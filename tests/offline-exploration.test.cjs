@@ -104,6 +104,67 @@ test('elite ether level penalty is applied at the kill and a first-clear BOSS re
  assert(r.run('state.materials["以太鍛鐵"]||0')>=2,'BOSS first-clear materials remain guaranteed');
  assert.deepEqual(r.errors,[]);
 });
+test('offline kills level up immediately and recalculate later monster XP, gold and drop penalties in the same encounter',async()=>{
+ const r=game();
+ r.run(`
+   state.lv=15;state.xp=need(15)-1;state.xpFraction=0;syncParty();refillParty();
+   foes=foes.slice(0,3);
+   foes.forEach((e,i)=>{e.lv=[15,13,10][i];e.kind='normal';e.hp=1;e.maxhp=1;e.rewarded=false;});
+   enemy=foes[0];state.active=[];state.supportSlots=[];
+   castPartySkill=()=>false;castSupport=()=>false;
+   initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];
+   performHeroBasic=()=>{for(const e of foes)e.hp=0;};
+   globalThis.levelPenaltyTrace=[];const originalReward=rewardGroupKill;
+   rewardGroupKill=function(e){
+    const h=party.members[0],before=h.lv,beforeXp=h.xp+(h.xpFraction||0),beforeGold=h.gold,
+     expectXp=EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),heroes().length),
+     expectGold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),
+     gearChance=__EMBERWILD_DROP_TEST.effectiveDropChance({type:'gear',chanceByDifficulty:[1,1,1]},e,0),
+     materialChance=__EMBERWILD_DROP_TEST.effectiveDropChance({type:'sourceMaterial',chanceByDifficulty:[1,1,1]},e,0);
+    const out=originalReward(e);
+    levelPenaltyTrace.push({before,after:h.lv,enemyLv:e.lv,expectXp,actualXp:h.xp+(h.xpFraction||0)-beforeXp+(h.lv>before?need(before):0),
+     expectGold,actualGold:h.gold-beforeGold,gearChance,materialChance});
+    return out;
+   };
+   nextActionAt=Date.now()+1500;save();
+ `);
+ await settle(r,7000);
+ const rows=json(r,'levelPenaltyTrace');
+ assert.equal(rows.length,3,'all three defeated monsters must settle individually');
+ assert.deepEqual(rows.map(x=>[x.before,x.after,x.enemyLv]),[[15,16,15],[16,16,13],[16,16,10]]);
+ for(const row of rows){
+  assert(Math.abs(row.actualXp-row.expectXp)<1e-7,'XP penalty must be computed from the current level: '+JSON.stringify(row));
+  assert.equal(row.actualGold,row.expectGold,'gold penalty must use the current level');
+ }
+ assert.deepEqual(rows.map(x=>x.gearChance),[1,.5,.2]);
+ assert.deepEqual(rows.map(x=>Math.round(x.materialChance*100)/100),[1,1,.9]);
+ assert.equal(r.run('party.offlineExploration.receipt.kills'),3);
+ assert.deepEqual(r.errors,[]);
+});
+test('fast replay prevents fractional XP from crossing a level boundary before switching to full simulation',()=>{
+ const source=file=>file==='js/combat/offline-exploration.js';
+ const r=loadRuntime(root,'index.html',{},undefined,{transformSource:(name,code)=>source(name)
+  ?code.replace('globalThis.EmberwildOffline={',`globalThis.__levelBoundaryProbe=function(){
+    const h=playerHero();h.lv=15;h.xp=need(15)-1;h.xpFraction=.95;
+    round=0;roundIterator=null;combatRoundProgress=null;
+    foes.forEach(e=>{e.kind='normal';e.lv=15;e.evasion=0;e.lifesteal=0;});
+    const hp=foes.reduce((n,e)=>n+e.maxhp,0),key=combatKey();
+    analysis={ready:true,key,profiles:new Map([['fraction',{count:8,rows:Array.from({length:8},()=>({duration:10000,rounds:1,mastery:{},hero:{}})),min:hp,max:hp}]])};
+    observed={key:'fraction',hp,at:Date.now()};
+    metrics={fallbacks:{}};simpleCombat=()=>'';running=true;
+    const previous=EmberwildProgression.enemyXp;
+    EmberwildProgression.enemyXp=()=>.1/foes.length;
+    try{const executed=tryFast(Date.now()+20000);return {executed,fallbacks:metrics.fallbacks,lv:h.lv,xp:h.xp,fraction:h.xpFraction};}
+    finally{EmberwildProgression.enemyXp=previous;}
+   };globalThis.EmberwildOffline={`)
+  :code});
+ r.run('selectSaveSlot(1);start(0);closeModal();startSelectedExploration();');
+ const result=json(r,'__levelBoundaryProbe()');
+ assert.equal(result.executed,false,'fractional EXP should force normal full simulation');
+ assert.equal(result.fallbacks['level-boundary'],1);
+ assert.equal(result.lv,15);
+ assert.deepEqual(r.errors,[]);
+});
 test('resume a persisted mid-turn cursor including support, enemy cooldowns, control, custom status and token state',async()=>{
  const a=game();for(let i=0;i<10;i++){a.advance(50);a.run('tick()');}a.run('save()');assert(a.run('!!combatRoundProgress'));
  const data=json(a,'packParty()'),rng=a.run('rngState'),serial=a.run('uidSerial'),b=game();b.advance(500);b.ctx.saved=data;b.run('loadParty(saved);');b.ctx.rng=rng;b.ctx.serial=serial;b.run('rngState=rng;uidSerial=serial');

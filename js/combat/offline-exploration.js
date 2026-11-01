@@ -282,7 +282,7 @@
   const expiry=Math.min(...buffs().filter(b=>b.remainingMs>0).map(b=>c.lastAt+b.remainingMs),Infinity);
   if(end>=expiry||end>Math.min(target,c.lastAt+HOUR))return fastReason('time-boundary');
   const h=playerHero(),xp=foes.reduce((n,e)=>n+EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,h.lv),heroes().length)*(1+api.bonus(party,'exp')/100),0);
-  if(h.lv<levelCap(h)&&h.xp+xp>=need(h.lv))return fastReason('level-boundary');
+  if(h.lv<levelCap(h)&&h.xp+(h.xpFraction||0)+xp>=need(h.lv))return fastReason('level-boundary');
   // Require a large HP reserve even with twice the longest sampled battle,
   // no evasion, healing, shield or beneficial status. Special attacks are excluded.
   const v=stats(h),formula=GAMEPLAY_SETTINGS.combat.damageFormula||{},maxRounds=Math.max(...p.rows.map(x=>x.rounds))*2;
