@@ -39,7 +39,8 @@ test('speed, XP and drop boosts expire at four hours and force fresh full sample
 test('inventory capacity auto-salvages overflow, preserves existing gear and does not stop offline exploration',async()=>{
  const save=fixture(r,base,'high'),initialIds=save.members[0].bag.map(g=>g.id);
  const warm=await replay(r,save,3,123456,true),capacity=warm.bag+1;
- r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity='+String(capacity));
+ r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity='+String(capacity)+';globalThis.__EMBERWILD_GAMEPLAY_SETTINGS.equipment.bagCapacity='+String(capacity));
+ assert.equal(r.run('RULES.bagCapacity'),capacity,'the configured inventory cap must be applied by the live rule accessor');
  const out=await replay(r,save,24,123456,false);
  assert(out.metrics.fastBattles>0);
  assert.equal(out.running,true,'a full bag must not stop an otherwise ongoing expedition');
@@ -48,6 +49,10 @@ test('inventory capacity auto-salvages overflow, preserves existing gear and doe
  assert.doesNotMatch(String(receipt().reason||''),/背包已滿/);
  assert.equal(receipt().gear.length,out.bag-save.members[0].bag.length);
  assert.equal(receipt().kills,r.run('state.totalKills'));
+ // Reapply the intended limit after replay: reset/load helpers may refresh the
+ // current published settings object while restoring saved state.
+ r.run('globalThis.__EMBERWILD_GAMEPLAY_SETTINGS.equipment.bagCapacity='+String(capacity));
+ assert.equal(r.run('RULES.bagCapacity'),capacity,'the overflow path must use the actual live capacity');
  // Drop-rate reductions may leave space after 24h; fill remaining slots before
  // testing the full-bag salvage path, rather than assuming a guaranteed drop.
  for(let i=out.bag;i<capacity;i++)r.run('addGear(gear(1,0,0,state.job))');
@@ -59,5 +64,5 @@ test('inventory capacity auto-salvages overflow, preserves existing gear and doe
  assert.deepEqual(after.ids,before.ids,'overflow must not replace or discard stored gear');
  assert.equal(after.ore,before.ore+3,'overflow tier-one gear converts to forge material');
  assert.equal(after.dust,before.dust+1,'overflow tier-one gear converts to gem dust');
- r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=10000');
+ r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=10000;globalThis.__EMBERWILD_GAMEPLAY_SETTINGS.equipment.bagCapacity=10000');
 });

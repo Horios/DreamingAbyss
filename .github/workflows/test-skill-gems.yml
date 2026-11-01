@@ -47,7 +47,7 @@ jobs:
         include:
           - group: receipts-and-compatibility
             tests: >-
-              tests/boot-save-notices.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs
+              tests/boot-save-notices.test.cjs tests/published-loader.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs
           - group: simulation-and-lifecycle
             tests: >-
               tests/offline-exploration.test.cjs tests/offline-fast.test.cjs tests/offline-final-stage.test.cjs tests/gameplay-lifecycle-audit.test.cjs
@@ -76,4 +76,4 @@ jobs:
       - name: Verify actual browser boot and mobile navigation
         env:
           EMBERWILD_PACE_REALTIME: '1'
-        run: node --test --test-concurrency=1 tests/mobile-layout.browser.test.cjs tests/published-loader.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs
+        run: node --test --test-concurrency=1 tests/mobile-layout.browser.test.cjs tests/published-loader.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs

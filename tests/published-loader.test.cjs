@@ -14,12 +14,12 @@ function harness({badSchema=false,stallMetadata=false,executionFailure=false,sto
   const app=new Node('app'),body=new Node('body'),head=new Node('head'),published={schema:'emberwild-balance-v1',schemaVersion:badSchema?99:1,items:[{cost:1}]};
   const document={getElementById:()=>app,createElement:tag=>new Node(tag),body,head,querySelectorAll:()=>['first.js','second.js','third.js'].map(file=>({getAttribute:()=>file}))};
   const emit=(type,event)=>{for(const fn of listeners.get(type)||[])fn(event);};
-  const ctx=vm.createContext({navigator:{locks:{request:(_name,callback)=>Promise.resolve().then(callback)}},document,URL,AbortController,Date,Promise,Error,Array,JSON,Map,Set,order:[],applied:[],loaded:[],toasts:[],__EMBERWILD_BOOT_SAVE_RAW:bootSave,
+  const ctx=vm.createContext({state:null,party:null,BACKUP_KEY:'emberwild-save-v1-backup',BATTLE_STATS_STORAGE_KEY:'emberwild-battle-statistics-v1',migrateWorldSave:data=>data,navigator:{locks:{request:(_name,callback)=>Promise.resolve().then(callback)}},document,URL,AbortController,Date,Promise,Error,Array,JSON,Map,Set,order:[],applied:[],loaded:[],toasts:[],__EMBERWILD_BOOT_SAVE_RAW:bootSave,
     location:{href:'https://emberwild.test/'+(preview?'preview/':''),pathname:preview?'/preview/':'/',reload(){}},
     localStorage:{getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)},
     setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout:id=>timers.delete(id),clearInterval(){},
     fetch:async(url,{signal})=>{if(stallMetadata&&url.startsWith('data/build.json'))return new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Error('aborted'))));return {ok:true,json:async()=>url.startsWith('data/build.json')?{commit:'a'.repeat(40)}:published};},
-    EmberwildBalanceDocument:{inspect:()=>[]},applyBalanceConfig(data){ctx.applied.push(data);},loadParty(data){ctx.loaded.push(data);if(loadFailure)throw Error('道具資料無效');},
+    EmberwildBalanceDocument:{inspect:()=>[]},applyBalanceConfig(data){ctx.applied.push(data);},loadParty(data){ctx.loaded.push(data);if(loadFailure===true||typeof loadFailure==='function'&&loadFailure(data))throw Error('道具資料無效');ctx.party=data;ctx.state=data.members?.[0]||{};},
     importBalanceJSON:async()=>true,resetBalanceJSON:()=>true,exportableBalance:()=>ctx.__EMBERWILD_BALANCE_SOURCE,toast(message){ctx.toasts.push(message);},backToTitle(){ctx.returnedToTitle=true;},
     addEventListener:(type,fn)=>{if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(fn);},removeEventListener:(type,fn)=>listeners.get(type)?.delete(fn),dispatchEvent(){},Event:class{}
   });ctx.window=ctx;
@@ -83,4 +83,46 @@ test('final save hydration alone reports a genuine failure and preserves stored 
     assert.deepEqual([...h.ctx.toasts],loadFailure?['存檔未能載入：道具資料無效；可匯入備份。']:[]);
     assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,loadFailure?'道具資料無效':null);
   }
+});
+
+test('a corrupt primary uses a valid backup only after full module loading and leaves both raw records intact',async()=>{
+  const primary=JSON.stringify({broken:true}),backup=JSON.stringify({version:3,members:[{job:0,lv:2}]});
+  const h=harness({bootSave:primary,loadFailure:row=>!!row.broken,storage:{
+    'emberwild-save-v1':primary,'emberwild-save-v1-backup':backup
+  }});
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+  assert.equal(h.ctx.loaded.length,2);
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_RAW,backup);
+  assert.equal(h.ctx.__EMBERWILD_UNREADABLE_PRIMARY_RAW,primary);
+  assert.equal(h.values.get('emberwild-save-v1'),primary);
+  assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
+  assert.deepEqual([...h.ctx.toasts],['主要存檔無法載入，已讀取上一份備份；原始資料保留']);
+  assert.equal(h.ctx.returnedToTitle,undefined);
+});
+
+test('a missing primary can load the backup without treating it as corrupt',async()=>{
+  const backup=JSON.stringify({version:3,members:[{job:1,lv:7}]});
+  const h=harness({storage:{'emberwild-save-v1-backup':backup}});
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_RAW,backup);
+  assert.equal(h.ctx.__EMBERWILD_UNREADABLE_PRIMARY_RAW,undefined);
+  assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
+});
+
+test('a missing custom equipment form does not silently substitute the backup',async()=>{
+  const primary=JSON.stringify({custom:true}),backup=JSON.stringify({version:3,members:[{job:0,lv:5}]});
+  const h=harness({bootSave:primary,loadFailure:row=>!!row.custom,storage:{
+    'emberwild-save-v1':primary,'emberwild-save-v1-backup':backup
+  }});
+  // Use the exact preview-specific compatibility error.
+  h.ctx.loadParty=(data)=>{h.ctx.loaded.push(data);if(data.custom)throw Error('裝備類型無效：custom');h.ctx.party=data;h.ctx.state=data.members?.[0]||{};};
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);
+  assert.equal(h.ctx.loaded.length,1);
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,'裝備類型無效：custom');
+  assert.equal(h.values.get('emberwild-save-v1'),primary);
+  assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
 });
