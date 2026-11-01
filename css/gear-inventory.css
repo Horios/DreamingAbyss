@@ -31,7 +31,7 @@
 #app .gear-management-panel .inventory-detail-pane{overflow:visible}
 @media(max-width:760px){#app .gear-management-panel .inventory-master-pane{height:clamp(250px,38dvh,380px)}.gear-management-panel .gear-basic-filters,.gear-management-panel .gear-numeric-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-.inventory-wear-guide{margin-bottom:14px}.inventory-wear-guide ol{padding-left:22px;line-height:1.8}.inventory-wear-target{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0}.inventory-wear-target>b{flex-basis:100%}
+.inventory-wear-toolbar{display:flex;justify-content:flex-end;margin:0 0 6px}.inventory-wear-toolbar .inventory-wear-help{display:grid;place-items:center;flex:none;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:50%;font-size:16px;font-weight:700;line-height:1}.inventory-wear-help-steps{padding-left:24px;line-height:1.85}.inventory-wear-help-steps li{margin:8px 0}.inventory-wear-target{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 12px}.inventory-wear-target>b{flex-basis:100%}.inventory-wear-skill-link{margin-bottom:12px}
 
 .gear-management-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:8px 0}.gear-filter-button{margin-inline-start:auto}
 .gear-management-panel .inventory-master-heading{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px}.inventory-master-heading>span{margin-inline-start:auto;white-space:nowrap}

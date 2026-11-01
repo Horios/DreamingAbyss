@@ -133,7 +133,7 @@
     const list=rows(),visible=new Set(list.map(r=>r.g.id));selected=new Set([...selected].filter(id=>visible.has(id)&&actionable(findGear(id))));
     if(!visible.has(inventorySelectedGearId))inventorySelectedGearId=list[0]?.g.id??null;
     const current=list.find(r=>r.g.id===inventorySelectedGearId)?.g;
-    return `<section class="panel compact-inventory-panel gear-management-panel"><div class="gear-management-top">${resourceLine()}${controls()}</div>${state.bag.length>=RULES.bagCapacity?'<p class="gear-overflow-note" role="status">背包已滿，掉落已保留；整理至容量以下後可繼續探索。</p>':''}<div class="inventory-master-detail"><section class="inventory-master-pane"><div class="inventory-master-heading"><b>裝備列表</b>${sortControls()}<span>顯示 ${list.length} 件</span></div><div class="inline-equipment-list inventory-list-scroll">${list.map(item).join('')||'<p class="empty">沒有符合條件的裝備。</p>'}</div>${multi?`<div class="gear-batch-controls"><b>已選 ${selected.size} 件</b><button onclick="selectVisibleGear()">全選目前結果</button><button onclick="clearSelectedGear()">清除選取</button><button onclick="requestGearInventoryBatch('sell')" ${selected.size?'':'disabled'}>批次出售</button><button onclick="requestGearInventoryBatch('salvage')" ${selected.size?'':'disabled'}>批次分解</button></div>`:''}</section><section class="inventory-detail-wrap">${inventoryGearDetail(current)}</section></div></section>`;
+    return `<section class="panel compact-inventory-panel gear-management-panel"><div class="gear-management-top">${resourceLine()}${controls()}</div>${state.bag.length>=RULES.bagCapacity?'<p class="gear-overflow-note" role="status">背包已滿，後續掉落的裝備會自動分解。</p>':''}<div class="inventory-master-detail"><section class="inventory-master-pane"><div class="inventory-master-heading"><b>裝備列表</b>${sortControls()}<span>顯示 ${list.length} 件</span></div><div class="inline-equipment-list inventory-list-scroll">${list.map(item).join('')||'<p class="empty">沒有符合條件的裝備。</p>'}</div>${multi?`<div class="gear-batch-controls"><b>已選 ${selected.size} 件</b><button onclick="selectVisibleGear()">全選目前結果</button><button onclick="clearSelectedGear()">清除選取</button><button onclick="requestGearInventoryBatch('sell')" ${selected.size?'':'disabled'}>批次出售</button><button onclick="requestGearInventoryBatch('salvage')" ${selected.size?'':'disabled'}>批次分解</button></div>`:''}</section><section class="inventory-detail-wrap">${inventoryGearDetail(current)}</section></div></section>`;
   };
   let wearTarget=null;
   globalThis.openInventoryWear=function(id){
@@ -141,21 +141,21 @@
     wearTarget={owner:party,id};const positions=gearEquipPositions(g),position=positions.find(p=>h.equipped[p]===id)??positions.find(p=>!h.equipped[p])??positions[0];
     wornSlotSelection={key:memberKey(h),position};pageHeroSelection.set('worn',memberKey(h));closeModal();setTab('worn');return true;
   };
+  globalThis.openWornWearHelp=function(){
+    const modal=$('modal');
+    modal.innerHTML=`<h2>穿戴流程說明</h2><ol class="inventory-wear-help-steps"><li>先點選要穿戴的部位，再從右側背包選擇裝備；也可以在背包詳情按「穿戴」直接帶入。</li><li>裝備必須符合角色職業與等級；飾品有兩個欄位，請選擇要使用的欄位。</li><li>換裝時先查看能力、詞綴比較，再按「確認穿戴」；原本是空欄位時會直接穿戴。</li><li>若裝備附帶技能，請前往「技能」頁啟用該裝備技能，並配置到對應的主動、觸發或輔助槽。</li><li>已穿戴裝備下方的「詳情」可查看完整能力，「鑲嵌」可管理寶石，「強化／洗鍊」可前往強化頁。</li></ol><div class="actions"><button type="button" onclick="closeModal()">關閉說明</button></div>`;
+    if(!modal.open)modal.showModal();return true;
+  };
   const wornBase=wornEquipmentView;
   wornEquipmentView=function(){
     const h=party.members[0],g=wearTarget?.owner===party?findGear(wearTarget.id):null,sk=g&&globalThis.__EMBERWILD_SKILLS?.byId(g.skillId),wearer=g&&gearWearer(g.id),valid=g&&eligibleWearers(g).includes(h)&&!inlineAffixDrafts.has(affixDraftKey(g));
     const selected=g?`<div class="inventory-wear-target"><b>準備穿戴：${equipmentNameHTML(g)}</b>${wearer?'<p>目前由 '+esc(characterName(wearer))+' 穿戴。</p>':!valid?'<p>此裝備不符合目前職業、等級或有待確認詞綴。</p>':gearEquipPositions(g).map(p=>`<button type="button" onclick="previewEquip('${g.id}',${memberKey(h)},${p})">穿戴至${esc(EQUIP_POSITION_NAMES[p])}</button>`).join('')}</div>`:'';
-    const guide=`<section class="panel inventory-wear-guide" aria-label="固定穿戴流程"><h2>穿戴流程</h2><ol><li>選擇裝備欄位與背包裝備。</li><li>查看換裝比較，再確認穿戴；空欄位會直接穿戴。</li><li>技能裝備：前往技能頁啟用一件裝備技能，再放入對應的主動、觸發或輔助槽。</li></ol>${selected}<button type="button" onclick="setTab('skills')">${sk?'啟用與配置「'+esc(sk.name)+'」':'前往技能配置'}</button></section>`;
+    const guide=`<div class="inventory-wear-toolbar"><button type="button" class="inventory-wear-help" aria-label="穿戴流程說明" title="穿戴流程說明" onclick="openWornWearHelp()">?</button></div>${selected}<div class="inventory-wear-skill-link"><button type="button" onclick="setTab('skills')">${sk?'啟用與配置「'+esc(sk.name)+'」':'前往技能配置'}</button></div>`;
     return guide+wornBase();
   };
   const reset=resetSession;resetSession=function(){const out=reset();wearTarget=null;filter=defaults();sort='quality';direction='desc';multi=false;folds.filters=false;folds.sort=false;advanced=false;selected.clear();review=null;return out;};
   const validate=validateParty;validateParty=data=>validate(EmberwildGearInventory.prepareSave(data));
-  function full(){return !!state&&state.bag.length>=RULES.bagCapacity;}
-  function blocked(){if(!full())return false;running=false;toast('背包已滿，請先整理裝備再繼續探索');return true;}
-  const battle=toggleBattle;toggleBattle=function(...args){if(!running&&blocked())return false;return battle(...args);};
-  for(const name of ['startBossChallenge','restartExploration']){const base=globalThis[name];if(base)globalThis[name]=function(...args){if(blocked())return false;return base(...args);};}
-  const spawn=spawnGroup;spawnGroup=function(...args){if(blocked())return false;return spawn(...args);};
-  const round=pacedRound;pacedRound=function*(){if(blocked())return;try{yield* round();}finally{if(full())running=false;}};
+  // The canonical addGear overflow path salvages excess drops; a full bag does not halt exploration.
   globalThis.__EMBERWILD_GEAR_INVENTORY={rows,filters:()=>({...filter}),sort:()=>({key:sort,direction}),selection:()=>[...selected],actionable,quote,review:()=>review,limits:inputLimits,folds:()=>({...folds})};
 })();
 

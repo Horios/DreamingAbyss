@@ -26,7 +26,7 @@ test('backpack sort, modal filters and guided wear work on desktop and mobile; b
    if(width===1440)await p.screenshot({path:'/tmp/emberwild-inventory-desktop.png'});
   }
   await p.locator('.inventory-detail-actions').getByRole('button',{name:'穿戴',exact:true}).click();
-  assert.equal(await p.evaluate(()=>tab),'worn');await p.getByLabel('固定穿戴流程').waitFor({state:'visible'});
+  assert.equal(await p.evaluate(()=>tab),'worn');await p.getByRole('button',{name:'穿戴流程說明'}).click();await p.locator('#modal').getByRole('heading',{name:'穿戴流程說明'}).waitFor({state:'visible'});assert.match(await p.locator('#modal').innerText(),/「鑲嵌」可管理寶石/);await p.locator('#modal').getByRole('button',{name:'關閉說明'}).click();
   assert.equal(await p.evaluate(()=>state.equipped.includes(charm.id)),false);
   await p.getByRole('button',{name:/穿戴至飾品/}).first().click();
   if(await p.locator('#modal').isVisible())await p.locator('#modal').getByRole('button',{name:'確認穿戴',exact:true}).click();
