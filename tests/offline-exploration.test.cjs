@@ -80,13 +80,24 @@ test('offline low-level farm reduces gem, potion and token drops along with XP a
    id:'offline-gap-'+type,name:type,key:type==='token'?'berserk':'random',
    type,enabled:true,kinds:['normal','elite'],sources,chanceByDifficulty:[1,1,1],quantityMin:1,quantityMax:1
   }));
+  globalThis.monsterGoldAwards=[];
+  const baseEnemyGold=EmberwildProgression.enemyGold;
+  EmberwildProgression.enemyGold=function(...args){
+   const amount=baseEnemyGold(...args);
+   monsterGoldAwards.push({playerLevel:args[4],enemyLevel:args[1],amount});
+   return amount;
+  };
   Math.random=()=>.5;foes.forEach(e=>e.kind='elite');save();`);
  const before=json(r,'({gems:state.gems,bag:state.bag.length,potions:state.potions,ore:state.ore,ether:state.materials["以太鍛鐵"]||0})');
  await settle(r,60000);
  const rec=json(r,'party.offlineExploration.receipt');
  assert(rec?.kills>0,'high-level party must actually defeat low-level enemies');
  assert.equal(rec.xp,0,'10+ levels above monsters earns zero XP');
- assert.equal(rec.goldGained,0,'10+ levels above monsters earns zero monster gold');
+ const monsterGold=json(r,'monsterGoldAwards');
+ assert(monsterGold.length>0,'test must verify actual monster reward calculations');
+ assert(monsterGold.every(row=>row.amount===0),'10+ levels above monsters earn zero monster gold: '+JSON.stringify(monsterGold));
+ // The offline receipt can also count rewards from other systems, so its
+ // aggregate gold is not a reliable measure of monster gold alone.
  assert.deepEqual(json(r,'state.gems'),before.gems,'discounted gem odds must be used by offline loot rolls');
  assert.equal(r.run('state.bag.length'),before.bag,'discounted token odds must be used by offline loot rolls');
  assert.equal(r.run('state.potions'),before.potions,'discounted potion odds must be used by offline loot rolls');
@@ -98,7 +109,9 @@ test('elite ether level penalty is applied at the kill and a first-clear BOSS re
  const r=game();
  r.run(`state.lv=20;syncParty();Math.random=()=>.03;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
  assert.equal(r.run('state.materials["以太鍛鐵"]||0'),0,'a high-level party must not get the undiscounted elite chance');
- r.run(`state.lv=5;syncParty();awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
+ assert.equal(r.run('etherDropChance({kind:"elite",region:0})'),.05,'the base elite ether chance remains 5%');
+ r.run(`state.lv=5;syncParty();Math.random=()=>0;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
+ assert.equal(r.run('generalDropLevelGapFactor({type:"material"},{kind:"elite",lv:5,region:0})'),1,'same-level elite material odds are unpenalized');
  assert.equal(r.run('state.materials["以太鍛鐵"]||0'),1,'same-level elite retains original 5% chance');
  r.run(`state.lv=20;syncParty();awardEther({kind:'boss',lv:5,region:0,difficulty:0});`);
  assert(r.run('state.materials["以太鍛鐵"]||0')>=2,'BOSS first-clear materials remain guaranteed');
@@ -114,16 +127,24 @@ test('offline kills level up immediately and recalculate later monster XP, gold 
    castPartySkill=()=>false;castSupport=()=>false;
    initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];
    performHeroBasic=()=>{for(const e of foes)e.hp=0;};
-   globalThis.levelPenaltyTrace=[];const originalReward=rewardGroupKill;
+   globalThis.levelPenaltyTrace=[];globalThis.levelGoldCalls=[];
+   const baseEnemyGold=EmberwildProgression.enemyGold;
+   EmberwildProgression.enemyGold=function(...args){
+    const amount=baseEnemyGold(...args);
+    levelGoldCalls.push({playerLevel:args[4],enemyLevel:args[1],amount});
+    return amount;
+   };
+   const originalReward=rewardGroupKill;
    rewardGroupKill=function(e){
     const h=party.members[0],before=h.lv,beforeXp=h.xp+(h.xpFraction||0),beforeGold=h.gold,
      expectXp=EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),heroes().length),
-     expectGold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),
+     expectGold=baseEnemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),
      gearChance=__EMBERWILD_DROP_TEST.effectiveDropChance({type:'gear',chanceByDifficulty:[1,1,1]},e,0),
      materialChance=__EMBERWILD_DROP_TEST.effectiveDropChance({type:'sourceMaterial',chanceByDifficulty:[1,1,1]},e,0);
+    const goldCallStart=levelGoldCalls.length;
     const out=originalReward(e);
     levelPenaltyTrace.push({before,after:h.lv,enemyLv:e.lv,expectXp,actualXp:h.xp+(h.xpFraction||0)-beforeXp+(h.lv>before?need(before):0),
-     expectGold,actualGold:h.gold-beforeGold,gearChance,materialChance});
+     expectGold,actualGold:h.gold-beforeGold,goldCalls:levelGoldCalls.slice(goldCallStart),gearChance,materialChance});
     return out;
    };
    nextActionAt=Date.now()+1500;save();
@@ -134,7 +155,8 @@ test('offline kills level up immediately and recalculate later monster XP, gold 
  assert.deepEqual(rows.map(x=>[x.before,x.after,x.enemyLv]),[[15,16,15],[16,16,13],[16,16,10]]);
  for(const row of rows){
   assert(Math.abs(row.actualXp-row.expectXp)<1e-7,'XP penalty must be computed from the current level: '+JSON.stringify(row));
-  assert.equal(row.actualGold,row.expectGold,'gold penalty must use the current level');
+  assert.deepEqual(row.goldCalls,[{playerLevel:row.before,enemyLevel:row.enemyLv,amount:row.expectGold}],
+   'the monster-gold calculation must use the current level exactly once');
  }
  assert.deepEqual(rows.map(x=>x.gearChance),[1,.5,.2]);
  assert.deepEqual(rows.map(x=>Math.round(x.materialChance*100)/100),[1,1,.9]);
