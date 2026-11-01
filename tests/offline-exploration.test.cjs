@@ -10,6 +10,56 @@ test('fixed random sequence: visible timeline and offline events give identical 
  const online=game(),offline=game();for(const r of [online,offline])r.run('nextActionAt=Date.now()+50;save()');for(let i=0;i<1200;i++){online.advance(50);online.run('tick()');}await settle(offline,60000);
  assert.deepEqual(result(offline),result(online));const r=json(offline,'party.offlineExploration.receipt');assert.equal(r.end-r.start,60000);assert.equal(r.effectiveMs,60000);assert.equal(r.kills,offline.run('state.totalKills'));assert(r.xp>0);assert.equal(offline.run('party.offlineExploration.lastAt'),offline.now);assert.deepEqual(offline.errors,[]);
 });
+test('25-minute real-time and offline replay earn identical rewards at 1x and 2x',async()=>{
+ const span=25*60*1000;
+ for(const rate of [1,2]){
+  const visible=game(),offline=game(),interval=1500/rate;
+  for(const r of [visible,offline])r.run(`if(${rate}===2){state.consumables.speed2_30m=1;useSupply('speed2_30m');setBattleSpeed(2);}nextActionAt=Date.now()+${interval};save();`);
+  const before=json(offline,'({kills:state.totalKills,gold:state.gold,gear:state.bag.length})');
+  for(let t=0;t<span;t+=interval){visible.advance(interval);visible.run('tick()');}
+  await settle(offline,span);
+  assert.deepEqual(result(offline),result(visible),'online/offline state must agree at '+rate+'x');
+  const receipt=json(offline,'party.offlineExploration.receipt');
+  assert(receipt?.complete,'a completed encounter must yield one durable receipt');
+  assert.equal(receipt.effectiveMs,span);
+  assert.equal(receipt.intervals.reduce((n,i)=>n+i.end-i.start,0),span);
+  assert.equal(receipt.kills,offline.run('state.totalKills')-before.kills);
+  assert.equal(receipt.goldGained-receipt.goldSpent,offline.run('state.gold')-before.gold);
+  assert.equal(receipt.gear.length,offline.run('state.bag.length')-before.gear);
+  const settled=result(offline);
+  await offline.run('EmberwildOffline.settle()');
+  assert.deepEqual(result(offline),settled,'repeated settlement must not duplicate payout at '+rate+'x');
+  assert.deepEqual(offline.errors,[]);
+ }
+});
+test('25-minute one-action victory stress test cannot skip minimum rounds or duplicate XP, money and kills',async()=>{
+ const span=25*60*1000;
+ for(const rate of [1,2]){
+  const visible=game(),offline=game(),interval=1500/rate,minimumRound=6000/rate;
+  for(const r of [visible,offline])r.run(`
+   if(${rate}===2){state.consumables.speed2_30m=1;useSupply('speed2_30m');setBattleSpeed(2);}
+   state.active=[];state.supportSlots=[];
+   castPartySkill=()=>false;castSupport=()=>false;
+   initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];
+   performHeroBasic=()=>{for(const e of foes)e.hp=0;};
+   globalThis.earningWins=0;const baseFinish=finalizeBattleStatistics;
+   finalizeBattleStatistics=function(outcome){if(activeBattleStat&&outcome==='victory')earningWins++;return baseFinish(outcome);};
+   nextActionAt=Date.now()+${interval};save();
+  `);
+  const first=json(offline,'({kills:state.totalKills,gold:state.gold})');
+  for(let t=0;t<span;t+=interval){visible.advance(interval);visible.run('tick()');}
+  await settle(offline,span);
+  const receipt=json(offline,'party.offlineExploration.receipt');
+  const maxVictories=Math.ceil(span/(minimumRound+interval))+1;
+  assert(offline.run('earningWins')<=maxVictories,'offline victories exceeded pacing limit at '+rate+'x');
+  assert.equal(offline.run('earningWins'),visible.run('earningWins'),'offline victories must match foreground at '+rate+'x');
+  assert.equal(receipt.battles,offline.run('earningWins'));
+  assert.equal(receipt.kills,offline.run('state.totalKills')-first.kills);
+  assert.equal(receipt.goldGained-receipt.goldSpent,offline.run('state.gold')-first.gold);
+  assert.deepEqual(result(offline),result(visible));
+  assert.deepEqual(offline.errors,[]);
+ }
+});
 test('resume a persisted mid-turn cursor including support, enemy cooldowns, control, custom status and token state',async()=>{
  const a=game();for(let i=0;i<10;i++){a.advance(50);a.run('tick()');}a.run('save()');assert(a.run('!!combatRoundProgress'));
  const data=json(a,'packParty()'),rng=a.run('rngState'),serial=a.run('uidSerial'),b=game();b.advance(500);b.ctx.saved=data;b.run('loadParty(saved);');b.ctx.rng=rng;b.ctx.serial=serial;b.run('rngState=rng;uidSerial=serial');
