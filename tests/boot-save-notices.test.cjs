@@ -42,3 +42,26 @@ test('fractional party EXP remains reloadable and pre-fix decimal EXP is migrate
  assert.equal(rejected.run('!!state'),false);
  assert.match(rejected.ctx.__EMBERWILD_BOOT_SAVE_ERROR,/資源數值無效/);
 });
+
+test('failed primary save does not erase its backup or corrupt the previous committed save',()=>{
+ const r=loadRuntime(root);
+ r.run('selectSaveSlot(1);start(0);closeModal();state.gold+=13;save()');
+ const key=r.run('KEY'),backupKey=r.run('BACKUP_KEY'),previous=r.values.get(key);
+ assert(previous,'must have a committed primary before testing storage failure');
+ const originalWrite=r.ctx.localStorage.setItem;
+ r.ctx.localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota fault injection');return originalWrite(k,v);};
+ try{
+  r.run('state.gold+=1');
+  assert.equal(r.run('save()'),false);
+  assert.equal(r.values.get(key),previous,'the failed primary write leaves the previous valid save intact');
+  const backup=r.values.get(backupKey);
+  assert(backup,'backup must survive quota failure even when the primary cannot be written');
+  assert.doesNotThrow(()=>JSON.parse(backup));
+  assert.doesNotThrow(()=>JSON.parse(previous));
+  const cold=loadRuntime(root,'index.html',{[key]:previous,[backupKey]:backup},r.now);
+  assert.equal(cold.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+  assert.equal(cold.run('!!state&&!!party'),true);
+ }finally{r.ctx.localStorage.setItem=originalWrite;}
+ assert.equal(r.run('save()'),true,'saving is retryable after storage access is restored');
+ assert.equal(r.run('validateParty(JSON.parse(localStorage.getItem(KEY))).members[0].gold'),r.run('state.gold'));
+});

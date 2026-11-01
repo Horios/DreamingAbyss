@@ -596,7 +596,7 @@ save=function(show=false){
  if(globalThis.__EMBERWILD_TEAM_BOOT_RAW&&!globalThis.__EMBERWILD_TEAM_READY)return;
  if(!saveReady||!state||partyBusy)return;
  if(!party)party=createParty(state);
- let payload,previous=null,backupWritten=false;
+ let payload,previous=null;
  try{
   payload=JSON.stringify(packParty(),(key,value)=>{if(typeof value==='number'&&!Number.isFinite(value))throw Error('存檔包含非有限數值：'+key);return value;});
   previous=localStorage.getItem(KEY);
@@ -604,11 +604,10 @@ save=function(show=false){
   // Never replace the only verified backup with those unreadable bytes.
   // When the game started from a verified backup, keep that recovery point for
   // the entire session. A newly written primary is not cold-load verified yet.
-  if(previous&&previous!==payload&&!globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);backupWritten=true;}catch{}}
-  try{localStorage.setItem(KEY,payload);}catch(firstError){
-   if(backupWritten){try{localStorage.removeItem(BACKUP_KEY);}catch{}}
-   localStorage.setItem(KEY,payload);
-  }
+  if(previous&&previous!==payload&&!globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);}catch{}}
+  // A failed primary write must never delete the last recovery copy to make
+  // room for a retry. Report failure and keep the previously committed main.
+  localStorage.setItem(KEY,payload);
   globalThis.__EMBERWILD_BOOT_SAVE_RAW=payload;
   // Keep the restored-backup flag until a fresh browser boot has verified the
   // primary. Deleting it here would allow the next timer save to rotate again.
