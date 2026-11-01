@@ -62,7 +62,21 @@ test('Chromium: a corrupt primary restores a valid backup only after full startu
    backup:localStorage.getItem('emberwild-save-v1-backup')
   }));
   assert.doesNotThrow(()=>JSON.parse(persisted.primary));
-  assert.equal(persisted.backup,backup,'first post-recovery save must not rotate corrupt primary over the good backup');
+  assert.equal(persisted.backup,backup,'first post-recovery save must not replace the verified backup');
+  // A subsequent changed save must not rotate the fresh, not-yet-reloaded
+  // primary over the verified backup either.
+  await p.evaluate(()=>{state.gold+=1;save();});
+  const afterSecondSave=await p.evaluate(()=>({
+   primary:localStorage.getItem('emberwild-save-v1'),
+   backup:localStorage.getItem('emberwild-save-v1-backup'),
+   gold:state.gold
+  }));
+  assert.equal(afterSecondSave.backup,backup,'later saves in this session keep the verified backup');
+  assert.equal(JSON.parse(afterSecondSave.primary).members[0].gold,afterSecondSave.gold);
+  await p.reload();
+  assert.equal(await p.evaluate(()=>globalThis.__EMBERWILD_BOOT_SAVE_ERROR??null),null);
+  assert.equal(await p.evaluate(()=>globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION??false),false);
+  assert.equal(await p.evaluate(()=>localStorage.getItem('emberwild-save-v1-backup')),backup);
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });

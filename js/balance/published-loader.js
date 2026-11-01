@@ -99,7 +99,12 @@
         globalThis.__EMBERWILD_BOOT_SAVE_RAW=candidate.raw;
         globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;
         recoveredBackup=candidate.label==='備份存檔';
-        if(recoveredBackup&&playerBytes&&candidate.raw!==playerBytes)globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW=playerBytes;
+        if(recoveredBackup){
+          // Keep this known-good backup until the next cold start validates
+          // the newly written primary, not just through one autosave.
+          globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION=true;
+          if(playerBytes&&candidate.raw!==playerBytes)globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW=playerBytes;
+        }
         break;
       }catch(error){
         const reason=String(error?.message||error);

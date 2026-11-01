@@ -96,6 +96,7 @@ test('a corrupt primary uses a valid backup only after full module loading and l
   assert.equal(h.ctx.loaded.length,2);
   assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_RAW,backup);
   assert.equal(h.ctx.__EMBERWILD_UNREADABLE_PRIMARY_RAW,primary);
+  assert.equal(h.ctx.__EMBERWILD_RECOVERED_BACKUP_SESSION,true);
   assert.equal(h.values.get('emberwild-save-v1'),primary);
   assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
   assert.deepEqual([...h.ctx.toasts],['主要存檔無法載入，已讀取上一份備份；原始資料保留']);

@@ -602,12 +602,16 @@ save=function(show=false){
   previous=localStorage.getItem(KEY);
   // On the first save after backup recovery, the previous primary is known bad.
   // Never replace the only verified backup with those unreadable bytes.
-  if(previous&&previous!==payload&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);backupWritten=true;}catch{}}
+  // When the game started from a verified backup, keep that recovery point for
+  // the entire session. A newly written primary is not cold-load verified yet.
+  if(previous&&previous!==payload&&!globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);backupWritten=true;}catch{}}
   try{localStorage.setItem(KEY,payload);}catch(firstError){
    if(backupWritten){try{localStorage.removeItem(BACKUP_KEY);}catch{}}
    localStorage.setItem(KEY,payload);
   }
   globalThis.__EMBERWILD_BOOT_SAVE_RAW=payload;
+  // Keep the restored-backup flag until a fresh browser boot has verified the
+  // primary. Deleting it here would allow the next timer save to rotate again.
   delete globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW;
   if(show)toast('隊伍進度已儲存');
   return true;
@@ -749,7 +753,7 @@ guideView=function(){return `<section class="panel"><h2>3.0 · 小隊遠征</h2>
 exportSave=function(){if(!state)return toast('請先建立角色');save();const blob=new Blob([JSON.stringify(packParty(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='emberwild-party.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 importSave=async function(ev){const f=ev.target.files[0];ev.target.value='';if(!f)return;try{if(f.size>8e6)throw Error('存檔過大');const migrated=migrateWorldSave(JSON.parse(await f.text())),preview=validateParty(migrated);pendingImport=migrated;running=false;$('modal').innerHTML=`<h2>載入隊伍？</h2><p>${preview.members.map(h=>esc(characterName(h))+' LV'+h.lv).join('、')}</p><p>確認後取代目前全隊進度。</p><button onclick="acceptImport()">確認載入</button><button onclick="closeModal();pendingImport=null">取消</button>`;$('modal').showModal();}catch(e){pendingImport=null;console.warn('手動匯入存檔失敗',e);toast('匯入失敗：'+e.message);}};
 acceptImport=function(){if(!pendingImport)return;const data=pendingImport;try{loadParty(data);closeModal();const stored=save();pendingImport=null;render();toast(stored===false?'存檔已載入，但瀏覽器無法寫入；請先匯出 JSON 備份':'存檔已匯入');}catch(e){pendingImport=null;console.warn('套用匯入存檔失敗',e);toast('匯入失敗：'+e.message);}};
-newGame=function(){resetSession();party=null;state=null;try{localStorage.removeItem(KEY);localStorage.removeItem(BACKUP_KEY);}catch{}closeModal();$('wallet').textContent='';render();};
+newGame=function(){resetSession();party=null;state=null;delete globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION;delete globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW;try{localStorage.removeItem(KEY);localStorage.removeItem(BACKUP_KEY);}catch{}closeModal();$('wallet').textContent='';render();};
 
 
 const partyGearDetail=showGearDetail;
