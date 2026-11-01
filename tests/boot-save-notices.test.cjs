@@ -16,3 +16,29 @@ test('published saves defer hydration until the final loader, without provisiona
   for(const [k,v] of Object.entries(storage))assert.equal(cold.values.get(k),v);
  }
 });
+
+test('fractional party EXP remains reloadable and pre-fix decimal EXP is migrated without losing progress',()=>{
+ const r=loadRuntime(root);
+ r.run('selectSaveSlot(1);start(0);closeModal();awardXP(19.8);save()');
+ const key=r.run('KEY'),first=JSON.parse(r.values.get(key));
+ assert.equal(first.members[0].xp,19);
+ assert(Math.abs(first.members[0].xpFraction-.8)<1e-9);
+ r.run('awardXP(19.8);save()');
+ const saved=r.values.get(key),second=JSON.parse(saved);
+ assert.equal(second.members[0].xp,39);
+ assert(Math.abs(second.members[0].xpFraction-.6)<1e-9);
+ const cold=loadRuntime(root,'index.html',{[key]:saved},r.now);
+ assert.equal(cold.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+ assert.equal(cold.run('state.xp'),39);
+ assert(Math.abs(cold.run('state.xpFraction')-.6)<1e-9);
+ const legacy=structuredClone(first);legacy.members[0].xp=19.8;legacy.members[0].xpFraction=0;
+ const raw=JSON.stringify(legacy),migrated=loadRuntime(root,'index.html',{[key]:raw},r.now);
+ assert.equal(migrated.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+ assert.equal(migrated.run('state.xp'),19);
+ assert(Math.abs(migrated.run('state.xpFraction')-.8)<1e-9);
+ assert.equal(migrated.values.get(key),raw,'cold-load migration does not overwrite the original saved bytes');
+ const corrupt=structuredClone(first);corrupt.members[0].xp='19.8';
+ const rejected=loadRuntime(root,'index.html',{[key]:JSON.stringify(corrupt)},r.now);
+ assert.equal(rejected.run('!!state'),false);
+ assert.match(rejected.ctx.__EMBERWILD_BOOT_SAVE_ERROR,/資源數值無效/);
+});

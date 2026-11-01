@@ -58,6 +58,12 @@ function validateSave(input,{companion=false}={}) {
   const s=migrateLegacyEquipmentSlotsInSave(JSON.parse(JSON.stringify(input))),legacy=s.version===1;
   if(Array.isArray(s.gems)&&s.gems.length===3){s.gems=[...s.gems,...Array(GEMS.length-3).fill(0)];if(Array.isArray(s.sockets))s.sockets=s.sockets.map((v,i)=>v===1&&CLASSES[s.job]?.skills?.[i]?.[1]==='proc'?2:v===2&&CLASSES[s.job]?.skills?.[i]?.[1]==='active'?3:v);}
   delete s.sp;delete s.ap;delete s.stats;s.xpFraction??=0;
+  // Older builds could persist fractional XP after shared combat rewards.
+  // Normalize only valid numeric fractions; malformed values still fail below.
+  if(Number.isFinite(s.xp)&&s.xp>=0&&s.xp<=1e12&&!Number.isInteger(s.xp)&&num(s.xpFraction,0,1)&&s.xpFraction<1){
+    const base=Math.floor(s.xp),fraction=s.xp-base+s.xpFraction,carry=Math.floor(fraction);
+    s.xp=base+carry;s.xpFraction=fraction-carry;
+  }
   if(!int(s.job,0,3)||!int(s.lv,1,RULES.maxLevel)||!int(s.map,0,MAPS.length-1))fail('角色或地圖無效');
   if(s.avatarId!==undefined&&s.avatarId!==null&&s.avatarId!==''&&!['guardian','mage','ranger','healer','wanderer','phoenix'].includes(s.avatarId))fail('角色圖示無效');
   for(const k of ['gold','ore','dust','totalKills','repeat','potions','xp'])if(!int(s[k]))fail('資源數值無效');
