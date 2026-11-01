@@ -193,10 +193,12 @@
    const actionMs=Math.max(1,Math.round(GS('combat.pacing.actionIntervalMs',1500)/battleRate)),roundMs=Math.max(actionMs,Math.round(GS('combat.pacing.roundMinimumMs',6000)/battleRate));
    if(result.done){
     roundIterator=null;
-    // round===0 means this step only spawned an encounter. The existing action
-    // interval is also the encounter gap; the minimum belongs to ongoing rounds.
-    const ongoing=round>0&&foes.some(e=>e.hp>0);
-    nextActionAt=ongoing?Math.max(at+actionMs,roundStartedAt+roundMs):at+actionMs;
+    // A completed combat round consumes its configured minimum duration even
+    // when the last action defeats every foe. Otherwise short AoE victories
+    // repeatedly skip that time during cold offline replay. An encounter
+    // spawn (round===0) still uses only the regular action interval.
+    const completedRound=round>0&&running;
+    nextActionAt=completedRound?Math.max(at+actionMs,roundStartedAt+roundMs):at+actionMs;
    }else nextActionAt=at+actionMs;
    if(!jobOffline&&!document.hidden)presentation={intervalMs:actionMs,nextAt:nextActionAt,owner:party};
   });}finally{stepping=false;visual?.end();}

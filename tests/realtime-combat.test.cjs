@@ -35,12 +35,12 @@ test('slow rendering and a reentrant save cannot consume the next action interva
   assert.equal(r.run('party.combatSession.idleTimeMs'),2350+gap);assert.deepEqual(r.errors,[]);
  }
 });
-test('a delayed lethal publication preserves only the original encounter gap and survives saving',()=>{
+test('a delayed lethal publication preserves the remaining minimum round wait and survives saving',()=>{
  const r=game();r.run(`initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];castPartySkill=()=>false;castSupport=()=>false;performHeroBasic=()=>{foes.forEach(e=>e.hp=0);};`);
  r.advance(50);r.run('save()');const kills=r.run('state.totalKills'),gold=r.run('state.gold');assert(kills>0);
- r.advance(2300);r.run('tick();save()');assert.equal(r.run('roundIterator'),null);assert.equal(r.run('combatRoundProgress'),null);assert.equal(r.run('nextActionAt')-r.now,1500);
- const stored=json(r,'packParty()');assert.equal(stored.offlineExploration.nextAt-r.now,1500);
- drive(r,1450);assert.equal(r.run('round'),1);drive(r,50);assert.equal(r.run('round'),0);assert.equal(r.run('nextActionAt')-r.now,1500);assert.equal(r.run('state.totalKills'),kills);assert.equal(r.run('state.gold'),gold);
+ r.advance(2300);r.run('tick();save()');assert.equal(r.run('roundIterator'),null);assert.equal(r.run('combatRoundProgress'),null);assert.equal(r.run('nextActionAt')-r.now,3700);
+ const stored=json(r,'packParty()');assert.equal(stored.offlineExploration.nextAt-r.now,3700);
+ drive(r,3650);assert.equal(r.run('round'),1);drive(r,50);assert.equal(r.run('round'),0);assert.equal(r.run('nextActionAt')-r.now,1500);assert.equal(r.run('state.totalKills'),kills);assert.equal(r.run('state.gold'),gold);
 });
 test('a pending publication cannot shift a loaded or reset encounter timeline',()=>{
  const r=game({durable:true});r.advance(50);r.run('save();globalThis.beforeLoad=packParty();');const due=r.run('nextActionAt');
@@ -56,9 +56,10 @@ test('a delayed sync does not restart a minimum-round wait that already covers t
  r.advance(2300);r.run('tick()');assert.equal(r.run('nextActionAt'),started+6000);assert.equal(r.run('paceActions.length'),1);
  drive(r,2200);assert.equal(r.run('paceActions.length'),2);assert.equal(r.run('paceActions.at(-1).at'),started+6000);
 });
-test('one lethal AoE stays one action; settlement and encounter spawn do not wait out the round minimum',()=>{
+test('one lethal AoE stays one action but the next encounter respects the completed round minimum',()=>{
  for(const rate of [1,2]){const r=game({rate});r.run(`foes=foes.slice(0,3);foes.forEach(e=>{e.hp=1;e.maxhp=1;});initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];`);
-  const gap=duration(r);drive(r,50);assert.equal(r.run('paceActions.length'),1);assert.equal(r.run('paceActions[0].kind'),'技能');assert.equal(r.run('combatRoundProgress'),null);assert.equal(r.run('roundIterator'),null);assert.equal(r.run('state.totalKills'),3);assert.equal(r.run('activeBattleStat'),null);assert.equal(r.run('EmberwildBattleSummary.snapshot().hp'),0);assert.equal(r.run('nextActionAt')-r.now,gap);
+  const gap=duration(r);drive(r,50);assert.equal(r.run('paceActions.length'),1);assert.equal(r.run('paceActions[0].kind'),'技能');assert.equal(r.run('combatRoundProgress'),null);assert.equal(r.run('roundIterator'),null);assert.equal(r.run('state.totalKills'),3);assert.equal(r.run('activeBattleStat'),null);assert.equal(r.run('EmberwildBattleSummary.snapshot().hp'),0);assert.equal(r.run('nextActionAt')-r.now,6000/rate);
+  drive(r,6000/rate-gap);assert.equal(r.run('round'),1);
   drive(r,gap);assert.equal(r.run('round'),0);assert(r.run('foes.some(e=>e.hp>0)'));assert.equal(r.run('nextActionAt')-r.now,gap);assert.equal(r.run('EmberwildBattleSummary.snapshot().result'),null);
   drive(r,gap);assert.equal(r.run('paceActions.length'),2);
  }
@@ -74,9 +75,9 @@ test('background replay and visibility resume remain unrestricted, quiet and do 
  const r=game();r.ctx.document.hidden=true;r.dispatch('visibilitychange','document');r.advance(60000);await r.run('EmberwildOffline.settle(undefined,false)');assert(r.run('paceEvents.length')>5);assert.equal(r.run('party.offlineExploration.receipt'),null);
  r.ctx.document.hidden=false;r.dispatch('visibilitychange','document');await r.run('EmberwildOffline.settle(undefined,false)');r.run('paceActions=[];paceEvents=[];paceFrames=[];');drive(r,10000);assert.equal(report(r).maxActionsPerFrame,1);assert.equal(r.run('party.offlineExploration.pendingReceipt'),null);assert.notEqual(r.elements.get('offline-settlement').hidden,false);assert.deepEqual(r.errors,[]);
 });
-test('100 consecutive victories have one payout and only the encounter interval before each new spawn',()=>{
+test('consecutive short victories have one payout and obey the minimum completed-round interval',()=>{
  const r=game();r.run(`initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];state.active=[];state.supportSlots=[];castPartySkill=()=>false;castSupport=()=>false;performHeroBasic=()=>{foes.forEach(e=>e.hp=0);};globalThis.paceWins=[];const paceFinalize=finalizeBattleStatistics;finalizeBattleStatistics=function(result){if(activeBattleStat&&result==='victory')paceWins.push({at:Date.now(),count:foes.length,kills:state.totalKills});return paceFinalize(result);};`);
- drive(r,300000);const wins=json(r,'paceWins');assert(wins.length>=100);assert.equal(r.run('state.totalKills'),wins.reduce((n,x)=>n+x.count,0));for(let i=1;i<wins.length;i++)assert.equal(wins[i].at-wins[i-1].at,3000);assert.equal(report(r).maxActionsPerFrame,1);
+ drive(r,300000);const wins=json(r,'paceWins');assert(wins.length>=35&&wins.length<=41);assert.equal(r.run('state.totalKills'),wins.reduce((n,x)=>n+x.count,0));for(let i=1;i<wins.length;i++)assert.equal(wins[i].at-wins[i-1].at,7500);assert.equal(report(r).maxActionsPerFrame,1);
 });
 test('hidden ticks keep the original coarse batching cadence and do not render every 50ms',async()=>{
  const r=game({rate:2,durable:true});r.ctx.document.hidden=true;r.dispatch('visibilitychange','document');
@@ -85,9 +86,9 @@ test('hidden ticks keep the original coarse batching cadence and do not render e
  r.advance(50);r.run('tick()');assert.equal(r.run('party.offlineExploration.lastAt'),last);assert.equal(r.run('EmberwildOffline.busy'),false);
  r.ctx.document.hidden=false;r.dispatch('visibilitychange','document');await r.run('EmberwildOffline.settle(undefined,false)');assert.equal(r.run('party.offlineExploration.receipt'),null);r.run('paceActions=[];paceFrames=[];paceEvents=[];');drive(r,5000);assert.equal(report(r).maxActionsPerFrame,1);
 });
-test('a saved lethal action and encounter gap resume without duplicate payouts or minimum-round debt',()=>{
+test('a saved lethal action preserves its minimum-round deadline without duplicate payouts',()=>{
  const a=game();a.run(`initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];castPartySkill=()=>false;castSupport=()=>false;performHeroBasic=()=>{foes.forEach(e=>e.hp=0);};`);drive(a,50);a.run('save()');const stored=json(a,'packParty()'),kills=a.run('state.totalKills'),gold=a.run('state.gold');
- assert.equal(stored.offlineExploration.combat.progress,null);assert.equal(stored.offlineExploration.nextAt-a.now,1500);assert(stored.offlineExploration.combat.foes.every(e=>e.rewarded));
+ assert.equal(stored.offlineExploration.combat.progress,null);assert.equal(stored.offlineExploration.nextAt-a.now,6000);assert(stored.offlineExploration.combat.foes.every(e=>e.rewarded));
  const b=game();b.advance(a.now-b.now);b.ctx.paceSave=stored;b.ctx.nextSeed=a.run('paceSeed');b.ctx.nextSerial=a.run('uidSerial');b.run('loadParty(paceSave);paceSeed=nextSeed;uidSerial=nextSerial;');
- drive(a,1500);drive(b,1500);assert.equal(b.run('state.totalKills'),kills);assert.equal(b.run('state.gold'),gold);assert.deepEqual(json(b,'foes'),json(a,'foes'));assert.equal(b.run('nextActionAt')-b.now,1500);assert.deepEqual(b.errors,[]);
+ drive(a,6000);drive(b,6000);assert.equal(b.run('state.totalKills'),kills);assert.equal(b.run('state.gold'),gold);assert.deepEqual(json(b,'foes'),json(a,'foes'));assert.equal(b.run('nextActionAt')-b.now,1500);assert.deepEqual(b.errors,[]);
 });
