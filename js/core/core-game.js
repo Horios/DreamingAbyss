@@ -1351,7 +1351,7 @@ function etherDropChance(e){
  if(e.kind==='boss'||e.kind==='final')return 0.05;
  return 0;
 }
-function awardEther(e){if(!party)return;let n=0;const boss=e.kind==='boss'||e.kind==='final',key=(e.region??party.map)+':'+(e.difficulty||0);party.etherBossClaims??=[];if(boss&&!party.etherBossClaims.includes(key)){n=1+rand(2);party.etherBossClaims.push(key);}else if(Math.random()<etherDropChance(e))n=1;if(n){state.materials['以太鍛鐵']=(state.materials['以太鍛鐵']||0)+n;note('獲得以太鍛鐵 ×'+n);}}
+function awardEther(e){if(!party)return;let n=0;const boss=e.kind==='boss'||e.kind==='final',key=(e.region??party.map)+':'+(e.difficulty||0);party.etherBossClaims??=[];if(boss&&!party.etherBossClaims.includes(key)){n=1+rand(2);party.etherBossClaims.push(key);}else{const factor=e.kind==='elite'?generalDropLevelGapFactor({type:'material'},e):1;if(Math.random()<etherDropChance(e)*factor)n=1;}if(n){state.materials['以太鍛鐵']=(state.materials['以太鍛鐵']||0)+n;note('獲得以太鍛鐵 ×'+n);}}
 let inventoryCategory='equipment',massSalvageIds=null;
 function setInventoryCategory(category){if(category==='gems')category='items';if(!['equipment','materials','items'].includes(category))return;inventoryCategory=category;render();}
 function inventoryTabs(){return `<div class="actions inventory-category-tabs">${[['equipment','裝備'],['materials','材料'],['items','道具']].map(([id,name])=>`<button class="${inventoryCategory===id?'primary':''}" onclick="setInventoryCategory('${id}')">${name}</button>`).join('')}<button onclick="showTestCodes()">兌換碼</button></div>`;}

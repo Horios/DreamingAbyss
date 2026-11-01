@@ -133,7 +133,7 @@ function rollConfiguredDrops(e,rng=Math.random){
 victory=function(){
   let e=enemy;if(!e)return;lastDefeatedEnemy={...e};let mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards,mult=[r.kindMultiplier.normal,r.kindMultiplier.elite,r.kindMultiplier.boss][kindIndex],firstClear=e.kind==='final'&&!state.won;
   state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);
-  const playerLevel=party?.members?.[0]?.lv??state?.lv,gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel);state.gold+=gold;if(kindIndex>0||Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*generalDropLevelGapFactor({type:'ore'},e))state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
+  const playerLevel=party?.members?.[0]?.lv??state?.lv,gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel);state.gold+=gold;const oreFactor=generalDropLevelGapFactor({type:'ore'},e);if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
   rollConfiguredDrops(e);awardEther(e);
   if(e.kind==='final'){state.won=true;state.modeClears[mode]++;state.materials['日蝕王冠']=Math.max(1,state.materials['日蝕王冠']||0);running=false;}
   awardXP(xp);state.hp=Math.min(stats().hp,state.hp+stats().hp*r.postVictoryHeal);state.shield=0;note(`擊敗 ${e.name}（${d.name}）· ${gold} 金幣`);enemy=null;
@@ -156,7 +156,7 @@ validateSave=function(input,options){
 };solo.validateSave=validateSave;
 
 const dropTableBalanceReferenceBase=balanceReference;
-balanceReference=function(){const r=dropTableBalanceReferenceBase();r.affixTypes['17']='掉寶率增加：實際機率 = 基礎掉落率 × (1 + 全隊掉寶率加成)，最高 100%';r.balancePaths['balanceSettings.equipment.dropLevelGap']='一般與 BOSS 裝備使用 progression.xpLevelGap 相同的等級差倍率；enabled 控制啟用與否，舊 freeLevels／penaltyPerLevel／minimumMultiplier 僅保留相容，不再參與計算。';r.balancePaths['balance.affixes.extendedValues.dropRateBonus']='各品質「掉寶率」詞條數值，單位為百分比';r.dropAlgorithm='每條符合怪物來源與遭遇種類的掉落規則獨立判定；一般裝備與 BOSS 裝備各乘一次 progression.xpLevelGap 倍率（高 3／5／10 級為 50%／20%／0%），再乘(1+全隊掉寶率加成)，最後封頂100%。一般／菁英怪的素材、鍛鐵、粉塵、寶石、藥水、消耗品與信物依 drops.levelGap 衰減；裝備僅套用裝備等級差倍率，BOSS 專屬來源豁免一般掉落懲罰。成功項目超過怪物 maxDrops 時，隨機保留至上限。';return r;};
+balanceReference=function(){const r=dropTableBalanceReferenceBase();r.affixTypes['17']='掉寶率增加：實際機率 = 基礎掉落率 × (1 + 全隊掉寶率加成)，最高 100%';r.balancePaths['balanceSettings.equipment.dropLevelGap']='一般與 BOSS 裝備使用 progression.xpLevelGap 相同的等級差倍率；enabled 控制啟用與否，舊 freeLevels／penaltyPerLevel／minimumMultiplier 僅保留相容，不再參與計算。';r.balancePaths['balance.affixes.extendedValues.dropRateBonus']='各品質「掉寶率」詞條數值，單位為百分比';r.dropAlgorithm='每條符合怪物來源與遭遇種類的掉落規則獨立判定；一般裝備與 BOSS 裝備各乘一次 progression.xpLevelGap 倍率（高 3／5／10 級為 50%／20%／0%），再乘(1+全隊掉寶率加成)，最後封頂100%。一般／菁英怪的素材、鍛鐵（含菁英原本保證的鍛鐵）、粉塵、寶石、藥水、消耗品與信物依 drops.levelGap 衰減；裝備僅套用裝備等級差倍率，BOSS 專屬來源豁免一般掉落懲罰。成功項目超過怪物 maxDrops 時，隨機保留至上限。';return r;};
 
 const dropTableApplySideEffectsBase=applyGameplaySettingsSideEffects;
 applyGameplaySettingsSideEffects=function(){dropTableApplySideEffectsBase();syncMonsterCatalogToMaps();};

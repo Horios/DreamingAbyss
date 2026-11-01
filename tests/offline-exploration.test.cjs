@@ -78,10 +78,10 @@ test('offline low-level farm reduces gem, potion and token drops along with XP a
   const sources=GAMEPLAY_SETTINGS.monsters.catalog.filter(m=>m.mapIndex===0&&m.kind==='normal').map(m=>m.id);
   GAMEPLAY_SETTINGS.drops.entries=['gem','potion','token'].map(type=>({
    id:'offline-gap-'+type,name:type,key:type==='token'?'berserk':'random',
-   type,enabled:true,kinds:['normal'],sources,chanceByDifficulty:[1,1,1],quantityMin:1,quantityMax:1
+   type,enabled:true,kinds:['normal','elite'],sources,chanceByDifficulty:[1,1,1],quantityMin:1,quantityMax:1
   }));
-  Math.random=()=>.5;save();`);
- const before=json(r,'({gems:state.gems,bag:state.bag.length,potions:state.potions})');
+  Math.random=()=>.5;foes.forEach(e=>e.kind='elite');save();`);
+ const before=json(r,'({gems:state.gems,bag:state.bag.length,potions:state.potions,ore:state.ore,ether:state.materials["以太鍛鐵"]||0})');
  await settle(r,60000);
  const rec=json(r,'party.offlineExploration.receipt');
  assert(rec?.kills>0,'high-level party must actually defeat low-level enemies');
@@ -90,6 +90,18 @@ test('offline low-level farm reduces gem, potion and token drops along with XP a
  assert.deepEqual(json(r,'state.gems'),before.gems,'discounted gem odds must be used by offline loot rolls');
  assert.equal(r.run('state.bag.length'),before.bag,'discounted token odds must be used by offline loot rolls');
  assert.equal(r.run('state.potions'),before.potions,'discounted potion odds must be used by offline loot rolls');
+ assert.equal(r.run('state.ore'),before.ore,'overlevelled elite enemies must not guarantee base iron');
+ assert.equal(r.run('state.materials["以太鍛鐵"]||0'),before.ether,'overlevelled elite ether must use common drop penalty');
+ assert.deepEqual(r.errors,[]);
+});
+test('elite ether level penalty is applied at the kill and a first-clear BOSS reward remains guaranteed',()=>{
+ const r=game();
+ r.run(`state.lv=20;syncParty();Math.random=()=>.03;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
+ assert.equal(r.run('state.materials["以太鍛鐵"]||0'),0,'a high-level party must not get the undiscounted elite chance');
+ r.run(`state.lv=5;syncParty();awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
+ assert.equal(r.run('state.materials["以太鍛鐵"]||0'),1,'same-level elite retains original 5% chance');
+ r.run(`state.lv=20;syncParty();awardEther({kind:'boss',lv:5,region:0,difficulty:0});`);
+ assert(r.run('state.materials["以太鍛鐵"]||0')>=2,'BOSS first-clear materials remain guaranteed');
  assert.deepEqual(r.errors,[]);
 });
 test('resume a persisted mid-turn cursor including support, enemy cooldowns, control, custom status and token state',async()=>{
