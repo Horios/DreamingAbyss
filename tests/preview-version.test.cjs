@@ -12,6 +12,8 @@ test('preview badge displays the separately versioned source and never changes p
  let requested=false;
  const production=vm.createContext({document:{getElementById:()=>null},Date,fetch:()=>{requested=true;},console});
  vm.runInContext(source,production);assert.equal(requested,false);
+ const headless=vm.createContext({document:{getElementById:()=>({textContent:'unchanged'})},Date,console});
+ assert.doesNotThrow(()=>vm.runInContext(source,headless),'headless game tests must not require fetch');
 });
 test('preview HTML includes the badge updater without changing regular game metadata',()=>{
  const html=fs.readFileSync(require.resolve('../index.html'),'utf8');

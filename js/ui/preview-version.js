@@ -2,7 +2,8 @@
 (()=>{
  'use strict';
  const banner=document.getElementById('preview-build-banner');
- if(!banner)return;
+ // The headless game runner has a DOM shim but no network fetch.
+ if(!banner||typeof fetch!=='function')return;
  fetch('data/preview-version.json?at='+Date.now(),{cache:'no-store'})
   .then(response=>{if(!response.ok)throw Error('preview version unavailable');return response.json();})
   .then(data=>{
