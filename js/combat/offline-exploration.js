@@ -146,7 +146,7 @@
   if(stepping&&jobOffline&&analysis){if(result==='wipe'||deaths){analysis.deaths+=deaths;analysis.bad=true;analysis.ready=false;if(observed)observed.bad=true;}if(finished&&observed)observed.finished=true;}
   if(stepping&&jobOffline&&finished&&r){r.battles++;r.lastBattleAt=Date.now();}return out;
  };
- function hasRewards(r){return !!r&&(r.xp>0||r.goldGained>0||r.gear.length>0||Object.values(r.items).some(n=>n>0));}
+ function hasRewards(r){return !!r&&(r.kills>0||r.xp>0||r.goldGained>0||r.gear.length>0||Object.values(r.items).some(n=>n>0));}
  function eligible(r){return hasRewards(r)&&(r.battles>0||r.legacy===true);}
  // An interrupted replay keeps its original 24-hour window in the saved cursor.
  function ensureOfflineWindow(c,target){
@@ -242,7 +242,7 @@
   const enough=hs.every(h=>h.battles>=30&&h.kills>=100),keys=new Set(hs.flatMap(h=>Object.keys(h.monsters)));
   let distribution=true;
   for(const k of keys){const share=hs.reduce((n,h)=>n+(h.monsters[k]||0),0)/hs.reduce((n,h)=>n+h.kills,0);if(share<.02){distribution=false;break;}if(hs.some(h=>(h.monsters[k]||0)<5||Math.abs((h.monsters[k]||0)/h.kills-share)>.05))distribution=false;}
-  analysis.ready=enough&&!analysis.bad&&hs.every(h=>!Object.keys(h.potions).length)&&stable('kills')&&stable('battles')&&(stable('xp')||hs.every(h=>!h.xp))&&stable('gold')&&distribution;
+  analysis.ready=enough&&!analysis.bad&&hs.every(h=>!Object.keys(h.potions).length)&&stable('kills')&&stable('battles')&&(stable('xp')||hs.every(h=>!h.xp))&&(stable('gold')||hs.every(h=>!h.gold))&&distribution;
   analysis.verdict=true;metrics.hours=copy(hs);if(!analysis.ready)fastReason(!enough?'insufficient-hour-samples':analysis.bad?'unsafe-resources':'unstable-hours');
  }
  const spawnForOffline=spawnGroup;
