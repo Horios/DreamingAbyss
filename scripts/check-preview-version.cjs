@@ -3,8 +3,8 @@ const fs=require('node:fs'),cp=require('node:child_process');
 const path='data/preview-version.json';
 const number=(raw,label)=>{
  const data=JSON.parse(raw);
- if(typeof data.version!=='string'||!/^v\\d+\\.\\d{3}$/.test(data.version))throw Error(label+' version invalid');
- const [,major,minor]=data.version.match(/^v(\\d+)\\.(\\d{3})$/);
+ if(typeof data.version!=='string'||!/^v\d+\.\d{3}$/.test(data.version))throw Error(label+' version invalid');
+ const [,major,minor]=data.version.match(/^v(\d+)\.(\d{3})$/);
  return Number(major)*1000+Number(minor);
 };
 const current=number(fs.readFileSync(path,'utf8'),'current');
