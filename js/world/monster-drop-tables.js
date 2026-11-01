@@ -75,7 +75,7 @@ function equipmentLevelGapDropFactor(rule,e){
   return EmberwildProgression.xpLevelGapFactor(GAMEPLAY_SETTINGS,level,enemyLevel);
 }
 function generalDropLevelGapFactor(rule,e){
-  if(!['normal','elite'].includes(e?.kind)||e?.bossChallenge||!['sourceMaterial','material','ore','dust'].includes(rule?.type))return 1;
+  if(!['normal','elite'].includes(e?.kind)||e?.bossChallenge||!['sourceMaterial','material','ore','dust','gem','potion','item','token'].includes(rule?.type))return 1;
   const c=GAMEPLAY_SETTINGS.drops?.levelGap;if(!c?.enabled)return 1;
   const level=party?.members?.[0]?.lv??state?.lv??e?.lv??1,gap=Math.max(0,level-(e.lv??level));
   if(gap<=c.freeLevels)return 1;
@@ -156,7 +156,7 @@ validateSave=function(input,options){
 };solo.validateSave=validateSave;
 
 const dropTableBalanceReferenceBase=balanceReference;
-balanceReference=function(){const r=dropTableBalanceReferenceBase();r.affixTypes['17']='掉寶率增加：實際機率 = 基礎掉落率 × (1 + 全隊掉寶率加成)，最高 100%';r.balancePaths['balanceSettings.equipment.dropLevelGap']='一般與 BOSS 裝備使用 progression.xpLevelGap 相同的等級差倍率；enabled 控制啟用與否，舊 freeLevels／penaltyPerLevel／minimumMultiplier 僅保留相容，不再參與計算。';r.balancePaths['balance.affixes.extendedValues.dropRateBonus']='各品質「掉寶率」詞條數值，單位為百分比';r.dropAlgorithm='每條符合怪物來源與遭遇種類的掉落規則獨立判定；一般裝備與 BOSS 裝備各乘一次 progression.xpLevelGap 倍率（高 3／5／10 級為 50%／20%／0%），再乘(1+全隊掉寶率加成)，最後封頂100%。素材、鍛鐵、粉塵與信物維持各自原有規則。成功項目超過怪物 maxDrops 時，隨機保留至上限。';return r;};
+balanceReference=function(){const r=dropTableBalanceReferenceBase();r.affixTypes['17']='掉寶率增加：實際機率 = 基礎掉落率 × (1 + 全隊掉寶率加成)，最高 100%';r.balancePaths['balanceSettings.equipment.dropLevelGap']='一般與 BOSS 裝備使用 progression.xpLevelGap 相同的等級差倍率；enabled 控制啟用與否，舊 freeLevels／penaltyPerLevel／minimumMultiplier 僅保留相容，不再參與計算。';r.balancePaths['balance.affixes.extendedValues.dropRateBonus']='各品質「掉寶率」詞條數值，單位為百分比';r.dropAlgorithm='每條符合怪物來源與遭遇種類的掉落規則獨立判定；一般裝備與 BOSS 裝備各乘一次 progression.xpLevelGap 倍率（高 3／5／10 級為 50%／20%／0%），再乘(1+全隊掉寶率加成)，最後封頂100%。一般／菁英怪的素材、鍛鐵、粉塵、寶石、藥水、消耗品與信物依 drops.levelGap 衰減；裝備僅套用裝備等級差倍率，BOSS 專屬來源豁免一般掉落懲罰。成功項目超過怪物 maxDrops 時，隨機保留至上限。';return r;};
 
 const dropTableApplySideEffectsBase=applyGameplaySettingsSideEffects;
 applyGameplaySettingsSideEffects=function(){dropTableApplySideEffectsBase();syncMonsterCatalogToMaps();};

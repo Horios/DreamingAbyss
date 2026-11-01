@@ -60,6 +60,38 @@ test('25-minute one-action victory stress test cannot skip minimum rounds or dup
   assert.deepEqual(offline.errors,[]);
  }
 });
+test('offline drop chances apply the published level-gap rules to ordinary loot without double-penalizing equipment',()=>{
+ const r=game(),kinds=['sourceMaterial','material','ore','dust','gem','potion','item','token'];
+ const chance=(type,kind='normal')=>r.run(`__EMBERWILD_DROP_TEST.effectiveDropChance({type:"${type}",chanceByDifficulty:[1,1,1]},{kind:"${kind}",lv:5,region:0,difficulty:0},0)`);
+ for(const [lv,expected] of [[5,1],[10,1],[15,.5],[20,.2],[21,.1]]){
+  r.run('party.members[0].lv='+lv);
+  for(const kind of ['normal','elite'])for(const type of kinds)assert(Math.abs(chance(type,kind)-expected)<1e-10,`LV${lv} ${kind} ${type}: expected ${expected}`);
+ }
+ r.run('party.members[0].lv=15');
+ for(const type of ['gear','gearLegendary','equipment','bossGear'])assert.equal(chance(type),0,'equipment only uses its existing XP-level-gap rule: '+type);
+ for(const type of kinds)assert.equal(chance(type,'boss'),1,'boss loot remains exempt from common-item penalty: '+type);
+ assert.deepEqual(r.errors,[]);
+});
+test('offline low-level farm reduces gem, potion and token drops along with XP and money',async()=>{
+ const r=game();
+ r.run(`state.lv=20;syncParty();refillParty();
+  const sources=GAMEPLAY_SETTINGS.monsters.catalog.filter(m=>m.mapIndex===0&&m.kind==='normal').map(m=>m.id);
+  GAMEPLAY_SETTINGS.drops.entries=['gem','potion','token'].map(type=>({
+   id:'offline-gap-'+type,name:type,key:type==='token'?'berserk':'random',
+   type,enabled:true,kinds:['normal'],sources,chanceByDifficulty:[1,1,1],quantityMin:1,quantityMax:1
+  }));
+  Math.random=()=>.5;save();`);
+ const before=json(r,'({gems:state.gems,bag:state.bag.length,potions:state.potions})');
+ await settle(r,60000);
+ const rec=json(r,'party.offlineExploration.receipt');
+ assert(rec?.kills>0,'high-level party must actually defeat low-level enemies');
+ assert.equal(rec.xp,0,'10+ levels above monsters earns zero XP');
+ assert.equal(rec.goldGained,0,'10+ levels above monsters earns zero monster gold');
+ assert.deepEqual(json(r,'state.gems'),before.gems,'discounted gem odds must be used by offline loot rolls');
+ assert.equal(r.run('state.bag.length'),before.bag,'discounted token odds must be used by offline loot rolls');
+ assert.equal(r.run('state.potions'),before.potions,'discounted potion odds must be used by offline loot rolls');
+ assert.deepEqual(r.errors,[]);
+});
 test('resume a persisted mid-turn cursor including support, enemy cooldowns, control, custom status and token state',async()=>{
  const a=game();for(let i=0;i<10;i++){a.advance(50);a.run('tick()');}a.run('save()');assert(a.run('!!combatRoundProgress'));
  const data=json(a,'packParty()'),rng=a.run('rngState'),serial=a.run('uidSerial'),b=game();b.advance(500);b.ctx.saved=data;b.run('loadParty(saved);');b.ctx.rng=rng;b.ctx.serial=serial;b.run('rngState=rng;uidSerial=serial');
