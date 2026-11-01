@@ -29,9 +29,23 @@ jobs:
       matrix:
         area: [world, economy, equipment, companions, offline]
     steps:
+      # Pin push-triggered verification to its exact commit. Scheduled/manual
+      # runs deliberately read the current chatgpt-dev head.
       - uses: actions/checkout@v4
         with:
-          ref: chatgpt-dev
+          ref: ${{ github.event_name == 'push' && github.sha || 'chatgpt-dev' }}
+      - name: Verify checked-out source revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          echo "Extended regression source SHA: $actual"
+          if [ "$GITHUB_EVENT_NAME" = push ]; then
+            test "$actual" = "$GITHUB_SHA" || {
+              echo "::error::Checkout SHA $actual does not match event SHA $GITHUB_SHA"
+              exit 1
+            }
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -64,9 +78,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # Pin push-triggered verification to its exact commit. Scheduled/manual
+      # runs deliberately read the current chatgpt-dev head.
       - uses: actions/checkout@v4
         with:
-          ref: chatgpt-dev
+          ref: ${{ github.event_name == 'push' && github.sha || 'chatgpt-dev' }}
+      - name: Verify checked-out source revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          echo "Extended regression source SHA: $actual"
+          if [ "$GITHUB_EVENT_NAME" = push ]; then
+            test "$actual" = "$GITHUB_SHA" || {
+              echo "::error::Checkout SHA $actual does not match event SHA $GITHUB_SHA"
+              exit 1
+            }
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
