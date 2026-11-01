@@ -21,6 +21,7 @@
   const t=timing(s),factor=actorInterval(h),flat=allSkillCooldownReduction(h)+(s.adapter.kind==='core'?bonusFor(s.adapter.index,5,h):0);
   return Math.max(config().minimumActionIntervalSeconds,t.cooldownSeconds-flat*factor);
  }
+ function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance?actorInterval(h):0;}
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
   const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i))].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
@@ -161,7 +162,7 @@
   if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now+Math.max(Math.round(engine.interval(a)),Math.round(s.cooldownSeconds*1e6));return false;}
   scheduleEffects(before,t,d);scheduleControls(t);
   if(Object.hasOwn(x,'job')){
-   const a=engine.find(key(x)),chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(x,d.id,'cooldown');if(chance>0&&Math.random()<chance)a.ready[s.id]=Math.max(engine.now+Math.round(config().minimumActionIntervalSeconds*1e6),a.ready[s.id]-Math.round(actorInterval(x)*1e6));
+   const a=engine.find(key(x)),reduction=cooldownReductionOnCast(x,d.id);if(reduction)a.ready[s.id]=Math.max(engine.now+Math.round(config().minimumActionIntervalSeconds*1e6),a.ready[s.id]-Math.round(reduction*1e6));
    EmberwildCombatEvents.endTurn(x,true);
   }
   return true;
@@ -277,8 +278,10 @@
  castSupport=function(h,i){const before=new Set(effects),d=S.byPosition(h?.job,'support',i),out=oldSupport(h,i);if(out!==false){scheduleEffects(before,timing(d),d);scheduleControls(timing(d));}return out;};
  const oldNote=note;note=function(text,type){const secs=partyClock||0,stamp=String(Math.floor(secs/60)).padStart(2,'0')+':'+(secs%60).toFixed(1).padStart(4,'0');let value=String(text);if(currentTiming)value=value.replace(/\d+(?:\.\d+)? 回合/g,currentTiming.durationSeconds+' 秒');value=value.replace(/回合/g,'秒');return oldNote('['+stamp+'] '+value,type);};
  skillManaCost=function(i,h=state){return timing(S.byPosition(h.job,'core',i))?.mpCost||0;};
- skillCooldown=function(i,h=state){const s=S.byPosition(h.job,'core',i);return s?skillCooldownSeconds(h,s):0;};
- supportSkillCooldown=function(h,i){const s=S.byPosition(h.job,'support',i);return s?skillCooldownSeconds(h,s):0;};
+ skillCooldown=function(i,h=state){const s=S.byPosition(h.job,'core',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
+ supportSkillCooldown=function(h,i){const s=S.byPosition(h.job,'support',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
+ gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'?Math.max(config().minimumActionIntervalSeconds,cd-cooldownReductionOnCast(h,s.id)):cd;};
+ __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return Math.max(config().minimumActionIntervalSeconds,supportSkillCooldown(h,i)-(s?cooldownReductionOnCast(h,s.id):0));};
  const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
  const oldSpawn=spawnGroup;spawnGroup=function(...args){const cds=copy(actorCooldowns),supports=copy(supportCooldowns),out=oldSpawn(...args);actorCooldowns=cds;supportCooldowns=supports;needsRoster=true;return out;};
  const oldPack=packParty,oldPartyValidate=validateParty;
