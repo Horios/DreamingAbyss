@@ -786,7 +786,9 @@
   const candidates=[];
   try{const primary=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);if(primary)candidates.push({raw:primary,label:'主要存檔'});}catch{}
   try{const backup=localStorage.getItem(BACKUP_KEY);if(backup&&!candidates.some(x=>x.raw===backup))candidates.push({raw:backup,label:'備份存檔'});}catch{}
-  if(candidates.length){
+  // Published builds install later skill and save validators before one final hydration.
+  // Provisional validation here can reject a valid save or recover a backup too early.
+  if(candidates.length&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
     state=null;party=null;
     // A custom form may be unavailable until its test JSON is imported; keep the primary save intact.
     for(const candidate of candidates){try{loadParty(migrateWorldSave(JSON.parse(candidate.raw)));normalizeAllGearIdentity();normalizeEquippedWearability();globalThis.__EMBERWILD_PRE_CONTROL_SAVE_RAW=candidate.raw;if(candidate.label==='備份存檔'&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY))toast('主要存檔無法載入，已自動恢復上一份備份');break;}catch(e){state=null;party=null;console.warn(candidate.label+'最終載入失敗',e);if(candidate.label==='主要存檔'&&String(e?.message||e).startsWith('裝備類型無效：'))break;}}

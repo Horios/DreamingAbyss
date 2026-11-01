@@ -58,7 +58,8 @@
   // restored instead of being rejected or truncated by the core six-skill schema.
   try{
     const raw=globalThis.__EMBERWILD_PRE_CONTROL_SAVE_RAW??globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);
-    if(raw){
+    // The published loader restores exact save bytes after all modules are installed.
+    if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
       const parsed=JSON.parse(raw),fallbackStats=party?.battleStatistics;
       loadParty(migrateWorldSave(parsed));
       if(!parsed.battleStatistics&&fallbackStats&&typeof normalizeBattleStatistics==='function')party.battleStatistics=normalizeBattleStatistics(fallbackStats);

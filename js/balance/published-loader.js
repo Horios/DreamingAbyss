@@ -77,11 +77,40 @@
     applyBalanceConfig(globalThis.__EMBERWILD_BALANCE_SOURCE,{persist:false});
     // Only the fully installed validators can decide whether a save is unreadable.
     const playerBytes=globalThis.__EMBERWILD_TEAM_BOOT_RAW||globalThis.__EMBERWILD_BOOT_SAVE_RAW;
-    if(playerBytes){try{loadParty(JSON.parse(playerBytes));globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;}catch(error){party=null;state=null;running=false;globalThis.__EMBERWILD_BOOT_SAVE_ERROR=String(error.message||error);if(typeof backToTitle==='function')backToTitle();else render();if(!party&&!state&&globalThis.__EMBERWILD_BOOT_SAVE_ERROR)toast('存檔未能載入：'+globalThis.__EMBERWILD_BOOT_SAVE_ERROR+'；可匯入備份。');}}
+    const candidates=[];
+    if(playerBytes)candidates.push({raw:playerBytes,label:'主要存檔'});
+    try{
+      const backup=localStorage.getItem(BACKUP_KEY);
+      if(backup&&!candidates.some(x=>x.raw===backup))candidates.push({raw:backup,label:'備份存檔'});
+    }catch(error){console.warn('讀取備份存檔失敗',error);}
+    let recoveredBackup=false,firstError=null;
+    for(const candidate of candidates){
+      try{
+        loadParty(JSON.parse(candidate.raw));
+        globalThis.__EMBERWILD_BOOT_SAVE_RAW=candidate.raw;
+        globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;
+        recoveredBackup=candidate.label==='備份存檔';
+        break;
+      }catch(error){
+        const reason=String(error?.message||error);
+        if(!firstError)firstError=reason;
+        party=null;state=null;running=false;
+        console.warn(candidate.label+'載入失敗，原始存檔保留',error);
+        // Preview saves using custom equipment forms require their original JSON;
+        // silently falling back would hide the missing-design problem.
+        if(candidate.label==='主要存檔'&&reason.startsWith('裝備類型無效：'))break;
+      }
+    }
+    if(candidates.length&&!state){
+      globalThis.__EMBERWILD_BOOT_SAVE_ERROR=firstError;
+      if(typeof backToTitle==='function')backToTitle();else render();
+      if(firstError)toast('存檔未能載入：'+firstError+'；可匯入備份。');
+    }
     const importBase=importBalanceJSON;
     importBalanceJSON=async ev=>{const result=await importBase(ev);if(result){globalThis.__EMBERWILD_BALANCE_SOURCE=exportableBalance();if(preview)localStorage.setItem(key+'-published-base',version);}return result;};
     const resetBase=resetBalanceJSON;resetBalanceJSON=()=>{const result=resetBase();if(result!==false){globalThis.__EMBERWILD_BALANCE_SOURCE=published;localStorage.removeItem(key);localStorage.removeItem(key+'-published-base');toast('已恢復目前發布版本的平衡資料');}return result;};
     globalThis.__EMBERWILD_BALANCE_READY=true;
+    if(recoveredBackup)toast('主要存檔無法載入，已讀取上一份備份；原始資料保留');
     guard.remove();panel.remove();window.emberwildBootComplete=true;app.style.visibility='';window.dispatchEvent(new Event('emberwild-balance-ready'));
   }catch(e){
     if(typeof timer!=='undefined')clearInterval(timer);
