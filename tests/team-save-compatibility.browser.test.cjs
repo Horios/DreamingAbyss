@@ -55,6 +55,14 @@ test('Chromium: a corrupt primary restores a valid backup only after full startu
   await p.locator('.title-screen').waitFor({state:'detached'});
   assert.equal(await p.evaluate(()=>!!party&&!!state),true);
   assert.equal(await p.locator('#modal').evaluate(el=>el.open),false);
+  await p.waitForFunction(()=>!globalThis.EmberwildOffline?.busy);
+  await p.evaluate(()=>save());
+  const persisted=await p.evaluate(()=>({
+   primary:localStorage.getItem('emberwild-save-v1'),
+   backup:localStorage.getItem('emberwild-save-v1-backup')
+  }));
+  assert.doesNotThrow(()=>JSON.parse(persisted.primary));
+  assert.equal(persisted.backup,backup,'first post-recovery save must not rotate corrupt primary over the good backup');
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });

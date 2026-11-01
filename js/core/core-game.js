@@ -600,12 +600,15 @@ save=function(show=false){
  try{
   payload=JSON.stringify(packParty(),(key,value)=>{if(typeof value==='number'&&!Number.isFinite(value))throw Error('存檔包含非有限數值：'+key);return value;});
   previous=localStorage.getItem(KEY);
-  if(previous&&previous!==payload){try{localStorage.setItem(BACKUP_KEY,previous);backupWritten=true;}catch{}}
+  // On the first save after backup recovery, the previous primary is known bad.
+  // Never replace the only verified backup with those unreadable bytes.
+  if(previous&&previous!==payload&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);backupWritten=true;}catch{}}
   try{localStorage.setItem(KEY,payload);}catch(firstError){
    if(backupWritten){try{localStorage.removeItem(BACKUP_KEY);}catch{}}
    localStorage.setItem(KEY,payload);
   }
   globalThis.__EMBERWILD_BOOT_SAVE_RAW=payload;
+  delete globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW;
   if(show)toast('隊伍進度已儲存');
   return true;
  }catch(e){

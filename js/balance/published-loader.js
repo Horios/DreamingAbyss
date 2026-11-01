@@ -99,6 +99,7 @@
         globalThis.__EMBERWILD_BOOT_SAVE_RAW=candidate.raw;
         globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;
         recoveredBackup=candidate.label==='備份存檔';
+        if(recoveredBackup&&playerBytes&&candidate.raw!==playerBytes)globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW=playerBytes;
         break;
       }catch(error){
         const reason=String(error?.message||error);
