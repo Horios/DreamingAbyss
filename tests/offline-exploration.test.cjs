@@ -107,12 +107,12 @@ test('offline low-level farm reduces gem, potion and token drops along with XP a
 });
 test('elite ether level penalty is applied at the kill and a first-clear BOSS reward remains guaranteed',()=>{
  const r=game();
- r.run(`state.lv=20;syncParty();Math.random=()=>.03;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
+ r.run(`state.lv=20;syncParty();Math.random=()=>.005;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
  assert.equal(r.run('state.materials["以太鍛鐵"]||0'),0,'a high-level party must not get the undiscounted elite chance');
- assert.equal(r.run('etherDropChance({kind:"elite",region:0})'),.05,'the base elite ether chance remains 5%');
+ assert.equal(r.run('etherDropChance({kind:"elite",region:0})'),r.run('GAMEPLAY_SETTINGS.rewards.ether.eliteBase'),'elite ether chance must match published balance settings before the level-gap penalty');
  r.run(`state.lv=5;syncParty();Math.random=()=>0;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
  assert.equal(r.run('generalDropLevelGapFactor({type:"material"},{kind:"elite",lv:5,region:0})'),1,'same-level elite material odds are unpenalized');
- assert.equal(r.run('state.materials["以太鍛鐵"]||0'),1,'same-level elite retains original 5% chance');
+ assert.equal(r.run('state.materials["以太鍛鐵"]||0'),1,'same-level elite retains the configured base chance');
  r.run(`state.lv=20;syncParty();awardEther({kind:'boss',lv:5,region:0,difficulty:0});`);
  assert(r.run('state.materials["以太鍛鐵"]||0')>=2,'BOSS first-clear materials remain guaranteed');
  assert.deepEqual(r.errors,[]);
