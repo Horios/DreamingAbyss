@@ -43,12 +43,16 @@ test('inventory capacity auto-salvages overflow, preserves existing gear and doe
  const out=await replay(r,save,24,123456,false);
  assert(out.metrics.fastBattles>0);
  assert.equal(out.running,true,'a full bag must not stop an otherwise ongoing expedition');
- assert.equal(out.bag,capacity,'generated gear fills but never exceeds the configured capacity');
+ assert(out.bag>=save.members[0].bag.length&&out.bag<=capacity,'generated gear must preserve old gear and stay within capacity');
  assert.equal(receipt().effectiveMs,24*3600000,'the full eligible offline interval must be settled');
  assert.doesNotMatch(String(receipt().reason||''),/背包已滿/);
  assert.equal(receipt().gear.length,out.bag-save.members[0].bag.length);
  assert.equal(receipt().kills,r.run('state.totalKills'));
+ // Drop-rate reductions may leave space after 24h; fill remaining slots before
+ // testing the full-bag salvage path, rather than assuming a guaranteed drop.
+ for(let i=out.bag;i<capacity;i++)r.run('addGear(gear(1,0,0,state.job))');
  const before=json(r,'({ids:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust})');
+ assert.equal(before.ids.length,capacity,'overflow test must begin with a full bag');
  for(const id of initialIds)assert(before.ids.includes(id),'preexisting gear must be preserved: '+id);
  r.run('addGear(gear(1,0,0,state.job))');
  const after=json(r,'({ids:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust})');
