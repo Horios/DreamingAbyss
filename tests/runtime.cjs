@@ -16,7 +16,14 @@ async function openRuntime(root,entry='index.html',storage={},options={}) {
     if(!fs.existsSync(file))return route.fulfill({status:404,body:'Not found'});
     await route.fulfill({status:200,body:fs.readFileSync(file),contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html'});
   });
-  await page.addInitScript(s=>{for(const [k,v] of Object.entries(s))localStorage.setItem(k,typeof v==='string'?v:JSON.stringify(v));},storage);
+  await page.addInitScript(({s,once})=>{
+    // A recovery test must not re-inject corrupt fixtures on every reload:
+    // otherwise it tests another forced corruption instead of the saved main.
+    const marker='__emberwild_test_storage_seeded';
+    if(once&&localStorage.getItem(marker)==='1')return;
+    for(const [k,v] of Object.entries(s))localStorage.setItem(k,typeof v==='string'?v:JSON.stringify(v));
+    if(once)localStorage.setItem(marker,'1');
+  },{s:storage,once:options.seedStorageOnce===true});
   await page.goto('http://localhost'+(options.pathname||'/'),{waitUntil:'load',timeout:30000});
   async function waitForBoot(){
     if(entry!=='index.html'||!fs.existsSync(path.join(root,'data/balance.json')))return;

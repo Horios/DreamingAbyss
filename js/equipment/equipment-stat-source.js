@@ -266,7 +266,22 @@ function update12SalvageRewards(g,includeEnhance=true){const q=gearQualityRank(g
 salvage=function(id){const g=findGear(id);if(!g||g.locked||gearWearer(g.id)||inlineAffixDrafts.has(affixDraftKey(g)))return;const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;state.bag=state.bag.filter(x=>x.id!==id);pruneGearSelections();save();render();};
 confirmMassSalvage=function(){if(!massSalvageIds)return;const items=massSalvageTargets(massSalvageIds),ids=new Set(items.map(g=>g.id)),bag=state.bag,ore=state.ore,dust=state.dust;for(const g of items){const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));if(!save()){state.bag=bag;state.ore=ore;state.dust=dust;return;}massSalvageIds=null;pruneGearSelections();closeModal();render();toast('已分解 '+items.length+' 件裝備');};
 salvageAll=function(){const targets=state.bag.filter(g=>gearQualityRank(g)===0&&(g.plus||0)===0&&!g.affix.length&&g.boss===undefined&&!state.equipped.includes(g.id)&&!g.locked),ids=new Set(targets.map(g=>g.id));for(const g of targets){const r=update12SalvageRewards(g,false);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));pruneGearSelections();save();render();toast(`已分解 ${ids.size} 件未養成普通裝備`);};
-addGear=function(g){if(!g)return;g.acquiredAt??=Date.now();state.bag.push(g);const q=gearQualityRank(g);note(`獲得 ${AFFIX_RANK[q]} ${equipmentDisplayName(g)}${g.boss!==undefined?'（BOSS 專屬）':''}`,'item');if(state.bag.length>=RULES.bagCapacity){running=false;note('裝備背包已滿：本場掉落已完整保留，探索暫停，請整理背包後繼續。','item');toast('裝備背包已滿，本場掉落已保留；請整理後繼續探索');}};
+addGear=function(g){
+  if(!g)return;
+  g.acquiredAt??=Date.now();
+  const q=gearQualityRank(g);
+  // This late module replaces core addGear. It must use the same overflow
+  // contract: never append beyond capacity, salvage only the new drop, and
+  // keep exploration running. The old implementation appended then stopped.
+  if(state.bag.length>=RULES.bagCapacity){
+    state.ore+=g.tier*(3+q*2);
+    state.dust+=1+q;
+    note('背包已滿，掉落裝備自動分解。','item');
+    return;
+  }
+  state.bag.push(g);
+  note(`獲得 ${AFFIX_RANK[q]} ${equipmentDisplayName(g)}${g.boss!==undefined?'（BOSS 專屬）':''}`,'item');
+};
 
 combatSpeed=function(e){const s=GAMEPLAY_SETTINGS.combat.speed;return Math.round(s.enemyBase+e.lv*s.enemyPerLevel+(s.race[e.race]||0)+(s.kind[e.kind]||0)+(e.difficulty||0)*s.difficultyBonus);};
 resolveHit=function(e,amount,h,element,crit){const v=battleStats(h),cap=GAMEPLAY_SETTINGS.combat.caps,def=e.def*(1-Math.min(cap.fracture,effectTotal(e.id,'fracture')))*(1-v.pierce);let d=Math.max(1,Math.round(amount-def*GS('combat.defenseEffectiveness',.65)));if(crit)d=Math.round(d*v.critDamage);const tonic=activeSupply(h,'elementTonic'),bonus=(v.elementDamage[element]||0)+(element==='physical'?0:v.elementBonus)+(tonic&&tonic.element===element?GS('combat.supply.elementTonicDamage',.2):0);d=Math.max(1,Math.round(d*elementFactor(element,e.element)*(1+bonus)*(1+(v.raceDamage[e.race]||0))*(1+effectTotal(e.id,'vulnerable'))));const actual=Math.min(e.hp,d);e.hp=Math.max(0,e.hp-d);h.hp=Math.min(v.hp,h.hp+actual*v.lifesteal);return actual;};

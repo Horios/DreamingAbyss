@@ -16,7 +16,7 @@ jobs:
         include:
           - group: modules-and-gear
             tests: >-
-              tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs
+              tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/gear-overflow.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs
           - group: skill-loadouts
             tests: >-
               tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/skill-equipment-tutorial.test.cjs tests/skill-system-model.test.cjs tests/skill-system-runtime.test.cjs

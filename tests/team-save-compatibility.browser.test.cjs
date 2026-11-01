@@ -37,7 +37,7 @@ test('Chromium: genuinely corrupted skill records still show the recovery dialog
 test('Chromium: a corrupt primary restores a valid backup only after full startup, without touching stored bytes',async()=>{
  const primary='{"broken":',backup=JSON.stringify(legacy),r=await openRuntime(root,'index.html',{
   'emberwild-save-v1':primary,'emberwild-save-v1-backup':backup
- }),p=r.page;
+ },{seedStorageOnce:true}),p=r.page;
  try{
   const boot=await p.evaluate(()=>({
    error:globalThis.__EMBERWILD_BOOT_SAVE_ERROR,
@@ -73,6 +73,8 @@ test('Chromium: a corrupt primary restores a valid backup only after full startu
   }));
   assert.equal(afterSecondSave.backup,backup,'later saves in this session keep the verified backup');
   assert.equal(JSON.parse(afterSecondSave.primary).members[0].gold,afterSecondSave.gold);
+  // The next cold boot must validate the newly written main, without a test
+  // harness silently putting the intentionally corrupted bytes back first.
   await p.reload();
   assert.equal(await p.evaluate(()=>globalThis.__EMBERWILD_BOOT_SAVE_ERROR??null),null);
   assert.equal(await p.evaluate(()=>globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION??false),false);
