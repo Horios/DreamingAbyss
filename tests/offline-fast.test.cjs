@@ -21,6 +21,17 @@ test('the published level-gap rule gives an overlevelled starter-region fixture 
  const save=fixture(r,base,'high'),out=await replay(r,save,1,123456,true);
  assert(out.kills>0);assert.equal(out.xp,0);assert.equal(out.lv,59);
 });
+test('starter map 11-hour offline replay respects the published level-gap EXP cap',async()=>{
+ const save=fixture(r,base,'low');
+ assert.equal(save.map,0);
+ assert.equal(save.members[0].lv,1);
+ assert.equal(r.run('MAPS[0].max'),5);
+ assert.equal(r.run("EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,5,'normal',0,15)"),0,'a level-15 character must receive zero EXP from a level-5 enemy');
+ const out=await replay(r,save,11,123456,false);
+ assert(out.kills>0,'replay should defeat monsters in the starter zone');
+ assert(out.lv<=15,'11 hours on map 0 must not reach level 16 or higher, observed level '+out.lv);
+ assert.equal(r.run('party.map'),0);
+});
 test('a level boundary exits fast replay and rebuilds natural stats and overflow XP',async()=>{
  // Isolate the boundary from EXP source/level-gap rules (covered above). A
  // fixed one-EXP reward places the transition after the three sampling hours.

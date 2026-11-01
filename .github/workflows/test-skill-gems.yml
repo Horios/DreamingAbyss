@@ -16,7 +16,7 @@ jobs:
         include:
           - group: modules-and-gear
             tests: >-
-              tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/current-catalog-integrity.test.cjs
+              tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs
           - group: skill-loadouts
             tests: >-
               tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/skill-equipment-tutorial.test.cjs tests/skill-system-model.test.cjs tests/skill-system-runtime.test.cjs
@@ -77,3 +77,16 @@ jobs:
         env:
           EMBERWILD_PACE_REALTIME: '1'
         run: node --test --test-concurrency=1 tests/mobile-layout.browser.test.cjs tests/published-loader.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
+
+  preview-version:
+    name: Preview version must increase for every commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify one version increment from previous commit
+        run: node scripts/check-preview-version.cjs
