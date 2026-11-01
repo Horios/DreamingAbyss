@@ -43,7 +43,17 @@
 正式發布只處理已確認的遊戲差異。不要因為 `main` 與 `chatgpt-dev` 的 commit 數量或 ahead/behind 顯示不同，就直接整枝 merge 或覆蓋。
 發布前應先比較實際 `index.html` 內容，辨識哪些差異是已測試遊戲修改，哪些只是部署／文件歷史。
 
-## 平衡設計器
+## 《龍息深淵》秒數戰鬥移植進度（v0.015）
+
+本階段僅交付排程核心與換算稽核工具，尚未將遊戲、離線結算或存檔切換到秒數制。`js/combat/seconds-timeline.js` 載入後只註冊 API；不覆寫現有 `pacedRound`、技能、存檔或掉落函式。六階段改版尚未完成，名稱與介面也尚未更換。
+
+核心使用整數微秒排程，公開參數使用秒數；沒有職業或技能平衡預設值。每個角色獨立保留普攻充能、共同動作限制、各技能冷卻與 MP。相同時間先結算週期效果，再移除到期狀態、完成施法，最後按隊伍固定順序行動；技能依優先級及配置順序選擇。週期效果的最後一次 tick 包含到期邊界。主動增益同樣消耗 MP 與行動，觸發效果不改變行動時間。永久效果使用 JSON 可保存的 `null` 期限。條件判斷由純函式 `canUse` 提供；傷害、目標、死亡連鎖與收益仍需沿用既有處理器接通，不能把排程測試視為技能移植驗收。
+
+`node --test tests/seconds-timeline.test.cjs` 驗證排程及中斷續算。`node scripts/audit-seconds-migration.cjs` 讀取目前發布資料與共用技能索引，列出回合換算、MP 與特殊事件的缺口；不寫入平衡資料。`node scripts/audit-seconds-migration.cjs --candidate candidate.json --seconds 28800` 可模擬明確提供的 `{config, actors, statuses?}` 排程與 MP 參數。這是排程與資源模型，尚不能用來判斷傷害、生存或掉落平衡。
+
+啟用前仍須完成：正式時間／MP 參數設計與技能適配、同一核心的線上／離線入口、一次性舊戰鬥快照遷移、離線快速樣本失效處理、主角中央介面、狩獵模式與平衡器同步。不得用本核心的快照直接覆蓋現有角色存檔。
+
+## 平衡設計器來源
 
 平衡／設計器不放在此公開 Repository。
 其原始碼位於 Private Repository：`Horios/Emberwild-Balance`，主要檔案為 `balance-editor.html`。
