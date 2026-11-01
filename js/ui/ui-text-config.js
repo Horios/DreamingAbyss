@@ -427,7 +427,7 @@ inlineInventoryView=function(){
 // not silently discarded even when the early/core load succeeded.
 try{
   const raw=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);
-  if(raw){
+  if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
     const parsed=JSON.parse(raw),fallbackStats=party?.battleStatistics;
     loadParty(parsed);
     if(!parsed.battleStatistics){

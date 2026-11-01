@@ -44,7 +44,7 @@
   migrateWorldSave=migrateWorldSaveForCurrentMaps;
   try{
     const raw=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);
-    if(raw){
+    if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
       const migrated=migrateWorldSaveForCurrentMaps(JSON.parse(raw));
       loadParty(migrated);save();
     }

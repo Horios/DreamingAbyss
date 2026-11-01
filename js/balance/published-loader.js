@@ -86,7 +86,16 @@
     let recoveredBackup=false,firstError=null;
     for(const candidate of candidates){
       try{
-        loadParty(JSON.parse(candidate.raw));
+        const parsed=JSON.parse(candidate.raw);
+        // World migration and split battle statistics were previously restored
+        // by premature boot passes. Apply them here with all modules ready.
+        loadParty(migrateWorldSave(parsed));
+        if(!parsed.battleStatistics&&typeof normalizeBattleStatistics==='function'){
+          try{
+            const rawStats=typeof BATTLE_STATS_STORAGE_KEY!=='undefined'?localStorage.getItem(BATTLE_STATS_STORAGE_KEY):null;
+            if(rawStats)party.battleStatistics=normalizeBattleStatistics(JSON.parse(rawStats));
+          }catch(error){console.warn('舊版戰鬥統計補讀失敗',error);}
+        }
         globalThis.__EMBERWILD_BOOT_SAVE_RAW=candidate.raw;
         globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;
         recoveredBackup=candidate.label==='備份存檔';

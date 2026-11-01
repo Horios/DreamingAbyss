@@ -173,7 +173,8 @@
   try{
     GAMEPLAY_SETTINGS=normalizeGameplaySettings(GAMEPLAY_SETTINGS);globalThis.__EMBERWILD_GAMEPLAY_SETTINGS=GAMEPLAY_SETTINGS;if(typeof applyGameplaySettingsSideEffects==='function')applyGameplaySettingsSideEffects();
     if(party){party.bossProgress=normalizeBossProgress(party.bossProgress);party.bossChallenge=normalizeChallenge(party.bossChallenge);}
-    const raw=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);if(raw){loadParty(JSON.parse(raw));party.bossProgress=normalizeBossProgress(party.bossProgress);party.bossChallenge=normalizeChallenge(party.bossChallenge);save();}
+    // The published loader restores the original save after the complete module chain.
+    const raw=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){loadParty(JSON.parse(raw));party.bossProgress=normalizeBossProgress(party.bossProgress);party.bossChallenge=normalizeChallenge(party.bossChallenge);save();}
   }catch(e){console.warn('BOSS 進度／挑戰系統初始化失敗',e);}
   render();
 })();

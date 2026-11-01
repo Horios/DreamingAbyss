@@ -58,3 +58,24 @@ test('Chromium: a corrupt primary restores a valid backup only after full startu
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Chromium: published cold load retains legacy split battle statistics without changing original storage',async()=>{
+ const legacyWithoutStats=structuredClone(legacy);delete legacyWithoutStats.battleStatistics;
+ const raw=JSON.stringify(legacyWithoutStats),statistics=JSON.stringify({maps:{0:[{
+  time:1793390000000,difficulty:0,result:'victory',xp:31,drops:{'鍛鐵':2},deaths:[]
+ }]}});
+ const r=await openRuntime(root,'index.html',{'emberwild-save-v1':raw,'emberwild-battle-statistics-v1':statistics}),p=r.page;
+ try{
+  const boot=await p.evaluate(()=>({
+   error:globalThis.__EMBERWILD_BOOT_SAVE_ERROR,
+   xp:party?.battleStatistics?.maps?.[0]?.[0]?.xp,
+   primary:localStorage.getItem('emberwild-save-v1'),
+   statistics:localStorage.getItem('emberwild-battle-statistics-v1')
+  }));
+  assert.equal(boot.error,null);
+  assert.equal(boot.xp,31);
+  assert.equal(boot.primary,raw);
+  assert.equal(boot.statistics,statistics);
+  assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
