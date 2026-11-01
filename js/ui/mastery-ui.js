@@ -186,7 +186,7 @@ function devToolHTML(){
     <div class="mastery-dev-box"><b>主角進度（夥伴等級同步）</b><div class="actions"><label>LV <input id="dev-mastery-level" type="number" min="1" max="${RULES.maxLevel}" value="${player.lv}"></label><button onclick="devMasterySetLevel()">設定</button></div><div class="actions"><label>EXP <input id="dev-mastery-exp" type="number" min="0" value="${player.xp}"></label><button onclick="devMasterySetExp()">設定</button></div></div>
     <div class="mastery-dev-box"><b>精通 XP</b>${masteryKeys().map(key=>`<div class="actions"><span style="min-width:54px">${esc(masteryLabel(key))}</span><button onclick="devMasteryAdjust('${key}',-10)">−10</button><input id="dev-mastery-${key}" type="number" min="0" value="${state.mastery[key]}"><button onclick="devMasterySet('${key}')">設定</button><button onclick="devMasteryAdjust('${key}',10)">+10</button></div>`).join('')}<button onclick="devMasteryReset()">重置此角色精通</button></div>
     <div class="mastery-dev-box"><b>武器切換</b><div class="actions">${weaponTypes.map(type=>`<button onclick="devMasteryWeapon('${type}')">${esc(weaponLabel(type))}</button>`).join('')||'<span class="small">目前資料沒有可切換武器。</span>'}</div><p class="small">沒有對應武器時會建立一件基底評級：D 的測試武器並直接穿戴。</p></div>
-    <div class="mastery-dev-box"><b>戰鬥模擬</b><div class="actions"><label>回合 <input id="dev-mastery-rounds" type="number" min="1" max="2000" value="100"></label><button onclick="devMasterySimulate()">模擬</button></div><p class="small">上次完整遭遇精通：${masteryGainHTML(M.lastBattleGain())}</p><p class="small">目前遭遇精通：${masteryGainHTML(M.currentBattleGain())}</p></div>
+    <div class="mastery-dev-box"><b>戰鬥模擬</b><div class="actions"><label>秒 <input id="dev-mastery-rounds" type="number" min="1" max="2000" value="100"></label><button onclick="devMasterySimulate()">模擬</button></div><p class="small">上次完整遭遇精通：${masteryGainHTML(M.lastBattleGain())}</p><p class="small">目前遭遇精通：${masteryGainHTML(M.currentBattleGain())}</p></div>
   </div><div class="divider"></div><b>技能測試開關</b><div class="actions">${CLASSES[state.job].skills.map((sk,i)=>`<button onclick="devMasteryToggleCore(${i})">${learnedCore(i)?'取消':'學會'} ${esc(sk[0])}</button>`).join('')}</div><div class="actions">${SUPPORT[state.job].map((sk,i)=>`<button onclick="devMasteryToggleSupport(${i})">${learnedSupport(i)?'取消':'學會'} ${esc(sk.name)}</button>`).join('')}</div></details>`;
 }
 skillsView=function(){
@@ -229,13 +229,12 @@ globalThis.devMasterySimulate=function(){
   stopForDev();const el=$('dev-mastery-rounds'),target=Math.max(1,Math.min(2000,Math.floor(Number(el?.value)||100)));let completed=0,actions=0;
   running=true;if(!foes.some(e=>e.hp>0))spawnGroup();
   try{
-    for(;completed<target;completed++){
-      if($('modal')?.open)break;
-      const gen=pacedRound();let guard=0,step;
-      do{step=gen.next();guard++;actions++;if(guard>200)throw Error('單回合動作超過安全上限');}while(!step.done);
-    }
+    if(globalThis.EmberwildSecondsCombat?.active){
+      const end=partyClock+target;let guard=0;
+      while(running&&partyClock<end&&!$('modal')?.open){const step=EmberwildSecondsCombat.step();completed=target-Math.max(0,end-partyClock);if(++guard>100000)throw Error('模擬事件超過安全上限');}
+    }else for(;completed<target;completed++){const gen=pacedRound();for(const step of gen)if(++actions>400000)throw Error('模擬事件超過安全上限');}
   }catch(e){console.warn('長時間戰鬥模擬中止',e);toast('模擬中止：'+e.message);}
-  running=false;save();render();if(completed)toast(`已模擬 ${completed} 個戰鬥回合`);
+  running=false;save();render();if(completed)toast(`已模擬 ${Number(completed.toFixed(1))} ${globalThis.EmberwildSecondsCombat?.active?'秒':'個戰鬥回合'}`);
 };
 
 if(GAMEPLAY_SETTINGS.quests?.tutorial)GAMEPLAY_SETTINGS.quests.tutorial.skillLevelRequirement=1;

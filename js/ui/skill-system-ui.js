@@ -4,6 +4,7 @@
  const S=__EMBERWILD_SKILLS,E=__EMBERWILD_EQUIPMENT_SKILLS;
  const labels={active:'主動',proc:'觸發',support:'輔助',passive:'被動'},sources={class:'職業',advanced:'二轉',quest:'任務',equipment:'裝備',companion:'夥伴'};
  function detail(sk,h=state){
+  if(globalThis.EmberwildSecondsUI)return EmberwildSecondsUI.detail(sk,h);
   const a=EmberwildSkillSystem.adapterFor(sk,h.job);
   if(sk.type==='passive')return [sk.description,...(sk.effects||[]).map(EmberwildPassives.effectText)].filter(Boolean).join(' · ');
   if(sk.systemEffect)return `持續 ${sk.duration} 回合 · 冷卻 ${sk.cooldown} 回合${['guard','slow'].includes(sk.systemEffect)?' · '+Math.round(sk.power*100)+'%':sk.systemEffect==='regen'?' · 每回合最大生命 '+Math.round(sk.power*10000)/100+'%':''}`;

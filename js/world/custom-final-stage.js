@@ -91,6 +91,7 @@
     save();if(tab==='battle'||!isEditingControl())render();else refreshGlobalJournal();
   }
 
+  globalThis.EmberwildFinalEncounter={complete:completeFinalStage,fail(mi){globalThis.expeditionChallengeResult={name:MAPS[mi]?.name||'終局關卡',success:false};}};
   if(typeof pacedRound==='function'){
     const customStagePacedBase=pacedRound;
     pacedRound=function*(){

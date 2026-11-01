@@ -3,7 +3,7 @@
 /* STATUS_PURE_START */
 const STATUS_SCHEMA_VERSION=1;
 const STATUS_TAGS=['periodic','control','modifier','instant'];
-const STATUS_MODIFIER_KINDS=['attack','critical','guard','fracture','power','weaken','vulnerable','damageAmp','regen','followup'];
+const STATUS_MODIFIER_KINDS=['attack','critical','guard','fracture','power','weaken','vulnerable','damageAmp','regen','followup','mpRegen','mpCostReduction'];
 const STATUS_CONTROL_KINDS=['polymorph','freeze','frost','rage','fear','tauntRage'];
 const STATUS_PERIODIC_KINDS=['damage','heal'];
 const STATUS_BASIS=['fixed','casterAttack','casterMaxHp','casterCurrentHp','casterMissingHp','casterDefense','casterShield','casterLevel','targetAttack','targetMaxHp','targetCurrentHp','targetMissingHp','targetDefense','targetShield','targetLevel'];
@@ -41,7 +41,7 @@ function normalizeStatusDefinition(raw,index=0){
     const allowed=kind==='heal'?STATUS_HEAL_RESOLUTIONS:STATUS_DAMAGE_RESOLUTIONS;
     return {kind,basis:STATUS_BASIS.includes(x?.basis)?x.basis:'casterAttack',coefficient:Math.max(0,statusNum(x?.coefficient,0)),resolution:allowed.includes(x?.resolution)?x.resolution:allowed[0],element:STATUS_ELEMENTS.includes(x?.element)?x.element:'physical'};
   }):[];
-  return {polarity:['auto','buff','debuff','neutral'].includes(raw.polarity)?raw.polarity:'auto',dispellable:raw.dispellable!==false,id:String(raw.id||('status-'+(index+1))).trim()||('status-'+(index+1)),name:String(raw.name||'未命名狀態').trim()||'未命名狀態',tags,duration:statusInt(raw.duration,1,1,99),modifiers,control,periodic};
+  return {...(raw.timing?{timing:deepClone(raw.timing)}:{}),polarity:['auto','buff','debuff','neutral'].includes(raw.polarity)?raw.polarity:'auto',dispellable:raw.dispellable!==false,id:String(raw.id||('status-'+(index+1))).trim()||('status-'+(index+1)),name:String(raw.name||'未命名狀態').trim()||'未命名狀態',tags,duration:statusInt(raw.duration,1,1,99),modifiers,control,periodic};
 }
 function validateStatusDefinition(raw){
   const s=normalizeStatusDefinition(raw),issues=[];
@@ -198,6 +198,7 @@ function removeStatusEffects(target,polarity,limit=99){
   return removed;
 }
 function tickCustomStatuses(){
+  if(globalThis.EmberwildSecondsCombat?.active)return;
   if(lastStatusTickClock===partyClock)return;lastStatusTickClock=partyClock;
   const keep=[];
   for(const inst of activeStatuses){
@@ -401,6 +402,7 @@ applyCustomStatus=function(defOrId,source,target){
   if(regenRate>0&&statusIsHero(target)){const max=statusMaxHp(target),before=target.hp;target.hp=Math.min(max,target.hp+healingAmount(source,max*regenRate));const healed=Math.max(0,target.hp-before);if(healed>0&&source&&typeof recordCombatContribution==='function')recordCombatContribution(source,'healing',healed);if(healed>0)note(def.name+'・再生 → '+characterName(target)+' '+Math.round(healed)+' 生命');}
   if(def.tags.includes('instant'))for(const fx of def.periodic)executeStatusPeriodic(inst,fx,true);
   note((source?(statusIsHero(source)?characterName(source):combatEnemyName(source))+' → ':'')+(statusIsHero(target)?characterName(target):combatEnemyName(target))+' 獲得狀態「'+def.name+'」· '+(def.permanent?'永久':def.duration+' 回合')+(inst.remainingUses===null?'':' · '+inst.remainingUses+' 次'));
+  globalThis.EmberwildSecondsCombat?.statusApplied(inst);
   return true;
 };
 function consumeCustomStatusUse(instanceId,count=1){const inst=activeStatuses.find(x=>x.id===instanceId);if(!inst||inst.remainingUses===null)return false;inst.remainingUses=Math.max(0,inst.remainingUses-Math.max(1,Math.floor(Number(count)||1)));if(inst.remainingUses<=0)activeStatuses=activeStatuses.filter(x=>x.id!==instanceId);return true;}
@@ -461,10 +463,11 @@ statusApplyShieldAwareDamage=function(...args){
   if(!visual?.capturing)return visualStatusDamageBase(...args);
   return visual.scope({mode:'damage'},()=>visualStatusDamageBase(...args));
 };
-globalThis.EmberwildStatusCombatState={pack:()=>({active:activeStatuses,clock:lastStatusTickClock,serial:advancedStatusSerial}),restore:v=>{activeStatuses=v?.active||[];lastStatusTickClock=v?.clock??-1;advancedStatusSerial=v?.serial||0;advancedSpreadContext=null;}};
-function collectStatusTriggers(event,target,allowChain=true,chainScale=1){
+globalThis.EmberwildStatusCombatState={pack:()=>({active:activeStatuses,clock:lastStatusTickClock,serial:advancedStatusSerial}),restore:v=>{activeStatuses=v?.active||[];lastStatusTickClock=v?.clock??-1;advancedStatusSerial=v?.serial||0;advancedSpreadContext=null;},seconds:{instances:()=>activeStatuses,definitions:()=>statusDefinitions,replaceInstances:rows=>{activeStatuses=rows;},periodic:executeStatusPeriodic}};
+function collectStatusTriggers(event,target,allowChain=true,chainScale=1,instanceId=null){
   const rows=[];
   for(const inst of [...activeStatuses]){
+    if(instanceId&&inst.id!==instanceId)continue;
     if(inst.targetKey!==statusTargetKey(target)||partyClock>=inst.expiresClock||inst.remainingUses===0)continue;
     const trigger=inst.definition.triggers?.find(t=>t.event===event);if(!trigger)continue;
     // Even a suppressed chained death consumes/removes its dead target's mark.
@@ -475,6 +478,7 @@ function collectStatusTriggers(event,target,allowChain=true,chainScale=1){
   return rows;
 }
 function tickStatusActorTurns(actor){
+  if(globalThis.EmberwildSecondsCombat?.active)return;
   for(const inst of [...activeStatuses]){
     const d=inst.definition;if(!d.triggers||d.permanent||d.durationClock==='battle')continue;
     const match=d.durationClock==='target'?inst.targetKey===statusTargetKey(actor):(inst.sourceKey=== (statusIsHero(actor)?memberKey(actor):actor?.id));

@@ -173,14 +173,14 @@ equipmentComparison=function(h,g,position=null){
 // Test JSON accepts fixedEffects (1–5 rows) and transparently migrates legacy exclusive / mana / form fields.
 validateBalanceConfig=function(input){
   const data=validateBalanceConfigCore(input),elements=new Set(Object.keys(ELEMENTS));
-  data.equipmentForms.forEach((jobs,job)=>jobs.forEach((forms,slot)=>forms.forEach((form,i)=>{normalizeEquipmentFormObject(form);for(const key of Object.keys(form))if(!['id','name','wearableJobs','fixedEffects','textStyleId'].includes(key))throw Error(`未知裝備欄位：${key}`);if(!Array.isArray(form.fixedEffects)||form.fixedEffects.length<1||form.fixedEffects.length>5)throw Error(`裝備固定屬性必須為 1～5 條：${job}-${slot}-${i}`);const wearJobs=Array.isArray(form.wearableJobs)?form.wearableJobs.filter(j=>Number.isInteger(j)&&j>=0&&j<data.classes.length):(job<data.classes.length?[job]:data.classes.map((_,j)=>j)),skillCount=wearJobs.reduce((max,j)=>Math.max(max,(data.classes[j]?.skills||[]).length),0);for(const [j,fx] of form.fixedEffects.entries()){if(!fx||!EQUIPMENT_FIXED_EFFECT_KEYS.has(fx.key))throw Error(`裝備固定屬性無效：${job}-${slot}-${i}-${j}`);if(fx.key==='basicElement'){if(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.value))throw Error('裝備普通攻擊屬性無效');}else if(!Number.isFinite(fx.value))throw Error(`裝備固定屬性數值無效：${job}-${slot}-${i}-${j}`);if(['elementDamagePct','elementResistPct'].includes(fx.key)&&(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.element)||fx.element==='physical'))throw Error('裝備固定屬性的元素目標無效');if(fx.key==='raceDamagePct'&&!EQUIPMENT_EFFECT_RACES.has(fx.race))throw Error('裝備固定屬性的種族目標無效');if(['skillEffectPct','skillCooldownReduction'].includes(fx.key)&&(!Number.isInteger(fx.skill)||fx.skill<0||fx.skill>=skillCount))throw Error('裝備固定屬性的技能目標無效');}})));
+  data.equipmentForms.forEach((jobs,job)=>jobs.forEach((forms,slot)=>forms.forEach((form,i)=>{normalizeEquipmentFormObject(form);for(const key of Object.keys(form))if(!['id','name','wearableJobs','fixedEffects','textStyleId','mana'].includes(key))throw Error(`未知裝備欄位：${key}`);if(!Array.isArray(form.fixedEffects)||form.fixedEffects.length<1||form.fixedEffects.length>5)throw Error(`裝備固定屬性必須為 1～5 條：${job}-${slot}-${i}`);const wearJobs=Array.isArray(form.wearableJobs)?form.wearableJobs.filter(j=>Number.isInteger(j)&&j>=0&&j<data.classes.length):(job<data.classes.length?[job]:data.classes.map((_,j)=>j)),skillCount=wearJobs.reduce((max,j)=>Math.max(max,(data.classes[j]?.skills||[]).length),0);for(const [j,fx] of form.fixedEffects.entries()){if(!fx||!EQUIPMENT_FIXED_EFFECT_KEYS.has(fx.key))throw Error(`裝備固定屬性無效：${job}-${slot}-${i}-${j}`);if(fx.key==='basicElement'){if(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.value))throw Error('裝備普通攻擊屬性無效');}else if(!Number.isFinite(fx.value))throw Error(`裝備固定屬性數值無效：${job}-${slot}-${i}-${j}`);if(['elementDamagePct','elementResistPct'].includes(fx.key)&&(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.element)||fx.element==='physical'))throw Error('裝備固定屬性的元素目標無效');if(fx.key==='raceDamagePct'&&!EQUIPMENT_EFFECT_RACES.has(fx.race))throw Error('裝備固定屬性的種族目標無效');if(['skillEffectPct','skillCooldownReduction'].includes(fx.key)&&(!Number.isInteger(fx.skill)||fx.skill<0||fx.skill>=skillCount))throw Error('裝備固定屬性的技能目標無效');}})));
   return data;
 };
 
 const equipmentCleanupApplyBalanceConfig=applyBalanceConfig;
 applyBalanceConfig=function(input,options={}){const result=equipmentCleanupApplyBalanceConfig(input,options);normalizeAllEquipmentForms();migrateCurrentEquipmentMana();if(state)render();return result;};
 const equipmentCleanupExportableBalance=exportableBalance;
-exportableBalance=function(){normalizeAllEquipmentForms();const data=equipmentCleanupExportableBalance();data.balance=cloneBalance(GAME_BALANCE);data._reference=balanceReference();data.notes=[...(data.notes||[]),'equipmentForms.fixedEffects 為每件基底裝備的 1～5 條固定屬性；武器攻擊屬性唯一來源為 basicElement。舊 element 僅在匯入時轉換為 basicElement，隨即移除。','魔力資源系統已移除；技能只受冷卻限制。舊裝備中的 mp / mpRegen 欄位僅在匯入時轉換為少量 attackPct，以保留舊裝備價值。','balance.affixes 可直接調整品質機率、詞條倍率、攻擊%與洗鍊成本；_reference 僅為欄位說明。'];return data;};
+exportableBalance=function(){normalizeAllEquipmentForms();const data=equipmentCleanupExportableBalance();data.balance=cloneBalance(GAME_BALANCE);data._reference=balanceReference();data.notes=[...(data.notes||[]),'equipmentForms.fixedEffects 為每件基底裝備的 1～5 條固定屬性；武器攻擊屬性唯一來源為 basicElement。舊 element 僅在匯入時轉換為 basicElement，隨即移除。','主動技能同時受秒數冷卻、共同行動間隔與 MP 限制；equipmentForms.mana 可設定額外魔力、每秒恢復與消耗減免。已轉換的舊裝備能力維持原值。','balance.affixes 可直接調整品質機率、詞條倍率、攻擊%與洗鍊成本；_reference 僅為欄位說明。'];return data;};
 
 const equipmentCleanupLoadParty=loadParty;
 loadParty=function(data){const out=equipmentCleanupLoadParty(data);normalizeAllEquipmentForms();migrateCurrentEquipmentMana();return out;};
@@ -192,7 +192,7 @@ migrateCurrentEquipmentMana();
 function stripLegacyManaState(){
   if(!party)return;
   for(const h of party.members){
-    delete h.mp;
+    if(!globalThis.EmberwildSecondsCombat?.active)delete h.mp;
     if(h.consumables&&Object.prototype.hasOwnProperty.call(h.consumables,'mana'))delete h.consumables.mana;
   }
   if(party.sharedItems?.consumables&&Object.prototype.hasOwnProperty.call(party.sharedItems.consumables,'mana'))delete party.sharedItems.consumables.mana;
@@ -205,7 +205,7 @@ refillParty=function(){for(const h of party.members){const v=stats(h);h.hp=v.hp;
 const noManaLoadParty=loadParty;
 loadParty=function(data){const out=noManaLoadParty(data);stripLegacyManaState();return out;};
 const noManaPackParty=packParty;
-packParty=function(){stripLegacyManaState();const data=noManaPackParty();for(const h of data.members||[]){delete h.mp;if(h.consumables)delete h.consumables.mana;}return data;};
+packParty=function(){stripLegacyManaState();const data=noManaPackParty();for(const h of data.members||[]){if(!globalThis.EmberwildSecondsCombat?.active)delete h.mp;if(h.consumables)delete h.consumables.mana;}return data;};
 const noManaRecruitHero=recruitHero;
 recruitHero=function(job){const out=noManaRecruitHero(job);stripLegacyManaState();return out;};
 

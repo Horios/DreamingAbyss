@@ -43,7 +43,7 @@
    for(const g of r.gear){if(!g||typeof g.id!=='string'||!Number.isInteger(g.slot)||g.slot<0||g.slot>4||!Array.isArray(g.affix))throw Error('戰鬥配置裝備無效');EmberwildSkillSystem.gear(g,{legacy:true,system:S.system()});}
   }
  }
- globalThis.EmberwildBattleConfiguration={get active(){return active;},has:h=>!!row(h),learned:(h,id)=>!!row(h)?.learned.includes(id),pending,notify,editable,combat,
+ globalThis.EmberwildBattleConfiguration={begin:capture,get active(){return active;},has:h=>!!row(h),learned:(h,id)=>!!row(h)?.learned.includes(id),pending,notify,editable,combat,
   equipmentEffects(h,read){if(!row(h))return read();if(!gemEffects.has(memberKey(h)))gemEffects.set(memberKey(h),read());return gemEffects.get(memberKey(h));},
   pack:()=>owner===party&&rows?{version:1,heroes:copy(rows)}:null,
   validate,restore(data){clear();if(data){validate(data,party.members);owner=party;rows=copy(data.heroes);}else if(foes.some(e=>e.hp>0))editable(capture);}

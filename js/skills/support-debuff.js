@@ -121,6 +121,7 @@
   };
 
   function tickFixedDotBeforeEnemyAction(e){
+    if(globalThis.EmberwildSecondsCombat?.active)return 0;
     if(!e||e.hp<=0)return 0;
     let total=0;
     const dots=effects.filter(fx=>fx.target===e.id&&fx.until>partyClock&&(fx.kind==='dotAttack'||fx.kind==='dotMaxHp'));

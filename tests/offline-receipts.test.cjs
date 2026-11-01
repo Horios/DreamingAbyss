@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;}
+function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};party.huntingMode="group";startSelectedExploration();save();`);return r;}
 async function settle(r,ms=0){r.advance(ms);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false);}
 function hidden(r,value){r.ctx.document.hidden=value;r.ctx.document.visibilityState=value?'hidden':'visible';r.dispatch('visibilitychange','document');}
 function rewardState(r){return json(r,'({gold:state.gold,xp:state.xp,lv:state.lv,kills:state.totalKills,bag:state.bag,materials:state.materials,at:party.offlineExploration.lastAt})');}
@@ -14,7 +14,7 @@ test('one second or an unfinished ten-second encounter preserves cursor without 
 });
 
 test('one real completed encounter within ten seconds shows its applied rewards once',async()=>{
- const r=game();r.run('foes.splice(1);foes[0].hp=1;save()');await settle(r,10000);
+ const r=game();r.run('foes.splice(1);foes[0].hp=1;const finishOne=finalizeBattleStatistics;finalizeBattleStatistics=function(...a){const out=finishOne(...a);if(a[0]==="victory")running=false;return out;};save()');await settle(r,10000);
  const receipt=json(r,'party.offlineExploration.receipt');assert.equal(receipt.battles,1);assert.equal(receipt.kills,1);assert(receipt.xp>0);assert.equal(receipt.lastBattleAt<=receipt.end,true);
  const before=rewardState(r);for(let i=0;i<3;i++){hidden(r,true);hidden(r,false);await settle(r);}assert.deepEqual(rewardState(r),before);
  assert.equal(r.run('acknowledgeOfflineExploration()'),true);assert.deepEqual(rewardState(r),before);assert.equal(r.run('acknowledgeOfflineExploration()'),false);
@@ -45,8 +45,8 @@ test('queued incomplete battle and merged absence intervals keep all partial rew
 });
 
 test('old complete and interrupted receipts migrate without losing rewards or pausing running combat',async()=>{
- const r=game();await settle(r,60000);r.run('globalThis.old=structuredClone(packParty());old.offlineExploration.version=1;old.offlineExploration.status="paused";old.offlineExploration.resumeRunning=true;delete old.offlineExploration.pendingReceipt;delete old.offlineExploration.receipt.battles;delete old.offlineExploration.receipt.intervals;');
- const before=rewardState(r);r.run('loadParty(old)');assert.equal(r.run('running'),true);assert.equal(r.run('party.offlineExploration.version'),2);assert.equal(r.run('party.offlineExploration.receipt.legacy'),true);await settle(r);assert.deepEqual(rewardState(r),before);r.run('acknowledgeOfflineExploration()');
+ const r=game();await settle(r,60000);r.run('globalThis.old=structuredClone(packParty());old.offlineExploration.version=1;old.offlineExploration.combat=null;old.offlineExploration.status="paused";old.offlineExploration.resumeRunning=true;delete old.offlineExploration.pendingReceipt;delete old.offlineExploration.receipt.battles;delete old.offlineExploration.receipt.intervals;');
+ const before=rewardState(r);r.run('loadParty(old)');assert.equal(r.run('running'),true);assert.equal(r.run('party.offlineExploration.version'),3);assert.equal(r.run('party.offlineExploration.receipt.legacy'),true);await settle(r);assert.deepEqual(rewardState(r),before);r.run('acknowledgeOfflineExploration()');
  r.run('old.offlineExploration.receipt.complete=false;old.offlineExploration.status="running";loadParty(old)');assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.complete'),false);await settle(r,60000);if(!r.run('party.offlineExploration.receipt')){assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);r.run('foes.forEach(e=>{if(e.hp>0)e.hp=1;})');await settle(r,30000);}assert(r.run('party.offlineExploration.receipt?.battles')>0);
 });
 
@@ -73,9 +73,9 @@ test('title page never settles or displays errors and a late valid consumable sa
 });
 
 
-test('normal defeat retries by existing rules, while a failed quest encounter stops with no fabricated rewards',async()=>{
- const r=game();r.run('state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,1000);
- assert.equal(r.run('running'),true);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.pendingReceipt.kills'),0);
+test('normal defeat stops by existing rules, while a failed quest encounter stops with no fabricated rewards',async()=>{
+ const r=game();r.run('state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,4000);
+ assert.equal(r.run('running'),false);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.pendingReceipt.kills'),0);
  r.run('stopTeamExploration()');const before=rewardState(r);await settle(r,60000);assert.equal(r.run('state.totalKills'),before.kills);assert.equal(r.run('state.gold'),before.gold);
  const q=game();q.run(`stopTeamExploration();state.lv=20;syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save();`);await settle(q,60000);
  assert.equal(q.run('running'),false);assert.equal(q.run('party.offlineExploration.receipt'),null);assert.equal(q.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(q.run('party.offlineExploration.pendingReceipt.kills'),0);assert.equal(q.run('expeditionChallengeResult.success'),false);

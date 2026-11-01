@@ -33,7 +33,7 @@
   };
 
   spawnGroup=function(){
-    const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],final=isFinalMap(party.map),g=GAMEPLAY_SETTINGS.combat.groupSize,min=Math.max(1,Math.round(g.min)),max=Math.max(min,Math.round(g.max)),n=final?1:min+rand(max-min+1);
+    const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],final=isFinalMap(party.map),g=GAMEPLAY_SETTINGS.combat.groupSize,min=Math.max(1,Math.round(g.min)),max=Math.max(min,Math.round(g.max)),n=final?1:globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.encounterSize():min+rand(max-min+1);
     foes=[];effects=[];actorCooldowns={};supportCooldowns={};for(const h of heroes())h.shield=0;
     for(let i=0;i<n;i++){const e=makeEnemy(party.map,weak);e.id='foe-'+uid();e.rewarded=false;foes.push(e);}enemy=foes[0];round=0;
     if(typeof beginBattleStatistics==='function')beginBattleStatistics();

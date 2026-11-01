@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 function game(pref='full'){
  const r=loadRuntime(root,'index.html',{'emberwild-battle-effects':pref});
- r.run(`globalThis.fxSeed=8723;Math.random=()=>{fxSeed=(Math.imul(fxSeed,1664525)+1013904223)>>>0;return fxSeed/4294967296;};selectSaveSlot(1);start(0);closeModal();startSelectedExploration();running=true;spawnGroup();foes=foes.slice(0,3);foes.forEach((e,i)=>{e.name='同名怪物';e.hp=e.maxhp=10000;e.shield=0;e.id='fx-'+i;});enemy=foes[0];for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();`);return r;
+ r.run(`globalThis.fxSeed=8723;Math.random=()=>{fxSeed=(Math.imul(fxSeed,1664525)+1013904223)>>>0;return fxSeed/4294967296;};selectSaveSlot(1);start(0);closeModal();party.huntingMode='group';startSelectedExploration();running=true;party.huntingMode='group';spawnGroup();foes=foes.slice(0,3);foes.forEach((e,i)=>{e.name='同名怪物';e.hp=e.maxhp=10000;e.shield=0;e.id='fx-'+i;});enemy=foes[0];for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();`);return r;
 }
 function capture(r,code){r.run('EmberwildBattleEffects.begin();'+code+';EmberwildBattleEffects.end();');return JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingEvents)'));}
 test('resolved physical/fire/ice hits and AoE use instance IDs, without touching other same-name targets',()=>{
@@ -53,13 +53,13 @@ test('actual evasion branch emits dodge without hit or shield effects',()=>{
  const r=game();r.run(`const fxEnemyStats=enemyBattleStats;enemyBattleStats=function(e){return {...fxEnemyStats(e),evasion:1};}`);
  const events=capture(r,`resolveHit(foes[1],50,state,'fire',false)`);assert(events.some(e=>e.type==='evade'&&e.target==='fx-1'));assert(!events.some(e=>['fire','hit','absorb'].includes(e.type)));
 });
-test('polymorph and freeze skips emit immediate feedback without damage, casting or extra control turns',()=>{
+test('polymorph and freeze feedback does not decrement seconds duration per attempted action',()=>{
  const r=game();r.run(`__EMBERWILD_CONTROL_TEST_API.applyPolymorph(foes[1],300,{duration:3});globalThis.hpBefore=state.hp;`);
  let events=capture(r,'performEnemyAction(foes[1])');
  assert(events.some(e=>e.type==='skip'&&e.target==='fx-1'&&e.label==='變形・無法行動'));assert(!events.some(e=>['hit','cast','attack'].includes(e.type)));
- assert.equal(r.run('state.hp'),r.run('hpBefore'));assert.equal(r.run('__EMBERWILD_CONTROL_TEST_API.states[foes[1].id].polymorph.turns'),2);
+ assert.equal(r.run('state.hp'),r.run('hpBefore'));assert.equal(r.run('__EMBERWILD_CONTROL_TEST_API.states[foes[1].id].polymorph.turns'),3);
  r.run(`__EMBERWILD_CONTROL_TEST_API.applyFreeze(foes[2],{duration:2});`);events=capture(r,'performEnemyAction(foes[2])');
- assert(events.some(e=>e.type==='skip'&&e.target==='fx-2'&&e.label==='冰凍・無法行動'));assert.equal(r.run('state.hp'),r.run('hpBefore'));assert.equal(r.run('__EMBERWILD_CONTROL_TEST_API.states[foes[2].id].freeze.turns'),1);
+ assert(events.some(e=>e.type==='skip'&&e.target==='fx-2'&&e.label==='冰凍・無法行動'));assert.equal(r.run('state.hp'),r.run('hpBefore'));assert.equal(r.run('__EMBERWILD_CONTROL_TEST_API.states[foes[2].id].freeze.turns'),2);
  assert.deepEqual(r.errors,[]);
 });
 test('off, hidden, navigation and reset discard presentation; terminal outcomes retain the last hit',()=>{

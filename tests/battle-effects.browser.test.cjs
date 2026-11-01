@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
 async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')});await g.page.evaluate(()=>{
- selectSaveSlot(1);start(1);closeModal();clearInterval(timer);state.lv=8;syncParty();recruitCompanion(10);recruitCompanion(11);closeModal();party.active=party.members.map(h=>memberKey(h));startSelectedExploration();clearInterval(timer);spawnGroup();running=true;
+ selectSaveSlot(1);start(1);closeModal();clearInterval(timer);state.lv=8;syncParty();recruitCompanion(10);recruitCompanion(11);closeModal();party.active=party.members.map(h=>memberKey(h));party.huntingMode='group';startSelectedExploration();clearInterval(timer);spawnGroup();running=true;
  const base=foes[0];foes=Array.from({length:3},(_,i)=>({...base,name:'測試史萊姆',id:'fx-'+i,kind:i===2?'elite':'normal',hp:10000,maxhp:10000,shield:0}));enemy=foes[0];beginBattleStatistics();for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();
  globalThis.fxCapture=function(fn){EmberwildBattleEffects.begin();fn();EmberwildBattleEffects.end();globalThis.fxEvents=EmberwildBattleEffects.pendingEvents;EmberwildBattleSummary.sync();};
  });return g;}
@@ -35,7 +35,7 @@ test('1x impacts remain readable; polymorph skips report immediately on both sur
   const card=p.locator('.unit[data-combat-id="fx-1"]');
   assert.equal(await card.locator('[data-fx="skip"]').count(),2);assert((await card.locator('[data-fx="skip"] b').allTextContents()).every(x=>x==='變形・無法行動'));
   assert.equal(await card.locator('[data-fx="attack"],[data-fx="cast"],[data-fx="hit"]').count(),0);assert.equal(await p.evaluate(()=>state.hp),hp);
-  assert.equal(await p.evaluate(()=>__EMBERWILD_CONTROL_TEST_API.states[foes[1].id].polymorph.turns),2);
+  assert.equal(await p.evaluate(()=>__EMBERWILD_CONTROL_TEST_API.states[foes[1].id].polymorph.turns),3);
   await p.clock.runFor(500);assert.equal(await card.locator('[data-fx="skip"]').count(),2);await p.clock.runFor(1100);
   assert.equal(await card.locator('[data-fx="skip"]').count(),0);assert.equal(await card.locator('[data-fx-persistent="polymorph"]').count(),2);
   const before=await p.evaluate(()=>foes[0].hp);await p.evaluate(()=>fxCapture(()=>resolveHit(foes[0],50,state,'fire',false)));
@@ -164,7 +164,7 @@ test('opening mage blasts retain cast, all lethal impacts and HP stages across t
    const cast=castPartySkill;castPartySkill=function(h,i,...args){const before=foes.filter(e=>e.hp>0).map(e=>({id:e.id,hp:e.hp})),out=cast(h,i,...args);if(h.job===1&&CLASSES[h.job]?.skills?.[i]?.[0]==='魔爆'&&out!==false)blastAudit.casts.push({at:performance.now(),targets:before.filter(b=>foes.find(e=>e.id===b.id)?.hp<b.hp).map(b=>b.id),attempted:before.length,dead:foes.filter(e=>e.hp<=0).map(e=>e.id)});return out;};
    const finish=EmberwildBattleSummary.finish;EmberwildBattleSummary.finish=function(result){if(result==='victory')blastAudit.battles++;return finish(result);};
    new MutationObserver(rows=>{for(const row of rows)for(const n of row.addedNodes)if(n.nodeType===1&&n.matches('.battle-fx'))blastAudit.impacts.push({at:performance.now(),type:n.dataset.fx,event:n.dataset.event,unit:n.parentNode.dataset.combatId||n.parentNode.dataset.heroId||n.parentNode.dataset.enemyId,surface:n.classList.contains('battle-fx-health')?'hp':'icon'});}).observe($('app'),{subtree:true,childList:true});
-   startSelectedExploration();
+   party.huntingMode='group';startSelectedExploration();
   });
   let switchedUp=false,switchedDown=false;
   for(let n=0;n<6000;n++){

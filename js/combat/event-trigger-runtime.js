@@ -20,13 +20,15 @@
   for(const h of living())for(const sk of passives(h)){
    const e=sk.eventPassive;if(e.event!=='enemyDeath')continue;
    h.eventPassiveCooldowns??={};if((h.eventPassiveCooldowns[sk.id]||0)>0)continue;
-   for(const cds of [actorCooldowns,supportCooldowns])for(const id of Object.keys(cds))if(id.startsWith(memberKey(h)+'-'))cds[id]=Math.max(0,cds[id]-e.reduction);
-   h.eventPassiveCooldowns[sk.id]=e.cooldown;
+   const seconds=globalThis.EmberwildSecondsCombat;
+   if(seconds?.active)seconds.reduceCooldowns(h,e.reduction);
+   else for(const cds of [actorCooldowns,supportCooldowns])for(const id of Object.keys(cds))if(id.startsWith(memberKey(h)+'-'))cds[id]=Math.max(0,cds[id]-e.reduction);
+   h.eventPassiveCooldowns[sk.id]=e.cooldown*(seconds?.active?seconds.config().actionReferenceSeconds:1);
    note(characterName(h)+'・'+sk.name+' → 技能冷卻減少 '+e.reduction+' 回合');
   }
  }
- function enqueueStatus(event,target,allowChain=true,chainScale=1){
-  for(const row of status().collectTriggers(event,target,allowChain,chainScale))queue.push({kind:'effect',...row});
+ function enqueueStatus(event,target,allowChain=true,chainScale=1,instanceId=null){
+  for(const row of status().collectTriggers(event,target,allowChain,chainScale,instanceId))queue.push({kind:'effect',...row});
  }
  function execute(row){
   const {instance:i,trigger:t}=row,caster=partyMember(i.sourceKey) || foes.find(e=>e.id===i.sourceKey);
@@ -86,7 +88,7 @@
   // Death consumes all marks first, even when death occurs during this turn.
   if(actor.hp>0){
    if(acted)enqueueStatus('targetActionEnd',actor);
-   enqueueStatus('targetTurnEnd',actor);drain();
+   if(!globalThis.EmberwildSecondsCombat?.active)enqueueStatus('targetTurnEnd',actor);drain();
   }
   status().tickActorTurns(actor);
  }
@@ -109,5 +111,5 @@
  resetEncounter=function(...args){clear(true);return reset(...args);};
  spawnGroup=function(...args){clear();return spawn(...args);};
  status().addDefinition(EmberwildSkillSystem.clearingStatus());
- globalThis.EmberwildCombatEvents={action,endTurn,scanDeaths,drain,clear};
+ globalThis.EmberwildCombatEvents={action,endTurn,scanDeaths,drain,clear,emit(event,target,instanceId){scanDeaths();drain();if(target?.hp>0){enqueueStatus(event,target,true,1,instanceId);drain();}}};
 })();

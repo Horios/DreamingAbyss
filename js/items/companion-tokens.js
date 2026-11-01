@@ -9,12 +9,13 @@
   function clear(h){if(h){combat.delete(memberKey(h));effects=effects.filter(e=>e.tokenOwner!==memberKey(h));}else{combat.clear();effects=effects.filter(e=>e.tokenOwner===undefined);}}
   function runtime(h){const key=memberKey(h);if(!combat.has(key))combat.set(key,{round:partyClock,started:false,count:0,used:0,next:0,target:null,hits:0});return combat.get(key);}
   const eventClock=()=>partyClock+(preparingRound?1:0);
-  function ready(h,event){const g=item(h),a=g?.snapshot.ability;if(!a||a.event!==event||h.hp<=0)return null;const r=runtime(h);if(eventClock()<r.next||a.maxTriggers>0&&r.used>=a.maxTriggers)return null;if(a.chance<=0||Math.random()>=a.chance)return null;r.used++;r.next=eventClock()+a.cooldown;return {g,a,r};}
+  function ready(h,event){const g=item(h),a=g?.snapshot.ability;if(!a||a.event!==event||h.hp<=0)return null;const r=runtime(h);if(eventClock()<r.next||a.maxTriggers>0&&r.used>=a.maxTriggers)return null;if(a.chance<=0||Math.random()>=a.chance)return null;r.used++;r.next=eventClock()+(globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.tokenTiming(g).cooldownSeconds:a.cooldown);return {g,a,r};}
   function trigger(h,event,target=null){
     const hit=ready(h,event);if(!hit)return false;const {g,a}=hit,v=battleStats(h),before=h.hp;
     if(['attack','guard','critical','power'].includes(a.action)){
       effects=effects.filter(e=>!(e.tokenOwner===memberKey(h)&&e.tokenId===g.id));
-      effects.push({source:heroKey(h),skill:-1,target:heroKey(h),kind:a.action,value:a.value,until:eventClock()+a.duration,name:g.snapshot.name,tokenOwner:memberKey(h),tokenId:g.id});
+      const duration=globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.tokenTiming(g).durationSeconds:a.duration;
+      effects.push({source:heroKey(h),skill:-1,target:heroKey(h),kind:a.action,value:a.value,until:eventClock()+duration,name:g.snapshot.name,tokenOwner:memberKey(h),tokenId:g.id});
     }else if(a.action==='heal'){h.hp=Math.min(v.hp,h.hp+Math.round(healingAmount(h,v.hp*a.value)));if(h.hp>before)recordCombatContribution(h,'healing',h.hp-before);}
     else if(a.action==='shield')applyPureShield(h,v.hp*a.value);
     else if(a.action==='extraDamage'&&target?.hp>0&&!extraDepth){
@@ -128,15 +129,15 @@
       .replace(/此武器攻擊屬性/g,'普攻屬性').replace('（固定屬性 basicElement）','')).join(' / ');
   }
   function abilityText(g){
-    const a=g.snapshot.ability,percent=Number((a.value*100).toFixed(2)),chance=Number((a.chance*100).toFixed(2));
+    const a=g.snapshot.ability,t=globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.tokenTiming(g):null,percent=Number((a.value*100).toFixed(2)),chance=Number((a.chance*100).toFixed(2));
     const action={attack:`攻擊力提升 ${percent}%`,guard:`受到的傷害減少 ${percent}%`,critical:`暴擊率提升 ${percent}%`,power:`技能威力提升 ${percent}%`,heal:`回復生命上限 ${percent}% 的生命`,shield:`獲得生命上限 ${percent}% 的護盾`,extraDamage:`追加攻擊力 ${percent}% 的傷害`,damageBonus:`傷害增幅 ${percent}%`,healingBonus:`治療與護盾效果增幅 ${percent}%`}[a.action];
-    const event={battleStart:'戰鬥開始時',kill:'擊殺敵人時',receivedHit:'受到傷害時',basicHit:'普攻命中時',skillCast:'施放技能後',damage:'造成傷害時',sameTarget:`連續普攻同一目標達 ${a.threshold} 次後`,lowHealth:`受到傷害且生命不高於 ${Number((a.threshold*100).toFixed(2))}% 時`,round:`戰鬥第 ${a.threshold} 回合起，每回合`}[a.event];
+    const event={battleStart:'戰鬥開始時',kill:'擊殺敵人時',receivedHit:'受到傷害時',basicHit:'普攻命中時',skillCast:'施放技能後',damage:'造成傷害時',sameTarget:`連續普攻同一目標達 ${a.threshold} 次後`,lowHealth:`受到傷害且生命不高於 ${Number((a.threshold*100).toFixed(2))}% 時`,round:t?`戰鬥 ${t.firstTriggerSeconds} 秒起，每 ${t.triggerIntervalSeconds} 秒`:`戰鬥第 ${a.threshold} 回合起，每回合`}[a.event];
     const skill=a.event==='activeSkill'?'主動技能':a.event==='procSkill'?'觸發技能':null;
     const text=skill?`${skill}${action}`:`${event}${action}`;
     const extras=[];
     if(a.chance<1)extras.push(`觸發機率 ${chance}%`);
-    if(a.duration)extras.push(`持續 ${a.duration} 回合`);
-    if(a.cooldown)extras.push(`冷卻 ${a.cooldown} 回合`);
+    if(a.duration)extras.push(t?`持續 ${t.durationSeconds} 秒`:`持續 ${a.duration} 回合`);
+    if(a.cooldown||t?.cooldownSeconds)extras.push(t?`冷卻 ${t.cooldownSeconds} 秒`:`冷卻 ${a.cooldown} 回合`);
     if(a.maxTriggers)extras.push(`每場最多 ${a.maxTriggers} 次`);
     return [text,...extras].join(' · ');
   }

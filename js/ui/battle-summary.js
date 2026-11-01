@@ -84,7 +84,7 @@
    const e=row.unit,num=(indices.get(e.name)||0)+1;indices.set(e.name,num);
    const name=ally?characterName(e):e.name+(names.get(e.name)>1?num:'');
    let node=nodes.get(row.id);
-   if(!node){node=document.createElement('button');node.type='button';node.onclick=()=>showUnit(row.id,ally?'ally':'enemy');node.dataset[attribute]=row.id;node.className='battle-enemy-icon'+(ally?' battle-ally-icon':'');node.innerHTML='<span class="enemy-icon-art"></span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">◆</span>';}
+   if(!node){node=document.createElement('button');node.type='button';node.onclick=()=>globalThis.EmberwildBattleSummary.showUnit(row.id,ally?'ally':'enemy');node.dataset[attribute]=row.id;node.className='battle-enemy-icon'+(ally?' battle-ally-icon':'');node.innerHTML='<span class="enemy-icon-art"></span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">◆</span>';}
    const artKey=ally?EmberwildAvatars.resolvedId(e):[baseMonsterName(e),e.monsterId,e.mat,e.element,e.icon,e.race].join('|');
    if(node.dataset.artKey!==artKey){node.querySelector('.enemy-icon-art').innerHTML=ally?EmberwildAvatars.control(e).replace(/^<button[^>]*>/,'<span class="battle-avatar-art" data-avatar-id="'+EmberwildAvatars.resolvedId(e)+'">').replace(/<\/button>$/,'</span>'):artwork(e);node.dataset.artKey=artKey;}
    const flash=ally?null:flashes.get(row.id),state=row.alive?(row.acting?'目前行動':'存活'):ally?'倒下':'已擊敗';
@@ -180,7 +180,7 @@
   return {id:row.id,side:ally?'ally':'enemy',name,level:u.lv,kind:ally?(u.companionId===undefined?'主角':'夥伴'):({normal:'普通怪物',elite:'菁英怪物',boss:'BOSS',final:'最終 BOSS'}[u.kind]||'怪物'),alive:hp>0,hp,max,shield:Math.max(0,finite(u.shield)),controlShield:Math.max(0,finite(controls.polymorph?.shield)),element:ally?weaponElement(u):u.element,race:ally?null:u.race,stats:{...v},skills,statuses,nextActiveDamageBonus:Math.max(0,finite(u.nextActiveDamageBonus)),advanceSteps:Math.max(0,finite(ally?u.procAdvanceSteps:u.sharedAdvanceSteps))};
  }
  function showUnit(id,side){
-  const d=inspect(id,side);if(!d)return false;
+  const d=globalThis.EmberwildSecondsCombat?.active?globalThis.EmberwildBattleSummary.inspect(id,side):inspect(id,side);if(!d)return false;
   const statNames={atk:'攻擊力',def:'防禦力',speed:'速度',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷'},ratios=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
   const statRows=Object.entries(statNames).map(([k,n])=>[n,ratios.has(k)?pct(d.stats[k]):fmt(finite(d.stats[k]))]);
   for(const [k,label,names] of [['elementDamage','屬性增傷',ELEMENTS],['resist','屬性抗性',ELEMENTS],['raceDamage','種族增傷',RACES]])for(const [target,value] of Object.entries(d.stats[k]||{}))statRows.push([(names[target]||target)+' · '+label,pct(value)]);

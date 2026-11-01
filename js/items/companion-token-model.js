@@ -41,6 +41,7 @@
     if(a.event==='lowHealth')assert(a.threshold>0&&a.threshold<=1,'低血量門檻需為 0～1');
     if(['sameTarget','round'].includes(a.event))assert(integer(a.threshold,1,100),'攻擊次數／回合門檻需為正整數');
     if(!['sameTarget','round','lowHealth'].includes(a.event))assert(a.threshold===0,'此信物事件不使用條件門檻');
+    if(a.timing){const t=a.timing;assert(number(t.cooldownSeconds,0,1e9)&&number(t.durationSeconds,0,1e9)&&number(t.triggerIntervalSeconds,.000001,1e9)&&number(t.firstTriggerSeconds,0,1e9),'信物秒數設定無效');}
     return copy(a);
   }
   function validateDrop(d,global=false){

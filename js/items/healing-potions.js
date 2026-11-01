@@ -41,11 +41,11 @@
   }
   if(typeof balanceReference==='function'){
     const baseReference=balanceReference;
-    balanceReference=function(){const r=baseReference();r.itemTypes={...(r.itemTypes||{}),healPotion:'治療藥水；healAmount=固定恢復 HP，shopAvailable=商店販售狀態，requiredVip=最低商店 VIP 等級，cooldown=使用後等待的回合數；只能由自動喝藥機制使用。'};return r;};
+    balanceReference=function(){const r=baseReference();r.itemTypes={...(r.itemTypes||{}),healPotion:'治療藥水；healAmount=固定恢復 HP，shopAvailable=商店販售狀態，requiredVip=最低商店 VIP 等級，timing.cooldownSeconds=使用後等待的戰鬥秒數；cooldown 為舊版相容欄位；只能由自動喝藥機制使用。'};return r;};
   }
   if(typeof exportableBalance==='function'){
     const baseExport=exportableBalance;
-    exportableBalance=function(){const out=baseExport();out.notes=[...(out.notes||[]),'items 中 type=healPotion 為治療藥水；healAmount 使用固定 HP，shopAvailable / requiredVip 控制所有商店購買入口，cooldown 使用回合。治療藥水沒有手動使用按鈕，只會依角色自動喝藥設定觸發。'];return out;};
+    exportableBalance=function(){const out=baseExport();out.notes=[...(out.notes||[]),'items 中 type=healPotion 為治療藥水；healAmount 使用固定 HP，shopAvailable / requiredVip 控制所有商店購買入口，timing.cooldownSeconds 使用戰鬥秒數。治療藥水沒有手動使用按鈕，只會依角色自動喝藥設定觸發。'];return out;};
   }
 
   const baseInitial=initial;initial=function(...args){const h=baseInitial(...args),n=h.potions||0;h.healingPotions={...(h.healingPotions||{}),heal_small:(h.healingPotions?.heal_small||0)+n};h.potions=0;h.autoPotionId='heal_small';return h;};
@@ -61,7 +61,7 @@
     if(!Number.isFinite(h.autoPotionThresholdPct))h.autoPotionThresholdPct=Math.round((typeof GS==='function'?GS('combat.autoPotionThreshold',.35):.35)*100);
     h.autoPotionThresholdPct=Math.max(1,Math.min(99,Math.round(h.autoPotionThresholdPct)));
     if(typeof h.autoPotionId!=='string'||!healPotionItems().some(x=>x.id===h.autoPotionId))h.autoPotionId=defaultHealPotionId();
-    if(!Number.isInteger(h.healPotionCooldownRemaining)||h.healPotionCooldownRemaining<0)h.healPotionCooldownRemaining=0;
+    if(!(globalThis.EmberwildSecondsCombat?.active?Number.isFinite(h.healPotionCooldownRemaining):Number.isInteger(h.healPotionCooldownRemaining))||h.healPotionCooldownRemaining<0)h.healPotionCooldownRemaining=0;
   }
   const baseEnsureSharedItems=typeof ensureSharedItems==='function'?ensureSharedItems:null;
   function ensureHealingPotionState(){
@@ -88,15 +88,15 @@
   }
   function useAutoHealingPotionCore(h){
     normalizeHeroHealingSettings(h);
-    if(h.healPotionCooldownRemaining>0){h.healPotionCooldownRemaining--;return false;}
+    if(h.healPotionCooldownRemaining>0){if(!globalThis.EmberwildSecondsCombat?.active)h.healPotionCooldownRemaining--;return false;}
     if(!h.autoPotion||h.hp<=0)return false;
     const item=selectedHealPotion(h);if(!item||healPotionCount(item.id)<1)return false;
     const v=battleStats(h),threshold=Math.max(1,Math.min(99,h.autoPotionThresholdPct))/100;
     if(h.hp/v.hp>threshold||h.hp>=v.hp)return false;
     setHealPotionCount(item.id,healPotionCount(item.id)-1);
     const before=h.hp,amount=Math.max(1,Math.round(item.healAmount));h.hp=Math.min(v.hp,h.hp+amount);
-    const actual=Math.max(0,Math.round(h.hp-before));if(actual>0)recordCombatContribution(h,'healing',actual);h.healPotionCooldownRemaining=Math.max(0,Math.round(item.cooldown));
-    note(`${characterName(h)}自動使用${item.name} · 恢復 ${actual} 生命（藥水固定恢復 ${item.healAmount} HP）· 冷卻 ${item.cooldown} 回合`);
+    const actual=Math.max(0,Math.round(h.hp-before));if(actual>0)recordCombatContribution(h,'healing',actual);h.healPotionCooldownRemaining=globalThis.EmberwildSecondsCombat?.active?item.timing.cooldownSeconds:Math.max(0,Math.round(item.cooldown));
+    note(`${characterName(h)}自動使用${item.name} · 恢復 ${actual} 生命（藥水固定恢復 ${item.healAmount} HP）· 冷卻 ${globalThis.EmberwildSecondsCombat?.active?item.timing.cooldownSeconds:item.cooldown} ${globalThis.EmberwildSecondsCombat?.active?'秒':'回合'}`);
     return true;
   }
   globalThis.useAutoHealingPotion=useAutoHealingPotion;
@@ -111,16 +111,16 @@
   }
   if(typeof resetEncounter==='function'){
     const baseReset=resetEncounter;
-    resetEncounter=function(){const out=baseReset();if(party)for(const h of party.members){normalizeHeroHealingSettings(h);h.healPotionCooldownRemaining=0;}return out;};
+    resetEncounter=function(){const out=baseReset();if(party)for(const h of party.members){normalizeHeroHealingSettings(h);if(!globalThis.EmberwildSecondsCombat?.active)h.healPotionCooldownRemaining=0;}return out;};
   }
   if(typeof spawnGroup==='function'){
     const baseSpawn=spawnGroup;
-    spawnGroup=function(){const out=baseSpawn();if(party)for(const h of heroes()){normalizeHeroHealingSettings(h);h.healPotionCooldownRemaining=0;}return out;};
+    spawnGroup=function(){const out=baseSpawn();if(party)for(const h of heroes()){normalizeHeroHealingSettings(h);if(!globalThis.EmberwildSecondsCombat?.active)h.healPotionCooldownRemaining=0;}return out;};
   }
 
   if(typeof supplyDetail==='function'){
     const baseSupplyDetail=supplyDetail;
-    supplyDetail=function(item){if(isHealPotion(item))return `恢復 ${item.healAmount} HP · 自動使用冷卻 ${Math.round(item.cooldown)} 回合 · 單價 ${Math.round(item.cost)} 金幣`;return baseSupplyDetail(item);};
+    supplyDetail=function(item){if(isHealPotion(item))return `恢復 ${item.healAmount} HP · 自動使用冷卻 ${globalThis.EmberwildSecondsCombat?.active?item.timing.cooldownSeconds:Math.round(item.cooldown)} ${globalThis.EmberwildSecondsCombat?.active?'秒':'回合'} · 單價 ${Math.round(item.cost)} 金幣`;return baseSupplyDetail(item);};
   }
   if(typeof useSupply==='function'){
     const baseUseSupply=useSupply;
@@ -132,7 +132,7 @@
     return heroes().map(h=>{
       normalizeHeroHealingSettings(h);
       const item=selectedHealPotion(h);
-      return `<div class="heal-auto-row"><b>${esc(characterName(h))} · ${esc(CLASSES[h.job].name)}</b><label><input type="checkbox" ${h.autoPotion?'checked':''} onchange="setHeroAutoPotion(${memberKey(h)},this.checked)">自動喝藥</label><label>HP ≤ <input type="number" min="1" max="99" step="1" value="${h.autoPotionThresholdPct}" onchange="setHeroAutoPotionThreshold(${memberKey(h)},this.value)">%</label><label>使用 <select onchange="setHeroAutoPotionItem(${memberKey(h)},this.value)">${items.map(x=>`<option value="${esc(x.id)}" ${x.id===h.autoPotionId?'selected':''}>${esc(x.name)} ×${healPotionCount(x.id)}</option>`).join('')}</select></label><span class="heal-auto-detail">${item?`${esc(item.name)}：恢復 ${item.healAmount} HP · 冷卻 ${item.cooldown} 回合 · <span class="heal-stock">共用庫存 ${healPotionCount(item.id)}</span>`:'沒有可用治療藥水'}${h.healPotionCooldownRemaining>0?`<br><span class="heal-auto-cd">目前冷卻剩餘 ${h.healPotionCooldownRemaining} 回合</span>`:''}</span></div>`;
+      return `<div class="heal-auto-row"><b>${esc(characterName(h))} · ${esc(CLASSES[h.job].name)}</b><label><input type="checkbox" ${h.autoPotion?'checked':''} onchange="setHeroAutoPotion(${memberKey(h)},this.checked)">自動喝藥</label><label>HP ≤ <input type="number" min="1" max="99" step="1" value="${h.autoPotionThresholdPct}" onchange="setHeroAutoPotionThreshold(${memberKey(h)},this.value)">%</label><label>使用 <select onchange="setHeroAutoPotionItem(${memberKey(h)},this.value)">${items.map(x=>`<option value="${esc(x.id)}" ${x.id===h.autoPotionId?'selected':''}>${esc(x.name)} ×${healPotionCount(x.id)}</option>`).join('')}</select></label><span class="heal-auto-detail">${item?`${esc(item.name)}：恢復 ${item.healAmount} HP · 冷卻 ${globalThis.EmberwildSecondsCombat?.active?item.timing.cooldownSeconds:item.cooldown} ${globalThis.EmberwildSecondsCombat?.active?'秒':'回合'} · <span class="heal-stock">共用庫存 ${healPotionCount(item.id)}</span>`:'沒有可用治療藥水'}${h.healPotionCooldownRemaining>0?`<br><span class="heal-auto-cd">目前冷卻剩餘 ${Number(h.healPotionCooldownRemaining.toFixed(1))} ${globalThis.EmberwildSecondsCombat?.active?'秒':'回合'}</span>`:''}</span></div>`;
     }).join('');
   }
 
@@ -141,7 +141,7 @@
     ensureHealingPotionState();
     const modal=$('modal');
     modal.dataset.view='healing-settings';
-    modal.innerHTML=`<h2>自動喝水設定</h2><p class="small">設定上陣角色的 HP 門檻與使用藥水；後備成員會保留原設定，重新上陣時沿用。介面中的「回合」定義可由探索控制右上角的「？」查看。</p><div class="heal-settings-modal">${healingSettingsRows()}</div><div class="actions"><button class="primary" onclick="closeModal()">完成</button></div>`;
+    modal.innerHTML=`<h2>自動喝水設定</h2><p class="small">設定上陣角色的 HP 門檻與使用藥水；後備成員會保留原設定，重新上陣時沿用。冷卻依戰鬥秒數倒數，切換遭遇不會重置。</p><div class="heal-settings-modal">${healingSettingsRows()}</div><div class="actions"><button class="primary" onclick="closeModal()">完成</button></div>`;
     if(!modal.open)modal.showModal();
   };
 
@@ -179,17 +179,17 @@
   if(typeof shopView==='function'){
     shopView=function(){
       ensureHealingPotionState();if(typeof ensureMarket==='function')ensureMarket();const h=pageHero('shop'),inv=healingInventory();
-      const healCards=healPotionItems().map(item=>`<article class="card heal-shop-card"><h3>${esc(item.name)}</h3><p class="item-flavor"><b>說明：</b>${esc(globalThis.__EMBERWILD_ITEM_DESCRIPTION?.('item',item.id)??'')}</p><p class="heal-spec"><b>詳細：</b>恢復 ${item.healAmount} HP · 冷卻 ${item.cooldown} 回合</p><div class="row"><span>共用 ${healPotionCount(item.id)} 瓶</span><span>${item.cost} 金幣／瓶</span></div><div class="actions">${ownerControls(`<button onclick="buyHealingPotion('${item.id}')" ${h.gold<item.cost?'disabled':''}>購買 1 瓶</button>`,h.job)}</div><p class="heal-no-manual">治療藥水沒有手動使用按鈕；由戰鬥頁的角色自動治療設定觸發。</p></article>`).join('');
+      const healCards=healPotionItems().map(item=>`<article class="card heal-shop-card"><h3>${esc(item.name)}</h3><p class="item-flavor"><b>說明：</b>${esc(globalThis.__EMBERWILD_ITEM_DESCRIPTION?.('item',item.id)??'')}</p><p class="heal-spec"><b>詳細：</b>恢復 ${item.healAmount} HP · 冷卻 ${globalThis.EmberwildSecondsCombat?.active?item.timing.cooldownSeconds:item.cooldown} ${globalThis.EmberwildSecondsCombat?.active?'秒':'回合'}</p><div class="row"><span>共用 ${healPotionCount(item.id)} 瓶</span><span>${item.cost} 金幣／瓶</span></div><div class="actions">${ownerControls(`<button onclick="buyHealingPotion('${item.id}')" ${h.gold<item.cost?'disabled':''}>購買 1 瓶</button>`,h.job)}</div><p class="heal-no-manual">治療藥水沒有手動使用按鈕；由戰鬥頁的角色自動治療設定觸發。</p></article>`).join('');
       const supplyCards=SHOP.filter(x=>!isHealPotion(x)).map(item=>`<article class="card"><h3>${esc(item.name)}</h3><p class="item-flavor"><b>說明：</b>${esc(globalThis.__EMBERWILD_ITEM_DESCRIPTION?.('item',item.id)??'')}</p><p class="item-detail small"><b>詳細：</b>${esc(supplyDetail(item))}</p><div class="row"><span>共用 ${h.consumables[item.id]||0} 瓶</span><span>${item.cost} 金幣</span></div><div class="actions">${ownerControls(`<button onclick="buySupply('${item.id}')" ${h.gold<item.cost?'disabled':''}>購買</button><button onclick="useSupply('${item.id}')" ${!h.consumables[item.id]?'disabled':''}>對${esc(characterName(h))}使用</button>`,h.job)}</div></article>`).join('');
       const market=typeof marketCards==='function'?marketCards():'';
       const marketHead=party?.market?`<div class="actions market-refresh"><span>素材商品 · 第 ${party.market.serial} 批</span><button onclick="refreshMarket()">刷新商店 · ${MARKET_REFRESH_COST} 金幣</button></div>`:'';
-      return `<div class="actions"><button onclick="showTestCodes()">兌換碼</button></div>`+heading('SUPPLIES / 全隊共用','商店')+pageSelector('shop')+`<section class="panel shared-shop-info"><b>道具設定角色：${esc(characterName(h))} · ${h.gold} 金幣</b>${uiHelp('補給說明','治療藥水購買後進入全隊共用庫存，只能在角色回合開始時依自動治療設定使用；沒有手動喝藥。元素附魔、抗性與增幅藥水仍可手動使用，效果以角色出戰回合計時。')}<p class="supply-countdown" data-job="${h.job}">${supplyStatus(h)||'目前無持續型消耗品效果'}</p></section>${marketHead}<div class="shared-shop-grid">${healCards}${market}${supplyCards}</div>`;
+      return `<div class="actions"><button onclick="showTestCodes()">兌換碼</button></div>`+heading('SUPPLIES / 全隊共用','商店')+pageSelector('shop')+`<section class="panel shared-shop-info"><b>道具設定角色：${esc(characterName(h))} · ${h.gold} 金幣</b>${uiHelp('補給說明','治療藥水購買後進入全隊共用庫存，依戰鬥事件與自動治療設定使用；沒有手動喝藥。元素附魔、抗性與增幅藥水仍可手動使用，附魔效果依角色出戰的戰鬥秒數計時，抗性與增幅依現實時間計時。')}<p class="supply-countdown" data-job="${h.job}">${supplyStatus(h)||'目前無持續型消耗品效果'}</p></section>${marketHead}<div class="shared-shop-grid">${healCards}${market}${supplyCards}</div>`;
     };
   }
 
   if(typeof guideView==='function'){
     const baseGuide=guideView;
-    guideView=function(){return `<section class="panel"><h2>自動治療藥水</h2><p>每名角色可設定自動喝藥開關、HP 百分比門檻與指定治療藥水。判定只發生在該角色回合開始時；使用治療藥水不會取消該回合的攻擊。治療藥水使用後依品項進入回合冷卻，冷卻期間不會再喝。治療藥水不提供手動使用按鈕。</p></section>`+baseGuide();};
+    guideView=function(){return `<section class="panel"><h2>自動治療藥水</h2><p>每名角色可設定自動喝藥開關、HP 百分比門檻與指定治療藥水。判定發生在戰鬥事件結算時；使用治療藥水不會取消角色的攻擊。治療藥水使用後依品項進入秒數冷卻，冷卻期間不會再喝。治療藥水不提供手動使用按鈕。</p></section>`+baseGuide();};
   }
 
   if(typeof save==='function'){

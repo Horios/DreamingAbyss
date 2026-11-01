@@ -1,6 +1,6 @@
-<!doctype html><html lang="zh-Hant"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>餘燼荒野 · Emberwild</title><script src="js/ui/themes.js?v=20261016-themes1"></script><link rel="stylesheet" href="css/base.css?v=20261021-quality-forge1"><link rel="stylesheet" href="css/navigation-tree.css?v=20261021-group-reminders1"><body><header><a class="brand" href="#"> <span>餘燼荒野<small>EMBERWILD / IDLE RPG · 4.0</small></span></a><div id="utilityNavigation" class="utility-navigation" hidden></div><div id="wallet"></div><button onclick="save(true)">儲存</button><button onclick="exportSave()">匯出存檔 JSON</button><label class="button">匯入存檔<input type="file" accept=".json" onchange="importSave(event)" hidden></label></header><div id="app"><section class="panel" style="margin:32px"><h1>正在啟動餘燼荒野…</h1><p>正在載入遊戲資料，請稍候。原有存檔保留。</p></section></div><noscript><p style="padding:24px">目前環境未允許 JavaScript。請下載 HTML 後使用瀏覽器開啟。</p></noscript><div id="toast" role="status"></div><dialog id="modal"></dialog><script data-startup-guard src="js/core/startup-guard.js"></script>
+<!doctype html><html lang="zh-Hant"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>龍息深淵 · Emberwild</title><script src="js/ui/themes.js?v=20261016-themes1"></script><link rel="stylesheet" href="css/base.css?v=20261021-quality-forge1"><link rel="stylesheet" href="css/navigation-tree.css?v=20261021-group-reminders1"><body><header><a class="brand" href="#"> <span>龍息深淵<small>EMBERWILD / IDLE RPG · 4.0</small></span></a><div id="utilityNavigation" class="utility-navigation" hidden></div><div id="wallet"></div><button onclick="save(true)">儲存</button><button onclick="exportSave()">匯出存檔 JSON</button><label class="button">匯入存檔<input type="file" accept=".json" onchange="importSave(event)" hidden></label></header><div id="app"><section class="panel" style="margin:32px"><h1>正在啟動龍息深淵…</h1><p>正在載入遊戲資料，請稍候。原有存檔保留。</p></section></div><noscript><p style="padding:24px">目前環境未允許 JavaScript。請下載 HTML 後使用瀏覽器開啟。</p></noscript><div id="toast" role="status"></div><dialog id="modal"></dialog><link rel="stylesheet" href="css/seconds-battle.css?v=20261102-v0017-seconds1"><script data-startup-guard src="js/core/startup-guard.js"></script>
 <script data-balance-src="js/balance/progression-model.js?v=20261031-worn-refinement1"></script>
-<script data-balance-src="js/items/companion-token-model.js?v=20261019-token-jobs1"></script>
+<script data-balance-src="js/items/companion-token-model.js?v=20261102-v0017-seconds1"></script>
 <script data-balance-src="js/character/companion-model.js"></script>
 <script data-balance-src="js/skills/passive-model.js"></script>
 <script data-balance-src="js/character/achievement-model.js?v=20261012-utility1"></script>
@@ -8,7 +8,8 @@
 <script data-balance-src="js/character/team-model.js"></script>
 <script data-balance-src="js/items/timed-boosts.js?v=20261020-exploration1"></script>
 <script data-balance-src="js/skills/skill-effect-schema.js"></script>
-<script data-balance-src="js/combat/seconds-timeline.js?v=20261101-v0015-seconds1"></script>
+<script data-balance-src="js/combat/seconds-timeline.js?v=20261102-v0017-seconds1"></script>
+<script src="js/combat/seconds-schema.js?v=20261102-v0017-seconds1"></script>
 <script data-balance-src="js/world/quest-design-model.js?v=20261019-daily-speed2"></script>
 <script data-balance-src="js/world/commission-model.js?v=20261019-daily-speed2"></script>
 <script data-balance-src="js/equipment/gear-inventory-model.js"></script>
@@ -20,8 +21,8 @@
 <script data-balance-src="js/balance/gameplay-settings-schema.js?v=20261022-core-services1"></script>
 <script data-balance-src="js/ui/core-screen-views.js?v=20261022-core-ui1"></script>
 <script data-balance-src="js/ui/core-equipment-views.js?v=20261022-core-ui1"></script>
-<script data-balance-src="js/ui/core-battle-journal.js?v=20261022-core-journal1"></script>
-<script data-balance-src="js/core/core-game.js?v=20261101-offline-level-gap2"></script>
+<script data-balance-src="js/ui/core-battle-journal.js?v=20261102-v0017-seconds1"></script>
+<script data-balance-src="js/core/core-game.js?v=20261102-v0017-seconds1"></script>
 <link rel="stylesheet" href="css/text-rarity.css">
 <script data-balance-src="js/ui/text-rarity-style.js"></script>
 <link id="ally-row-readability-fix" rel="stylesheet" href="css/ally-row.css">
@@ -29,7 +30,7 @@
 <link id="json-description-layout" rel="stylesheet" href="css/json-description.css">
 
 
-<script id="equipment-stat-source-cleanup" data-balance-src="js/equipment/equipment-stat-source.js?v=20261101-v0012-level-gap"></script>
+<script id="equipment-stat-source-cleanup" data-balance-src="js/equipment/equipment-stat-source.js?v=20261102-v0017-seconds1"></script>
 
 
 <link id="battle-statistics-style" rel="stylesheet" href="css/battle-statistics.css">
@@ -52,12 +53,12 @@
 
 <script id="world-runtime-followup-fixes" data-balance-src="js/world/world-followup.js?v=20261019-daily-speed2"></script>
 
-<script id="final-map-type-runtime" data-balance-src="js/world/final-map.js?v=20261101-v0012-level-gap"></script>
+<script id="final-map-type-runtime" data-balance-src="js/world/final-map.js?v=20261102-v0017-seconds1"></script>
 
-<script id="custom-final-stage-runtime" data-balance-src="js/world/custom-final-stage.js"></script>
+<script id="custom-final-stage-runtime" data-balance-src="js/world/custom-final-stage.js?v=20261102-v0017-seconds1"></script>
 
 
-<script id="manual-boss-challenge-system" data-balance-src="js/combat/manual-boss.js"></script>
+<script id="manual-boss-challenge-system" data-balance-src="js/combat/manual-boss.js?v=20261102-v0017-seconds1"></script>
 
 
 
@@ -74,11 +75,11 @@
 <script id="expedition-layout-stability-fix" data-balance-src="js/ui/expedition-layout.js?v=20261021-input-scroll1"></script>
 
 
-<script id="turn-duration-system" data-balance-src="js/combat/turn-duration.js"></script>
+<script id="turn-duration-system" data-balance-src="js/combat/turn-duration.js?v=20261102-v0017-seconds1"></script>
 
 
 <link id="healing-potion-system-style" rel="stylesheet" href="css/healing-potions.css">
-<script id="healing-potion-system" data-balance-src="js/items/healing-potions.js?v=20261027-fx1"></script>
+<script id="healing-potion-system" data-balance-src="js/items/healing-potions.js?v=20261102-v0017-seconds1"></script>
 
 
 <link id="shop-inventory-overhaul-style" rel="stylesheet" href="css/shop-inventory.css?v=20261013-material-groups3">
@@ -96,7 +97,7 @@
 <script id="forge-list-navigation-system" data-balance-src="js/equipment/forge-navigation.js?v=20261031-worn-refinement1"></script>
 
 
-<script id="support-debuff-mechanics-v2" data-balance-src="js/skills/support-debuff.js?v=20261028-integrated3"></script>
+<script id="support-debuff-mechanics-v2" data-balance-src="js/skills/support-debuff.js?v=20261102-v0017-seconds1"></script>
 <link id="equipment-identity-style" rel="stylesheet" href="css/equipment-identity.css">
 <script id="equipment-identity-system-v2" data-balance-src="js/equipment/equipment-identity.js?v=20261019-daily-speed2"></script>
 
@@ -113,7 +114,7 @@
 
 
 
-<script id="numeric-compression-and-combat-formula-v1" data-balance-src="js/balance/numeric-compression-formula.js?v=20261027-fx1"></script>
+<script id="numeric-compression-and-combat-formula-v1" data-balance-src="js/balance/numeric-compression-formula.js?v=20261102-v0017-seconds1"></script>
 
 
 <link id="skill-rules-help-style" rel="stylesheet" href="css/skill-rules-help.css">
@@ -126,7 +127,7 @@
 
 
 <link id="mastery-overhaul-ui-style" rel="stylesheet" href="css/mastery-ui.css">
-<script id="mastery-overhaul-ui-dev-v1" data-balance-src="js/ui/mastery-ui.js"></script>
+<script id="mastery-overhaul-ui-dev-v1" data-balance-src="js/ui/mastery-ui.js?v=20261102-v0017-seconds1"></script>
 
 
 <script id="mastery-overhaul-cleanup-v1" data-balance-src="js/skills/mastery-cleanup.js"></script>
@@ -136,12 +137,12 @@
 <script id="per-class-growth-runtime-v1" data-balance-src="js/character/class-growth.js"></script>
 
 
-<script id="control-status-summon-system" data-balance-src="js/combat/control-status-summon.js?v=20261029-pace1"></script>
+<script id="control-status-summon-system" data-balance-src="js/combat/control-status-summon.js?v=20261102-v0017-seconds1"></script>
 <script id="enemy-combat-stats-system" data-balance-src="js/combat/enemy-combat-stats.js"></script>
 
 <link id="status-maker-runtime-style" rel="stylesheet" href="css/status-maker.css">
-<script id="status-maker-runtime-v1" data-balance-src="js/skills/status-maker.js?v=20261028-integrated3"></script>
-<script id="shared-core-skill-runtime-v1" data-balance-src="js/combat/shared-skill-runtime.js?v=20261028-integrated3"></script>
+<script id="status-maker-runtime-v1" data-balance-src="js/skills/status-maker.js?v=20261102-v0017-seconds1"></script>
+<script id="shared-core-skill-runtime-v1" data-balance-src="js/combat/shared-skill-runtime.js?v=20261102-v0017-seconds1"></script>
 <link rel="stylesheet" href="css/title-screen.css">
 <script data-balance-src="js/ui/title-screen.js?v=20261013-team-actions1"></script>
 <script data-balance-src="js/ui/interaction-guard.js?v=20261021-input-scroll1"></script>
@@ -161,7 +162,7 @@
 <script data-balance-src="js/skills/induction-schema.js"></script>
 <script data-balance-src="js/skills/induction-runtime.js"></script>
 <link rel="stylesheet" href="css/companion-tokens.css?v=20261019-token-jobs1">
-<script data-balance-src="js/items/companion-tokens.js?v=20261031-worn-refinement1"></script>
+<script data-balance-src="js/items/companion-tokens.js?v=20261102-v0017-seconds1"></script>
 <link rel="stylesheet" href="css/team-builds.css?v=20261012-skills1">
 <script data-balance-src="js/character/team-runtime.js?v=20261019-token-jobs1"></script>
 <script data-balance-src="js/equipment/team-references.js?v=20261019-daily-speed2"></script>
@@ -180,7 +181,7 @@
 <script src="js/skills/skill-system-model.js"></script>
 <script src="js/items/healing-potion-model.js?v=20261022-potions1"></script>
 <script src="js/world/wishing-lake-model.js"></script>
-<script src="js/balance/balance-document.js?v=20261022-potions1"></script><!-- shared preflight -->
+<script src="js/balance/balance-document.js?v=20261102-v0017-seconds1"></script><!-- shared preflight -->
 <script data-balance-src="js/items/life-skills.js?v=20261019-shop-labels1"></script>
 <link rel="stylesheet" href="css/achievements.css">
 <script data-balance-src="js/character/companion-unlocks.js?v=20261014-descriptions1"></script>
@@ -189,13 +190,13 @@
 <link rel="stylesheet" href="css/quest-design.css?v=20261012-quests2">
 <script data-balance-src="js/world/daily-commissions.js?v=20261021-new-label1"></script>
 <script data-balance-src="js/ui/utility-navigation.js?v=20261021-group-reminders1"></script>
-<script data-balance-skip="js/balance/balance-document.js?v=20261022-potions1"></script>
+<script data-balance-skip="js/balance/balance-document.js?v=20261102-v0017-seconds1"></script>
 <script data-balance-src="js/balance/published-runtime.js"></script>
 <script data-balance-src="js/ui/navigation-tree.js?v=20261021-group-reminders1"></script>
 <script data-balance-src="js/ui/inventory-icons-runtime.js?v=20261014-descriptions1"></script>
 <script data-balance-src="js/world/monster-design-runtime.js?v=20261028-inventory-inspector1"></script>
 <link rel="stylesheet" href="css/story.css">
-<script data-balance-src="js/story/story-runtime.js?v=20261028-inventory-inspector1"></script>
+<script data-balance-src="js/story/story-runtime.js?v=20261102-v0017-seconds1"></script>
 <script data-balance-src="js/ui/mobile-layout.js?v=20261020-exploration1"></script>
 <link rel="stylesheet" href="css/mobile-layout.css?v=20261015-mobile5">
 <link rel="stylesheet" href="css/themes.css?v=20261021-quality-forge1">
@@ -204,18 +205,21 @@
 <script data-balance-src="js/equipment/gear-inventory.js?v=20261101-wear-help1"></script>
 <link rel="stylesheet" href="css/exploration-controls.css?v=20261020-right-controls1">
 <link rel="stylesheet" href="css/offline-exploration.css">
-<script data-balance-src="js/combat/offline-exploration.js?v=20261101-zero-gold-fast-kill-receipts1"></script><script data-balance-src="js/combat/gem-finalizer.js?v=20261021-gems2"></script>
+<script data-balance-src="js/combat/offline-exploration.js?v=20261102-v0017-seconds1"></script><script data-balance-src="js/combat/gem-finalizer.js?v=20261021-gems2"></script>
 <script data-balance-src="js/skills/skill-system-runtime.js"></script>
 <script data-balance-src="js/equipment/equipment-skill-runtime.js"></script>
 <link rel="stylesheet" href="css/skill-system.css">
-<script data-balance-src="js/ui/skill-system-ui.js?v=20261101-wear-help1"></script>
+<script data-balance-src="js/ui/skill-system-ui.js?v=20261102-v0017-seconds1"></script>
 <link rel="stylesheet" href="css/battle-summary.css?v=20261028-integrated3">
-<script data-balance-src="js/ui/battle-summary.js?v=20261029-pace1"></script>
+<script data-balance-src="js/ui/battle-summary.js?v=20261102-v0017-seconds1"></script>
 <link rel="stylesheet" href="css/battle-effects.css?v=20261029-semantic1">
 <script data-balance-src="js/ui/battle-effects.js?v=20261029-semantic2"></script>
 <link rel="stylesheet" href="css/wishing-lake.css">
 <script data-balance-src="js/world/wishing-lake.js"></script>
-<script data-balance-src="js/combat/event-trigger-runtime.js"></script>
-<script data-balance-src="js/combat/battle-configuration.js"></script>
+<script data-balance-src="js/combat/event-trigger-runtime.js?v=20261102-v0017-seconds1"></script>
+<script data-balance-src="js/combat/battle-configuration.js?v=20261102-v0017-seconds1"></script>
+<script data-balance-src="js/combat/seconds-runtime.js?v=20261102-v0017-seconds1"></script>
+
+<script data-balance-src="js/ui/seconds-battle.js?v=20261102-v0017-seconds1"></script>
 <script src="js/ui/preview-version.js"></script><script src="js/balance/published-loader.js?v=20261013-parallel-boot1"></script>
 </body></html>

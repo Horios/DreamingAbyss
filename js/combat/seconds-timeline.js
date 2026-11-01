@@ -63,6 +63,20 @@
       this.actors.push(a);return this.actor(d.id);
     }
     find(actorId){return this.actors.find(a=>a.definition.id===actorId)||fail('unknown actor '+actorId);}
+    syncActors(definitions){
+      if(this.executing)fail('cannot change roster inside event callback');
+      const checked=new Timeline(this.config,definitions),old=new Map(this.actors.map(a=>[a.definition.id,a]));
+      this.actors=checked.actors.map(fresh=>{
+        const a=old.get(fresh.definition.id);if(!a){fresh.mpAt=this.now;fresh.actionAt=fresh.actionSpeedAt=fresh.actionFixedAt=this.now;fresh.basicAt=safeAdd(this.now,this.interval(fresh));for(const s of fresh.definition.skills)fresh.ready[s.id]=safeAdd(this.now,time(s.initialReadyInSeconds??0));return fresh;}
+        this.settleMana(a);const oldInterval=this.interval(a);a.definition=fresh.definition;a.speed=fresh.speed;a.mp=Math.min(a.mp,a.definition.maxMp);
+        a.basicAt=safeAdd(this.now,Math.max(0,Math.round((a.basicAt-this.now)*this.interval(a)/oldInterval)));
+        a.actionSpeedAt=safeAdd(this.now,Math.max(0,Math.round((a.actionSpeedAt-this.now)*this.interval(a)/oldInterval)));a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);
+        const ready=Object.create(null);for(const s of a.definition.skills)ready[s.id]=a.ready[s.id]??safeAdd(this.now,time(s.initialReadyInSeconds??0));a.ready=ready;
+        if(a.casting&&!a.definition.skills.some(s=>s.id===a.casting.skillId))a.casting=null;
+        return a;
+      });
+      const ids=new Set(definitions.map(a=>a.id));this.statuses=this.statuses.filter(s=>ids.has(s.actorId));
+    }
     actor(actorId){
       const a=this.find(actorId);
       return {id:actorId,alive:a.alive,speed:a.speed,mp:this.mana(a,this.now),maxMp:a.definition.maxMp,
@@ -122,6 +136,7 @@
       if(s.durationSeconds!==null)positiveTime(s.durationSeconds,'durationSeconds');
       if(typeof s.preventsAction!=='boolean')fail('preventsAction missing');
       if(s.tickEverySeconds!==null)positiveTime(s.tickEverySeconds,'tickEverySeconds');
+      if(s.tickPriority!==undefined&&(!Number.isSafeInteger(s.tickPriority)||s.tickPriority<0||s.tickPriority>99))fail('tickPriority invalid');
       return s;
     }
     addStatus(input){
@@ -153,13 +168,13 @@
       const rows=[];
       for(const [order,s] of this.statuses.entries()){
         // Final periodic tick occurs before expiry, which occurs before actions.
-        if(s.next!==null&&(s.until===null||s.next<=s.until))rows.push({at:s.next,priority:0,order,type:'statusTick',status:s});
-        if(s.until!==null)rows.push({at:s.until,priority:1,order,type:'statusExpire',status:s});
+        if(s.next!==null&&(s.until===null||s.next<=s.until))rows.push({at:s.next,priority:s.tickPriority??0,order,type:'statusTick',status:s});
+        if(s.until!==null)rows.push({at:s.until,priority:100,order,type:'statusExpire',status:s});
       }
       for(const [order,a] of this.actors.entries()){
         if(!a.alive)continue;
-        if(a.casting)rows.push({at:a.casting.at,priority:2,order,type:'castComplete',actor:a});
-        else{const c=this.candidate(a);if(c)rows.push({...c,priority:3,order,type:'action',actor:a});}
+        if(a.casting)rows.push({at:a.casting.at,priority:200,order,type:'castComplete',actor:a});
+        else{const c=this.candidate(a);if(c)rows.push({...c,priority:300,order,type:'action',actor:a});}
       }
       rows.sort((a,b)=>a.at-b.at||a.priority-b.priority||a.order-b.order);
       return rows[0]||null;
@@ -176,6 +191,10 @@
         this.emit('castComplete',{actorId:a.definition.id,skillId});return;
       }
       const skill=event.skill;
+      if(this.handlers.beforeAction&&this.handlers.beforeAction(this.actor(a.definition.id),skill,this.context())===false){
+        a.actionSpeedAt=safeAdd(this.now,this.interval(a));a.actionFixedAt=this.now;a.actionAt=a.actionSpeedAt;
+        this.emit('blocked',{actorId:a.definition.id,skillId:skill?.id??null});return;
+      }
       if(skill){
         this.settleMana(a);a.mp=Math.max(0,a.mp-this.mpCost(a,skill));
         a.ready[skill.id]=safeAdd(this.now,time(skill.cooldownSeconds));

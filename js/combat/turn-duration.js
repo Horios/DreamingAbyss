@@ -24,8 +24,8 @@
   function migrateSupplyBuff(buff){
     if(!buff||typeof buff!=='object')return null;
     if(Number.isFinite(buff.remainingTurns)){
-      const left=Math.max(0,Math.ceil(buff.remainingTurns));if(left<=0)return null;
-      return {...buff,remainingTurns:left,totalTurns:Math.max(left,Math.ceil(Number(buff.totalTurns)||left)),until:0};
+      const left=Math.max(0,(buff.clock==='battleSeconds'?buff.remainingTurns:Math.ceil(buff.remainingTurns)));if(left<=0)return null;
+      return {...buff,remainingTurns:left,totalTurns:Math.max(left,(buff.clock==='battleSeconds'?Number(buff.totalTurns)||left:Math.ceil(Number(buff.totalTurns)||left))),until:0};
     }
     if(Number.isFinite(buff.until)&&buff.until>Date.now()){
       const left=Math.max(1,Math.ceil((buff.until-Date.now())/roundReferenceMs()));

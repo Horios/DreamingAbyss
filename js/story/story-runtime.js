@@ -138,8 +138,8 @@
   }
   enemy=foes[0]||null;beginBattleStatistics();note('任務關卡開始：'+row.name+'。');return true;
  };
- const questRoundBase=pacedRound;pacedRound=function*(){
-  const ch=party?.questChallenge;yield* questRoundBase();if(!ch||party?.questChallenge!==ch)return;
+ function finishQuestEncounter(ch=party?.questChallenge){
+  if(!ch||party?.questChallenge!==ch)return;
   const success=foes.length>0&&foes.every(e=>e.hp<=0);
   if(success||!running&&!foes.length){
    running=false;party.questChallenge=null;
@@ -147,7 +147,9 @@
    globalThis.expeditionChallengeResult={name:ch.name,success,key:ch.key};
    note('任務關卡「'+ch.name+'」'+(success?'挑戰成功，任務進度已更新。':'挑戰失敗，可依任務規則重試。'));save();render();
   }
- };
+ }
+ globalThis.EmberwildQuestEncounter={complete:finishQuestEncounter};
+ const questRoundBase=pacedRound;pacedRound=function*(){const ch=party?.questChallenge;yield* questRoundBase();finishQuestEncounter(ch);};
  const stopBase=stopTeamExploration;stopTeamExploration=function(...args){if(party)party.questChallenge=null;return stopBase(...args);};
  const changeMapBase=chooseMap;chooseMap=function(...args){if(party)party.questChallenge=null;globalThis.expeditionChallengeResult=null;return changeMapBase(...args);};
 

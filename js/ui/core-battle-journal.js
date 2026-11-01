@@ -116,7 +116,7 @@ function toggleBattleReport(){battleReportPaused=!battleReportPaused;document.qu
 function setBattleLogFilter(type){if(!Object.hasOwn(BATTLE_LOG_FILTERS,type))return;battleLogFilter=type;battleLogGeneration++;save();render();}
 function battleJournalFilter(){return `<label class="journal-filter">顯示 <select aria-label="戰報篩選" onchange="setBattleLogFilter(this.value)">${Object.entries(BATTLE_LOG_FILTERS).map(([type,label])=>`<option value="${type}" ${battleLogFilter===type?'selected':''}>${label}</option>`).join('')}</select></label>`;}
 
-function syncBattleLogHeader(live){if(battleReportPaused)return;const tag=live?.querySelector?.('.battle-log-round');if(tag)tag.textContent='回合 '+round;}
+function syncBattleLogHeader(live){if(battleReportPaused)return;const tag=live?.querySelector?.('.battle-log-round');if(tag)tag.textContent=globalThis.EmberwildSecondsCombat?.active?'戰鬥 '+partyClock.toFixed(1)+' 秒':'回合 '+round;}
 function markBattleLogGeneration(live){if(live)live.dataset.logGeneration=String(battleLogGeneration);}
 function captureBattleLogScroll(live){
  const stream=live?.querySelector?.('.battle-log-stream');

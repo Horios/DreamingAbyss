@@ -222,7 +222,7 @@
       const api=EmberwildTimedBoosts;
       try{buff=api.compactBuffs(api.stackBuff(api.buffRows(previous),api.createElementalBuff({...item,statEffects:normalizeStatEffects(item.statEffects)})));}
       catch(e){toast(e.message);return false;}
-    }else{const turns=Math.max(1,Math.round(Number(item.duration)||1));buff={element:item.element,remainingTurns:turns,totalTurns:turns,until:0,statEffects:normalizeStatEffects(item.statEffects)};}
+    }else{const seconds=globalThis.EmberwildSecondsCombat?.active&&item.timing?.durationSeconds,turns=seconds||Math.max(1,Math.round(Number(item.duration)||1));buff={element:item.element,remainingTurns:turns,totalTurns:turns,clock:seconds?'battleSeconds':'battleRounds',until:0,statEffects:normalizeStatEffects(item.statEffects)};}
     state.consumables[id]--;state[item.type]=buff;withHero(state,clampVitals);
     if(save()===false){state.consumables[id]=count;state[item.type]=previous;state.hp=previousHp;return false;}
     render();toast('已使用'+item.name);return true;

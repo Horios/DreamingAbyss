@@ -32,7 +32,7 @@ test('25-minute real-time and offline replay earn identical rewards at 1x and 2x
   assert.deepEqual(offline.errors,[]);
  }
 });
-test('25-minute one-action victory stress test cannot skip minimum rounds or duplicate XP, money and kills',async()=>{
+test('25-minute one-action victories respect the shared action floor and never duplicate XP, money and kills',async()=>{
  const span=25*60*1000;
  for(const rate of [1,2]){
   const visible=game(),offline=game(),interval=1500/rate,minimumRound=6000/rate;
@@ -50,7 +50,7 @@ test('25-minute one-action victory stress test cannot skip minimum rounds or dup
   for(let t=0;t<span;t+=interval){visible.advance(interval);visible.run('tick()');}
   await settle(offline,span);
   const receipt=json(offline,'party.offlineExploration.receipt');
-  const maxVictories=Math.ceil(span/(minimumRound+interval))+1;
+  const maxVictories=Math.ceil(span/(offline.run('EmberwildSecondsCombat.config().minimumActionIntervalSeconds')*1000/rate))+1;
   assert(offline.run('earningWins')<=maxVictories,'offline victories exceeded pacing limit at '+rate+'x');
   assert.equal(offline.run('earningWins'),visible.run('earningWins'),'offline victories must match foreground at '+rate+'x');
   assert.equal(receipt.battles,offline.run('earningWins'));
@@ -118,7 +118,7 @@ test('elite ether level penalty is applied at the kill and a first-clear BOSS re
  assert.deepEqual(r.errors,[]);
 });
 test('offline kills level up immediately and recalculate later monster XP, gold and drop penalties in the same encounter',async()=>{
- const r=game();
+ const r=game();r.run("party.huntingMode='group';spawnGroup();");
  r.run(`
    state.lv=15;state.xp=need(15)-1;state.xpFraction=0;syncParty();refillParty();
    foes=foes.slice(0,3);
@@ -145,6 +145,7 @@ test('offline kills level up immediately and recalculate later monster XP, gold 
     const out=originalReward(e);
     levelPenaltyTrace.push({before,after:h.lv,enemyLv:e.lv,expectXp,actualXp:h.xp+(h.xpFraction||0)-beforeXp+(h.lv>before?need(before):0),
      expectGold,actualGold:h.gold-beforeGold,goldCalls:levelGoldCalls.slice(goldCallStart),gearChance,materialChance});
+    if(foes.every(x=>x.rewarded))running=false;
     return out;
    };
    nextActionAt=Date.now()+1500;save();
@@ -188,7 +189,7 @@ test('fast replay prevents fractional XP from crossing a level boundary before s
  assert.deepEqual(r.errors,[]);
 });
 test('resume a persisted mid-turn cursor including support, enemy cooldowns, control, custom status and token state',async()=>{
- const a=game();for(let i=0;i<10;i++){a.advance(50);a.run('tick()');}a.run('save()');assert(a.run('!!combatRoundProgress'));
+ const a=game();for(let i=0;i<10;i++){a.advance(50);a.run('tick()');}a.run('save()');assert(a.run('!!EmberwildSecondsCombat.pack().timeline'));assert.equal(a.run('combatRoundProgress'),null);
  const data=json(a,'packParty()'),rng=a.run('rngState'),serial=a.run('uidSerial'),b=game();b.advance(500);b.ctx.saved=data;b.run('loadParty(saved);');b.ctx.rng=rng;b.ctx.serial=serial;b.run('rngState=rng;uidSerial=serial');
  await settle(a,60000);await settle(b,60000);assert.deepEqual(result(b),result(a));assert.equal(b.run('party.offlineExploration.receipt.kills'),a.run('party.offlineExploration.receipt.kills'));
 });

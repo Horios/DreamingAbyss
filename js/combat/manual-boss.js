@@ -142,6 +142,7 @@
     if(entry.charges>0){running=true;note(`BOSS 關卡完成。仍有 ${entry.charges} 次挑戰，將自動進入下一場。`);}else{party.bossChallenge=null;running=true;note('BOSS 挑戰次數已用完，返回目前地圖繼續一般探索。');}
     save();if(tab==='battle'||!isEditingControl())render();else refreshGlobalJournal();
   }
+  globalThis.EmberwildBossEncounter={complete:completeAttempt};
   if(typeof pacedRound==='function'){const base=pacedRound;pacedRound=function*(){const was=!!party?.bossChallenge?.active;yield* base();if(was&&party?.bossChallenge?.active&&party.bossChallenge.stagePaid&&foes.length&&foes.every(e=>e.hp<=0)&&foes.some(e=>e.bossChallenge))completeAttempt();};}
 
   function panel(mi){

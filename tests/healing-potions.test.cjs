@@ -3,20 +3,20 @@ const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirnam
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 function game(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.run('selectSaveSlot(1);start(0);closeModal();Math.random=()=>.99;');assert.deepEqual(r.errors,[]);assert.deepEqual(r.warnings,[]);return r;}
 const ids=['heal_small','heal_standard','heal_greater','heal_supreme'];
-test('fixed healing, overflow, thresholds, own-turn cooldowns, shared inventory and original settings',()=>{
+test('fixed healing, overflow, thresholds, seconds cooldowns, shared inventory and original settings',()=>{
  const r=game();r.run('globalThis.originalBattleStats=battleStats;globalThis.mockMax=10000;battleStats=h=>({...originalBattleStats(h),hp:mockMax});state.autoPotion=true;state.autoPotionThresholdPct=99;');
  for(const [i,id]of ids.entries())for(const max of [100,10000]){
   r.ctx.id=id;r.ctx.max=max;r.run('mockMax=max;state.hp=1;state.shield=0;state.autoPotionId=id;state.healPotionCooldownRemaining=0;setHealPotionCount(id,3);useAutoHealingPotion(state)');
   assert.equal(r.run('state.hp'),Math.min(max,1+[20,50,200,500][i]));assert.equal(r.run('state.shield'),0);assert.equal(r.run('healPotionCount(id)'),2);
-  assert.equal(r.run('state.healPotionCooldownRemaining'),i+2);
-  r.run(`state.hp=1;for(let n=0;n<${i+2};n++)useAutoHealingPotion(state);`);assert.equal(r.run('healPotionCount(id)'),2);assert.equal(r.run('state.healPotionCooldownRemaining'),0);
-  r.run('useAutoHealingPotion(state)');assert.equal(r.run('healPotionCount(id)'),1);
+  assert.equal(r.run('state.healPotionCooldownRemaining'),(i+2)*3);
+  r.run(`state.hp=1;for(let n=0;n<${i+2};n++)useAutoHealingPotion(state);`);assert.equal(r.run('healPotionCount(id)'),2);assert.equal(r.run('state.healPotionCooldownRemaining'),(i+2)*3);
+  r.run('state.healPotionCooldownRemaining=0;useAutoHealingPotion(state)');assert.equal(r.run('healPotionCount(id)'),1);
  }
  r.run("mockMax=100;state.hp=36;state.autoPotionId='heal_small';state.autoPotionThresholdPct=35;state.healPotionCooldownRemaining=0;setHealPotionCount('heal_small',5)");assert.equal(r.run('useAutoHealingPotion(state)'),false);
  r.run('state.hp=35');assert.equal(r.run('useAutoHealingPotion(state)'),true);assert.equal(r.run('state.hp'),55);
  r.run('state.hp=1;state.autoPotion=false;state.healPotionCooldownRemaining=0');assert.equal(r.run('useAutoHealingPotion(state)'),false);
  r.run("recruitCompanion(10);closeModal();globalThis.ally=partyMember(10);ally.autoPotion=true;ally.autoPotionId='heal_small';ally.autoPotionThresholdPct=50;ally.healPotionCooldownRemaining=0;ally.hp=1;state.healPotionCooldownRemaining=2;");const stock=r.run("healPotionCount('heal_small')");assert.equal(r.run('useAutoHealingPotion(ally)'),true);assert.equal(r.run("healPotionCount('heal_small')"),stock-1);assert.equal(r.run('state.healPotionCooldownRemaining'),2);
- r.run('battleStats=originalBattleStats;spawnGroup()');assert.equal(r.run('state.healPotionCooldownRemaining'),0);assert.equal(r.run('ally.healPotionCooldownRemaining'),0);
+ r.run('battleStats=originalBattleStats;spawnGroup()');assert.equal(r.run('state.healPotionCooldownRemaining'),2);assert.equal(r.run('ally.healPotionCooldownRemaining'),6);
  assert.match(r.run("supplyDetail(SHOP.find(x=>x.id==='heal_small'))"),/恢復 20 HP/);r.run('openHealingSettings()');assert.doesNotMatch(r.elements.get('modal').innerHTML,/恢復最大生命/);
 });
 test('every fixed, random, legacy and direct purchase entrance enforces VIP/status and current price',()=>{
