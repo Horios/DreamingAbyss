@@ -604,7 +604,10 @@ save=function(show=false){
   // Never replace the only verified backup with those unreadable bytes.
   // When the game started from a verified backup, keep that recovery point for
   // the entire session. A newly written primary is not cold-load verified yet.
-  if(previous&&previous!==payload&&!globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);}catch{}}
+  // Rotate only bytes committed by this game session (or validated at boot).
+  // If another writer or a damaged storage entry changed KEY, never copy it
+  // over the previously verified backup.
+  if(previous&&previous===globalThis.__EMBERWILD_BOOT_SAVE_RAW&&previous!==payload&&!globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION&&previous!==globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW){try{localStorage.setItem(BACKUP_KEY,previous);}catch{}}
   // A failed primary write must never delete the last recovery copy to make
   // room for a retry. Report failure and keep the previously committed main.
   localStorage.setItem(KEY,payload);

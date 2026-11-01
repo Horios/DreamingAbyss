@@ -65,3 +65,21 @@ test('failed primary save does not erase its backup or corrupt the previous comm
  assert.equal(r.run('save()'),true,'saving is retryable after storage access is restored');
  assert.equal(r.run('validateParty(JSON.parse(localStorage.getItem(KEY))).members[0].gold'),r.run('state.gold'));
 });
+
+test('unexpected changes to the stored primary can never replace a verified backup',()=>{
+ const r=loadRuntime(root);
+ r.run('selectSaveSlot(1);start(0);closeModal();state.gold+=3;save()');
+ const key=r.run('KEY'),backupKey=r.run('BACKUP_KEY');
+ r.run('state.gold+=4;save()');
+ const verifiedBackup=r.values.get(backupKey);
+ assert(verifiedBackup);
+ assert.doesNotThrow(()=>JSON.parse(verifiedBackup));
+ r.ctx.localStorage.setItem(key,'{damaged external write');
+ r.run('state.gold+=1');
+ assert.equal(r.run('save()'),true);
+ assert.equal(r.values.get(backupKey),verifiedBackup,'the damaged main must never enter the backup rotation');
+ assert.equal(JSON.parse(r.values.get(key)).members[0].gold,r.run('state.gold'));
+ const cold=loadRuntime(root,'index.html',{[key]:r.values.get(key),[backupKey]:verifiedBackup},r.now);
+ assert.equal(cold.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+ assert.equal(cold.run('!!state&&!!party'),true);
+});
