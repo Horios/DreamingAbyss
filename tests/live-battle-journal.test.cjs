@@ -12,7 +12,15 @@ test('normal live ticks publish combat events to the battle journal without an o
 });
 test('delayed live ticks still record damage, XP and loot without opening offline settlement',async()=>{
  const r=game();r.advance(60000);r.run('tick()');await r.run('EmberwildOffline.settle(undefined,false)');
- hasAttacks(r);assert(r.run("logs.some(e=>e.type==='exp')"));assert(r.run("logs.some(e=>e.type==='item')"));assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement').hidden,false);assert.deepEqual(r.errors,[]);
+ hasAttacks(r);assert(r.run("logs.some(e=>e.type==='exp')"));
+ // Random drops may legitimately be absent in a one-minute session. Grant one
+ // deterministic material through the real loot path to verify journal wiring.
+ const beforeCount=r.run("state.materials['戰報測試素材']||0");
+ r.run("grantConfiguredDrop({type:'material',key:'戰報測試素材',quantityMin:1,quantityMax:1},{kind:'normal',region:party.map,difficulty:party.difficulty})");
+ assert.equal(r.run("state.materials['戰報測試素材']"),beforeCount+1);
+ assert(r.run("logs.some(e=>e.type==='item'&&e.text.includes('戰報測試素材'))"));
+ assert.match(r.run('logContent()'),/data-event-type="item"/);
+ assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement').hidden,false);assert.deepEqual(r.errors,[]);
 });
 test('offline replay stays quiet and live combat resumes recording after it',async()=>{
  const r=game();r.advance(60000);await r.run('EmberwildOffline.settle()');
