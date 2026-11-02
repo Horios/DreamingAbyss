@@ -62,6 +62,12 @@
   for(const row of doc.items||[])if(['imbue','healPotion'].includes(row.type)){const t=row.timing;if(!t||!finite(t.cooldownSeconds)||!finite(t.durationSeconds))fail(row.id+' 道具秒數無效');}
   return doc;
  }
+ function validateImport(doc){
+  const c=doc?.balanceSettings?.combat?.seconds,m=doc?.balanceSettings?.meta;
+  if(c?.version!==VERSION)fail('缺少版本 1');
+  for(const k of ['independentActionsVersion','continuousExplorationVersion'])if(m?.[k]!==undefined&&m[k]!==1)fail('未知的 '+k);
+  validate(m?.independentActionsVersion===undefined&&m?.continuousExplorationVersion===undefined?normalize(doc):doc);return doc;
+ }
  function legacy(input){
   const d=copy(input);delete d.balanceSettings?.combat?.seconds;delete d.balanceSettings?.meta?.combatTimingVersion;delete d.balanceSettings?.meta?.independentActionsVersion;delete d.balanceSettings?.meta?.continuousExplorationVersion;
   for(const group of d.equipmentForms||[])for(const slot of group||[])for(const form of slot||[])delete form.mana;
@@ -77,5 +83,5 @@
   for(const t of out.companionTokens?.catalog||[]){const v=d.companionTokens.catalog.find(x=>x.id===t.id);if(v?.ability?.timing)t.ability.timing=copy(v.ability.timing);}
   return out;
  }
- return {VERSION,copy,assertJSON,defaults,timing,normalize,validate,legacy,attach};
+ return {VERSION,copy,assertJSON,defaults,timing,normalize,validate,validateImport,legacy,attach};
 });

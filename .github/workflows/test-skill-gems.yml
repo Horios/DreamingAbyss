@@ -48,9 +48,12 @@ jobs:
           - group: receipts-and-compatibility
             tests: >-
               tests/boot-save-notices.test.cjs tests/published-loader.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs
-          - group: simulation-and-lifecycle
+          - group: offline-simulation
             tests: >-
-              tests/offline-exploration.test.cjs tests/offline-fast.test.cjs tests/offline-final-stage.test.cjs tests/gameplay-lifecycle-audit.test.cjs
+              tests/offline-exploration.test.cjs
+          - group: offline-lifecycle
+            tests: >-
+              tests/offline-fast.test.cjs tests/offline-final-stage.test.cjs tests/gameplay-lifecycle-audit.test.cjs
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

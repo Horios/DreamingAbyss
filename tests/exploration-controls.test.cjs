@@ -22,10 +22,10 @@ test('legacy deadline and malformed new timer migration are validated without mu
 });
 test('runtime exploration clock, controls, save compatibility, effects and quest encounters',async t=>{
  const r=fixture();r.ctx.setTimeout=fn=>setImmediate(fn);const move=async ms=>{r.advance(ms);await r.run('EmberwildOffline.settle()');if(r.run('!!party.offlineExploration.receipt'))r.run('acknowledgeOfflineExploration()');};const baseline=json(r,'packParty()');const reset=()=>{r.ctx.saved=structuredClone(baseline);r.ctx.saved.offlineExploration.lastAt=r.now;r.run('loadParty(saved);closeModal();setTab("battle");globalThis.expeditionChallengeResult=null;');};
- await t.test('one main operation surface and synchronized pause/resume/stop controls',()=>{
-  reset();let view=r.run('battleView()');assert.equal((view.match(/onclick="startSelectedExploration\(\)"/g)||[]).length,1);assert(!view.includes('onclick="toggleBattle()"'));assert.match(view,/一般探索/);assert.match(view,/BOSS 難關/);assert.match(view,/任務關卡/);
-  r.run('startSelectedExploration();durable();');for(const fn of ['battleView()','sharedBattleJournal()'])assert.match(r.run(fn),/onclick="toggleBattle\(\)">暫停/);
-  r.run('toggleBattle()');for(const fn of ['battleView()','sharedBattleJournal()'])assert.match(r.run(fn),/onclick="toggleBattle\(\)">繼續/);
+ await t.test('adventure controls and the top shortcut share synchronized pause/resume/stop operations',()=>{
+  reset();let view=r.run('battleView()');assert.equal((view.match(/onclick="startSelectedExploration\(\)"/g)||[]).length,2);assert(!view.includes('onclick="toggleBattle()"'));assert.match(view,/一般探索/);assert.match(view,/BOSS 難關/);assert.match(view,/任務關卡/);
+  r.run('startSelectedExploration();durable();');for(const fn of ['battleView()','sharedBattleJournal()'])assert.match(r.run(fn),/onclick="toggleBattle\(\)">[\s\S]*?暫停/);
+  r.run('toggleBattle()');for(const fn of ['battleView()','sharedBattleJournal()'])assert.match(r.run(fn),/onclick="toggleBattle\(\)">[\s\S]*?繼續/);
   r.run('toggleBattle();stopTeamExploration()');assert.equal(r.run('running||foes.length>0||!!roundIterator'),false);assert.match(r.run('battleView()'),/開始探索/);assert.doesNotMatch(r.run('sharedBattleJournal()'),/onclick="toggleBattle\(\)"/);
  });
  await t.test('pending map selection never changes the active encounter, starting after stop applies it once',()=>{

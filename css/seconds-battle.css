@@ -62,3 +62,6 @@ body.seconds-cooldowns-hidden #app .seconds-charge-list,body.seconds-cooldowns-h
 #app .seconds-adventure-toolbar>.seconds-toolbar-actions{display:flex!important;flex:0 1 auto;min-width:0;gap:5px}
 #utilityNavigation>.utility-icon-button{width:auto!important;gap:5px;min-height:36px;padding:5px 8px!important}
 @media(max-width:900px){#utilityNavigation>.utility-icon-button{min-height:40px;padding:4px!important}.seconds-toolbar-actions{flex-wrap:wrap}}
+
+#app #battleEnemyIcons.seconds-enemies>.unit.seconds-unit{flex:0 0 140px!important;width:140px!important;max-width:140px!important}
+@media(max-width:700px){#app #battleEnemyIcons.seconds-enemies>.unit.seconds-unit{flex-basis:calc((100% - 10px)/3)!important;width:calc((100% - 10px)/3)!important;max-width:110px!important}}

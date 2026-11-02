@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),key='emberwild-item-display';
 
 async function start(page){
   await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();});
-  await page.waitForTimeout(60);await page.evaluate(()=>closeModal());
+  await page.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);});
 }
 
 test('Item interfaces share one persisted icon-name or name-only list mode',async()=>{

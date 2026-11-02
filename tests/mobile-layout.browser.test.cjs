@@ -157,7 +157,7 @@ test('Mobile: expedition settings, readable touch controls and skill details are
   await p.evaluate(()=>setTab('battle'));
   assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),false);
   const layout=await p.evaluate(()=>{const card=document.querySelector('.expedition-control-card'),action=card.querySelector('.exploration-primary-actions button');return {settings:card.getBoundingClientRect().top,battle:document.querySelector('.party-combat').getBoundingClientRect().top,start:action.getBoundingClientRect().toJSON(),controls:card.getBoundingClientRect().toJSON()};});
-  assert(layout.settings<layout.battle,'settings precede the battle roster');assert(layout.start.height>=40,'exploration start control remains touchable');assert(layout.start.left>=layout.controls.left-1&&layout.start.right<=layout.controls.right+1,'start control stays inside panel');
+  assert(layout.battle<layout.settings,'the central battlefield precedes detailed adventure settings');assert(layout.start.height>=40,'exploration start control remains touchable');assert(layout.start.left>=layout.controls.left-1&&layout.start.right<=layout.controls.right+1,'start control stays inside panel');
   for(const viewport of [{width:320,height:640},{width:390,height:844},{width:844,height:390}]){
    await p.setViewportSize(viewport);
    await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
@@ -206,7 +206,7 @@ test('Mobile: long combat names, stats, skills and effects grow without overlapp
    await p.evaluate(()=>{setTab('battle');document.querySelectorAll('.unit-skills').forEach(e=>e.insertAdjacentHTML('beforeend','<div>主動與觸發技能的長名稱狀態文字測試</div>'.repeat(3)));document.querySelectorAll('.unit-effects').forEach(e=>e.insertAdjacentHTML('beforeend','<span class="tag">持續增益與減益狀態的長名稱</span>'.repeat(6)));});
    const issues=await p.evaluate(()=>{
     const errors=[],box=e=>e.getBoundingClientRect(),allies=box(document.querySelector('.squad-allies')),enemies=box(document.querySelector('.squad-enemies'));
-    if(innerWidth<=600?allies.bottom>enemies.top+1:allies.right>enemies.left+1)errors.push('allies overlap enemies');
+    if(enemies.bottom>allies.top+1)errors.push('enemies overlap allies');
     for(const unit of document.querySelectorAll('.squad-field .unit')){
      const u=box(unit);let bottom=u.top;
      for(const child of unit.children){
@@ -267,6 +267,7 @@ test('Mobile: messages and loot are sibling panels without shared or nested scro
   assert(await p.evaluate(latestVisible),'opening shows the latest log');
   await p.evaluate(()=>note('新增最新訊息','playerDamage'));
   assert(await p.evaluate(latestVisible),'new messages keep following');
+  await p.locator('#mobileJournalBody').scrollIntoViewIfNeeded();
   const journalBox=await p.locator('#mobileJournalBody').boundingBox();
   await p.mouse.move(journalBox.x+journalBox.width/2,journalBox.y+journalBox.height/2);
   await p.mouse.wheel(0,-3000);await p.waitForTimeout(80);
@@ -337,7 +338,7 @@ test('Journal: loot collapse survives immediate redraws, queued toggle events an
     // stability check would see a replacement from the 30 ms refresh loop.
     await p.evaluate(()=>clearInterval(globalThis.foldRefresh));
     await p.waitForFunction(()=>!isEmberwildUIInteracting());
-    await p.locator(selector).waitFor({state:'visible'});
+    await p.locator(selector).waitFor({state:'visible'});await p.locator(selector).scrollIntoViewIfNeeded();
     const box=await p.evaluate(sel=>{const el=document.querySelector(sel);if(!el)return null;const r=el.getBoundingClientRect(),css=getComputedStyle(el);return css.display!=='none'&&r.width>0&&r.height>0?{x:r.x,y:r.y,width:r.width,height:r.height}:null;},selector);
     if(!box)console.log('JOURNAL_FOLD_HEADER_DIAG',JSON.stringify(await p.evaluate(sel=>({viewport:innerWidth,matched:matchMedia('(max-width:900px)').matches,node:!!document.querySelector(sel),display:document.querySelector(sel)?getComputedStyle(document.querySelector(sel)).display:null,html:document.getElementById('globalBattleJournal')?.className}),selector)));
     assert(box,width+' click '+i+' has a visible header');

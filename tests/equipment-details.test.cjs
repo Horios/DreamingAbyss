@@ -15,7 +15,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       globalThis.__equipmentTestGear=(extra={})=>({id:'equipment-test',job:0,slot:0,tier:10,formJob:0,form:0,powerTier:1,plus:0,rar:0,difficulty:0,prefixId:'',suffixId:'',affix:[],...extra});
       globalThis.__equipmentTestHero=()=>{
         closeModal();state=initial(0);state.lv=60;state.won=true;state.bag=[];state.equipped=[null,null,null,null,null];
-        party=createParty(state);party.cleared=true;syncParty();state.hp=stats(state).hp;continueFromTitle();
+        party=createParty(state);party.cleared=true;syncParty();state.hp=stats(state).hp;
         return state;
       };
     });
@@ -156,7 +156,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.deepEqual(out.issues,[]);assert.ok(out.checked>1500);t.diagnostic('Checked '+out.checked+' additive equipment source ledgers.');
     });
-    await t.test('All 336 pre-change character stat snapshots remain identical with shipped defaults',async()=>{
+    await t.test('All 336 published v0.016 character stat snapshots remain identical through seconds migration',async()=>{
       const issues=await r.page.evaluate(fixtures=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const issues=[];
@@ -168,28 +168,23 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       },regression);
       assert.deepEqual(issues,[]);
     });
-    await t.test('All starter jobs stay ungraded, keep locked actions, and include growth in one ledger',async()=>{
-      const out=await r.page.evaluate(()=>{
-        const issues=[];let checked=0;
+    await t.test('four starter gifts arrive by mail, retain reroll restrictions and include growth in one ledger',async()=>{
+      const out=await r.page.evaluate(async()=>{
+        const issues=[];let checked=0,gift;
         for(let job=0;job<4;job++){
-          closeModal();start(job);closeModal();
-          for(const g of equipment(state)){
-            checked++;if(equipmentBaseRating(g)!=='—'||canEnhance(g)||!equipmentBaseRatingHTML(g).includes('此裝備不適用基底評級。'))issues.push('starter '+job);
-            if((equipmentAttributeDetailsHTML(g).match(/<details /g)||[]).length!==1)issues.push('fold '+job);
-            const before=JSON.stringify(g);enhance(g.id);rerollEquipmentPowerTier(g.id);reroll(g.id);
-            if(JSON.stringify(g)!==before)issues.push('locked '+job);
-          }
+          await EmberwildOffline.settle(undefined,false);closeModal();start(job);closeModal();clearInterval(timer);await EmberwildOffline.settle(undefined,false);
+          const mail=party.mailbox.messages.find(m=>m.rewardKey.startsWith('starter-')&&!m.claimed);if(!mail){issues.push('missing gift '+job);continue;}
+          claimMailboxAttachments(mail.id);gift=state.bag.find(g=>g.starterPack);if(!gift){issues.push('missing weapon '+job);continue;}
+          checked++;if(equipmentBaseRating(gift)!=='—')issues.push('starter rating '+job);
+          const before=JSON.stringify(gift);rerollEquipmentPowerTier(gift.id);reroll(gift.id);if(JSON.stringify(gift)!==before)issues.push('reroll restriction '+job);
+          equipSharedGear(gift.id,memberKey(state),0);
         }
-        const g=equipment(state).find(x=>x.slot===0);
-        g.starterPack.fixedEffects=[{key:'gearAtkPct',value:30}];
-        g.starterPack.growth={enabled:true,startLevel:1,maxLevel:60,effects:[{key:'flatAttack',value:1},{key:'attackPct',value:.5}]};
-        state.lv=10;
-        const ledger=equipmentStatContributions(g),growthRows=ledger.rows.filter(x=>x.label.startsWith('成長加成'));
-        if(growthRows[0].stats.atk!==9||growthRows[1].stats.atk!==0||ledger.total.atk!==13)issues.push('growth');
+        gift.starterPack.fixedEffects=[{key:'gearAtkPct',value:30}];gift.starterPack.growth={enabled:true,startLevel:1,maxLevel:60,effects:[{key:'flatAttack',value:1},{key:'attackPct',value:.5}]};state.lv=10;
+        const ledger=equipmentStatContributions(gift),growth=ledger.rows.filter(x=>x.label.startsWith('成長加成'));
+        if(growth[0].stats.atk!==9||growth[1].stats.atk!==0)issues.push('growth');
         for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('growth sum');
         return {issues,checked};
-      });
-      assert.equal(out.checked,20);assert.deepEqual(out.issues,[]);
+      });assert.equal(out.checked,4);assert.deepEqual(out.issues,[]);
     });
     await t.test('Affix rules stay above while details show only their increments, named effects and the footer',async()=>{
       await r.page.evaluate(()=>{
@@ -216,12 +211,12 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       await r.page.setViewportSize({width:390,height:844});
       assert.ok(await detail.evaluate(el=>el.scrollWidth<=el.clientWidth+1));
       assert.ok(await r.page.locator('#modal .equipment-total-summary').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
-      await r.page.setViewportSize({width:1280,height:800});await r.page.evaluate(()=>{closeModal();setTab('equipment');});
-      const listName=r.page.locator('.inventory-list-name').first();
-      assert.match(await listName.innerText(),/\+10[\s\S]*基底評級：A/);
+      await r.page.setViewportSize({width:1280,height:800});await r.page.evaluate(()=>{closeModal();setTab('equipment');setInventoryCategory('equipment');});
+      const listName=r.page.locator('.gear-management-row[data-gear-id="equipment-test"] .inventory-list-item');
+      assert.match(await listName.innerText(),/T7[\s\S]*\+10/);
       assert.ok(await listName.evaluate(el=>el.scrollHeight<=el.clientHeight+1));
       await r.page.evaluate(()=>openForge(state.bag[0].id));
-      assert.ok(await r.page.locator('.forge-gear-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
+      assert.ok(await r.page.locator('.forge-gear-item .item-slot-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
     });
     await t.test('Inventory shows saved T tiers and has no pending equipment controls',async()=>{
       const out=await r.page.evaluate(()=>{

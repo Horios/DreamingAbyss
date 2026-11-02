@@ -186,12 +186,17 @@
    EmberwildBattleSummary.sync({animate:false});
    for(const event of events)if(event.type!=='cast'&&byId.has(event.target))playEvent(event);
   };
+  batch.commitImpact=impact;
   if(batch.delay)later(impact,batch.delay);else impact();
  }
  // Presentation timestamps never feed the shared simulation clock or saves.
  function present(s){
   if(pending&&pending.owner===party){
-   staged=pending;pending=null;staged.delay=[...staged.events.values()].some(e=>e.type==='cast')?(battleRate===2?130:190):0;
+   const next=pending;pending=null;
+   // A later independent action must not cancel an already resolved impact.
+   // Flush its presentation before replacing the display batch; combat stays immediate.
+   if(staged&&!staged.impacted)staged.commitImpact?.();
+   staged=next;staged.delay=[...staged.events.values()].some(e=>e.type==='cast')?(battleRate===2?130:190):0;
    staged.eventId=String(++sequence);staged.started=performance.now();
    if(s.result&&staged.terminalVitals){const final=row=>{const v=staged.terminalVitals.get(row.unit);return v?{...row,hp:v.hp,shield:v.shield,alive:v.hp>0}:row;};s={...s,allies:s.allies.map(final),units:s.units.map(final)};}
    if(s.result){held={snapshot:s,until:staged.started+staged.delay+(battleRate===2?700:850),encounter:staged.encounter};

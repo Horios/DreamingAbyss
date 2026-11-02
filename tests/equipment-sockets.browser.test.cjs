@@ -30,6 +30,7 @@ test('equipment sockets: horizontal icons, icon gem choices, modes and disabled 
    assert.equal(boxes.length,3,'worn gear should show its three sockets in the equipment panel');assert(boxes.every(b=>b.y===boxes[0].y));assert(boxes[2].x>boxes[1].x&&boxes[1].x>boxes[0].x);
    assert(boxes[2].right<=width,'socket row fits viewport');
    await editor.locator('[data-equipment-socket="0"]').click();
+   await editor.locator('[data-equipment-gem]').first().waitFor({state:'visible'});
    assert.equal(await editor.locator('[data-equipment-gem] svg').count(),3);
    assert.equal(await editor.locator('[data-equipment-gem="14"]').count(),0);
    const withinViewport=await editor.evaluate(el=>{const b=el.getBoundingClientRect();return b.left>=-1&&b.right<=innerWidth+1;});

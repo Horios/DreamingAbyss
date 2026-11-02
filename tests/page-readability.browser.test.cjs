@@ -96,7 +96,7 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
     }
     await show(p,'battle','.text-battle-layout');
     assert.equal(await p.locator('.readability-page').count(),0);
-    assert.equal(await p.locator('.layout>main').evaluate(el=>getComputedStyle(el).overflowY),p.viewportSize().width<=900?'auto':'hidden');
+    assert(['auto','scroll'].includes(await p.locator('.layout>main').evaluate(el=>getComputedStyle(el).overflowY)),'continuous battle cards remain reachable through main scrolling');
     assert.deepEqual(r.errors,[]);
   }finally{await r.browser.close();}
 });
