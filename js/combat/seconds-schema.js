@@ -35,7 +35,7 @@
   c.advanceStepSeconds??=(doc.balanceSettings.combat.pacing?.actionIntervalMs||1500)/1000;
   c.actionModel??='independent';
   c.recovery??={hpFractionPerSecond:round((doc.balanceSettings.rewards?.postVictoryHeal??.12)/c.durationReferenceSeconds),mpRegenMultiplier:1,minimumHpRatio:1,minimumMpRatio:0};
-  doc.balanceSettings.combat.seconds=c;doc.balanceSettings.meta.combatTimingVersion=VERSION;
+  doc.balanceSettings.combat.seconds=c;doc.balanceSettings.meta.combatTimingVersion=VERSION;doc.balanceSettings.meta.independentActionsVersion=1;doc.balanceSettings.meta.continuousExplorationVersion=1;
   for(const s of doc.skillSystem?.definitions||[]){s.timing??=timing(s,s.adapter?.job??s.jobs?.[0]??0,c);}
   for(const s of doc.statusDefinitions||[]){s.timing??={durationSeconds:s.permanent?null:round(s.duration*c.durationReferenceSeconds),periodicIntervalSeconds:c.periodicIntervalSeconds,triggerIntervalSeconds:c.triggerIntervalSeconds};if(s.control)s.timing.bossControlDurationSeconds??=round(s.control.bossDuration*c.actionReferenceSeconds);}
   for(const row of doc.balanceSettings.monsters?.catalog||[])row.timing??={baseIntervalSeconds:c.actionReferenceSeconds};
@@ -63,13 +63,13 @@
   return doc;
  }
  function legacy(input){
-  const d=copy(input);delete d.balanceSettings?.combat?.seconds;delete d.balanceSettings?.meta?.combatTimingVersion;
+  const d=copy(input);delete d.balanceSettings?.combat?.seconds;delete d.balanceSettings?.meta?.combatTimingVersion;delete d.balanceSettings?.meta?.independentActionsVersion;delete d.balanceSettings?.meta?.continuousExplorationVersion;
   for(const group of d.equipmentForms||[])for(const slot of group||[])for(const form of slot||[])delete form.mana;
   d.timeUnits={...(d.timeUnits||{}),supportDuration:'battleRounds',itemDuration:'battleRounds'};
   return d;
  }
  function attach(output,source){
-  const out=copy(output),d=source?.balanceSettings?.meta?.combatTimingVersion===VERSION?validate(source):normalize(source);out.balanceSettings.combat.seconds=copy(d.balanceSettings.combat.seconds);out.balanceSettings.meta.combatTimingVersion=VERSION;out.timeUnits=copy(d.timeUnits);if(out._reference?.units){out._reference.units.cooldown=d._reference?.units?.cooldown||'timing.cooldownSeconds：戰鬥秒數';out._reference.units.duration=d._reference?.units?.duration||'timing.durationSeconds：戰鬥秒數';}
+  const out=copy(output),d=source?.balanceSettings?.meta?.combatTimingVersion===VERSION?validate(source):normalize(source);out.balanceSettings.combat.seconds=copy(d.balanceSettings.combat.seconds);out.balanceSettings.meta.combatTimingVersion=VERSION;out.balanceSettings.meta.independentActionsVersion=1;out.balanceSettings.meta.continuousExplorationVersion=1;out.timeUnits=copy(d.timeUnits);if(out._reference?.units){out._reference.units.cooldown=d._reference?.units?.cooldown||'timing.cooldownSeconds：戰鬥秒數';out._reference.units.duration=d._reference?.units?.duration||'timing.durationSeconds：戰鬥秒數';}
   for(const [j,group] of (out.equipmentForms||[]).entries())for(const [k,slot] of group.entries())for(const [i,form] of slot.entries()){const mana=d.equipmentForms?.[j]?.[k]?.[i]?.mana;if(mana)form.mana=copy(mana);}
   for(const [name,key] of [['statusDefinitions','id'],['items','id']])for(const x of out[name]||[]){const s=d[name]?.find(s=>s[key]===x[key]);if(s?.timing)x.timing=copy(s.timing);}
   for(const s of out.skillSystem?.definitions||[]){const v=d.skillSystem.definitions.find(x=>x.id===s.id);if(v?.timing)s.timing=copy(v.timing);}

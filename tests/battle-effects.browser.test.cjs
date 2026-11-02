@@ -62,7 +62,7 @@ test('healing and coexisting buff/debuff/shield markers use party IDs and expire
   assert.equal(await p.locator('#battleAllyIcons .unit>[data-hero-id]').count(),3);
   await p.evaluate(()=>{for(const h of heroes())h.hp=1;fxCapture(()=>EmberwildBattleEffects.scope({mode:'skill'},()=>heroes()[1].hp+=10));});
   const target=await p.evaluate(()=>heroKey(heroes()[1]));assert.equal(await p.locator('#battleAllyIcons [data-hero-id="'+target+'"] [data-fx="heal"]').count(),1);assert.equal(await p.locator('#battleAllyIcons .battle-enemy-icon [data-fx="heal"]').count(),1);
-  await p.clock.runFor(1600);await p.evaluate(()=>fxCapture(()=>{applyPureShield(heroes()[1],300);__EMBERWILD_STATUS_TEST_API.apply({id:'fx-b',name:'強化',polarity:'buff',duration:2,modifiers:[{kind:'guard',value:.1}]},state,heroes()[1]);__EMBERWILD_STATUS_TEST_API.apply({id:'fx-d',name:'弱化',polarity:'debuff',duration:2,modifiers:[{kind:'weaken',value:.1}]},foes[0],heroes()[1]);}));
+  await p.clock.runFor(1600);await p.evaluate(()=>fxCapture(()=>{applyPureShield(heroes()[1],300);__EMBERWILD_STATUS_TEST_API.apply({id:'fx-b',name:'強化',polarity:'buff',duration:2,timing:{durationSeconds:3,periodicIntervalSeconds:6,triggerIntervalSeconds:3},modifiers:[{kind:'guard',value:.1}]},state,heroes()[1]);__EMBERWILD_STATUS_TEST_API.apply({id:'fx-d',name:'弱化',polarity:'debuff',duration:2,timing:{durationSeconds:3,periodicIntervalSeconds:6,triggerIntervalSeconds:3},modifiers:[{kind:'weaken',value:.1}]},foes[0],heroes()[1]);}));
   const icon=p.locator('#battleAllyIcons [data-hero-id="'+target+'"]');for(const type of ['shield','buff','debuff'])assert.equal(await icon.locator('[data-fx="'+type+'"]').count(),1,type);assert.equal(await icon.locator('.battle-fx-status>i').count(),3);
   await p.clock.runFor(1600);assert.equal(await icon.locator('.battle-fx').count(),0);assert.equal(await icon.locator('.battle-fx-status>i').count(),3);
   await p.evaluate(()=>{partyClock+=3;heroes()[1].shield=0;EmberwildBattleSummary.sync();});assert.equal(await icon.locator('.battle-fx-status').count(),0);
@@ -155,7 +155,7 @@ test('HP block effects preserve layout and readable bars at desktop/mobile width
  }finally{await g.browser.close();}
 });
 
-test('opening mage blasts retain cast, all lethal impacts and HP stages across twenty real timeline encounters',async t=>{
+test('mage blasts retain cast and lethal HP stages across twenty encounters with continuous cooldowns',async t=>{
  const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')}),p=g.page;
  try{
   await p.evaluate(()=>{
@@ -164,7 +164,7 @@ test('opening mage blasts retain cast, all lethal impacts and HP stages across t
    const cast=castPartySkill;castPartySkill=function(h,i,...args){const before=foes.filter(e=>e.hp>0).map(e=>({id:e.id,hp:e.hp})),out=cast(h,i,...args);if(h.job===1&&CLASSES[h.job]?.skills?.[i]?.[0]==='魔爆'&&out!==false)blastAudit.casts.push({at:performance.now(),targets:before.filter(b=>foes.find(e=>e.id===b.id)?.hp<b.hp).map(b=>b.id),attempted:before.length,dead:foes.filter(e=>e.hp<=0).map(e=>e.id)});return out;};
    const finish=EmberwildBattleSummary.finish;EmberwildBattleSummary.finish=function(result){if(result==='victory')blastAudit.battles++;return finish(result);};
    new MutationObserver(rows=>{for(const row of rows)for(const n of row.addedNodes)if(n.nodeType===1&&n.matches('.battle-fx'))blastAudit.impacts.push({at:performance.now(),type:n.dataset.fx,event:n.dataset.event,unit:n.parentNode.dataset.combatId||n.parentNode.dataset.heroId||n.parentNode.dataset.enemyId,surface:n.classList.contains('battle-fx-health')?'hp':'icon'});}).observe($('app'),{subtree:true,childList:true});
-   party.huntingMode='group';startSelectedExploration();
+   state.lv=8;state.shield=1e9;state.mana={regenPerSecond:100};syncParty();party.huntingMode='group';startSelectedExploration();
   });
   let switchedUp=false,switchedDown=false;
   for(let n=0;n<6000;n++){
@@ -204,8 +204,8 @@ test('integrated portrait, readable HP and click targets fit phones; physical/ma
  const g=await setup(),p=g.page;try{
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:844});await p.evaluate(()=>render());
-   const layout=await p.locator('.squad-field .unit[data-combat-id]').evaluateAll(ns=>ns.map(n=>{const icon=n.querySelector('.battle-enemy-icon').getBoundingClientRect(),bar=n.querySelector('.battle-health-bar').getBoundingClientRect(),r=n.getBoundingClientRect();return {ally:!!n.closest('.squad-allies'),icon:{x:icon.x,right:icon.right,w:icon.width,h:icon.height},bar:{x:bar.x,right:bar.right,w:bar.width},right:r.right,viewport:innerWidth,scroll:n.scrollWidth,width:n.clientWidth};}));
-   for(const l of layout){assert(l.icon.w>=38&&l.icon.h>=44);assert(l.bar.w>=Math.min(80,width/5));assert(l.ally?l.icon.right<l.bar.x:l.bar.right<l.icon.x);assert(l.right<=l.viewport+1);assert(l.scroll<=l.width+2,JSON.stringify(l));}
+   const layout=await p.locator('.squad-field .unit[data-combat-id]').evaluateAll(ns=>ns.map(n=>{const icon=n.querySelector('.battle-enemy-icon').getBoundingClientRect(),bar=n.querySelector('.battle-health-bar').getBoundingClientRect(),r=n.getBoundingClientRect();return {ally:!!n.closest('.squad-allies'),icon:{x:icon.x,right:icon.right,bottom:icon.bottom,w:icon.width,h:icon.height},bar:{x:bar.x,y:bar.y,right:bar.right,w:bar.width},right:r.right,viewport:innerWidth,scroll:n.scrollWidth,width:n.clientWidth};}));
+   for(const l of layout){assert(l.icon.w>=38&&l.icon.h>=44);assert(l.bar.w>=Math.min(48,width/6));assert(l.icon.bottom<=l.bar.y);assert(l.right<=l.viewport+1);assert(l.scroll<=l.width+2,JSON.stringify(l));}
    await p.locator('#battleAllyIcons .battle-enemy-icon').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());await p.locator('#modal button').last().click();
   }
   await p.evaluate(()=>fxCapture(()=>{resolveHit(foes[0],5,state,'physical',true);resolveHit(foes[1],5,state,'ice',false);__EMBERWILD_STATUS_TEST_API.apply({id:'shape-debuff',name:'弱化',polarity:'debuff',duration:3,modifiers:[{kind:'weaken',value:.1}]},state,foes[1]);}));

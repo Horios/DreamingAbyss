@@ -10,7 +10,7 @@ const hp=p=>p.locator('[data-summary-hp]').textContent();
 test('combat icons and aggregate HP update in place for damage, healing, revive, summon and phase replacement',async()=>{
  const g=await setup(),p=g.page;
  try{
-  assert.equal(await hp(p),'475 / 1,000');assert.equal(await p.locator('[data-summary-percent]').textContent(),'47.5%');assert.equal(await p.locator('#battleEnemyIcons svg').count(),2);
+  assert.equal(await hp(p),'475 / 1,000');assert.equal(await p.locator('[data-summary-percent]').textContent(),'47.5%');assert.equal(await p.locator('#battleEnemyIcons .battle-enemy-icon>.enemy-icon-art>svg').count(),2);
   await p.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});foes[1].hp=449;EmberwildBattleSummary.sync();});assert.equal(await hp(p),'475 / 1,000');
   await p.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:false});EmberwildBattleSummary.sync();});assert.equal(await hp(p),'474 / 1,000');
   await p.evaluate(()=>{foes[1].hp=450;EmberwildBattleSummary.sync();});
@@ -37,7 +37,7 @@ test('shared summary stays visible while operating pages and collapsing desktop/
    await p.setViewportSize(size);await p.evaluate(()=>render());
    assert(await p.locator('#journalEnemyIcons .battle-enemy-icon').evaluateAll(nodes=>nodes.every(n=>{const box=n.getBoundingClientRect(),svg=n.querySelector('svg').getBoundingClientRect();return svg.left>=box.left&&svg.right<=box.right&&svg.top>=box.top&&svg.bottom<=box.bottom;})),'journal SVGs fit their compact icons');
    for(const tab of ['equipment','forge','skills','lifeSkills','gather','alchemy','story','battle']){
-    await p.evaluate(id=>setTab(id),tab);assert(await p.locator('#battleSummary').isVisible(),tab+' summary');
+    await p.evaluate(id=>setTab(id),tab);if(size.width<=900&&tab==='battle')await p.locator('#battleSummary').scrollIntoViewIfNeeded();assert(await p.locator('#battleSummary').isVisible(),tab+' summary');
     await p.evaluate(()=>{foes[1].hp=Math.max(1,foes[1].hp-1);EmberwildBattleSummary.sync();});
     assert.equal(await p.locator('#battleSummary').count(),1);
     const layout=await p.evaluate(()=>{const s=$('battleSummary').getBoundingClientRect(),main=document.querySelector('.layout>main').getBoundingClientRect(),nav=document.querySelector('.layout>aside').getBoundingClientRect();return {right:s.right,bottom:s.bottom,top:s.top,mainHeight:main.height,navTop:nav.top,overflow:document.documentElement.scrollWidth>innerWidth};});
@@ -72,17 +72,17 @@ test('offline replay skips icon rendering and settles to the effective encounter
    if(i>=11&&await p.evaluate(()=>foes.some(e=>e.hp<e.maxhp)))break;
   }
   await p.evaluate(async()=>{if(EmberwildOffline.busy)await EmberwildOffline.settle(undefined,false);EmberwildBattleSummary.sync();});
-  assert(await p.evaluate(()=>round>0&&lastActionOrder.length>0));assert(await p.evaluate(()=>{const s=EmberwildBattleSummary.snapshot();return s.hp<s.max&&Number($('battleSummary').querySelector('[role="progressbar"]').getAttribute('aria-valuenow'))===s.percent}));
+  assert(await p.evaluate(()=>partyClock>0&&lastActionOrder.length>0));assert(await p.evaluate(()=>{const s=EmberwildBattleSummary.snapshot();return s.hp<s.max&&Number($('battleSummary').querySelector('[role="progressbar"]').getAttribute('aria-valuenow'))===s.percent}));
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
-test('allied portraits sit beside their own HP cards and the active actor marker follows both teams and journal icons',async()=>{
+test('allied portraits sit above their own HP bars and the active actor marker follows both teams and journal icons',async()=>{
  const g=await setup(),p=g.page;
  try{
   assert.equal(await p.locator('#battleAllyIcons .unit>[data-hero-id]').count(),await p.evaluate(()=>heroes().length));
   assert.equal(await p.locator('.squad-allies .unit-title .character-avatar-control').count(),0);
-  assert(await p.evaluate(()=>{const icon=$('battleAllyIcons').querySelector('.battle-enemy-icon').getBoundingClientRect(),bar=document.querySelector('.squad-allies>.unit>.battle-health-bar').getBoundingClientRect();return icon.right<bar.left&&Math.abs((icon.top+icon.bottom)/2-(bar.top+bar.bottom)/2)<50;}));
-  assert.equal(await p.locator('#journalEnemyIcons svg').count(),2);
+  assert(await p.evaluate(()=>{const icon=$('battleAllyIcons').querySelector('.battle-enemy-icon').getBoundingClientRect(),bar=document.querySelector('.squad-allies>.unit>.battle-health-bar').getBoundingClientRect();return icon.bottom<=bar.top&&icon.left>=bar.left-1&&icon.right<=bar.right+1;}));
+  assert.equal(await p.locator('#journalEnemyIcons .battle-enemy-icon>.enemy-icon-art>svg').count(),2);
   assert.equal(await p.locator('.battle-enemy-icon.is-acting').count(),0,'the first enemy is not highlighted before an action');
   await p.evaluate(()=>{recordAction(heroKey(heroes()[0]),characterName(heroes()[0]),'普攻');EmberwildBattleSummary.sync();});
   assert.equal(await p.locator('#battleAllyIcons .is-acting').count(),1);assert.equal(await p.locator('#battleEnemyIcons .is-acting,#journalEnemyIcons .is-acting').count(),0);

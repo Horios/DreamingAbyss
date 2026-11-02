@@ -104,9 +104,9 @@
    toast(error.message);refresh();return false;
   }finally{busy=false;}
  };
- const navBase=globalThis.gameNavigationHTML;globalThis.gameNavigationHTML=function(...args){return navBase(...args)+'<button type="button" data-page="wishingLake" onclick="openWishingLake()">'+(ensure()?.unlocked?'許願湖':'許願湖 🔒')+'</button>';};
+ const navBase=globalThis.gameNavigationHTML;globalThis.gameNavigationHTML=function(...args){return navBase(...args)+'<button type="button" data-page="wishingLake" onclick="openWishingLake()">'+'<span class="game-nav-label">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:waves',[],{size:18})+'許願湖'+(ensure()?.unlocked?'':__EMBERWILD_SKILL_ICONS.svgFor('lucide:lock',[],{size:12}))+'</span>'+'</button>';};
  const tabBase=setTab;setTab=function(id){return id==='wishingLake'?openWishingLake():tabBase(id);};
- const after=globalThis.__EMBERWILD_AFTER_RENDER;globalThis.__EMBERWILD_AFTER_RENDER=function(...args){after?.(...args);if(party&&state){const utility=$('utilityNavigation');if(!document.getElementById('utilityButton-wishingLake'))utility.insertAdjacentHTML('beforeend','<button id="utilityButton-wishingLake" class="utility-icon-button" onclick="openWishingLake()" aria-label="許願湖" title="許願湖">湖</button>');}refresh();};
+ const after=globalThis.__EMBERWILD_AFTER_RENDER;globalThis.__EMBERWILD_AFTER_RENDER=function(...args){after?.(...args);if(party&&state){const utility=$('utilityNavigation');if(!document.getElementById('utilityButton-wishingLake'))utility.insertAdjacentHTML('beforeend','<button id="utilityButton-wishingLake" class="utility-icon-button" onclick="openWishingLake()" aria-label="許願湖" title="許願湖">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:waves',[],{size:18})+'<span class="utility-label">許願湖</span></button>');}refresh();};
  const closeBase=closeModal;closeModal=function(...args){if($('modal').dataset.view==='wishing-lake')delete $('modal').dataset.view;lastHTML='';return closeBase(...args);};
  setInterval(()=>{if(!party||!state)return;notify();refresh();},1000);
  globalThis.__EMBERWILD_WISHING_LAKE={ensure,choices,remaining,view,normalizeState,ledgerKey,design:()=>copy(design)};

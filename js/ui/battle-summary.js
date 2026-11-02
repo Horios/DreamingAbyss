@@ -50,7 +50,7 @@
     html=icons.svgFor('lucide:'+glyph,[],{size:32});if(!usedArtwork.has(html))break;html='';
    }
   }
-  html=html||esc(name);monsterArtwork.set(name,html);usedArtwork.add(html);return html;
+  html=html||__EMBERWILD_SKILL_ICONS.svgFor('lucide:ghost',[],{size:32});monsterArtwork.set(name,html);usedArtwork.add(html);return html;
  }
  const put=(root,selector,value)=>{const n=root.querySelector(selector);if(n&&n.textContent!==value)n.textContent=value;};
  function sample(s,animate){
@@ -84,7 +84,7 @@
    const e=row.unit,num=(indices.get(e.name)||0)+1;indices.set(e.name,num);
    const name=ally?characterName(e):e.name+(names.get(e.name)>1?num:'');
    let node=nodes.get(row.id);
-   if(!node){node=document.createElement('button');node.type='button';node.onclick=()=>globalThis.EmberwildBattleSummary.showUnit(row.id,ally?'ally':'enemy');node.dataset[attribute]=row.id;node.className='battle-enemy-icon'+(ally?' battle-ally-icon':'');node.innerHTML='<span class="enemy-icon-art"></span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">◆</span>';}
+   if(!node){node=document.createElement('button');node.type='button';node.onclick=()=>globalThis.EmberwildBattleSummary.showUnit(row.id,ally?'ally':'enemy');node.dataset[attribute]=row.id;node.className='battle-enemy-icon'+(ally?' battle-ally-icon':'');node.innerHTML='<span class="enemy-icon-art"></span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:gem',[],{size:12})+'</span>';}
    const artKey=ally?EmberwildAvatars.resolvedId(e):[baseMonsterName(e),e.monsterId,e.mat,e.element,e.icon,e.race].join('|');
    if(node.dataset.artKey!==artKey){node.querySelector('.enemy-icon-art').innerHTML=ally?EmberwildAvatars.control(e).replace(/^<button[^>]*>/,'<span class="battle-avatar-art" data-avatar-id="'+EmberwildAvatars.resolvedId(e)+'">').replace(/<\/button>$/,'</span>'):artwork(e);node.dataset.artKey=artKey;}
    const flash=ally?null:flashes.get(row.id),state=row.alive?(row.acting?'目前行動':'存活'):ally?'倒下':'已擊敗';
@@ -113,7 +113,7 @@
    // would keep observing the previous page and overflow the stack.
    if(actual!==expected){if(!globalThis.isEmberwildUIInteracting?.())render();return;}
   }
-  const status=s.result==='victory'?'戰鬥勝利':s.result==='wipe'?'戰鬥失敗':!s.total?(running?'搜尋敵人':'尚未探索'):!running?'戰鬥暫停':$('modal')?.open?'視窗暫停':round>0&&!roundIterator&&!combatRoundProgress&&foes.some(e=>e.hp>0)?'等待下一回合':event||'戰鬥中';
+  const status=s.result==='victory'?'戰鬥勝利':s.result==='wipe'?'戰鬥失敗':!s.total?(running?'搜尋敵人':'尚未探索'):!running?'戰鬥暫停':$('modal')?.open?'視窗暫停':round>0&&!roundIterator&&!combatRoundProgress&&foes.some(e=>e.hp>0)?(globalThis.EmberwildSecondsCombat?.phase==='recovery'?'脫戰恢復':'行動充能'):event||'戰鬥中';
   if(summary){
    put(summary,'[data-summary-name]',s.name);summary.querySelector('[data-summary-name]').title=s.name;put(summary,'[data-summary-state]',status);
    put(summary,'[data-summary-hp]',fmt(s.hp)+' / '+fmt(s.max));
@@ -134,7 +134,7 @@
  // The inspector reads the exact combat unit, never a catalogue-only replacement.
  const pct=n=>fmt(finite(n)*100)+'%';
  const controlLabels={polymorph:'變形',freeze:'冰凍',frost:'結霜',rage:'狂暴',fear:'恐懼',tauntRage:'嘲諷狂暴'};
- const effectLabels={attack:'攻擊提升',power:'技能威力提升',guard:'傷害減免',fracture:'防禦降低',weaken:'攻擊降低',vulnerable:'承受傷害增加',damageAmp:'承受傷害增加',critical:'暴擊率提升',regen:'每回合恢復最大生命',slow:'速度降低',followup:'追打',dotAttack:'持續傷害（攻擊倍率）',dotMaxHp:'持續傷害（最大生命比例）'};
+ const effectLabels={attack:'攻擊提升',power:'技能威力提升',guard:'傷害減免',fracture:'防禦降低',weaken:'攻擊降低',vulnerable:'承受傷害增加',damageAmp:'承受傷害增加',critical:'暴擊率提升',regen:'持續恢復最大生命',slow:'速度降低',followup:'追打',dotAttack:'持續傷害（攻擊倍率）',dotMaxHp:'持續傷害（最大生命比例）'};
  function inspect(id,side){
   const s=snapshot(),ally=side==='ally',rows=ally?s.allies:s.units,row=rows.find(x=>x.id===String(id));if(!row)return null;
   const u=row.unit,v=ally?battleStats(u):enemyBattleStats({...u}),skills=[],statuses=[];
@@ -173,7 +173,7 @@
   }
   if(ally)for(const kind of ['imbue','ward','elementTonic'])for(const b of (EmberwildTimedBoosts.ELEMENTAL_TYPES.includes(kind)?EmberwildTimedBoosts.buffRows(u[kind]):u[kind]?[u[kind]]:[])){
    if(EmberwildTimedBoosts.ELEMENTAL_TYPES.includes(kind)?!(b.enabled&&EmberwildTimedBoosts.remainingMs(b)>0):!(b.remainingTurns>0))continue;
-   const d=supplyBuffDetails(b,kind);statuses.push({name:d.name,polarity:'buff',detail:d.detail,time:d.time,clock:d.clock});
+   const d=supplyBuffDetails(b,kind);statuses.push({name:d.name,polarity:'buff',detail:d.detail,time:d.time,clock:d.clock,clockType:kind==='imbue'?'battle':'wall',remaining:kind==='imbue'?b.remainingTurns:EmberwildTimedBoosts.remainingMs(b)/1000});
   }
   const controls=globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[u.id]||{},max=ally?v.hp:row.max,hp=Math.max(0,Math.min(max,finite(u.hp)));
   const same=rows.filter(x=>x.unit.name===u.name),name=ally?characterName(u):u.name+(same.length>1?same.indexOf(row)+1:'');
@@ -191,7 +191,7 @@
  }
  $('modal').addEventListener('close',()=>$('modal').classList.remove('battle-unit-dialog'));
  function toggleDetails(){detailCollapsed=!detailCollapsed;sync({animate:false});}
- globalThis.EmberwildBattleSummary={snapshot,sync,finish,toggleDetails,inspect,showUnit};
+ globalThis.EmberwildBattleSummary={snapshot,sync,finish,toggleDetails,inspect,showUnit,artwork};
  const journalBase=sharedBattleJournal;
  sharedBattleJournal=function(){const html=journalBase();return html.replace('<div class="journal-resizer"',summaryHTML()+'<div class="journal-resizer"');};
  const battleBase=battleView;
@@ -224,8 +224,10 @@
   else for(const fresh of freshField?.querySelectorAll('.unit[data-combat-id]')||[]){
    const old=cards.get(fresh.dataset.combatId);if(!old||old===fresh)continue;
    // Keep the exact portrait and running effect nodes through full screen redraws.
-   for(const child of [...old.children])if(!child.matches('.battle-enemy-icon,.battle-fx,.battle-fx-status'))child.remove();
-   old.append(...fresh.children);old.className=fresh.className;old.removeAttribute('style');fresh.replaceWith(old);
+   const portrait=[...old.children].find(n=>n.matches('.battle-enemy-icon'));
+   for(const child of [...old.children])if(!child.matches('.battle-enemy-icon,.battle-fx,.battle-fx-status')||child.matches('.battle-enemy-icon')&&child!==portrait)child.remove();
+   if(portrait)for(const child of [...fresh.children])if(child.matches('.battle-enemy-icon'))child.remove();
+   old.append(...fresh.children);old.className=fresh.className;old.style.cssText=fresh.style.cssText;fresh.replaceWith(old);
   }
   retainedField=document.querySelector('.squad-field')||retainedField;
   sync();return out;

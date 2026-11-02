@@ -18,13 +18,13 @@ async function start(page){
 async function fits(page,label){
  const b=await page.evaluate(()=>{
   const m=document.querySelector('.layout>main'),layout=document.querySelector('#app>.layout'),nav=document.querySelector('.layout>aside'),journal=document.querySelector('#globalBattleJournal');
-  return {viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,height:innerHeight};
+  return {inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,height:innerHeight};
  });
  assert(b.layoutWidth<=b.viewport+1,label+' layout width '+JSON.stringify(b));
  assert(b.mainScroll<=b.mainWidth+1,label+' horizontal overflow '+JSON.stringify(b));
  assert(b.mainHeight>=90,label+' readable main height '+JSON.stringify(b));
- assert(b.mainBottom<=b.journalTop+1,label+' journal overlaps content');
- assert(b.journalBottom<=b.navTop+1,label+' nav overlaps journal');
+ if(b.inline)assert(b.mainBottom<=b.navTop+1,label+' inline journal stays in the scrollable main area');
+ else{assert(b.mainBottom<=b.journalTop+1,label+' journal overlaps content');assert(b.journalBottom<=b.navTop+1,label+' nav overlaps journal');}
  assert(Math.abs(b.navBottom-b.height)<=1,label+' nav at viewport bottom');
 }
 

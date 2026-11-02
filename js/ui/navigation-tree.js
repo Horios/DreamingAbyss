@@ -48,6 +48,8 @@
     document.querySelectorAll?.('#app>.layout>aside nav details[data-nav-group]').forEach(group=>openState.set(group.dataset.navGroup,group.open));
   }
 
+  const icons={battle:'swords',statistics:'chart-no-axes-combined',shop:'store',guide:'book-open',roster:'users',partnerRoster:'contact',character:'user-round',skills:'sparkles',equipment:'backpack',worn:'shield',forge:'hammer',bossCraft:'anvil','story-main':'scroll-text','story-side':'scroll','story-npc':'message-circle',quests:'clipboard-list',gather:'pickaxe',alchemy:'flask-conical'};
+  const navIcon=id=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(icons[id]||'folder'),[],{size:18});
   const taskPages=new Set(['story-main','story-side','story-npc','quests']);
   function taskStatus(id){return id.startsWith('story-')?globalThis.storyCategoryReminder?.(id.slice(6)):id==='quests'?globalThis.dailyQuestReminder?.():null;}
   function taskBadge(status){
@@ -74,7 +76,7 @@
       const hasNew=pages.some(({reminder})=>reminder.isNew);
       const count=pages.reduce((sum,{reminder})=>sum+reminder.count,0);
       const groupBadge=hasNew?'<span class="quest-new" aria-label="包含未開始任務">N</span>':count?`<span class="number-badge" aria-label="分類提醒 ${count}">${count}</span>`:'';
-      return `<details class="game-nav-group ${groupActive?'has-active':''}" data-nav-group="${esc(group.id)}" ${open?'open':''}><summary><span>${esc(group.label)}</span>${groupBadge}<span class="game-nav-chevron" aria-hidden="true">›</span></summary><div class="game-nav-items">${pages.map(({page,reminder})=>`<button type="button" data-page="${esc(page.id)}" class="${active(page,current)?'active':''}" onclick="${action(page)}" ${active(page,current)?'aria-current="page"':''}><span>${esc(page.label)}</span>${reminder.html}</button>`).join('')}</div></details>`;
+      return `<details class="game-nav-group ${groupActive?'has-active':''}" data-nav-group="${esc(group.id)}" ${open?'open':''}><summary><span class="game-nav-label">${navIcon(group.pages[0]?.id)}${esc(group.label)}</span>${groupBadge}<span class="game-nav-chevron" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor('lucide:chevron-right',[],{size:14})}</span></summary><div class="game-nav-items">${pages.map(({page,reminder})=>`<button type="button" data-page="${esc(page.id)}" class="${active(page,current)?'active':''}" onclick="${action(page)}" ${active(page,current)?'aria-current="page"':''}><span class="game-nav-label">${navIcon(page.id)}${esc(page.label)}</span>${reminder.html}</button>`).join('')}</div></details>`;
     }).join('');
   };
   globalThis.EmberwildNavigation=Object.freeze({VERSION,PAGES:Object.freeze({...PAGES}),defaults:()=>copy(DEFAULTS),normalize,get design(){return copy(design);},get order(){return orderedGroups().map(g=>g.id);}});

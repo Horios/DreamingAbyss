@@ -41,6 +41,9 @@
     }
     const journal=document.getElementById('globalBattleJournal');
     if(journal){
+      const inline=mobile.matches&&tab==='battle'&&!!main?.querySelector('.seconds-battlefield');
+      journal.classList.toggle('mobile-inline-battle-journal',inline);
+      if(inline&&journal.parentElement!==main)main.appendChild(journal);
       journal.classList.toggle('mobile-journal-open',journalOpen);
       journal.classList.toggle('mobile-loot-open',lootOpen);
       const button=journal.querySelector('.mobile-journal-toggle');
