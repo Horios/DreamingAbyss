@@ -26,12 +26,21 @@ test('changing difficulty cannot clear an encounter before its elapsed time has 
  for(const value of ['state.totalKills','state.gold','state.xp','party.offlineExploration.lastAt'])assert.equal(b.run(value),a.run(value),value);
  b.run('changeDifficulty(1)');assert.equal(b.run('party.difficulty'),1);assert.equal(b.run('running'),false);
 });
-test('speed-expiry linking changes apply after elapsed time, never retroactively',async()=>{
- const r=game();r.run(`for(const id of ['speed2_30m','exp_100_30m']){state.consumables[id]=1;useSupply(id);}setBattleSpeed(2);party.timedBoosts[0].remainingMs=1000;party.timedBoosts[1].remainingMs=10000;save();`);r.advance(5000);
- // A short foreground gap now settles wall-clock boosts synchronously before
- // applying the UI change; it no longer has to reject the action for replay.
- r.run('setPauseBoostsOnSpeedEnd(true)');assert.equal(r.run('party.combatSession.pauseBoostsOnSpeedEnd'),true);await r.run('EmberwildOffline.settle()');assert.equal(r.run('party.timedBoosts[1].remainingMs'),5000);assert.equal(r.run('party.timedBoosts[1].enabled'),true);
- r.run('setPauseBoostsOnSpeedEnd(true)');assert.equal(r.run('party.combatSession.pauseBoostsOnSpeedEnd'),true);
+test('battle speed is removed: legacy tickets, active speed effects and speed settings are dropped on load',async()=>{
+ const r=game();r.run(`state.consumables.exp_100_30m=1;useSupply('exp_100_30m');party.timedBoosts[0].remainingMs=10000;globalThis.legacy=JSON.parse(JSON.stringify(packParty()));
+  legacy.members[0].consumables.speed2_30m=2;legacy.members[0].consumables.speed2_120m=1;legacy.members[0].consumables.speed4_30m=1;
+  legacy.timedBoosts.unshift({itemId:'speed2_30m',name:'兩倍速解鎖券30分鐘',boostType:'speed2',bonusPercent:0,durationMinutes:30,remainingMs:600000,enabled:true});
+  legacy.combatSession={...legacy.combatSession,speed:2,pauseBoostsOnSpeedEnd:true};loadParty(legacy);`);
+ assert.equal(r.run('__EMBERWILD_BOOT_SAVE_ERROR'),null);
+ assert.deepEqual(json(r,'Object.keys(state.consumables).filter(k=>/^speed/.test(k))'),[]);
+ assert.deepEqual(json(r,'party.timedBoosts.map(b=>[b.boostType,b.remainingMs,b.enabled])'),[['exp',10000,true]]);
+ assert.equal(r.run('battleRate'),1);assert.equal(r.run('"speed" in party.combatSession||"pauseBoostsOnSpeedEnd" in party.combatSession'),false);
+ for(const name of ['setBattleSpeed','toggleBattleRate','battleSpeedButtons','setPauseBoostsOnSpeedEnd','claimDailyBonus'])assert.equal(r.run('typeof globalThis.'+name),'undefined',name);
+ assert.deepEqual(json(r,'SHOP.filter(i=>/^speed/.test(i.id)||i.boostType==="speed2").map(i=>i.id)'),[]);
+ assert.equal(r.run('GAMEPLAY_SETTINGS.combat.pacing.rates'),undefined);
+ assert.doesNotMatch(r.run('timedBoostManagement()+battleView()'),/倍速|\d×/);
+ r.advance(5000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('party.timedBoosts[0].remainingMs'),5000);assert.equal(r.run('battleRate'),1);
+ const saved=json(r,'packParty()');assert.equal(JSON.stringify(saved).includes('speed2'),false);assert.deepEqual(r.errors,[]);
 });
 
 test('shop purchases wait for the old timeline instead of supplying items retroactively',async()=>{

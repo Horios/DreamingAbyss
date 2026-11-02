@@ -25,7 +25,7 @@ async function equivalenceScenarios(){
  // Test-only high drop probabilities ensure generated token/affix data is
  // actually compared, rather than accepting a seed that happens to drop none.
  const scenarios={
-  boosts:`for(const id of ['speed2_30m','exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}setBattleSpeed(2);party.timedBoosts[0].remainingMs=10000;party.timedBoosts[1].remainingMs=20000;party.timedBoosts[2].remainingMs=45000;save();`,
+  boosts:`for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}party.timedBoosts[0].remainingMs=20000;party.timedBoosts[1].remainingMs=45000;save();`,
   drops:`state.lv=1;syncParty();refillParty();state.healingPotions.heal_standard=5000;for(const row of GAMEPLAY_SETTINGS.drops.entries)if(['gear','equipment'].includes(row.type))row.chanceByDifficulty=[1,1,1];save();`
  };
  for(const [scenario,setup] of Object.entries(scenarios)){

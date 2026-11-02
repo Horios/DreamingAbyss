@@ -2,22 +2,23 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),M=(()=>{const vm=require('node:vm'),ctx={};vm.runInNewContext(fs.readFileSync(path.join(root,'js/items/timed-boosts.js'),'utf8'),ctx);return ctx.EmberwildTimedBoosts;})();
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function fixture(){const r=loadRuntime(root);r.ctx.seed=require('../data/balance.json');r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();state.lv=20;state.hp=stats().hp;recruitCompanion(11);recruitCompanion(13);closeModal();for(const h of heroes()){h.lv=20;h.hp=stats(h).hp;}syncParty();globalThis.durable=()=>{foes=[{...makeEnemy(0,state,()=>.9),id:'durable',hp:1e8,maxhp:1e8,atk:1,def:0}];enemy=foes[0];for(const h of heroes())h.shield=1e6;};globalThis.tickets=()=>{for(const id of ['speed2_30m','exp_100_30m','drop_50_30m']){state.consumables[id]=2;useSupply(id);}setBattleSpeed(2);};`);return r;}
-const buff=(kind='exp',ms=60000,enabled=true)=>({itemId:kind,name:kind,boostType:kind,bonusPercent:kind==='speed2'?0:100,durationMinutes:1,remainingMs:ms,enabled});
+function fixture(){const r=loadRuntime(root);r.ctx.seed=require('../data/balance.json');r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();state.lv=20;state.hp=stats().hp;recruitCompanion(11);recruitCompanion(13);closeModal();for(const h of heroes()){h.lv=20;h.hp=stats(h).hp;}syncParty();globalThis.durable=()=>{foes=[{...makeEnemy(0,state,()=>.9),id:'durable',hp:1e8,maxhp:1e8,atk:1,def:0}];enemy=foes[0];for(const h of heroes())h.shield=1e6;};globalThis.tickets=()=>{for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=2;useSupply(id);}};`);return r;}
+const buff=(kind='exp',ms=60000,enabled=true)=>({itemId:kind,name:kind,boostType:kind,bonusPercent:100,durationMinutes:1,remainingMs:ms,enabled});
 test('same-name sources stack up to 24h while preserving independent strength and disabled time',()=>{
  const a=buff(),b={...a,itemId:'alias'};let rows=M.stackBuff([a],b);assert.equal(rows.length,1);assert.equal(rows[0].remainingMs,120000);assert.equal(rows[0].expiresAt,undefined);
  rows=M.stackBuff([{...a,enabled:false}],b);assert.equal(rows[0].enabled,false);
  const max={...a,remainingMs:M.MAX_STACK_MS-60000};assert.equal(M.stackBuff([max],b)[0].remainingMs,M.MAX_STACK_MS);assert.throws(()=>M.stackBuff([{...max,remainingMs:max.remainingMs+1}],b),/24 小時/);
  assert.equal(M.stackBuff([a],{...b,bonusPercent:35}).length,2);
 });
-test('late background callbacks link only at natural exhaustion of the last active speed source',()=>{
- const p={timedBoosts:[buff('speed2',100),{...buff('speed2',300),name:'other'},buff('exp',1000),buff('drop',1000,false)],combatSession:{pauseBoostsOnSpeedEnd:true},members:[]};
- assert.equal(M.consume(p,200),false);assert.equal(p.timedBoosts[2].remainingMs,800);assert.equal(M.consume(p,500),true);
- assert.equal(p.timedBoosts[2].remainingMs,700);assert.equal(p.timedBoosts[2].enabled,false);assert.equal(p.timedBoosts[3].remainingMs,1000);
- const noSpeed={timedBoosts:[buff('speed2',0,false),buff('exp')],combatSession:{pauseBoostsOnSpeedEnd:true}};M.consume(noSpeed,1000);assert.equal(noSpeed.timedBoosts[1].enabled,true);assert.equal(noSpeed.timedBoosts[1].remainingMs,59000);
+test('every enabled source consumes its own wall time; legacy speed sources are dropped from saves',()=>{
+ const p={timedBoosts:[buff('exp',1000),buff('drop',1000,false),{...buff('drop',300),name:'other'}],members:[]};
+ assert.equal(M.consume(p,500),false);assert.deepEqual(JSON.parse(JSON.stringify(p.timedBoosts.map(b=>[b.remainingMs,b.enabled]))),[[500,true],[1000,false],[0,false]]);
+ const legacy={timedBoosts:[{...buff('exp'),boostType:'speed2',itemId:'speed2_30m',bonusPercent:0},buff('exp')],combatSession:{speed:2,pauseBoostsOnSpeedEnd:true}};
+ const out=M.validateState(legacy);assert.deepEqual([...out.timedBoosts.map(b=>b.boostType)],['exp']);assert.deepEqual([...Object.keys(out.combatSession)].sort(),['filter','idleTimeMs','reportPaused']);
+ assert.throws(()=>M.validateItem({id:'speed2_30m',type:'timedBoost',name:'x',description:'',boostType:'speed2',bonusPercent:0,durationMinutes:30,duration:0,cost:0}));
 });
 test('legacy deadline and malformed new timer migration are validated without mutating input',()=>{
- const old={timedBoosts:[{...buff(),remainingMs:undefined,enabled:undefined,expiresAt:Date.now()+60000}],combatSession:{speed:1}};const before=JSON.stringify(old),out=M.validateState(old);assert.equal(JSON.stringify(old),before);assert(out.timedBoosts[0].remainingMs>59000);assert.equal(out.timedBoosts[0].enabled,true);assert.equal(out.combatSession.pauseBoostsOnSpeedEnd,false);
+ const old={timedBoosts:[{...buff(),remainingMs:undefined,enabled:undefined,expiresAt:Date.now()+60000}],combatSession:{speed:1}};const before=JSON.stringify(old),out=M.validateState(old);assert.equal(JSON.stringify(old),before);assert(out.timedBoosts[0].remainingMs>59000);assert.equal(out.timedBoosts[0].enabled,true);assert.equal(Object.hasOwn(out.combatSession,'pauseBoostsOnSpeedEnd'),false);
  for(const patch of [{remainingMs:-1},{remainingMs:Infinity},{enabled:'yes'},{remainingMs:undefined,expiresAt:Infinity}])assert.throws(()=>M.validateState({timedBoosts:[{...buff(),...patch}]}));
 });
 test('runtime exploration clock, controls, save compatibility, effects and quest encounters',async t=>{
@@ -33,24 +34,19 @@ test('runtime exploration clock, controls, save compatibility, effects and quest
   r.run('stopTeamExploration();startSelectedExploration();');assert.equal(r.run('party.map'),1);assert.equal(r.run('foes.includes(oldFoe)'),false);assert.equal(r.run('running'),true);
  });
  await t.test('wall-clock effects count paused and stopped time; active time counts only exploration',async()=>{
-  reset();r.run('tickets();startSelectedExploration();durable();');await move(30000);assert.deepEqual(json(r,'party.timedBoosts.map(b=>b.remainingMs)'),[1770000,1770000,1770000]);assert.equal(r.run('party.combatSession.idleTimeMs'),30000);
+  reset();r.run('tickets();startSelectedExploration();durable();');await move(30000);assert.deepEqual(json(r,'party.timedBoosts.map(b=>b.remainingMs)'),[1770000,1770000]);assert.equal(r.run('party.combatSession.idleTimeMs'),30000);
   r.run('toggleBattle()');await move(100000);assert.equal(r.run('party.timedBoosts[0].remainingMs'),1670000);assert.equal(r.run('party.combatSession.idleTimeMs'),30000);
   r.run('toggleBattle()');await move(1000);r.run('stopTeamExploration()');await move(100000);assert.equal(r.run('party.timedBoosts[0].remainingMs'),1569000);
  });
  await t.test('independent toggles change effects while retaining independent wall deadlines',async()=>{
-  reset();r.run('tickets();setTimedBoostEnabled("team:1",false);');assert.equal(r.run('EmberwildTimedBoosts.bonus(party,"exp")'),0);assert.equal(r.run('partyDropRateBonus()'),.5);r.run('awardXP(100)');assert.equal(r.run('state.xp'),100);
-  r.run('startSelectedExploration();durable()');await move(2000);assert.deepEqual(json(r,'party.timedBoosts.map(b=>b.remainingMs)'),[1798000,1798000,1798000]);
-  r.run('setTimedBoostEnabled("team:1",true);state.xp=0;awardXP(100)');assert.equal(r.run('state.xp'),200);assert.equal(r.run('effectiveDropChance({chanceByDifficulty:[.05,.05,.05]},{difficulty:0})'),.07500000000000001);
- });
- await t.test('natural speed exhaustion disables linked effects at cutoff; all deadlines keep counting',async()=>{
-  reset();r.run('tickets();setPauseBoostsOnSpeedEnd(true);startSelectedExploration();durable();party.timedBoosts[0].remainingMs=100;');await move(500);assert.equal(r.run('battleRate'),1);assert.equal(r.run('party.timedBoosts[1].remainingMs'),1799500);assert.equal(r.run('party.timedBoosts[1].enabled'),false);
-  r.run('setTimedBoostEnabled("team:1",true);useSupply("speed2_30m");setBattleSpeed(2);setBattleSpeed(1);');assert.equal(r.run('party.timedBoosts.find(b=>b.boostType==="exp").enabled'),true);
-  r.run('stopTeamExploration()');await move(1000);assert.equal(r.run('party.timedBoosts.find(b=>b.boostType==="exp").enabled'),true);
+  reset();r.run('tickets();setTimedBoostEnabled("team:0",false);');assert.equal(r.run('EmberwildTimedBoosts.bonus(party,"exp")'),0);assert.equal(r.run('partyDropRateBonus()'),.5);r.run('awardXP(100)');assert.equal(r.run('state.xp'),100);
+  r.run('startSelectedExploration();durable()');await move(2000);assert.deepEqual(json(r,'party.timedBoosts.map(b=>b.remainingMs)'),[1798000,1798000]);
+  r.run('setTimedBoostEnabled("team:0",true);state.xp=0;awardXP(100)');assert.equal(r.run('state.xp'),200);assert.equal(r.run('effectiveDropChance({chanceByDifficulty:[.05,.05,.05]},{difficulty:0})'),.07500000000000001);
  });
  await t.test('save/reload restores running combat; old saves have no retrospective offline rewards',async()=>{
-  reset();r.run('tickets();setTimedBoostEnabled("team:2",false);setPauseBoostsOnSpeedEnd(true);startSelectedExploration();durable();');await move(1200);r.run('save();globalThis.snapshot=structuredClone(packParty());');
+  reset();r.run('tickets();setTimedBoostEnabled("team:1",false);startSelectedExploration();durable();');await move(1200);r.run('save();globalThis.snapshot=structuredClone(packParty());');
   r.advance(3600000);r.run('loadParty(snapshot)');assert.equal(r.run('running'),true);await r.run('EmberwildOffline.settle()');assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);assert.equal(r.run('party.timedBoosts.every(b=>b.remainingMs===0)'),true);
-  r.run('delete snapshot.combatSession;delete snapshot.timedBoosts;delete snapshot.offlineExploration;loadParty(snapshot)');assert.deepEqual(json(r,'party.timedBoosts'),[]);assert.equal(r.run('party.combatSession.pauseBoostsOnSpeedEnd'),false);assert.equal(r.run('running'),false);
+  r.run('delete snapshot.combatSession;delete snapshot.timedBoosts;delete snapshot.offlineExploration;loadParty(snapshot)');assert.deepEqual(json(r,'party.timedBoosts'),[]);assert.equal(r.run('"pauseBoostsOnSpeedEnd" in party.combatSession'),false);assert.equal(r.run('running'),false);
  });
  await t.test('elemental potions share wall time, including when effects are disabled',async()=>{
   reset();const item=r.run('SHOP.find(i=>i.type==="ward").id');r.ctx.item=item;r.run('state.consumables[item]=2;useSupply(item);globalThis.originalLeft=EmberwildTimedBoosts.remainingMs(EmberwildTimedBoosts.buffRows(state.ward)[0]);startSelectedExploration();durable();');await move(2000);assert.equal(r.run('EmberwildTimedBoosts.remainingMs(EmberwildTimedBoosts.buffRows(state.ward)[0])'),r.run('originalLeft')-2000);

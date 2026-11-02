@@ -53,9 +53,9 @@ test('The published herb/water/bottle recipe consumes its real inputs and yields
  assert.deepEqual(r.errors,[]);
 });
 
-test('Gathering and alchemy continue on other pages alongside real 1× and unlocked 2× exploration',async()=>{
-  for(const rate of [1,2]){
-    const r=await game();r.run(`recruitCompanion(10);closeModal();recruitCompanion(11);closeModal();state.materials['紅色草']=2;buyLifeMaterial('藥水瓶',10);buyLifeMaterial('清水',10);if(${rate}===2){state.consumables.speed2_30m=1;useSupply('speed2_30m');}spawnGroup();foes.forEach(f=>{f.hp=f.maxhp=1e9;f.atk=0;});running=true;setBattleSpeed(${rate});startLifeGathering();startLifeWork('alchemy');setTab('equipment');`);
+test('Gathering and alchemy continue on other pages alongside real exploration at the fixed pace',async()=>{
+  for(const rate of [1]){
+    const r=await game();r.run(`recruitCompanion(10);closeModal();recruitCompanion(11);closeModal();state.materials['紅色草']=2;buyLifeMaterial('藥水瓶',10);buyLifeMaterial('清水',10);spawnGroup();foes.forEach(f=>{f.hp=f.maxhp=1e9;f.atk=0;});running=true;startLifeGathering();startLifeWork('alchemy');setTab('equipment');`);
     assert.equal(r.run('battleRate'),rate);
     assert.notEqual(r.run('__EMBERWILD_LIFE_SKILLS.jobs.work'),null);
     const stock=r.run('healPotionCount("heal_small")');

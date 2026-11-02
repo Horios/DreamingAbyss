@@ -63,8 +63,8 @@ test('offline replay skips icon rendering and settles to the effective encounter
   await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);EmberwildBattleSummary.sync();});
   assert(await p.evaluate(()=>iconMutations<100),'offline simulation must not build icons for every encounter');
   assert(await p.evaluate(()=>{const s=EmberwildBattleSummary.snapshot();return $('battleSummary').querySelector('[role="progressbar"]').getAttribute('aria-valuenow')===String(s.percent)}));
-  await p.evaluate(()=>{acknowledgeOfflineExploration();resetEncounter();running=false;party.huntingMode='group';startSelectedExploration();state.consumables.speed2_30m=1;useSupply('speed2_30m');setBattleSpeed(2);for(const h of heroes())h.shield=1e9;foes.forEach(e=>{e.hp=1e6;e.maxhp=1e6;e.atk=1});setTab('equipment');});
-  assert.equal(await p.evaluate(()=>battleRate),2);
+  await p.evaluate(()=>{acknowledgeOfflineExploration();resetEncounter();running=false;party.huntingMode='group';startSelectedExploration();for(const h of heroes())h.shield=1e9;foes.forEach(e=>{e.hp=1e6;e.maxhp=1e6;e.atk=1});setTab('equipment');});
+  assert.equal(await p.evaluate(()=>battleRate),1);
   // The warrior opens with a non-damaging taunt. A random six-enemy group
   // can still be resolving enemy actions at 12s; observe a real hit instead.
   for(let i=0;i<30;i++){

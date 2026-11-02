@@ -10,11 +10,11 @@ test('fixed random sequence: visible timeline and offline events give identical 
  const online=game(),offline=game();for(const r of [online,offline])r.run('nextActionAt=Date.now()+50;save()');for(let i=0;i<1200;i++){online.advance(50);online.run('tick()');}await settle(offline,60000);
  assert.deepEqual(result(offline),result(online));const r=json(offline,'party.offlineExploration.receipt');assert.equal(r.end-r.start,60000);assert.equal(r.effectiveMs,60000);assert.equal(r.kills,offline.run('state.totalKills'));assert(r.xp>0);assert.equal(offline.run('party.offlineExploration.lastAt'),offline.now);assert.deepEqual(offline.errors,[]);
 });
-test('25-minute real-time and offline replay earn identical rewards at 1x and 2x',async()=>{
+test('25-minute real-time and offline replay earn identical rewards at the fixed pace',async()=>{
  const span=25*60*1000;
- for(const rate of [1,2]){
+ for(const rate of [1]){
   const visible=game(),offline=game(),interval=1500/rate;
-  for(const r of [visible,offline])r.run(`if(${rate}===2){state.consumables.speed2_30m=1;useSupply('speed2_30m');setBattleSpeed(2);}nextActionAt=Date.now()+${interval};save();`);
+  for(const r of [visible,offline])r.run(`nextActionAt=Date.now()+${interval};save();`);
   const before=json(offline,'({kills:state.totalKills,gold:state.gold,gear:state.bag.length})');
   for(let t=0;t<span;t+=interval){visible.advance(interval);visible.run('tick()');}
   await settle(offline,span);
@@ -34,10 +34,9 @@ test('25-minute real-time and offline replay earn identical rewards at 1x and 2x
 });
 test('25-minute one-action victories respect the shared action floor and never duplicate XP, money and kills',async()=>{
  const span=25*60*1000;
- for(const rate of [1,2]){
+ for(const rate of [1]){
   const visible=game(),offline=game(),interval=1500/rate,minimumRound=6000/rate;
   for(const r of [visible,offline])r.run(`
-   if(${rate}===2){state.consumables.speed2_30m=1;useSupply('speed2_30m');setBattleSpeed(2);}
    state.active=[];state.supportSlots=[];
    castPartySkill=()=>false;castSupport=()=>false;
    initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];
@@ -193,9 +192,9 @@ test('resume a persisted mid-turn cursor including support, enemy cooldowns, con
  const data=json(a,'packParty()'),rng=a.run('rngState'),serial=a.run('uidSerial'),b=game();b.advance(500);b.ctx.saved=data;b.run('loadParty(saved);');b.ctx.rng=rng;b.ctx.serial=serial;b.run('rngState=rng;uidSerial=serial');
  await settle(a,60000);await settle(b,60000);assert.deepEqual(result(b),result(a));assert.equal(b.run('party.offlineExploration.receipt.kills'),a.run('party.offlineExploration.receipt.kills'));
 });
-test('independent wall-clock boost boundaries switch speed, XP and drops at their actual expiry',async()=>{
- const a=game(),b=game();for(const r of [a,b])r.run(`for(const id of ['speed2_30m','exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}setBattleSpeed(2);party.timedBoosts[0].remainingMs=10000;party.timedBoosts[1].remainingMs=20000;party.timedBoosts[2].remainingMs=45000;save();`);
- for(let i=0;i<1200;i++){a.advance(50);a.run('tick()');}await settle(b,60000);assert.deepEqual(result(b),result(a));assert.deepEqual(json(b,'Object.values(party.offlineExploration.receipt.boosts).map(b=>b.ms)'),[10000,20000,45000]);assert.equal(b.run('battleRate'),1);
+test('independent wall-clock boost boundaries switch XP and drops at their actual expiry',async()=>{
+ const a=game(),b=game();for(const r of [a,b])r.run(`for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}party.timedBoosts[0].remainingMs=20000;party.timedBoosts[1].remainingMs=45000;save();`);
+ for(let i=0;i<1200;i++){a.advance(50);a.run('tick()');}await settle(b,60000);assert.deepEqual(result(b),result(a));assert.deepEqual(json(b,'Object.values(party.offlineExploration.receipt.boosts).map(b=>b.ms)'),[20000,45000]);assert.equal(b.run('battleRate'),1);
 });
 test('pause and stop earn no offline rewards; wall-clock effects still expire',async()=>{
  for(const operation of ['toggleBattle()','stopTeamExploration()']){const r=game();r.run('state.consumables.exp_100_30m=1;useSupply("exp_100_30m");'+operation+';save();');const before=result(r);await settle(r,60000);const after=result(r);assert.equal(after.members[0].kills,before.members[0].kills);assert.equal(after.gold,before.gold);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.timedBoosts[0].remainingMs'),1740000);}

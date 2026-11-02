@@ -11,10 +11,10 @@ test('five distinct snapshots survive switches, balance imports and cold reload,
  r=loadRuntime(root,'index.html',Object.fromEntries(r.values),r.now);r.run('continueFromTitle()');await r.run('EmberwildOffline.settle()');r.run('closeModal()');assert.equal(r.run('JSON.stringify(state.board)'),before);r.advance(1000);r.run('ensureBoard()');assert.equal(r.run('state.board.day'),'2026-10-20');assert.equal(r.run('state.board.tasks.length'),5);assert.equal(r.run('state.board.bonusClaimed'),false);assert.deepEqual(r.errors,[]);
 });
 
-test('four claims consume stock, award frozen random materials and unlock one two-hour ticket; fifth is blocked',async()=>{
+test('four claims consume stock and award frozen random materials without a speed ticket bonus; fifth is blocked',async()=>{
  const r=game();await allTypes(r);const qs=json(r,'state.board.tasks');for(const q of qs.slice(0,4)){assert.equal(complete(r,q),true);assert.equal(r.run('claimBoard(qid)'),false);}
- assert.equal(r.run('state.board.tasks.filter(q=>q.done).length'),4);assert.equal(r.run('questReadyCount()'),1);assert.equal(complete(r,qs[4]),false);assert.equal(r.run('claimDailyBonus()'),true);assert.equal(r.run('state.consumables.speed2_120m'),1);assert.equal(r.run('claimDailyBonus()'),false);r.run('save();loadParty(packParty())');assert.equal(r.run('claimDailyBonus()'),false);assert.equal(r.run('state.board.tasks.filter(q=>q.done).length'),4);
- r.run("useSupply('speed2_120m');setBattleSpeed(2)");assert.equal(r.run('battleRate'),2);assert.equal(r.run('party.timedBoosts.find(b=>b.itemId==="speed2_120m").remainingMs'),7200000);r.advance(7200000);r.run('tick()');await r.run('EmberwildOffline.settle()');assert.equal(r.run('battleRate'),1);assert.deepEqual(r.errors,[]);
+ assert.equal(r.run('state.board.tasks.filter(q=>q.done).length'),4);assert.equal(r.run('questReadyCount()'),0);assert.equal(complete(r,qs[4]),false);assert.equal(r.run('typeof claimDailyBonus'),'undefined');assert.equal(r.run('state.consumables.speed2_120m'),undefined);r.run('save();loadParty(packParty())');assert.equal(r.run('state.board.tasks.filter(q=>q.done).length'),4);
+ assert.doesNotMatch(r.run('questView()'),/兩倍速|四項完成獎勵/);assert.equal(r.run('battleRate'),1);assert.deepEqual(r.errors,[]);
 });
 
 test('real kills respect species and snapshotted level range; enhance and every manual salvage path count after start',async()=>{
@@ -26,12 +26,11 @@ test('real kills respect species and snapshotted level range; enhance and every 
  assert.equal(r.run("state.board.tasks.find(q=>q.objectives[0].type==='enhance').objectives[0].progress"),1);assert.equal(r.run("state.board.tasks.find(q=>q.objectives[0].type==='salvage').objectives[0].progress"),r.run("Math.min(2,state.board.tasks.find(q=>q.objectives[0].type==='salvage').objectives[0].quantity)"));assert.deepEqual(r.errors,[]);
 });
 
-test('collect tasks deduct every delivered inventory and failed saves restore stock, claims, bonus and event counters',async()=>{
+test('collect tasks deduct every delivered inventory and failed saves restore stock, claims and event counters',async()=>{
  const r=game();await allTypes(r);r.run(`globalThis.collect=state.board.tasks.find(q=>q.objectives[0].type==='material');startDailyCommission(collect.id);setMaterialCount(collect.objectives[0].key,collect.objectives[0].quantity+20);globalThis.prior=JSON.stringify(packParty());globalThis.originalSave=save;save=()=>false`);assert.equal(r.run('claimBoard(collect.id)'),false);assert.equal(r.run('JSON.stringify(packParty())'),r.run('prior'));r.run('save=originalSave');
  const q=json(r,'state.board.tasks.find(q=>q.id===collect.id)'),k=q.objectives[0].key,before=r.run(`materialCount(${JSON.stringify(k)})`);assert.equal(r.run('claimBoard(collect.id)'),true);const reward=q.rewards.materials.find(x=>x.key===k)?.quantity||0;assert.equal(r.run(`materialCount(${JSON.stringify(k)})`),before-q.objectives[0].quantity+reward);
  r.run(`startDailyCommission(state.board.tasks.find(q=>q.objectives[0].type==='salvage').id);globalThis.g=gear(1,0,0,0);addGear(g);globalThis.prior=JSON.stringify(packParty());save=()=>false;salvage(g.id);`);assert.equal(r.run('JSON.stringify(packParty())'),r.run('prior'));r.run('save=originalSave');
  for(const q of json(r,'state.board.tasks.filter(q=>!q.done)').slice(0,3))assert.equal(complete(r,q),true);
- const beforeBonus=r.run('JSON.stringify(packParty())');r.run('save=()=>false');assert.equal(r.run('claimDailyBonus()'),false);assert.equal(r.run('JSON.stringify(packParty())'),beforeBonus);r.run('save=originalSave');assert.equal(r.run('claimDailyBonus()'),true);
 });
 
 test('one-task daily and one-time side progress migrate once; side content moves out of commissions',async()=>{

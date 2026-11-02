@@ -209,6 +209,8 @@
   if(activeBattleStat)finalizeBattleStatistics(victory?'victory':'wipe');
   if(finalAttempt){if(victory)EmberwildFinalEncounter.complete(party.map);else EmberwildFinalEncounter.fail(party.map);}
   if(quest)EmberwildQuestEncounter.complete(quest);else if(victory&&party.bossChallenge?.active)EmberwildBossEncounter.complete();
+  // Quest and final-stage eligibility is taken before their completion hooks run.
+  if(!victory&&!quest&&!finalAttempt)globalThis.EmberwildAutoRetry?.afterWipe();
   return true;
  }
  function thresholds(){return {...config().recovery,...party.explorationRecovery};}

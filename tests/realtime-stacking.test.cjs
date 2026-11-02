@@ -7,7 +7,7 @@ async function game(){const g=loadRuntime(root);g.ctx.setTimeout=fn=>setImmediat
 
 test('All five real-time consumables extend remaining time without duplicating strength',async()=>{
   const g=await game();
-  for(const id of ['speed2_30m','exp_100_30m','drop_50_30m','ward_fire','elementTonic_fire']){
+  for(const id of ['exp_100_30m','drop_50_30m','ward_fire','elementTonic_fire']){
     g.ctx.itemId=id;
     const result=plain(g.run(`(()=>{const api=EmberwildTimedBoosts,item=SHOP.find(x=>x.id===itemId),rows=()=>item.type==='timedBoost'?party.timedBoosts.filter(b=>b.itemId===itemId):api.buffRows(state[item.type]);state.consumables[itemId]=2;useSupply(itemId);const first=rows()[0].remainingMs;useSupply(itemId);return {count:rows().length,first,remaining:rows()[0].remainingMs,minutes:item.durationMinutes,inventory:state.consumables[itemId]};})()`));
     assert.equal(result.remaining,result.first+result.minutes*60000);
@@ -57,7 +57,7 @@ test('Different strengths and elements keep independent states, stats, timers an
 
 test('24 hour boundary accepts an exact fit and rejects excess without consuming any kind of item',async()=>{
   const g=await game();
-  for(const id of ['speed2_30m','exp_100_30m','drop_50_30m','ward_fire','elementTonic_fire']){
+  for(const id of ['exp_100_30m','drop_50_30m','ward_fire','elementTonic_fire']){
     g.ctx.itemId=id;
     g.run(`{const item=SHOP.find(x=>x.id===itemId);state.consumables[itemId]=3;useSupply(itemId);const rows=item.type==='timedBoost'?party.timedBoosts:EmberwildTimedBoosts.buffRows(state[item.type]);rows.find(b=>b.itemId===itemId).remainingMs=86400000-item.durationMinutes*60000;useSupply(itemId);}`);
     assert.equal(g.run(`(()=>{const item=SHOP.find(x=>x.id===itemId),rows=item.type==='timedBoost'?party.timedBoosts:EmberwildTimedBoosts.buffRows(state[item.type]);return rows.find(b=>b.itemId===itemId).remainingMs;})()`),86400000);

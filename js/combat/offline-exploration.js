@@ -169,7 +169,7 @@
   const c=clock(),elapsed=at-c.lastAt;if(elapsed<=0)return;
   const r=c.pendingReceipt,rows=buffs(),disabled=rows.filter(b=>!b.enabled);
   if(jobOffline&&r&&!r.complete&&combatActive){r.effectiveMs+=elapsed;for(const b of rows.filter(b=>b.enabled&&b.remainingMs>0)){
-   const key=api.sourceKey(b);const entry=r.boosts[key]??={name:b.name,effect:b.boostType==='speed2'?'兩倍速':b.boostType==='exp'?'經驗＋'+b.bonusPercent+'%':b.boostType==='drop'?'掉寶＋'+b.bonusPercent+'%':'屬性藥水',ms:0};entry.ms+=Math.min(elapsed,b.remainingMs);
+   const key=api.sourceKey(b);const entry=r.boosts[key]??={name:b.name,effect:b.boostType==='exp'?'經驗＋'+b.bonusPercent+'%':b.boostType==='drop'?'掉寶＋'+b.bonusPercent+'%':'屬性藥水',ms:0};entry.ms+=Math.min(elapsed,b.remainingMs);
   }}
   if(combatActive)party.combatSession.idleTimeMs+=elapsed;
   api.consume(party,elapsed);
@@ -457,12 +457,12 @@
  // and persist the new running/paused/stopped state after the operation.
  for(const name of [
   'toggleBattle','stopTeamExploration','restartExploration','startSelectedExploration','startBossChallenge','startQuestEncounter','leaveBossChallenge',
-  'chooseMap','changeDifficulty','setEncounterMode','returnToTitle','setBattleSpeed','setTimedBoostEnabled','setPauseBoostsOnSpeedEnd','useSupply','closeModal',
+  'chooseMap','changeDifficulty','setEncounterMode','returnToTitle','setTimedBoostEnabled','useSupply','closeModal',
   'buyFixedShopOffer','buyMarketOffer','buyHealingPotion','buySupply','buyLifeMaterial','sellInventoryItem',
   'setHeroAutoPotion','setHeroAutoPotionThreshold','setHeroAutoPotionItem','potion',
   'enhance','reroll','autoReroll','acceptAffix','resolveInlineAffix','rerollEquipmentPowerTier','socket',
   'salvage','salvageAll','sellGear','sellAllGearByQuality','confirmMassSalvage','confirmGearInventoryBatch','confirmTokenBatch','sellMaterial','sellCatalogueGem',
-  'startDailyCommission','claimBoard','claimDailyBonus','startSideQuest','claimQuest','completeStoryStage','claimMailboxAttachments','claimAllMailboxAttachments','useLevelScroll'
+  'startDailyCommission','claimBoard','startSideQuest','claimQuest','completeStoryStage','claimMailboxAttachments','claimAllMailboxAttachments','useLevelScroll'
  ]){
   // Mail claims commit attachments and claim flags atomically, including rollback.
   const savesOwnState=['claimMailboxAttachments','claimAllMailboxAttachments'].includes(name),base=globalThis[name];if(typeof base!=='function')continue;

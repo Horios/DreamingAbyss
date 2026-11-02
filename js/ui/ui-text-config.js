@@ -221,6 +221,20 @@ inlineInventoryView=function(){
     initial=function(job){const h=initHero(finalInitialBase(job));if(typeof syncHeroSkillArrays==='function')syncHeroSkillArrays(h);return h;};
   }
 
+  // Shared by the legacy round cursor and the seconds timeline: an ordinary
+  // (non-quest, non-final) wipe keeps exploring after the existing refill.
+  function autoRetryAfterWipe(){
+    if(party&&!party.questChallenge&&!globalThis.isFinalMap?.(party.map)&&!running&&!foes.length&&!enemy&&living().length){
+      running=true;
+      note('全隊恢復後，自動重新挑戰目前區域。');
+      save();
+      if(tab==='battle'||!isEditingControl())render();
+      else refreshGlobalJournal();
+      return true;
+    }
+    return false;
+  }
+  globalThis.EmberwildAutoRetry={afterWipe:autoRetryAfterWipe};
   if(typeof pacedRound==='function'){
     const finalAutoRetryPacedRoundBase=pacedRound;
     pacedRound=function*(){
@@ -229,13 +243,7 @@ inlineInventoryView=function(){
       // A wipe is the only normal round outcome that clears foes/enemy after
       // starting in the running state. Final-boss victory keeps the defeated
       // foe list, while a manual pause does not clear the encounter.
-      if(startedRunning&&party&&!party.questChallenge&&!globalThis.isFinalMap?.(party.map)&&!running&&!foes.length&&!enemy&&living().length){
-        running=true;
-        note('全隊恢復後，自動重新挑戰目前區域。');
-        save();
-        if(tab==='battle'||!isEditingControl())render();
-        else refreshGlobalJournal();
-      }
+      if(startedRunning)autoRetryAfterWipe();
     };
   }
 
@@ -377,13 +385,6 @@ inlineInventoryView=function(){
     };
   }
 
-  function configuredBattleRates(){const raw=GS('combat.pacing.rates',[1,2,4]);return Array.isArray(raw)?raw.map(Number).filter(x=>Number.isFinite(x)&&x>0):[1,2,4];}
-  function normalizeBattleRateToSettings(){const rates=configuredBattleRates();if(rates.length&&!rates.includes(battleRate))battleRate=rates[0];}
-  normalizeBattleRateToSettings();
-  if(typeof applyBalanceConfig==='function'){
-    const auditedApplyBalanceConfigBase=applyBalanceConfig;
-    applyBalanceConfig=function(...args){const out=auditedApplyBalanceConfigBase(...args);normalizeBattleRateToSettings();return out;};
-  }
 
   // Final-boss completion text should follow configurable level caps as the
   // actual progression code does.

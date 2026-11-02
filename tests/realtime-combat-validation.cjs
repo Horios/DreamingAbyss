@@ -18,7 +18,6 @@ function game({baseline,rate=1,job=1,durable=false}={}){
  const paceJournal=refreshGlobalJournal;refreshGlobalJournal=function(...args){const t=performance.now(),out=paceJournal(...args);paceFrames.push({at:Date.now(),actions:paceActions.length,ms:performance.now()-t});return out;};
  `);
  if(durable)r.run(`for(const h of heroes())h.shield=1e12;foes.forEach(e=>{e.hp=1e12;e.maxhp=1e12;e.atk=1;});`);
- if(rate===2)r.run(`state.consumables.speed2_30m=1;useSupply('speed2_30m');setBattleSpeed(2);`);
  r.run('paceEvents=[];paceActions=[];paceFrames=[];');return r;
 }
 function drive(r,ms,step=50){for(let t=0;t<ms;t+=step){r.advance(Math.min(step,ms-t));r.run('tick()');}}
@@ -28,7 +27,7 @@ async function encounterReport(baseline,rate){
  for(let t=0;t<30000;t+=50){r.advance(50);r.run('tick()');if(r.run('EmberwildOffline.busy'))await r.run('EmberwildOffline.settle(undefined,false)');}
  const w=json(r,'encounterWins'),sp=json(r,'encounterSpawns');return {rate,baseline,killToSettlementMs:w[0]-json(r,'paceActions')[0].at,settlementToSpawnMs:sp[0]-w[0],spawnToActionMs:json(r,'paceActions').find(a=>a.at>sp[0]).at-sp[0]};
 }
-async function main(){const i=process.argv.indexOf('--baseline'),baseline=i<0?null:process.argv[i+1];for(const rate of [1,2]){
+async function main(){const i=process.argv.indexOf('--baseline'),baseline=i<0?null:process.argv[i+1];for(const rate of [1]){
  if(process.argv.includes('--encounters')){console.log(JSON.stringify(await encounterReport(baseline,rate)));continue;}
  const r=game({baseline,rate,durable:true});if(process.argv.includes('--realtime')){
   const start=performance.now();await new Promise(resolve=>{const timer=setInterval(()=>{const now=performance.now();r.advance(Math.round(now-start)-(r.now-r.startedWall));r.run('tick()');if(now-start>=300000){clearInterval(timer);resolve();}},50);r.startedWall=r.now;});

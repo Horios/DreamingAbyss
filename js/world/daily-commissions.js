@@ -88,14 +88,12 @@
     if(!party||!state||!current(playerHero().board))return;for(const q of playerHero().board.tasks){if(!q.started||q.done)continue;for(const o of q.objectives)if(o.type===type&&(type!=='nearKill'||o.key===key&&level>=o.levelMin&&level<=o.levelMax))o.progress=Math.min(o.quantity,(o.progress||0)+quantity);}
   };
   claimBoard=function(id){if(!ensureBoard())return false;const board=playerHero().board,q=board.tasks.find(q=>q.id===id);if(!ready(q))return false;const req=requirements(q);if(!transaction(req,()=>{q.done=true;playerHero().repeat++;}))return false;toast('每日委託完成，已領取素材獎勵');return true;};
-  function bonusReady(){const b=playerHero().board;return current(b)&&!b.bonusClaimed&&b.tasks.filter(q=>q.done).length===4&&(playerHero().consumables.speed2_120m||0)<1e9&&SHOP.some(i=>i.id==='speed2_120m');}
-  globalThis.claimDailyBonus=function(){if(!ensureBoard()||!bonusReady())return false;const rewards=M.reward();rewards.items=[{key:'speed2_120m',quantity:1}];if(!transaction({objectives:[],rewards},()=>{playerHero().board.bonusClaimed=true;}))return false;toast('已領取兩倍速券2小時');return true;};
   claimQuest=function(id){
     ensureAccountQuests();const q=design().side.find(q=>q.id===id);if(!sideReady(q)||playerHero().claimed.length>=200)return false;
     const resolved={...q,rewards:resolveRewards(q.rewards,questRegion(playerHero()))};if(blocked(resolved))return false;
     if(!transaction(resolved,()=>playerHero().claimed.push(id)))return false;toast('支線完成，已領取獎勵');return true;
   };
-  globalThis.questReadyCount=function(){if(!party||!state)return 0;ensureBoard();return (current(playerHero().board)?playerHero().board.tasks.filter(ready).length:0)+Number(bonusReady());};
+  globalThis.questReadyCount=function(){if(!party||!state)return 0;ensureBoard();return (current(playerHero().board)?playerHero().board.tasks.filter(ready).length:0);};
   globalThis.sideQuestReminder=function(){if(!party||!state)return {ready:0,new:0};return {ready:design().side.filter(sideReady).length,new:design().side.filter(q=>M.eligible(q,context())&&!playerHero().claimed.includes(q.id)&&!sideReady(q)&&!party.story?.flags['side_started_'+q.id]).length};};
   globalThis.dailyQuestReminder=function(){if(!party||!state)return {ready:0,new:0};return {ready:questReadyCount(),new:current(playerHero().board)&&playerHero().board.tasks.filter(q=>q.done).length<4?playerHero().board.tasks.filter(q=>!q.started).length:0};};
   globalThis.startSideQuest=function(id){const q=design().side.find(q=>q.id===id);if(!q||!M.eligible(q,context()))return false;party.story??={version:1,quests:{},flags:{},unlocks:{},vip:0,autoBuy:false};const key='side_started_'+id,old=party.story.flags[key];party.story.flags[key]=true;if(!save()){if(old===undefined)delete party.story.flags[key];else party.story.flags[key]=old;return false;}render();return true;};
@@ -112,7 +110,7 @@
   questView=function(){
     ensureBoard();const h=playerHero(),board=h.board,tasks=current(board)?board.tasks:[],done=tasks.filter(q=>q.done).length;
     const daily=tasks.map(q=>{const req=requirements(q);return `<article class="card quest-design-card"><span class="tag">${q.done?'今日已完成':q.started?'進行中':'未開始'}</span>${!q.started&&done<4?'<span class="quest-new quest-new-detail" aria-label="有未開始任務">NEW!</span>':''}<h2>${esc(q.title)}</h2><p>${esc(q.description)}</p>${progressHTML(req)}<p class="gold">${esc(rewardText(req.rewards))}</p>${q.started?`<button class="primary" onclick="claimBoard('${q.id}')" ${ready(q)?'':'disabled'}>${q.done?'今日已完成':done>=4?'今日已完成四項':'交付並領獎'}</button>`:`<button onclick="startDailyCommission('${q.id}')" ${done>=4?'disabled':''}>開始任務</button>`}</article>`;}).join('');
-    return heading('COMMISSIONS / 每日委託','委託')+`<section class="panel"><b>每日委託 · 今日 ${done} / 4（五選四）</b><p class="small">每天隨機五項，最多完成四項，全隊共用。台灣時間 00:00 更新；切換角色、地圖或匯入設計不會重抽。擊殺、分解與強化從開始任務後計算；收集道具交付時會實際扣除。每項隨機素材獎勵已抽定。</p><p>完成四項額外獎勵：兩倍速券2小時 ×1</p><button class="primary" onclick="claimDailyBonus()" ${bonusReady()?'':'disabled'}>${board.bonusClaimed?'今日獎勵已領取':'領取四項完成獎勵'}</button></section><div class="cards">${daily||'<p>目前沒有可接取的每日委託。</p>'}</div>`;
+    return heading('COMMISSIONS / 每日委託','委託')+`<section class="panel"><b>每日委託 · 今日 ${done} / 4（五選四）</b><p class="small">每天隨機五項，最多完成四項，全隊共用。台灣時間 00:00 更新；切換角色、地圖或匯入設計不會重抽。擊殺、分解與強化從開始任務後計算；收集道具交付時會實際扣除。每項隨機素材獎勵已抽定。</p></section><div class="cards">${daily||'<p>目前沒有可接取的每日委託。</p>'}</div>`;
   };
   globalThis.sideQuestListHTML=function(){const h=playerHero(),d=design();
     const counts={available:0,locked:0,done:0};

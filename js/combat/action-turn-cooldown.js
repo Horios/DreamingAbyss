@@ -105,6 +105,6 @@ const actionTurnApplyGameplaySettingsBase=applyGameplaySettingsSideEffects;
 applyGameplaySettingsSideEffects=function(){actionTurnApplyGameplaySettingsBase();};
 applyGameplaySettingsSideEffects();
 const actionTurnGuideBase=guideView;
-guideView=function(){return `<section class="panel"><h2>行動回合冷卻</h2><p>主動與輔助技能的冷卻只在該角色自己的行動回合推進；冷卻 N 代表施放後要完整經過 N 次自身行動，之後才能再次施放。其他隊員與敵人行動不會扣除冷卻，戰鬥倍速也只改變播放速度。</p><p>每個角色自己的行動中，輔助技能不消耗主要行動；輔助處理完後，最多只會施放 1 個可用主動技能，若沒有主動技能可施放才會普通攻擊。主動技能或普通攻擊一旦執行，就結束該角色本回合。</p><p>主動技能最低冷卻為 ${GAME_BALANCE.combat.minimumActiveCooldown} 回合；因此 1 回合冷卻時，至少會隔一個自己的行動回合才再次施放。裝備的全技能冷卻詞條與指定技能冷卻詞條可同時生效。</p></section>`+actionTurnGuideBase();};
+guideView=function(){return `<section class="panel"><h2>行動回合冷卻</h2><p>主動與輔助技能的冷卻只在該角色自己的行動回合推進；冷卻 N 代表施放後要完整經過 N 次自身行動，之後才能再次施放。其他隊員與敵人行動不會扣除冷卻。</p><p>每個角色自己的行動中，輔助技能不消耗主要行動；輔助處理完後，最多只會施放 1 個可用主動技能，若沒有主動技能可施放才會普通攻擊。主動技能或普通攻擊一旦執行，就結束該角色本回合。</p><p>主動技能最低冷卻為 ${GAME_BALANCE.combat.minimumActiveCooldown} 回合；因此 1 回合冷卻時，至少會隔一個自己的行動回合才再次施放。裝備的全技能冷卻詞條與指定技能冷卻詞條可同時生效。</p></section>`+actionTurnGuideBase();};
 try{GAMEPLAY_SETTINGS=normalizeGameplaySettings(GAMEPLAY_SETTINGS);globalThis.__EMBERWILD_GAMEPLAY_SETTINGS=GAMEPLAY_SETTINGS;applyGameplaySettingsSideEffects();}catch(e){console.warn('行動回合設定初始化失敗',e);}
 if(state&&party){resetEncounter();save();render();}

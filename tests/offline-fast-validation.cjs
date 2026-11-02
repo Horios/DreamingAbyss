@@ -16,7 +16,7 @@ const setups={
  high:`state.lv=59;state.won=true;party.cleared=true;`,
  potions:`state.lv=8;party.map=1;state.equipped=state.equipped.map(()=>null);state.autoPotion=true;state.autoPotionId='heal_small';state.autoPotionThresholdPct=90;state.healingPotions={heal_small:2};`,
  boss:`state.lv=30;party.map=6;`,
- boosts:`state.lv=59;state.won=true;party.cleared=true;for(const id of ['speed2_30m','exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}setBattleSpeed(2);for(const b of party.timedBoosts)b.remainingMs=4*3600000;`,
+ boosts:`state.lv=59;state.won=true;party.cleared=true;for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}for(const b of party.timedBoosts)b.remainingMs=4*3600000;`,
  inventory:`state.lv=59;state.won=true;party.cleared=true;const token=createCompanionToken(EmberwildTokens.normalize().catalog[0].id),source=state.bag[0];for(let i=0;i<1500;i++)state.bag.push({...structuredClone(i%2?token:source),id:'existing-'+i});`
 };
 function reset(r,save){r.advance(save.offlineExploration.lastAt-r.now);r.ctx.fixture=structuredClone(save);r.run('loadParty(fixture)');}

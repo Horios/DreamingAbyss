@@ -1123,10 +1123,9 @@ const beforeSpeedCharacter=characterView;characterView=function(){const h=pageHe
 const speedReset=resetEncounter;resetEncounter=function(){speedReset();lastActionOrder=[];actionVisualTime=0;};
 
 let battleRate=1,roundIterator=null,nextActionAt=0,roundStartedAt=0;
-function toggleBattleRate(){return globalThis.setBattleSpeed?.(battleRate===1?2:1);}
 function tick(){if(!party||!running||$('modal').open)return;const now=Date.now();if(now<nextActionAt)return;if(!roundIterator){roundIterator=pacedRound();roundStartedAt=now;}const step=roundIterator.next();if(step.done){roundIterator=null;nextActionAt=Math.max(now+900/battleRate,roundStartedAt+6000/battleRate);}else{nextActionAt=now+900/battleRate;if(tab==='battle')render();}if(tab!=='battle')refreshGlobalJournal(); }
 const beforePaceReset=resetEncounter;resetEncounter=function(){roundIterator=null;nextActionAt=0;roundStartedAt=0;beforePaceReset();};
-const beforePaceBattle=battleView;battleView=function(){return beforePaceBattle().replace('<div class="text-battle-layout">',`<div class="panel pace-controls"><button class="${battleRate===2?'primary':''}" onclick="toggleBattleRate()">${battleRate} 倍速</button><button onclick="setTab('guide')">戰鬥說明</button></div><div class="text-battle-layout">`);};
+const beforePaceBattle=battleView;battleView=function(){return beforePaceBattle().replace('<div class="text-battle-layout">',`<div class="panel pace-controls"><button onclick="setTab('guide')">戰鬥說明</button></div><div class="text-battle-layout">`);};
 
 
 

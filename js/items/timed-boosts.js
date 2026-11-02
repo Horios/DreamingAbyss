@@ -1,8 +1,12 @@
 /* Shared real-time consumable contract. Percentages are source contributions, not multipliers. */
 (function(root){
   'use strict';
-  const TYPE='timedBoost',KINDS=['speed2','exp','drop'],MAX_STACK_MS=24*60*60*1000;
-  const LABELS={speed2:'2× 解鎖',exp:'經驗值',drop:'掉寶率'};
+  const TYPE='timedBoost',KINDS=['exp','drop'],MAX_STACK_MS=24*60*60*1000;
+  const LABELS={exp:'經驗值',drop:'掉寶率'};
+  // Battle speed was removed: legacy speed tickets and their effects are dropped
+  // from catalogs and saves without compensation.
+  const REMOVED_KINDS=['speed2','speed4'],REMOVED_ITEM=/^speed[24]_/;
+  const removedItem=item=>REMOVED_KINDS.includes(item?.boostType)||REMOVED_ITEM.test(String(item?.id??item?.itemId??item?.key??''));
   const copy=v=>JSON.parse(JSON.stringify(v));
   const isItem=item=>item?.type===TYPE;
   const ELEMENTAL_TYPES=['ward','elementTonic'];
@@ -70,19 +74,24 @@
     const out={...copy(buff),name:buff.name??item?.name??type+'_'+buff.element,durationMinutes:total/60000,effectPercent:item?.effectPercent??elementalPercent(type,settings),remainingMs:left,enabled:true,until:0};
     delete out.remainingTurns;delete out.totalTurns;validateElementalItem({...out,type,duration:0});return out;
   }
-  function itemName(kind,percent,minutes){return kind==='speed2'?'兩倍速解鎖券'+minutes+'分鐘':LABELS[kind]+'＋'+percent+'％ '+minutes+'分鐘';}
+  function itemName(kind,percent,minutes){return LABELS[kind]+'＋'+percent+'％ '+minutes+'分鐘';}
   const DEFAULT_ITEMS=[
-    {id:'speed2_30m',type:TYPE,boostType:'speed2',bonusPercent:0,durationMinutes:30,duration:0,cost:1200,sellPrice:300,shopEnabled:false,name:itemName('speed2',0,30),description:''},
     {id:'exp_100_30m',type:TYPE,boostType:'exp',bonusPercent:100,durationMinutes:30,duration:0,cost:600,sellPrice:150,shopEnabled:false,name:itemName('exp',100,30),description:''},
     {id:'drop_50_30m',type:TYPE,boostType:'drop',bonusPercent:50,durationMinutes:30,duration:0,cost:600,sellPrice:150,shopEnabled:false,name:itemName('drop',50,30),description:''}
   ];
-  const DAILY_TICKET={id:'speed2_120m',type:TYPE,boostType:'speed2',bonusPercent:0,durationMinutes:120,duration:0,cost:0,sellPrice:0,shopEnabled:false,name:'兩倍速券2小時',description:'每日委託五選四完成獎勵，提供 2 小時現實時間的兩倍速效果。'};
-  const DEFAULT_RULES=DEFAULT_ITEMS.map((item,i)=>({id:item.id,enabled:true,type:'item',key:item.id,name:'',description:'',quantityMin:1,quantityMax:1,unitPrice:null,weight:i===0?.15:.35,selection:'weighted',chance:1,quantityScalesWithTier:false,priceScalesWithTier:false}));
+  const DEFAULT_RULES=DEFAULT_ITEMS.map((item,i)=>({id:item.id,enabled:true,type:'item',key:item.id,name:'',description:'',quantityMin:1,quantityMax:1,unitPrice:null,weight:.35,selection:'weighted',chance:1,quantityScalesWithTier:false,priceScalesWithTier:false}));
+  function removeSpeedConfig(cfg){
+    if(!cfg||typeof cfg!=='object')return cfg;
+    if(Array.isArray(cfg.items))cfg.items=cfg.items.filter(item=>!(isItem(item)&&removedItem(item))&&!REMOVED_ITEM.test(String(item?.id??'')));
+    const rows=cfg.shopSettings?.randomOffers?.entries;if(Array.isArray(rows))cfg.shopSettings.randomOffers.entries=rows.filter(rule=>!(rule?.type==='item'&&REMOVED_ITEM.test(String(rule.key??''))));
+    if(Array.isArray(cfg.inventoryIcons))cfg.inventoryIcons=cfg.inventoryIcons.filter(row=>!(row?.kind==='item'&&REMOVED_ITEM.test(String(row.key??''))));
+    if(cfg.balanceSettings?.combat?.pacing)delete cfg.balanceSettings.combat.pacing.rates;
+    return cfg;
+  }
   function migrateConfig(cfg){
     migrateElementalConfig(cfg);
-    migrateSpeedData(cfg);
+    removeSpeedConfig(cfg);
     cfg.timeUnits??={};
-    if(cfg.balanceSettings?.combat?.pacing)cfg.balanceSettings.combat.pacing.rates=[1,2];
     if(cfg.timeUnits.timedBoostDuration!=='realMinutes'){
       cfg.items??=[];
       if(!cfg.items.some(isItem)){
@@ -98,7 +107,6 @@
       cfg.timeUnits.timedBoostDuration='realMinutes';
     }
     cfg.timeUnits.consumableClock='wall';
-    cfg.items??=[];if(!cfg.items.some(i=>i.id==='speed2_120m'))cfg.items.push(copy(DAILY_TICKET));
     return cfg;
   }
   function validateItem(item){
@@ -106,36 +114,32 @@
     if(!isItem(item)||typeof item.id!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(item.id)||typeof item.name!=='string'||!item.name.trim()||typeof item.description!=='string'||!KINDS.includes(item.boostType))throw Error('限時增益道具資料無效：'+id);
     if(!Number.isSafeInteger(item.durationMinutes)||item.durationMinutes<=0)throw Error('限時增益分鐘必須為有效正整數：'+id);
     expiryTime(item.durationMinutes);
-    if(item.boostType==='speed2'?item.bonusPercent!==0:!Number.isSafeInteger(item.bonusPercent)||item.bonusPercent<=0)throw Error('限時增益百分比必須為正整數；2× 解鎖為 0：'+id);
+    if(!Number.isSafeInteger(item.bonusPercent)||item.bonusPercent<=0)throw Error('限時增益百分比必須為正整數：'+id);
     if(item.duration!==0||!Number.isSafeInteger(item.cost)||item.cost<0||item.sellPrice!==undefined&&(!Number.isSafeInteger(item.sellPrice)||item.sellPrice<0)||item.element!==undefined&&item.element!==null&&item.element!=='')throw Error('限時增益價格或時間單位無效：'+id);
     return item;
   }
   function available(party,now=Date.now()){return (party?.timedBoosts||[]).filter(b=>remainingMs(b,now)>0);}
   function active(party,now=Date.now()){return available(party,now).filter(b=>b.enabled!==false);}
   function bonus(party,kind,now=Date.now()){return active(party,now).filter(b=>b.boostType===kind).reduce((sum,b)=>sum+b.bonusPercent,0);}
-  function unlocked(party,now=Date.now()){return available(party,now).some(b=>b.boostType==='speed2');}
-  function migrateSpeedData(data){
-    // Rename legacy references together, including inventories, rules, mail and snapshots.
-    function walk(v){if(!v||typeof v!=='object')return;for(const k of Object.keys(v)){
-      const next=k.replace(/speed4/g,'speed2');let value=v[k];
-      if(typeof value==='string')value=value.replace(/speed4/g,'speed2').replace(/四倍速/g,'兩倍速').replace(/4×/g,'2×');else walk(value);
-      if(next!==k){if(typeof value==='number'&&typeof v[next]==='number')value+=v[next];delete v[k];}v[next]=value;
-    }}walk(data);if(data?.combatSession?.speed===4)data.combatSession.speed=2;return data;
+  function removeSpeedSave(data){
+    if(!data||typeof data!=='object')return data;
+    if(Array.isArray(data.timedBoosts))data.timedBoosts=data.timedBoosts.filter(b=>!removedItem(b));
+    for(const h of Array.isArray(data.members)?data.members:[])if(h?.consumables&&typeof h.consumables==='object'&&!Array.isArray(h.consumables))for(const k of Object.keys(h.consumables))if(REMOVED_ITEM.test(k))delete h.consumables[k];
+    if(data.combatSession&&typeof data.combatSession==='object'){delete data.combatSession.speed;delete data.combatSession.pauseBoostsOnSpeedEnd;}
+    return data;
   }
   function prepareSave(data){
-    const out=migrateSpeedData(copy(data)),now=Date.now();
-    if(Array.isArray(out?.timedBoosts))out.timedBoosts=out.timedBoosts.map(b=>migrateBuff(b,now,b.boostType!=='speed2'||out.combatSession?.speed===2));
+    const out=removeSpeedSave(copy(data)),now=Date.now();
+    if(Array.isArray(out?.timedBoosts))out.timedBoosts=out.timedBoosts.map(b=>migrateBuff(b,now));
     return out;
   }
-  // One wall-clock delta per running expedition. Link at the exact speed expiry,
+  // One wall-clock delta per running expedition,
   // including when a background callback arrives after several effects expire.
   function consume(party,elapsed){
     if(!party||!Number.isSafeInteger(elapsed)||elapsed<=0)return false;
-    const rows=party.timedBoosts||[],speed=rows.filter(b=>b.boostType==='speed2'&&b.enabled&&remainingMs(b)>0),cutoff=speed.length?Math.max(...speed.map(b=>remainingMs(b))):Infinity;
-    const exhausted=cutoff<=elapsed,link=exhausted&&party.combatSession?.pauseBoostsOnSpeedEnd===true;
-    for(const b of rows){if(!b.enabled)continue;const used=link&&b.boostType!=='speed2'?Math.min(elapsed,cutoff):elapsed;b.remainingMs=Math.max(0,remainingMs(b)-used);if(!b.remainingMs||link&&b.boostType!=='speed2')b.enabled=false;}
+    for(const b of party.timedBoosts||[]){if(!b.enabled)continue;b.remainingMs=Math.max(0,remainingMs(b)-elapsed);if(!b.remainingMs)b.enabled=false;}
     for(const h of party.members||[])for(const k of ELEMENTAL_TYPES)for(const b of buffRows(h[k]))if(b.enabled){b.remainingMs=Math.max(0,remainingMs(b)-elapsed);if(!b.remainingMs)b.enabled=false;}
-    return exhausted;
+    return false;
   }
   function validateState(data){
     data=prepareSave(data);
@@ -147,11 +151,9 @@
       if(!Number.isSafeInteger(b.remainingMs)||b.remainingMs<0||typeof b.enabled!=='boolean'||names.has(key))throw Error('限時增益到期時間或同名來源無效');
       names.add(key);
     }
-    const raw=data?.combatSession??{},idleTimeMs=raw.idleTimeMs??0,speed=raw.speed??1,reportPaused=raw.reportPaused??false,filter=raw.filter??'all';
-    if(!Number.isSafeInteger(idleTimeMs)||idleTimeMs<0||![1,2].includes(speed)||typeof reportPaused!=='boolean'||!['all','playerDamage','enemyDamage','exp','item'].includes(filter))throw Error('掛機時間／倍速／戰報存檔無效');
-    const pauseBoostsOnSpeedEnd=raw.pauseBoostsOnSpeedEnd??false;if(typeof pauseBoostsOnSpeedEnd!=='boolean')throw Error('增益自動暫停設定無效');
-    const timedBoosts=copy(rows);
-    return {timedBoosts,combatSession:{idleTimeMs,speed:speed===2&&!active({timedBoosts}).some(b=>b.boostType==='speed2')?1:speed,reportPaused,filter,pauseBoostsOnSpeedEnd}};
+    const raw=data?.combatSession??{},idleTimeMs=raw.idleTimeMs??0,reportPaused=raw.reportPaused??false,filter=raw.filter??'all';
+    if(!Number.isSafeInteger(idleTimeMs)||idleTimeMs<0||typeof reportPaused!=='boolean'||!['all','playerDamage','enemyDamage','exp','item'].includes(filter))throw Error('掛機時間／戰報存檔無效');
+    return {timedBoosts:copy(rows),combatSession:{idleTimeMs,reportPaused,filter}};
   }
-  root.EmberwildTimedBoosts=Object.freeze({TYPE,KINDS,LABELS,MAX_STACK_MS,DEFAULT_ITEMS,DEFAULT_RULES,DAILY_TICKET,prepareSave,migrateSpeedData,isItem,itemName,migrateConfig,validateItem,available,migrateBuff,consume,active,bonus,unlocked,validateState,ELEMENTAL_TYPES,isElementalItem,expiryTime,remainingMs,buffRows,compactBuffs,elementalActive,sourceKey,stackBuff,timeText,validateElementalItem,createElementalBuff,migrateElementalConfig,migrateElementalBuff});
+  root.EmberwildTimedBoosts=Object.freeze({TYPE,KINDS,LABELS,MAX_STACK_MS,DEFAULT_ITEMS,DEFAULT_RULES,REMOVED_ITEM,removedItem,removeSpeedConfig,removeSpeedSave,prepareSave,isItem,itemName,migrateConfig,validateItem,available,migrateBuff,consume,active,bonus,validateState,ELEMENTAL_TYPES,isElementalItem,expiryTime,remainingMs,buffRows,compactBuffs,elementalActive,sourceKey,stackBuff,timeText,validateElementalItem,createElementalBuff,migrateElementalConfig,migrateElementalBuff});
 })(globalThis);
