@@ -125,3 +125,8 @@ MP 採 100 點標準池，完整自然恢復為十個原參考期（60 秒）。
 秒數 `finish()` 補回原有的一般探索全滅自動重試，與舊回合流程共用 `EmberwildAutoRetry.afterWipe()`；任務關卡與終局關卡全滅仍停止，判斷時採用結算前的關卡狀態。冒險指南與生效效果視窗中的回合制說明改為秒數規則。
 
 平衡器相容性：本工作階段無法讀取 `Horios/Emberwild-Balance`。平衡器內嵌的 `timed-boosts.js` 需同步為本版，並移除 `speed2` 類型與 `pacing.rates` 欄位；在同步前，`tests/timed-boosts-journal.test.cjs` 的內嵌比對會不一致。
+
+## v0.024 恢復一般全滅重試斷言
+
+v0.017 曾把 `tests/offline-receipts.test.cjs` 的「一般全滅依既有規則重試」斷言改成停止，以配合當時秒數制遺漏的自動重試。v0.023 已補回重試，本版恢復原斷言；任務關卡全滅仍停止且不產生獎勵。
+

@@ -73,9 +73,9 @@ test('title page never settles or displays errors and a late valid consumable sa
 });
 
 
-test('normal defeat stops by existing rules, while a failed quest encounter stops with no fabricated rewards',async()=>{
+test('normal defeat retries by existing rules, while a failed quest encounter stops with no fabricated rewards',async()=>{
  const r=game();r.run('state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,4000);
- assert.equal(r.run('running'),false);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.pendingReceipt.kills'),0);
+ assert.equal(r.run('running'),true);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.pendingReceipt.kills'),0);
  r.run('stopTeamExploration()');const before=rewardState(r);await settle(r,60000);assert.equal(r.run('state.totalKills'),before.kills);assert.equal(r.run('state.gold'),before.gold);
  const q=game();q.run(`stopTeamExploration();state.lv=20;syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save();`);await settle(q,60000);
  assert.equal(q.run('running'),false);assert.equal(q.run('party.offlineExploration.receipt'),null);assert.equal(q.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(q.run('party.offlineExploration.pendingReceipt.kills'),0);assert.equal(q.run('expeditionChallengeResult.success'),false);
