@@ -15,27 +15,27 @@ test('actors interleave on independent seconds; order of tied actors is stable',
  t.advanceTo(6);
  assert.deepEqual(events.map(e=>[e.timeSeconds,e.actorId]),[[1.5,'fast'],[3,'slow'],[3,'fast'],[4.5,'fast'],[6,'slow'],[6,'fast']]);
 });
-test('same-time actives use priority then configured order; charged skills wait',()=>{
+test('same-time instant skills use configured order and do not postpone basics',()=>{
  const {timeline:t,events}=setup([actor('h',{skills:[active('attack'),active('heal',{priority:0}),active('buff',{priority:1})]})]);
  t.advanceTo(2);
- assert.deepEqual(events.map(e=>[e.timeSeconds,e.skillId]),[[0,'heal'],[2,'buff']]);
- assert.equal(t.actor('h').skills.find(s=>s.id==='attack').readyInSeconds,0);
- assert.equal(t.actor('h').mp,80);
+ assert.deepEqual(events.map(e=>[e.timeSeconds,e.skillId]),[[0,'attack'],[0,'heal'],[0,'buff'],[2,undefined]]);
+ assert.equal(t.actor('h').skills.find(s=>s.id==='attack').readyInSeconds,2);
+ assert.equal(t.actor('h').mp,70);
  const tied=setup([actor('h',{skills:[active('first'),active('second')]})]);tied.timeline.advanceTo(0);assert.equal(tied.events[0].skillId,'first');
 });
-test('active buff consumes MP and action; predicates prevent redundant recasting',()=>{
+test('active buff consumes MP without taking a basic action; predicates prevent redundant recasting',()=>{
  const {timeline:t,events}=setup([actor('h',{skills:[active('buff',{priority:1,cooldownSeconds:0})]})],{
   canUse:(_a,s,c)=>s.id!=='buff'||!c.timeline.statuses.some(x=>x.id==='buff-effect'),
   onEvent(e,t){if(e.type==='skill')t.addStatus(status('buff-effect','h',{durationSeconds:5}));}
  });
  t.advanceTo(6);
- assert.deepEqual(events.filter(e=>['skill','basic'].includes(e.type)).map(e=>[e.type,e.timeSeconds]),[['skill',0],['basic',2],['basic',4],['skill',6]]);
+ assert.deepEqual(events.filter(e=>['skill','basic'].includes(e.type)).map(e=>[e.type,e.timeSeconds]),[['skill',0],['basic',2],['basic',4],['skill',5],['basic',6]]);
  assert.equal(t.actor('h').mp,80);
 });
 test('MP shortage skips expensive skills, considers other actions and regenerates continuously',()=>{
  const {timeline:t,events}=setup([actor('h',{mp:0,mpRegenPerSecond:3,skills:[active('expensive',{mpCost:1000}),active('spell',{mpCost:9})]})]);
  t.advanceTo(4);
- assert.deepEqual(events.map(e=>[e.type,e.timeSeconds,e.skillId]),[['basic',2,undefined],['skill',4,'spell']]);
+ assert.deepEqual(events.map(e=>[e.type,e.timeSeconds,e.skillId]),[['basic',2,undefined],['skill',3,'spell'],['basic',4,undefined]]);
  assert.equal(t.actor('h').mp,3);
 });
 test('a ready skill wakes precisely when enough MP exists, without frame polling',()=>{
@@ -49,7 +49,7 @@ test('cooldown is elapsed seconds independent of other actor counts',()=>{
 test('casts consume resources at start, respect cast time and block competing actions',()=>{
  const {timeline:t,events}=setup([actor('h',{skills:[active('cast',{castSeconds:3}),active('other')]})]);
  t.advanceTo(2);assert.equal(t.actor('h').mp,90);assert.equal(t.actor('h').casting.remainingSeconds,1);assert.equal(events.length,1);
- t.advanceTo(3);assert.deepEqual(events.map(e=>[e.type,e.timeSeconds]),[['castStart',0],['castComplete',3],['skill',3]]);
+ t.advanceTo(3);assert.deepEqual(events.map(e=>[e.type,e.timeSeconds]),[['castStart',0],['castComplete',3],['skill',3],['basic',3]]);
 });
 test('stun interrupts a cast, expires in seconds and blocks actions rather than skipping turns',()=>{
  const {timeline:t,events}=setup([actor('h',{skills:[active('cast',{castSeconds:3})]})]);
@@ -89,7 +89,7 @@ test('speed changes preserve basic charge progress and high speed respects confi
 test('cooldown reduction operates in seconds without resetting a basic attack',()=>{
  const {timeline:t,events}=setup([actor('h',{skills:[active('spell',{cooldownSeconds:20})]})]);
  t.advanceTo(1);const basic=t.actor('h').basicReadyInSeconds;t.reduceCooldowns('h',18);assert.equal(t.actor('h').basicReadyInSeconds,basic);
- t.advanceTo(2);assert.equal(events.at(-1).skillId,'spell');
+ t.advanceTo(2);assert(events.some(e=>e.skillId==='spell'&&e.timeSeconds===2));assert.equal(events.at(-1).type,'basic');
 });
 test('MP recovery and cost modifiers change at exact effect boundaries',()=>{
  const {timeline:t,events}=setup([actor('h',{mp:0,skills:[active('spell',{mpCost:20})]})]);
@@ -98,7 +98,7 @@ test('MP recovery and cost modifiers change at exact effect boundaries',()=>{
  t.setMpCostMultiplier('h',1);t.setMpRegen('h',10);t.advanceTo(3);assert.equal(t.actor('h').mp,10);
  const restored=Engine.restore(t.snapshot());assert.equal(restored.actor('h').mp,10);
 });
-test('speed changes rescale the shared action interval while fixed cast costs remain enforced',()=>{
+test('speed changes rescale basics while explicit fixed action costs remain enforced',()=>{
  const {timeline:t,events}=setup([actor('h',{skills:[active('spell')]})]);
  t.advanceTo(1);t.setSpeed('h',200);t.advanceTo(1.5);assert.equal(events.at(-1).type,'basic');assert.equal(events.at(-1).timeSeconds,1.5);
  const fixed=setup([actor('h',{skills:[active('spell',{actionCostSeconds:5})]})]);fixed.timeline.advanceTo(1);fixed.timeline.setSpeed('h',200);fixed.timeline.advanceTo(4.9);assert.equal(fixed.events.length,1);
@@ -153,3 +153,6 @@ test('the simulation clock never consults wall time or scales real-time consumab
  const {timeline:t}=setup([actor('h')]);const now=Date.now;Date.now=()=>{throw Error('wall clock consulted');};
  try{t.advanceTo(20);assert.equal(t.serial,10);}finally{Date.now=now;}
 });
+
+test('rejected casts can defer retry without creating a skill cooldown or stealing a basic',()=>{const {timeline:t,events}=setup([actor('h',{skills:[active('invalid',{mpCost:0})]})],{onEvent(e,t){if(e.skillId==='invalid'){t.find('h').ready.invalid=t.now;t.deferSkill('h','invalid',3);}}});t.advanceTo(2);assert.equal(t.actor('h').skills[0].readyInSeconds,0);assert.equal(events.filter(e=>e.type==='basic').length,1);assert.equal(events.filter(e=>e.type==='skill').length,1);});
+test('version-one checkpoints retain MP and charge while removing only the implicit old action lock',()=>{const {timeline:t}=setup([actor('h',{skills:[active('s')]})]);t.advanceTo(1);const raw=t.snapshot();raw.version=1;raw.actors[0].actionSpeedAt=2000000;raw.actors[0].actionAt=2000000;delete raw.actors[0].retryAt;const restored=Engine.restore(raw);assert.equal(restored.actor('h').actionReadyInSeconds,0);assert.equal(restored.actor('h').basicReadyInSeconds,1);assert.equal(restored.actor('h').mp,90);assert.equal(restored.snapshot().version,2);});

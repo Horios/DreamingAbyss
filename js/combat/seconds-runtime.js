@@ -159,7 +159,7 @@
    if(Object.hasOwn(x,'job'))ok=d.type==='support'?castSupport(x,d.adapter.index):castPartySkill(x,d.adapter.index,battleStats(x));
    else{const shared=sharedSkillById(d.id),old=x.atk,c=__EMBERWILD_CONTROL_TEST_API.states[x.id];x.atk*=1-(c?.fear?.damageReduction||0);try{ok=EmberwildCombatEvents.action(x,()=>castEnemySharedSkill(x,shared));}finally{x.atk=old;}EmberwildCombatEvents.endTurn(x,ok!==false);}
   }finally{currentTiming=null;}
-  if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now+Math.max(Math.round(engine.interval(a)),Math.round(s.cooldownSeconds*1e6));return false;}
+  if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now;engine.deferSkill(key(x),s.id,config().minimumActionIntervalSeconds);return false;}
   scheduleEffects(before,t,d);scheduleControls(t);
   if(Object.hasOwn(x,'job')){
    const a=engine.find(key(x)),reduction=cooldownReductionOnCast(x,d.id);if(reduction)a.ready[s.id]=Math.max(engine.now+Math.round(config().minimumActionIntervalSeconds*1e6),a.ready[s.id]-Math.round(reduction*1e6));
@@ -183,7 +183,7 @@
   if(event.type==='blocked'){note(combatEnemyName(x)+' 因畏懼延後行動。');return;}
   if(event.type==='basic'){
    basicAction(x);  }else if(event.type==='skill'||event.type==='castComplete'){
-   const s=engine.find(event.actorId).definition.skills.find(s=>s.id===event.skillId);if(s){if(castResolved(x,s))recordAction(event.actorId,Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x),skill(s.id).name);else if(event.type==='skill'&&x.hp>0&&foes.some(e=>e.hp>0)&&living().length){const a=engine.find(key(x));a.basicAt=a.actionSpeedAt=engine.now+engine.interval(a);a.actionFixedAt=engine.now;a.actionAt=a.actionSpeedAt;basicAction(x);}}
+   const s=engine.find(event.actorId).definition.skills.find(s=>s.id===event.skillId);if(s){if(castResolved(x,s))recordAction(event.actorId,Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x),skill(s.id).name);}
   }
   scheduleEffects(new Set(effects.filter(f=>f.secondsId)),null,null);scheduleControls();
   for(const a of engine.actors){const u=unit(a.definition.id);if(!u)continue;const steps=(u.procAdvanceSteps||0)+(u.basicAdvanceRound?1:0)+(u.sharedAdvanceSteps||0);if(steps){const advance=steps*config().advanceStepSeconds*1e6;a.basicAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.basicAt-advance);a.actionSpeedAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.actionSpeedAt-advance);a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);for(const k of ['procAdvanceSteps','basicAdvanceRound','procAdvanceRound','sharedAdvanceSteps','sharedAdvanceRound'])delete u[k];}}

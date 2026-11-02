@@ -87,8 +87,8 @@ test('Missing inputs or full output stock stop cleanly without consuming partial
   assert.deepEqual(r.errors,[]);
 });
 
-test('New materials can be sold at requested prices, including after old balance JSON is applied',async()=>{
-  const r=await game();r.run('state.materials["紅色草"]=4;state.materials["小蟲"]=2;');
+test('Configured material sale prices survive old balance JSON and remain editable',async()=>{
+  const r=await game();r.run(`const prices=exportableBalance();for(const [key,sellPrice] of [['紅色草',1],['小蟲',5]]){const item=prices.inventoryIcons.find(x=>x.kind==='material'&&x.key===key);item.sellPrice=sellPrice;}applyBalanceConfig(prices,{persist:false});state.materials['紅色草']=4;state.materials['小蟲']=2;`);
   assert.equal(r.run('materialSellPrice("紅色草")'),1);assert.equal(r.run('materialSellPrice("小蟲")'),5);
   assert.match(r.run('accountMaterialsView()'),/data-item-kind="material" data-item-key="紅色草"[^>]*data-item-quantity="4"/);assert.match(r.run('accountMaterialsView()'),/data-item-kind="material" data-item-key="小蟲"[^>]*data-item-quantity="2"/);
   r.run('{const d=exportableBalance();d.balanceSettings.economy.materialPrices=d.balanceSettings.economy.materialPrices.filter(x=>!["紅色草","小蟲","清水","藥水瓶"].includes(x.key));applyBalanceConfig(d);}');
@@ -157,7 +157,7 @@ test('Shop categories render only their own products and preserve purchases and 
 });
 
 test('Life stock shows uses and quantities and sells through the shared inventory with save rollback',async()=>{
-  const r=await game();r.run('setTab("gather");state.materials["紅色草"]=4;state.materials["小蟲"]=2;');
+  const r=await game();r.run(`const prices=exportableBalance();for(const [key,sellPrice] of [['紅色草',1],['小蟲',5]]){const item=prices.inventoryIcons.find(x=>x.kind==='material'&&x.key===key);item.sellPrice=sellPrice;}applyBalanceConfig(prices,{persist:false});setTab('gather');state.materials['紅色草']=4;state.materials['小蟲']=2;`);
   const view=r.run('gatheringView()'),alchemy=r.run('alchemyView()');assert.match(view,/目前材料庫存/);assert.match(view,/id="life-gather"/);assert.doesNotMatch(view,/id="life-alchemy"/);assert.match(alchemy,/id="life-alchemy"/);assert.doesNotMatch(alchemy,/id="life-gather"/);
   assert.equal((view.match(/class="life-stock-row /g)||[]).length,8);
   const gold=r.run('state.gold');

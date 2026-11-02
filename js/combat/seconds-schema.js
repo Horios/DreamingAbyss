@@ -33,6 +33,7 @@
   const c=doc.balanceSettings.combat.seconds===undefined?defaults(doc):copy(doc.balanceSettings.combat.seconds);
   c.finalBoss??={enrageAfterSeconds:(doc.balanceSettings.combat.finalBoss?.enrageAfterTurn??45)*c.actionReferenceSeconds,specialIntervalSeconds:(doc.balanceSettings.combat.finalBoss?.specialEveryTurns||5)*c.actionReferenceSeconds};
   c.advanceStepSeconds??=(doc.balanceSettings.combat.pacing?.actionIntervalMs||1500)/1000;
+  c.actionModel??='independent';
   doc.balanceSettings.combat.seconds=c;doc.balanceSettings.meta.combatTimingVersion=VERSION;
   for(const s of doc.skillSystem?.definitions||[]){s.timing??=timing(s,s.adapter?.job??s.jobs?.[0]??0,c);}
   for(const s of doc.statusDefinitions||[]){s.timing??={durationSeconds:s.permanent?null:round(s.duration*c.durationReferenceSeconds),periodicIntervalSeconds:c.periodicIntervalSeconds,triggerIntervalSeconds:c.triggerIntervalSeconds};if(s.control)s.timing.bossControlDurationSeconds??=round(s.control.bossDuration*c.actionReferenceSeconds);}
@@ -44,7 +45,7 @@
   validate(doc);return doc;
  }
  function validate(doc){
-  const c=doc?.balanceSettings?.combat?.seconds;if(!c||c.version!==VERSION)fail('缺少版本 1');
+  const c=doc?.balanceSettings?.combat?.seconds;if(c?.actionModel!=='independent')fail('必須使用獨立普攻與技能時間軸');if(!c||c.version!==VERSION)fail('缺少版本 1');
   for(const k of ['referenceSpeed','minimumActionIntervalSeconds','actionReferenceSeconds','durationReferenceSeconds','periodicIntervalSeconds','triggerIntervalSeconds'])if(!finite(c[k],.000001,3600))fail(k+' 必須為正秒數／速度');
   if(!finite(c.advanceStepSeconds,.000001,3600)||!finite(c.encounterDelaySeconds,0,3600)||!finite(c.healThreshold,0,1))fail('遭遇等待或治療門檻無效');
   if(!c.finalBoss||!finite(c.finalBoss.enrageAfterSeconds)||!finite(c.finalBoss.specialIntervalSeconds,.000001))fail('終局首領計時無效');
