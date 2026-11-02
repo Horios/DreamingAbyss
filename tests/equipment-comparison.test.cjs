@@ -67,12 +67,16 @@ test('An enhanced equipped item uses live values in previews while combat retain
   const r=loadRuntime(root);
   const result=json(r,`
     start(0);closeModal();const h=playerHero(),worn=h.bag.find(g=>g.id===h.equipped[0]),next=gear(1,0,0,0);next.affix=[{type:0,rank:1,value:20}];h.bag.push(next);
-    spawnGroup();const frozen=stats(h);worn.plus=10;
-    const idle=__EMBERWILD_TEAM_EQUIPMENT.withLiveEquipment(()=>equipmentComparison(h,next,0)),preview=equipmentComparison(h,next,0),battle=stats(h);
-    return {idle,preview,frozen,battle};
+    spawnGroup();running=true;EmberwildSecondsCombat.step();const frozen=EmberwildBattleConfiguration.combat(()=>stats(h));worn.plus=10;
+    const idle=__EMBERWILD_TEAM_EQUIPMENT.withLiveEquipment(()=>equipmentComparison(h,next,0)),preview=equipmentComparison(h,next,0),battle=EmberwildBattleConfiguration.combat(()=>stats(h)),live=stats(h);
+    return {idle,preview,frozen,battle,live,pending:EmberwildBattleConfiguration.pending()};
   `);
+  // Since live configuration edits (969a3ab), only the encounter's combat calculations keep the snapshot;
+  // menus and previews show the edited equipment immediately.
+  assert.equal(result.pending,true);
   assert.deepEqual(result.preview,result.idle);
   assert.deepEqual(result.battle,result.frozen);
+  assert.ok(result.live.atk>result.frozen.atk);
 });
 
 test('Moving an already worn accessory to the other position counts its physical item only once',()=>{

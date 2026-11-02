@@ -171,6 +171,8 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
     await t.test('four starter gifts arrive by mail, retain reroll restrictions and include growth in one ledger',async()=>{
       const out=await r.page.evaluate(async()=>{
         const issues=[];let checked=0,gift;
+        // Real play chooses a save slot before creating a character; the title screen refuses unslotted saves.
+        await EmberwildOffline.settle(undefined,false);selectSaveSlot(1);closeModal();
         for(let job=0;job<4;job++){
           await EmberwildOffline.settle(undefined,false);closeModal();start(job);closeModal();clearInterval(timer);await EmberwildOffline.settle(undefined,false);
           const mail=party.mailbox.messages.find(m=>m.rewardKey.startsWith('starter-')&&!m.claimed);if(!mail){issues.push('missing gift '+job);continue;}
@@ -213,7 +215,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.ok(await r.page.locator('#modal .equipment-total-summary').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
       await r.page.setViewportSize({width:1280,height:800});await r.page.evaluate(()=>{closeModal();setTab('equipment');setInventoryCategory('equipment');});
       const listName=r.page.locator('.gear-management-row[data-gear-id="equipment-test"] .inventory-list-item');
-      assert.match(await listName.innerText(),/T7[\s\S]*\+10/);
+      const listText=await listName.innerText();assert.match(listText,/(^|\s)T7(\s|$)/);assert.match(listText,/\+10 /);
       assert.ok(await listName.evaluate(el=>el.scrollHeight<=el.clientHeight+1));
       await r.page.evaluate(()=>openForge(state.bag[0].id));
       assert.ok(await r.page.locator('.forge-gear-item .item-slot-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
@@ -226,7 +228,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.match(out.html,/gear-tier-10[^]*?T10/);assert.doesNotMatch(out.html,/claimPending|pending-gear/);assert.equal(out.pending,'undefined');
     });
     await t.test('Equipment comparison, wear, enhancement to configured +15, reroll and save/load still work',async()=>{
-      const out=await r.page.evaluate(()=>{
+      const out=await r.page.evaluate(async()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const h=__equipmentTestHero(),first=__equipmentTestGear({id:'worn-test'}),next=__equipmentTestGear({id:'next-test',powerTier:10,plus:10,affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]});
         h.bag.push(first,next);equipSharedGear(first.id,memberKey(h),0);
@@ -235,7 +237,9 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const previewText=$('modal').textContent,unchanged=h.equipped[0]===first.id;
         confirmEquipComparison(next.id,memberKey(h),0);
         const after=stats(h),worn=h.equipped[0]===next.id;
-        const doc=exportableBalance();doc.balanceSettings.equipment.enhance.maxLevel=15;applyBalanceConfig(doc,{persist:true});
+        const doc=exportableBalance();doc.balanceSettings.equipment.enhance.maxLevel=15;
+        // Use the in-game test-balance import, which is the path that keeps a preview balance across reloads.
+        const imported=await importBalanceJSON({target:{files:[new File([JSON.stringify(doc)],'balance.json',{type:'application/json'})],value:''}});if(!imported)throw Error('balance import failed');
         h.ore=h.dust=100000;h.materials['以太鍛鐵']=100000;
         for(let i=0;i<5;i++)enhance(next.id);
         const enhanced=next.plus,baseRating=equipmentBaseRating(next);
@@ -252,16 +256,17 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       for(const key of ['rerolled','saveResult','gearEqual','statsEqual','summaryEqual'])assert.equal(out[key],true,key);
       const reopened=await openRuntime(root,'index.html',out.storage,{pathname:'/preview/'});
       try{
-        const restored=await reopened.page.evaluate(id=>{continueFromTitle();const g=state.bag.find(x=>x.id===id);return {gear:JSON.stringify(g),summary:equipmentTotalSummaryText(g),stats:stats(state)};},out.gearId);
+        // Published boots hydrate the slot when the player opens it from the title screen.
+        const restored=await reopened.page.evaluate(async id=>{await EmberwildOffline.settle(undefined,false);selectSaveSlot(1);await EmberwildOffline.settle(undefined,false);const g=state.bag.find(x=>x.id===id);return {gear:JSON.stringify(g),summary:equipmentTotalSummaryText(g),stats:stats(state)};},out.gearId);
         assert.equal(restored.gear,out.gearJSON);assert.equal(restored.summary,out.summary);assert.deepEqual(restored.stats,out.stats);assert.deepEqual(reopened.errors,[]);
       }finally{await reopened.browser.close();}
     });
     await t.test('Six legacy saves keep equipment identity, character stats and source totals through round trips',async()=>{
-      const issues=await r.page.evaluate(fixtures=>{
+      const issues=await r.page.evaluate(async fixtures=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});const issues=[];
         for(const raw of fixtures){
-          loadParty(structuredClone(raw));const before=party.members.map(h=>stats(h)),packed=structuredClone(packParty());
-          loadParty(packed);
+          await EmberwildOffline.settle(undefined,false);loadParty(structuredClone(raw));await EmberwildOffline.settle(undefined,false);const before=party.members.map(h=>stats(h)),packed=structuredClone(packParty());
+          loadParty(packed);await EmberwildOffline.settle(undefined,false);
           if(JSON.stringify(party.members.map(h=>stats(h)))!==JSON.stringify(before))issues.push('stats '+state.lv);
           for(const g of state.bag){const ledger=equipmentStatContributions(g);for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('source '+g.id);}
         }

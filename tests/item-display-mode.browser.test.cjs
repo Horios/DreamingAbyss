@@ -29,7 +29,10 @@ test('Item interfaces share one persisted icon-name or name-only list mode',asyn
     // Snapshot immediately before the display-only action. Visiting other
     // tabs can legitimately record quest or interface state.
     await p.evaluate(()=>setTab('shop'));
-    const before=await p.evaluate(()=>({party:JSON.stringify(party),balance:JSON.stringify(exportableBalance()),save:localStorage.getItem(KEY)}));
+    // playTimeMs and offlineExploration.lastAt follow the real clock while the page is open; every
+    // other party/save field must stay identical across the display-only action.
+    await p.evaluate(()=>{globalThis.__displaySnapshot=raw=>{const v=typeof raw==='string'?JSON.parse(raw):structuredClone(raw);if(!v)return JSON.stringify(v);delete v.playTimeMs;if(v.offlineExploration)delete v.offlineExploration.lastAt;return JSON.stringify(v);};});
+    const before=await p.evaluate(()=>({party:__displaySnapshot(JSON.parse(JSON.stringify(party))),balance:JSON.stringify(exportableBalance()),save:__displaySnapshot(localStorage.getItem(KEY))}));
     await p.locator('#utilityButton-options').click();
     assert.equal(await p.locator('[data-item-display-choice]').count(),2);
     await p.locator('[data-item-display-choice="name"]').click();
@@ -40,7 +43,7 @@ test('Item interfaces share one persisted icon-name or name-only list mode',asyn
     const textSlot=p.locator('main .item-slot:visible').first();await textSlot.waitFor();
     assert.equal(await textSlot.locator('.item-slot-art').isVisible(),false);
     assert.equal(await textSlot.locator('.item-slot-name').isVisible(),true);
-    assert.deepEqual(await p.evaluate(before=>({party:before.party===JSON.stringify(party),balance:before.balance===JSON.stringify(exportableBalance()),save:before.save===localStorage.getItem(KEY)}),before),{party:true,balance:true,save:true});
+    assert.deepEqual(await p.evaluate(before=>({party:before.party===__displaySnapshot(JSON.parse(JSON.stringify(party))),balance:before.balance===JSON.stringify(exportableBalance()),save:before.save===__displaySnapshot(localStorage.getItem(KEY))}),before),{party:true,balance:true,save:true});
     assert.equal(await p.evaluate(()=>setItemDisplayMode('unknown')),false);
     await p.reload();
     assert.equal(await p.locator('html').getAttribute('data-item-display'),'name');

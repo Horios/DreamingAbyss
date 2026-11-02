@@ -11,3 +11,12 @@ test('every party card lists party-wide timed boosts with their real remaining t
  await g.page.clock.runFor(61000);await g.page.evaluate(()=>{clearInterval(timer);EmberwildSecondsUI.sync();});
  const later=await g.page.locator('.seconds-protagonist .seconds-state').evaluateAll(ns=>ns.map(n=>n.textContent));assert(later.some(t=>/經驗值＋100％ 30分鐘（00:2[89]:\d\d）/.test(t)),JSON.stringify(later));
  assert.equal(await g.page.locator('#battleEnemyIcons .seconds-state').evaluateAll(ns=>ns.filter(n=>n.textContent.includes('經驗值')).length),0,'party boosts are not shown on enemies');assert.deepEqual(g.errors,[]);}finally{await g.browser.close();}});
+test('full redraws between scheduler events keep charge and MP bars at the presented time instead of jumping back',async()=>{const g=await setup();try{
+ const regressions=[];
+ for(let i=0;i<24;i++){
+  await g.page.clock.runFor(137);
+  const sample=await g.page.evaluate(()=>{const read=()=>[...document.querySelectorAll('#battleAllyIcons [data-seconds-skill="basic"] .seconds-charge-fill,#battleAllyIcons [data-mp-actor] .seconds-mp-track>span')].map(n=>parseFloat(n.style.width));EmberwildSecondsUI.sync();const synced=read();render();const redrawn=read();return {synced,redrawn,stale:EmberwildSecondsCombat.timeline.now/1e6};});
+  sample.synced.forEach((w,n)=>{if(sample.redrawn[n]<w-.5)regressions.push({i,n,synced:w,redrawn:sample.redrawn[n]});});
+ }
+ assert.deepEqual(regressions,[]);assert.deepEqual(g.errors,[]);
+}finally{await g.browser.close();}});

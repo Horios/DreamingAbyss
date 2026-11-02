@@ -42,6 +42,7 @@ test('equipment sockets: horizontal icons, icon gem choices, modes and disabled 
    await mode.selectOption('skill');
    assert.equal(await editor.locator('[data-equipment-gem="1"]').isDisabled(),true,'proc skill rejects cooldown gem');
    await editor.locator('[data-equipment-gem="0"]').click();
+   await editor.locator('[data-equipment-socket="0"] svg').first().waitFor({state:'attached',timeout:10000});
    assert.equal(await editor.locator('[data-equipment-socket="0"] svg').count(),1);
    assert.equal(await p.evaluate(()=>playerHero().gems[0]),2);
    await mode.selectOption('base');
@@ -51,6 +52,7 @@ test('equipment sockets: horizontal icons, icon gem choices, modes and disabled 
    assert.equal(await p.evaluate(()=>playerHero().gems[1]),2);
    await editor.locator('[data-equipment-socket="2"]').click();
    await editor.locator('[data-equipment-gem="12"]').click();
+   await editor.locator('[data-equipment-socket="2"] svg').first().waitFor({state:'attached',timeout:10000});
    assert.equal(await editor.locator('[data-equipment-socket="2"] svg').count(),1);
    assert.equal(await p.evaluate(()=>__EMBERWILD_EQUIPMENT_SKILLS.mode(playerHero(),findGear('socket-ui'),2)),'base');
    await editor.locator('.equipment-gem-remove').click();

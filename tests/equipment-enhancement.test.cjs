@@ -21,14 +21,19 @@ test('actual enhancement, preview, combat stats and an existing +10 save use the
   const r=game(),out=json(r,`(()=>{
     const g=gear(1,0,0,0);Object.assign(g,{formJob:0,form:0,prefixId:'',suffixId:'',affix:[],powerTier:7,plus:0,baseSnapshot:{version:1,mult:1.08,raw:{hp:0,atk:3,def:0},body:{hp:0,atk:3,def:0},base:{hp:0,atk:3,def:0}}});
     state.bag.push(g);equipSharedGear(g.id,memberKey(playerHero()),0);state.ore=100000;state.dust=100000;state.materials['以太鍛鐵']=100;
-    const before=stats(playerHero()).atk,base=JSON.stringify(g.baseSnapshot),id=g.id,cost=upgradeMaterials(g),ore=state.ore;
+    const before=stats(playerHero()).atk,ledgerBefore=equipmentStatContributions(g).total.atk,base=JSON.stringify(g.baseSnapshot),id=g.id,cost=upgradeMaterials(g),ore=state.ore;
     const preview=equipmentTotalSummaryText({...g,plus:1});enhance(id);const first={plus:g.plus,spent:ore-state.ore,attack:gearBaseStats(g).atk};
     for(let i=1;i<10;i++)enhance(id);
-    const after=stats(playerHero()).atk,ledger=equipmentStatContributions(g),saved=packParty();loadParty(saved);const restored=findGear(id);
-    return {before,after,base,preview,cost,first,total:gearBaseStats(restored),plus:restored.plus,t:restored.powerTier,reloadedBase:JSON.stringify(restored.baseSnapshot),ledger,html:(openForge(id),forgeView())};
+    const after=stats(playerHero()).atk,ledger=equipmentStatContributions(g);
+    const reference={...structuredClone(g),id:'unrefined-reference',plus:0,baseSnapshot:{...structuredClone(g.baseSnapshot),raw:{hp:0,atk:13,def:0},body:{hp:0,atk:13,def:0},base:{hp:0,atk:13,def:0}}};
+    state.bag.push(reference);equipSharedGear(reference.id,memberKey(playerHero()),0);const referenceAttack=stats(playerHero()).atk;equipSharedGear(id,memberKey(playerHero()),0);state.bag.splice(state.bag.indexOf(reference),1);
+    const saved=packParty();loadParty(saved);const restored=findGear(id);
+    return {before,after,referenceAttack,ledgerBefore,base,preview,cost,first,total:gearBaseStats(restored),plus:restored.plus,t:restored.powerTier,reloadedBase:JSON.stringify(restored.baseSnapshot),ledger,html:(openForge(id),forgeView())};
   })()`);
   assert.equal(out.first.plus,1);assert.equal(out.first.spent,out.cost.ore);assert.equal(out.first.attack,4);assert.match(out.preview,/攻擊 \+4/);
-  assert.equal(out.plus,10);assert.equal(out.t,7);assert.equal(out.total.atk,13);assert.equal(out.after-out.before,10);assert.equal(out.base,out.reloadedBase);
+  assert.equal(out.plus,10);assert.equal(out.t,7);assert.equal(out.total.atk,13);// Character attack applies class-level percentages to the summed equipment attack, so +10 from refinement
+  // must change combat stats exactly like an unrefined base of the same 13 attack.
+  assert.equal(out.ledger.total.atk-out.ledgerBefore,10);assert.equal(out.after,out.referenceAttack);assert.ok(out.after-out.before>=10);assert.equal(out.base,out.reloadedBase);
   assert.equal(out.ledger.rows.find(x=>x.label==='強化加成（+10）').stats.atk,10);assert.match(out.html,/固定值/);
   for(const k of ['atk','hp','def','speed'])assert.equal(out.ledger.rows.reduce((n,row)=>n+row.stats[k],0),out.ledger.total[k]);
   assert.deepEqual(r.errors,[]);
@@ -65,7 +70,8 @@ test('forge shows the next refinement gains with at least one point per present 
     if(row.slot===1)assert.doesNotMatch(preview,/攻擊/,label);
     assert(Object.values(shown).some(n=>n>=1),label+' should always gain a present base attribute');
   }
-  assert.match(out.rows.find(row=>row.level===1&&row.slot===1&&row.plus===1).decorated,/本次增加：生命 \+1<\/p>/);
+  // Published LV1 armor has both HP and defense; each present base attribute gains at least one point.
+  assert.match(out.rows.find(row=>row.level===1&&row.slot===1&&row.plus===1).decorated,/本次增加：生命 \+1 \/ 防禦 \+1<\/p>/);
   assert.match(out.rows.find(row=>row.level===1&&row.slot===0&&row.plus===0).decorated,/本次增加：攻擊 \+1<\/p>/);
   assert.match(out.rows.find(row=>row.level===1&&row.slot===0&&row.plus===1).decorated,/本次增加：攻擊 \+1<\/p>/);
   assert.match(out.max,/已達 \+10 強化上限/);assert.doesNotMatch(out.max,/本次增加：|累計/);

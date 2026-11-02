@@ -9,8 +9,9 @@
 
   const baseValidate=validateBalanceConfig;
   validateBalanceConfig=function(input){
-    const copy=clone(input),items=normalizeDescriptionBalance(copy).items;
-    copy.shopSettings=catalog.validate(copy.shopSettings,{...catalogOptions(items),equipmentForms:copy.equipmentForms,maps:copy.balanceSettings?.maps?.catalog,classes:copy.classes});
+    // Validate the migrated shop rules: removed items (e.g. retired speed boosts) drop their rules too.
+    const copy=clone(input),normalized=normalizeDescriptionBalance(copy),items=normalized.items;
+    copy.shopSettings=catalog.validate(normalized.shopSettings,{...catalogOptions(items),equipmentForms:copy.equipmentForms,maps:copy.balanceSettings?.maps?.catalog,classes:copy.classes});
     if(Array.isArray(copy.items))for(const item of copy.items)if(item.shopEnabled!==undefined&&typeof item.shopEnabled!=='boolean')throw Error('商店上架設定必須為布林值：'+item.id);
     const out=baseValidate(copy);out.shopSettings=copy.shopSettings;return out;
   };
