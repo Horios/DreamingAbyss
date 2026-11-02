@@ -51,15 +51,15 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
   await p.setViewportSize({width:390,height:844});await start(p);
   assert.equal(await p.locator('aside nav>button:visible').count(),5);
   for(const [id,target] of navPages){
-   let b=p.locator(`aside nav [data-page="${id}"]`);
-   if(!await b.count()){
-    // Sub-pages are reached through their category and the content tabs.
-    const group=await p.evaluate(id=>EmberwildNavigation.design.groups.find(g=>g.pages.some(x=>x.id===id))?.id,id);
-    const category=p.locator(`aside nav [data-nav-group="${group}"]`);
-    if(!await category.isVisible())await p.locator('.mobile-more-toggle').click();
-    await category.click();b=p.locator(`main .game-subtabs [data-subpage="${id}"]`);
-   }else if(!await b.isVisible())await p.locator('.mobile-more-toggle').click();
-   await b.click();await p.waitForFunction(t=>tab===t,target);
+   // A category remembers its last sub-page. Opening More redraws navigation,
+   // so data-page can change between locating and clicking the category.
+   const group=await p.evaluate(id=>EmberwildNavigation.design.groups.find(g=>g.pages.some(x=>x.id===id))?.id,id);
+   const category=p.locator(`aside nav [data-nav-group="${group}"]`);
+   if(!await category.isVisible())await p.locator('.mobile-more-toggle').click();
+   await category.click();
+   const subpage=p.locator(`main .game-subtabs [data-subpage="${id}"]`);
+   if(await subpage.count())await subpage.click();
+   await p.waitForFunction(t=>tab===t,target);
    assert.equal(await p.locator('.mobile-more-pages').isVisible(),false);
    assert.equal(await p.locator('aside nav>button:visible').count(),5);
   }
