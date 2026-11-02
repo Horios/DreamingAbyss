@@ -112,7 +112,7 @@
     const p=b.plans[index];if(!confirm('刪除隊伍方案「'+p.name+'」？整個方案及其配置將永久移除，無法復原。永久養成與背包物品保留；未被其他方案使用的寶石會返還。'+(id===b.activeId?'刪除後切換至第一個方案「'+b.plans[0].name+'」。':'')))return false;
     return transaction(()=>{releaseSockets(p);b.plans.splice(index,1);if(id===b.activeId){b.activeId=b.plans[0].id;apply(plan());}});
   };
-  globalThis.resetSkills=function(){if(state!==player()||!safe()||!confirm('免費重置本隊所有技能學習與裝配？永久解鎖與精通保留。'))return false;return transaction(()=>{const p=plan();releaseSockets(p);p.skills.fill(0);p.supportLevels.fill(0);p.active.fill(null);p.procSlots.fill(null);p.supportSlots.fill(null);apply(p);});};
+  globalThis.resetSkills=function(){if(state!==player()||!safe()||!confirm('免費重置本隊所有技能學習與裝配？永久解鎖與精通保留。'))return false;return transaction(()=>{const p=plan();releaseSockets(p);p.skills.fill(0);p.supportLevels.fill(0);p.active.fill(null);p.procSlots.fill(null);p.supportSlots.fill(null);delete p.skillLoadout;apply(p);});};
   function learnTeam(kind,i){if(state!==player()||!safe()||plan().job===null)return false;capture();const p=plan(),j=p.job,list=kind==='core'?player().skills:player().supportLevels,k=M.key(j,kind,i),r=kind==='core'?coreRule(j,i):supportRule(j,i);if(!Number.isInteger(i)||i<0||i>=list.length||list[i])return false;if(!build().permanent.unlocks[k]){toast('尚未永久解鎖：'+unlockMissing(j,kind,i).join('、'));return false;}return transaction(()=>{list[i]=1;});}
   const learnBase=learn,supportBase=learnSupport;
   learn=function(i){return state===player()?learnTeam('core',i):learnBase(i);};learnSupport=function(i){return state===player()?learnTeam('support',i):supportBase(i);};
