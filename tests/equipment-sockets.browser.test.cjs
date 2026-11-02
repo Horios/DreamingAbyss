@@ -4,6 +4,8 @@ const root=path.resolve(__dirname,'..');
 
 test('equipment sockets: horizontal icons, icon gem choices, modes and disabled skillless gear on desktop/mobile',async()=>{
  const r=await openRuntime(root),p=r.page;
+ // Socket edits redraw the panel asynchronously; read the UI only after it reflects the edit.
+ const eventually=async(read,expected,message)=>{for(let i=0;i<100&&await read()!==expected;i++)await p.waitForTimeout(50);assert.equal(await read(),expected,message);};
  try{
   // Starting a save can asynchronously settle offline rewards. Its receipt
   // is a real blocking dialog, so complete/acknowledge it before testing sockets.
@@ -40,20 +42,18 @@ test('equipment sockets: horizontal icons, icon gem choices, modes and disabled 
    assert.equal(await mode.isDisabled(),false);
    await editor.locator('[data-equipment-socket="0"]').click();
    await mode.selectOption('skill');
-   assert.equal(await editor.locator('[data-equipment-gem="1"]').isDisabled(),true,'proc skill rejects cooldown gem');
+   await eventually(()=>editor.locator('[data-equipment-gem="1"]').isDisabled(),true,'proc skill rejects cooldown gem');
    await editor.locator('[data-equipment-gem="0"]').click();
-   await editor.locator('[data-equipment-socket="0"] svg').first().waitFor({state:'attached',timeout:10000});
-   assert.equal(await editor.locator('[data-equipment-socket="0"] svg').count(),1);
+   await eventually(()=>editor.locator('[data-equipment-socket="0"] svg').count(),1);
    assert.equal(await p.evaluate(()=>playerHero().gems[0]),2);
    await mode.selectOption('base');
-   assert.equal(await editor.locator('[data-equipment-gem="1"]').isDisabled(),false);
+   await eventually(()=>editor.locator('[data-equipment-gem="1"]').isDisabled(),false);
    await editor.locator('[data-equipment-gem="1"]').click();
    assert.equal(await p.evaluate(()=>playerHero().gems[0]),3,'replacing refunds prior gem');
    assert.equal(await p.evaluate(()=>playerHero().gems[1]),2);
    await editor.locator('[data-equipment-socket="2"]').click();
    await editor.locator('[data-equipment-gem="12"]').click();
-   await editor.locator('[data-equipment-socket="2"] svg').first().waitFor({state:'attached',timeout:10000});
-   assert.equal(await editor.locator('[data-equipment-socket="2"] svg').count(),1);
+   await eventually(()=>editor.locator('[data-equipment-socket="2"] svg').count(),1);
    assert.equal(await p.evaluate(()=>__EMBERWILD_EQUIPMENT_SKILLS.mode(playerHero(),findGear('socket-ui'),2)),'base');
    await editor.locator('.equipment-gem-remove').click();
    await editor.locator('[data-equipment-socket="0"]').click();
@@ -61,15 +61,15 @@ test('equipment sockets: horizontal icons, icon gem choices, modes and disabled 
    assert.equal(await p.evaluate(()=>playerHero().gems[1]),3);
   }
   await p.evaluate(()=>{selectSkillEquipment(null);});
-  assert.equal(await mode.isDisabled(),true);
-  assert.equal(await mode.inputValue(),'base');
+  await eventually(()=>mode.isDisabled(),true);
+  await eventually(()=>mode.inputValue(),'base');
   await p.evaluate(()=>{delete findGear('socket-ui').skillId;render();});
-  assert.equal(await mode.isDisabled(),true);
-  assert.equal(await mode.locator('option[value="skill"]').isDisabled(),true);
+  await eventually(()=>mode.isDisabled(),true);
+  await eventually(()=>mode.locator('option[value="skill"]').isDisabled(),true);
   assert.equal(await p.evaluate(()=>{playerHero().activeSkillEquipmentId='socket-ui';return setEquipmentGemMode('socket-ui','skill');}),false,'API rejects skillless equipment even with stale active ID');
   await p.evaluate(()=>{playerHero().activeSkillEquipmentId=null;const g=findGear('socket-ui');g.skillSockets={version:1,count:0,gems:[],firstMode:'skill'};render();});
-  assert.equal(await editor.locator('[data-equipment-socket]').count(),0);
-  assert.equal(await mode.count(),0);
+  await eventually(()=>editor.locator('[data-equipment-socket]').count(),0);
+  await eventually(()=>mode.count(),0);
   assert.match(await editor.textContent(),/沒有鑲嵌孔/);
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
