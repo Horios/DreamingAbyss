@@ -1,7 +1,11 @@
-# Emberwild 開發與修改說明
+# Dreaming Abyss 開發與修改說明
 
-本 Repository 為《餘燼荒野 · Emberwild》主遊戲專案。GitHub Repository 是目前版本的唯一最新版來源。
+本 Repository 為《夢淵 · Dreaming Abyss》主遊戲專案。GitHub Repository 是目前版本的唯一最新版來源。
 過去對話中的附件只作歷史參考；除非使用者明確指定附件版本，否則不得以舊附件覆蓋 Repository 的最新內容。
+
+## 命名規則
+
+遊戲名稱為「夢淵（Dreaming Abyss）」。畫面文字、文件、註解與匯出檔名中出現的「Emberwild」一律改為「Dreaming Abyss」，之後新增內容也依此辦理。下列名稱屬於程式運作依據，維持原樣：程式內部識別名稱（`Emberwild*` 全域物件、`__EMBERWILD_*`）、localStorage 存檔鍵名，以及實際存在的 GitHub repository 名稱與網址（`Horios/Emberwild`、`Horios/Emberwild-Balance`）。
 
 ## Branch 角色
 
@@ -143,3 +147,7 @@ v0.017 曾把 `tests/offline-receipts.test.cjs` 的「一般全滅依既有規�
 ## v0.026 更名後的測試前提
 
 `core-ui-split` 原以 `EMBERWILD` 字樣確認冷啟動標題畫面，更名後改為比對「DREAMING ABYSS／夢淵」；`preview-version` 測試的模擬標題同步更新。只修改測試，遊戲行為不變。
+
+## v0.027 名稱規則
+
+畫面以外的文件與註解中的「Emberwild」改為「Dreaming Abyss」，並於本文件開頭記錄命名規則。只修改文字，遊戲行為不變。
