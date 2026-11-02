@@ -3,9 +3,9 @@ const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const json=(runtime,code)=>JSON.parse(runtime.run('JSON.stringify('+code+')'));
 
-test('navigation defaults group every page once and expose the requested mission and life trees',()=>{
+test('navigation defaults group every page once in the top menu categories',()=>{
   const runtime=loadRuntime(root),design=json(runtime,'EmberwildNavigation.design');
-  assert.deepEqual(design.groups.map(group=>group.label),['主線','冒險','背包','商店','生活']);
+  assert.deepEqual(design.groups.map(group=>group.label),['冒險配置','技能','裝備','背包','夥伴','角色','任務','地圖','商店','生活']);
   assert(design.groups.every(group=>group.expanded===false));
   assert.deepEqual(design.groups.find(group=>group.id==='missions').pages.map(page=>page.label),['主線','支線','NPC 任務','委託']);
   assert.deepEqual(design.groups.find(group=>group.id==='life').pages.map(page=>page.label),['採集','煉金']);
@@ -18,29 +18,31 @@ test('navigation defaults group every page once and expose the requested mission
 test('tree navigation renders virtual story categories and independent gathering and alchemy pages',()=>{
   const runtime=loadRuntime(root);runtime.run('selectSaveSlot(1);start(0);closeModal()');
   const html=runtime.elements.get('app').innerHTML;
-  assert.match(html,/data-nav-group="missions"[^]*data-page="story-main"[^]*data-page="story-side"[^]*data-page="story-npc"[^]*data-page="quests"/);
-  assert.match(html,/data-nav-group="life"[^]*data-page="gather"[^]*data-page="alchemy"/);
+  assert.match(html,/data-nav-group="map" data-page="battle"/);
+  assert.match(html,/class="game-subtabs"[^]*data-subpage="battle" class="active"[^]*data-subpage="statistics"/);
   runtime.run("openStory('','side')");
   assert.equal(runtime.run('tab'),'story');
-  assert.match(runtime.elements.get('app').innerHTML,/data-page="story-side" class="active"/);
+  const story=runtime.elements.get('app').innerHTML;
+  assert.match(story,/class="game-menu-item active" data-nav-group="missions" data-page="story-side"/);
+  assert.match(story,/data-subpage="story-main"[^]*data-subpage="story-side" class="active"[^]*data-subpage="story-npc"[^]*data-subpage="quests"/);
   runtime.run("setTab('gather')");assert.match(runtime.elements.get('app').innerHTML,/<h1>採集<\/h1>/);assert.doesNotMatch(runtime.elements.get('app').innerHTML,/id="life-alchemy"/);
   runtime.run("setTab('alchemy')");assert.match(runtime.elements.get('app').innerHTML,/<h1>煉金<\/h1>/);assert.doesNotMatch(runtime.elements.get('app').innerHTML,/id="life-gather"/);
   assert.deepEqual(runtime.errors,[]);
 });
 
 
-test('navigation begins collapsed, is not draggable, and uses designer-defined order',()=>{
+test('top menu has one button per category, is not draggable, and uses designer-defined order',()=>{
   const runtime=loadRuntime(root);
   runtime.run('selectSaveSlot(1);start(0);closeModal()');
   const html=runtime.elements.get('app').innerHTML;
-  const groups=[...html.matchAll(/<details class="game-nav-group[^"]*" data-nav-group="([^"]+)"([^>]*)>/g)];
-  assert.deepEqual(groups.map(match=>match[1]),['missions','adventure','equipment','shop','life']);
-  assert(groups.every(match=>!match[2].includes(' open')));
+  const groups=[...html.matchAll(/<button type="button" class="game-menu-item[^"]*" data-nav-group="([^"]+)"/g)];
+  assert.deepEqual(groups.map(match=>match[1]),['adventure-config','skills','gear','bag','partners','character','missions','map','shop','life','settings']);
+  assert(!html.includes('<details class="game-nav-group'));
   assert(!html.includes('game-nav-drag')&&!html.includes('data-nav-drag')&&!html.includes('draggable="true"'));
-  assert.deepEqual(json(runtime,'EmberwildNavigation.order'),['missions','adventure','equipment','shop','life']);
-  runtime.values.set('emberwild-navigation-group-order-v1',JSON.stringify(['life','missions','adventure','equipment','shop']));
+  const order=['adventure-config','skills','gear','bag','partners','character','missions','map','shop','life'];assert.deepEqual(json(runtime,'EmberwildNavigation.order'),order);
+  runtime.values.set('emberwild-navigation-group-order-v1',JSON.stringify(['life','missions','map','shop']));
   const reloaded=loadRuntime(root,'index.html',Object.fromEntries(runtime.values));
-  assert.deepEqual(json(reloaded,'EmberwildNavigation.order'),['missions','adventure','equipment','shop','life']);
+  assert.deepEqual(json(reloaded,'EmberwildNavigation.order'),order);
   assert.equal(reloaded.run('typeof EmberwildNavigation.moveGroup'),'undefined');
   assert.deepEqual(reloaded.errors,[]);
 });
@@ -54,12 +56,12 @@ test('collapsed parent reminders show N before numbers and aggregate counts',()=
     numberBadgeHTML=id=>id==='equipment'?'<span class="number-badge">7</span>':'';`);
   const summary=group=>{
     const html=runtime.run("gameNavigationHTML('battle')");
-    return html.split('data-nav-group="'+group+'"')[1]?.split('</summary>')[0]||'';
+    return html.split('data-nav-group="'+group+'"')[1]?.split('</button>')[0]||'';
   };
   const missions=summary('missions');
   assert(missions.includes('class="quest-new"')&&missions.includes('>N</span>'));
   assert(!missions.includes('class="number-badge"'));
-  assert(summary('equipment').includes('class="number-badge"')&&summary('equipment').includes('>7</span>'));
+  assert(summary('bag').includes('class="number-badge"')&&summary('bag').includes('>7</span>'));
   runtime.run("storyCategoryReminder=type=>type==='main'?{ready:4,new:0}:type==='side'?{ready:3,new:0}:{ready:0,new:0};");
   const numeric=summary('missions');
   assert(numeric.includes('class="number-badge"')&&numeric.includes('>12</span>'));
@@ -93,7 +95,7 @@ test('balance navigation changes round-trip and malformed page lists are rejecte
   runtime.ctx.custom=custom;runtime.run('applyBalanceConfig(custom,{persist:true})');
   assert.equal(json(runtime,'exportableBalance().navigation').groups[0].label,'冒險總覽');
   assert.match(runtime.run("gameNavigationHTML('alchemy')"),/冒險總覽/);
-  assert(runtime.run("gameNavigationHTML('alchemy')").indexOf('data-page="alchemy"')<runtime.run("gameNavigationHTML('alchemy')").indexOf('data-page="gather"'));
+  const tabs=runtime.run("gameSubtabsHTML('alchemy')");assert(tabs.indexOf('data-subpage="alchemy"')>=0&&tabs.indexOf('data-subpage="alchemy"')<tabs.indexOf('data-subpage="gather"'));
   const bad=structuredClone(custom);bad.navigation.groups.find(group=>group.id==='life').pages.pop();runtime.ctx.bad=bad;
   assert.throws(()=>runtime.run('applyBalanceConfig(bad)'),/導覽列表缺少頁籤/);
   assert.deepEqual(json(runtime,'exportableBalance().navigation'),custom.navigation);

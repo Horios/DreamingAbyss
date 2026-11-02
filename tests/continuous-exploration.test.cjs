@@ -22,3 +22,15 @@ test('an ordinary seconds-timeline wipe keeps the existing automatic retry; ques
  const challenge=wipe(true);
  assert.deepEqual(challenge.result.outcomes,['wipe']);assert.equal(challenge.result.running,false);assert.equal(challenge.result.quest,false);assert.equal(challenge.result.next,0);assert.deepEqual(challenge.r.errors,[]);
 });
+test('encounters hold at most five foes, bosses first, and simultaneous deaths resolve in foe order',()=>{
+ const r=game();r.run(`globalThis.capResult=[];const base=makeEnemy;for(const kinds of [['normal','normal','elite','normal','normal','normal','boss'],['normal','elite','normal']]){
+  const C=EmberwildSecondsCombat,size=C.encounterSize;let n=0;C.encounterSize=()=>kinds.length;makeEnemy=(...args)=>{const i=n++;return {...base(...args),kind:kinds[i],tag:'cap-'+i};};
+  try{party.huntingMode='group';spawnGroup();}finally{C.encounterSize=size;makeEnemy=base;}
+  capResult.push(foes.map(e=>e.tag));}`);
+ const caps=json(r,'capResult');assert.equal(r.run('EmberwildSecondsCombat.maxEncounterSize'),5);
+ assert.deepEqual(caps[0],['cap-0','cap-1','cap-2','cap-3','cap-6'],'the boss is kept and the rest follow the configured order');assert.deepEqual(caps[1],['cap-0','cap-1','cap-2']);
+ r.run(`globalThis.deathOrder=[];const api=__EMBERWILD_STATUS_TEST_API,collect=api.collectTriggers;api.collectTriggers=function(event,target,...args){if(event==='targetDeath')deathOrder.push(target.id);return collect.call(this,event,target,...args);};
+  foes=[0,1,2,3,4].map(i=>({...makeEnemy(0,state,()=>.5),id:'order-'+i,hp:10,maxhp:10,rewarded:false}));enemy=foes[0];
+  EmberwildCombatEvents.action(state,()=>{foes[3].hp=0;foes[0].hp=0;foes[4].hp=0;});api.collectTriggers=collect;`);
+ assert.deepEqual(json(r,'deathOrder'),['order-0','order-3','order-4'],'deaths in one action follow foe numbering, not hit order');assert.deepEqual(r.errors,[]);
+});

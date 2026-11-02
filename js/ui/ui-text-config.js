@@ -1,6 +1,6 @@
 
 /* Update 17: editable main-screen/interface copy. */
-const UI_TEXT_DEFAULTS={"browserTitle":"餘燼荒野 · Emberwild","gameTitle":"餘燼荒野","gameSubtitle":"EMBERWILD / IDLE RPG · 4.0","chapterTitle":"","chapterSubtitle":"","homeEyebrow":"EMBERWILD · 選擇你的遠征者","homeTitle":"","homeDescription":"一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。","homeFooter":"自動存檔 · 無離線戰鬥"};
+const UI_TEXT_DEFAULTS={"browserTitle":"夢淵 · Dreaming Abyss","gameTitle":"夢淵","gameSubtitle":"DREAMING ABYSS / IDLE RPG · 4.0","chapterTitle":"","chapterSubtitle":"","homeEyebrow":"DREAMING ABYSS · 選擇你的遠征者","homeTitle":"","homeDescription":"一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。","homeFooter":"自動存檔 · 無離線戰鬥"};
 let UI_TEXT=structuredClone(UI_TEXT_DEFAULTS);
 function normalizeUIText(input){
   const src=input&&typeof input==='object'&&!Array.isArray(input)?input:{};

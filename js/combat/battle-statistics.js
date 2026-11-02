@@ -129,7 +129,7 @@ function statisticsView(){
   <section class="panel"><h2>隊員死亡統計</h2><div class="statistics-members">${party.members.map(h=>{const d=a.memberData.get(memberKey(h))||{count:0,recent:[]};return `<article class="statistics-member"><h3><span>${esc(characterName(h))}</span><span class="tag">死亡 ${d.count}</span></h3>${d.recent.length?`<ol class="statistics-deaths">${d.recent.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'<p class="statistics-empty">最近 300 場內沒有死亡紀錄。</p>'}</article>`;}).join('')}</div><p class="small">每名隊員最多顯示最近 5 次直接致死來源，格式為「怪物名稱－招式名稱」。</p></section></div>`;
 }
 function ensureStatisticsNavButton(){
-  const nav=document.querySelector('#app nav');if(!nav)return;
+  const nav=document.querySelector('#app nav');if(!nav||nav.querySelector('.game-menu-item'))return;
   let btn=nav.querySelector('[data-page="statistics"], [data-statistics-tab]');
   if(!btn){btn=document.createElement('button');btn.dataset.page='statistics';btn.dataset.statisticsTab='1';btn.textContent='戰鬥統計';btn.onclick=()=>setTab('statistics');nav.appendChild(btn);}
   if(tab==='statistics'){nav.querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}else btn.classList.remove('active');
@@ -138,7 +138,7 @@ const battleStatisticsRenderBase=render;
 render=function(){
   if(state&&party&&tab==='statistics'){
     tab='battle';battleStatisticsRenderBase();tab='statistics';
-    const main=document.querySelector('#app .layout>main');if(main)main.innerHTML=statisticsView();
+    const main=document.querySelector('#app .layout>main');if(main)main.innerHTML=(globalThis.gameSubtabsHTML?.('statistics')||'')+statisticsView();
     ensureStatisticsNavButton();return;
   }
   battleStatisticsRenderBase();ensureStatisticsNavButton();

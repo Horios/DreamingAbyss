@@ -11,9 +11,14 @@
     gather:'採集',alchemy:'煉金'
   };
   const DEFAULTS={version:VERSION,groups:[
-    {id:'missions',label:'主線',expanded:false,pages:[['story-main','主線'],['story-side','支線'],['story-npc','NPC 任務'],['quests','委託']]},
-    {id:'adventure',label:'冒險',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計'],['guide','冒險指南'],['roster','隊伍編成'],['partnerRoster','夥伴名冊'],['character','角色能力'],['skills','技能']]},
-    {id:'equipment',label:'背包',expanded:false,pages:[['equipment','背包'],['worn','裝備與信物'],['forge','裝備強化'],['bossCraft','BOSS 製作']]},
+    {id:'adventure-config',label:'冒險配置',expanded:false,pages:[['roster','隊伍編成'],['guide','冒險指南']]},
+    {id:'skills',label:'技能',expanded:false,pages:[['skills','技能']]},
+    {id:'gear',label:'裝備',expanded:false,pages:[['worn','裝備與信物'],['forge','裝備強化'],['bossCraft','BOSS 製作']]},
+    {id:'bag',label:'背包',expanded:false,pages:[['equipment','背包']]},
+    {id:'partners',label:'夥伴',expanded:false,pages:[['partnerRoster','夥伴名冊']]},
+    {id:'character',label:'角色',expanded:false,pages:[['character','角色能力']]},
+    {id:'missions',label:'任務',expanded:false,pages:[['story-main','主線'],['story-side','支線'],['story-npc','NPC 任務'],['quests','委託']]},
+    {id:'map',label:'地圖',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計']]},
     {id:'shop',label:'商店',expanded:false,pages:[['shop','商品列表']]},
     {id:'life',label:'生活',expanded:false,pages:[['gather','採集'],['alchemy','煉金']]}
   ].map(group=>({...group,pages:group.pages.map(([id,label])=>({id,label}))}))};
@@ -50,6 +55,10 @@
 
   const icons={battle:'swords',statistics:'chart-no-axes-combined',shop:'store',guide:'book-open',roster:'users',partnerRoster:'contact',character:'user-round',skills:'sparkles',equipment:'backpack',worn:'shield',forge:'hammer',bossCraft:'anvil','story-main':'scroll-text','story-side':'scroll','story-npc':'message-circle',quests:'clipboard-list',gather:'pickaxe',alchemy:'flask-conical'};
   const navIcon=id=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(icons[id]||'folder'),[],{size:18});
+  // Top menu categories use the same Lucide line icons as the rest of the interface.
+  const groupIcons={'adventure-config':'compass',skills:'scroll-text',gear:'swords',bag:'backpack',partners:'handshake',character:'user-round',missions:'clipboard-list',map:'map',shop:'store',life:'sprout',adventure:'compass',equipment:'backpack'};
+  const groupIcon=group=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(groupIcons[group.id]||icons[group.pages[0]?.id]||'folder'),[],{size:18});
+  const lastPage=new Map();
   const taskPages=new Set(['story-main','story-side','story-npc','quests']);
   function taskStatus(id){return id.startsWith('story-')?globalThis.storyCategoryReminder?.(id.slice(6)):id==='quests'?globalThis.dailyQuestReminder?.():null;}
   function taskBadge(status){
@@ -66,18 +75,26 @@
     }
     return {isNew:false,count:globalThis.numberReminderCount?.(page.id)||0,html:globalThis.numberBadgeHTML?.(page.id)||''};
   }
+  function groupBadge(pages){
+    const hasNew=pages.some(({reminder})=>reminder.isNew),count=pages.reduce((sum,{reminder})=>sum+reminder.count,0);
+    return hasNew?'<span class="quest-new" aria-label="包含未開始任務">N</span>':count?`<span class="number-badge" aria-label="分類提醒 ${count}">${count}</span>`:'';
+  }
+  // One button per category. A category with several pages opens its current or
+  // last visited page; the pages are listed as tabs at the top of the content.
   globalThis.gameNavigationHTML=function(current){
     rememberOpenState();
-
-    return orderedGroups().map(group=>{
-      const groupActive=group.pages.some(page=>active(page,current));
-      const open=openState.has(group.id)?openState.get(group.id):group.expanded;
-      const pages=group.pages.map(page=>({page,reminder:pageReminder(page)}));
-      const hasNew=pages.some(({reminder})=>reminder.isNew);
-      const count=pages.reduce((sum,{reminder})=>sum+reminder.count,0);
-      const groupBadge=hasNew?'<span class="quest-new" aria-label="包含未開始任務">N</span>':count?`<span class="number-badge" aria-label="分類提醒 ${count}">${count}</span>`:'';
-      return `<details class="game-nav-group ${groupActive?'has-active':''}" data-nav-group="${esc(group.id)}" ${open?'open':''}><summary><span class="game-nav-label">${navIcon(group.pages[0]?.id)}${esc(group.label)}</span>${groupBadge}<span class="game-nav-chevron" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor('lucide:chevron-right',[],{size:14})}</span></summary><div class="game-nav-items">${pages.map(({page,reminder})=>`<button type="button" data-page="${esc(page.id)}" class="${active(page,current)?'active':''}" onclick="${action(page)}" ${active(page,current)?'aria-current="page"':''}><span class="game-nav-label">${navIcon(page.id)}${esc(page.label)}</span>${reminder.html}</button>`).join('')}</div></details>`;
+    const items=orderedGroups().map(group=>{
+      const pages=group.pages.map(page=>({page,reminder:pageReminder(page)})),activePage=group.pages.find(page=>active(page,current));
+      if(activePage)lastPage.set(group.id,activePage.id);
+      const target=group.pages.find(page=>page.id===lastPage.get(group.id))||group.pages[0];
+      return `<button type="button" class="game-menu-item ${activePage?'active':''}" data-nav-group="${esc(group.id)}" data-page="${esc(target.id)}" onclick="${action(target)}" ${activePage?'aria-current="page"':''}><span class="game-nav-label">${groupIcon(group)}${esc(group.label)}</span>${groupBadge(pages)}</button>`;
     }).join('');
+    return `<span class="game-menu-title">遊戲選單</span>${items}<button type="button" class="game-menu-item ${current==='options'?'active':''}" data-nav-group="settings" data-page="options" onclick="setTab('options')" ${current==='options'?'aria-current="page"':''}><span class="game-nav-label">${__EMBERWILD_SKILL_ICONS.svgFor('lucide:settings',[],{size:18})}設定</span></button>`;
+  };
+  globalThis.gameSubtabsHTML=function(current){
+    const group=orderedGroups().find(group=>group.pages.some(page=>active(page,current)));
+    if(!group||group.pages.length<2)return '';
+    return `<nav class="game-subtabs" aria-label="${esc(group.label)}分頁">${group.pages.map(page=>{const on=active(page,current),reminder=pageReminder(page);return `<button type="button" data-subpage="${esc(page.id)}" class="${on?'active':''}" onclick="${action(page)}" ${on?'aria-current="page"':''}><span class="game-nav-label">${navIcon(page.id)}${esc(page.label)}</span>${reminder.html}</button>`;}).join('')}</nav>`;
   };
   globalThis.EmberwildNavigation=Object.freeze({VERSION,PAGES:Object.freeze({...PAGES}),defaults:()=>copy(DEFAULTS),normalize,get design(){return copy(design);},get order(){return orderedGroups().map(g=>g.id);}});
 

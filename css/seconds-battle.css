@@ -65,3 +65,72 @@ body.seconds-cooldowns-hidden #app .seconds-charge-list,body.seconds-cooldowns-h
 
 #app #battleEnemyIcons.seconds-enemies>.unit.seconds-unit{flex:0 0 140px!important;width:140px!important;max-width:140px!important}
 @media(max-width:700px){#app #battleEnemyIcons.seconds-enemies>.unit.seconds-unit{flex-basis:calc((100% - 10px)/3)!important;width:calc((100% - 10px)/3)!important;max-width:110px!important}}
+
+/* v0.024 card layout: enemies above, party below, equal cards with HP/MP and
+   horizontal charge bars. Presentation only; timers stay in the combat core. */
+#app .seconds-battlefield{gap:14px!important}
+#app .seconds-battlefield .seconds-side{display:flex;flex-direction:column;gap:8px;min-width:0;align-self:stretch!important;width:100%!important}
+#app .seconds-battlefield .seconds-side-ally{border-top:1px solid var(--line);padding-top:12px}
+#app .seconds-side-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+#app .seconds-side-note{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 0}
+#app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(176px,1fr))!important;grid-template-rows:none!important;grid-auto-rows:auto!important;gap:10px!important;justify-content:stretch!important;align-items:stretch!important;min-height:0!important;width:100%!important}
+#app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;padding:12px!important;width:auto!important;max-width:none!important;height:auto!important;flex:none!important;grid-column:auto!important;grid-row:auto!important;border-radius:12px!important;background:var(--panel)!important;border:1px solid var(--line)!important;box-shadow:none!important;align-self:stretch!important}
+#app .seconds-battlefield .seconds-unit.seconds-protagonist{border-color:#c6a76b!important}
+#app .seconds-battlefield .seconds-unit .unit-title{flex-direction:row!important;justify-content:space-between!important;align-items:baseline!important;text-align:left!important;gap:6px!important}
+#app .seconds-battlefield .seconds-unit .unit-title b{font-size:14px!important}
+#app .seconds-battlefield .seconds-unit .unit-title span{font-size:11px!important;white-space:nowrap}
+#app .seconds-battlefield .seconds-unit .battle-enemy-icon{width:54px!important;height:54px!important;margin:2px auto!important}
+#app #battleAllyIcons .seconds-unit .enemy-icon-art svg,#app #battleEnemyIcons .seconds-unit .enemy-icon-art svg{width:48px!important;height:48px!important}
+#app .seconds-battlefield .seconds-unit .unit-numbers{font-size:12px!important}
+#app .seconds-battlefield .seconds-unit .battle-health-bar{height:8px}
+#app .seconds-battlefield .seconds-unit .seconds-mp{height:auto!important;flex:0 0 auto!important;border:0!important;background:none!important;display:grid;gap:3px;overflow:visible}
+#app .seconds-battlefield .seconds-unit .seconds-mp>small{position:static!important;text-align:left!important;font-size:12px!important;line-height:1.3!important;color:inherit!important;text-shadow:none!important}
+#app .seconds-mp-track{display:block;height:8px;border-radius:5px;background:#2b3442;overflow:hidden}
+#app .seconds-mp-track>span{display:block;height:100%;background:linear-gradient(90deg,#4f8fd8,#7fb3ec)}
+#app .seconds-battlefield .seconds-unit .seconds-charge-list{display:grid!important;gap:6px!important;justify-content:stretch!important;margin:2px 0 0!important;min-height:0!important}
+#app .seconds-battlefield .seconds-unit .seconds-charge{display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 6px;gap:3px 6px;align-items:center;width:100%!important;height:auto!important;min-height:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;text-align:left;cursor:pointer;color:inherit}
+#app .seconds-battlefield .seconds-charge-name{position:static!important;font-size:12px!important;line-height:1.3!important;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app .seconds-battlefield .seconds-charge-time{position:static!important;inset:auto!important;font-size:12px!important;text-shadow:none!important;color:var(--muted);text-align:right}
+#app .seconds-charge-track{grid-column:1/-1;display:block;height:6px;border-radius:4px;background:#2b3442;overflow:hidden}
+#app .seconds-charge-fill{display:block;height:100%;background:#e5b85c;transition:width .05s linear}
+#app .seconds-charge-skill .seconds-charge-fill{background:#a98be0}
+#app .seconds-charge.needs-mp .seconds-charge-fill{background:#5965b2}
+#app .seconds-battlefield .seconds-states{justify-content:flex-start!important;gap:6px!important;min-height:0}
+#app .seconds-battlefield .seconds-state{font-size:12px!important;padding:3px 8px!important;border-radius:6px!important}
+#app .seconds-state-empty{font-size:12px;color:var(--muted)}
+#app .seconds-battlefield .seconds-cast-label:empty{display:none}
+#app .seconds-party-hp{font-size:12px!important;text-align:left!important}
+#app .seconds-party-hp small{display:block;margin-top:4px;color:var(--muted)}
+#app .seconds-battle-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;padding:6px 10px!important}
+#app .seconds-battle-header>.seconds-battle-title{display:flex;align-items:center;gap:6px 14px;flex:1 1 220px;min-width:0;flex-wrap:wrap}
+#app .seconds-battle-title h2{margin:0;font-size:16px;line-height:1.3}
+#app .seconds-battle-xp{display:flex;align-items:center;gap:6px;font-size:12px;min-width:140px;flex:0 1 220px}
+#app .seconds-battle-xp>progress{flex:1;min-width:60px;height:5px;accent-color:var(--gold)}
+#app .seconds-battle-header .seconds-toolbar-actions{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+#app .seconds-battle-header .seconds-toolbar-actions>button{min-height:30px!important;padding:3px 8px!important;font-size:12px!important;gap:4px!important}
+#app .seconds-battle-header .seconds-toolbar-actions>button svg{width:15px;height:15px}
+@media(max-width:700px){
+ #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+ #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{padding:8px!important;gap:4px!important}
+ #app .seconds-battlefield .seconds-unit .unit-title{flex-direction:column!important;align-items:flex-start!important;gap:0!important}
+ #app .seconds-battlefield .seconds-unit .unit-title b{font-size:12px!important}
+ #app .seconds-battlefield .seconds-unit .unit-numbers,#app .seconds-battlefield .seconds-unit .seconds-mp>small,#app .seconds-battlefield .seconds-charge-name,#app .seconds-battlefield .seconds-charge-time,#app .seconds-battlefield .seconds-state,#app .seconds-state-empty{font-size:11px!important}
+ #app .seconds-battlefield .seconds-unit .battle-enemy-icon{width:42px!important;height:42px!important}
+ #app #battleAllyIcons .seconds-unit .enemy-icon-art svg,#app #battleEnemyIcons .seconds-unit .enemy-icon-art svg{width:36px!important;height:36px!important}
+ #app .seconds-battle-title h2{font-size:17px}
+ #app .seconds-battle-header .seconds-toolbar-actions{justify-content:flex-start}
+}
+#app .seconds-battlefield .seconds-unit.fallen .seconds-charge-list{display:none!important}
+/* Phones: one horizontal card per row, portrait on the left, details on the right. */
+@media(max-width:700px){
+ #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:minmax(0,1fr)!important;gap:5px!important}
+ #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{display:grid!important;grid-template-columns:44px minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:none!important;column-gap:8px!important;row-gap:3px!important;align-items:center!important;padding:6px 8px!important}
+ #app .seconds-battlefield .seconds-unit>.battle-enemy-icon{grid-column:1!important;grid-row:1 / span 4!important;align-self:start;margin:0!important;width:42px!important;height:42px!important}
+ #app .seconds-battlefield .seconds-unit>*:not(.battle-enemy-icon):not(.battle-fx):not(.battle-fx-status){grid-column:2 / -1!important}
+ #app .seconds-battlefield .seconds-unit .unit-title{flex-direction:row!important;align-items:baseline!important;gap:6px!important}
+ #app .seconds-battlefield .seconds-unit .seconds-charge-list{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));column-gap:8px!important;row-gap:3px!important}
+ #app .seconds-battlefield .seconds-unit .seconds-states{gap:4px!important}
+ #app .seconds-battle-header .seconds-toolbar-actions{justify-content:flex-start}
+}
+
+@media(max-width:700px){#app .seconds-battlefield .seconds-unit .unit-numbers{justify-content:space-between!important;width:100%!important;text-align:left!important}#app .seconds-battlefield .seconds-unit .unit-numbers>span{flex:0 0 auto}}

@@ -301,9 +301,13 @@
  gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'?Math.max(config().minimumActionIntervalSeconds,cd-cooldownReductionOnCast(h,s.id)):cd;};
  __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return Math.max(config().minimumActionIntervalSeconds,supportSkillCooldown(h,i)-(s?cooldownReductionOnCast(h,s.id):0));};
  const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
+ const MAX_FOES=5;
  const oldSpawn=spawnGroup;spawnGroup=function(...args){
   const normal=!party.bossChallenge?.active&&!party.questChallenge&&!isFinalMap(party.map),cds=copy(actorCooldowns),supports=copy(supportCooldowns),ids=new Set(party.members.map(key)),vitals=party.members.map(h=>({h,hp:h.hp,mp:h.mp,shield:h.shield})),kept=effects.filter(f=>ids.has(f.target)),statuses=statusList().filter(s=>ids.has(s.targetKey)),controls=EmberwildControlCombatState.pack();
   continuing=normal;let out;try{out=oldSpawn(...args);}finally{continuing=false;}
+  // At most five foes per encounter. Bosses are kept first; the rest keep their
+  // configured order, which is also the order simultaneous deaths resolve in.
+  if(foes.length>MAX_FOES){const keep=new Set(foes.filter(e=>['boss','final'].includes(e.kind)).slice(0,MAX_FOES));for(const e of foes){if(keep.size>=MAX_FOES)break;keep.add(e);}foes=foes.filter(e=>keep.has(e));enemy=foes[0];}
   if(normal){for(const v of vitals){v.h.hp=Math.min(v.hp,stats(v.h).hp);if(v.mp!==undefined)v.h.mp=v.mp;v.h.shield=v.shield;}effects=kept;EmberwildStatusCombatState.seconds.replaceInstances(statuses);EmberwildControlCombatState.restore({...controls,states:Object.fromEntries(Object.entries(controls.states).filter(([id])=>ids.has(id))),summons:[]});}
   actorCooldowns=cds;supportCooldowns=supports;needsRoster=true;return out;
  };
@@ -315,7 +319,7 @@
  const baseSupplyStatus=supplyStatus;supplyStatus=function(h){return baseSupplyStatus(h).replace(/回合/g,'秒');};
  globalThis.setRecoveryThresholds=function(hp,mp){if(!party||![hp,mp].every(x=>Number.isFinite(x)&&x>=0&&x<=1))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.explorationRecovery={minimumHpRatio:hp,minimumMpRatio:mp};save();render();return true;};
  globalThis.setHuntingMode=function(mode){if(!party||!['single','group'].includes(mode))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.huntingMode=mode;save();render();return true;};
- globalThis.EmberwildSecondsCombat={active:true,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
+ globalThis.EmberwildSecondsCombat={active:true,maxEncounterSize:MAX_FOES,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
   encounterSize(){party.currentHuntingMode=party.huntingMode||'single';if(party.currentHuntingMode==='single')return 1;const weights=config().groupWeights,total=weights.reduce((a,b)=>a+b,0);let pick=Math.random()*total;for(let i=0;i<weights.length;i++)if((pick-=weights[i])<0)return i+3;return 5;},
   validateSnapshot(raw){if(raw!==null){if(raw.phase!==undefined&&!['combat','recovery'].includes(raw.phase)||raw.recoveryUntil!==undefined&&(!Number.isFinite(raw.recoveryUntil)||raw.recoveryUntil<0)||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
   reduceCooldowns(h,legacyAmount){if(engine?.actors.some(a=>a.definition.id===key(h)))engine.reduceCooldowns(key(h),legacyAmount*actorInterval(h));},

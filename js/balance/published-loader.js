@@ -4,7 +4,7 @@
   const guard=document.createElement('style');guard.textContent='#app{visibility:hidden!important}header{pointer-events:none;opacity:.65}';document.head.appendChild(guard);
   const panel=document.createElement('section');panel.className='panel';panel.style.cssText='position:fixed;inset:90px 20px auto;max-width:620px;margin:auto;z-index:2147483646;padding:24px';
   panel.setAttribute('role','status');panel.setAttribute('aria-live','polite');
-  panel.innerHTML='<h1>正在啟動餘燼荒野…</h1><p data-boot-stage>正在取得版本與平衡資料</p><progress aria-label="遊戲載入進度" max="1" value="0" style="width:100%"></progress><p data-boot-count>請稍候，原有存檔保留。</p>';
+  panel.innerHTML='<h1>正在啟動夢淵…</h1><p data-boot-stage>正在取得版本與平衡資料</p><progress aria-label="遊戲載入進度" max="1" value="0" style="width:100%"></progress><p data-boot-count>請稍候，原有存檔保留。</p>';
   document.body.appendChild(panel);
   const stage=panel.querySelector('[data-boot-stage]'),count=panel.querySelector('[data-boot-count]'),progress=panel.querySelector('progress');
   const preloads=[],cancelPreloads=[],controllers=new Set();let downloaded=0,initialized=0,total=0,activeScript=null,scriptError=null,stopped=false;

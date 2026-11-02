@@ -51,8 +51,14 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
   await p.setViewportSize({width:390,height:844});await start(p);
   assert.equal(await p.locator('aside nav>button:visible').count(),5);
   for(const [id,target] of navPages){
-   const b=p.locator(`aside nav [data-page="${id}"]`);
-   if(!await b.isVisible())await p.locator('.mobile-more-toggle').click();
+   let b=p.locator(`aside nav [data-page="${id}"]`);
+   if(!await b.count()){
+    // Sub-pages are reached through their category and the content tabs.
+    const group=await p.evaluate(id=>EmberwildNavigation.design.groups.find(g=>g.pages.some(x=>x.id===id))?.id,id);
+    const category=p.locator(`aside nav [data-nav-group="${group}"]`);
+    if(!await category.isVisible())await p.locator('.mobile-more-toggle').click();
+    await category.click();b=p.locator(`main .game-subtabs [data-subpage="${id}"]`);
+   }else if(!await b.isVisible())await p.locator('.mobile-more-toggle').click();
    await b.click();await p.waitForFunction(t=>tab===t,target);
    assert.equal(await p.locator('.mobile-more-pages').isVisible(),false);
    assert.equal(await p.locator('aside nav>button:visible').count(),5);
@@ -135,13 +141,12 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   assert.equal(await p.locator('.mobile-journal-toggle').isVisible(),false);
   assert.equal(await p.locator('.mobile-more-toggle').isVisible(),false);
   assert.equal(await p.locator('#mobileJournalBody').isVisible(),true);
-  await p.evaluate(()=>document.querySelectorAll('aside nav details[data-nav-group]').forEach(d=>d.open=true));
-  assert.equal(await p.locator('aside nav [data-page]:visible').count(),navPages.length+1,'includes the permanent wishing lake entrance');
-  const order=await p.locator('aside nav [data-page]').evaluateAll(nodes=>nodes.map(e=>({id:e.dataset.page,y:e.getBoundingClientRect().y})).sort((a,b)=>a.y-b.y).map(e=>e.id));
-  const designed=await p.evaluate(()=>[...EmberwildNavigation.design.groups.flatMap(g=>g.pages.map(p=>p.id)),'wishingLake']);
-  assert.deepEqual(order,designed,'desktop navigation follows the configured tree');
-  const rects=await p.evaluate(()=>['aside','main','#globalBattleJournal'].map(s=>{const r=document.querySelector('.layout').querySelector(s).getBoundingClientRect();return {x:r.x,right:r.right};}));
-  assert(rects[0].right<=rects[1].x&&rects[1].right<=rects[2].x,'desktop retains three columns');
+  const order=await p.locator('aside nav .game-menu-item:visible').evaluateAll(nodes=>nodes.map(e=>({id:e.dataset.navGroup,x:e.getBoundingClientRect().x,y:Math.round(e.getBoundingClientRect().y)})).sort((a,b)=>a.y-b.y||a.x-b.x).map(e=>e.id));
+  const designed=await p.evaluate(()=>[...EmberwildNavigation.design.groups.map(g=>g.id),'settings']);
+  assert.deepEqual(order,designed,'desktop top menu follows the configured categories');
+  assert.equal(await p.locator('#utilityButton-wishingLake').isVisible(),true,'the wishing lake keeps its header entrance');
+  const rects=await p.evaluate(()=>['aside','main','#globalBattleJournal'].map(s=>{const r=document.querySelector('.layout').querySelector(s).getBoundingClientRect();return {x:r.x,right:r.right,y:r.y,bottom:r.bottom};}));
+  assert(rects[0].bottom<=rects[1].y+1&&rects[0].bottom<=rects[2].y+1,'desktop menu sits above the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
   await p.evaluate(()=>returnToTitle());assert.equal(await p.locator('.mobile-more-toggle').count(),0);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

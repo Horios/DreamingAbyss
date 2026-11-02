@@ -166,7 +166,7 @@
     let validJSON=false;try{JSON.parse(raw);validJSON=true;}catch{}
     const link=document.createElement('a');
     link.href=URL.createObjectURL(new Blob([raw],{type:validJSON?'application/json':'text/plain;charset=utf-8'}));
-    link.download=`emberwild-slot-${slot}-${which}-raw-${new Date().toISOString().slice(0,10)}.${validJSON?'json':'txt'}`;
+    link.download=`dreaming-abyss-slot-${slot}-${which}-raw-${new Date().toISOString().slice(0,10)}.${validJSON?'json':'txt'}`;
     link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);
   };
   function showLoadFailure(slot){
