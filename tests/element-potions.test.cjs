@@ -74,7 +74,7 @@ test('Explicitly empty current pools stay empty and do not restore reroll produc
   }
 });
 test('Legacy account timed boosts remain readable during exploration-clock migration',()=>{
-  const {api}=contracts(),source=clone(api.DEFAULT_ITEMS[1]);api.validateItem(source);
+  const {api}=contracts(),source=clone(api.DEFAULT_ITEMS.find(x=>x.boostType==='exp'));api.validateItem(source);
   assert.equal(api.bonus({timedBoosts:[{...source,expiresAt:2000}]},'exp',1000),100);
   assert.equal(api.bonus({timedBoosts:[{...source,expiresAt:2000}]},'exp',2000),0);
   assert.throws(()=>api.validateItem({...source,durationMinutes:1.5}));

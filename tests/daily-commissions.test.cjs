@@ -39,5 +39,5 @@ test('one-task daily and one-time side progress migrate once; side content moves
 });
 
 test('navigation shows task-specific red counts and a green N badge, and clears N when started',async()=>{
- const r=game();assert.match(r.run("taskReminderHTML('quests')"),/class="quest-new"[^>]*>N<\/span>/);assert.match(r.run("taskReminderHTML('story-main')"),/class="quest-new"[^>]*>N<\/span>/);assert.match(r.run("taskReminderHTML('story-main')"),/class="quest-new"[^>]*>N<\/span>/);r.run("readStory('goddess_intro')");assert.doesNotMatch(r.run("taskReminderHTML('story-main')"),/class="quest-new"[^>]*>N<\/span>/);assert.match(r.run("gameNavigationHTML('quests')"),/data-page="story-side"/);assert.deepEqual(r.errors,[]);
+ const r=game();assert.match(r.run("taskReminderHTML('quests')"),/class="quest-new"[^>]*>N<\/span>/);assert.match(r.run("taskReminderHTML('story-main')"),/class="quest-new"[^>]*>N<\/span>/);assert.match(r.run("taskReminderHTML('story-main')"),/class="quest-new"[^>]*>N<\/span>/);r.run("readStory('goddess_intro')");assert.doesNotMatch(r.run("taskReminderHTML('story-main')"),/class="quest-new"[^>]*>N<\/span>/);assert.match(r.run("gameNavigationHTML('quests')"),/data-nav-group="missions"/);assert.match(r.run("gameSubtabsHTML('story')"),/data-subpage="story-side"/);assert.deepEqual(r.errors,[]);
 });
