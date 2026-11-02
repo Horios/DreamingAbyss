@@ -334,7 +334,7 @@ exportableBalance=function(){const out=statusExportBase();out.statusDefinitions=
 const statusResetEncounterBase=resetEncounter;
 resetEncounter=function(){activeStatuses=[];lastStatusTickClock=-1;return statusResetEncounterBase();};
 const statusSpawnBase=spawnGroup;
-spawnGroup=function(...args){activeStatuses=[];lastStatusTickClock=-1;if(party)refillParty();return statusSpawnBase(...args);};
+spawnGroup=function(...args){if(!globalThis.EmberwildSecondsCombat?.continuing){activeStatuses=[];lastStatusTickClock=-1;if(party)refillParty();}return statusSpawnBase(...args);};
 if(typeof resetBalanceJSON==='function'){
   const statusResetBalanceBase=resetBalanceJSON;
   resetBalanceJSON=function(){statusDefinitions=[];activeStatuses=[];lastStatusTickClock=-1;return statusResetBalanceBase();};

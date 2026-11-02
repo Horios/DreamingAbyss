@@ -57,7 +57,7 @@
       if(!Array.isArray(d.skills))fail('skills missing');
       d.skills=d.skills.map(skillDefinition);for(const s of d.skills)if(s.type==='active')s.cooldownSeconds=Math.max(s.cooldownSeconds,this.config.minimumActionIntervalSeconds);
       if(new Set(d.skills.map(s=>s.id)).size!==d.skills.length)fail('duplicate skill id');
-      const a={definition:d,speed:d.speed,alive:true,mp:d.mp,mpAt:this.now,mpCostMultiplier:1,actionAt:this.now,actionSpeedAt:this.now,actionFixedAt:this.now,basicAt:0,casting:null,ready:Object.create(null),retryAt:Object.create(null)};
+      const a={definition:d,speed:d.speed,alive:true,mp:d.mp,mpAt:this.now,mpCostMultiplier:1,actionAt:this.now,actionSpeedAt:this.now,actionFixedAt:this.now,basicAt:0,casting:null,ready:Object.create(null),retryAt:Object.create(null),readyArchive:Object.create(null)};
       a.basicAt=safeAdd(this.now,this.interval(a));
       for(const s of d.skills)a.ready[s.id]=safeAdd(this.now,time(s.initialReadyInSeconds??0));
       this.actors.push(a);return this.actor(d.id);
@@ -71,7 +71,7 @@
         this.settleMana(a);const oldInterval=this.interval(a);a.definition=fresh.definition;a.speed=fresh.speed;a.mp=Math.min(a.mp,a.definition.maxMp);
         a.basicAt=safeAdd(this.now,Math.max(0,Math.round((a.basicAt-this.now)*this.interval(a)/oldInterval)));
         a.actionSpeedAt=safeAdd(this.now,Math.max(0,Math.round((a.actionSpeedAt-this.now)*this.interval(a)/oldInterval)));a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);
-        const ready=Object.create(null);for(const s of a.definition.skills)ready[s.id]=a.ready[s.id]??safeAdd(this.now,time(s.initialReadyInSeconds??0));a.ready=ready;a.retryAt=Object.fromEntries(Object.entries(a.retryAt||{}).filter(([id])=>Object.hasOwn(ready,id)));
+        const allReady={...a.readyArchive,...a.ready},ready=Object.create(null);for(const s of a.definition.skills)ready[s.id]=allReady[s.id]??safeAdd(this.now,time(s.initialReadyInSeconds??0));a.readyArchive=Object.fromEntries(Object.entries(allReady).filter(([id,at])=>!Object.hasOwn(ready,id)&&at>this.now));a.ready=ready;a.retryAt=Object.fromEntries(Object.entries(a.retryAt||{}).filter(([id])=>Object.hasOwn(ready,id)));
         if(a.casting&&!a.definition.skills.some(s=>s.id===a.casting.skillId))a.casting=null;
         return a;
       });
@@ -92,12 +92,13 @@
       if(!alive)a.casting=null;
     }
     setMp(actorId,value){const a=this.find(actorId);number(value,'mp');if(value>a.definition.maxMp)fail('MP exceeds maximum');a.mp=value;a.mpAt=this.now;}
+    setMaxMp(actorId,value){number(value,'maxMp',Number.MIN_VALUE);const a=this.find(actorId);this.settleMana(a);a.definition.maxMp=value;a.definition.mp=Math.min(a.definition.mp,value);a.mp=Math.min(a.mp,value);}
     setMpRegen(actorId,value){number(value,'mpRegenPerSecond');const a=this.find(actorId);this.settleMana(a);a.definition.mpRegenPerSecond=value;}
     setMpCostMultiplier(actorId,value){number(value,'mpCostMultiplier');this.find(actorId).mpCostMultiplier=value;}
     mpCost(a,s){return number(s.mpCost*a.mpCostMultiplier,'effective MP cost');}
     reduceCooldowns(actorId,secondsToReduce){
       const amount=time(secondsToReduce,'cooldown reduction'),a=this.find(actorId);
-      for(const key of Object.keys(a.ready))a.ready[key]=Math.max(this.now,a.ready[key]-amount);
+      for(const box of [a.ready,a.readyArchive])for(const key of Object.keys(box))box[key]=Math.max(this.now,box[key]-amount);
     }
     deferSkill(actorId,skillId,delaySeconds){const a=this.find(actorId);if(!Object.hasOwn(a.ready,skillId))fail('unknown skill');a.retryAt[skillId]=safeAdd(this.now,positiveTime(delaySeconds,'retry delay'));}
     setSpeed(actorId,value){
@@ -237,7 +238,7 @@
         if(a.mpAt>s.now||!a.ready||Array.isArray(a.ready))fail('actor clock invalid');
         if(Object.keys(a.ready).length!==def.skills.length)fail('cooldown keys invalid');
         for(const sk of def.skills)ticks(a.ready[sk.id],'cooldown');
-        a.ready=Object.assign(Object.create(null),a.ready);a.retryAt??={};for(const [id,at] of Object.entries(a.retryAt)){if(!Object.hasOwn(a.ready,id))fail('retry skill invalid');ticks(at,'retry clock');}if(s.version===1){a.actionSpeedAt=s.now;a.actionAt=Math.max(s.now,a.actionFixedAt);}
+        a.ready=Object.assign(Object.create(null),a.ready);a.readyArchive??={};if(!a.readyArchive||Array.isArray(a.readyArchive)||typeof a.readyArchive!=='object'||Object.keys(a.readyArchive).length>100000)fail('archived cooldowns invalid');for(const [key,at] of Object.entries(a.readyArchive)){id(key,'archived skill');if(Object.hasOwn(a.ready,key))fail('duplicate archived cooldown');ticks(at,'archived cooldown');}a.retryAt??={};for(const [id,at] of Object.entries(a.retryAt)){if(!Object.hasOwn(a.ready,id))fail('retry skill invalid');ticks(at,'retry clock');}if(s.version===1){a.actionSpeedAt=s.now;a.actionAt=Math.max(s.now,a.actionFixedAt);}
         if(a.casting){if(!a.alive||a.casting.at<s.now||!def.skills.some(sk=>sk.id===a.casting.skillId&&sk.type==='active'))fail('casting invalid');ticks(a.casting.at,'cast time');}
         out.actors[i]=a;
       }

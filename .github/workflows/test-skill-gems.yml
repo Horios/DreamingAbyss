@@ -28,7 +28,7 @@ jobs:
               tests/status-advanced.test.cjs tests/skill-effects.test.cjs
           - group: combat
             tests: >-
-              tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs
+              tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/continuous-exploration.test.cjs
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

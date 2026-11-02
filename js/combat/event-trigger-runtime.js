@@ -92,7 +92,7 @@
   }
   status().tickActorTurns(actor);
  }
- function clear(resetCooldowns=false){queue=[];depth=0;draining=false;chainContext=null;status().clearEvents();if(resetCooldowns)for(const h of heroes())delete h.eventPassiveCooldowns;}
+ function clear(resetCooldowns=false,keepStatuses=false){queue=[];depth=0;draining=false;chainContext=null;if(!keepStatuses)status().clearEvents();if(resetCooldowns)for(const h of heroes())delete h.eventPassiveCooldowns;}
  const hit=resolveHit;
  resolveHit=function(target,amount,caster,...args){
   const before=target?.hp,out=hit(target,amount,caster,...args);
@@ -109,7 +109,7 @@
  initiativeOrder=function(...args){const out=action(null,()=>initiative(...args));return out;};
  const reset=resetEncounter,spawn=spawnGroup;
  resetEncounter=function(...args){clear(true);return reset(...args);};
- spawnGroup=function(...args){clear();return spawn(...args);};
+ spawnGroup=function(...args){clear(false,!!globalThis.EmberwildSecondsCombat?.continuing);return spawn(...args);};
  status().addDefinition(EmberwildSkillSystem.clearingStatus());
  globalThis.EmberwildCombatEvents={action,endTurn,scanDeaths,drain,clear,emit(event,target,instanceId){scanDeaths();drain();if(target?.hp>0){enqueueStatus(event,target,true,1,instanceId);drain();}}};
 })();

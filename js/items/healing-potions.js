@@ -60,6 +60,7 @@
     if(typeof h.autoPotion!=='boolean')h.autoPotion=true;
     if(!Number.isFinite(h.autoPotionThresholdPct))h.autoPotionThresholdPct=Math.round((typeof GS==='function'?GS('combat.autoPotionThreshold',.35):.35)*100);
     h.autoPotionThresholdPct=Math.max(1,Math.min(99,Math.round(h.autoPotionThresholdPct)));
+    if(h.autoPotionPriority!==undefined)h.autoPotionPriority=[...new Set(Array.isArray(h.autoPotionPriority)?h.autoPotionPriority.filter(id=>healPotionItems().some(x=>x.id===id)):[])];
     if(typeof h.autoPotionId!=='string'||!healPotionItems().some(x=>x.id===h.autoPotionId))h.autoPotionId=defaultHealPotionId();
     if(!(globalThis.EmberwildSecondsCombat?.active?Number.isFinite(h.healPotionCooldownRemaining):Number.isInteger(h.healPotionCooldownRemaining))||h.healPotionCooldownRemaining<0)h.healPotionCooldownRemaining=0;
   }
@@ -90,7 +91,7 @@
     normalizeHeroHealingSettings(h);
     if(h.healPotionCooldownRemaining>0){if(!globalThis.EmberwildSecondsCombat?.active)h.healPotionCooldownRemaining--;return false;}
     if(!h.autoPotion||h.hp<=0)return false;
-    const item=selectedHealPotion(h);if(!item||healPotionCount(item.id)<1)return false;
+    const item=[selectedHealPotion(h),...(h.autoPotionPriority||[]).map(id=>healPotionItems().find(x=>x.id===id))].find(x=>x&&healPotionCount(x.id)>0);if(!item)return false;
     const v=battleStats(h),threshold=Math.max(1,Math.min(99,h.autoPotionThresholdPct))/100;
     if(h.hp/v.hp>threshold||h.hp>=v.hp)return false;
     setHealPotionCount(item.id,healPotionCount(item.id)-1);
@@ -100,6 +101,11 @@
     return true;
   }
   globalThis.useAutoHealingPotion=useAutoHealingPotion;
+  let manaProvider=null;
+  const manaItems=()=>manaProvider?.items?.()||[];
+  function manaSettings(h){h.autoManaPotion??=false;h.autoManaPotionThresholdPct=Number.isFinite(h.autoManaPotionThresholdPct)?Math.max(1,Math.min(99,h.autoManaPotionThresholdPct)):35;h.autoManaPotionPriority=Array.isArray(h.autoManaPotionPriority)?[...new Set(h.autoManaPotionPriority.filter(validId))]:[];h.manaPotionCooldownRemaining=Math.max(0,Number(h.manaPotionCooldownRemaining)||0);}
+  function useAutoManaPotion(h){manaSettings(h);const C=globalThis.EmberwildSecondsCombat;if(!C?.active||!manaProvider||!h.autoManaPotion||h.hp<=0||h.manaPotionCooldownRemaining>0)return false;const max=C.resourceProfile(h).maxMp,current=C.timeline?.actors.some(a=>a.definition.id===heroKey(h))?C.timeline.actor(heroKey(h)).mp:h.mp??max;if(current>=max||current/max>h.autoManaPotionThresholdPct/100)return false;const item=h.autoManaPotionPriority.map(id=>manaItems().find(x=>x.id===id)).find(x=>x&&manaProvider.count(x.id)>0);if(!item||!Number.isFinite(item.restoreMp)||item.restoreMp<=0||!Number.isFinite(item.cooldownSeconds)||item.cooldownSeconds<0||manaProvider.consume(item.id)===false)return false;h.mp=Math.min(max,current+item.restoreMp);if(C.timeline?.actors.some(a=>a.definition.id===heroKey(h)))C.timeline.setMp(heroKey(h),h.mp);h.manaPotionCooldownRemaining=item.cooldownSeconds;note(characterName(h)+'自動使用'+item.name+' · 恢復 '+(h.mp-current)+' MP');return true;}
+  globalThis.EmberwildAutoPotions={manaItems,manaSettings,useMana:useAutoManaPotion,registerManaProvider(provider){if(!provider||!['items','count','consume'].every(k=>typeof provider[k]==='function'))throw Error('魔力藥水介面無效');manaProvider=provider;},configureMana(key,{enabled,threshold,priority}){const h=partyMember(key);if(!h||typeof enabled!=='boolean'||!Number.isFinite(threshold)||threshold<1||threshold>99||!Array.isArray(priority)||priority.some(id=>!validId(id)))return false;globalThis.EmberwildOffline?.sync();if(globalThis.EmberwildOffline?.busy||globalThis.EmberwildOffline?.failed)return false;Object.assign(h,{autoManaPotion:enabled,autoManaPotionThresholdPct:threshold,autoManaPotionPriority:[...new Set(priority)]});manaSettings(h);save();return true;},configureHealingPriority(key,ids){const h=partyMember(key);if(!h||!Array.isArray(ids)||ids.some(id=>!healPotionItems().some(x=>x.id===id)))return false;globalThis.EmberwildOffline?.sync();if(globalThis.EmberwildOffline?.busy||globalThis.EmberwildOffline?.failed)return false;h.autoPotionPriority=[...new Set(ids)];save();return true;}};
   globalThis.setHeroAutoPotion=function(key,on){const h=partyMember(key);if(!h)return;h.autoPotion=!!on;save();render();refreshHealingSettingsModal();};
   globalThis.setHeroAutoPotionThreshold=function(key,value){const h=partyMember(key);if(!h)return;const n=Number(value);h.autoPotionThresholdPct=Number.isFinite(n)?Math.max(1,Math.min(99,Math.round(n))):35;save();render();refreshHealingSettingsModal();};
   globalThis.setHeroAutoPotionItem=function(key,id){const h=partyMember(key);if(!h||!healPotionItems().some(x=>x.id===id))return;h.autoPotionId=id;save();render();refreshHealingSettingsModal();};

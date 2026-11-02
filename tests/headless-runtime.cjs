@@ -37,8 +37,10 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
   }
   const published=path.join(root,'data/balance.json');
   ctx.__HEADLESS_PUBLISHED_BALANCE=fs.existsSync(published)?JSON.parse(fs.readFileSync(published,'utf8')):null;
+  // Match the browser harness's 30s boot budget for the complete published document.
+  // Individual module execution remains capped at 10s.
   // Mirror the loader's final domain apply and late-validator save restoration.
-  vm.runInContext(`{const raw=typeof balanceSourceText==='function'?balanceSourceText():null;if(raw||globalThis.__HEADLESS_PUBLISHED_BALANCE)applyBalanceConfig(raw?JSON.parse(raw):globalThis.__HEADLESS_PUBLISHED_BALANCE,{persist:false});const boot=globalThis.__EMBERWILD_TEAM_BOOT_RAW||globalThis.__EMBERWILD_BOOT_SAVE_RAW;if(boot){try{loadParty(JSON.parse(boot));globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;}catch(error){party=null;state=null;running=false;globalThis.__EMBERWILD_BOOT_SAVE_ERROR=String(error.message||error);if(typeof backToTitle==='function')backToTitle();else render();}}}`,ctx,{filename:'headless-published-loader',timeout:10000});
+  vm.runInContext(`{const raw=typeof balanceSourceText==='function'?balanceSourceText():null;if(raw||globalThis.__HEADLESS_PUBLISHED_BALANCE)applyBalanceConfig(raw?JSON.parse(raw):globalThis.__HEADLESS_PUBLISHED_BALANCE,{persist:false});const boot=globalThis.__EMBERWILD_TEAM_BOOT_RAW||globalThis.__EMBERWILD_BOOT_SAVE_RAW;if(boot){try{loadParty(JSON.parse(boot));globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;}catch(error){party=null;state=null;running=false;globalThis.__EMBERWILD_BOOT_SAVE_ERROR=String(error.message||error);if(typeof backToTitle==='function')backToTitle();else render();}}}`,ctx,{filename:'headless-published-loader',timeout:options.bootstrapTimeoutMs||30000});
   return {ctx,elements,errors,warnings,values,dispatch:(type,target='window',event={})=>{for(const fn of listeners[target].get(type)||[])fn({...event,type});},run:code=>vm.runInContext(code,ctx),advance:ms=>{now+=ms;},get now(){return now;}};
 }
 module.exports={loadRuntime};

@@ -5,7 +5,7 @@
  const Schema=EmberwildSecondsSchema,S=__EMBERWILD_SKILLS,E=EmberwildSecondsTimeline;
  const copy=Schema.copy,key=x=>Object.hasOwn(x||{},'job')?heroKey(x):x?.id;
  let source=Schema.normalize(exportableBalance()),engine=null,owner=null,serial=0,ended=false,importing=0,currentTiming=null;
- let pendingRestore=null,encounterStart=0,scheduledAt=0,needsRoster=true,procReady={};
+ let pendingRestore=null,encounterStart=0,scheduledAt=0,needsRoster=true,procReady={},phase="combat",recoveryUntil=0,continuing=false;
  const config=()=>source.balanceSettings.combat.seconds;
  const unit=id=>party?.members.find(h=>heroKey(h)===id)||foes.find(e=>e.id===id);
  const skill=id=>S.byId(id)||source.skillSystem.definitions.find(s=>s.id===id);
@@ -25,7 +25,7 @@
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
   const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i))].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
-   (GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===x.monsterId)?.skillAssignments||[]).map(r=>skill(r.skillId)).filter(s=>s?.type==='active'&&sharedSkillScopeAllowsEnemy(s.usageScope||'character',x.kind));
+   (GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===x.monsterId)?.skillAssignments||[]).map(r=>skill(r.skillId)).filter(s=>s?.type==='active'&&!s.disabled&&x.lv>=(s.requiredLevel||1)&&sharedSkillScopeAllowsEnemy(s.usageScope||'character',x.kind));
   const skills=[...new Map(rows.map(s=>[s.id,s])).values()].map(s=>{const t=timing(s);return {id:s.id,type:'active',cooldownSeconds:hero?skillCooldownSeconds(x,s):t.cooldownSeconds,castSeconds:t.castSeconds,actionCostSeconds:t.actionCostSeconds,mpCost:t.mpCost,priority:t.priority};});
   return {id:key(x),baseIntervalSeconds:hero?actorInterval(x):source.balanceSettings.monsters.catalog.find(m=>m.id===x.monsterId)?.timing.baseIntervalSeconds??config().actionReferenceSeconds,
    speed:hero?battleStats(x).speed:combatSpeed(x),mp:Math.max(0,Math.min(m.maxMp,Number.isFinite(x.mp)?x.mp:m.maxMp)),maxMp:m.maxMp,mpRegenPerSecond:m.regen,skills};
@@ -33,7 +33,7 @@
  function canUse(view,s){
   const x=unit(view.id),d=skill(s.id);if(!x||x.hp<=0||!d)return false;
   const hero=Object.hasOwn(x,'job'),t=timing(d),effect=d.effect||d.kind;
-  if((t.minTargets||1)>foes.filter(e=>e.hp>0).length&&hero)return false;
+  if((t.minTargets||1)>(hero?foes:living()).filter(e=>e.hp>0).length)return false;
   if(t.requiredTargetStatusId&&!statusList().some(s=>s.statusId===t.requiredTargetStatusId&&unit(s.targetKey)?.hp>0&&(hero?foes:living()).some(x=>key(x)===s.targetKey)))return false;
   if(!hero){const c=__EMBERWILD_CONTROL_TEST_API.states[x.id];if(c?.rage||!living().length)return false;if(effect==='revive')return foes.some(e=>e.hp<=0);if(t.condition==='injured')return foes.some(e=>e.hp>0&&e.hp/e.maxhp<config().healThreshold);if(t.condition==='missingEffect'&&effect==='shield')return x.shield<x.atk*(d.power||0);return true;}
   if(!S.learned(x,d)||__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length)return false;
@@ -54,7 +54,7 @@
  }
  function ensure(){
   if(!party)return null;
-  if(owner!==party){engine=null;owner=party;ended=false;scheduledAt=partyClock;needsRoster=true;procReady={};}
+  if(owner!==party){engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};}
   if(!engine){engine=E.create({minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed},[],handlers);engine.now=Math.round(partyClock*1e6);}
   return engine;
  }
@@ -70,7 +70,7 @@
   if(!engine)return;
   for(const a of engine.actors){const x=unit(a.definition.id);if(!x)continue;
    if(x.hp<=0&&a.alive)engine.setAlive(a.definition.id,false);else if(x.hp>0&&!a.alive)engine.setAlive(a.definition.id,true);
-   {const m=mana(x);engine.setMpRegen(key(x),m.regen*Math.max(0,1+effectTotal(key(x),'mpRegen')));engine.setMpCostMultiplier(key(x),Math.max(0,m.cost-effectTotal(key(x),'mpCostReduction')));}
+   {const m=mana(x);if(a.definition.maxMp!==m.maxMp)engine.setMaxMp(key(x),m.maxMp);engine.setMpRegen(key(x),m.regen*(phase==='recovery'&&Object.hasOwn(x,'job')?config().recovery.mpRegenMultiplier:1)*Math.max(0,1+effectTotal(key(x),'mpRegen')));engine.setMpCostMultiplier(key(x),Math.max(0,m.cost-effectTotal(key(x),'mpCostReduction')));}
    const speed=Object.hasOwn(x,'job')?battleStats(x).speed:combatSpeed(x);if(speed!==a.speed)engine.setSpeed(key(x),speed);
    x.mp=engine.actor(key(x)).mp;
    if(Object.hasOwn(x,'job'))for(const s of a.definition.skills){const d=skill(s.id);(d.type==='support'?supportCooldowns:actorCooldowns)[memberKey(x)+'-'+d.adapter.index]=Math.max(0,(a.ready[s.id]-engine.now)/1e6);}
@@ -127,13 +127,13 @@
  }
  function clock(at){
   const delta=Math.max(0,at-partyClock);partyClock=at;
-  for(const h of heroes()){h.healPotionCooldownRemaining=Math.max(0,(h.healPotionCooldownRemaining||0)-delta);for(const id of Object.keys(h.eventPassiveCooldowns||{}))h.eventPassiveCooldowns[id]=Math.max(0,h.eventPassiveCooldowns[id]-delta);const b=h.imbue;if(b?.remainingTurns){b.remainingTurns=Math.max(0,b.remainingTurns-delta);if(!b.remainingTurns)h.imbue=null;}}
+  for(const h of heroes()){if(phase==='recovery'&&delta>0)h.hp=Math.min(stats(h).hp,h.hp+stats(h).hp*config().recovery.hpFractionPerSecond*delta);h.healPotionCooldownRemaining=Math.max(0,(h.healPotionCooldownRemaining||0)-delta);h.manaPotionCooldownRemaining=Math.max(0,(h.manaPotionCooldownRemaining||0)-delta);for(const id of Object.keys(h.eventPassiveCooldowns||{}))h.eventPassiveCooldowns[id]=Math.max(0,h.eventPassiveCooldowns[id]-delta);const b=h.imbue;if(b?.remainingTurns){b.remainingTurns=Math.max(0,b.remainingTurns-delta);if(!b.remainingTurns)h.imbue=null;}}
   for(const c of Object.values(__EMBERWILD_CONTROL_TEST_API.states))for(const s of Object.values(c))if(s.secondsUntil!==undefined)s.turns=Math.max(0,s.secondsUntil-at);
  }
  function periodic(event){
   const p=event.payload,x=unit(event.actorId);if(!p)return;
   if(event.type==='statusExpire'){
-   if(p.kind==='control')__EMBERWILD_CONTROL_TEST_API.clear(x,p.control);
+   if(p.kind==='supply')automaticSupplies();else if(p.kind==='control')__EMBERWILD_CONTROL_TEST_API.clear(x,p.control);
    else if(p.kind==='effect')effects=effects.filter(f=>f.secondsId!==p.id);
    else if(p.kind==='statusExpiry')EmberwildStatusCombatState.seconds.replaceInstances(statusList().filter(s=>s.id!==p.id));
    return;
@@ -190,25 +190,42 @@
  }
  const handlers={canAct:view=>{const x=unit(view.id);return !!x&&x.hp>0&&living().length>0&&foes.some(e=>e.hp>0);},canUse,
   beforeAction(view){const x=unit(view.id);if(Object.hasOwn(x,'job'))return true;const f=__EMBERWILD_CONTROL_TEST_API.states[x.id]?.fear;return !f||Math.random()>=f.skipChance;},onEvent:handleEvent};
+ function automaticSupplies(){for(const h of living()){
+  const max=stats(h).hp,hpNeeded=h.autoPotion&&h.hp/max<=h.autoPotionThresholdPct/100;
+  if(hpNeeded&&h.healPotionCooldownRemaining<=0)useAutoHealingPotion(h);
+  let mpNeeded=false;if(h.autoManaPotion){const m=mana(h),mp=engine?.actors.some(a=>a.definition.id===key(h))?engine.actor(key(h)).mp:h.mp??m.maxMp;mpNeeded=mp/m.maxMp<=h.autoManaPotionThresholdPct/100;if(mpNeeded&&h.manaPotionCooldownRemaining<=0)EmberwildAutoPotions.useMana(h);}
+  for(const [kind,needed,left] of [['hp',hpNeeded,h.healPotionCooldownRemaining],['mp',mpNeeded,h.manaPotionCooldownRemaining]])if(needed&&left>0)addTimer('supply:'+key(h)+':'+kind,key(h),left,null,{kind:'supply'});
+ }}
  function finish(){
   if(ended||!foes.length||living().length&&foes.some(e=>e.hp>0))return false;
   ended=true;const victory=living().length>0,finalAttempt=foes.some(e=>e.kind==='final');
   EmberwildBattleSummary.finish(victory?'victory':'wipe');
   for(const e of foes)if(e.hp<=0&&!e.rewarded)rewardGroupKill(e);
-  EmberwildCombatEvents.clear();EmberwildTokenCombatState.restore([]);engine.statuses=[];effects=[];EmberwildStatusCombatState.seconds.replaceInstances([]);
-  const quest=party.questChallenge;
+  const quest=party.questChallenge,special=!!quest||!!party.bossChallenge?.active||finalAttempt;
+  EmberwildCombatEvents.clear(false,victory&&!special);EmberwildTokenCombatState.restore([]);
+  if(!victory||special){engine.statuses=[];effects=[];EmberwildStatusCombatState.seconds.replaceInstances([]);}else{phase='recovery';recoveryUntil=mono()+config().encounterDelaySeconds;syncResources();}
   if(!victory){running=false;party.members[0].gold-=Math.floor(party.members[0].gold*GS('combat.defeatGoldLoss',.05));note('全隊戰敗，生命已回滿。');refillParty();foes=[];enemy=null;}
-  else{refillParty();note('本次遭遇勝利。');if(foes.some(e=>e.kind==='final'))running=false;}
+  else{if(special)refillParty();note(special?'本次遭遇勝利。':'本次遭遇勝利，進入脫戰恢復。');if(foes.some(e=>e.kind==='final'))running=false;}
   if(activeBattleStat)finalizeBattleStatistics(victory?'victory':'wipe');
   if(finalAttempt){if(victory)EmberwildFinalEncounter.complete(party.map);else EmberwildFinalEncounter.fail(party.map);}
   if(quest)EmberwildQuestEncounter.complete(quest);else if(victory&&party.bossChallenge?.active)EmberwildBossEncounter.complete();
   return true;
  }
+ function thresholds(){return {...config().recovery,...party.explorationRecovery};}
+ function recoveryWait(){const c=thresholds();let wait=Math.max(0,recoveryUntil-mono());for(const h of heroes()){const max=stats(h).hp,m=mana(h),a=engine.actors.find(a=>a.definition.id===key(h)),mpRate=a?.alive?a.definition.mpRegenPerSecond:0,hpMissing=Math.max(0,c.minimumHpRatio*max-h.hp),mpMissing=Math.max(0,c.minimumMpRatio*m.maxMp-(a?engine.actor(key(h)).mp:h.mp??m.maxMp));if(hpMissing)wait=Math.max(wait,c.hpFractionPerSecond>0?hpMissing/(max*c.hpFractionPerSecond):Infinity);if(mpMissing)wait=Math.max(wait,mpRate>0?mpMissing/mpRate:Infinity);}return wait;}
+ function recoveryStep(){
+  let at=Math.max(mono(),scheduledAt);const progress=engine.advanceTo(at,{maxEvents:2000});clock(engine.now/1e6);cleanTimers();syncResources();if(!progress.complete)return {delaySeconds:.000001};
+  automaticSupplies();
+  if(!living().length){ended=false;phase='combat';finish();return {delaySeconds:config().encounterDelaySeconds};}
+  const wait=recoveryWait();if(wait<=.000001){phase='combat';return null;}
+  const next=engine.nextEvent(),target=Math.min(Number.isFinite(wait)?mono()+wait:mono()+config().durationReferenceSeconds,next?next.at/1e6:Infinity);scheduledAt=Math.max(mono()+.000001,target);return {delaySeconds:scheduledAt-mono()};
+ }
  function step(){if(foes.some(e=>e.hp>0)&&!EmberwildBattleConfiguration.pending())EmberwildBattleConfiguration.begin();return EmberwildBattleConfiguration.combat(stepCore);}
  function stepCore(){
   ensure();
+  if(phase==='recovery'){const waiting=recoveryStep();if(waiting)return waiting;}
   if(!foes.some(e=>e.hp>0)||ended){
-   if(!ended&&foes.length)finish();
+   if(!ended&&foes.length&&finish()&&phase==='recovery'){scheduledAt=recoveryUntil;return {delaySeconds:Math.max(.000001,recoveryUntil-mono())};}
    if(!running)return {delaySeconds:config().encounterDelaySeconds};
    const next=Math.max(mono(),scheduledAt);engine.advanceTo(next,{maxEvents:1});clock(next);
    spawnGroup();ended=false;encounterStart=partyClock;syncRoster();
@@ -228,7 +245,7 @@
    scheduleEffects(before,null,null);
   }
   needsRoster=false;
-  scheduleControls();cleanTimers();syncResources();
+  scheduleControls();cleanTimers();syncResources();automaticSupplies();
   let next=engine.nextEvent();
   if(!next){const at=Math.max(mono(),scheduledAt);engine.advanceTo(at);clock(at);scheduledAt=at+config().actionReferenceSeconds;return {delaySeconds:config().actionReferenceSeconds};}
   if(next.at/1e6>scheduledAt){scheduledAt=next.at/1e6;return {delaySeconds:Math.max(.000001,scheduledAt-mono())};}
@@ -236,8 +253,7 @@
   while((next=engine.nextEvent())&&next.at/1e6===at&&count++<2000){
    if(dotPhase&&next.priority>0){EmberwildCombatEvents.scanDeaths();EmberwildCombatEvents.drain();dotPhase=false;syncResources();if(!living().length||!foes.some(e=>e.hp>0))break;}
    clock(at);
-   for(const h of living())if(h.healPotionCooldownRemaining<=0){if(useAutoHealingPotion(h)){const item=SHOP.find(s=>s.id===h.autoPotionId);h.healPotionCooldownRemaining=item?.timing?.cooldownSeconds??(item?.cooldown||0)*actorInterval(h);}}
-   engine.advanceTo(at,{maxEvents:1});cleanTimers();syncResources();
+   engine.advanceTo(at,{maxEvents:1});cleanTimers();syncResources();automaticSupplies();
    if(!dotPhase&&(!living().length||!foes.some(e=>e.hp>0)))break;
   }
   EmberwildCombatEvents.scanDeaths();EmberwildCombatEvents.drain();syncResources();
@@ -253,9 +269,9 @@
   for(const d of statusDefs()){const original=doc.statusDefinitions.find(x=>x.id===d.id);if(original)d.timing=copy(original.timing);}
   for(const item of SHOP){const original=doc.items.find(x=>x.id===item.id);if(original?.timing)item.timing=copy(original.timing);}
  }
- function pack(){if(!party)return null;ensure();syncResources();return {version:1,timeline:engine.snapshot(),uidSerial,serial,ended,encounterStart,scheduledAt,procReady:copy(procReady)};}
- function restore(raw){engine=null;owner=party;ended=false;pendingRestore=raw;
-  if(raw){engine=E.restore(raw.timeline,handlers);serial=raw.serial;if(raw.uidSerial!==undefined)uidSerial=raw.uidSerial;ended=raw.ended;encounterStart=raw.encounterStart;scheduledAt=raw.scheduledAt??engine.now/1e6;needsRoster=false;procReady=copy(raw.procReady);partyClock=engine.now/1e6;syncResources();}
+ function pack(){if(!party)return null;ensure();syncResources();return {version:1,timeline:engine.snapshot(),uidSerial,serial,ended,phase,recoveryUntil,encounterStart,scheduledAt,procReady:copy(procReady)};}
+ function restore(raw){engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;pendingRestore=raw;
+  if(raw){engine=E.restore(raw.timeline,handlers);serial=raw.serial;if(raw.uidSerial!==undefined)uidSerial=raw.uidSerial;ended=raw.ended;phase=raw.phase||"combat";recoveryUntil=raw.recoveryUntil||0;encounterStart=raw.encounterStart;scheduledAt=raw.scheduledAt??engine.now/1e6;needsRoster=false;procReady=copy(raw.procReady);partyClock=engine.now/1e6;syncResources();}
  }
  function migrateLegacy(){
   if(!party)return;const before=partyClock,oldCds=copy(actorCooldowns),oldSupports=copy(supportCooldowns);partyClock=0;scheduledAt=0;round=0;combatRoundProgress=null;roundIterator=null;restore(null);ensure();syncRoster();
@@ -282,18 +298,24 @@
  supportSkillCooldown=function(h,i){const s=S.byPosition(h.job,'support',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
  gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'?Math.max(config().minimumActionIntervalSeconds,cd-cooldownReductionOnCast(h,s.id)):cd;};
  __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return Math.max(config().minimumActionIntervalSeconds,supportSkillCooldown(h,i)-(s?cooldownReductionOnCast(h,s.id):0));};
- const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
- const oldSpawn=spawnGroup;spawnGroup=function(...args){const cds=copy(actorCooldowns),supports=copy(supportCooldowns),out=oldSpawn(...args);actorCooldowns=cds;supportCooldowns=supports;needsRoster=true;return out;};
+ const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
+ const oldSpawn=spawnGroup;spawnGroup=function(...args){
+  const normal=!party.bossChallenge?.active&&!party.questChallenge&&!isFinalMap(party.map),cds=copy(actorCooldowns),supports=copy(supportCooldowns),ids=new Set(party.members.map(key)),vitals=party.members.map(h=>({h,hp:h.hp,mp:h.mp,shield:h.shield})),kept=effects.filter(f=>ids.has(f.target)),statuses=statusList().filter(s=>ids.has(s.targetKey)),controls=EmberwildControlCombatState.pack();
+  continuing=normal;let out;try{out=oldSpawn(...args);}finally{continuing=false;}
+  if(normal){for(const v of vitals){v.h.hp=Math.min(v.hp,stats(v.h).hp);if(v.mp!==undefined)v.h.mp=v.mp;v.h.shield=v.shield;}effects=kept;EmberwildStatusCombatState.seconds.replaceInstances(statuses);EmberwildControlCombatState.restore({...controls,states:Object.fromEntries(Object.entries(controls.states).filter(([id])=>ids.has(id))),summons:[]});}
+  actorCooldowns=cds;supportCooldowns=supports;needsRoster=true;return out;
+ };
  const oldPack=packParty,oldPartyValidate=validateParty;
- packParty=function(){const out=oldPack();if(party){out.huntingMode=party.huntingMode||'single';out.currentHuntingMode=party.currentHuntingMode||out.huntingMode;}return out;};
- validateParty=function(raw){if(raw?.huntingMode!==undefined&&!['single','group'].includes(raw.huntingMode))throw Error('狩獵模式無效');const out=oldPartyValidate(raw);out.huntingMode=raw?.huntingMode||'single';out.currentHuntingMode=raw?.currentHuntingMode||out.huntingMode;return out;};
+ packParty=function(){const out=oldPack();if(party){out.huntingMode=party.huntingMode||'single';out.currentHuntingMode=party.currentHuntingMode||out.huntingMode;if(party.explorationRecovery)out.explorationRecovery=copy(party.explorationRecovery);}return out;};
+ validateParty=function(raw){if(raw?.huntingMode!==undefined&&!['single','group'].includes(raw.huntingMode))throw Error('狩獵模式無效');const out=oldPartyValidate(raw);out.huntingMode=raw?.huntingMode||'single';out.currentHuntingMode=raw?.currentHuntingMode||out.huntingMode;if(raw?.explorationRecovery!==undefined){const r=raw.explorationRecovery;if(!r||['minimumHpRatio','minimumMpRatio'].some(k=>typeof r[k]!=='number'||!Number.isFinite(r[k])||r[k]<0||r[k]>1))throw Error('探索恢復門檻無效');out.explorationRecovery=copy(r);}return out;};
  const baseSupplyDetail=supplyDetail;supplyDetail=function(item){let text=baseSupplyDetail(item);if(item?.type==='imbue')text=text.replace(/持續 \d+(?:\.\d+)?(?: 戰鬥)? 回合/g,'持續 '+item.timing.durationSeconds+' 秒');return text;};
  const baseSupplyDetails=supplyBuffDetails;supplyBuffDetails=function(b,k){const d=baseSupplyDetails(b,k);if(k==='imbue'){d.time=Number(b.remainingTurns.toFixed(1))+' / '+Number(b.totalTurns.toFixed(1))+' 秒';d.clock='戰鬥秒數';}return d;};
  const baseSupplyStatus=supplyStatus;supplyStatus=function(h){return baseSupplyStatus(h).replace(/回合/g,'秒');};
- globalThis.setHuntingMode=function(mode){if(!['single','group'].includes(mode))return false;party.huntingMode=mode;save();render();return true;};
- globalThis.EmberwildSecondsCombat={active:true,config,resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
+ globalThis.setRecoveryThresholds=function(hp,mp){if(!party||![hp,mp].every(x=>Number.isFinite(x)&&x>=0&&x<=1))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.explorationRecovery={minimumHpRatio:hp,minimumMpRatio:mp};save();render();return true;};
+ globalThis.setHuntingMode=function(mode){if(!party||!['single','group'].includes(mode))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.huntingMode=mode;save();render();return true;};
+ globalThis.EmberwildSecondsCombat={active:true,config,thresholds,get phase(){return phase;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
   encounterSize(){party.currentHuntingMode=party.huntingMode||'single';if(party.currentHuntingMode==='single')return 1;const weights=config().groupWeights,total=weights.reduce((a,b)=>a+b,0);let pick=Math.random()*total;for(let i=0;i<weights.length;i++)if((pick-=weights[i])<0)return i+3;return 5;},
-  validateSnapshot(raw){if(raw!==null){if(raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
+  validateSnapshot(raw){if(raw!==null){if(raw.phase!==undefined&&!['combat','recovery'].includes(raw.phase)||raw.recoveryUntil!==undefined&&(!Number.isFinite(raw.recoveryUntil)||raw.recoveryUntil<0)||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
   reduceCooldowns(h,legacyAmount){if(engine?.actors.some(a=>a.definition.id===key(h)))engine.reduceCooldowns(key(h),legacyAmount*actorInterval(h));},
   bossMultiplier(e){const f=GAMEPLAY_SETTINGS.combat.finalBoss,schedule=config().finalBoss,elapsed=partyClock-encounterStart;if(elapsed>schedule.enrageAfterSeconds)return f.enrageMultiplier;e.secondsSpecialAt??=encounterStart+schedule.specialIntervalSeconds;if(partyClock>=e.secondsSpecialAt){while(e.secondsSpecialAt<=partyClock)e.secondsSpecialAt+=schedule.specialIntervalSeconds;return f.specialMultiplier;}return 1;}
  };
