@@ -27,7 +27,7 @@ test('pre-core extracted functions preserve cold render, tabs, character and equ
   assert.equal(r.run('typeof render'),'function');
   assert.equal(r.run('typeof equipmentView'),'function');
   assert.equal(r.run('typeof battleView'),'function');
-  assert.match(r.elements.get('app')?.innerHTML||'',/EMBERWILD|遠征/);
+  assert.match(r.elements.get('app')?.innerHTML||'',/DREAMING ABYSS|夢淵|遠征/);
   r.run('selectSaveSlot(1);start(0);closeModal();save()');
   assert.equal(r.run('!!party && !!state'),true);
   assert.equal(r.run('globalThis.__EMBERWILD_BOOT_SAVE_ERROR'),null);

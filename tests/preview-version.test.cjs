@@ -4,7 +4,7 @@ const version=JSON.parse(fs.readFileSync(require.resolve('../data/preview-versio
 const source=fs.readFileSync(require.resolve('../js/ui/preview-version.js'),'utf8');
 test('preview badge displays the separately versioned source and never changes production UI',async()=>{
  assert.match(version,/^v\d+\.\d{3}$/);
- const badge={textContent:'測試版本 · chatgpt-dev'},document={title:'測試版｜餘燼荒野',getElementById:id=>id==='preview-build-banner'?badge:null};
+ const badge={textContent:'測試版本 · chatgpt-dev'},document={title:'測試版｜夢淵',getElementById:id=>id==='preview-build-banner'?badge:null};
  const ctx=vm.createContext({document,Date,fetch:async()=>({ok:true,json:async()=>({version})}),console});
  vm.runInContext(source,ctx);await new Promise(resolve=>setImmediate(resolve));
  assert.equal(badge.textContent,'測試版本 '+version);
