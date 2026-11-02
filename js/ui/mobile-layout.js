@@ -2,6 +2,10 @@
 (()=>{
   const mobile=matchMedia('(max-width:900px)');
   const primary=['battle','roster','equipment','character'];
+  // Top-menu category buttons point at their last visited sub-page, so the four
+  // shortcuts are matched by the category that owns each primary page.
+  const groupOf=id=>globalThis.EmberwildNavigation?.design.groups.find(g=>g.pages.some(p=>p.id===id))?.id;
+  const shortcutIndex=button=>{const group=button.dataset.navGroup;return group?primary.findIndex(id=>groupOf(id)===group):primary.indexOf(button.dataset.page);};
   let menuOpen=false,journalOpen=false,lootOpen=false,lootScroll=0,menuScroll=0,pendingSkill=null,journalSeen=false;
   function sync(){
     const main=document.querySelector('#app>.layout>main');
@@ -22,16 +26,16 @@
         const id=button.dataset.page||(button.dataset.statisticsTab?'statistics':button.getAttribute('onclick')?.match(/setTab\('([^']+)'\)/)?.[1]);
         if(!id)continue;
         button.dataset.page=id;
-        if(!primary.includes(id))pages.appendChild(button);
+        if(shortcutIndex(button)<0)pages.appendChild(button);
       }
       // Keep familiar, short labels in the four thumb-accessible shortcuts.
-      for(const id of primary){const b=nav.querySelector(`[data-page="${id}"]`);if(b)nav.appendChild(b);}
+      for(const [index,id] of primary.entries()){const b=[...nav.querySelectorAll('[data-page]')].find(b=>b.parentElement===nav&&shortcutIndex(b)===index)||nav.querySelector(`[data-page="${id}"]`);if(b)nav.appendChild(b);}
       const more=document.createElement('button');more.type='button';more.className='mobile-more-toggle';more.setAttribute('aria-controls',pages.id);more.onclick=()=>{menuOpen=!menuOpen;sync();};nav.append(more,pages);
     }
     if(nav){
       nav.classList.toggle('mobile-menu-open',menuOpen);
       const more=nav.querySelector('.mobile-more-toggle');
-      if(more){more.setAttribute('aria-expanded',String(menuOpen));more.textContent=menuOpen?'收起':primary.includes(tab)?'更多':'更多 · '+(nav.querySelector('.mobile-more-pages .active span')?.textContent||nav.querySelector('.mobile-more-pages .active')?.textContent||'');more.classList.toggle('active',!primary.includes(tab));}
+      if(more){more.setAttribute('aria-expanded',String(menuOpen));more.textContent=menuOpen?'收起':primary.some(id=>id===tab||groupOf(id)&&groupOf(id)===groupOf(tab))?'更多':'更多 · '+(nav.querySelector('.mobile-more-pages .active span')?.textContent||nav.querySelector('.mobile-more-pages .active')?.textContent||'');more.classList.toggle('active',!primary.includes(tab));}
       for(const b of nav.querySelectorAll('[data-page]')){
         if(b.dataset.page===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
       }
