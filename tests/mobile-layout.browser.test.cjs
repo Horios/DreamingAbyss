@@ -57,6 +57,8 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
    const category=p.locator(`aside nav [data-nav-group="${group}"]`);
    if(!await category.isVisible())await p.locator('.mobile-more-toggle').click();
    await category.click();
+   // The interaction guard defers rebuilding content until the click finishes.
+   await p.waitForFunction(()=>!isEmberwildUIInteracting());
    const subpage=p.locator(`main .game-subtabs [data-subpage="${id}"]`);
    if(await subpage.count())await subpage.click();
    await p.waitForFunction(t=>tab===t,target);
