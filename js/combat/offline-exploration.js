@@ -342,7 +342,11 @@
      nextActionAt=target;
     }
     resources=jobOffline?captureResources(resources):null;const eventStart=performance.now();event(foreground&&!globalThis.EmberwildSecondsCombat?.active?target:at);if(jobOffline&&metrics)metrics.fullMs+=performance.now()-eventStart;collect(resources);if(jobOffline)sampleAfterEvent();count++;if(!running){lastMode=false;const r=c.pendingReceipt;if(jobOffline&&r&&!r.complete){r.stoppedAt=at;r.reason=playerHero().bag.length>=RULES.bagCapacity?'背包已滿，掉落已保留':globalThis.expeditionChallengeResult?(expeditionChallengeResult.success?'任務關卡完成':'任務關卡戰敗'):'本次探索已依戰鬥規則結束';}}}
-   if(foreground&&!globalThis.EmberwildSecondsCombat?.active||at===target)break;
+   // A foreground seconds tick can resolve several independent actions.
+   // Publish a captured impact before advancing again, or the single pending
+   // visual frame is overwritten and some targets lose their HP/icon effects.
+   // Offline replay still processes its full batch without presentation waits.
+   if(foreground&&globalThis.EmberwildBattleEffects?.pendingEvents.length||foreground&&!globalThis.EmberwildSecondsCombat?.active||at===target)break;
   }});
   c.status=running?'running':foes.length?'paused':'stopped';return c.lastAt<target;
  }
