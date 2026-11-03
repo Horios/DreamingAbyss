@@ -75,6 +75,10 @@
    const s=ensure(),r=current(),d=doc(),n=quantity;
    if(!s.unlocked||!design.enabled||!remaining()||!r||!Number.isSafeInteger(n)||n<r.min||n>r.max||n>r.held)throw Error('今日次數、投入物品或數量不符');
    M.normalize(design,d);
+   // A full bag never takes extra gear (overflow is salvaged). Refuse before drawing when this pool can
+   // yield equipment, so nothing is consumed and the draw cannot be re-rolled by filling the bag.
+   {const pool=design.pools.find(p=>p.id===r.poolId),weights=pool?.typeWeights??design.typeWeights;
+    if(playerHero().bag.length>=RULES.bagCapacity&&weights?.equipment>0&&M.eligible(design,d,r.poolId,party.mapClears).some(x=>x.type==='equipment'))throw Error('背包已滿，這個回贈池可能給予裝備，請先整理背包');}
    const result=M.draw(design,d,r.poolId,party.mapClears),h=playerHero();
    if(result.type==='gold'&&h.gold+result.amount>1e12||result.type==='item'&&(result.kind==='item'?stock().count(result.key):materialCount(result.key))+result.quantity>(result.kind==='item'?1e6:1e9))throw Error('回贈會超出庫存上限，請先整理背包');
    before={lake:copy(s),gold:h.gold,ore:h.ore,dust:h.dust,bag:[...h.bag],running,input:r.gear?null:held(r),reward:result.type==='item'?(result.kind==='item'?stock().count(result.key):materialCount(result.key)):null,r,result};

@@ -107,7 +107,10 @@ test('different monster names have distinct artwork, elites have ornaments and d
    assert.deepEqual(await p.locator('#'+id+' .battle-enemy-icon small').allTextContents(),['1','','2','1','','2']);
    assert.deepEqual(await p.locator('#'+id+' [data-enemy-id]').evaluateAll(nodes=>nodes.map(n=>n.title.split(' · ')[0])),await p.evaluate(()=>foes.map(combatEnemyName)));
    const art=await p.locator('#'+id+' .enemy-icon-art').evaluateAll(nodes=>nodes.map(n=>n.innerHTML));assert.equal(art[0],art[2]);assert.equal(art[0],art[3]);assert.equal(art[3],art[5]);assert.equal(new Set([art[0],art[1],art[4]]).size,3);
-   assert.equal(await p.locator('#'+id+' .is-elite .enemy-icon-elite:visible').count(),2);
+   // Elites are distinguished by colour alone; the corner badge stays hidden so it never outgrows the icon.
+   assert.equal(await p.locator('#'+id+' .is-elite').count(),2);assert.equal(await p.locator('#'+id+' .enemy-icon-elite:visible').count(),0);
+   const tint=await p.locator('#'+id+' .battle-enemy-icon').evaluateAll(nodes=>nodes.map(n=>[getComputedStyle(n.querySelector('.enemy-icon-art')).color,getComputedStyle(n).borderColor]));
+   assert.notDeepEqual(tint[3],tint[0]);assert.deepEqual(tint[3],tint[5]);assert.deepEqual(tint[0],tint[2]);
   }
   await p.evaluate(()=>{globalThis.wolfNode=$('battleEnemyIcons').querySelector('.battle-enemy-icon');foes[0].hp=0;foes.push({...foes[0],id:'wolf-c',hp:100});EmberwildBattleSummary.sync();});
   assert.deepEqual(await p.locator('#battleEnemyIcons .battle-enemy-icon small').allTextContents(),['1','','2','1','','2','3']);assert(await p.evaluate(()=>$('battleEnemyIcons').querySelector('.battle-enemy-icon')===wolfNode));

@@ -20,7 +20,9 @@
 .battle-enemy-icon.is-boss .enemy-icon-art{color:var(--gold)}
 .battle-enemy-icon.is-dead .enemy-icon-art{filter:grayscale(1);opacity:.3}
 .enemy-icon-elite{display:none;position:absolute;top:-4px;right:-3px;color:#c6a0ee;background:var(--panel);border-radius:50%;font-size:12px;line-height:13px;pointer-events:none}
-.battle-enemy-icon.is-elite>.enemy-icon-elite{display:block}
+/* Elite enemies are marked by colour only: purple artwork, frame and tint (no corner badge). */
+.battle-enemy-icon.is-elite .enemy-icon-art{color:#c6a0ee}
+.battle-enemy-icon.is-elite{background:#a787c926}
 .battle-enemy-icon.is-elite:not(.is-acting){border-color:#a787c9}
 .battle-enemy-icon.is-dead .enemy-icon-elite{filter:grayscale(1);opacity:.3}
 .battle-enemy-icon small:empty{display:none}

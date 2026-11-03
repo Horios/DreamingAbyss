@@ -8,7 +8,7 @@
  #app>.layout>#globalBattleJournal{grid-column:2!important;grid-row:2!important}
  #app>.layout>aside nav{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px;margin:0!important;height:auto!important}
 }
-#app>.layout>aside nav .game-menu-item{position:relative;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:36px;padding:6px 12px!important;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:13px;white-space:nowrap}
+#app>.layout>aside nav .game-menu-item{position:relative;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:36px;padding:6px 12px!important;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:13px;white-space:nowrap;overflow:visible}
 #app>.layout>aside nav .game-menu-item.active{border-color:var(--gold);color:var(--gold)}
 #app>.layout>aside nav .game-menu-item .game-nav-label{display:inline-flex;align-items:center;gap:6px}
 #app>.layout>aside nav .game-menu-item .number-badge,#app>.layout>aside nav .game-menu-item .quest-new{position:absolute;top:-6px;right:-6px}

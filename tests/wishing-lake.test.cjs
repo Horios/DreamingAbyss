@@ -35,14 +35,21 @@ test('invalid rules and saving failures cannot consume or award; prepared journa
  assert.throws(()=>r.run("{const d=exportableBalance();d.wishingLake.inputs[0].key='不存在';applyBalanceConfig(d,{persist:false})}"),/引用不存在/);
  assert.throws(()=>r.run("{const d=exportableBalance();d.wishingLake.equipment.aheadLevels=6;applyBalanceConfig(d,{persist:false})}"),/最多 5/);
 });
-test('items use existing storage; equipment is legal, wearable, enhanceable and retained when the bag is full',()=>{
+test('items use existing storage; equipment is legal, wearable, enhanceable and a full bag refuses gear offerings without consuming anything',()=>{
  const r=game();r.run("recordMapClear(0);state.materials['黏稠凝膠']=1000;");force(r,'item');
  r.run("{const d=exportableBalance();d.wishingLake.pools[0].rewards=d.wishingLake.pools[0].rewards.filter(x=>x.id==='heal');applyBalanceConfig(d,{persist:false});selectLakeOffering('gel');}");
  const before=r.run("__EMBERWILD_INVENTORY_STOCK.count('heal_small')");assert.equal(r.run('confirmLakeOffering()'),true);const n=r.run("__EMBERWILD_INVENTORY_STOCK.count('heal_small')")-before;assert(n>=2&&n<=5);
  r.advance(86400000);r.run('EmberwildOffline.advance(Date.now(),1000)');r.run("{const d=exportableBalance();d.wishingLake=EmberwildWishingLake.defaults();d.wishingLake.equipment.aheadChance=0;d.wishingLake.typeWeights={gold:0,item:0,equipment:1};applyBalanceConfig(d,{persist:false});playerHero().lv=20;syncParty();Math.random=()=>.1;selectLakeOffering('gel');}");assert.equal(r.run('confirmLakeOffering()'),true);
  r.run('globalThis.lakeGear=state.bag.at(-1);');assert.equal(r.run('gearRequiredLevel(lakeGear)'),1);assert.equal(r.run('lakeGear.plus'),0);assert(r.run('lakeGear.powerTier')>=1);assert.equal(r.run('lakeGear.skillSockets.gems.every(x=>x===null)'),true);
  assert(r.run('eligibleWearers(lakeGear).length')>0);r.run('equipSharedGear(lakeGear.id,memberKey(playerHero()),lakeGear.slot);state.gold=100000;state.ore=1000;state.dust=1000;enhance(lakeGear.id);');assert.equal(r.run('lakeGear.plus'),1);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
- r.advance(86400000);r.run('EmberwildOffline.advance(Date.now(),1000)');r.run("{const template=JSON.parse(JSON.stringify(lakeGear));while(state.bag.length<RULES.bagCapacity){state.bag.push({...template,id:'lake-fill-'+state.bag.length});}selectLakeOffering('gel');}");assert.equal(r.run('confirmLakeOffering()'),true);assert(r.run('state.bag.length')>r.run('RULES.bagCapacity'));assert.equal(r.run('running'),false);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
+ r.advance(86400000);r.run('EmberwildOffline.advance(Date.now(),1000)');r.run("{const template=JSON.parse(JSON.stringify(lakeGear));while(state.bag.length<RULES.bagCapacity){state.bag.push({...template,id:'lake-fill-'+state.bag.length});}selectLakeOffering('gel');}");
+ // Gear never overflows the bag (overflow drops are salvaged), so a full bag refuses an equipment-capable
+ // offering before drawing: nothing is consumed and the outcome cannot be re-rolled by filling the bag.
+ const full=JSON.parse(r.run("JSON.stringify({bag:state.bag.length,gel:state.materials['黏稠凝膠']})"));
+ assert.equal(full.bag,r.run('RULES.bagCapacity'));assert.equal(r.run('confirmLakeOffering()'),false);
+ assert.deepEqual(JSON.parse(r.run("JSON.stringify({bag:state.bag.length,gel:state.materials['黏稠凝膠']})")),full);assert.equal(r.run('party.wishingLake.used'),0,'the new day keeps its offering');
+ r.run("state.bag.pop();selectLakeOffering('gel');");assert.equal(r.run('confirmLakeOffering()'),true);
+ assert.equal(r.run('state.bag.length'),r.run('RULES.bagCapacity'));assert.equal(r.run('state.bag.at(-1).equipmentLevel>=1'),true);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
  assert.deepEqual(r.errors,[]);
 });
 test('10000 shared draws respect progress, gold bands, equipment caps and do not touch player inventory',()=>{
