@@ -239,6 +239,14 @@
  // Cast glows are derived only from successful casts, never attempted cooldowns.
  for(const name of ['castPartySkill','castEnemySharedSkill','castSupport']){const base=globalThis[name];globalThis[name]=function(...args){const out=base.apply(this,args);if(frame&&out!==false){const source=args[0],sk=name==='castPartySkill'?CLASSES[source.job]?.skills?.[args[1]]:name==='castSupport'?SUPPORT[source.job]?.[args[1]]:args[1];enqueue('cast',id(source),{category:castCategory(sk),label:sk?.name||sk?.[0]||'技能',important:name==='castPartySkill'&&source.job===1&&(sk?.[0]==='魔爆'||sk?.name==='魔爆')});}return out;};}
  for(const name of ['resetEncounter','resetSession','loadParty','stopTeamExploration']){const base=globalThis[name];if(typeof base==='function')globalThis[name]=function(...args){clear();return base.apply(this,args);};}
+ // The seconds timeline spawns the next group and may cast an instant skill in the same step.
+ // A frame that has not recorded anything yet belongs to the new encounter: rebind it and take
+ // fresh pre-impact samples, or sync() treats its whole batch as a stale encounter and clears it.
+ const spawnBase=spawnGroup;spawnGroup=function(...args){
+  const out=spawnBase.apply(this,args);
+  if(frame&&!frame.events.size&&frame.encounter!==foes&&frame.owner===party){frame.encounter=foes;encounter=foes;frame.initial=sample();frame.vitals=sample();frame.statuses=statuses();}
+  return out;
+ };
  globalThis.EmberwildBattleEffects={begin,end,scope,result,sync,clear,present,get holdingEncounter(){return !!held&&held.encounter!==foes&&performance.now()<held.until;},get capturing(){return !!frame;},get preference(){return preference;},get pendingEvents(){return pending?[...pending.events.values()].map(e=>({...e})):[];},get activeCount(){return [...activeNodes.values()].reduce((n,m)=>n+m.size,0);}};
  globalThis.setBattleEffects=function(value){if(!choices.includes(value))return false;preference=value;clear();try{localStorage.setItem(storageKey,value);}catch{toast('特效已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-battle-effects]').forEach(select=>select.value=value);EmberwildBattleSummary.sync({animate:false});return true;};
  globalThis.battleEffectsOptionsView=()=>'<section class="panel option-row"><div><h2>戰鬥特效</h2><p class="small">調整探索圖示與血條區塊動畫；保留目前行動者金框；減少動態效果時自動簡化。</p></div><select data-battle-effects aria-label="戰鬥特效" onchange="setBattleEffects(this.value)">'+choices.map((value,i)=>'<option value="'+value+'" '+(preference===value?'selected':'')+'>'+['完整','簡化','關閉'][i]+'</option>').join('')+'</select></section>';
