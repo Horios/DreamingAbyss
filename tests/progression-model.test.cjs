@@ -62,3 +62,15 @@ test('Monster level lead opens gradually and the editor can restore the legacy f
   s.monsters.encounter.levelLeadInterval=0;assert.equal(curve.encounterLevelLead(s,1),5);
   s.monsters.encounter.levelLeadInterval=5;s.progression.mapAheadAllowance=2;assert.equal(curve.encounterLevelLead(s,60),2);
 });
+
+test('character XP requirement applies the mastery character multiplier once and follows the published curve',()=>{
+ const {loadRuntime}=require('./headless-runtime.cjs'),root=require('node:path').resolve(__dirname,'..');
+ const r=loadRuntime(root);r.run("selectSaveSlot(1);start(0);closeModal()");
+ const curve=JSON.parse(r.run('JSON.stringify(GAMEPLAY_SETTINGS.progression.xpCurve)'));
+ for(const lv of [1,2,5,10,30])assert.equal(r.run(`need(${lv})`),r.run(`EmberwildProgression.requiredXp(GAMEPLAY_SETTINGS,${lv})`),'level '+lv);
+ assert.equal(r.run('need(1)'),Math.round((curve.base+curve.linear+curve.quadratic)*curve.multiplierBase));
+ r.run('{const d=exportableBalance();d.balanceSettings.skills.mastery.characterXpMultiplier=2;applyBalanceConfig(d,{persist:false})}');
+ assert.equal(r.run('need(1)'),r.run('EmberwildProgression.requiredXp(GAMEPLAY_SETTINGS,1)'),'the multiplier is applied once');
+ assert.equal(r.run('need(1)'),2*Math.round((curve.base+curve.linear+curve.quadratic)*curve.multiplierBase));
+ assert.deepEqual(r.errors,[]);
+});

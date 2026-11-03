@@ -79,7 +79,9 @@
  function addTimer(id,actorId,duration,interval,payload,control=false,priority=0){
   if(!engine||!unit(actorId))return;
   if(!engine.actors.some(a=>a.definition.id===actorId)){if(engine.executing)return;syncRoster();}
-  engine.removeStatus(id);if(duration!==null&&duration<=0)return;
+  // A residue below the timeline resolution (1 µs, e.g. a cooldown left at 1e-9 s by float subtraction) has already
+  // expired; the timeline rounds it to 0 and rejects it, which would abort combat and offline settlement.
+  engine.removeStatus(id);if(duration!==null&&!(Math.round(duration*1e6)>=1))return;
   engine.addStatus({id,actorId,durationSeconds:duration,tickEverySeconds:interval,preventsAction:control,tickPriority:priority,payload});
  }
  function scheduleEffects(before,t,sk){

@@ -348,7 +348,9 @@ advance=function(){
 };
 
 const masteryNeedBase=need;
-need=function(level){return Math.max(1,Math.round(masteryNeedBase(level)*masterySettings().characterXpMultiplier));};
+// requiredXp (EmberwildProgression) already applies skills.mastery.characterXpMultiplier; applying it here again
+// squared the multiplier whenever it was not 1. Keep the single, shared formula.
+need=function(level){return Math.max(1,Math.round(masteryNeedBase(level)));};
 
 function prepSaveForLegacyValidator(input){
   const out=clone(input),rows=out?.version===3?out.members:[out];

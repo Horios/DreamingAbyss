@@ -5,7 +5,9 @@ const MIN=60000;
 // One runtime with a real 30-minute snapshot of map 0, reused through state copies (building it takes ~30 game minutes).
 let base=null;
 function sampled(){
- if(!base){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);for(let i=0;i<32*60*4;i++){r.advance(250);r.run('tick()');}r.run('save()');assert(json(r,'EmberwildRegionVouchers.ticketFor(0,0)'),'snapshot built');base={values:Object.fromEntries(r.values),now:r.now};}
+ if(!base){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
+  // Play online until a 30-minute snapshot exists: level-ups that equip new skills restart the sampling run.
+  for(let i=0;i<120*60*2&&!r.run('!!EmberwildRegionVouchers.ticketFor(0,0)');i++){r.advance(500);r.run('tick()');}r.run('save()');assert(json(r,'EmberwildRegionVouchers.ticketFor(0,0)'),'snapshot built');base={values:Object.fromEntries(r.values),now:r.now};}
  const r=loadRuntime(root,'index.html',base.values);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.advance(base.now-r.now);r.run("continueFromTitle();closeModal()");return r;
 }
 // Let the boot catch-up started by continueFromTitle finish, so each test starts with no unsettled time.

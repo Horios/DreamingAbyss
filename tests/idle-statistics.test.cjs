@@ -30,7 +30,10 @@ test('offline replay never enters online totals; without 30 online minutes it sa
  assert.equal(json(r,'party.offlineExploration.receipt').effectiveMs,2*3600000,'the replay still settles its whole time');
  {const t=json(r,'EmberwildIdleStatistics.totals(0,0)');assert.equal(t.ms,0);assert.equal(t.battles,0);assert.deepEqual(t.kills,{});}
  const s=json(r,'EmberwildIdleStatistics.snapshot(0,0)');assert.equal(s.source,'offline');assert(s.sampleMs>=30*60*1000&&s.sampleMs<31*60*1000);
- const first=s.at,start=json(r,'party.offlineExploration.receipt').start;assert(first-start<60000,'the sample starts at the beginning of the replay');
+ const first=s.at,start=json(r,'party.offlineExploration.receipt').start;// A level-up that equips a newly learned skill is a configuration change and restarts the 30-minute run,
+ // so the sample is the first complete run of the replay rather than literally its first minute.
+ assert(first>=start&&first+s.sampleMs<=start+2*3600000,'the sample lies inside this replay');
+ assert.equal(r.run('party.idleStatistics.progress.sampledWindow'),r.run('party.offlineExploration.receipt.start')+24*3600000,'this absence is sampled once');
  assert.deepEqual(r.errors,[]);
 });
 test('a stored snapshot is replaced only by higher earnings; configuration changes restart the 30-minute run',()=>{
