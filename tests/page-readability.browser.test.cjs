@@ -7,7 +7,9 @@ const root=path.resolve(__dirname,'..');
 
 async function start(page){
   await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();});
-  await page.waitForTimeout(60);await page.evaluate(()=>closeModal());
+  // Starting a save settles offline time asynchronously and may show its receipt; finish it before clicking.
+  await page.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline settlement failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);});
+  await page.locator('#offline-settlement').waitFor({state:'hidden',timeout:30000});
 }
 async function show(page,tab,selector){
   await page.evaluate(t=>setTab(t),tab);

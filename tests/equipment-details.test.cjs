@@ -15,7 +15,10 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       globalThis.__equipmentTestGear=(extra={})=>({id:'equipment-test',job:0,slot:0,tier:10,formJob:0,form:0,powerTier:1,plus:0,rar:0,difficulty:0,prefixId:'',suffixId:'',affix:[],...extra});
       globalThis.__equipmentTestHero=()=>{
         closeModal();state=initial(0);state.lv=60;state.won=true;state.bag=[];state.equipped=[null,null,null,null,null];
-        party=createParty(state);party.cleared=true;syncParty();state.hp=stats(state).hp;
+        party=createParty(state);party.cleared=true;syncParty();
+        // A real new game saves right away, which builds the team system; do that here instead of relying on
+        // an unrelated asynchronous save happening before the next render.
+        packParty();state.hp=stats(state).hp;
         return state;
       };
     });

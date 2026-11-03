@@ -188,6 +188,8 @@ test('Mobile: expedition settings, readable touch controls and skill details are
   await p.evaluate(()=>setTab('roster'));
   const heading=await p.evaluate(()=>({title:document.querySelector('.mobile-roster-heading').getBoundingClientRect().top,plan:document.querySelector('.team-plan-panel').getBoundingClientRect().top}));assert(heading.title<heading.plan);
   await p.setViewportSize({width:1440,height:900});
+  // The layout swaps headings on the resize redraw; wait for it instead of counting immediately.
+  await p.locator('.companion-management-page>.heading').first().waitFor({state:'attached',timeout:10000});
   assert.equal(await p.locator('.companion-management-page>.heading').count(),1,'desktop restores its original heading');
   await p.setViewportSize({width:390,height:844});await p.evaluate(()=>setTab('skills'));
   const skillsBefore=await p.evaluate(()=>playerHero().skills.slice());

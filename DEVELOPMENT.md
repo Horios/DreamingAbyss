@@ -226,3 +226,13 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
 新增回歸測試比對時間軸 12→9 秒與「減少 3 秒」戰報。`initial-clearing-skills` 與 `preview-version` 合計 18 項測試通過。JavaScript 快取參數及 Preview 版號同步更新；合併到 Claude 的工作分支時需再次核對當時最新版號。
 
 此修正在分支上編號為 v0.037（`5e1466f`），`chatgpt-dev` 當時已推進到 v0.038，故以合併提交併入並編為 v0.039。合併前核對：`balance.json` 只修改魔力循環、冰凍陷阱、神聖光牢的說明文字（正式定義與舊投影同步），數值不變；戰報的縮減秒數與 `EmberwildSecondsCombat.reduceCooldowns` 實際使用的「減少量 × 職業 `baseIntervalSeconds`」相同。`seconds-consistency.yml` 只在該修正分支推送時執行，不影響 `chatgpt-dev` 的 CI。
+
+## v0.040 主角置中顯示與測試時序
+
+- 戰鬥頁我方隊伍的**顯示**改為主角固定在正中央，其他成員依隊伍順序平均分在左右（2 名夥伴：夥伴、主角、夥伴；只有 1 名夥伴時為主角、夥伴）。`party.members`、`heroes()` 及所有行動與效果處理順序不變，主角仍是第一位。
+- 桌面版敵我兩排保留等寬卡片，欄寬改為 176～200px 並以 `auto-fit` 收起空欄、整排置中，不再從左側填滿。手機版維持一列一張卡。
+- 修正三支依賴時機的瀏覽器測試（重跑可通過的偶發失敗）：
+  - `equipment-details`：測試輔助建立隊伍後呼叫 `packParty()` 建立隊伍系統，比照正式新遊戲立即存檔，不再依賴其他非同步存檔先發生。
+  - `page-readability`：開始時等待離線結算完成並確認收益視窗，取代固定 60ms 等待。
+  - `mobile-layout`：調整為桌面寬度後等待標題重繪再計數。
+- `realtime-combat` 的兩項斷言由「主角是第一張卡」改為「主角卡位於中央，且 `heroes()`／`party.members` 第一位仍是主角」。
