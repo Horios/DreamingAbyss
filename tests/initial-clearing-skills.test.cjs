@@ -89,3 +89,9 @@ test('lethal support effects finish death events and reduce the new support cool
  assert.equal(r.run('foes[0].__eventDeathHandled'),true);assert.equal(r.run('state.eventPassiveCooldowns["mage-mana-cycle"]'),6);
  assert.equal(r.run('supportCooldowns[memberKey(state)+"-0"]'),r.run('Math.max(.3,supportSkillCooldown(state,0)-3)'));
 });
+
+test('mage seconds log reports the same cooldown reduction applied to the timeline',()=>{
+ const r=game(1);r.run(`running=true;EmberwildSecondsCombat.step();const C=EmberwildSecondsCombat,a=C.timeline.find(heroKey(state)),sk=a.definition.skills[0];a.ready[sk.id]=C.timeline.now+12000000;currentEvents=[];EmberwildCombatEvents.action(null,()=>foes[0].hp=0);`);
+ assert.equal(r.run('EmberwildSecondsCombat.timeline.actor(heroKey(state)).skills[0].readyInSeconds'),9);
+ assert(r.run('currentEvents.some(x=>x.includes("技能冷卻減少 3 秒"))'));assert(!r.run('currentEvents.some(x=>x.includes("技能冷卻減少 1 秒"))'));assert.deepEqual(r.errors,[]);
+});

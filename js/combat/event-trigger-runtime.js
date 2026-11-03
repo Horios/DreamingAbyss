@@ -24,7 +24,8 @@
    if(seconds?.active)seconds.reduceCooldowns(h,e.reduction);
    else for(const cds of [actorCooldowns,supportCooldowns])for(const id of Object.keys(cds))if(id.startsWith(memberKey(h)+'-'))cds[id]=Math.max(0,cds[id]-e.reduction);
    h.eventPassiveCooldowns[sk.id]=e.cooldown*(seconds?.active?seconds.config().actionReferenceSeconds:1);
-   note(characterName(h)+'・'+sk.name+' → 技能冷卻減少 '+e.reduction+' 回合');
+   const reduction=seconds?.active?e.reduction*seconds.config().classes.find(c=>c.job===h.job).baseIntervalSeconds:e.reduction;
+   note(characterName(h)+'・'+sk.name+' → 技能冷卻減少 '+reduction+(seconds?.active?' 秒':' 回合'));
   }
  }
  function enqueueStatus(event,target,allowChain=true,chainScale=1,instanceId=null){
@@ -41,7 +42,7 @@
    if(x.hp<=0)continue;
    if(t.effect==='damage'){
     const dealt=hero(caster)?resolveHit(x,amount,caster,t.element,false):sharedEnemySkillDamage(caster,x,amount,t.element,{name:i.name});
-    note(i.name+'・'+(t.event==='targetDeath'?'死亡引爆':'回合引爆')+' → '+(hero(x)?characterName(x):combatEnemyName(x))+' '+dealt+' 傷害',hero(caster)?'playerDamage':'enemyDamage');
+    note(i.name+'・'+(t.event==='targetDeath'?'死亡引爆':globalThis.EmberwildSecondsCombat?.active?'週期引爆':'回合引爆')+' → '+(hero(x)?characterName(x):combatEnemyName(x))+' '+dealt+' 傷害',hero(caster)?'playerDamage':'enemyDamage');
    }else if(t.effect==='heal'){
     const before=x.hp;x.hp=Math.min(status().maxHp(x),x.hp+Math.round(healingAmount(caster,amount)));if(hero(caster))recordCombatContribution(caster,'healing',Math.max(0,x.hp-before));
     note(i.name+' → '+(hero(x)?characterName(x):combatEnemyName(x))+' 恢復 '+Math.max(0,x.hp-before)+' 生命');

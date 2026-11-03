@@ -216,3 +216,13 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
 
 - `wishing-lake-model.js`：許願湖檢查在每列回贈與投入規則都重新建立整份物品目錄，一次平衡套用約呼叫 245 次。同一次檢查中文件不變，改為第一次用到時建立並沿用。單次完整套用由約 4.2 秒降為約 2.5 秒。平衡器以 `scripts/sync-wishing-lake.cjs` 內嵌此模型，重新同步後即取得相同改善；檢查結果不變。
 - `published-loader.js`、`skill-system-runtime.js`、`skill-effect-runtime.js`、`induction-runtime.js`：三個後段模組在載入時會再完整套用一次平衡設定，用途是在沒有 loader 的環境補回自己的設定層。正式開機流程在所有模組載入後一定會再完整套用一次，所以 loader 在執行模組期間設定 `__EMBERWILD_BALANCE_FINAL_APPLY_PENDING`，這三個模組看到旗標時略過中途套用。最終套用結束（含失敗）即清除旗標。headless 測試不經過 loader，行為不變。
+
+## v0.039 秒數戰報與技能說明一致性（併入 `fix/seconds-data-consistency-20261103`）
+
+從 `chatgpt-dev` a3434bf 建立 `fix/seconds-data-consistency-20261103`；不修改共同工作分支。
+
+魔力循環戰報先依職業基礎間隔計算實際冷卻減少量，再顯示秒數。既有減少 3 秒、內部冷卻 6 秒的效果不變，修正原本文字被直接從「1 回合」替換成「1 秒」的錯誤。事件標記的非死亡引爆在秒數模式顯示「週期引爆」。魔力循環、冰凍陷阱與神聖光牢的原始描述同步改為秒數／週期語意；JSON 數值與觸發規則未變更。
+
+新增回歸測試比對時間軸 12→9 秒與「減少 3 秒」戰報。`initial-clearing-skills` 與 `preview-version` 合計 18 項測試通過。JavaScript 快取參數及 Preview 版號同步更新；合併到 Claude 的工作分支時需再次核對當時最新版號。
+
+此修正在分支上編號為 v0.037（`5e1466f`），`chatgpt-dev` 當時已推進到 v0.038，故以合併提交併入並編為 v0.039。合併前核對：`balance.json` 只修改魔力循環、冰凍陷阱、神聖光牢的說明文字（正式定義與舊投影同步），數值不變；戰報的縮減秒數與 `EmberwildSecondsCombat.reduceCooldowns` 實際使用的「減少量 × 職業 `baseIntervalSeconds`」相同。`seconds-consistency.yml` 只在該修正分支推送時執行，不影響 `chatgpt-dev` 的 CI。
