@@ -22,7 +22,7 @@ test('three real form/download/file-import/reload cycles retain material prices 
    const promise=e.page.waitForEvent('download');await e.page.locator('#exportBtn').click();const download=await promise,buffer=fs.readFileSync(await download.path()),d=JSON.parse(buffer);
    assert.equal(d.balanceSettings.economy.materialPrices.find(x=>x.key==='紅色草泥').sellPrice,price);
    await g.page.evaluate(()=>{closeModal();setTab('options');});
-   await (await g.page.evaluate(()=>setOptionsTab('other')),g.page).locator('#options-test-json-import').setInputFiles({name:'audit-balance-'+cycle+'.json',mimeType:'application/json',buffer});
+   await require('./runtime.cjs').importBalanceFile(g.page,'audit-balance-'+cycle+'.json',buffer);
    await g.page.waitForFunction(price=>materialSellPrice('紅色草泥')===price,price);
    const before=await g.page.evaluate(()=>{closeModal();state.materials['紅色草泥']=2;setTab('lifeSkills');return state.gold;});
    await g.page.locator('[data-material="紅色草泥"]').getByRole('button',{name:'全部賣出',exact:true}).click();

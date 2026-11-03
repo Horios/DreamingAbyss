@@ -1,4 +1,4 @@
-/* Account actions live in Options; balance imports are visible only in Preview.
+/* Account actions live in Options.
    Options are grouped into 一般 (appearance), 存檔 (save, export, import, title) and 其他 (codes, test data). */
 (function(){
   globalThis.isEmberwildPreview=function(){return /(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');};
@@ -14,8 +14,8 @@
       +row('返回標題','儲存目前進度、暫停探索，返回存檔選擇畫面。','<button onclick="returnToTitle()">返回標題</button>');
   }
   function other(){
-    return row('兌換碼','輸入兌換碼並領取獎勵。','<button onclick="showTestCodes()">兌換碼</button>')
-      +(isEmberwildPreview()?row('載入 JSON','套用平衡設計器匯出的測試設定。','<label class="button">載入 JSON<input id="options-test-json-import" type="file" accept=".json,application/json" onchange="importBalanceJSON(event)" hidden></label>'):'');
+    // Balance JSON imports belong to the balance designer's developer mode, not to player settings.
+    return row('兌換碼','輸入兌換碼並領取獎勵。','<button onclick="showTestCodes()">兌換碼</button>');
   }
   globalThis.optionsView=function(){
     const body={general,save:saves,other}[current]();

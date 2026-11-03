@@ -5,7 +5,7 @@ const json=(runtime,code)=>JSON.parse(runtime.run('JSON.stringify('+code+')'));
 
 test('navigation defaults group every page once in the top menu categories',()=>{
   const runtime=loadRuntime(root),design=json(runtime,'EmberwildNavigation.design');
-  assert.deepEqual(design.groups.map(group=>group.label),['冒險配置','技能','裝備','背包','夥伴','角色','任務','地圖','商店','生活']);
+  assert.deepEqual(design.groups.map(group=>group.label),['探索','隊伍','技能','裝備','背包','夥伴','角色','任務','商店','生活']);
   assert(design.groups.every(group=>group.expanded===false));
   assert.deepEqual(design.groups.find(group=>group.id==='missions').pages.map(page=>page.label),['主線','支線','NPC 任務','委託']);
   assert.deepEqual(design.groups.find(group=>group.id==='life').pages.map(page=>page.label),['採集','煉金']);
@@ -36,10 +36,10 @@ test('top menu has one button per category, is not draggable, and uses designer-
   runtime.run('selectSaveSlot(1);start(0);closeModal()');
   const html=runtime.elements.get('app').innerHTML;
   const groups=[...html.matchAll(/<button type="button" class="game-menu-item[^"]*" data-nav-group="([^"]+)"/g)];
-  assert.deepEqual(groups.map(match=>match[1]),['adventure-config','skills','gear','bag','partners','character','missions','map','shop','life','settings']);
+  assert.deepEqual(groups.map(match=>match[1]),['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life','settings']);
   assert(!html.includes('<details class="game-nav-group'));
   assert(!html.includes('game-nav-drag')&&!html.includes('data-nav-drag')&&!html.includes('draggable="true"'));
-  const order=['adventure-config','skills','gear','bag','partners','character','missions','map','shop','life'];assert.deepEqual(json(runtime,'EmberwildNavigation.order'),order);
+  const order=['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life'];assert.deepEqual(json(runtime,'EmberwildNavigation.order'),order);
   runtime.values.set('emberwild-navigation-group-order-v1',JSON.stringify(['life','missions','map','shop']));
   const reloaded=loadRuntime(root,'index.html',Object.fromEntries(runtime.values));
   assert.deepEqual(json(reloaded,'EmberwildNavigation.order'),order);
@@ -99,5 +99,17 @@ test('balance navigation changes round-trip and malformed page lists are rejecte
   const bad=structuredClone(custom);bad.navigation.groups.find(group=>group.id==='life').pages.pop();runtime.ctx.bad=bad;
   assert.throws(()=>runtime.run('applyBalanceConfig(bad)'),/導覽列表缺少頁籤/);
   assert.deepEqual(json(runtime,'exportableBalance().navigation'),custom.navigation);
+  assert.deepEqual(runtime.errors,[]);
+});
+
+test('the adventure guide opens from the header beside Save; older navigation documents listing it still load',()=>{
+  const runtime=loadRuntime(root);runtime.run('selectSaveSlot(1);start(0);closeModal()');
+  const design=json(runtime,'EmberwildNavigation.design');
+  assert(!design.groups.some(g=>g.pages.some(p=>p.id==='guide')),'the guide is no longer a menu page');
+  assert.deepEqual(design.groups.find(g=>g.id==='adventure-config').pages.map(p=>p.id),['roster']);
+  const legacy=json(runtime,`EmberwildNavigation.normalize({version:1,groups:EmberwildNavigation.design.groups.map(g=>g.id==='adventure-config'?{...g,pages:[...g.pages,{id:'guide',label:'冒險指南'}]}:g)})`);
+  assert.deepEqual(legacy.groups.find(g=>g.id==='adventure-config').pages.map(p=>p.id),['roster']);
+  assert.equal(runtime.run("openUtilityPanel('guide')"),true);assert.match(runtime.run("$('modal').innerHTML"),/關閉[\s\S]*冒險指南|冒險指南[\s\S]*關閉/);
+  runtime.run('closeModal()');assert.equal(runtime.run("setTab('guide')"),true,'existing guide links open the same dialog');
   assert.deepEqual(runtime.errors,[]);
 });

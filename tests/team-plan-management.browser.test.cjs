@@ -10,6 +10,9 @@ test('Chromium: removed copy, native plan warnings, first-plan protection, class
   const card=i=>p.locator('.team-plan-card').nth(i);
   assert(await card(0).getByRole('button',{name:'刪除方案',exact:true}).isDisabled());
   await p.getByRole('button',{name:'新增空白隊伍',exact:true}).click();
+  // Plan blocks collapse; the plan in use starts expanded and other plans open from their summary.
+  assert.equal(await card(0).evaluate(e=>e.open),true);assert.equal(await card(1).evaluate(e=>e.open),false);
+  await card(1).locator('summary').click();
   await card(1).getByRole('button',{name:'切換',exact:true}).click();
   const start=p.locator('#globalBattleJournal button[onclick="toggleBattle()"]');
   assert(await start.isDisabled());

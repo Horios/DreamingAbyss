@@ -1,6 +1,6 @@
 /* Compact utility dialogs and account-owned number reminders. */
 (()=>{
-  const A=EmberwildAchievements,labels={mailbox:'信箱',achievements:'成就',equipment:'背包',quests:'委託'},utilityIds=['mailbox','achievements','options'];
+  const A=EmberwildAchievements,labels={mailbox:'信箱',achievements:'成就',equipment:'背包',quests:'委託'},utilityIds=['mailbox','achievements','options','guide'],names={mailbox:'信箱',achievements:'成就',options:'設定',guide:'冒險指南'};
   const settings=()=>party?(party.numberReminders??=A.numberReminderDefaults()):A.numberReminderDefaults();
   function counts(){
     if(!party||!state)return {mailbox:0,achievements:0,equipment:0,quests:0};
@@ -22,18 +22,18 @@
   const svg=name=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${(__EMBERWILD_LUCIDE.nodes[name]||[]).map(([tag,attrs])=>`<${tag} ${Object.entries(attrs).map(([key,value])=>`${key}="${esc(value)}"`).join(' ')}></${tag}>`).join('')}</svg>`;
   for(const [selector,name] of [['header>label.button','upload']])document.querySelector(selector)?.insertAdjacentHTML('afterbegin',svg(name));
   const container=$('utilityNavigation');
-  container.innerHTML=utilityIds.map(id=>`<button id="utilityButton-${id}" type="button" class="utility-icon-button" data-utility="${id}" title="${labels[id]||'選項'}" aria-label="${labels[id]||'選項'}" onclick="openUtilityPanel('${id}')">${svg({mailbox:'mail',achievements:'medal',options:'settings'}[id])}<span class="utility-label">${labels[id]||'設定'}</span><span id="utilityReminder-${id}" class="number-badge" hidden></span></button>`).join('');
-  // Save sits right beside Settings; import/export live under Settings → 存檔.
-  $('utilityButton-options')?.insertAdjacentHTML('afterend',`<button id="utilityButton-save" type="button" class="utility-icon-button" title="儲存" aria-label="儲存" onclick="save(true)">${svg('save')}<span class="utility-label">儲存</span></button>`);
+  container.innerHTML=utilityIds.filter(id=>id!=='guide').map(id=>`<button id="utilityButton-${id}" type="button" class="utility-icon-button" data-utility="${id}" title="${labels[id]||'選項'}" aria-label="${labels[id]||'選項'}" onclick="openUtilityPanel('${id}')">${svg({mailbox:'mail',achievements:'medal',options:'settings'}[id])}<span class="utility-label">${labels[id]||'設定'}</span><span id="utilityReminder-${id}" class="number-badge" hidden></span></button>`).join('');
+  // Save sits right beside Settings and the adventure guide beside Save; import/export live under Settings → 存檔.
+  $('utilityButton-options')?.insertAdjacentHTML('afterend',`<button id="utilityButton-save" type="button" class="utility-icon-button" title="儲存" aria-label="儲存" onclick="save(true)">${svg('save')}<span class="utility-label">儲存</span></button><button id="utilityButton-guide" type="button" class="utility-icon-button" data-utility="guide" title="冒險指南" aria-label="冒險指南" onclick="openUtilityPanel('guide')">${svg('book-open')}<span class="utility-label">冒險指南</span></button>`);
   globalThis.isUtilityDialogOpen=id=>$('modal').open&&$('modal').dataset.view==='utility-'+id;
   let lastDialogHTML='';
   function clearUtilityMarker(){const modal=$('modal');if(String(modal.dataset.view||'').startsWith('utility-'))delete modal.dataset.view;modal.classList.remove('utility-dialog');lastDialogHTML='';}
-  function refreshDialog(){const modal=$('modal');if(!modal.open||!String(modal.dataset.view||'').startsWith('utility-'))return;const id=modal.dataset.view.slice(8),view={mailbox:mailboxView,achievements:achievementsView,options:optionsView}[id];if(!view)return;const html=`<div class="utility-dialog-controls"><button onclick="closeModal()" aria-label="關閉彈窗">關閉</button></div>`+view();if(html!==lastDialogHTML){modal.innerHTML=html;lastDialogHTML=html;}}
+  function refreshDialog(){const modal=$('modal');if(!modal.open||!String(modal.dataset.view||'').startsWith('utility-'))return;const id=modal.dataset.view.slice(8),view={mailbox:mailboxView,achievements:achievementsView,options:optionsView,guide:guideView}[id];if(!view)return;const html=`<div class="utility-dialog-controls"><button onclick="closeModal()" aria-label="關閉彈窗">關閉</button></div>`+view();if(html!==lastDialogHTML){modal.innerHTML=html;lastDialogHTML=html;}}
   globalThis.openUtilityPanel=function(id){
     if(!party||!state||!utilityIds.includes(id)||isEmberwildTitleOpen())return false;
     __EMBERWILD_COMPANION_UNLOCK_TEST.syncUnlocks();
     if(id==='achievements'){const old=[...party.achievements.readCompleted];party.achievements.readCompleted=[...party.achievements.completed];if(!save())party.achievements.readCompleted=old;}
-    const modal=$('modal');modal.dataset.view='utility-'+id;modal.classList.add('utility-dialog');modal.setAttribute('aria-label',labels[id]||'選項');lastDialogHTML='';if(!modal.open)modal.showModal();refreshDialog();refreshBadges();return true;
+    const modal=$('modal');modal.dataset.view='utility-'+id;modal.classList.add('utility-dialog');modal.setAttribute('aria-label',names[id]);lastDialogHTML='';if(!modal.open)modal.showModal();refreshDialog();refreshBadges();return true;
   };
   function setAttributeIfChanged(node,key,value){
     if(node.getAttribute(key)!==value)node.setAttribute(key,value);
@@ -60,7 +60,7 @@
       if(!button)continue;
       const n=preferences[id]?current[id]||0:0;
       setAttributeIfChanged(button,'aria-pressed',String(isUtilityDialogOpen(id)));
-      setAttributeIfChanged(button,'aria-label',(labels[id]||'選項')+(n?'，'+n+' 項提醒':''));
+      setAttributeIfChanged(button,'aria-label',names[id]+(n?'，'+n+' 項提醒':''));
     }
   }
   const baseSetTab=setTab;setTab=function(id){if(utilityIds.includes(id))return openUtilityPanel(id);return baseSetTab(id);};

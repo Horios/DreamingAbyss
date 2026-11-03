@@ -53,4 +53,9 @@ async function installCompanionFixtures(page){
   };
   await page.addInitScript(setup);await page.evaluate(setup);
 }
-module.exports={openRuntime,openEditorSection,installCompanionFixtures};
+// The preview no longer shows a balance JSON button (the developer mode owns imports);
+// tests import through the same importBalanceJSON handler the button used.
+async function importBalanceFile(page,name,buffer){
+  return page.evaluate(({name,text})=>importBalanceJSON({target:{files:[new File([text],name,{type:'application/json'})],value:''}}),{name,text:Buffer.from(buffer).toString('utf8')});
+}
+module.exports={importBalanceFile,openRuntime,openEditorSection,installCompanionFixtures};

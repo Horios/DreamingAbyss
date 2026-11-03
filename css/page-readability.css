@@ -94,3 +94,6 @@
   .character-reading-page .stat-allocate input,.character-reading-page .stat-allocate button{width:100%!important;min-width:0}
 }
 .character-reading-page .class-mastery-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}
+/* The adventure guide opens as a header dialog; keep its reading sizes there too. */
+#modal .readability-page p,#modal .readability-page .ui-help{font-size:15px;line-height:1.8}
+#modal .guide-reading-page .mode-table{font-size:14px}

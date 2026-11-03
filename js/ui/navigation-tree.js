@@ -4,21 +4,22 @@
 (()=>{
   const VERSION=1,copy=value=>structuredClone(value);
   const PAGES={
-    battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',guide:'冒險指南',
+    battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',
     roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',
     equipment:'背包',worn:'裝備與信物',forge:'裝備強化',bossCraft:'BOSS 製作',
     'story-main':'主線','story-side':'支線','story-npc':'NPC 任務',quests:'委託',
     gather:'採集',alchemy:'煉金'
   };
+  const RETIRED=new Set(['guide']);
   const DEFAULTS={version:VERSION,groups:[
-    {id:'adventure-config',label:'冒險配置',expanded:false,pages:[['roster','隊伍編成'],['guide','冒險指南']]},
+    {id:'map',label:'探索',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計']]},
+    {id:'adventure-config',label:'隊伍',expanded:false,pages:[['roster','隊伍編成']]},
     {id:'skills',label:'技能',expanded:false,pages:[['skills','技能']]},
     {id:'gear',label:'裝備',expanded:false,pages:[['worn','裝備與信物'],['forge','裝備強化'],['bossCraft','BOSS 製作']]},
     {id:'bag',label:'背包',expanded:false,pages:[['equipment','背包']]},
     {id:'partners',label:'夥伴',expanded:false,pages:[['partnerRoster','夥伴名冊']]},
     {id:'character',label:'角色',expanded:false,pages:[['character','角色能力']]},
     {id:'missions',label:'任務',expanded:false,pages:[['story-main','主線'],['story-side','支線'],['story-npc','NPC 任務'],['quests','委託']]},
-    {id:'map',label:'地圖',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計']]},
     {id:'shop',label:'商店',expanded:false,pages:[['shop','商品列表']]},
     {id:'life',label:'生活',expanded:false,pages:[['gather','採集'],['alchemy','煉金']]}
   ].map(group=>({...group,pages:group.pages.map(([id,label])=>({id,label}))}))};
@@ -29,7 +30,8 @@
     const groupIds=new Set(),pageIds=new Set(),groups=raw.groups.map((group,index)=>{
       if(!group||typeof group!=='object'||Array.isArray(group)||!validText(group.id,48)||groupIds.has(group.id)||!validText(group.label,24)||typeof group.expanded!=='boolean'||!Array.isArray(group.pages)||group.pages.length>24)throw Error('導覽群組無效：'+index);
       groupIds.add(group.id);
-      return {id:group.id,label:group.label,expanded:group.expanded,pages:group.pages.map((page,pageIndex)=>{
+      // The adventure guide moved to the header (utility dialog); older documents may still list it.
+      return {id:group.id,label:group.label,expanded:group.expanded,pages:group.pages.filter(page=>!RETIRED.has(page?.id)).map((page,pageIndex)=>{
         if(!page||typeof page!=='object'||Array.isArray(page)||!Object.hasOwn(PAGES,page.id)||pageIds.has(page.id)||!validText(page.label,24))throw Error('導覽頁籤無效：'+index+'-'+pageIndex);
         pageIds.add(page.id);return {id:page.id,label:page.label};
       })};
@@ -56,7 +58,7 @@
   const icons={battle:'swords',statistics:'chart-no-axes-combined',shop:'store',guide:'book-open',roster:'users',partnerRoster:'contact',character:'user-round',skills:'sparkles',equipment:'backpack',worn:'shield',forge:'hammer',bossCraft:'anvil','story-main':'scroll-text','story-side':'scroll','story-npc':'message-circle',quests:'clipboard-list',gather:'pickaxe',alchemy:'flask-conical'};
   const navIcon=id=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(icons[id]||'folder'),[],{size:18});
   // Top menu categories use the same Lucide line icons as the rest of the interface.
-  const groupIcons={'adventure-config':'compass',skills:'scroll-text',gear:'swords',bag:'backpack',partners:'handshake',character:'user-round',missions:'clipboard-list',map:'map',shop:'store',life:'sprout',adventure:'compass',equipment:'backpack'};
+  const groupIcons={'adventure-config':'users',skills:'scroll-text',gear:'swords',bag:'backpack',partners:'handshake',character:'user-round',missions:'clipboard-list',map:'compass',shop:'store',life:'sprout',adventure:'compass',equipment:'backpack'};
   const groupIcon=group=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(groupIcons[group.id]||icons[group.pages[0]?.id]||'folder'),[],{size:18});
   const lastPage=new Map();
   const taskPages=new Set(['story-main','story-side','story-npc','quests']);

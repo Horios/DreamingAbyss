@@ -60,7 +60,7 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
   try{
     await start(p);
     for(const width of [1440,768,390]){
-      await p.setViewportSize({width,height:900});
+      await p.setViewportSize({width,height:900});await p.evaluate(()=>closeModal());
       await show(p,'bossCraft','.boss-reading-page');
       await p.locator('.boss-reading-page .ui-help').filter({has:p.getByText('製作說明',{exact:true})}).locator('summary').click();
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.boss-reading-page details'))el.open=true;});
@@ -76,7 +76,8 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
       await show(p,'guide','.guide-reading-page');
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.guide-reading-page details'))el.open=true;});
       const guide=await p.evaluate(()=>{
-        const root=document.querySelector('.guide-reading-page'),main=root.closest('main');
+        // The guide opens as a header dialog; the dialog is its single scroll container.
+        const root=document.querySelector('.guide-reading-page'),main=root.closest('main')||root.closest('dialog');
         return {mainHeight:main.clientHeight,mainScroll:main.scrollHeight,overflow:getComputedStyle(main).overflowY,pageWidth:root.clientWidth,pageScroll:root.scrollWidth,fonts:[...root.querySelectorAll('p,.ui-help>div')].map(el=>Number.parseFloat(getComputedStyle(el).fontSize)),first:root.firstElementChild.className};
       });
       assert.equal(guide.overflow,'auto');assert(guide.mainScroll>guide.mainHeight);
@@ -91,13 +92,15 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
       await p.locator('.guide-reading-page .panel').last().scrollIntoViewIfNeeded();
       const journalAfter=await p.locator('.global-battle-journal').boundingBox();
       assert.deepEqual(journalAfter,journalBefore);
-      assert(await p.locator('.layout>main').evaluate(el=>el.scrollTop>0));
+      assert(await p.locator('.guide-reading-page').evaluate(el=>(el.closest('main')||el.closest('dialog')).scrollTop>0),'the guide scrolls inside its own container');
+      await p.evaluate(()=>closeModal());
       await show(p,'worn','.worn-single-player');
       assert.equal(await p.locator('.worn-character-pane,.worn-character-item').count(),0);
       assert.deepEqual(await p.evaluate(overflowingChildren),[],width+' worn nested scrolls');
     }
     await show(p,'battle','.text-battle-layout');
-    assert.equal(await p.locator('.readability-page').count(),0);
+    // A closed dialog may keep its last markup; only the battle page itself must not use the reading wrapper.
+    assert.equal(await p.locator('.layout>main .readability-page').count(),0);
     assert(['auto','scroll'].includes(await p.locator('.layout>main').evaluate(el=>getComputedStyle(el).overflowY)),'continuous battle cards remain reachable through main scrolling');
     assert.deepEqual(r.errors,[]);
   }finally{await r.browser.close();}

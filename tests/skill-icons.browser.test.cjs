@@ -69,7 +69,7 @@ test('Chromium: existing icon maker, offline catalog, appearance/effects, JSON d
     });
     await t.test('preview game uses the real options JSON input and renders the same SVG, color, size and animation in the current team UI',async()=>{
       await g.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);});await g.waitForTimeout(80);await g.evaluate(()=>{closeModal();setTab('options');});
-      await (await g.evaluate(()=>setOptionsTab('other')),g).locator('#options-test-json-import').setInputFiles({name:'icons-roundtrip.json',mimeType:'application/json',buffer:fs.readFileSync(file)});await g.waitForFunction(()=>__EMBERWILD_MASTERY.iconDefinitions().length===2);
+      await require('./runtime.cjs').importBalanceFile(g,'icons-roundtrip.json',fs.readFileSync(file));await g.waitForFunction(()=>__EMBERWILD_MASTERY.iconDefinitions().length===2);
       assert.deepEqual(await g.evaluate(()=>exportableBalance().skillIcons),doc.skillIcons);await g.evaluate(()=>{closeModal();setTab('skills');});
       const svg=g.locator('[data-team-skill="0:core:0"] svg');assert.equal(await svg.count(),1);assert.equal(await svg.evaluate(el=>el.getBoundingClientRect().width),64);assert.equal(await svg.locator('.ew-icon-motion').evaluate(el=>getComputedStyle(el).animationName),'tr-float');
       assert(await g.evaluate(()=>{const holder=document.createElement('div');holder.innerHTML=__EMBERWILD_SKILL_ICONS.svgFor('custom:'+exportableBalance().skillIcons[0].id,__EMBERWILD_MASTERY.iconDefinitions());return holder.innerHTML===document.querySelector('[data-team-skill="0:core:0"] svg').outerHTML;}));

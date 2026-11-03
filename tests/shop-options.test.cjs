@@ -42,7 +42,7 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
         await runtime.page.waitForSelector('.options-list');
         assert.equal(await runtime.page.locator('.options-list button').filter({hasText:'兌換碼'}).count(),1);
         assert.equal(await runtime.page.locator('.options-list button').filter({hasText:'返回標題'}).count(),1);
-        assert.equal(await runtime.page.locator('#options-test-json-import').count(),hasJSON?1:0);
+        assert.equal(await runtime.page.locator('#options-test-json-import').count(),0,'balance JSON import lives in the developer mode, not in Settings');
         assert.equal(await runtime.page.locator('aside nav button[onclick="returnToTitle()"] ').count(),0);
         await runtime.page.getByRole('button',{name:'關閉彈窗',exact:true}).click();
         await runtime.page.getByRole('button',{name:'冒險指南',exact:true}).click();
@@ -135,7 +135,7 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       const downloadPromise=editor.page.waitForEvent('download');await editor.page.getByRole('button',{name:'匯出測試 JSON',exact:true}).click();const download=await downloadPromise;const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
       assert.deepEqual(exported.shopSettings,doc.shopSettings);
       await preview.page.evaluate(()=>setTab('options'));
-      await preview.page.locator('#options-test-json-import').setInputFiles({name:'shop-test.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
+      assert.equal(await require('./runtime.cjs').importBalanceFile(preview.page,'shop-test.json',Buffer.from(JSON.stringify(exported))),true);
       await preview.page.waitForFunction(()=>exportableBalance().shopSettings.fixedOffers.entries[0]?.quantity===3);
       assert.deepEqual(await preview.page.evaluate(()=>exportableBalance().shopSettings),exported.shopSettings);
       await preview.page.evaluate(()=>{setShopCategory('fixed');setTab('shop');});assert.equal(await preview.page.locator('.fixed-shop-row').count(),1);assert((await preview.page.locator('.fixed-shop-row').innerText()).includes('商店專用治療補給'));assert((await preview.page.locator('.fixed-shop-row').innerText()).includes('27 金幣'));

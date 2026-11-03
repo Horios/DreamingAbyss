@@ -5,7 +5,7 @@ test('Chromium: create blank plans, choose classes, learn, copy, rename, safety 
  try{
   await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);playerHero().lv=5;syncParty();save();setTab('roster');});await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
   await t.test('new plan has no class, stat allocations, equipment or companions',async()=>{
-   await p.getByRole('button',{name:'新增空白隊伍',exact:true}).click();await p.locator('.team-plan-card').nth(1).getByRole('button',{name:'切換',exact:true}).click();
+   await p.getByRole('button',{name:'新增空白隊伍',exact:true}).click();await p.locator('.team-plan-card').nth(1).locator('summary').click();await p.locator('.team-plan-card').nth(1).getByRole('button',{name:'切換',exact:true}).click();
    const a=await p.evaluate(()=>({plan:__EMBERWILD_TEAMS.plan(),hasAP:Object.hasOwn(playerHero(),'ap'),hasSp:Object.hasOwn(playerHero(),'sp')}));assert.equal(a.plan.job,null);assert.deepEqual(a.plan.skills,[]);assert.equal(a.plan.stats,undefined);assert(a.plan.equipped.every(x=>x===null));assert.deepEqual(a.plan.companions,[]);assert.equal(a.hasAP,false);assert.equal(a.hasSp,false);
    await p.waitForFunction(()=>document.querySelector('.adventurer-summary > p')?.textContent==='尚未選擇職業');assert.equal(await p.locator('.adventurer-summary > p').textContent(),'尚未選擇職業');await p.evaluate(()=>toggleBattle());assert.equal(await p.evaluate(()=>running),false);
   });

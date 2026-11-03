@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const pages=['battle','statistics','shop','guide','roster','partnerRoster','character','skills','equipment','worn','forge','bossCraft','quests','gather','alchemy','story'];
-const navPages=[['battle','battle'],['statistics','statistics'],['shop','shop'],['guide','guide'],['roster','roster'],['partnerRoster','partnerRoster'],['character','character'],['skills','skills'],['equipment','equipment'],['worn','worn'],['forge','forge'],['bossCraft','bossCraft'],['story-main','story'],['story-side','story'],['story-npc','story'],['quests','quests'],['gather','gather'],['alchemy','alchemy']];
+const navPages=[['battle','battle'],['statistics','statistics'],['shop','shop'],['roster','roster'],['partnerRoster','partnerRoster'],['character','character'],['skills','skills'],['equipment','equipment'],['worn','worn'],['forge','forge'],['bossCraft','bossCraft'],['story-main','story'],['story-side','story'],['story-npc','story'],['quests','quests'],['gather','gather'],['alchemy','alchemy']];
 async function start(page){
  await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
  await page.waitForTimeout(60);await page.evaluate(()=>closeModal());
@@ -65,6 +65,8 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
    assert.equal(await p.locator('.mobile-more-pages').isVisible(),false);
    assert.equal(await p.locator('aside nav>button:visible').count(),5);
   }
+  // The adventure guide lives in the header beside Save on phones too.
+  await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
   await p.locator('.mobile-more-toggle').click();
   await p.evaluate(()=>render());
   assert.equal(await p.locator('.mobile-more-pages').isVisible(),true);
@@ -79,7 +81,7 @@ test('Mobile: folding the live journal preserves combat, filters, loot and page 
  const g=await openRuntime(root),p=g.page;
  try{
   await p.setViewportSize({width:390,height:844});await start(p);
-  await p.evaluate(()=>{setTab('guide');document.querySelector('main').scrollTop=220;});
+  await p.evaluate(()=>{setTab('character');document.querySelector('main').scrollTop=220;});
   assert.equal(await p.locator('#mobileJournalBody').isVisible(),false);
   await p.locator('.mobile-journal-toggle').click();
   assert.equal(await p.locator('#mobileJournalBody').isVisible(),true);
