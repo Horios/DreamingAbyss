@@ -77,14 +77,14 @@
  function updateRoster(root,s,ally=false){
   const rows=ally?s.allies:s.units,attribute=ally?'heroId':'enemyId';
   const integrated=root.classList.contains('squad-allies')||root.classList.contains('squad-enemies');
-  const nodes=new Map([...root.querySelectorAll(integrated?'.unit > .battle-enemy-icon':':scope > .battle-enemy-icon')].map(n=>[n.dataset[attribute],n]));
+  const nodes=new Map([...root.querySelectorAll(integrated?'.unit > .battle-enemy-icon, .unit > .seconds-face-main > .battle-enemy-icon':':scope > .battle-enemy-icon')].map(n=>[n.dataset[attribute],n]));
   const names=new Map();for(const row of rows)names.set(row.unit.name,(names.get(row.unit.name)||0)+1);
   const indices=new Map();
   rows.forEach((row,index)=>{
    const e=row.unit,num=(indices.get(e.name)||0)+1;indices.set(e.name,num);
    const name=ally?characterName(e):e.name+(names.get(e.name)>1?num:'');
    let node=nodes.get(row.id);
-   if(!node){node=document.createElement('button');node.type='button';node.onclick=()=>globalThis.EmberwildBattleSummary.showUnit(row.id,ally?'ally':'enemy');node.dataset[attribute]=row.id;node.className='battle-enemy-icon'+(ally?' battle-ally-icon':'');node.innerHTML='<span class="enemy-icon-art"></span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:gem',[],{size:12})+'</span>';}
+   if(!node){node=document.createElement('button');node.type='button';node.onclick=event=>{event?.stopPropagation();globalThis.EmberwildBattleSummary.showUnit(row.id,ally?'ally':'enemy');};node.dataset[attribute]=row.id;node.className='battle-enemy-icon'+(ally?' battle-ally-icon':'');node.innerHTML='<span class="enemy-icon-art"></span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:gem',[],{size:12})+'</span>';}
    const artKey=ally?EmberwildAvatars.resolvedId(e):[baseMonsterName(e),e.monsterId,e.mat,e.element,e.icon,e.race].join('|');
    if(node.dataset.artKey!==artKey){node.querySelector('.enemy-icon-art').innerHTML=ally?EmberwildAvatars.control(e).replace(/^<button[^>]*>/,'<span class="battle-avatar-art" data-avatar-id="'+EmberwildAvatars.resolvedId(e)+'">').replace(/<\/button>$/,'</span>'):artwork(e);node.dataset.artKey=artKey;}
    const flash=ally?null:flashes.get(row.id),state=row.alive?(row.acting?'目前行動':'存活'):ally?'倒下':'已擊敗';
@@ -95,7 +95,7 @@
    put(node,'small',!ally&&names.get(e.name)>1?String(num):'');put(node,'.enemy-icon-event',flash?.label||(!row.alive?state:''));
    if(integrated){
     const card=[...root.querySelectorAll(':scope > .unit')].find(n=>n.dataset.combatId===row.id);
-    if(card){if(node.parentNode!==card)card.prepend(node);card.classList.toggle('fallen',!row.alive);card.classList.toggle('is-current',row.acting);}
+    if(card){const slot=card.querySelector(':scope > .seconds-face-main')||card;if(node.parentNode!==slot){const own=slot.querySelector(':scope > .battle-enemy-icon');if(own&&own!==node)own.replaceWith(node);else slot.prepend(node);}card.classList.toggle('fallen',!row.alive);card.classList.toggle('is-current',row.acting);}
    }else if(root.children[index]!==node)root.insertBefore(node,root.children[index]||null);
    nodes.delete(row.id);
   });
@@ -226,10 +226,11 @@
   else for(const fresh of freshField?.querySelectorAll('.unit[data-combat-id]')||[]){
    const old=cards.get(fresh.dataset.combatId);if(!old||old===fresh)continue;
    // Keep the exact portrait and running effect nodes through full screen redraws.
-   const portrait=[...old.children].find(n=>n.matches('.battle-enemy-icon'));
-   for(const child of [...old.children])if(!child.matches('.battle-enemy-icon,.battle-fx,.battle-fx-status')||child.matches('.battle-enemy-icon')&&child!==portrait)child.remove();
-   if(portrait)for(const child of [...fresh.children])if(child.matches('.battle-enemy-icon'))child.remove();
-   old.append(...fresh.children);old.className=fresh.className;old.style.cssText=fresh.style.cssText;fresh.replaceWith(old);
+   // Stacked cards hold the portrait inside their first face; flat cards hold it directly.
+   const slots=':scope > .battle-enemy-icon, :scope > .seconds-face-main > .battle-enemy-icon',portrait=old.querySelector(slots);
+   if(portrait){const replaced=fresh.querySelector(slots);if(replaced)replaced.replaceWith(portrait);else fresh.prepend(portrait);}
+   for(const child of [...old.children])if(!child.matches('.battle-fx,.battle-fx-status'))child.remove();
+   old.append(...fresh.children);for(const a of [...fresh.attributes])old.setAttribute(a.name,a.value);old.className=fresh.className;old.style.cssText=fresh.style.cssText;fresh.replaceWith(old);
   }
   retainedField=document.querySelector('.squad-field')||retainedField;
   sync();return out;

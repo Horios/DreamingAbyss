@@ -19,9 +19,9 @@ test('combat icons and aggregate HP update in place for damage, healing, revive,
   await p.evaluate(()=>{foes[1].hp=600;EmberwildBattleSummary.sync();});assert.equal(await hp(p),'600 / 1,000');assert.equal(await state(p),'敵方治療');assert.equal(await p.locator('#battleEnemyIcons [data-enemy-id="summary-b"]').getAttribute('data-effect'),'healed');
   await p.evaluate(()=>{foes[0].hp=40;EmberwildBattleSummary.sync();});assert.equal(await state(p),'敵方復活');assert.equal(await p.locator('#battleEnemyIcons [data-enemy-id="summary-a"].is-dead').count(),0);
   assert(await p.evaluate(()=>$('battleEnemyIcons').querySelector('.battle-enemy-icon')===savedIcon&&savedIcon.firstElementChild===savedArt));
-  await p.evaluate(()=>{foes.push({...foes[0],id:'summary-c',hp:200,maxhp:200});EmberwildBattleSummary.sync();});assert.equal(await hp(p),'840 / 1,200');assert.equal(await state(p),'援軍加入');assert.equal(await p.locator('#battleEnemyIcons .unit>[data-enemy-id]').count(),3);
-  await p.evaluate(()=>{foes.splice(2,1);EmberwildBattleSummary.sync();render();});assert.equal(await hp(p),'640 / 1,000');assert.equal(await p.locator('#battleEnemyIcons .unit>[data-enemy-id]').count(),2);assert(await p.evaluate(()=>$('battleEnemyIcons').querySelector('.battle-enemy-icon')===savedIcon&&$('battleSummary')===savedSummary));
-  await p.evaluate(()=>{foes=[{...foes[0],id:'phase-2',hp:800,maxhp:1200,kind:'boss'}];enemy=foes[0];EmberwildBattleSummary.sync();});assert.equal(await hp(p),'800 / 1,200');assert.equal(await p.locator('#battleEnemyIcons .unit>[data-enemy-id]').count(),1);assert.equal(await p.locator('#battleEnemyIcons [data-enemy-id="phase-2"].is-boss').count(),1);
+  await p.evaluate(()=>{foes.push({...foes[0],id:'summary-c',hp:200,maxhp:200});EmberwildBattleSummary.sync();});assert.equal(await hp(p),'840 / 1,200');assert.equal(await state(p),'援軍加入');assert.equal(await p.locator('#battleEnemyIcons .unit [data-enemy-id]').count(),3);
+  await p.evaluate(()=>{foes.splice(2,1);EmberwildBattleSummary.sync();render();});assert.equal(await hp(p),'640 / 1,000');assert.equal(await p.locator('#battleEnemyIcons .unit [data-enemy-id]').count(),2);assert(await p.evaluate(()=>$('battleEnemyIcons').querySelector('.battle-enemy-icon')===savedIcon&&$('battleSummary')===savedSummary));
+  await p.evaluate(()=>{foes=[{...foes[0],id:'phase-2',hp:800,maxhp:1200,kind:'boss'}];enemy=foes[0];EmberwildBattleSummary.sync();});assert.equal(await hp(p),'800 / 1,200');assert.equal(await p.locator('#battleEnemyIcons .unit [data-enemy-id]').count(),1);assert.equal(await p.locator('#battleEnemyIcons [data-enemy-id="phase-2"].is-boss').count(),1);
   await p.evaluate(()=>{foes[0].shield=99999;foes[0].maxhp=1400;EmberwildBattleSummary.sync();});assert.equal(await hp(p),'800 / 1,400');
   await p.evaluate(()=>{EmberwildBattleSummary.finish('wipe');foes=[];enemy=null;running=false;render();});assert.equal(await state(p),'戰鬥失敗');assert.equal(await hp(p),'800 / 1,400');
   await p.evaluate(()=>{spawnGroup();foes.forEach(e=>e.hp=0);EmberwildBattleSummary.finish('victory');foes=[];render();});assert.equal(await state(p),'戰鬥勝利');assert.match(await hp(p),/^0 \/ /);
@@ -52,7 +52,7 @@ test('shared summary stays visible while operating pages and collapsing desktop/
   assert(await p.evaluate(()=>$('liveLog').querySelector('.battle-log-stream').scrollTop===beforeTop));
   await p.evaluate(()=>{const input=document.createElement('input');input.id='summary-editing';document.querySelector('main').appendChild(input);input.focus();foes[1].hp=123;render();});assert.equal(await hp(p),'148 / 1,000');assert(await p.locator('#summary-editing').evaluate(e=>e===document.activeElement));await p.evaluate(()=>{$('summary-editing').blur();$('summary-editing').remove();});
   await p.evaluate(()=>{globalThis.iconBefore=$('battleEnemyIcons').querySelector('.battle-enemy-icon');for(let i=0;i<100;i++){foes[1].hp=10+i%20;EmberwildBattleSummary.sync();}save();loadParty(JSON.parse(localStorage.getItem(KEY)));render();});
-  assert.equal(await p.locator('#battleEnemyIcons .unit>[data-enemy-id]').count(),await p.evaluate(()=>EmberwildBattleSummary.snapshot().total));assert.deepEqual(g.errors,[]);
+  assert.equal(await p.locator('#battleEnemyIcons .unit [data-enemy-id]').count(),await p.evaluate(()=>EmberwildBattleSummary.snapshot().total));assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
 test('offline replay skips icon rendering and settles to the effective encounter, then live 2x updates continue across pages',async()=>{
@@ -79,9 +79,9 @@ test('offline replay skips icon rendering and settles to the effective encounter
 test('allied portraits sit above their own HP bars and the active actor marker follows both teams and journal icons',async()=>{
  const g=await setup(),p=g.page;
  try{
-  assert.equal(await p.locator('#battleAllyIcons .unit>[data-hero-id]').count(),await p.evaluate(()=>heroes().length));
+  assert.equal(await p.locator('#battleAllyIcons .unit [data-hero-id]').count(),await p.evaluate(()=>heroes().length));
   assert.equal(await p.locator('.squad-allies .unit-title .character-avatar-control').count(),0);
-  assert(await p.evaluate(()=>{const icon=$('battleAllyIcons').querySelector('.battle-enemy-icon').getBoundingClientRect(),bar=document.querySelector('.squad-allies>.unit>.battle-health-bar').getBoundingClientRect();return icon.bottom<=bar.top&&icon.left>=bar.left-1&&icon.right<=bar.right+1;}));
+  assert(await p.evaluate(()=>{const icon=$('battleAllyIcons').querySelector('.battle-enemy-icon').getBoundingClientRect(),bar=document.querySelector('.squad-allies>.unit .battle-health-bar').getBoundingClientRect();return icon.bottom<=bar.top&&icon.left>=bar.left-1&&icon.right<=bar.right+1;}));
   assert.equal(await p.locator('#journalEnemyIcons .battle-enemy-icon>.enemy-icon-art>svg').count(),2);
   assert.equal(await p.locator('.battle-enemy-icon.is-acting').count(),0,'the first enemy is not highlighted before an action');
   await p.evaluate(()=>{recordAction(heroKey(heroes()[0]),characterName(heroes()[0]),'普攻');EmberwildBattleSummary.sync();});
@@ -94,7 +94,7 @@ test('allied portraits sit above their own HP bars and the active actor marker f
   await p.evaluate(()=>{foes[1].hp=200;EmberwildBattleSummary.sync();setTab('equipment');foes[0].hp=0;EmberwildBattleSummary.sync();setTab('battle');});
   assert.equal(await p.locator('#journalEnemyIcons .is-dead').getAttribute('data-enemy-id'),'summary-a');assert(await p.evaluate(()=>$('journalEnemyIcons').lastElementChild===journalUnit&&$('battleAllyIcons').querySelector('.battle-enemy-icon')===allyUnit));
   await p.evaluate(()=>{heroes()[0].avatarId='phoenix';EmberwildBattleSummary.sync();});assert.equal(await p.locator('#battleAllyIcons [data-avatar-id="phoenix"]').count(),1);
-  await p.locator('#battleAllyIcons .unit>[data-hero-id]').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.equal(await p.locator('#battleAllyIcons .character-avatar-control').count(),0);await p.evaluate(()=>closeModal());
+  await p.locator('#battleAllyIcons .unit [data-hero-id]').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.equal(await p.locator('#battleAllyIcons .character-avatar-control').count(),0);await p.evaluate(()=>closeModal());
   await p.evaluate(()=>{running=false;EmberwildBattleSummary.sync();});assert.equal(await p.locator('.battle-enemy-icon.is-acting').count(),0);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

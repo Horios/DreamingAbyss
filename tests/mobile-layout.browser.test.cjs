@@ -218,7 +218,12 @@ test('Mobile: long combat names, stats, skills and effects grow without overlapp
     if(enemies.bottom>allies.top+1)errors.push('enemies overlap allies');
     for(const unit of document.querySelectorAll('.squad-field .unit')){
      const u=box(unit);let bottom=u.top;
+     // Stacked cards overlay their faces in one cell: check the visible face as one block and its own
+     // children for clipping; hidden faces are not part of the layout flow.
+     const visibleFaces=[...unit.children].filter(c=>c.matches('.seconds-face')&&getComputedStyle(c).visibility!=='hidden');
+     for(const face of visibleFaces)for(const part of face.children)if(part.matches('.unit-title,.unit-numbers,.seconds-face-title')&&(part.scrollHeight>part.clientHeight+1||part.scrollWidth>part.clientWidth+1))errors.push(part.className+' clips text');
      for(const child of unit.children){
+      if(child.matches('.seconds-face')&&!visibleFaces.includes(child))continue;
       if(child.matches('.battle-enemy-icon,.battle-fx,.battle-fx-status'))continue;
       const r=box(child);if(!r.width||!r.height)continue;
       if(r.top<bottom-1||r.bottom>u.bottom+1||r.right>u.right+1)errors.push(child.className+' overlaps or escapes unit');

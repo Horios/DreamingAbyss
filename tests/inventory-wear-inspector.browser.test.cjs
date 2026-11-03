@@ -37,12 +37,12 @@ test('backpack sort, modal filters and guided wear work on desktop and mobile; b
   await p.evaluate(()=>{setTab('battle');spawnGroup();const base=foes[0];foes=[{...base,id:'inspect-one',name:'同名測試',hp:13,maxhp:80},{...base,id:'inspect-two',name:'同名測試',hp:0,maxhp:120}];enemy=foes[0];effects.push({target:'inspect-one',kind:'weaken',value:.2,until:partyClock+2,name:'測試衰弱'});render();});
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:900});
-   await p.locator('#battleAllyIcons .unit>[data-hero-id]').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.match(await p.locator('#modal').innerText(),/追擊/);await p.locator('#modal').getByRole('button',{name:'關閉',exact:true}).click();
-   await p.locator('#battleEnemyIcons .unit>[data-enemy-id="inspect-one"]').click();assert.match(await p.locator('#modal').innerText(),/生命 13 \/ 80/);assert.match(await p.locator('#modal').innerText(),/測試衰弱/);
+   await p.locator('#battleAllyIcons .unit [data-hero-id]').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.match(await p.locator('#modal').innerText(),/追擊/);await p.locator('#modal').getByRole('button',{name:'關閉',exact:true}).click();
+   await p.locator('#battleEnemyIcons .unit [data-enemy-id="inspect-one"]').click();assert.match(await p.locator('#modal').innerText(),/生命 13 \/ 80/);assert.match(await p.locator('#modal').innerText(),/測試衰弱/);
    assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
    if(width===1440)await p.screenshot({path:'/tmp/emberwild-inspector-desktop.png'});
    await p.locator('#modal').getByRole('button',{name:'關閉',exact:true}).click();
-   await p.locator('#battleEnemyIcons .unit>[data-enemy-id="inspect-two"]').click();assert.match(await p.locator('#modal').innerText(),/生命 0 \/ 120/);assert(!/測試衰弱/.test(await p.locator('#modal').innerText()));await p.locator('#modal').getByRole('button',{name:'關閉',exact:true}).click();
+   await p.locator('#battleEnemyIcons .unit [data-enemy-id="inspect-two"]').click();assert.match(await p.locator('#modal').innerText(),/生命 0 \/ 120/);assert(!/測試衰弱/.test(await p.locator('#modal').innerText()));await p.locator('#modal').getByRole('button',{name:'關閉',exact:true}).click();
   }
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}

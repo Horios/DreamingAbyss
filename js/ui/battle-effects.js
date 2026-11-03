@@ -146,7 +146,7 @@
   for(const node of activeNodes.keys())if(!node.isConnected)cleanNode(node);
   for(const node of markedNodes)if(!node.isConnected){node.querySelector(':scope > .battle-fx-status')?.remove();delete node.dataset.fxShield;markedNodes.delete(node);}
   const rows=[...s.allies,...s.units],byId=new Map(rows.map(row=>[String(row.id),row]));
-  const nodes=new Map();document.querySelectorAll('#battleAllyIcons .unit > [data-hero-id],#battleEnemyIcons .unit > [data-enemy-id]').forEach(node=>nodes.set(node.dataset.heroId||node.dataset.enemyId,node));
+  const nodes=new Map();document.querySelectorAll('#battleAllyIcons .unit [data-hero-id],#battleEnemyIcons .unit [data-enemy-id]').forEach(node=>nodes.set(node.dataset.heroId||node.dataset.enemyId,node));
   const healthNodes=new Map();document.querySelectorAll('.squad-field .unit[data-combat-id]').forEach(node=>healthNodes.set(node.dataset.combatId,node));
   const playUnit=(key,event,sourceKey)=>{for(const surfaces of [nodes,healthNodes]){const node=surfaces.get(key);if(node)play(node,event,surfaces.get(sourceKey));}};
   const currentStatuses=statuses();
