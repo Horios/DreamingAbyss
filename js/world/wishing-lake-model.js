@@ -11,8 +11,8 @@
   future:{fairyEvents:[],companionQuests:[],festivals:[],stateFields:{festivalClaims:'object',fairyEvents:'object',companionTriggers:'object',questCompletions:'object'}}};
  const maps=d=>d.balanceSettings?.maps?.catalog||[];
  function catalog(d){return root.EmberwildInventoryIcons.entries(d);}
- function safe(d,kind,key){
-  const row=catalog(d).find(r=>r.kind===kind&&r.key===key);if(!row)return false;
+ function safe(d,kind,key,rows=catalog(d)){
+  const row=rows.find(r=>r.kind===kind&&r.key===key);if(!row)return false;
   const meta=d.inventoryIcons?.find(r=>r.kind===kind&&r.key===key),item=d.items?.find(r=>r.id===key);
   if(meta?.locked||meta?.questItem||meta?.unique||meta?.saleEnabled===false||item?.questItem||item?.unique||item?.special||item?.locked||item?.consumable===false)return false;
   if(kind==='item'&&!['healPotion','imbue','ward','elementTonic','timedBoost','gearTierReroll'].includes(item?.type))return false;
@@ -30,6 +30,8 @@
  function issues(c,d){
   const out=[],fail=s=>out.push(s),obj=x=>x&&typeof x==='object'&&!Array.isArray(x),num=(x,a,b)=>Number.isFinite(x)&&x>=a&&x<=b,int=(x,a,b)=>Number.isSafeInteger(x)&&x>=a&&x<=b;
   if(!obj(c))return ['許願湖設定必須為物件'];
+  // The document does not change during one check: build its item catalogue once, on first use.
+  let catalogRows;const rows=()=>catalogRows??=catalog(d);
   if(c.version!==1)fail('許願湖版本必須為 1');
   const ids=new Set(maps(d).map(m=>m.id)),map=id=>typeof id==='string'&&ids.has(id);
   if(c.unlock?.source!=='mapClears'||!map(c.unlock?.mapId))fail('解鎖必須引用正式地區通關紀錄');
@@ -49,12 +51,12 @@
    if(!types.every(t=>num(weights?.[t],0,1e9))||!types.some(t=>weights?.[t]>0))fail(p.id+' 類型權重無效');
    for(const r of rewards){
    if(!types.includes(r.type)||typeof r.enabled!=='boolean'||!num(r.weight,0,1e9)||!map(r.minMapId)||typeof r.allowAhead!=='boolean')fail(p.id+'/'+r.id+' 回贈設定無效');
-   if(r.type==='item'&&(!['material','item'].includes(r.kind)||!safe(d,r.kind,r.key)||!int(r.min,1,1e6)||!int(r.max,r.min,1e6)))fail(p.id+'/'+r.id+' 引用不存在、特殊或無法正常入包的道具／數量');
+   if(r.type==='item'&&(!['material','item'].includes(r.kind)||!safe(d,r.kind,r.key,rows())||!int(r.min,1,1e6)||!int(r.max,r.min,1e6)))fail(p.id+'/'+r.id+' 引用不存在、特殊或無法正常入包的道具／數量');
   }if(p.enabled!==false&&!rewards.some(r=>r.enabled&&r.weight>0&&weights?.[r.type]>0))fail(p.id+' 沒有有效回贈');}
   const triggers=new Set((c.future?.companionQuests||[]).map(r=>r.triggerItemId).filter(Boolean));
   for(const r of unique(c.inputs,'投入規則')){
-   if(!['material','item','equipment','token'].includes(r.kind)||!catalog(d).some(x=>x.kind===r.kind&&x.key===r.key))fail(r.id+' 投入引用不存在');
-   if(['material','item'].includes(r.kind)&&!safe(d,r.kind,r.key))fail(r.id+' 不可投入特殊或任務關鍵道具');
+   if(!['material','item','equipment','token'].includes(r.kind)||!rows().some(x=>x.kind===r.kind&&x.key===r.key))fail(r.id+' 投入引用不存在');
+   if(['material','item'].includes(r.kind)&&!safe(d,r.kind,r.key,rows()))fail(r.id+' 不可投入特殊或任務關鍵道具');
    if(typeof r.enabled!=='boolean'||!['fixed','range'].includes(r.quantityMode)||!int(r.min,1,1e6)||!int(r.max,r.min,1e6)||r.quantityMode==='fixed'&&r.min!==r.max||['equipment','token'].includes(r.kind)&&r.max!==1||!poolIds.has(r.poolId)||typeof r.specialTrigger!=='string')fail(r.id+' 投入數量／回贈池無效');
    if(r.enabled&&(r.specialTrigger||triggers.has(r.key)))fail(r.id+' 尚未實作的特殊觸發道具不可啟用');
   }
@@ -62,7 +64,7 @@
   else for(const k of ['fairyEvents','companionQuests','festivals'])for(const r of unique(c.future[k],k)){
    if(r.enabled!==false)fail(k+'/'+r.id+' 第一階段必須停用');
    if(r.poolId&&!poolIds.has(r.poolId))fail(k+'/'+r.id+' 回贈池引用不存在');
-   if(r.triggerItemId&&!catalog(d).some(x=>x.kind==='item'&&x.key===r.triggerItemId))fail(k+'/'+r.id+' 觸發道具引用不存在');
+   if(r.triggerItemId&&!rows().some(x=>x.kind==='item'&&x.key===r.triggerItemId))fail(k+'/'+r.id+' 觸發道具引用不存在');
    if(k==='companionQuests'&&r.companionId!==null&&!d.companions?.some(x=>x.id===r.companionId))fail(k+'/'+r.id+' 夥伴引用不存在');
   }
   return [...new Set(out)];

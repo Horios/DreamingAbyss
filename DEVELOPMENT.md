@@ -209,3 +209,10 @@ v0.033 Extended 的 Chromium 組中，`equipment-sockets` 在切換第一孔模�
 - `seconds-runtime.js`：`syncResources` 直接以 `engine.mana()` 讀取 MP，與 `engine.actor().mp` 相同，省去複製整份角色資料。
 
 headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不同，效能請以瀏覽器量測為準。
+
+## v0.038 開啟遊戲初始化加速
+
+不改變任何設定、存檔或規則。以本機 Chromium 量測，開啟到可操作由約 10.9 秒降為約 5.1 秒（新玩家與有存檔玩家相同）。驗證方式：開機完成後擷取匯出平衡文件、技能系統、主要資料表、全部 `__EMBERWILD_` 全域狀態與標題畫面共 71 項，另以同一存檔讀入後比對隊伍資料與所有角色戰鬥數值，修改前後完全一致。
+
+- `wishing-lake-model.js`：許願湖檢查在每列回贈與投入規則都重新建立整份物品目錄，一次平衡套用約呼叫 245 次。同一次檢查中文件不變，改為第一次用到時建立並沿用。單次完整套用由約 4.2 秒降為約 2.5 秒。平衡器以 `scripts/sync-wishing-lake.cjs` 內嵌此模型，重新同步後即取得相同改善；檢查結果不變。
+- `published-loader.js`、`skill-system-runtime.js`、`skill-effect-runtime.js`、`induction-runtime.js`：三個後段模組在載入時會再完整套用一次平衡設定，用途是在沒有 loader 的環境補回自己的設定層。正式開機流程在所有模組載入後一定會再完整套用一次，所以 loader 在執行模組期間設定 `__EMBERWILD_BALANCE_FINAL_APPLY_PENDING`，這三個模組看到旗標時略過中途套用。最終套用結束（含失敗）即清除旗標。headless 測試不經過 loader，行為不變。

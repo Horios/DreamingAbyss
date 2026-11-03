@@ -67,6 +67,9 @@
     addEventListener('pagehide',()=>{globalThis.save?.();releaseOwnership();},{once:true});
     addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
     const urls=Array.from(document.querySelectorAll('script[data-balance-src]'),node=>{const url=new URL(node.getAttribute('data-balance-src'),location.href);url.searchParams.set('balance-build',runtimeVersion);return url.href;});
+    // Every module below is followed by one full apply of the published document, so modules may
+    // skip their own load-time re-apply (it only restored their layer for loader-less boots).
+    globalThis.__EMBERWILD_BALANCE_FINAL_APPLY_PENDING=true;
     total=urls.length;update('正在下載遊戲');
     const downloads=urls.map(preload);
     for(let i=0;i<urls.length;i++){
@@ -74,7 +77,7 @@
       await execute(urls[i]);initialized++;update('正在初始化遊戲');
     }
     update('正在套用平衡資料與讀取存檔');
-    applyBalanceConfig(globalThis.__EMBERWILD_BALANCE_SOURCE,{persist:false});
+    try{applyBalanceConfig(globalThis.__EMBERWILD_BALANCE_SOURCE,{persist:false});}finally{globalThis.__EMBERWILD_BALANCE_FINAL_APPLY_PENDING=false;}
     // Only the fully installed validators can decide whether a save is unreadable.
     const playerBytes=globalThis.__EMBERWILD_TEAM_BOOT_RAW||globalThis.__EMBERWILD_BOOT_SAVE_RAW;
     const candidates=[];

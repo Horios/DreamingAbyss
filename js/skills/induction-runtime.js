@@ -125,5 +125,5 @@
   const badgesBase=skillTypeBadges;
   skillTypeBadges=function(job,i,group='core'){return badgesBase(job,i,group)+(group==='core'&&api.tagged(runtimeDef(job,i))?'<span class="tag">誘發</span>':'');};
   // Earlier layers load saved JSON before this late module is available.
-  try{const saved=JSON.parse(balanceSourceText()||'null');if(saved)applyBalanceConfig(saved,{persist:false});}catch(e){console.warn('誘發技能資料還原失敗',e);}
+  try{const saved=globalThis.__EMBERWILD_BALANCE_FINAL_APPLY_PENDING?null:JSON.parse(balanceSourceText()||'null');if(saved)applyBalanceConfig(saved,{persist:false});}catch(e){console.warn('誘發技能資料還原失敗',e);}
 })();
