@@ -1,14 +1,16 @@
-/* Region vouchers: settled offline exploration time turned into 30-minute earnings tickets of one region.
+/* Region vouchers: settled offline exploration time turned into earnings tickets of one region.
+   Ticket length, sample length, sample gap tolerance and potion charging are balance settings
+   (balanceSettings.rewards.regionVouchers, defaults 30 / 30 / 10 minutes and charged).
 
    Issue  (EmberwildRegionVouchers.issue, called by offline settlement when the player chooses vouchers)
-   - Uses the region's stored 30-minute snapshot (online-idle-statistics.js, highest earnings). A region
+   - Uses the region's stored snapshot scaled to one ticket (online-idle-statistics.js, highest earnings). A region
      without a snapshot cannot issue vouchers; offline settlement keeps its full simulation there.
-   - Converted time plus the region's saved remainder makes floor(total / 30 min) tickets; the rest stays
+   - Converted time plus the region's saved remainder makes floor(total / ticket length) tickets; the rest stays
      in the remainder ledger. Tickets are mailed as one voucher attachment per offline settlement.
    - Each ticket locks the snapshot values at issue time: XP, gold, the enemy kill distribution used for
      item drops, and the region's level range. Later gear, skill, team or map changes never raise it.
-   - Consumables used during the sampled 30 minutes are charged as their shop price from the ticket gold
-     (never below 0); the player's own potions are not consumed.
+   - When potion charging is on, consumables used during the sample are charged as their shop price from
+     the ticket gold (never below 0); the player's own potions are not consumed.
 
    Use (ticket items live in the inventory's item tab; one save for the whole batch)
    - Claiming the ticket mail moves the tickets into the item inventory. The item shows only a short
@@ -22,7 +24,7 @@
      counts, quests or achievements. A failed save restores the tickets and the mailbox together. */
 (()=>{
  'use strict';
- const RULES={version:1,ticketMs:30*60*1000,historyLimit:20,maxStacks:500};
+ const RULES={version:1,get ticketMs(){return S()?.RULES.ticketMs??30*60*1000;},historyLimit:20,maxStacks:500};
  const S=()=>globalThis.EmberwildIdleStatistics;
  const copy=v=>v==null?v:JSON.parse(JSON.stringify(v));
  const regionKey=(map,difficulty)=>map+':'+difficulty;
@@ -51,7 +53,9 @@
  function voucherOf(raw){
   if(!raw||typeof raw!=='object'||!eligibleMap(raw.map)||![0,1,2].includes(raw.difficulty)||typeof raw.snapshotId!=='string'||!raw.snapshotId||raw.snapshotId.length>80)return null;
   const v={map:raw.map,difficulty:raw.difficulty,mapName:String(raw.mapName||MAPS[raw.map].name).slice(0,60),levelMin:Math.round(num(raw.levelMin,1,1e4))||1,levelMax:Math.round(num(raw.levelMax,1,1e4))||1,snapshotId:raw.snapshotId,
-   xp:Math.round(num(raw.xp)),gold:Math.round(num(raw.gold)),baseGold:Math.round(num(raw.baseGold)),potionCost:Math.round(num(raw.potionCost)),consumed:counts(raw.consumed,40),enemies:counts(raw.enemies,200),expectedItems:counts(raw.expectedItems,200),expectedGear:num(raw.expectedGear,0,1e4),createdAt:num(raw.createdAt)};
+   xp:Math.round(num(raw.xp)),gold:Math.round(num(raw.gold)),baseGold:Math.round(num(raw.baseGold)),potionCost:Math.round(num(raw.potionCost)),consumed:counts(raw.consumed,40),enemies:counts(raw.enemies,200),expectedItems:counts(raw.expectedItems,200),expectedGear:num(raw.expectedGear,0,1e4),createdAt:num(raw.createdAt),
+   // Tickets issued before the duration became editable represent 30 minutes.
+   minutes:Number.isInteger(raw.minutes)&&raw.minutes>=1&&raw.minutes<=1440?raw.minutes:30};
   if(v.levelMax<v.levelMin||!Object.keys(v.enemies).length)return null;
   return v;
  }
@@ -80,21 +84,21 @@
  function ticketFor(map,difficulty){
   if(!eligibleMap(map))return null;
   const s=S()?.snapshot(map,difficulty);if(!s||!Object.keys(s.perTicket.enemies||{}).length)return null;
-  const t=s.perTicket,potionCost=Math.round(Object.entries(t.consumed||{}).reduce((n,[k,c])=>n+unitPrice(k)*c,0)),baseGold=Math.round(t.gold);
-  return voucherOf({map,difficulty,mapName:MAPS[map].name+(difficulty?'（'+modeName(difficulty)+'）':''),levelMin:MAPS[map].min,levelMax:MAPS[map].max,snapshotId:s.id,xp:t.xp,gold:Math.max(0,baseGold-potionCost),baseGold,potionCost,consumed:t.consumed,
+  const t=s.perTicket,charge=S()?.voucherSettings?.().chargePotions!==false,potionCost=charge?Math.round(Object.entries(t.consumed||{}).reduce((n,[k,c])=>n+unitPrice(k)*c,0)):0,baseGold=Math.round(t.gold);
+  return voucherOf({map,difficulty,mapName:MAPS[map].name+(difficulty?'（'+modeName(difficulty)+'）':''),levelMin:MAPS[map].min,levelMax:MAPS[map].max,snapshotId:s.id,minutes:Math.round(t.ms/60000),xp:t.xp,gold:Math.max(0,baseGold-potionCost),baseGold,potionCost,consumed:t.consumed,
    enemies:t.enemies,expectedItems:t.items,expectedGear:Object.values(t.gear||{}).reduce((a,b)=>a+b,0),createdAt:Date.now()});
  }
  function available(map=party?.map,difficulty=party?.difficulty||0){return !!party&&!!ticketFor(map,difficulty);}
  // How many tickets a span of settled time yields, including the region's saved remainder.
  function quote(map,difficulty,ms){const rem=party?.regionVouchers?.remainders?.[regionKey(map,difficulty)]||0,total=Math.max(0,Math.floor(ms))+rem;return {tickets:Math.floor(total/RULES.ticketMs),remainder:total%RULES.ticketMs};}
  function issue(map,difficulty,ms){
-  const v=ticketFor(map,difficulty);if(!v)throw Error('此地區尚未建立 30 分鐘收益樣本，無法改領收益券');
+  const v=ticketFor(map,difficulty);if(!v)throw Error('此地區尚未建立收益樣本，無法改領收益券');
   const l=ledger(),q=quote(map,difficulty,ms),key=regionKey(map,difficulty);
   if(q.remainder)l.remainders[key]=q.remainder;else delete l.remainders[key];
   if(!q.tickets)return 0;
   const mailbox=party.mailbox??=EmberwildAchievements.mailboxDefaults(),id=++mailbox.serial;
-  mailbox.messages.push({id,rewardKey:'voucher-'+id,subject:`${v.mapName} 30 分鐘收益券 ×${q.tickets}`,body:`離線探索改領收益券。每張代表在 ${v.mapName} 探索 30 分鐘的收益。領取後放入背包的道具欄；使用時才計算經驗、金幣與道具，收益寄到信箱。主角等級超過 Lv.${v.levelMax} 後，此券只能兌換固定金幣 ${overlevelGold(map).toLocaleString()}。`,at:Date.now(),read:false,claimed:false,
-   attachments:[{type:'regionVoucher',name:v.mapName+' 30 分鐘收益券',quantity:q.tickets,voucher:v}]});
+  mailbox.messages.push({id,rewardKey:'voucher-'+id,subject:`${v.mapName} ${v.minutes} 分鐘收益券 ×${q.tickets}`,body:`離線探索改領收益券。每張代表在 ${v.mapName} 探索 ${v.minutes} 分鐘的收益。領取後放入背包的道具欄；使用時才計算經驗、金幣與道具，收益寄到信箱。主角等級超過 Lv.${v.levelMax} 後，此券只能兌換固定金幣 ${overlevelGold(map).toLocaleString()}。`,at:Date.now(),read:false,claimed:false,
+   attachments:[{type:'regionVoucher',name:v.mapName+' '+v.minutes+' 分鐘收益券',quantity:q.tickets,voucher:v}]});
   return q.tickets;
  }
  // ---------------------------------------------------------------- mailbox
@@ -241,19 +245,19 @@
  function itemsHTML(items,approx){const rows=Object.entries(items).filter(([,n])=>n>=(approx?.05:1)).sort((a,b)=>b[1]-a[1]);return rows.length?`<ul class="region-voucher-items">${rows.map(([k,n])=>`<li>${esc(itemName(k))} <b>${approx?'約 ':''}×${approx?(n>=10?fmt(n):Math.round(n*10)/10):fmt(n)}</b></li>`).join('')}</ul>`:'<p class="small">無</p>';}
  // Standard item slots (item-presentation.js virtual items): the ticket carries only a short description;
  // earnings are calculated when the player chooses to use it.
- const VIRTUAL=/^region-voucher:(v\d+)$/,MAIL_VIRTUAL=/^region-voucher-mail:(\d+):([012])$/;
+ const VIRTUAL=/^region-voucher:(v\d+)$/,MAIL_VIRTUAL=/^region-voucher-mail:(\d+):([012])(?::(\d+))?$/;
  const regionName=(map,difficulty)=>MAPS[map]?.name?MAPS[map].name+(difficulty?'（'+modeName(difficulty)+'）':''):'地區';
  globalThis.__EMBERWILD_VIRTUAL_ITEM=function(key){
   if(key==='voucher-xp')return {name:'經驗值',glyph:'sparkles',description:'收益券的經驗收益。領取附件後直接入帳。'};
   if(key==='voucher-gold')return {name:'金幣',glyph:'coins',description:'收益券的金幣收益。領取附件後直接入帳。'};
   const mail=MAIL_VIRTUAL.exec(key);
-  if(mail){const name=regionName(Number(mail[1]),Number(mail[2]));return {name:name+' 30 分鐘收益券',glyph:'ticket',description:`記錄在 ${name} 探索 30 分鐘的收益。領取後放入背包的道具欄，使用時才計算收益。`};}
+  if(mail){const name=regionName(Number(mail[1]),Number(mail[2])),minutes=Number(mail[3]||30);return {name:name+' '+minutes+' 分鐘收益券',glyph:'ticket',description:`記錄在 ${name} 探索 ${minutes} 分鐘的收益。領取後放入背包的道具欄，使用時才計算收益。`};}
   const m=VIRTUAL.exec(key),s=m&&party?ledger().stacks.find(x=>x.id===m[1]):null;if(!s)return null;
-  return {name:s.mapName+' 30 分鐘收益券',glyph:'ticket',description:`記錄在 ${s.mapName} 探索 30 分鐘的收益。使用時計算經驗、金幣與道具，收益寄到信箱。`,
+  return {name:s.mapName+' '+s.minutes+' 分鐘收益券',glyph:'ticket',description:`記錄在 ${s.mapName} 探索 ${s.minutes} 分鐘的收益。使用時計算經驗、金幣與道具，收益寄到信箱。`,
    detail:()=>`<p>持有 ${fmt(s.count)} 張</p>`,
    actions:()=>`<div class="actions"><button onclick="closeItemDetails();useRegionVouchers('${esc(s.id)}',1)">使用</button>${s.count>1?`<button onclick="closeItemDetails();useRegionVouchers('${esc(s.id)}',${s.count})">全部使用（${fmt(s.count)}）</button>`:''}</div>`};
  };
- globalThis.__EMBERWILD_VIRTUAL_MAIL_KEY=a=>a?.type==='regionVoucher'?`region-voucher-mail:${a.voucher.map}:${a.voucher.difficulty}`:a?.type==='voucherXp'?'voucher-xp':a?.type==='voucherGold'?'voucher-gold':null;
+ globalThis.__EMBERWILD_VIRTUAL_MAIL_KEY=a=>a?.type==='regionVoucher'?`region-voucher-mail:${a.voucher.map}:${a.voucher.difficulty}:${a.voucher.minutes||30}`:a?.type==='voucherXp'?'voucher-xp':a?.type==='voucherGold'?'voucher-gold':null;
  function inventorySlots(){
   if(!party)return {slots:[],action:''};const l=ledger();
   return {slots:l.stacks.map(s=>`<div class="account-item-row icon-only-row" data-voucher-stack="${esc(s.id)}">${itemSlotHTML('item','region-voucher:'+s.id,{count:s.count,context:'inventory'})}</div>`),

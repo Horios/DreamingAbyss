@@ -113,3 +113,21 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  assert.match(r.run('party.mailbox.messages.find(m=>m.rewardKey.startsWith("starter-")).body'),/初始裝已穿戴/);
  assert.deepEqual(r.errors,[]);
 });
+test('ticket length and potion charging come from balance settings; invalid values are rejected',async()=>{
+ const r=await ready(sampled()),before=json(r,'EmberwildRegionVouchers.ticketFor(0,0)');
+ assert.deepEqual(json(r,'exportableBalance().balanceSettings.rewards.regionVouchers'),{ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true});
+ assert.equal(before.minutes,30);
+ // Balance changes are refused while exploring, so stop, apply and resume.
+ r.run('stopTeamExploration();closeModal();globalThis.__doc=exportableBalance();__doc.balanceSettings.rewards.regionVouchers={ticketMinutes:15,sampleMinutes:30,maxGapMinutes:10,chargePotions:false}');
+ assert.notEqual(r.run('applyBalanceConfig(__doc,{persist:false})'),false);r.run('startSelectedExploration();closeModal();save()');
+ const after=json(r,'EmberwildRegionVouchers.ticketFor(0,0)');
+ assert.equal(after.minutes,15);assert(Math.abs(after.xp-before.xp/2)<=1,'a 15-minute ticket is worth half the 30-minute sample');
+ assert.equal(after.potionCost,0,'potions are not charged when charging is off');assert.equal(after.gold,after.baseGold);
+ await offlineVouchers(r,60*MIN);
+ const mail=json(r,'party.mailbox.messages.filter(m=>m.rewardKey.startsWith("voucher-")).at(-1)');
+ assert.equal(mail.attachments[0].quantity,4);assert.match(mail.subject,/15 分鐘收益券 ×4/);
+ for(const bad of [{ticketMinutes:3},{sampleMinutes:500},{maxGapMinutes:0.5}]){
+  r.ctx.bad=bad;assert.throws(()=>r.run('__doc.balanceSettings.rewards.regionVouchers={ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true,...bad};validateBalanceConfig(structuredClone(__doc))'),/收益券設定/,JSON.stringify(bad));
+ }
+ assert.deepEqual(r.errors,[]);
+});

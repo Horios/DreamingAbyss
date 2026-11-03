@@ -26,7 +26,23 @@
      ticket stage can tell whether it depended on consumables or temporary effects. */
 (()=>{
  'use strict';
- const RULES={version:1,sampleMs:30*60*1000,maxGapMs:10*60*1000,maxKeys:400};
+ // Editable in the balance editor as balanceSettings.rewards.regionVouchers (whole minutes).
+ const VOUCHER_DEFAULTS=Object.freeze({ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true});
+ const VOUCHER_LIMITS={ticketMinutes:['每張收益券分鐘數',5,240],sampleMinutes:['收益樣本分鐘數',10,240],maxGapMinutes:['樣本中斷容許分鐘數',1,60]};
+ function voucherSettings(){
+  const raw=typeof GS==='function'?GS('rewards.regionVouchers',null):null,out={...VOUCHER_DEFAULTS};
+  if(raw&&typeof raw==='object'){for(const k of Object.keys(VOUCHER_LIMITS))if(Number.isInteger(raw[k]))out[k]=raw[k];if(typeof raw.chargePotions==='boolean')out.chargePotions=raw.chargePotions;}
+  return out;
+ }
+ function checkVoucherSettings(v){
+  if(!v||typeof v!=='object')throw Error('收益券設定無效');
+  for(const [k,[label,min,max]] of Object.entries(VOUCHER_LIMITS))if(!Number.isInteger(v[k])||v[k]<min||v[k]>max)throw Error(`收益券設定：${label}必須是 ${min}～${max} 的整數`);
+  if(typeof v.chargePotions!=='boolean')throw Error('收益券設定：是否扣除藥水費用必須是開或關');
+  return v;
+ }
+ if(typeof GAMEPLAY_SETTINGS_DEFAULTS==='object'&&GAMEPLAY_SETTINGS_DEFAULTS.rewards)GAMEPLAY_SETTINGS_DEFAULTS.rewards.regionVouchers??={...VOUCHER_DEFAULTS};
+ if(typeof validateGameplaySettings==='function'){const base=validateGameplaySettings;validateGameplaySettings=function(cfg){cfg=base(cfg);checkVoucherSettings(cfg?.rewards?.regionVouchers);return cfg;};}
+ const RULES={version:1,get sampleMs(){return voucherSettings().sampleMinutes*60000;},get ticketMs(){return voucherSettings().ticketMinutes*60000;},get maxGapMs(){return voucherSettings().maxGapMinutes*60000;},maxKeys:400};
  const HOUR=3600000,COUNTS=['kills','monsters','enemies','items','consumed','gear'],NUMBERS=['ms','battles','wipes','deaths','xp','gold','goldLost'];
  let rewarding=null;
  const challenge=()=>!!party.questChallenge||!!party.bossChallenge?.active||typeof isFinalMap==='function'&&isFinalMap(party.map);
@@ -136,13 +152,13 @@
   return out;
  }
  const perHour=(a)=>{const per=v=>a.ms?v*HOUR/a.ms:0,scale=o=>Object.fromEntries(Object.entries(o).map(([k,v])=>[k,per(v)]));return {battles:per(a.battles),xp:per(a.xp),gold:per(a.gold),goldLost:per(a.goldLost),wipes:per(a.wipes),deaths:per(a.deaths),kills:scale(a.kills),monsters:scale(a.monsters),items:scale(a.items),consumed:scale(a.consumed),gear:scale(a.gear)};};
- // A region's snapshot as one 30-minute ticket worth, plus whether it is calibrated for the current configuration.
+ // A region's snapshot scaled to one ticket's duration (rewards.regionVouchers.ticketMinutes), plus whether it is calibrated for the current configuration.
  function snapshot(map=party?.map,difficulty=party?.difficulty||0){
   const r=party?.idleStatistics?.regions?.[map+':'+difficulty],s=r?.snapshot;if(!s)return null;
-  const scale=RULES.sampleMs/s.ms,round=o=>Object.fromEntries(Object.entries(o).map(([k,v])=>[k,v*scale]));
+  const scale=RULES.ticketMs/s.ms,round=o=>Object.fromEntries(Object.entries(o).map(([k,v])=>[k,v*scale]));
   return {id:s.id,map,difficulty,source:s.source,at:s.at,levelMin:s.levelMin,levelMax:s.levelMax,config:s.config,currentConfiguration:!!party&&party.map===map&&(party.difficulty||0)===difficulty&&configuration()===s.config,
    sustainable:!Object.keys(s.consumed).length&&!s.boosts.length,boosts:[...s.boosts],sampleMs:s.ms,
-   perTicket:{ms:RULES.sampleMs,battles:s.battles*scale,xp:s.xp*scale,gold:s.gold*scale,kills:round(s.kills),monsters:round(s.monsters),enemies:round(s.enemies),items:round(s.items),consumed:round(s.consumed),gear:round(s.gear)},perHour:perHour(s)};
+   perTicket:{ms:RULES.ticketMs,battles:s.battles*scale,xp:s.xp*scale,gold:s.gold*scale,kills:round(s.kills),monsters:round(s.monsters),enemies:round(s.enemies),items:round(s.items),consumed:round(s.consumed),gear:round(s.gear)},perHour:perHour(s)};
  }
  function totals(map=party?.map,difficulty=party?.difficulty||0){const r=party?.idleStatistics?.regions?.[map+':'+difficulty];return r?{map,difficulty,first:r.first,last:r.last,...JSON.parse(JSON.stringify(r.total)),perHour:perHour(r.total)}:null;}
 
@@ -177,5 +193,5 @@
  const validateBase=validateParty;validateParty=function(data){const p=validateBase(data);p.idleStatistics=normalize(data?.idleStatistics);return p;};
  // Loading resets the encounter, but the saved progress belongs to the saved combat cursor: keep it.
  const loadBase=loadParty;loadParty=function(...args){loading=true;try{return loadBase.apply(this,args);}finally{loading=false;}};
- globalThis.EmberwildIdleStatistics={RULES,normalize,snapshot,totals,gearKey,configuration,get sampling(){const r=party?.idleStatistics?.progress?.run;return r?{mode:r.mode,ms:r.ms}:null;}};
+ globalThis.EmberwildIdleStatistics={RULES,voucherSettings,checkVoucherSettings,VOUCHER_DEFAULTS,normalize,snapshot,totals,gearKey,configuration,get sampling(){const r=party?.idleStatistics?.progress?.run;return r?{mode:r.mode,ms:r.ms}:null;}};
 })();
