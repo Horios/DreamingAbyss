@@ -361,3 +361,8 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
   - `page-readability`：指南以彈窗作為捲動容器；切換頁面前關閉彈窗；戰鬥頁只檢查主內容區。
   - `navigation-tree`：新增冒險指南位置與舊導覽資料相容的測試。
 - 平衡器的導覽編輯器同步移除 `guide` 頁（Horios/emberwild-balance `v2-developer-mode`）。
+
+## v0.048 手機版測試診斷訊息
+
+- v0.047 的必要 CI 第一次執行時，`mobile-layout` 的「messages and loot are sibling panels」在開始時遇到離線結算失敗（failed:true），重跑後通過。本機連續 3 次也都通過，判定為偶發，原因未查明。
+- 測試 helper `start()` 的錯誤訊息改為附上離線結算視窗的文字，下次若再發生可以看到實際失敗原因。只改測試，不改遊戲程式。

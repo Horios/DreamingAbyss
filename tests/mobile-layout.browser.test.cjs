@@ -9,7 +9,7 @@ async function start(page){
  // A real, saved offline receipt is modal and intentionally intercepts input.
  // UI-layout tests must acknowledge it, not bypass pointer-event checks.
  await page.waitForFunction(()=>!EmberwildOffline.busy,{},{timeout:30000});
- const offline=await page.evaluate(()=>{const el=document.getElementById('offline-settlement'),c=party?.offlineExploration;return {visible:!!el&&!el.hidden,complete:!!c?.receipt?.complete,failed:EmberwildOffline.failed};});
+ const offline=await page.evaluate(()=>{const el=document.getElementById('offline-settlement'),c=party?.offlineExploration;return {visible:!!el&&!el.hidden,complete:!!c?.receipt?.complete,failed:EmberwildOffline.failed,message:el&&!el.hidden?el.textContent.slice(0,200):''};});
  if(offline.visible){
   assert(offline.complete&&!offline.failed,'unexpected unfinished offline settlement during UI setup: '+JSON.stringify(offline));
   assert.equal(await page.evaluate(()=>acknowledgeOfflineExploration()),true,'acknowledge saved offline receipt before UI interactions');
