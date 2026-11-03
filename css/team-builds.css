@@ -6,3 +6,6 @@
 .team-plan-card>summary{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;cursor:pointer;list-style:none}.team-plan-card>summary::-webkit-details-marker{display:none}
 .team-plan-card>summary::before{content:'▸';color:var(--muted);transition:transform .15s}.team-plan-card[open]>summary::before{transform:rotate(90deg)}
 .team-plan-card[open]>summary{margin-bottom:6px}
+.team-plan-fold>summary{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;cursor:pointer;list-style:none}.team-plan-fold>summary::-webkit-details-marker{display:none}
+.team-plan-fold>summary h2{margin:0}.team-plan-fold>summary::before{content:'▸';color:var(--muted);transition:transform .15s}.team-plan-fold[open]>summary::before{transform:rotate(90deg)}
+.team-plan-fold[open]>summary{margin-bottom:8px}
