@@ -27,12 +27,12 @@
 (()=>{
  'use strict';
  const RULES={version:1,sampleMs:30*60*1000,maxGapMs:10*60*1000,maxKeys:400};
- const HOUR=3600000,COUNTS=['kills','monsters','items','consumed','gear'],NUMBERS=['ms','battles','wipes','deaths','xp','gold','goldLost'];
+ const HOUR=3600000,COUNTS=['kills','monsters','enemies','items','consumed','gear'],NUMBERS=['ms','battles','wipes','deaths','xp','gold','goldLost'];
  let rewarding=null;
  const challenge=()=>!!party.questChallenge||!!party.bossChallenge?.active||typeof isFinalMap==='function'&&isFinalMap(party.map);
  const regionKey=()=>party.map+':'+(party.difficulty||0);
  const add=(map,k,n)=>{if(n)map[k]=(map[k]||0)+n;};
- function empty(){return {ms:0,battles:0,wipes:0,deaths:0,xp:0,gold:0,goldLost:0,kills:{},monsters:{},items:{},consumed:{},gear:{}};}
+ function empty(){return {ms:0,battles:0,wipes:0,deaths:0,xp:0,gold:0,goldLost:0,kills:{},monsters:{},enemies:{},items:{},consumed:{},gear:{}};}
  function hash(text){let h=0x811c9dc5;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
  function boosts(){
   const api=globalThis.EmberwildTimedBoosts;if(!api)return [];
@@ -56,6 +56,8 @@
   const token=!!globalThis.EmberwildTokens?.isToken(g);
   return [token?'token':'gear',g.slot??'',g.tier??'',token?(g.rar??0):gearQualityRank(g),g.powerTier??'',g.job??'',g.boss!==undefined?'boss':'',g.skillId?'skill':'',g.skillSockets?.count||0].join('|');
  }
+ // Enough of a defeated enemy to roll its item loot again: catalog id | kind | level | source material.
+ const enemyKey=e=>[String(e.monsterId??''),e.kind||'normal',Math.round(Number(e.lv)||1),String(e.mat??'')].join('|');
  const onlineMs=key=>party.idleStatistics?.regions?.[key]?.total.ms||0;
  // Unfinished encounter, uncredited encounter and unfinished 30-minute run live in the save, so a reload
  // from any checkpoint (including mid-replay) continues exactly where the committed state stopped.
@@ -140,7 +142,7 @@
   const scale=RULES.sampleMs/s.ms,round=o=>Object.fromEntries(Object.entries(o).map(([k,v])=>[k,v*scale]));
   return {id:s.id,map,difficulty,source:s.source,at:s.at,levelMin:s.levelMin,levelMax:s.levelMax,config:s.config,currentConfiguration:!!party&&party.map===map&&(party.difficulty||0)===difficulty&&configuration()===s.config,
    sustainable:!Object.keys(s.consumed).length&&!s.boosts.length,boosts:[...s.boosts],sampleMs:s.ms,
-   perTicket:{ms:RULES.sampleMs,battles:s.battles*scale,xp:s.xp*scale,gold:s.gold*scale,kills:round(s.kills),monsters:round(s.monsters),items:round(s.items),consumed:round(s.consumed),gear:round(s.gear)},perHour:perHour(s)};
+   perTicket:{ms:RULES.sampleMs,battles:s.battles*scale,xp:s.xp*scale,gold:s.gold*scale,kills:round(s.kills),monsters:round(s.monsters),enemies:round(s.enemies),items:round(s.items),consumed:round(s.consumed),gear:round(s.gear)},perHour:perHour(s)};
  }
  function totals(map=party?.map,difficulty=party?.difficulty||0){const r=party?.idleStatistics?.regions?.[map+':'+difficulty];return r?{map,difficulty,first:r.first,last:r.last,...JSON.parse(JSON.stringify(r.total)),perHour:perHour(r.total)}:null;}
 
@@ -163,7 +165,7 @@
   finally{
    rewarding=outer;
    if(e.rewarded&&P().current===c){
-    c.gold+=Math.max(0,playerHero().gold-gold);c.goldAfter=playerHero().gold;add(c.kills,e.kind||'normal',1);add(c.monsters,String(e.monsterId??e.name??'unknown'),1);
+    c.gold+=Math.max(0,playerHero().gold-gold);c.goldAfter=playerHero().gold;add(c.kills,e.kind||'normal',1);add(c.monsters,String(e.monsterId??e.name??'unknown'),1);add(c.enemies,enemyKey(e),1);
     const after=stock();for(const k in after){const n=(after[k]||0)-(before[k]||0);if(n>0)add(c.items,k,n);}
    }
   }

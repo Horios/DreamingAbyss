@@ -69,13 +69,15 @@
   GAMEPLAY_SETTINGS_DEFAULTS.maps ??={};
   GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog ??= defaultMapCatalogFromRuntime();
   GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog=GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog.map((m,i)=>{
-    const copy={...m};copy.mapType=rawMapType(copy,i);copy.bossStageMode??='fixed';copy.bossStageRandomCount??=1;copy.progressionGate=copy.mapType==='final'&&(typeof copy.progressionGate==='boolean'?copy.progressionGate:i===LEGACY_GATE_INDEX);return copy;
+    const copy={...m};copy.mapType=rawMapType(copy,i);copy.bossStageMode??='fixed';copy.bossStageRandomCount??=1;copy.overlevelVoucherGold??=defaultOverlevelVoucherGold(copy.min);copy.progressionGate=copy.mapType==='final'&&(typeof copy.progressionGate==='boolean'?copy.progressionGate:i===LEGACY_GATE_INDEX);return copy;
   });
   GAMEPLAY_SETTINGS_DEFAULTS.maps.levelRanges = GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog.map(m=>({min:m.min,max:m.max}));
   GAMEPLAY_SETTINGS_DEFAULTS.monsters.kindMultipliers.eliteDefense ??=1;
   GAMEPLAY_SETTINGS_DEFAULTS.monsters.kindMultipliers.bossDefense ??=1;
   GAMEPLAY_SETTINGS_DEFAULTS.monsters.catalog=(GAMEPLAY_SETTINGS_DEFAULTS.monsters.catalog||[]).map(m=>extendMonsterRow(m));
 
+  function defaultOverlevelVoucherGold(min){return 100+300*Math.max(0,Math.floor((Math.max(1,min)-1)/5));}
+  globalThis.defaultOverlevelVoucherGold=defaultOverlevelVoucherGold;
   function normalizeMapRow(row,i){
     const def=GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog[i]||GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog[0];
     const src=row&&typeof row==='object'?row:{},mapType=rawMapType(src,i),final=mapType==='final';
@@ -88,7 +90,10 @@
       color:typeof src.color==='string'?src.color:(def?.color||'#34324a'),parallel:typeof src.parallel==='boolean'?src.parallel:!!def?.parallel,
       mapType,progressionGate:gate,bossStageMode:src.bossStageMode??'fixed',bossStageRandomCount:src.bossStageRandomCount??1,
       eliteEnabled:final?false:(typeof src.eliteEnabled==='boolean'?src.eliteEnabled:true),eliteChance:final?0:(Number.isFinite(src.eliteChance)?src.eliteChance:(def?.eliteChance??.12)),
-      bossEnabled:final?true:(typeof src.bossEnabled==='boolean'?src.bossEnabled:true),bossChance:final?1:(Number.isFinite(src.bossChance)?src.bossChance:(def?.bossChance??.05))
+      bossEnabled:final?true:(typeof src.bossEnabled==='boolean'?src.bossEnabled:true),bossChance:final?1:(Number.isFinite(src.bossChance)?src.bossChance:(def?.bossChance??.05)),
+      // Gold per region voucher once the hero exceeds this map's max level. Default: 100 for the level-1 band,
+      // +300 per 5-level band above it; the balance editor can override it per map.
+      overlevelVoucherGold:Number.isFinite(src.overlevelVoucherGold)&&src.overlevelVoucherGold>=0?Math.round(src.overlevelVoucherGold):defaultOverlevelVoucherGold(Number.isFinite(src.min)?Math.round(src.min):(def?.min||1))
     };
   }
   function prepareWorldInput(input){

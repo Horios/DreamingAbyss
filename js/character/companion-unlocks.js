@@ -88,7 +88,8 @@
   const baseBuy=buyMarketOffer;
   buyMarketOffer=function(id){const o=party?.market?.offers.find(o=>o.id===id);if(!o?.ruleId?.startsWith('companion-recruit-'))return baseBuy(id);const p=ticketPlan(o);if(!p||o.sold||companionUnlocked(p.id)||companionTicketCount(p.id)||companionPendingMail(p.id))return;const price=globalThis.shopPayablePrice?.(o.price)??o.price;if(state.gold<price)return toast('金幣不足');const gold=state.gold,old=copy(party.achievements);state.gold-=price;o.sold=true;party.achievements.tickets[p.id]=1;if(!save()){state.gold=gold;o.sold=false;party.achievements=old;return;}render();toast(`${p.name}招募券已放入背包，使用後解鎖`);};
   const baseInventory=accountItemsView;
-  accountItemsView=function(){syncUnlocks();const items=Object.entries(party.achievements.tickets).filter(([,n])=>n>0);if(!items.length)return baseInventory();return baseInventory()+`<section class="panel"><h2>夥伴招募券</h2><div class="account-item-list">${items.map(([id,n])=>`<article class="account-item-row icon-only-row" data-companion-ticket="${id}">${itemSlotHTML('item','companion-ticket-'+id,{count:n,context:'inventory'})}</article>`).join('')}</div></section>`;};
+  // Recruitment tickets are listed in the item tab's ticket block (shop-inventory.js).
+  accountItemsView=function(){syncUnlocks();return baseInventory();};
 
   globalThis.accountItemsView=accountItemsView;
   let selectedMail=null;
@@ -121,7 +122,7 @@
     if(mailbox.messages.some(m=>m.rewardKey.startsWith('starter-')))return false;
     const doc=exportableBalance(),attachments=rows.map(row=>row.type==='catalogue'?catalogueAttachment(row,job,doc):copy(row));
     const parts=Math.ceil(attachments.length/6);
-    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:CLASSES[job].name+'新手禮包'+(parts>1?`（${i+1}/${parts}）`:''),body:'歡迎來到夢淵！初始白板裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
+    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:CLASSES[job].name+'新手禮包'+(parts>1?`（${i+1}/${parts}）`:''),body:'歡迎來到夢淵！初始裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
     return true;
   };
   function claimMail(ids){

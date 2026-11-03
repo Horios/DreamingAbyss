@@ -197,9 +197,21 @@
     if(offer.kind==='gem')return globalThis.inventoryGemIcon?.(Number(offer.key))||inventoryMaterialIcon('寶石');
     return inventoryMaterialIcon(offer.kind==='ore'?'鍛鐵':offer.kind==='dust'?'粉塵':offer.key);
   };
+  // Item tab: tickets, potions, other consumables and skill gems are separate blocks.
   accountItemsView=function(){
     ensureHealingPotionState();const target=pageHero('equipment')||party.members[0],rows=[...SHOP,LEVEL_SCROLL].filter(item=>inventoryItemCount(item)>0),needsTarget=rows.some(item=>!['levelScroll','gearTierReroll'].includes(item.type)&&!isHealPotion(item)&&!EmberwildTimedBoosts.isItem(item));
-    return heading('ITEMS / 帳號共用','道具庫存')+`<section class="panel"><div class="inventory-item-controls">${needsTarget?`<label>使用角色 <select onchange="selectPageHero('equipment',Number(this.value))">${(typeof enlistedHeroes==='function'?enlistedHeroes():party.members).map(h=>`<option value="${memberKey(h)}" ${h===target?'selected':''}>${esc(characterName(h))}</option>`).join('')}</select></label>`:''}<span class="small">點擊項目查看詳細資料及使用／販售。</span></div><div class="inventory-supply-status">${esc(characterName(target))}目前效果：<span class="supply-countdown" data-job="${memberKey(target)}">${esc(supplyStatus(target)||'無')}</span></div><div class="account-item-list">${rows.map(item=>`<div class="account-item-row icon-only-row" data-inventory-item="${esc(item.id)}">${itemSlotHTML('item',item.id,{count:inventoryItemCount(item),context:'inventory'})}</div>`).join('')||'<p class="empty">尚未持有消耗道具。</p>'}</div></section>`+accountGemsView();
+    const slot=item=>`<div class="account-item-row icon-only-row" data-inventory-item="${esc(item.id)}">${itemSlotHTML('item',item.id,{count:inventoryItemCount(item),context:'inventory'})}</div>`;
+    const isPotion=item=>isHealPotion(item)||['imbue','ward','elementTonic'].includes(item.type),isTicket=item=>EmberwildTimedBoosts.isItem(item);
+    const potions=rows.filter(isPotion),tickets=rows.filter(item=>!isPotion(item)&&isTicket(item)),others=rows.filter(item=>!isPotion(item)&&!isTicket(item));
+    const companions=Object.entries(party.achievements?.tickets||{}).filter(([,n])=>n>0).map(([id,n])=>`<div class="account-item-row icon-only-row" data-companion-ticket="${esc(id)}">${itemSlotHTML('item','companion-ticket-'+id,{count:n,context:'inventory'})}</div>`);
+    const vouchers=globalThis.EmberwildRegionVouchers?.inventorySlots?.()||{slots:[],action:''},ticketSlots=[...tickets.map(slot),...companions,...vouchers.slots];
+    const group=(id,title,body,extra='')=>`<section class="panel inventory-item-group" data-inventory-group="${id}"><div class="inventory-item-group-head"><h2>${title}</h2>${extra}</div>${body}</section>`;
+    const list=items=>`<div class="account-item-list">${items.join('')}</div>`;
+    return heading('ITEMS / 帳號共用','道具庫存')+`<section class="panel"><div class="inventory-item-controls">${needsTarget?`<label>使用角色 <select onchange="selectPageHero('equipment',Number(this.value))">${(typeof enlistedHeroes==='function'?enlistedHeroes():party.members).map(h=>`<option value="${memberKey(h)}" ${h===target?'selected':''}>${esc(characterName(h))}</option>`).join('')}</select></label>`:''}<span class="small">點擊項目查看詳細資料及使用／販售。</span></div></section>`
+      +(ticketSlots.length?group('tickets','票券',list(ticketSlots),vouchers.action):'')
+      +group('potions','藥水',`<div class="inventory-supply-status">${esc(characterName(target))}目前裝備藥水：<span class="supply-countdown" data-job="${memberKey(target)}">${esc(supplyStatus(target)||'無')}</span></div>${potions.length?list(potions.map(slot)):'<p class="empty">尚未持有藥水。</p>'}`)
+      +(others.length?group('others','其他道具',list(others.map(slot))):'')
+      +(!rows.length&&!ticketSlots.length?'<p class="empty">尚未持有消耗道具。</p>':'')+accountGemsView();
   };
   globalThis.accountItemsView=accountItemsView;
   const shopInventoryEquipmentBase=equipmentView;

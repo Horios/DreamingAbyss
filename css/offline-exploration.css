@@ -1,1 +1,17 @@
 .offline-settlement[hidden]{display:none}.offline-settlement{position:fixed;inset:0;z-index:10000;background:#000a;display:grid;place-items:center;padding:20px}.offline-settlement>section{background:var(--panel,#252821);color:var(--text,#ece7d8);border:1px solid var(--line,#655e4d);border-radius:12px;width:min(800px,100%);max-height:90dvh;overflow:auto;padding:24px;box-shadow:0 16px 60px #0008;overscroll-behavior:contain}.offline-settlement h2{margin-top:0}.offline-settlement progress{width:100%}.offline-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.offline-summary>div{padding:12px;border:1px solid var(--line,#655e4d);border-radius:7px;font-size:.85rem}.offline-summary b{display:block;font-size:1.1rem;margin-top:5px}.offline-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.offline-items .item-slot{width:100%;max-width:100%;min-width:0}.offline-gear{display:flex;align-items:center;gap:6px;min-width:0;text-align:left}.offline-gear .item-slot{pointer-events:none}.offline-settlement .small{opacity:.8}.offline-settlement button.primary{margin-top:14px}.offline-settlement:has(+dialog[open]){z-index:9999}@media(max-width:600px){.offline-settlement{padding:8px}.offline-settlement>section{padding:16px;max-height:94dvh}.offline-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.offline-items{grid-template-columns:1fr}}
+/* Region vouchers: offline settlement offer/confirmation and the mailbox voucher area. */
+.offline-voucher-offer,.offline-voucher-confirm{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.offline-voucher-confirm{border-color:var(--gold)}.offline-voucher-confirm ul{margin:6px 0;padding-left:18px}
+.offline-voucher-note{color:var(--gold)}
+.region-vouchers .row{align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.region-voucher-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:8px 0}
+.region-voucher-card{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);min-width:0;overflow-wrap:anywhere}
+.region-voucher-card h3{margin:0 0 4px;font-size:15px}.region-voucher-card .actions{display:flex;flex-wrap:wrap;gap:6px}
+.region-voucher-card.is-overlevel{border-color:#a07a3c;background:#a07a3c1a}.region-voucher-over{color:#e0b060}
+.region-voucher-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px;margin:4px 0;padding-left:18px}
+.region-voucher-history ol{margin:6px 0;padding-left:18px;font-size:13px}
+.region-voucher-slot{display:inline-grid;place-items:center;position:relative}.region-voucher-glyph{font-weight:800;color:var(--gold)}
+.inventory-item-group-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}.inventory-item-group-head h2{margin:0}
+/* Item tab blocks: several slots per row where width allows (single column on phones). */
+.inventory-item-group .account-item-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));justify-items:stretch}
+.inventory-item-group .account-item-row.icon-only-row .item-slot{width:100%}

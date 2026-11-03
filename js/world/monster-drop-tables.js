@@ -129,12 +129,23 @@ function rollConfiguredDrops(e,rng=Math.random){
   successes=successes.slice(0,maxDrops);successes.push(...independent.filter(rule=>rng()<effectiveDropChance(rule,e)));const granted=[];for(const rule of successes){const result=grantConfiguredDrop(rule,e,rng);if(result)granted.push({ruleId:rule.id,...result});}return granted;
 }
 
+// Item loot of one defeated enemy: base ore, configured drop rules and ether, in the original order.
+// Region vouchers reuse it so redeemed kills follow exactly the same rules; they skip only the one-time
+// first-BOSS ether claim, which is not a repeatable idle reward.
+function rollEnemyItemLoot(e,{voucher=false}={}){
+  const mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards;
+  const oreFactor=generalDropLevelGapFactor({type:'ore'},e);if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
+  rollConfiguredDrops(e);
+  const firstBossClaim=(e.kind==='boss'||e.kind==='final')&&!(party?.etherBossClaims||[]).includes((e.region??party?.map)+':'+(e.difficulty||0));
+  if(!voucher||!firstBossClaim)awardEther(e);
+}
+globalThis.rollEnemyItemLoot=rollEnemyItemLoot;
 // Replace only the item-drop block; gold/XP/base ore/ether/progression stay as existing reward systems.
 victory=function(){
   let e=enemy;if(!e)return;lastDefeatedEnemy={...e};let mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards,mult=[r.kindMultiplier.normal,r.kindMultiplier.elite,r.kindMultiplier.boss][kindIndex],firstClear=e.kind==='final'&&!state.won;
   state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);
-  const playerLevel=party?.members?.[0]?.lv??state?.lv,gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel);state.gold+=gold;const oreFactor=generalDropLevelGapFactor({type:'ore'},e);if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
-  rollConfiguredDrops(e);awardEther(e);
+  const playerLevel=party?.members?.[0]?.lv??state?.lv,gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel);state.gold+=gold;
+  rollEnemyItemLoot(e);
   if(e.kind==='final'){state.won=true;state.modeClears[mode]++;state.materials['日蝕王冠']=Math.max(1,state.materials['日蝕王冠']||0);running=false;}
   awardXP(xp);state.hp=Math.min(stats().hp,state.hp+stats().hp*r.postVictoryHeal);state.shield=0;note(`擊敗 ${e.name}（${d.name}）· ${gold} 金幣`);enemy=null;
   if(e.kind==='final'){$('modal').innerHTML=`<h1>${firstClear?'等級界限已突破':'再次戰勝噬日者'}</h1><p>${d.name}模式通關。${firstClear?'等級上限提升。':'可繼續探索或挑戰更高難度。'}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}save();
