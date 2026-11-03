@@ -22,3 +22,9 @@
 @media(min-width:901px){#app>.layout>aside nav>[data-page="wishingLake"]{display:none!important}}
 /* The battle header already names the current map. */
 #app main:has(.seconds-battle-header)>.heading{display:none!important}
+/* The top-right corner stays empty in game: save sits beside Settings, gold follows the experience bar,
+   and import/export live under Settings → 存檔. The header import remains only on the title screen. */
+header #wallet{display:none!important}
+body.in-game header>label.title-save-import{display:none!important}
+.options-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.options-tabs>button{min-height:34px;padding:4px 16px}

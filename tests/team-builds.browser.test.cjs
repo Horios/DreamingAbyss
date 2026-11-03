@@ -27,9 +27,9 @@ test('Chromium: create blank plans, choose classes, learn, copy, rename, safety 
   });
   await t.test('actual save download and file import restore every team and shared resource',async()=>{
    const expected=await p.evaluate(()=>{save();return {build:party.buildSystem,ids:state.bag.map(g=>g.id).sort(),gold:state.gold};});
-   const downloadPromise=p.waitForEvent('download');await p.getByRole('button',{name:'匯出存檔 JSON',exact:true}).click();const file=await (await downloadPromise).path();
+   await p.evaluate(()=>{openUtilityPanel('options');setOptionsTab('save');});const downloadPromise=p.waitForEvent('download');await p.getByRole('button',{name:'匯出存檔 JSON',exact:true}).click();const file=await (await downloadPromise).path();
    await p.evaluate(()=>renameTeamPlan('team-1','匯入前改名'));
-   await p.locator('header input[type="file"]').setInputFiles({name:'party-roundtrip.json',mimeType:'application/json',buffer:fs.readFileSync(file)});
+   await p.locator('#options-save-import').setInputFiles({name:'party-roundtrip.json',mimeType:'application/json',buffer:fs.readFileSync(file)});
    await p.locator('#modal').getByRole('button',{name:'確認載入',exact:true}).click();
    assert.deepEqual(await p.evaluate(()=>({build:party.buildSystem,ids:state.bag.map(g=>g.id).sort(),gold:state.gold})),expected);
   });

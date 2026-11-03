@@ -70,7 +70,7 @@ test('Chromium: actor portraits survive class and team switches, real save expor
   await p.evaluate(()=>{setCharacterAvatar(0,'phoenix');setCharacterAvatar(10,'wanderer');setCharacterAvatar(14,'healer');copyTeamPlan();changePlayerClass(1);switchTeamPlan('team-2');save();});
   const expected=await p.evaluate(()=>({avatars:party.members.map(h=>({key:memberKey(h),avatarId:h.avatarId??null})),job:playerHero().job,active:party.buildSystem.activeId}));
   assert.equal(expected.job,0);
-  const downloadPromise=p.waitForEvent('download');await p.getByRole('button',{name:'匯出存檔 JSON',exact:true}).click();
+  await p.evaluate(()=>{openUtilityPanel('options');setOptionsTab('save');});const downloadPromise=p.waitForEvent('download');await p.getByRole('button',{name:'匯出存檔 JSON',exact:true}).click();await p.evaluate(()=>closeModal());
   const file=await (await downloadPromise).path(),doc=JSON.parse(fs.readFileSync(file,'utf8'));
   assert.equal(doc.members[0].avatarId,'phoenix');assert.equal(doc.members.find(h=>h.companionId===10).avatarId,'wanderer');
   await p.evaluate(()=>setCharacterAvatar(0,'guardian'));

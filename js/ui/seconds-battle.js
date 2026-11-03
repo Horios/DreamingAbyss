@@ -64,7 +64,7 @@
   const h=playerHero(),xp=h?Math.min(100,h.xp/need(h.lv)*100):0;
   const nextMode=(party.huntingMode||'single')==='group'?'single':'group',controls=explorationControlButtons().replace(/(<button[^>]*onclick="stopTeamExploration\(\)"[^>]*>(?:<svg[\s\S]*?<\/svg>)?)停止/,'$1重置');
   const modeHint=mode=>mode==='group'?'群怪：每場遭遇 3～5 隻敵人':'單怪：每場遭遇 1 隻敵人';
-  const toolbar=`<section class="seconds-adventure-toolbar seconds-battle-header" aria-label="冒險狀態與快捷操作"><div class="seconds-battle-title"><h2>${esc(MAPS[party.map]?.name||'荒野')}</h2><div class="seconds-battle-xp" title="經驗 ${h.xp.toLocaleString()} / ${need(h.lv).toLocaleString()}"><b>${esc(characterName(h))} · LV ${h.lv}</b><progress aria-label="等級經驗" value="${xp}" max="100"></progress></div></div><div class="seconds-toolbar-actions"><button type="button" data-seconds-toggle aria-pressed="${showCooldowns}" onclick="EmberwildSecondsUI.toggleCooldowns()">${svg('timer')}${showCooldowns?'隱藏冷卻條':'顯示冷卻條'}</button>${controls}<button type="button" data-hunting-switch onclick="setHuntingMode('${nextMode}')" title="${modeHint(current)}（目前）。點擊切換為${modeHint(nextMode)}，下一場遭遇生效。">${svg('repeat')}切換：${nextMode==='group'?'群怪':'單怪'}</button><button type="button" onclick="document.querySelector('.seconds-recovery-settings')?.setAttribute('open','');document.querySelector('.seconds-recovery-settings')?.scrollIntoView({block:'center'})">${svg('sliders-horizontal')}冒險配置</button></div></section>`;
+  const toolbar=`<section class="seconds-adventure-toolbar seconds-battle-header" aria-label="冒險狀態與快捷操作"><div class="seconds-battle-title"><h2>${esc(MAPS[party.map]?.name||'荒野')}</h2><div class="seconds-battle-xp" title="經驗 ${h.xp.toLocaleString()} / ${need(h.lv).toLocaleString()}"><b>${esc(characterName(h))} · LV ${h.lv}</b><progress aria-label="等級經驗" value="${xp}" max="100"></progress><span class="seconds-party-gold" data-party-gold>全隊金幣 ${(party.members[0].gold||0).toLocaleString()}</span></div></div><div class="seconds-toolbar-actions"><button type="button" data-seconds-toggle aria-pressed="${showCooldowns}" onclick="EmberwildSecondsUI.toggleCooldowns()">${svg('timer')}${showCooldowns?'隱藏冷卻條':'顯示冷卻條'}</button>${controls}<button type="button" data-hunting-switch onclick="setHuntingMode('${nextMode}')" title="${modeHint(current)}（目前）。點擊切換為${modeHint(nextMode)}，下一場遭遇生效。">${svg('repeat')}切換：${nextMode==='group'?'群怪':'單怪'}</button><button type="button" onclick="document.querySelector('.seconds-recovery-settings')?.setAttribute('open','');document.querySelector('.seconds-recovery-settings')?.scrollIntoView({block:'center'})">${svg('sliders-horizontal')}冒險配置</button></div></section>`;
   return toolbar+html.replace(/第 (\d+(?:\.\d+)?) (?:回合|秒)/g,(_m,n)=>'戰鬥 '+fmt(+n)+' 秒');
  };
  function viewTime(){
@@ -75,6 +75,7 @@
   return e.now/1e6+Math.min(remaining,Math.max(0,(wall-base)*battleRate/1000));
  }
  function sync(){
+  for(const n of document.querySelectorAll('[data-party-gold]'))if(party){const text='全隊金幣 '+(party.members[0].gold||0).toLocaleString();if(n.textContent!==text)n.textContent=text;}
   if(tab!=='battle'||!party||document.hidden||EmberwildOffline.busy||globalThis.__EMBERWILD_OFFLINE_SILENT)return;
   const e=C.timeline;if(!e)return;const now=viewTime(),elapsed=Math.max(0,now-e.now/1e6);
   for(const node of showCooldowns?document.querySelectorAll('[data-seconds-actor]'):[]){

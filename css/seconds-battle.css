@@ -165,3 +165,4 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main>.battle-enemy-icon,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main>.battle-enemy-icon{grid-column:1!important;grid-row:1 / span 4!important;width:42px!important;height:42px!important;margin:0!important}
 #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main>*:not(.battle-enemy-icon),#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main>*:not(.battle-enemy-icon){grid-column:2!important}
 }
+#app .seconds-battle-xp>.seconds-party-gold{flex:0 0 auto;font-size:12px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}

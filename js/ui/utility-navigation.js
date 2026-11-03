@@ -20,9 +20,11 @@
   globalThis.numberReminderOptionsView=function(){return `<section class="panel number-reminder-options"><h2>數字提醒開關</h2><p class="small">各入口的紅色數字可分別開關；關閉不影響信件、成就、裝備或任務功能。</p><div class="number-reminder-settings">${Object.entries(labels).map(([id,label])=>`<label><input type="checkbox" data-number-reminder="${id}" onchange="setNumberReminder('${id}',this.checked)" ${settings()[id]?'checked':''}> ${label}</label>`).join('')}</div></section>`;};
   globalThis.setNumberReminder=function(id,enabled){if(!party||!Object.hasOwn(labels,id)||typeof enabled!=='boolean')return false;const old={...settings()};party.numberReminders[id]=enabled;if(!save()){party.numberReminders=old;lastDialogHTML='';render();return false;}render();return true;};
   const svg=name=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${(__EMBERWILD_LUCIDE.nodes[name]||[]).map(([tag,attrs])=>`<${tag} ${Object.entries(attrs).map(([key,value])=>`${key}="${esc(value)}"`).join(' ')}></${tag}>`).join('')}</svg>`;
-  for(const [selector,name] of [['header>button[onclick="save(true)"]','save'],['header>button[onclick="exportSave()"]','download'],['header>label.button','upload']])document.querySelector(selector)?.insertAdjacentHTML('afterbegin',svg(name));
+  for(const [selector,name] of [['header>label.button','upload']])document.querySelector(selector)?.insertAdjacentHTML('afterbegin',svg(name));
   const container=$('utilityNavigation');
   container.innerHTML=utilityIds.map(id=>`<button id="utilityButton-${id}" type="button" class="utility-icon-button" data-utility="${id}" title="${labels[id]||'選項'}" aria-label="${labels[id]||'選項'}" onclick="openUtilityPanel('${id}')">${svg({mailbox:'mail',achievements:'medal',options:'settings'}[id])}<span class="utility-label">${labels[id]||'設定'}</span><span id="utilityReminder-${id}" class="number-badge" hidden></span></button>`).join('');
+  // Save sits right beside Settings; import/export live under Settings → 存檔.
+  $('utilityButton-options')?.insertAdjacentHTML('afterend',`<button id="utilityButton-save" type="button" class="utility-icon-button" title="儲存" aria-label="儲存" onclick="save(true)">${svg('save')}<span class="utility-label">儲存</span></button>`);
   globalThis.isUtilityDialogOpen=id=>$('modal').open&&$('modal').dataset.view==='utility-'+id;
   let lastDialogHTML='';
   function clearUtilityMarker(){const modal=$('modal');if(String(modal.dataset.view||'').startsWith('utility-'))delete modal.dataset.view;modal.classList.remove('utility-dialog');lastDialogHTML='';}
@@ -39,6 +41,7 @@
   function refreshBadges(){
     const active=!!party&&!!state&&!isEmberwildTitleOpen();
     if(container.hidden!==!active)container.hidden=!active;
+    document.body.classList.toggle('in-game',active);
     if(!active)return;
     const current=counts(),preferences=settings();
     for(const id of Object.keys(labels)){

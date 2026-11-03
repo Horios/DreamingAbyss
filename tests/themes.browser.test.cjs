@@ -81,7 +81,7 @@ test('Unknown saved appearance falls back safely; storage changes update an open
     await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();});
     await p.waitForTimeout(60);await p.evaluate(()=>closeModal());
     await p.locator('#utilityButton-options').click();
-    assert.equal(await p.locator('#options-test-json-import').count(),1,'Preview keeps its JSON import action');
+    assert.equal(await (await p.evaluate(()=>setOptionsTab('other')),p).locator('#options-test-json-import').count(),1,'Preview keeps its JSON import action');await p.evaluate(()=>setOptionsTab('general'));
     const [second]=await Promise.all([p.waitForEvent('popup'),p.evaluate(()=>{window.open('about:blank');})]);
     // A second same-origin document exercises the native cross-tab storage event.
     await second.evaluate(k=>localStorage.setItem(k,'forest'),key);
