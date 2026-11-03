@@ -53,7 +53,11 @@
   try{const saved=JSON.parse(balanceSourceText()||'null');if(saved?.companions)plans=parsePlans(saved.companions,saved);if(saved){config=Model.normalizeSettings(saved.companionSettings,saved.classes||CLASSES,saved.balanceSettings||GAMEPLAY_SETTINGS);passiveDefinitions=Passive.normalize(saved.passiveDefinitions);}}catch(e){console.warn('夥伴平衡設定無法載入，使用內建角色',e);}
   const byId=()=>new Map(plans.map(p=>[p.id,p]));
   function companionPlan(h){const current=byId().get(h?.companionId);return current?.job===h?.job?current:party?.companionProfiles?.[h?.companionId]?.job===h?.job?party.companionProfiles[h.companionId]:null;}
-  function allPassivesFor(h){const S=globalThis.__EMBERWILD_SKILLS;if(S&&h===party?.members[0])return S.system().definitions.filter(d=>d.type==='passive'&&S.learned(h,d));return (companionPlan(h)?.passives||[]).map(id=>passiveDefinitions.find(d=>d.id===id)).filter(Boolean);}
+  // Installed skill systems are immutable (their id/position maps are built once), so keep each one's
+  // passive subset instead of scanning every definition on every stat and effect lookup.
+  const passiveSubsets=new WeakMap();
+  function systemPassives(S){const defs=S.system().definitions;let list=passiveSubsets.get(defs);if(!list){list=defs.filter(d=>d.type==='passive');passiveSubsets.set(defs,list);}return list;}
+  function allPassivesFor(h){const S=globalThis.__EMBERWILD_SKILLS;if(S&&h===party?.members[0])return systemPassives(S).filter(d=>S.learned(h,d));return (companionPlan(h)?.passives||[]).map(id=>passiveDefinitions.find(d=>d.id===id)).filter(Boolean);}
   function skillDisabled(h,kind,id){if(globalThis.__EMBERWILD_SKILLS)return false;return !!companionPlan(h)&&!!h.disabledCompanionSkills?.[kind]?.includes(id);}
   function validateDisabledSkills(raw){
     if(raw===undefined)return {core:[],support:[],passive:[]};

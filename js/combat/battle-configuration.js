@@ -9,7 +9,17 @@
  const gemEffects=new Map();
  const values=h=>Object.fromEntries(fields.filter(k=>h[k]!==undefined).map(k=>[k,h[k]]));
  function assign(h,v){for(const k of fields){if(Object.hasOwn(v,k))h[k]=v[k];else delete h[k];}}
- const row=h=>owner===party&&rows?.find(r=>r.key===memberKey(h));
+ // rows is only ever replaced (capture/clear/restore), never edited in place, so lookups
+ // are memoised per rows array: combat reads these on every passive and skill check.
+ let rowCacheFor=null,rowCache=new WeakMap(),learnedCache=new WeakMap();
+ const row=h=>{
+  if(owner!==party)return false;if(!rows)return undefined;
+  if(rowCacheFor!==rows){rowCacheFor=rows;rowCache=new WeakMap();learnedCache=new WeakMap();}
+  if(!h||typeof h!=='object')return rows.find(r=>r.key===memberKey(h));
+  if(rowCache.has(h))return rowCache.get(h);
+  const found=rows.find(r=>r.key===memberKey(h));rowCache.set(h,found);return found;
+ };
+ const learnedIds=r=>{let set=learnedCache.get(r);if(!set){set=new Set(r.learned);learnedCache.set(r,set);}return set;};
  const pending=()=>!!(owner===party&&rows&&foes.length&&(foes.some(e=>e.hp>0)||combatRoundProgress||roundIterator));
  function capture(){
   S.refreshAll();owner=party;notified=false;gemEffects.clear();
@@ -43,7 +53,7 @@
    for(const g of r.gear){if(!g||typeof g.id!=='string'||!Number.isInteger(g.slot)||g.slot<0||g.slot>4||!Array.isArray(g.affix))throw Error('戰鬥配置裝備無效');EmberwildSkillSystem.gear(g,{legacy:true,system:S.system()});}
   }
  }
- globalThis.EmberwildBattleConfiguration={begin:capture,get active(){return active;},has:h=>!!row(h),learned:(h,id)=>!!row(h)?.learned.includes(id),pending,notify,editable,combat,
+ globalThis.EmberwildBattleConfiguration={begin:capture,get active(){return active;},has:h=>!!row(h),learned:(h,id)=>{const r=row(h);return !!r&&learnedIds(r).has(id);},pending,notify,editable,combat,
   equipmentEffects(h,read){if(!row(h))return read();if(!gemEffects.has(memberKey(h)))gemEffects.set(memberKey(h),read());return gemEffects.get(memberKey(h));},
   pack:()=>owner===party&&rows?{version:1,heroes:copy(rows)}:null,
   validate,restore(data){clear();if(data){validate(data,party.members);owner=party;rows=copy(data.heroes);}else if(foes.some(e=>e.hp>0))editable(capture);}
