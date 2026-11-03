@@ -453,6 +453,8 @@
      settlementProgress.target=end;
      let more;
      do{if(voucherState==='requested'){convertToVouchers();voucherState=null;more=false;break;}
+      // While the player reads the voucher confirmation the replay pauses, so its figures and buttons stay still.
+      if(voucherState==='confirm'){await new Promise(resolve=>setTimeout(resolve,100));more=true;continue;}
       const start=c.lastAt,r=c.pendingReceipt,status=c.status;more=advance(end);if(c!==clock()){c=clock();more=c.lastAt<end;}else if(jobOffline)recordInterval(r,start,c.lastAt);if(c.status!==status||more&&performance.now()-lastCheckpoint>=checkpointIntervalMs){commit();lastCheckpoint=performance.now();}if(show&&(performance.now()-lastProgress>=100||!more)){showProgress(metrics.fastBattles?'正在快速結算收益 · 正在生成掉落物品':metrics.phase);lastProgress=performance.now();}if(more)await yieldBatch();}while(more);
      if(c.offlineWindow&&c.lastAt<requestedAt)skipUncreditedTime(requestedAt);
     }while(c.lastAt<requestedAt);
