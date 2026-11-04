@@ -63,7 +63,8 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
     });
     await t.test('Actual starting gifts and first-map random encounters support every representative trio',async()=>{
       const starters=await simulateStarters(game.page,{samples:128});
-      for(const result of starters){assert.equal(result.winRate,1,result.team);assert.equal(result.maxEnemyLevel,1);assert.equal(result.minEnemies,3);assert.equal(result.maxEnemies,6);assert(result.rounds<5&&result.pressure<.3);}
+      for(const result of starters){assert.equal(result.winRate,1,result.team);assert.equal(result.maxEnemyLevel,1);// Continuous exploration spawns one enemy at a time on the first map.
+        assert.equal(result.minEnemies,1);assert.equal(result.maxEnemies,1);assert(result.rounds<5&&result.pressure<.3);}
       const levels=await game.page.evaluate(()=>{
         const lead=EmberwildProgression.encounterLevelLead;return [1,5,6,11,26,60].map(l=>lead(GAMEPLAY_SETTINGS,l));
       });assert.deepEqual(levels,[0,0,1,2,5,5]);
@@ -85,7 +86,8 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
           state=initial(1);state.lv=59;state.won=true;party=createParty(state);party.cleared=true;party.difficulty=mode;syncParty();recruitCompanion(11);recruitCompanion(13);recruitCompanion(14);closeModal();party.active=[1,11,13].slice(0,count);syncParty();
           for(const h of party.members){h.lv=59;h.won=true;h.xp=0;h.hp=stats(h).hp;}
           const e=makeEnemy(0,state,()=>.9);e.kind=kind;e.lv=59;e.hp=0;e.rewarded=false;foes=[e];enemy=e;
-          const want=EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,59,kind,mode),count);rewardGroupKill(e);
+          // Granted EXP is floored; current difficulty multipliers give fractional model values.
+          const want=Math.floor(EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,59,kind,mode),count));rewardGroupKill(e);
           for(const h of party.members)if(h.xp!==(h===party.members[0]?want:0))issues.push('xp '+count+'/'+kind+'/'+mode+'/'+memberKey(h));
           const before=party.members.map(h=>h.xp);rewardGroupKill(e);if(party.members.some((h,i)=>h.xp!==before[i]))issues.push('duplicate reward');
         }
@@ -101,7 +103,7 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
       assert.equal(modified.classes[2].growthSteps[0].atk,2);
       const roundTrip=await game.page.evaluate(doc=>{applyBalanceConfig(doc,{persist:false});const h=initial(2);h.lv=60;h.equipped=[];h.bag=[];h.advanced=false;return {attack:stats(h).atk,doc:exportableBalance()};},modified);
       assert.equal(roundTrip.attack,128);assert.deepEqual(roundTrip.doc.classes[2].growthSteps,modified.classes[2].growthSteps);
-      await editor.page.evaluate(doc=>{data=doc;ensureArrays();currentSection='balanceSettings:progression';render();},roundTrip.doc);
+      await editor.page.evaluate(doc=>{data=__EMBERWILD_VALIDATE_DOCUMENT(doc);ensureArrays();currentSection='balanceSettings:progression';render();},roundTrip.doc);
       await editor.page.waitForFunction(()=>document.querySelector('#balanceUxPreview')?.textContent.includes('三人隊每人／怪'),{timeout:10000});
       assert.equal((await editor.page.evaluate(()=>validateData())).length,0);
     });
@@ -110,11 +112,12 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
       legacyDoc.balanceSettings.rewards.kindMultiplier.boss=4;
       for(const d of legacyDoc.balanceSettings.difficulty.modes)delete d.xpMultiplier;
       legacyDoc.balanceSettings.difficulty.modes[1].reward=1.6;
-      const editorLegacy=await editor.page.evaluate(doc=>{data=doc;ensureArrays();return __EMBERWILD_MASTERY_EDITOR.cleanExport();},legacyDoc);
+      const editorLegacy=await editor.page.evaluate(doc=>{data=__EMBERWILD_VALIDATE_DOCUMENT(doc);ensureArrays();return __EMBERWILD_MASTERY_EDITOR.cleanExport();},legacyDoc);
       assert.equal(editorLegacy.balanceSettings.rewards.xp.kindMultiplier.boss,4);
       assert.equal(editorLegacy.balanceSettings.difficulty.modes[1].xpMultiplier,1.6);
       const result=await game.page.evaluate(doc=>{applyBalanceConfig(doc,{persist:false});const out=exportableBalance();return {boss:out.balanceSettings.rewards.xp.kindMultiplier.boss,hard:out.balanceSettings.difficulty.modes[1].xpMultiplier,xp:EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,30,'boss',1)};},legacyDoc);
-      assert.deepEqual(result,{boss:4,hard:1.6,xp:1843});
+      // EXP formula: (base + level × perLevel) × kind multiplier × difficulty multiplier, from the current defaults.
+      const x=defaults.balanceSettings.rewards.xp;assert.deepEqual({...result,xp:Math.round(result.xp*1000)/1000},{boss:4,hard:1.6,xp:Math.round((x.base+30*x.perLevel)*4*1.6*1000)/1000});
       await game.page.evaluate(doc=>applyBalanceConfig(doc,{persist:false}),defaults);
       assert.deepEqual(defaults.balanceSettings.difficulty.modes.map(d=>d.reward),[1,1.3,1.65]);
     });
