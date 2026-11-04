@@ -166,3 +166,8 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main>*:not(.battle-enemy-icon),#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main>*:not(.battle-enemy-icon){grid-column:2!important}
 }
 #app .seconds-battle-xp>.seconds-party-gold{flex:0 0 auto;font-size:12px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+/* Ally cards are tinted by class at low saturation so text stays readable in every theme. */
+#app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-0{background:linear-gradient(145deg,color-mix(in srgb,#c4563a 22%,var(--panel)),color-mix(in srgb,#c4563a 9%,var(--panel)))!important}
+#app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-1{background:linear-gradient(145deg,color-mix(in srgb,#7d5fd0 22%,var(--panel)),color-mix(in srgb,#7d5fd0 9%,var(--panel)))!important}
+#app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-2{background:linear-gradient(145deg,color-mix(in srgb,#4f9a55 22%,var(--panel)),color-mix(in srgb,#4f9a55 9%,var(--panel)))!important}
+#app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-3{background:linear-gradient(145deg,color-mix(in srgb,#c9a540 22%,var(--panel)),color-mix(in srgb,#c9a540 9%,var(--panel)))!important}

@@ -13,6 +13,8 @@
  const checkpointIntervalMs=1000,maxOfflineMs=24*60*60*1000;
  let settlementProgress=null,bootResumePending=!!globalThis.__EMBERWILD_BOOT_SAVE_RAW;
  const atTitle=()=>!!globalThis.isEmberwildTitleOpen?.();
+ // System clocks can step back slightly (time sync); a small step means no time has passed yet.
+ const CLOCK_SLACK_MS=5000;
  const nowReal=Date.now.bind(Date),basePack=packParty,baseSave=save,baseLoad=loadParty,baseValidate=validateParty;
  const active=()=>!!party&&running&&!$('modal')?.open&&!globalThis.isEmberwildTitleOpen?.();
  const clock=()=>party?.offlineExploration;
@@ -433,6 +435,7 @@
   if(!party||restoring||atTitle()||globalThis.__EMBERWILD_SAVE_OWNER===false)return Promise.resolve();
   let c=ensure();
   if(job){if(Number.isSafeInteger(target)){requestedAt=Math.max(requestedAt,target);if(offline){jobOffline=true;ensureOfflineWindow(c,requestedAt);track(Math.min(requestedAt,c.offlineWindow.capAt));}if(c.offlineWindow)c.offlineWindow.untilAt=Math.max(c.offlineWindow.untilAt,requestedAt);}return job;}
+  if(Number.isSafeInteger(target)&&target<c.lastAt&&c.lastAt-target<=CLOCK_SLACK_MS)return Promise.resolve();
   if(!Number.isSafeInteger(target)||target<0||target>8.64e15||target<c.lastAt){failed=true;settlementProgress=null;showProgress('裝置時間無效或早於最後結算時間；收益與時間已保留，請校正時間後重試。',true);return Promise.resolve();}
   requestedAt=target;jobOffline=offline;
   if(offline||c.offlineWindow||target-c.lastAt>maxOfflineMs)ensureOfflineWindow(c,target);
@@ -471,7 +474,7 @@
  function sync(now=nowReal()){
   if(internal||stepping||restoring||!party||failed||atTitle()||globalThis.__EMBERWILD_SAVE_OWNER===false)return;
   if(job){requestedAt=Math.max(requestedAt,now);return;}
-  const c=ensure();if(now<c.lastAt){void settle(now,false);return;}
+  const c=ensure();if(now<c.lastAt){if(c.lastAt-now>CLOCK_SLACK_MS)void settle(now,false);return;}
   // Hidden tabs and sleep-sized gaps keep the unrestricted shared replay path.
   // Ordinary foreground jitter must never start an asynchronous catch-up job.
   if(now-c.lastAt>=10000||document.hidden&&now-c.lastAt>1000){void settle(now,false);return;}

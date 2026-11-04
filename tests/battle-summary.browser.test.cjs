@@ -142,3 +142,15 @@ test('an enemy without an id renders once with the summary key, and a lasting mi
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
+test('ally cards are tinted by class and the battle note explains card and portrait clicks',async()=>{
+ const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')}),p=g.page;
+ try{
+  const out=await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);recruitCompanion(10);closeModal();recruitCompanion(14);closeModal();spawnGroup();running=true;setTab('battle');render();
+   const cards=[...document.querySelectorAll('#battleAllyIcons>.unit.seconds-unit')];
+   return {jobs:cards.map(n=>(n.className.match(/seconds-job-(\d)/)||[])[1]),bgs:cards.map(n=>getComputedStyle(n).backgroundImage),note:document.querySelector('.seconds-battlefield')?.textContent||''};});
+  assert(out.jobs.length===3&&out.jobs.every(Boolean),JSON.stringify(out.jobs));
+  assert.equal(new Set(out.bgs).size,new Set(out.jobs).size,'each class has its own tint');
+  assert.match(out.note,/點擊敵我資訊卡可切換查看冷卻與生效狀態/);assert.match(out.note,/點擊頭像可查看詳細數據/);
+  assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});

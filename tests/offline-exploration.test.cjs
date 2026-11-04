@@ -213,8 +213,9 @@ test('interrupted batches continue from their committed cursor, not the original
  while(callbacks.length){callbacks.shift()();await new Promise(resolve=>setImmediate(resolve));}await pending;
 });
 test('backwards clock and storage failure preserve the last valid save and unsettled time',async()=>{
- const r=game(),key=r.run('KEY'),raw=r.values.get(key);r.advance(-1000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),true);assert.equal(r.values.get(key),raw);
- r.advance(61000);r.ctx.localStorage.setItem=()=>{throw Error('quota');};await r.run('retryOfflineExploration()');assert.equal(r.run('EmberwildOffline.failed'),true);assert.equal(r.values.get(key),raw);assert.equal(r.run('party.offlineExploration.lastAt'),JSON.parse(raw).offlineExploration.lastAt);
+ // Beyond the 5 s slack for clock sync steps (offline-clock-step covers small steps).
+ const r=game(),key=r.run('KEY'),raw=r.values.get(key);r.advance(-60000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),true);assert.equal(r.values.get(key),raw);
+ r.advance(120000);r.ctx.localStorage.setItem=()=>{throw Error('quota');};await r.run('retryOfflineExploration()');assert.equal(r.run('EmberwildOffline.failed'),true);assert.equal(r.values.get(key),raw);assert.equal(r.run('party.offlineExploration.lastAt'),JSON.parse(raw).offlineExploration.lastAt);
 });
 test('a full bag preserves owned gear while offline combat continues with auto-salvaged overflow',async()=>{
  const r=game();r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;save()');const ids=json(r,'state.bag.map(g=>g.id)'),before=json(r,'({ore:state.ore,dust:state.dust})');await settle(r,3600000);assert.equal(r.run('running'),true);assert.deepEqual(json(r,'state.bag.map(g=>g.id)'),ids);assert.equal(r.run('(party.offlineExploration.receipt||party.offlineExploration.pendingReceipt).effectiveMs'),3600000);assert(r.run('state.ore')>=before.ore);assert(r.run('state.dust')>=before.dust);
