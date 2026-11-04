@@ -453,3 +453,17 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
   - `seconds-battle.js` 的敵人代號改用摘要的 `key()`，兩邊一致。
   - `sync()` 每次不一致只重繪一次；重繪後仍不一致就停止，不再遞迴。
 - 新增必要 CI 測試（`battle-summary.browser`）：沒有 id 的敵人畫成 `visual-N`；模擬永遠不一致時最多多重繪一次、不會溢位。拿掉修正時此測試失敗。
+
+## v0.055 整理長期失敗的非 CI 測試（第二批）
+
+- 前提已過時，更新測試：
+  - `companion-token-management`：信物掉率跟隨裝備掉率，裝備掉率調整後從 0.24% 變成 0.2%；改為比對設定算出的值，不寫死數字。
+  - `named-companions`、`skill-effects-editor`：改為編輯 `skillSystem.definitions`（技能系統 v1 會覆蓋 `classes[].skills`）；新增的狀態加上秒數 `timing`，並加入現有狀態清單而不是整批取代。
+  - `skill-effects-editor`：平衡器的狀態正規化在沒有 `timing` 時會補預設秒數（秒數編輯功能，平衡器 `5ae1a09`），比對時只允許這段不同。
+  - `global-item-catalogue`：道具總數 328 → 339、分類 46 → 44、不可販售只有 15 種寶石（加速券與 紅色草泥 已退役，寶石改 5 種 × 3 階）。「不可販售」的範例改用 清水，因為許願湖不接受不可販售的 紅色草 作為供品。
+  - `inventory-supplies`：道具列表改為精簡列（名稱 × 數量），售價在詳細視窗；材料列改用共用格式 `data-item-kind`／`data-item-key`。
+  - `icon-color-palette`：技能頁改為顯示目前配置（先是職業初始技能），改用技能頁同一個圖示函式檢查被改色的技能。
+  - `text-rarity-runtime`：瀏覽器中重設平衡會還原已發布資料；無頭測試補上已發布資料以符合實際情況。
+  - `utility-navigation`：設定也是上方選單的頁面；背包提醒顯示在「背包」分類按鈕上。
+- 已退役的功能：技能系統 v1（`4c49039`）後夥伴技能全部自動使用，`setCompanionSkillEnabled` 一律拒絕。原本三個開關測試改為一個測試，確認呼叫被拒絕、存檔不變、已解鎖技能仍在使用。
+- 待注意：`published-runtime.js` 的備用預設資料在載入時擷取，早於技能系統載入，所以缺少 `skillSystem`。正式遊戲一定有已發布資料，不會用到；只有沒有已發布資料的環境（無頭測試）會受影響。

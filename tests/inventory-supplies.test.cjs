@@ -17,7 +17,8 @@ test('Paused live foes and level caps prevent scroll consumption; real write fai
 test('Scroll sales use existing stock and configured price, refund failed writes, and survive save/import without migrating stock',()=>{
  const r=game();r.run('state.materials["升級卷軸"]=3;globalThis.__beforeGold=state.gold;globalThis.__scrollPrice=materialSellPrice("升級卷軸");');r.run('sellInventoryItem("level_scroll",2)');assert.equal(r.run('materialCount("升級卷軸")'),1);assert.equal(r.run('state.gold'),r.run('__beforeGold+2*__scrollPrice'));
  const before=snapshot(r),gold=r.run('state.gold');r.run('globalThis.__beforeSave=save;save=()=>false;sellInventoryItem("level_scroll",1);save=__beforeSave;');assert.deepEqual(snapshot(r),before);assert.equal(r.run('state.gold'),gold);
- r.run('save();loadParty(JSON.parse(localStorage.getItem(KEY)));');assert.equal(r.run('materialCount("升級卷軸")'),1);assert.equal(r.run('state.consumables.level_scroll||0'),0);assert.match(r.run('accountItemsView()'),/賣價 1 個 150 金幣/);assert.deepEqual(r.errors,[]);
+ r.run('save();loadParty(JSON.parse(localStorage.getItem(KEY)));');assert.equal(r.run('materialCount("升級卷軸")'),1);assert.equal(r.run('state.consumables.level_scroll||0'),0);// The item list is compact (name × count); the sale price lives in the detail popup and in materialSellPrice.
+ assert.match(r.run('accountItemsView()'),/data-inventory-item="level_scroll"[\s\S]*?×1/);assert.equal(r.run('materialSellPrice("升級卷軸")'),r.run('__scrollPrice'));assert.deepEqual(r.errors,[]);
 });
 test('Material regions track active drop rules, cross-region sources, boss difficulties and unknown inventory',()=>{
  const r=game();r.run(`{
@@ -25,6 +26,6 @@ test('Material regions track active drop rules, cross-region sources, boss diffi
  cfg.balanceSettings.drops.entries.push({id:'regional_ui_test',name:'測試材料',enabled:true,type:'material',key:'跨區測試材料',kinds:['normal'],chanceByDifficulty:[1,0,0],quantityMin:1,quantityMax:1,sources:[a.id,b.id]});applyBalanceConfig(cfg,{persist:false});Object.assign(state.materials,{'跨區測試材料':3,'舊存材料':1,'紅色草':2,'光輝碎塊':1});
  }`);
  assert.deepEqual(json(r,'[...inventoryMaterialRegions().get("跨區測試材料")]'),[0,1]);const html=r.run('accountMaterialsView()');assert.match(html,/data-material-group="common"/);assert.match(html,/data-material-group="alchemy"/);assert.match(html,/data-material-group="enhance"/);
- r.run('setCommonMaterialRegion("1")');assert.match(r.run('accountMaterialsView()'),/data-material="跨區測試材料"/);assert.doesNotMatch(r.run('accountMaterialsView()'),/data-material="舊存材料"/);r.run('setCommonMaterialRegion("other")');assert.match(r.run('accountMaterialsView()'),/data-material="舊存材料"/);assert.doesNotMatch(r.run('accountMaterialsView()'),/data-material="跨區測試材料"/);
+ r.run('setCommonMaterialRegion("1")');assert.match(r.run('accountMaterialsView()'),/data-item-kind="material" data-item-key="跨區測試材料"/);assert.doesNotMatch(r.run('accountMaterialsView()'),/data-item-kind="material" data-item-key="舊存材料"/);r.run('setCommonMaterialRegion("other")');assert.match(r.run('accountMaterialsView()'),/data-item-kind="material" data-item-key="舊存材料"/);assert.doesNotMatch(r.run('accountMaterialsView()'),/data-item-kind="material" data-item-key="跨區測試材料"/);
  const before=json(r,'({materials:state.materials,ore:state.ore,dust:state.dust})');r.run('setCommonMaterialSort("quantity");setLifeStockFilter("alchemy");setLifeStockSort("price");setLifeStockOpen(false);');assert.deepEqual(json(r,'({materials:state.materials,ore:state.ore,dust:state.dust})'),before);assert.deepEqual(r.errors,[]);
 });
