@@ -85,12 +85,12 @@ test('Player EXP drives all companion levels, growth, acquisition and progress d
     await t.test('Both progress bars always show the player, update after EXP gains and remain visible when a companion is selected',async()=>{
       const r=await page.evaluate(()=>{
         __levelReset(20);selectHero(10);awardXP(123);setTab('battle');
-        const bars=[...document.querySelectorAll('.player-exp-bar')].map(x=>({text:x.textContent,value:x.getAttribute('aria-valuenow'),visible:x.getBoundingClientRect().height>0})),name=document.querySelector('.adventurer-summary h2').textContent;
+        /* the battle toolbar carries the player's EXP bar (the sidebar summary is hidden by the top menu) */const xp=document.querySelector('.seconds-battle-xp'),bars=[{title:xp?.getAttribute('title'),name:xp?.querySelector('b')?.textContent,visible:!!xp&&xp.getBoundingClientRect().height>0}],name=document.querySelector('.adventurer-summary h2').textContent;
         setTab('character');const character=document.querySelector('.player-progress-character .player-exp-bar')?.textContent;
         setTab('roster');const team=document.querySelector('main').textContent;setTab('partnerRoster');const roster=document.querySelector('main').textContent;
         return {bars,name,character,team,roster,need:need(20)};
       });
-      assert.equal(r.bars.length,2);for(const bar of r.bars){assert.equal(bar.text,`123 / ${r.need} EXP`);assert.equal(bar.value,'123');assert(bar.visible);}assert.equal(r.name,'同步測試主角');assert.equal(r.character,`123 / ${r.need} EXP`);assert.match(r.team,/不獨立獲得經驗/);assert.match(r.roster,/同步主角等級/);
+      for(const bar of r.bars){assert.equal(bar.title,`經驗 123 / ${r.need.toLocaleString()}`);assert.match(bar.name,/同步測試主角 · LV 20/,'the bar names the player even with a companion selected');assert(bar.visible);}assert.equal(r.name,'同步測試主角');assert.equal(r.character,`123 / ${r.need} EXP`);assert.match(r.team,/不獨立獲得經驗/);assert.match(r.roster,/同步主角等級/);
     });
 
     await t.test('A scroll selected through a companion uses the player remaining EXP and updates archived growth too',async()=>{
@@ -111,13 +111,11 @@ test('Player EXP drives all companion levels, growth, acquisition and progress d
       assert.deepEqual(r.after,r.before);assert.equal(r.count,1);
     });
 
-    await t.test('Actual developer level and EXP controls edit the shared player progression from a companion page',async()=>{
-      await page.evaluate(()=>{__levelReset(5);selectHero(10);setTab('skills');selectPageHero('skills',10);});
-      await page.locator('.mastery-dev-tools > summary').click();
-      await page.locator('#dev-mastery-level').fill('25');await page.locator('#dev-mastery-level').locator('..').locator('..').getByRole('button',{name:'設定',exact:true}).click();
-      await page.locator('#dev-mastery-exp').fill('500');await page.locator('#dev-mastery-exp').locator('..').locator('..').getByRole('button',{name:'設定',exact:true}).click();
-      const r=await page.evaluate(()=>({levels:party.members.map(h=>h.lv),xp:party.members.map(h=>h.xp),advanced:partyMember(14).advanced,skills:partyMember(14).skills[__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(14)).core[0]]}));
-      assert.deepEqual(r.levels,Array(6).fill(25));assert.deepEqual(r.xp,[500,0,0,0,0,0]);assert(r.advanced);assert.equal(r.skills,1);
+    // The in-page 測試版開發工具 left the skills page (V2 developer mode edits saves now); the shared progression rule stays.
+    await t.test('Setting the player level and EXP while a companion page is selected drives every member',async()=>{
+      const r=await page.evaluate(()=>{__levelReset(5);selectHero(10);setTab('skills');selectPageHero('skills',10);const tools=document.querySelectorAll('.mastery-dev-tools').length;const h=playerHero();h.lv=25;h.xp=500;syncParty();save();render();
+        return {tools,levels:party.members.map(h=>h.lv),xp:party.members.map(h=>h.xp),advanced:partyMember(14).advanced,skills:partyMember(14).skills[__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(14)).core[0]]};});
+      assert.equal(r.tools,0,'no in-page test tools');assert.deepEqual(r.levels,Array(6).fill(25));assert.deepEqual(r.xp,[500,0,0,0,0,0]);assert(r.advanced);assert.equal(r.skills,1);
     });
 
     assert.deepEqual(game.errors,[]);
