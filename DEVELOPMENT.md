@@ -557,3 +557,9 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
 - 修正：隊伍方案尚未選職業時，戰鬥工具列的「開始探索」按鈕仍可按（實際不會開始，但看起來可用）。隊伍限制原本只停用舊的開始按鈕（toggleBattle、restartExploration、startBossChallenge），現在也停用 `startSelectedExploration` 按鈕。
 - `team-plan-management.browser`：閒置時戰報只提供「前往探索」，改從戰鬥頁工具列檢查開始按鈕；並確認沒有職業時直接呼叫也不會開始。
 - `team-builds.browser`、`team-plan-management.browser`：v0.059 起隊伍方案區塊預設收合，測試改為預設展開後操作。`team-builds.browser` 其餘子測試仍在處理（舊版技能點與技能學習介面已由技能系統 v1 取代）。
+
+## v0.066 附魔藥水持續時間改顯示秒數；商店與隊伍測試更新
+
+- 修正：附魔藥水的說明仍顯示「持續 50 戰鬥回合」。秒數戰鬥的轉換規則寫成「戰鬥」和「回合」之間要有空格，實際文字沒有空格，所以沒有換掉。現在顯示實際的「持續 300 秒」（timing.durationSeconds）。新增 CI 測試 `seconds-runtime` 確認所有附魔藥水都顯示秒數。
+- `team-builds.browser`：技能系統 v1 沒有技能點、學習按鈕與免費重置；改為檢查選職業後初始技能自動配置、各隊伍技能配置互相獨立、改職業仍有確認並保留其他隊伍與永久解鎖。成就解鎖條件改用技能系統 v1 編輯器 API 設定（目前平衡器沒有這些條件的表單，只能在技能 JSON 編輯）。背包販售按鈕改用 onclick 選取。
+- `shop-options`：設定按鈕改為右上「設定」並分頁；商品改為道具格，說明與效果在滑鼠提示中，改檢查提示內容（每項商品都有說明、沒有「回合」字樣）；heal_standard 需要 VIP 1，改用 heal_small，治療藥水依道具本身價格計價；Preview 跨重新整理只保留 JSON 匯入的設計；商品規則已無說明欄位；商品格顯示道具名稱，規則的「商店顯示名稱」只留在隱藏標籤。

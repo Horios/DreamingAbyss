@@ -13,15 +13,20 @@ test('Chromium: create blank plans, choose classes, learn, copy, rename, safety 
   });
   await t.test('actual class and skill controls save the current team independently',async()=>{
    await p.getByLabel('本隊主角職業',{exact:true}).selectOption('1');await p.evaluate(()=>setTab('character'));assert.equal(await p.locator('[id^="stat-alloc-"]').count(),0);await p.evaluate(()=>setTab('skills'));
-   await p.locator('[data-team-skill="1:core:0"]').click();const fire=p.locator('[data-team-skill-detail="1:core:0"]');await fire.getByRole('button',{name:'學習',exact:true}).click();await fire.getByRole('button',{name:'設為主動槽 1',exact:true}).click();
-   await p.waitForFunction(()=>document.querySelector('[data-team-skill-detail="1:core:0"]')?.textContent.includes('本隊已裝配'));assert.match(await fire.textContent(),/本隊已裝配/);assert.match(await p.locator('[data-team-skill="1:core:2"]').getAttribute('title'),/尚未永久解鎖/);
-   const a=await p.evaluate(()=>JSON.parse(localStorage.getItem(KEY)).buildSystem);assert.equal(a.activeId,'team-2');assert.equal(a.plans[0].job,0);assert.equal(a.plans[0].stats,undefined);assert.equal(a.plans[1].job,1);assert.equal(a.plans[1].stats,undefined);assert.equal(a.plans[1].skills[0],1);assert.equal(a.plans[1].active[0],0);
+   // Skill system v1: a class's starter skill is learned and equipped automatically; each plan keeps its own loadout.
+   assert.match(await p.locator('[data-skill-slot="active:0"]').textContent(),/主動槽 1\s*魔爆/);
+   const a=await p.evaluate(()=>JSON.parse(localStorage.getItem(KEY)).buildSystem);assert.equal(a.activeId,'team-2');assert.equal(a.plans[0].job,0);assert.equal(a.plans[0].stats,undefined);assert.equal(a.plans[1].job,1);assert.equal(a.plans[1].stats,undefined);
+   assert.equal(a.plans[1].skillLoadout.active[0],'class1-initial0');assert.equal(a.plans[0].skillLoadout.active[0],'class0-initial0','the first plan keeps its own loadout');
   });
   await t.test('copy and rename use actual controls without creating another item or companion',async()=>{
    const count=await p.evaluate(()=>{setTab('roster');return state.bag.length;});await p.locator('.team-plan-card.current').getByRole('button',{name:'複製',exact:true}).click();await p.locator('.team-plan-card.current').getByRole('button',{name:'改名',exact:true}).click();const a=await p.evaluate(()=>({count:state.bag.length,plans:party.buildSystem.plans}));assert.equal(a.count,count);assert.equal(a.plans[1].name,'法術編成');assert.equal(a.plans[1].stats,undefined);assert.equal(a.plans[2].stats,undefined);assert.deepEqual(a.plans[1].equipped,a.plans[2].equipped);
   });
   await t.test('reset and class confirmation leave permanent progress and other plans intact',async()=>{
-   await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'免費重置本隊技能',exact:true}).click();assert(warnings.some(s=>s.includes('永久解鎖與精通保留')));assert.equal(await p.evaluate(()=>party.buildSystem.plans[2].skills[0]),1);assert.equal(await p.evaluate(()=>party.buildSystem.permanent.unlocks['1:core:0']),true);await p.evaluate(()=>setTab('roster'));await p.getByLabel('本隊主角職業',{exact:true}).selectOption('0');assert(warnings.some(s=>s.includes('不符職業的裝備')));
+   // The free skill reset left with the skill-point system; changing class still confirms and keeps other plans and permanent progress.
+   const before=await p.evaluate(()=>({copy:structuredClone(party.buildSystem.plans[2].skillLoadout),unlocks:structuredClone(party.buildSystem.permanent.unlocks)}));
+   await p.evaluate(()=>setTab('roster'));await p.getByLabel('本隊主角職業',{exact:true}).selectOption('0');assert(warnings.some(s=>s.includes('不符職業的裝備')));
+   const after=await p.evaluate(()=>({job:__EMBERWILD_TEAMS.plan().job,copy:party.buildSystem.plans[2].skillLoadout,unlocks:party.buildSystem.permanent.unlocks}));
+   assert.equal(after.job,0);assert.deepEqual(after.copy,before.copy,'the copied plan keeps its loadout');assert.deepEqual(after.unlocks,before.unlocks,'permanent unlocks stay');
   });
   await t.test('running and paused encounters disable UI; stopping and safe switching reset HP, cooldowns and the encounter',async()=>{
    await p.evaluate(()=>{setTab('battle');toggleBattle();playerHero().hp=4;actorCooldowns={'0-0':7};render();setTab('roster');});assert.equal(await p.getByLabel('本隊主角職業',{exact:true}).isDisabled(),true);assert.equal(await p.locator('.team-plan-card').first().getByRole('button',{name:'切換',exact:true}).isDisabled(),true);
@@ -46,7 +51,7 @@ test('Chromium: worn equipment can be force-sold after a native warning naming a
  try{
   await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();copyTeamPlan();renameTeamPlan('team-1','戰士甲');renameTeamPlan('team-2','戰士乙');setTab('equipment');});
   await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
-  const before=await p.evaluate(()=>({id:state.equipped[0],gold:state.gold,price:equipmentSellPrice(findGear(state.equipped[0]))}));await p.evaluate(id=>selectInventoryGear(id),before.id);const button=p.locator('.inventory-detail-pane .sell-gear-button');
+  const before=await p.evaluate(()=>({id:state.equipped[0],gold:state.gold,price:equipmentSellPrice(findGear(state.equipped[0]))}));await p.evaluate(id=>selectInventoryGear(id),before.id);const button=p.locator('.inventory-detail-pane button[onclick*="sellGear("]').first();
   assert.equal(await button.isDisabled(),false);let message='';p.once('dialog',async d=>{message=d.message();await d.dismiss();});await button.click();assert(message.includes('戰士甲')&&message.includes('戰士乙'));assert.equal(await p.evaluate(id=>!!findGear(id),before.id),true);
   p.once('dialog',d=>d.accept());await button.click();
   const after=await p.evaluate(id=>({owned:!!findGear(id),refs:__EMBERWILD_TEAM_EQUIPMENT.references(id),gold:state.gold,empty:party.buildSystem.plans.every(p=>p.equipped[0]===null)}),before.id);
@@ -70,11 +75,12 @@ test('Chromium: designer achievement gates export one no-skill-point contract an
  const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root,'index.html',OPEN_PLANS),p=editor.page;
  try{
   await t.test('embedded schema is byte-identical to the runtime model',async()=>{const html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8'),embedded=html.split('<script id="team-model-v1">\n')[1].split('\n</script>')[0];assert.equal(embedded,fs.readFileSync(path.join(root,'js/character/team-model.js'),'utf8'));});
-  await p.evaluate(()=>{currentSection='skills';selected.skillTab='active';selected.skillClass=0;selected.skill=1;render();});
+  // Skill system v1: the skills page is the canonical workbench, which edits unlockConditions on the skill definition
+  // (classes[].skills is a projection). Set the same achievement gates through its editor API.
+  await p.evaluate(()=>{currentSection='skills';render();});
   assert.equal(await p.locator('#teamLearnCost').count(),0);assert.equal(await p.locator('[data-team-point-key="skillPoints"]').count(),0);
-  await p.locator('#skillAddBossKill').click();await p.locator('[data-unlock-kind="bossKills"] select').last().selectOption('0');await p.locator('[data-unlock-kind="bossKills"] input[type="number"]').last().fill('2');await p.locator('[data-unlock-kind="bossKills"] input[type="number"]').last().blur();
-  await p.locator('#skillAddEliteKill').click();await p.locator('[data-unlock-kind="eliteKills"] select').last().selectOption('0');await p.locator('[data-unlock-kind="eliteKills"] input[type="number"]').last().fill('5');await p.locator('[data-unlock-kind="eliteKills"] input[type="number"]').last().blur();
-  await p.locator('#skillAddBossEquipment').click();await p.locator('[data-unlock-kind="bossEquipment"] select').last().selectOption('1');await p.locator('[data-unlock-kind="bossEquipment"] input[type="number"]').last().fill('1');await p.locator('[data-unlock-kind="bossEquipment"] input[type="number"]').last().blur();
+  await p.evaluate(()=>{const id=data.classes[0].skills[1].id;__EMBERWILD_SKILL_SYSTEM_EDITOR.updateSkill(id,{unlockConditions:{classMasteryLevel:0,quests:[],materials:[],bossKills:[{mapIndex:0,count:2}],eliteKills:[{mapIndex:0,count:5}],bossEquipment:[{mapIndex:1,quantity:1}]}});render();});
+  assert.deepEqual(await p.evaluate(()=>validateData()),[]);
   await t.test('download omits skill-point fields and keeps all achievement conditions',async()=>{
    const downloadPromise=p.waitForEvent('download');await p.locator('#exportBtn').click();const file=await (await downloadPromise).path(),doc=JSON.parse(fs.readFileSync(file,'utf8')),sk=doc.classes[0].skills[1];assert.equal(doc.teamSettings?.defaultLearnCost,undefined);assert.equal(doc.balanceSettings.progression.starting.skillPoints,undefined);assert.equal(doc.balanceSettings.progression.levelRewards.skillPoints,undefined);assert.equal(sk.learnCost,undefined);assert.deepEqual(sk.unlockConditions.bossKills,[{mapIndex:0,count:2}]);assert.deepEqual(sk.unlockConditions.eliteKills,[{mapIndex:0,count:5}]);assert.deepEqual(sk.unlockConditions.bossEquipment,[{mapIndex:1,quantity:1}]);
    await game.page.evaluate(d=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);applyBalanceConfig(d);},doc);const out=await game.page.evaluate(()=>({rule:__EMBERWILD_TEAMS.coreRule(0,1),json:exportableBalance(),hasSp:Object.hasOwn(playerHero(),'sp')}));assert.deepEqual(out.rule.unlockConditions,sk.unlockConditions);assert.equal(out.rule.learnCost,undefined);assert.equal(out.json.balanceSettings.progression.starting.skillPoints,undefined);assert.equal(out.json.balanceSettings.progression.levelRewards.skillPoints,undefined);assert.equal(out.hasSp,false);

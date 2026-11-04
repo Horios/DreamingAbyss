@@ -28,3 +28,4 @@ test('a potion cooldown residue below one microsecond counts as expired instead 
  assert.doesNotThrow(()=>{for(let i=0;i<8;i++){r.advance(250);r.run('tick()');}});
  assert.equal(r.run('EmberwildOffline.failed'),false);assert.deepEqual(r.errors,[]);
 });
+test('imbue potion text shows its seconds duration, never legacy battle turns',()=>{const r=game();for(const id of JSON.parse(r.run('JSON.stringify(SHOP.filter(x=>x.type==="imbue").map(x=>x.id))'))){r.ctx.id=id;const text=r.run('supplyDetail(SHOP.find(x=>x.id===id))'),seconds=r.run('SHOP.find(x=>x.id===id).timing.durationSeconds');assert.match(text,new RegExp('持續 '+seconds+' 秒'));assert.doesNotMatch(text,/回合/);}assert.deepEqual(r.errors,[]);});
