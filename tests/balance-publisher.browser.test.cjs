@@ -36,7 +36,11 @@ test('real private UI + loopback HTTP: validate, preview commit/history, restore
   await page.evaluate(()=>{__EMBERWILD_RELEASE_EDITOR.state.target='chatgpt-dev';render();});await page.locator('#releaseHistory').click();await page.waitForFunction(()=>__EMBERWILD_RELEASE_EDITOR.state.history?.branch==='chatgpt-dev');
   await page.locator('details').filter({has:page.locator('[data-release-version="'+original+'"][data-action="restore"]')}).locator('summary').click();
   await page.locator('[data-release-version="'+original+'"][data-action="restore"]').click();await page.waitForFunction(()=>__EMBERWILD_RELEASE_EDITOR.state.prepared?.message.startsWith('restore'));
-  await page.locator('#releaseConfirm').check();await page.locator('#releaseCommit').click();await page.waitForFunction(()=>!__EMBERWILD_RELEASE_EDITOR.state.prepared);assert.deepEqual(git.docs.get(git.refs['chatgpt-dev']),base);assert.equal(git.commits.get(git.refs['chatgpt-dev']).parents[0].sha,testSource);assert.deepEqual(errors,[]);
+  await page.locator('#releaseConfirm').check();await page.locator('#releaseCommit').click();await page.waitForFunction(()=>!__EMBERWILD_RELEASE_EDITOR.state.prepared);
+  // Every release passes the game validator, which fills defaults (such as item descriptions) the stored file may lack;
+  // a restore therefore equals the original version as validated, with every original value kept.
+  runtime.ctx.doc=base;const validatedBase=JSON.parse(runtime.run('JSON.stringify(EmberwildBalanceDocument.validate(doc,validateBalanceConfig,exportableBalance()))'));
+  const filled=require('../js/balance/balance-diff.js').diff(base,validatedBase);assert.equal(filled.modified+filled.deleted,0,'validation only adds defaults');assert.deepEqual(git.docs.get(git.refs['chatgpt-dev']),validatedBase);assert.equal(git.docs.get(git.refs['chatgpt-dev']).items[0].cost,base.items[0].cost);assert.equal(git.commits.get(git.refs['chatgpt-dev']).parents[0].sha,testSource);assert.deepEqual(errors,[]);
   const response=await fetch('http://127.0.0.1:'+port+'/api/prepare',{method:'POST',headers:{Origin:'https://evil.invalid','Content-Type':'application/json'},body:'{}'});assert.equal(response.status,401);
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 });

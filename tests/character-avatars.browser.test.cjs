@@ -7,7 +7,8 @@ async function startParty(page){
  await page.waitForTimeout(50);await page.evaluate(()=>closeModal());
 }
 function combatSnapshot(){
- return {running,partyClock,foes:JSON.parse(JSON.stringify(foes)),effects:JSON.parse(JSON.stringify(effects)),actors:{...actorCooldowns},supports:{...supportCooldowns},build:JSON.parse(JSON.stringify(party.buildSystem)),members:party.members.map(h=>({key:memberKey(h),hp:h.hp,shield:h.shield,job:h.job,stats:h.stats.slice(),skills:h.skills.slice(),supportLevels:h.supportLevels.slice(),equipped:h.equipped.slice()}))};
+ return {running,partyClock,foes:JSON.parse(JSON.stringify(foes)),effects:JSON.parse(JSON.stringify(effects)),actors:{...actorCooldowns},supports:{...supportCooldowns},build:JSON.parse(JSON.stringify(party.buildSystem)),// Seconds combat keeps its state in the scheduler checkpoint; skill system v1 heroes have no supportLevels array.
+  seconds:JSON.parse(JSON.stringify(EmberwildSecondsCombat.pack())),members:party.members.map(h=>JSON.parse(JSON.stringify({key:memberKey(h),hp:h.hp,shield:h.shield,job:h.job,stats:h.stats,skills:h.skills,supportLevels:h.supportLevels??null,equipped:h.equipped})))};
 }
 
 test('Chromium: six accessible SVG portraits can be selected in formation and exploration without changing combat',async()=>{
@@ -31,34 +32,30 @@ test('Chromium: six accessible SVG portraits can be selected in formation and ex
   await p.waitForFunction(()=>!$('modal').open);
   assert.equal(await p.evaluate(()=>partyMember(14).avatarId),'phoenix');
 
-  await p.evaluate(()=>{setTab('battle');toggleBattle();clearInterval(timer);partyClock=7;actorCooldowns={'0-0':4};supportCooldowns={'10-0':3};for(const h of heroes()){h.hp=Math.max(1,stats(h).hp-3);h.shield=2;}save();render();});
-  await p.waitForFunction(()=>document.querySelectorAll('.squad-allies .character-avatar-control').length===3);
-  assert.equal(await p.locator('.squad-allies .character-avatar-control').count(),3);
+  // Since v0.041 a battle portrait opens the unit's full data; portraits are chosen in the roster and shown in battle.
+  await p.locator('.roster-row [data-avatar-owner="0"]').click();await p.locator('[data-avatar-choice="mage"]').click();
+  await p.waitForFunction(()=>playerHero().avatarId==='mage');
+  await p.evaluate(()=>{setTab('battle');toggleBattle();clearInterval(timer);partyClock=7;for(const h of heroes()){h.hp=Math.max(1,stats(h).hp-3);h.shield=2;}save();render();});
+  await p.waitForFunction(()=>document.querySelectorAll('#battleAllyIcons .battle-ally-icon').length===3);
+  const art=()=>p.evaluate(()=>Object.fromEntries([...document.querySelectorAll('#battleAllyIcons .battle-ally-icon')].map(b=>[b.dataset.heroId,b.querySelector('[data-avatar-id]')?.dataset.avatarId])));
+  assert.equal((await art())['hero-0'],'mage','the chosen portrait appears on the battle card');
+  assert.equal(await p.locator('#battleAllyIcons .character-avatar-control').count(),0,'battle cards have no portrait picker');
   const before=await p.evaluate(combatSnapshot);
-  await p.locator('.squad-allies [data-avatar-owner="0"]').click();
-  assert.equal(await p.evaluate(()=>running),true);
-  await p.locator('[data-avatar-choice="mage"]').click();
-  await p.waitForFunction(()=>document.querySelector('.squad-allies [data-avatar-owner="0"]')?.dataset.avatarId==='mage');
-  assert.deepEqual(await p.evaluate(combatSnapshot),before);
-  await p.locator('.squad-allies [data-avatar-owner="10"]').click();
-  await p.locator('[data-avatar-choice="wanderer"]').click();
-  await p.waitForFunction(()=>document.querySelector('.squad-allies [data-avatar-owner="10"]')?.dataset.avatarId==='wanderer');
-  assert.deepEqual(await p.evaluate(combatSnapshot),before);
-  for(const viewport of [{width:1440,height:900},{width:1280,height:600}]){
-   await p.setViewportSize(viewport);
-   const fits=await p.evaluate(()=>[...document.querySelectorAll('.squad-allies .unit')].every(unit=>{const box=unit.getBoundingClientRect();return [...unit.querySelectorAll('.unit-numbers,.battle-health-bar,.unit-skills')].every(el=>{const r=el.getBoundingClientRect();return r.top>=box.top&&r.bottom<=box.bottom&&r.right<=box.right;});}));
-   assert(fits);
-   assert(await p.locator('[data-adventure-config]').isVisible(),'adventure settings open from the toolbar');assert(await p.locator('.global-battle-journal').isVisible());
+  await p.locator('#battleAllyIcons [data-hero-id="hero-0"]').click();
+  assert.equal(await p.locator('#modal [data-avatar-choice]').count(),0,'the battle portrait does not open the picker');
+  assert.match(await p.locator('#modal').innerText(),/戰士|詳細|生命|HP/);await p.evaluate(()=>closeModal());
+  assert.deepEqual(await p.evaluate(combatSnapshot),before,'opening the details never changes combat');
+  for(const viewport of [{width:1440,height:900},{width:1280,height:600},{width:390,height:844}]){
+   await p.setViewportSize(viewport);await p.evaluate(()=>render());
+   const fits=await p.evaluate(()=>[...document.querySelectorAll('#battleAllyIcons .unit')].every(unit=>{const box=unit.getBoundingClientRect();return [...unit.querySelectorAll('.battle-ally-icon,.unit-numbers,.battle-health-bar')].every(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.top>=box.top-1&&r.bottom<=box.bottom+1&&r.left>=box.left-1&&r.right<=box.right+1;});}));
+   assert(fits,'portraits and numbers stay inside each card at '+viewport.width);
+   assert(await p.locator('[data-adventure-config]').isVisible(),'adventure settings open from the toolbar');
   }
-  await p.setViewportSize({width:390,height:844});
-  const bounds=await p.evaluate(()=>[...document.querySelectorAll('#battleAllyIcons .character-avatar-control')].map(el=>{const r=el.getBoundingClientRect(),strip=el.closest('#battleAllyIcons').getBoundingClientRect(),card=document.querySelector(`[data-combat-id="hero-${el.dataset.avatarOwner}"]`),box=card.getBoundingClientRect(),content=[...card.querySelectorAll('.unit-numbers,.battle-health-bar,.unit-skills')].map(x=>x.getBoundingClientRect());return {visible:r.width>0&&r.height>0,fits:r.left>=strip.left&&r.right<=strip.right&&r.top>=strip.top&&r.bottom<=strip.bottom&&strip.bottom<=box.top,label:el.getAttribute('aria-label'),contentFits:content.every(x=>x.top>=box.top&&x.bottom<=box.bottom&&x.right<=box.right)};}));
-  assert(bounds.every(x=>x.visible&&x.fits&&x.label&&x.contentFits));
-  await p.locator('.squad-allies [data-avatar-owner="0"]').click();
-  const dialog=await p.locator('#modal').boundingBox();assert(dialog.width<=390&&dialog.height<650);
+  // Back to the class default from the roster; battle follows.
+  await p.evaluate(()=>setTab('roster'));await p.locator('.roster-row [data-avatar-owner="0"]').click();
   await p.getByRole('button',{name:'使用職業預設圖示',exact:true}).click();
-  await p.waitForFunction(()=>document.querySelector('.squad-allies [data-avatar-owner="0"]')?.dataset.avatarId==='guardian');
-  assert.equal(await p.evaluate(()=>Object.prototype.hasOwnProperty.call(playerHero(),'avatarId')),false);
-  assert.deepEqual(await p.evaluate(combatSnapshot),before);
+  await p.waitForFunction(()=>!Object.prototype.hasOwnProperty.call(playerHero(),'avatarId'));
+  await p.evaluate(()=>{closeModal();setTab('battle');render();});assert.equal((await art())['hero-0'],'guardian');
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

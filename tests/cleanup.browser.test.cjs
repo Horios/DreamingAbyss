@@ -28,9 +28,11 @@ test('Idle notification refreshes do not mutate unchanged UI; saves coalesce and
   assert.equal(await r.page.evaluate(()=>journalStyleMutations),0);
   assert.equal(await r.page.evaluate(()=>{let scheduled=0;const original=queueMicrotask;queueMicrotask=fn=>{scheduled++;return original(fn);};try{save();save();save();return scheduled;}finally{queueMicrotask=original;}}),1);
   await r.page.evaluate(()=>{globalThis.reminderGear=state.bag[0];inlineAffixDrafts.set(affixDraftKey(reminderGear),structuredClone(reminderGear.affix));render();});
-  assert.equal(await r.page.locator('#navReminder-equipment').textContent(),'1');
+  // The menu shows one button per category; 背包 is a single-page category, so its reminder is the category badge.
+  const bagBadge=r.page.locator('aside nav [data-nav-group="bag"] .number-badge');
+  assert.equal(await bagBadge.textContent(),'1');
   await r.page.evaluate(()=>{resolveInlineAffix(reminderGear.id,false);render();});
-  assert(await r.page.locator('#navReminder-equipment').isHidden());
+  assert.equal(await bagBadge.count(),0);
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
