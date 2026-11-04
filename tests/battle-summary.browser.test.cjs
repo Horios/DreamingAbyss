@@ -171,10 +171,8 @@ test('the battlefield buttons turn every card to the main, cooldown or status pa
   await p.locator('#battleEnemyIcons .seconds-stack').first().click();
   const mixed=await faces();assert.equal(mixed.filter(f=>f!=='2').length,1);await p.evaluate(()=>EmberwildSecondsUI.sync());assert.deepEqual(await pressed(),['false','false','false']);
   await p.locator('[data-seconds-face-all="0"]').click();assert((await faces()).every(f=>f==='0'));
-  // With cooldown bars hidden the cooldown page is unavailable.
-  await p.evaluate(()=>EmberwildSecondsUI.toggleCooldowns());assert.equal(await p.locator('[data-seconds-face-all="1"]').isDisabled(),true);
-  assert.equal(await p.evaluate(()=>EmberwildSecondsUI.showAll(1)),false);assert((await faces()).every(f=>f==='0'));
-  await p.evaluate(()=>EmberwildSecondsUI.toggleCooldowns());
+  // v0.063 removed the hide-cooldown button, so the cooldown page is always available.
+  assert.equal(await p.locator('[data-seconds-face-all="1"]').isDisabled(),false);assert.equal(typeof await p.evaluate(()=>EmberwildSecondsUI.toggleCooldowns),'undefined');
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

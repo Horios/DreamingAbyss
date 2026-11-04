@@ -95,6 +95,7 @@
     if(destinationOwner!==party){destinationOwner=party;destination={category:isFinal(party.map)?'boss':'explore',map:party.map,quest:''};}
     return destination;
   }
+  globalThis.selectedExplorationCategory=()=>party?selectedDestination().category:'explore';
   globalThis.setExplorationCategory=function(category){if(!['explore','boss','quest'].includes(category))return;const d=selectedDestination();d.category=category;const maps=MAPS.map((_,i)=>i).filter(i=>category==='boss'||!isFinal(i));if(category!=='quest'&&!maps.includes(d.map))d.map=maps[0]??0;render();};
   globalThis.selectExplorationMap=function(mi){const d=selectedDestination();if(!MAPS[mi])return;d.map=mi;render();};
   globalThis.selectQuestEncounter=function(key){selectedDestination().quest=key;render();};

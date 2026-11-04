@@ -169,9 +169,12 @@ test('Mobile: expedition settings, readable touch controls and skill details are
   const banner=await p.locator('#preview-build-banner').boundingBox(),utilities=await p.locator('#utilityNavigation').boundingBox();
   assert(banner.y+banner.height<=utilities.y,'preview label does not cover utility buttons');
   await p.evaluate(()=>setTab('battle'));
+  // v0.063: the detailed adventure settings open from 冒險配置 as a dialog instead of sitting below the battlefield.
+  assert.equal(await p.locator('#app .expedition-control-card').count(),0);
+  await p.locator('[data-adventure-config]').click();
   assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),false);
-  const layout=await p.evaluate(()=>{const card=document.querySelector('.expedition-control-card'),action=card.querySelector('.exploration-primary-actions button');return {settings:card.getBoundingClientRect().top,battle:document.querySelector('.party-combat').getBoundingClientRect().top,start:action.getBoundingClientRect().toJSON(),controls:card.getBoundingClientRect().toJSON()};});
-  assert(layout.battle<layout.settings,'the central battlefield precedes detailed adventure settings');assert(layout.start.height>=40,'exploration start control remains touchable');assert(layout.start.left>=layout.controls.left-1&&layout.start.right<=layout.controls.right+1,'start control stays inside panel');
+  const layout=await p.evaluate(()=>{const card=document.querySelector('#modal .expedition-control-card'),action=card.querySelector('.exploration-primary-actions button'),modal=document.getElementById('modal').getBoundingClientRect();return {start:action.getBoundingClientRect().toJSON(),controls:card.getBoundingClientRect().toJSON(),modal:{left:modal.left,right:modal.right}};});
+  assert(layout.modal.left>=0&&layout.modal.right<=390,'the dialog fits the phone');assert(layout.start.height>=40,'exploration start control remains touchable');assert(layout.start.left>=layout.controls.left-1&&layout.start.right<=layout.controls.right+1,'start control stays inside panel');
   for(const viewport of [{width:320,height:640},{width:390,height:844},{width:844,height:390}]){
    await p.setViewportSize(viewport);
    await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
@@ -187,7 +190,8 @@ test('Mobile: expedition settings, readable touch controls and skill details are
    await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
   }
   await p.setViewportSize({width:390,height:844});
-  await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
+  // The auto-potion bar stays on the battle page; close the settings dialog to reach it.
+  await p.getByRole('button',{name:'關閉',exact:true}).click();
   await p.locator('.heal-auto-settings-button').click();
   assert.equal(await p.locator('#modal').isVisible(),true);
   const healing=await p.locator('#modal').boundingBox();assert(healing.x>=0&&healing.x+healing.width<=390);
@@ -206,8 +210,10 @@ test('Mobile: expedition settings, readable touch controls and skill details are
   await p.evaluate(()=>closeModal());
   assert.deepEqual(await p.evaluate(()=>playerHero().skills),skillsBefore,'viewing a skill does not learn it');
   await p.setViewportSize({width:1440,height:900});await p.evaluate(()=>setTab('battle'));
-  assert.equal(await p.locator('.expedition-control-card').isVisible(),true,'desktop exploration controls remain visible');
+  await p.locator('[data-adventure-config]').click();
+  assert.equal(await p.locator('#modal .expedition-control-card').isVisible(),true,'desktop exploration controls open from 冒險配置');
   assert.equal(await p.locator('.exploration-secondary-settings>details:last-child>summary').isVisible(),true,'difficulty controls remain discoverable');
+  await p.evaluate(()=>closeModal());
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

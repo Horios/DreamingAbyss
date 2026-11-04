@@ -19,7 +19,8 @@
  }
  function portrait(x){const art=hero(x)?EmberwildAvatars.control(x).replace(/^<button[^>]*>/,'<span>').replace(/<\/button>$/,'</span>'):EmberwildBattleSummary.artwork(x);return `<button type="button" class="battle-enemy-icon ${hero(x)?'battle-ally-icon':''}" ${hero(x)?'data-hero-id':'data-enemy-id'}="${esc(id(x))}" onclick="event.stopPropagation();EmberwildBattleSummary.showUnit('${esc(id(x))}','${hero(x)?'ally':'enemy'}')" aria-label="${esc(title(x))}，查看完整戰鬥資訊"><span class="enemy-icon-art">${art}</span><small></small><span class="enemy-icon-event"></span><span class="enemy-icon-elite" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor('lucide:gem',[],{size:12})}</span></button>`;}
  const preferenceKey=environmentStorageKey('emberwild-seconds-ui-v1');
- let showCooldowns=true;try{const saved=JSON.parse(localStorage.getItem(preferenceKey)||'{}');if(typeof saved.showCooldowns==='boolean')showCooldowns=saved.showCooldowns;}catch{}
+ // v0.063: the hide-cooldown button is gone, so the cooldown page is always available; an older hidden preference is ignored.
+ const showCooldowns=true;
  const svg=name=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+name,[],{size:18});
  const baseControls=explorationControlButtons;explorationControlButtons=function(...args){return baseControls(...args).replace(/(<button[^>]*>)([^<]+)/g,(_m,tag,text)=>tag+svg(text.includes('停止')?'square':text.includes('暫停')?'pause':'play')+text);};
  const baseLog=logContent;logContent=function(){return baseLog().replace(/(<span class="tag battle-log-round">)回合 [^<]*/,(_m,tag)=>tag+'戰鬥 '+fmt(partyClock)+' 秒');};
@@ -36,7 +37,6 @@
  function faceBar(){const units=[...foes,...heroes()].map(x=>currentFace(id(x)));return `<div class="seconds-face-switch" role="group" aria-label="切換全部卡片">${FACE_NAMES.map((name,f)=>`<button type="button" data-seconds-face-all="${f}" aria-pressed="${units.length>0&&units.every(v=>v===f)}" ${f===1&&!showCooldowns?'disabled':''} onclick="EmberwildSecondsUI.showAll(${f})">${['主要','冷卻','狀態'][f]}</button>`).join('')}</div>`;}
  function cycle(unitId){let f=currentFace(unitId);do{f=(f+1)%3;}while(f===1&&!showCooldowns);faces.set(unitId,f);for(const n of document.querySelectorAll('.seconds-stack[data-combat-id]'))if(n.dataset.combatId===unitId)showFace(n,f);faceButtons();return f;}
  function applyPreference(){document.body.classList.toggle('seconds-cooldowns-hidden',!showCooldowns);for(const n of document.querySelectorAll('[data-seconds-toggle]')){n.setAttribute('aria-pressed',String(showCooldowns));n.innerHTML=svg('timer')+(showCooldowns?'隱藏冷卻條':'顯示冷卻條');}}
- function toggleCooldowns(){showCooldowns=!showCooldowns;try{localStorage.setItem(preferenceKey,JSON.stringify({showCooldowns}));}catch{}applyPreference();for(const n of document.querySelectorAll('.seconds-stack[data-face="1"]'))if(!showCooldowns)showFace(n,0);for(const n of document.querySelectorAll('.seconds-face-dots>i:nth-child(2)'))n.classList.toggle('off',!showCooldowns);sync();}
  function statusBadges(x){
   const rows=EmberwildBattleSummary.inspect(id(x),hero(x)?'ally':'enemy')?.statuses||[];
   return rows.map(f=>{const permanent=f.remaining===null||f.time==='常駐被動'||f.time==='永久',remaining=permanent?null:f.remaining,wall=f.clockType==='wall',until=(wall?Date.now()/1000:partyClock)+(remaining||0);return `<span class="seconds-state ${esc(f.polarity||'buff')}" title="${esc(f.detail||'')}">${esc(f.name)}（<time ${permanent?'':`data-state-until="${until}" data-state-clock="${wall?'wall':'battle'}"`}>${duration(remaining)}</time>）${f.uses==null?'':' ×'+f.uses}</span>`;}).join('')||'<span class="seconds-state-empty">無持續狀態</span>';
@@ -67,14 +67,43 @@
   let html=replaceField(base());
   html=html.replace(/<p class="small combat-rule">[\s\S]*?<\/p>/,'<p class="small combat-rule">各單位依秒數獨立行動；角色自動依條件與優先級施放技能。普攻與技能獨立計時；技能依裝備順序施放並消耗 MP。</p>');
   html=html.replace(/群怪 · 3～6 隻/g,current==='single'?'單怪 · 1 隻':'群怪 · 3～5 隻');
-  const r=C.thresholds(),control=`<details class="seconds-recovery-settings"><summary>冒險配置 · 遭遇前恢復</summary><div><label>隊伍最低 HP <input aria-label="下一場最低 HP" type="number" min="0" max="100" step="1" value="${Math.round(r.minimumHpRatio*100)}" onchange="setRecoveryThresholds(Number(this.value)/100,EmberwildSecondsCombat.thresholds().minimumMpRatio)">%</label><label>隊伍最低 MP <input aria-label="下一場最低 MP" type="number" min="0" max="100" step="1" value="${Math.round(r.minimumMpRatio*100)}" onchange="setRecoveryThresholds(EmberwildSecondsCombat.thresholds().minimumHpRatio,Number(this.value)/100)">%</label><small>一般探索勝利後持續恢復，全部上陣成員達到門檻再出發。冷卻與狀態持續計時；特殊關卡依入場規則。</small><button type="button" onclick="openHealingSettings()">${svg('flask-conical')} 自動藥水</button></div></details><label class="seconds-mode-control">狩獵模式<select aria-label="狩獵模式" onchange="setHuntingMode(this.value)"><option value="single" ${mode==='single'?'selected':''}>單怪 · 1 隻</option><option value="group" ${mode==='group'?'selected':''}>群怪 · 3～5 隻</option></select><small>${mode===current?'下一次遭遇依此模式生成':'已變更，下一場生效'} · BOSS／任務依關卡規則</small></label>`;
+  const special=!!(party.questChallenge||party.bossChallenge?.active),category=globalThis.selectedExplorationCategory?.()||'explore',locked=special||category!=='explore',lockNote=special?'目前在'+(party.questChallenge?'任務':'BOSS')+'關卡，依關卡規則生成敵人':'BOSS／任務關卡依關卡規則生成敵人';
+  const r=C.thresholds(),control=`<details class="seconds-recovery-settings" open><summary>遭遇前恢復</summary><div><label>隊伍最低 HP <input aria-label="下一場最低 HP" type="number" min="0" max="100" step="1" value="${Math.round(r.minimumHpRatio*100)}" onchange="setRecoveryThresholds(Number(this.value)/100,EmberwildSecondsCombat.thresholds().minimumMpRatio)">%</label><label>隊伍最低 MP <input aria-label="下一場最低 MP" type="number" min="0" max="100" step="1" value="${Math.round(r.minimumMpRatio*100)}" onchange="setRecoveryThresholds(EmberwildSecondsCombat.thresholds().minimumHpRatio,Number(this.value)/100)">%</label><small>一般探索勝利後持續恢復，全部上陣成員達到門檻再出發。冷卻與狀態持續計時；特殊關卡依入場規則。</small><button type="button" onclick="openHealingSettings()">${svg('flask-conical')} 自動藥水</button></div></details><label class="seconds-mode-control">狩獵模式<select aria-label="狩獵模式" ${locked?'disabled':''} onchange="setHuntingMode(this.value)"><option value="single" ${mode==='single'?'selected':''}>單怪 · 1 隻</option><option value="group" ${mode==='group'?'selected':''}>群怪 · 3～5 隻</option></select><small>${locked?lockNote:(mode===current?'下一次遭遇依此模式生成':'已變更，下一場生效')+' · BOSS／任務依關卡規則'}</small></label>`;
   html=html.includes('<div class="exploration-categories"')?html.replace('<div class="exploration-categories"',control+'<div class="exploration-categories"'):html.replace('<div class="control-grid">','<div class="control-grid">'+control);
   const h=playerHero(),xp=h?Math.min(100,h.xp/need(h.lv)*100):0;
   const nextMode=(party.huntingMode||'single')==='group'?'single':'group',controls=explorationControlButtons().replace(/(<button[^>]*onclick="stopTeamExploration\(\)"[^>]*>(?:<svg[\s\S]*?<\/svg>)?)停止/,'$1重置');
   const modeHint=mode=>mode==='group'?'群怪：每場遭遇 3～5 隻敵人':'單怪：每場遭遇 1 隻敵人';
-  const toolbar=`<section class="seconds-adventure-toolbar seconds-battle-header" aria-label="冒險狀態與快捷操作"><div class="seconds-battle-title"><h2>${esc(MAPS[party.map]?.name||'荒野')}</h2><div class="seconds-battle-xp" title="經驗 ${h.xp.toLocaleString()} / ${need(h.lv).toLocaleString()}"><b>${esc(characterName(h))} · LV ${h.lv}</b><progress aria-label="等級經驗" value="${xp}" max="100"></progress><span class="seconds-party-gold" data-party-gold>全隊金幣 ${(party.members[0].gold||0).toLocaleString()}</span></div></div><div class="seconds-toolbar-actions"><button type="button" data-seconds-toggle aria-pressed="${showCooldowns}" onclick="EmberwildSecondsUI.toggleCooldowns()">${svg('timer')}${showCooldowns?'隱藏冷卻條':'顯示冷卻條'}</button>${controls}<button type="button" data-hunting-switch onclick="setHuntingMode('${nextMode}')" title="${modeHint(current)}（目前）。點擊切換為${modeHint(nextMode)}，下一場遭遇生效。">${svg('repeat')}切換：${nextMode==='group'?'群怪':'單怪'}</button><button type="button" onclick="document.querySelector('.seconds-recovery-settings')?.setAttribute('open','');document.querySelector('.seconds-recovery-settings')?.scrollIntoView({block:'center'})">${svg('sliders-horizontal')}冒險配置</button></div></section>`;
-  return toolbar+html.replace(/第 (\d+(?:\.\d+)?) (?:回合|秒)/g,(_m,n)=>'戰鬥 '+fmt(+n)+' 秒');
+  const toolbar=`<section class="seconds-adventure-toolbar seconds-battle-header" aria-label="冒險狀態與快捷操作"><div class="seconds-battle-title"><h2>${esc(MAPS[party.map]?.name||'荒野')}</h2><div class="seconds-battle-xp" title="經驗 ${h.xp.toLocaleString()} / ${need(h.lv).toLocaleString()}"><b>${esc(characterName(h))} · LV ${h.lv}</b><progress aria-label="等級經驗" value="${xp}" max="100"></progress><span class="seconds-party-gold" data-party-gold>全隊金幣 ${(party.members[0].gold||0).toLocaleString()}</span></div></div><div class="seconds-toolbar-actions">${controls}<button type="button" data-hunting-switch ${locked?'disabled':''} onclick="setHuntingMode('${nextMode}')" title="${locked?lockNote:modeHint(current)+'（目前）。點擊切換為'+modeHint(nextMode)+'，下一場遭遇生效。'}">${svg('repeat')}切換：${nextMode==='group'?'群怪':'單怪'}</button><button type="button" data-adventure-config onclick="openAdventureConfig()">${svg('sliders-horizontal')}冒險配置</button></div></section>`;
+  html=html.replace(/第 (\d+(?:\.\d+)?) (?:回合|秒)/g,(_m,n)=>'戰鬥 '+fmt(+n)+' 秒');
+  // v0.063: 探索與挑戰 (destinations, recovery, hunting mode, boosts, difficulty) lives in the 冒險配置 dialog.
+  const cut=takeSection(html,'<section class="panel battle-map-column expedition-control-card">');configHTML=cut.section;
+  return toolbar+cut.rest;
  };
+ let configHTML='',configShown='';
+ function takeSection(html,open){
+  const start=html.indexOf(open);if(start<0)return {section:'',rest:html};
+  const tags=/<\/?section\b[^>]*>/g;tags.lastIndex=start;let depth=0,m;
+  while((m=tags.exec(html))){depth+=m[0].startsWith('</')?-1:1;if(!depth)return {section:html.slice(start,tags.lastIndex),rest:html.slice(0,start)+html.slice(tags.lastIndex)};}
+  return {section:'',rest:html};
+ }
+ const configOpen=()=>$('modal').open&&$('modal').dataset.view==='adventure-config';
+ function configView(){return `<div class="utility-dialog-controls"><button type="button" onclick="closeModal()">關閉</button></div><section class="adventure-config-dialog" aria-label="冒險配置"><h1>冒險配置</h1>${configHTML||'<p>目前無法調整冒險配置。</p>'}</section>`;}
+ // Redraws keep which sections the player expanded and where the dialog was scrolled.
+ function refreshConfig(){if(!configOpen())return;const html=configView();if(html===configShown)return;const modal=$('modal'),key=d=>d.id||d.querySelector(':scope>summary')?.textContent.trim()||'',open=new Map([...modal.querySelectorAll('details')].map(d=>[key(d),d.open])),top=modal.scrollTop;modal.innerHTML=html;configShown=html;for(const d of modal.querySelectorAll('details'))if(open.has(key(d)))d.open=open.get(key(d));modal.scrollTop=top;}
+ globalThis.openAdventureConfig=function(){
+  if(!party||!state||globalThis.isEmberwildTitleOpen?.())return false;
+  if(tab!=='battle')setTab('battle');else render();
+  const modal=$('modal');modal.dataset.view='adventure-config';modal.classList.add('utility-dialog');modal.setAttribute('aria-label','冒險配置');configShown='';
+  if(!modal.open)modal.showModal();refreshConfig();return true;
+ };
+ globalThis.isAdventureConfigOpen=configOpen;
+ // The dialog's content as of the last battle view render.
+ globalThis.adventureConfigHTML=()=>configHTML;
+ const afterConfig=globalThis.__EMBERWILD_AFTER_RENDER;// Refresh first so later hooks (team locks, reminders) also reach the dialog's controls.
+ globalThis.__EMBERWILD_AFTER_RENDER=function(...args){refreshConfig();afterConfig?.(...args);};
+ const closeConfig=closeModal;closeModal=function(...args){const modal=$('modal');if(modal.dataset.view==='adventure-config')delete modal.dataset.view;configShown='';return closeConfig(...args);};
+ // Starting an exploration or challenge closes the dialog so combat resumes right away.
+ $('modal').addEventListener('click',event=>{if($('modal').dataset.view==='adventure-config'&&event.target.closest?.('.exploration-primary-actions button'))closeModal();});
  function viewTime(){
   const e=C.timeline;if(!e||!party)return partyClock;
   const next=C.nextSimulationAt,remaining=Math.max(0,next-e.now/1e6);
@@ -129,6 +158,6 @@
  // The full-data dialog repeats the card's portrait; cooldown bars stay on the card only.
  function unitArt(unitId){const x=party?.members.find(h=>heroKey(h)===unitId||String(memberKey(h))===String(unitId))||foes.find(e=>e.id===unitId);if(!x)return '';return hero(x)?EmberwildAvatars.control(x).replace(/^<button[^>]*>/,'<span>').replace(/<\/button>$/,'</span>'):EmberwildBattleSummary.artwork(x);}
  const show=EmberwildBattleSummary.showUnit;EmberwildBattleSummary.showUnit=function(...args){const out=show(...args),d=EmberwildBattleSummary.inspect(...args);if(d){const modal=$('modal');modal.innerHTML=modal.innerHTML.replace(/個自身回合|戰鬥回合|回合/g,'秒').replace(/(<p class="battle-unit-vitals"><b>[^<]*<\/b>)/,'$1<span>魔力 '+fmt(d.mp)+' / '+fmt(d.maxMp)+' MP</span>').replace('<div class="battle-unit-inspector"><h2>','<div class="battle-unit-inspector"><div class="battle-unit-portrait" aria-hidden="true">'+unitArt(args[0])+'</div><h2>').replace(/冷卻依該單位自身秒計算/,'冷卻依戰鬥秒數計算');}return out;};
- globalThis.EmberwildSecondsUI={sync,detail,field,viewTime,duration,toggleCooldowns,cycle,showAll,faceButtons,face:currentFace,get showCooldowns(){return showCooldowns;}};
+ globalThis.EmberwildSecondsUI={sync,detail,field,viewTime,duration,cycle,showAll,faceButtons,face:currentFace,get showCooldowns(){return showCooldowns;}};
  applyPreference();
 })();

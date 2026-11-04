@@ -176,3 +176,8 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #app .seconds-face-switch>button{min-height:28px;padding:2px 12px;font-size:12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--muted)}
 #app .seconds-face-switch>button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
 #app .seconds-face-switch>button:disabled{opacity:.45;cursor:not-allowed}
+/* v0.063: 探索與挑戰 is shown inside the 冒險配置 dialog. */
+#modal[data-view="adventure-config"]{width:min(720px,calc(100vw - 24px))}
+#modal .adventure-config-dialog>h1{margin:0 0 10px;font-size:20px}
+#modal .adventure-config-dialog .battle-map-column.expedition-control-card{max-height:none!important;overflow:visible!important;margin:0;padding:0!important;border:0;background:none;box-shadow:none}
+#app [data-hunting-switch]:disabled,#modal .seconds-mode-control select:disabled{opacity:.5;cursor:not-allowed}

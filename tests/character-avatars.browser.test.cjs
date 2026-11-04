@@ -48,7 +48,7 @@ test('Chromium: six accessible SVG portraits can be selected in formation and ex
    await p.setViewportSize(viewport);
    const fits=await p.evaluate(()=>[...document.querySelectorAll('.squad-allies .unit')].every(unit=>{const box=unit.getBoundingClientRect();return [...unit.querySelectorAll('.unit-numbers,.battle-health-bar,.unit-skills')].every(el=>{const r=el.getBoundingClientRect();return r.top>=box.top&&r.bottom<=box.bottom&&r.right<=box.right;});}));
    assert(fits);
-   assert(await p.locator('.expedition-control-card').isVisible());assert(await p.locator('.global-battle-journal').isVisible());
+   assert(await p.locator('[data-adventure-config]').isVisible(),'adventure settings open from the toolbar');assert(await p.locator('.global-battle-journal').isVisible());
   }
   await p.setViewportSize({width:390,height:844});
   const bounds=await p.evaluate(()=>[...document.querySelectorAll('#battleAllyIcons .character-avatar-control')].map(el=>{const r=el.getBoundingClientRect(),strip=el.closest('#battleAllyIcons').getBoundingClientRect(),card=document.querySelector(`[data-combat-id="hero-${el.dataset.avatarOwner}"]`),box=card.getBoundingClientRect(),content=[...card.querySelectorAll('.unit-numbers,.battle-health-bar,.unit-skills')].map(x=>x.getBoundingClientRect());return {visible:r.width>0&&r.height>0,fits:r.left>=strip.left&&r.right<=strip.right&&r.top>=strip.top&&r.bottom<=strip.bottom&&strip.bottom<=box.top,label:el.getAttribute('aria-label'),contentFits:content.every(x=>x.top>=box.top&&x.bottom<=box.bottom&&x.right<=box.right)};}));
