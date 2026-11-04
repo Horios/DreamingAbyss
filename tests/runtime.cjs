@@ -7,7 +7,8 @@ async function openRuntime(root,entry='index.html',storage={},options={}) {
   const errors=[];
   if(options.clockTime){await page.clock.install({time:options.clockTime});await page.clock.pauseAt(options.clockTime);}
   page.on('pageerror',e=>errors.push(e.message));
-  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  // The static test server has no release service; the editor's /api/ calls fail by design and are not page errors.
+  page.on('console',m=>{if(m.type()!=='error')return;if(/^Failed to load resource/.test(m.text())&&/\/api\//.test(m.location()?.url||''))return;errors.push(m.text());});
   await page.route('http://localhost/**',async route=>{
     const url=new URL(route.request().url());
     const pathname=options.pathname?url.pathname.replace(options.pathname,'/'):url.pathname;

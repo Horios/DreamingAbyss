@@ -135,7 +135,10 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
         if(need(59)!==EmberwildProgression.requiredXp(doc.balanceSettings,59))issues.push('xp formula');
         const e=makeEnemy(12,h,()=>.01),row=monsterCatalog().find(m=>m.id===e.monsterId),want=EmberwildProgression.monsterStats(GAMEPLAY_SETTINGS,e.lv,'elite',h.difficulty||0,row);
         if(e.hp!==want.hp)issues.push('monster formula');
-        const g=gear(12,0,0,0);g.powerTier=10;g.plus=10;const b=gearStatBreakdown(g);if(b.total.atk!==Math.round(Math.round(b.body.atk*1.8)*1.6))issues.push('equipment formula');
+        // Additive rule: total = body + strength bonus + enhancement; enhancement is a fixed gain per level.
+        const g=gear(12,0,0,0);g.powerTier=10;g.plus=10;const b=gearStatBreakdown(g),en=GAMEPLAY_SETTINGS.equipment.enhance,graded=b.body.atk+b.grade.atk;
+        const enhanced=EmberwildProgression.enhancedGearStats({atk:graded},10,gearRequiredLevel(g),en.flatStatsPerLevel,en.flatStatsPerEquipmentLevel).atk;
+        if(b.grade.atk!==Math.round(b.body.atk*(1.8-1))||b.enhance.atk!==enhanced-graded||b.total.atk!==b.body.atk+b.grade.atk+b.enhance.atk||b.enhance.atk<=0)issues.push('equipment formula');
         const out=exportableBalance();for(const k of ['initialStats','growthPerLevel','growthSteps'])if(JSON.stringify(out.classes[0][k])!==JSON.stringify(doc.classes[0][k]))issues.push('class export '+k);
         applyBalanceConfig(base,{persist:false});return issues;
       },defaults);assert.deepEqual(issues,[]);
@@ -162,7 +165,8 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
     });
     await t.test('Changed custom balance persists on reload and restoring defaults preserves distinct stairs',async()=>{
       const custom=structuredClone(defaults);custom.classes[1].growthPerLevel.atk=3;custom.classes[1].growthSteps=[{every:4,hp:1,atk:1,def:1}];custom.balanceSettings.rewards.xp.kindMultiplier.boss=12;custom.balanceSettings.monsters.awakened.hpPerLevel=.005;
-      await game.page.evaluate(doc=>applyBalanceConfig(doc,{persist:true}),custom);await game.page.reload({waitUntil:'load'});
+      // The Preview keeps a custom balance across reloads when it comes through the JSON import, the path players use.
+      assert.equal(await game.page.evaluate(async doc=>{const text=JSON.stringify(doc);return importBalanceJSON({target:{files:[{size:text.length,text:async()=>text}],value:'test'}});},custom),true);await game.page.reload({waitUntil:'load'});
       const stored=await game.page.evaluate(()=>exportableBalance());assert.deepEqual(stored.classes[1].growthSteps,custom.classes[1].growthSteps);assert.equal(stored.classes[1].growthPerLevel.atk,3);assert.equal(stored.balanceSettings.rewards.xp.kindMultiplier.boss,12);assert.equal(stored.balanceSettings.monsters.awakened.hpPerLevel,.005);
       await game.page.evaluate(()=>resetBalanceJSON());const restored=await game.page.evaluate(()=>exportableBalance());
       for(let j=0;j<4;j++)for(const key of ['initialStats','growthPerLevel','growthSteps'])assert.deepEqual(restored.classes[j][key],defaults.classes[j][key]);

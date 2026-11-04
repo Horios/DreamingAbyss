@@ -1,7 +1,10 @@
 /* Save progress and source documentation for the LV1–60 curves. */
 (()=>{
   const copy=v=>JSON.parse(JSON.stringify(v));
-  const sameBuiltinCurve=()=>JSON.stringify(GAMEPLAY_SETTINGS.progression.xpCurve)===JSON.stringify(EmberwildProgression.defaults.settings.progression.xpCurve)&&GS('skills.mastery.characterXpMultiplier',1)===1;
+  // "Built-in" means the published curve (the model default only when nothing is published). Comparing with the
+  // model default stopped matching once the published curve was tuned (v0.051), so v1 saves were never migrated.
+  const builtinCurve=()=>globalThis.__EMBERWILD_PUBLISHED_BALANCE?.balanceSettings?.progression?.xpCurve||EmberwildProgression.defaults.settings.progression.xpCurve;
+  const sameBuiltinCurve=()=>{const want=builtinCurve(),now=GAMEPLAY_SETTINGS.progression.xpCurve;return Object.keys(want).every(k=>now?.[k]===want[k])&&GS('skills.mastery.characterXpMultiplier',1)===1;};
   const legacyNeed=l=>Math.max(1,Math.round(Math.round((45+l*18+l*l*2)*(2.2+l*.16))*1.35));
   const builtinLegacy=data=>data?.progressionXpRequirements===undefined&&data?.progressionCurveVersion===undefined&&sameBuiltinCurve()&&!localStorage.getItem(BALANCE_KEY);
   function migrateProgress(data){
