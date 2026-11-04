@@ -9,3 +9,9 @@
 .team-plan-fold>summary{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;cursor:pointer;list-style:none}.team-plan-fold>summary::-webkit-details-marker{display:none}
 .team-plan-fold>summary h2{margin:0}.team-plan-fold>summary::before{content:'▸';color:var(--muted);transition:transform .15s}.team-plan-fold[open]>summary::before{transform:rotate(90deg)}
 .team-plan-fold[open]>summary{margin-bottom:8px}
+
+/* Folded plan block: one compact line. Open: tighter spacing. */
+.team-plan-panel{margin:8px 0}.team-plan-panel:has(>.team-plan-fold:not([open])){padding-top:8px;padding-bottom:8px}
+.team-plan-fold>summary h2{font-size:15px}.team-plan-fold>summary .team-plan-busy{font-size:11px}
+.team-plan-fold[open]>summary .team-plan-hint{display:none}
+.team-plan-fold[open]>.team-build-note{margin:4px 0 8px}.team-plan-fold[open] .team-plan-card{padding:8px}.team-plan-fold[open] .team-plan-card>summary{margin-bottom:4px}
