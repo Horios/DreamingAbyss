@@ -19,13 +19,13 @@ jobs:
               tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/gear-overflow.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs
           - group: skill-loadouts
             tests: >-
-              tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/skill-equipment-tutorial.test.cjs tests/skill-system-model.test.cjs tests/passive-save-compat.test.cjs tests/skill-system-runtime.test.cjs
+              tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/skill-equipment-tutorial.test.cjs tests/skill-system-model.test.cjs tests/passive-save-compat.test.cjs tests/skill-system-runtime.test.cjs tests/legacy-member-skills.test.cjs
           - group: skill-events
             tests: >-
               tests/initial-clearing-skills.test.cjs tests/battle-configuration.test.cjs
           - group: skill-effects
             tests: >-
-              tests/status-advanced.test.cjs tests/skill-effects.test.cjs
+              tests/status-advanced.test.cjs tests/skill-effects.test.cjs tests/shop-rule-price-name.test.cjs
           - group: combat
             tests: >-
               tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/continuous-exploration.test.cjs

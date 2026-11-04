@@ -96,8 +96,8 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
         return {charges,healCost,marketHealCost,before,after,offer,healGain:healPotionCount('heal_small')-healBefore,goldSpent:goldBefore-state.gold,savedOffer:validated.market.offers[0]};
       });
       for(const [key,amount] of Object.entries({ore:2,dust:3,gem:2,material:4,ward:2,heal:3,stone:1}))assert.equal(result.after[key]-result.before[key],amount,key);
-      // heal_standard needs VIP 1; healing potions are priced at their own item cost, other offers at the rule's unit price.
-      assert.deepEqual(result.charges,[2*7,3*7,2*7,4*7,2*7,3*result.healCost,1*7]);assert.equal(result.before.gold-result.after.gold,result.charges.reduce((a,b)=>a+b,0));assert.equal(result.healGain,2);assert.equal(result.goldSpent,2*result.marketHealCost);assert.equal(result.offer.sold,true);assert.equal(result.savedOffer.kind,'item');assert.equal(result.savedOffer.key,'heal_small');assert.equal(result.savedOffer.ruleId,'healing');assert.equal(result.savedOffer.sold,true);
+      // heal_standard needs VIP 1; healing potions use the rule's unit price like every other offer.
+      assert.deepEqual(result.charges,[2*7,3*7,2*7,4*7,2*7,3*7,1*7]);assert.equal(result.before.gold-result.after.gold,result.charges.reduce((a,b)=>a+b,0));assert.equal(result.healGain,2);assert.equal(result.goldSpent,2*5);assert.equal(result.offer.sold,true);assert.equal(result.savedOffer.kind,'item');assert.equal(result.savedOffer.key,'heal_small');assert.equal(result.savedOffer.ruleId,'healing');assert.equal(result.savedOffer.sold,true);
     });
     await t.test('Failed saves roll back gold, inventory and sold flags; stock limits also prevent charges',async()=>{
       const result=await game.page.evaluate(()=>{
@@ -135,7 +135,6 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       await editor.page.evaluate(()=>{data.shopSettings.randomOffers.entries=[];data.shopSettings.fixedOffers.entries=[];render();});
       await editor.page.getByRole('button',{name:'新增固定商品',exact:true}).click();
       // Shop rules no longer carry descriptions (the item manager owns item text); the rule's 商店顯示名稱 names the offer.
-      // Healing potions sell at their own item cost, so a non-potion item exercises the rule's unit price.
       await editor.page.locator('[data-shop-field="key"]').selectOption('power_tier_reroll');
       await editor.page.locator('[data-shop-field="quantity"]').fill('3');await editor.page.locator('[data-shop-field="quantity"]').blur();
       await editor.page.locator('[data-shop-field="unitPrice"]').fill('9');await editor.page.locator('[data-shop-field="unitPrice"]').blur();
@@ -152,8 +151,8 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       assert.equal(await require('./runtime.cjs').importBalanceFile(preview.page,'shop-test.json',Buffer.from(JSON.stringify(exported))),true);
       await preview.page.waitForFunction(()=>exportableBalance().shopSettings.fixedOffers.entries[0]?.quantity===3);
       assert.deepEqual(await preview.page.evaluate(()=>exportableBalance().shopSettings),exported.shopSettings);
-      await preview.page.evaluate(()=>{setShopCategory('fixed');setTab('shop');});assert.equal(await preview.page.locator('.fixed-shop-row').count(),1);// The slot shows the item's own name; the rule's display name stays in the row's (visually hidden) label.
-      assert.equal(await preview.page.locator('.fixed-shop-row .shop-product-label').textContent(),'測試重鑄石');assert((await preview.page.locator('.fixed-shop-row').innerText()).includes('27 金幣'));
+      await preview.page.evaluate(()=>{setShopCategory('fixed');setTab('shop');});assert.equal(await preview.page.locator('.fixed-shop-row').count(),1);// The rule's 商店顯示名稱 replaces the item name on the slot.
+      assert.equal(await preview.page.locator('.fixed-shop-row .item-slot-name').first().innerText(),'測試重鑄石');assert((await preview.page.locator('.fixed-shop-row').innerText()).includes('27 金幣'));
       await editor.page.evaluate(()=>{globalThis.confirmDelete=()=>true;deleteShopRule('random',0);deleteShopRule('fixed',0);});
       const removed=await editor.page.evaluate(()=>({random:data.shopSettings.randomOffers.entries.length,fixed:data.shopSettings.fixedOffers.entries.length,items:data.items.length,issues:validateData()}));assert.deepEqual(removed,{random:0,fixed:0,items:itemCount,issues:[]});
     });

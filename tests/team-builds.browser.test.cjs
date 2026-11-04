@@ -75,11 +75,12 @@ test('Chromium: designer achievement gates export one no-skill-point contract an
  const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root,'index.html',OPEN_PLANS),p=editor.page;
  try{
   await t.test('embedded schema is byte-identical to the runtime model',async()=>{const html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8'),embedded=html.split('<script id="team-model-v1">\n')[1].split('\n</script>')[0];assert.equal(embedded,fs.readFileSync(path.join(root,'js/character/team-model.js'),'utf8'));});
-  // Skill system v1: the skills page is the canonical workbench, which edits unlockConditions on the skill definition
-  // (classes[].skills is a projection). Set the same achievement gates through its editor API.
-  await p.evaluate(()=>{currentSection='skills';render();});
+  // Skill system v1: the skill database tab edits unlock conditions on the selected definition (classes[].skills is a projection).
+  await p.evaluate(()=>{currentSection='skills';render();__EMBERWILD_SKILL_SYSTEM_EDITOR.select('skills',data.classes[0].skills[1].id);render();});
   assert.equal(await p.locator('#teamLearnCost').count(),0);assert.equal(await p.locator('[data-team-point-key="skillPoints"]').count(),0);
-  await p.evaluate(()=>{const id=data.classes[0].skills[1].id;__EMBERWILD_SKILL_SYSTEM_EDITOR.updateSkill(id,{unlockConditions:{classMasteryLevel:0,quests:[],materials:[],bossKills:[{mapIndex:0,count:2}],eliteKills:[{mapIndex:0,count:5}],bossEquipment:[{mapIndex:1,quantity:1}]}});render();});
+  await p.locator('#skillAddBossKill').click();await p.locator('[data-unlock-kind="bossKills"] select').last().selectOption('0');await p.locator('[data-unlock-kind="bossKills"] input[type="number"]').last().fill('2');await p.locator('[data-unlock-kind="bossKills"] input[type="number"]').last().blur();
+  await p.locator('#skillAddEliteKill').click();await p.locator('[data-unlock-kind="eliteKills"] select').last().selectOption('0');await p.locator('[data-unlock-kind="eliteKills"] input[type="number"]').last().fill('5');await p.locator('[data-unlock-kind="eliteKills"] input[type="number"]').last().blur();
+  await p.locator('#skillAddBossEquipment').click();await p.locator('[data-unlock-kind="bossEquipment"] select').last().selectOption('1');await p.locator('[data-unlock-kind="bossEquipment"] input[type="number"]').last().fill('1');await p.locator('[data-unlock-kind="bossEquipment"] input[type="number"]').last().blur();
   assert.deepEqual(await p.evaluate(()=>validateData()),[]);
   await t.test('download omits skill-point fields and keeps all achievement conditions',async()=>{
    const downloadPromise=p.waitForEvent('download');await p.locator('#exportBtn').click();const file=await (await downloadPromise).path(),doc=JSON.parse(fs.readFileSync(file,'utf8')),sk=doc.classes[0].skills[1];assert.equal(doc.teamSettings?.defaultLearnCost,undefined);assert.equal(doc.balanceSettings.progression.starting.skillPoints,undefined);assert.equal(doc.balanceSettings.progression.levelRewards.skillPoints,undefined);assert.equal(sk.learnCost,undefined);assert.deepEqual(sk.unlockConditions.bossKills,[{mapIndex:0,count:2}]);assert.deepEqual(sk.unlockConditions.eliteKills,[{mapIndex:0,count:5}]);assert.deepEqual(sk.unlockConditions.bossEquipment,[{mapIndex:1,quantity:1}]);
