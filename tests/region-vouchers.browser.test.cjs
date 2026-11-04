@@ -17,8 +17,9 @@ test('Chromium: offering vouchers pauses the replay so the confirmation stays st
   assert.equal(await p.evaluate(()=>party.offlineExploration.lastAt),cursor,'the replay pauses during the confirmation');
   const shown=Number(first.match(/(\d+) 張「苔光林地」30 分鐘收益券/)?.[1]);assert(shown>=15&&shown<=16,'about 8 hours of tickets: '+shown);
   await confirm.getByRole('button',{name:'確認改領',exact:true}).click();
-  await p.evaluate(()=>__job);
-  const r=await p.evaluate(()=>({failed:EmberwildOffline.failed,vouchers:party.offlineExploration.receipt?.vouchers,mail:party.mailbox.messages.filter(m=>m.rewardKey.startsWith('voucher-')).map(m=>m.attachments[0].quantity)}));
+  // Read the result as soon as the job resolves: the test settled to a future time, so a later timer-driven sync would
+  // see the real clock 8 hours behind the settled cursor and report invalid time.
+  const r=await p.evaluate(async()=>{await __job;return {failed:EmberwildOffline.failed,vouchers:party.offlineExploration.receipt?.vouchers,mail:party.mailbox.messages.filter(m=>m.rewardKey.startsWith('voucher-')).map(m=>m.attachments[0].quantity)};});
   assert.equal(r.failed,false);assert.equal(r.vouchers,shown,'exactly the confirmed number of tickets');assert.deepEqual(r.mail,[shown]);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
