@@ -32,7 +32,7 @@ test('icon choices reach actual inventory, shop, gathering and gem rendering and
 });
 test('unknown icons, dangling custom references and duplicate entries reject before replacing settings or save data',()=>{
  const r=loadRuntime(root);r.run('selectSaveSlot(1);start(1);closeModal();');const base=JSON.parse(r.run('JSON.stringify(exportableBalance())')),before=r.run('JSON.stringify(packParty())');
- for(const icons of [[{kind:'item',key:base.items[0].id,iconType:'lucide:does-not-exist'}],[{kind:'material',key:'紅色草',iconType:'custom:missing'}],[{kind:'gem',key:'9',iconType:'sword'}],[{kind:'material',key:'__proto__',iconType:'sword'}],[{kind:'gem',key:'0',iconType:'sword'},{kind:'gem',key:'0',iconType:'shield'}]]){
+ for(const icons of [[{kind:'item',key:base.items[0].id,iconType:'lucide:does-not-exist'}],[{kind:'material',key:'紅色草',iconType:'custom:missing'}],[{kind:'gem',key:'99',iconType:'sword'}],[{kind:'material',key:'__proto__',iconType:'sword'}],[{kind:'gem',key:'0',iconType:'sword'},{kind:'gem',key:'0',iconType:'shield'}]]){
   r.ctx.bad={...base,inventoryIcons:icons};assert.throws(()=>r.run('applyBalanceConfig(bad)'),/道具圖示/);assert.equal(r.run('JSON.stringify(packParty())'),before);assert.deepEqual(JSON.parse(r.run('JSON.stringify(exportableBalance().inventoryIcons)')),base.inventoryIcons);
  }
 

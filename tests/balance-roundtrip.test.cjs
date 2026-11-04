@@ -4,11 +4,13 @@ const root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 const get=(d,p)=>p.split('.').reduce((v,k)=>v[k],d);
 const set=(d,p,v)=>{const keys=p.split('.'),key=keys.pop();get(d,keys.join('.'))[key]=v;};
+// Skill system v1 projects classes[].skills, supportSkills and passiveDefinitions from skillSystem.definitions.
+const def=id=>'skillSystem.definitions.'+require('../data/balance.json').skillSystem.definitions.findIndex(s=>s.id===id);
 const fields=[
  ['balance.combat.elementMultipliers.neutral',n=>1+n/100],
  ['classes.0.initialStats.hp',n=>30+n],['classes.0.growthPerLevel.hp',n=>5+n/10],
- ['classes.0.skills.0.power',n=>2+n/10],['classes.0.skills.0.hitCount',n=>2+n],
- ['supportSkills.0.0.value',n=>.1+n/100],
+ [def('job0-core0')+'.power',n=>2+n/10],[def('job0-core0')+'.hitCount',n=>2+n],
+ [def('job0-support0')+'.value',n=>.1+n/100],
  ['equipmentForms.0.0.0.fixedEffects.0.value',n=>5+n],
  ['items.0.cost',n=>10+n],['balanceSettings.progression.xpCurve.linear',n=>18+n],
  ['balanceSettings.monsters.encounter.levelLeadInterval',n=>n],
@@ -27,7 +29,7 @@ const fields=[
  ['companions.0.initialStats.hp',n=>47+n],
  ['companions.0.growthPerLevel.pierce',n=>n/10],
  ['companionSettings.activeLimit',n=>6+n],
- ['passiveDefinitions.0.effects.0.value',n=>10+n],
+ [def('partner10-passive1')+'.effects.0.value',n=>10+n],
  ['companionTokens.catalog.0.effects.0.value',n=>2+n],
  ['companionTokens.drop.chanceByDifficulty.0',n=>n/100],
  ['teamSettings.maxPlans',n=>6+n],
@@ -40,7 +42,8 @@ test('six cycles: 30 modified balance fields survive editor file import, game fi
  for(let cycle=1;cycle<=6;cycle++)await t.test('cycle '+cycle,async()=>{
   const d=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');
   for(const [p,value] of fields)set(d,p,value(cycle));
-  const skill=d.classes[0].skills[d.companions[0].core[0]];
+  // The companion's first core skill, edited on its canonical definition (partner10-core7).
+  const skill=d.skillSystem.definitions.find(x=>x.adapter?.job===0&&x.adapter.kind==='core'&&x.adapter.index===d.companions[0].core[0]);
   skill.requiredLevel=cycle+1;skill.power=3+cycle/10;
   e.ctx.importText=JSON.stringify(d);
   await e.elements.get('fileInput').onchange({target:{files:[{name:'audit-'+cycle+'.json',text:async()=>e.ctx.importText}],value:'test'}});
@@ -71,7 +74,7 @@ test('bad JSON and invalid balance changes leave the active settings, save and p
  const g=loadRuntime(root);g.run('selectSaveSlot(1);start(0);closeModal();applyBalanceConfig(exportableBalance());save();');
  for(const mutation of [
   'd.classes[0].hp=-1',
-  'd.classes[0].skills[0].hitCount=1.5',
+  'd.skillSystem.definitions[0].hitCount=1.5',
   'd.companions[1].name=d.companions[0].name',
   'd.balanceSettings.drops.entries[0].sources=["missing-monster"]',
   'd.companionTokens.drop.chanceByDifficulty[0]=2',

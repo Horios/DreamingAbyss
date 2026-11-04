@@ -9,13 +9,14 @@ const balanceRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Embe
 async function gameRuntime(preview=false){
   const runtime=await openRuntime(root);
   if(preview){
-    await runtime.page.route('http://emberwild.test/preview/**',async route=>{
+    // https: the game needs Web Locks for its save lock, which exist only in secure contexts.
+    await runtime.page.route('https://emberwild.test/preview/**',async route=>{
       const pathname=new URL(route.request().url()).pathname.replace(/^\/preview\//,'');
       const file=path.resolve(root,pathname||'index.html');
       if(!file.startsWith(root+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:'Not found'});
       return route.fulfill({body:fs.readFileSync(file),contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html'});
     });
-    await runtime.page.goto('http://emberwild.test/preview/',{waitUntil:'load'});
+    await runtime.page.goto('https://emberwild.test/preview/',{waitUntil:'load'});
   }
   await runtime.page.evaluate(()=>{selectSaveSlot(1);start(1);closeModal();running=false;state.gold=100000;save();});
   await runtime.page.waitForFunction(()=>document.querySelector('aside nav'));

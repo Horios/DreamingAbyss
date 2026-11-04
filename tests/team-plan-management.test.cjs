@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 const json=(r,code)=>JSON.parse(r.run(`JSON.stringify(${code})`));
 function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();');return r;}
-function configured(){const r=game();r.run(`playerHero().lv=5;save();allocate(0,3);recruitCompanion(10);const token=__EMBERWILD_TOKEN_TEST.makeToken('berserk');playerHero().bag.push(token);equipCompanionToken(token.id,10);playerHero().gems[0]=1;const gemGear=gear(1,1,0,0);gemGear.skillSockets={version:1,count:1,gems:[0],firstMode:'base'};playerHero().bag.push(gemGear);copyTeamPlan();`);return r;}
+function configured(){const r=game();r.run(`playerHero().lv=5;save();recruitCompanion(10);const token=__EMBERWILD_TOKEN_TEST.makeToken('berserk');playerHero().bag.push(token);equipCompanionToken(token.id,10);playerHero().gems[0]=1;const gemGear=gear(1,1,0,0);gemGear.skillSockets={version:1,count:1,gems:[0],firstMode:'base'};playerHero().bag.push(gemGear);copyTeamPlan();`);return r;}
 
 test('clearing plans preserves equipment-owned gems, permanent progression, inventory and companions',()=>{
  const r=configured(),out=json(r,`(()=>{

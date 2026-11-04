@@ -45,7 +45,8 @@ test('Battle journal preserves scrolling through redraws and sparse filters',asy
         assert.equal(await page.evaluate(()=>$('liveLog')===globalThis.retainedJournal),true);
         await page.evaluate(filter=>note('new matching reward',filter),filter);
         await settle();atBottom(await position());
-        assert.equal(await page.locator('#liveLog [data-event-type]').last().innerText(),'new matching reward');
+        // Rows start with the seconds-combat timestamp, e.g. [00:00.0].
+        assert.match(await page.locator('#liveLog [data-event-type]').last().innerText(),/^\[\d{2}:\d{2}\.\d\] new matching reward$/);
       });
     }
     for(const filter of ['all','exp','item'])for(const refresh of ['render','refreshGlobalJournal']){
@@ -93,10 +94,10 @@ test('Battle journal preserves scrolling through redraws and sparse filters',asy
       });
       try{
         for(let i=0;i<12;i++){await page.waitForTimeout(100);atBottom(await position());}
-        // The resumable timeline can still be inside its encounter transition.
-        await page.waitForFunction(()=>round>0&&lastActionOrder.length>0,{},{timeout:8000});
+        // The resumable timeline can still be inside its encounter transition. Seconds combat records actions without the old round counter.
+        await page.waitForFunction(()=>lastActionOrder.length>0,{},{timeout:8000});
         atBottom(await position());
-        assert.equal(await page.evaluate(()=>round>0&&lastActionOrder.length>0),true,'The actual timer must advance combat actions');
+        assert.equal(await page.evaluate(()=>lastActionOrder.length>0),true,'The actual timer must advance combat actions');
       }finally{await page.evaluate(()=>{if(running)toggleBattle();});}
     });
     assert.deepEqual(game.errors,[]);

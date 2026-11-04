@@ -32,7 +32,7 @@ test('Chromium: configured custom/Lucide icons and semantic fallback survive rel
     await startParty(page);
     await page.evaluate(()=>{
       const doc=exportableBalance();
-      doc.skillIcons=[{id:'fallback-test',name:'自訂火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({size:48,color:'#fa7312',opacity:.75,effect:'float'})}];
+      doc.skillIcons=[{id:'fallback-test',name:'自訂火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({size:48,color:'#fa7312',opacity:.75,effect:'float'})},...doc.skillIcons.filter(x=>x)];
       doc.classes[0].skills[0].iconType='custom:fallback-test';doc.classes[0].skills[1].iconType='lucide:shield';
       doc.classes[0].skills[2].iconType='auto';doc.classes[0].skills[2].name='臨時治療技能';doc.classes[0].skills[2].effect='heal';
       applyBalanceConfig(doc);playerHero().skills[0]=1;playerHero().active=[0,null];__EMBERWILD_TEAMS.capture();selectHero(10);save();setTab('skills');

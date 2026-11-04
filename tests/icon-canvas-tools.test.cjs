@@ -13,7 +13,7 @@ test('curves and layer erasures normalize, remain bounded and render safely',()=
   assert(!a.layerMarkup({...layer,eraseStrokes:[{width:3,points:[['<script>',0]]}]}).includes('<script>'));
 });
 test('effective game import/export preserves editable geometry and rejects malformed editing data',()=>{
-  const g=require('./headless-runtime.cjs').loadRuntime(root);const actual=g.run(`(()=>{const d=exportableBalance(),I=__EMBERWILD_SKILL_ICONS;d.skillIcons=[{id:'canvas',name:'畫布',layers:[I.normalizeLayer({kind:'curve',eraseStrokes:[{width:2,points:[[0,0]]}]}),I.normalizeLayer({kind:'icon',icon:'fire',filled:true,fillTone:'ember'})]}];applyBalanceConfig(JSON.parse(JSON.stringify(d)));return JSON.stringify(exportableBalance().skillIcons);})()`);
+  const g=require('./headless-runtime.cjs').loadRuntime(root);const actual=g.run(`(()=>{const d=exportableBalance(),I=__EMBERWILD_SKILL_ICONS;d.skillIcons=[{id:'canvas',name:'畫布',layers:[I.normalizeLayer({kind:'curve',eraseStrokes:[{width:2,points:[[0,0]]}]}),I.normalizeLayer({kind:'icon',icon:'fire',filled:true,fillTone:'ember'})]},...d.skillIcons.filter(x=>x)];applyBalanceConfig(JSON.parse(JSON.stringify(d)));return JSON.stringify(exportableBalance().skillIcons);})()`);
   const icons=JSON.parse(actual);assert.equal(icons[0].layers[0].kind,'curve');assert.equal(icons[0].layers[0].eraseStrokes[0].points[0][0],0);assert.equal(icons[0].layers[1].filled,true);
   g.ctx.bad=icons;g.run('bad[0].layers[0].eraseStrokes[0].points[0][0]=999;');assert.throws(()=>g.run('const d=exportableBalance();d.skillIcons=bad;applyBalanceConfig(d);'),/圖示圖層/);
 });
