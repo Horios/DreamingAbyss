@@ -551,3 +551,9 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
 - `companion-tokens.browser`：背包的信物分類改為道具格，穿戴改在裝備與信物頁；設計器刪除信物需確認；信物沒有 job 等同 job:'all'。
 - `companions-roster`：夥伴技能開關已在 v0.055 移除；候選裝備的識別屬性改為 data-item-gear；xpFraction 缺少時等同 0；Preview 重新整理前先用 JSON 匯入保存設計；測試敵人補上 id（存檔驗證要求）；重新整理後先停止探索再修改設計；舊版設計文件的遷移改用與 `companion-skill-ownership` 相同的真實舊格式並只驗證遷移。
 - 尚未處理：`companions-roster` 的「舊存檔隊員保留技能」子測試。舊版非夥伴隊員已學會職業技能並配置在主動槽，但名冊判定主角技能為主角專屬而顯示「此夥伴尚無技能」，需確認設計方向。
+
+## v0.065 沒有職業的隊伍不能按「開始探索」
+
+- 修正：隊伍方案尚未選職業時，戰鬥工具列的「開始探索」按鈕仍可按（實際不會開始，但看起來可用）。隊伍限制原本只停用舊的開始按鈕（toggleBattle、restartExploration、startBossChallenge），現在也停用 `startSelectedExploration` 按鈕。
+- `team-plan-management.browser`：閒置時戰報只提供「前往探索」，改從戰鬥頁工具列檢查開始按鈕；並確認沒有職業時直接呼叫也不會開始。
+- `team-builds.browser`、`team-plan-management.browser`：v0.059 起隊伍方案區塊預設收合，測試改為預設展開後操作。`team-builds.browser` 其餘子測試仍在處理（舊版技能點與技能學習介面已由技能系統 v1 取代）。

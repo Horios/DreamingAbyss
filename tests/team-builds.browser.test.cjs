@@ -1,7 +1,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+// The 隊伍方案 block is folded by default since v0.059; these tests use its controls, so it starts open.
+const OPEN_PLANS={'emberwild-team-plan-panel-open':'1'};
 test('Chromium: create blank plans, choose classes, learn, copy, rename, safety gate and exact reload through actual UI',async t=>{
- const game=await openRuntime(root),p=game.page,warnings=[];p.setDefaultTimeout(10000);p.on('dialog',async d=>{warnings.push(d.message());await d.accept(d.type()==='prompt'?'法術編成':undefined);});
+ const game=await openRuntime(root,'index.html',OPEN_PLANS),p=game.page,warnings=[];p.setDefaultTimeout(10000);p.on('dialog',async d=>{warnings.push(d.message());await d.accept(d.type()==='prompt'?'法術編成':undefined);});
  try{
   await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);playerHero().lv=5;syncParty();save();setTab('roster');});await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
   await t.test('new plan has no class, stat allocations, equipment or companions',async()=>{
@@ -40,7 +42,7 @@ test('Chromium: create blank plans, choose classes, learn, copy, rename, safety 
  }finally{await game.browser.close();}
 });
 test('Chromium: worn equipment can be force-sold after a native warning naming all plans, with cancellation and one reward',async()=>{
- const g=await openRuntime(root),p=g.page;p.setDefaultTimeout(10000);
+ const g=await openRuntime(root,'index.html',OPEN_PLANS),p=g.page;p.setDefaultTimeout(10000);
  try{
   await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();copyTeamPlan();renameTeamPlan('team-1','戰士甲');renameTeamPlan('team-2','戰士乙');setTab('equipment');});
   await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
@@ -52,9 +54,9 @@ test('Chromium: worn equipment can be force-sold after a native warning naming a
  }finally{await g.browser.close();}
 });
 test('Chromium: preview copies old saves once and never overwrites or resurrects the production slots',async()=>{
- const original=await openRuntime(root);let raw;
+ const original=await openRuntime(root,'index.html',OPEN_PLANS);let raw;
  try{raw=await original.page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();const d=packParty();delete d.buildSystem;delete d.members[0].playerId;return JSON.stringify(d);});}finally{await original.browser.close();}
- const stats=JSON.stringify({maps:{}}),g=await openRuntime(root,'index.html',{'emberwild-save-v1':raw,'emberwild-save-v1-backup':raw,'emberwild-save-v1-slot-2':raw,'emberwild-battle-statistics-v1':stats,'emberwild-play-time-v1-slot-1':'90000'},{pathname:'/Emberwild/preview/'}),p=g.page;
+ const stats=JSON.stringify({maps:{}}),g=await openRuntime(root,'index.html',{'emberwild-save-v1':raw,'emberwild-save-v1-backup':raw,'emberwild-save-v1-slot-2':raw,'emberwild-battle-statistics-v1':stats,...OPEN_PLANS,'emberwild-play-time-v1-slot-1':'90000'},{pathname:'/Emberwild/preview/'}),p=g.page;
  try{
   assert.equal(await p.evaluate(()=>KEY),'emberwild-preview-save-v1');assert.match(await p.locator('.title-screen').textContent(),/正式版進度保留/);
   await p.evaluate(()=>{continueFromTitle();clearInterval(timer);closeModal();addTeamPlan();switchTeamPlan('team-2');changePlayerClass(1);save();});
@@ -65,7 +67,7 @@ test('Chromium: preview copies old saves once and never overwrites or resurrects
  }finally{await g.browser.close();}
 });
 test('Chromium: designer achievement gates export one no-skill-point contract and game imports it',async t=>{
- const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root),p=editor.page;
+ const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root,'index.html',OPEN_PLANS),p=editor.page;
  try{
   await t.test('embedded schema is byte-identical to the runtime model',async()=>{const html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8'),embedded=html.split('<script id="team-model-v1">\n')[1].split('\n</script>')[0];assert.equal(embedded,fs.readFileSync(path.join(root,'js/character/team-model.js'),'utf8'));});
   await p.evaluate(()=>{currentSection='skills';selected.skillTab='active';selected.skillClass=0;selected.skill=1;render();});
