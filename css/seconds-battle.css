@@ -181,3 +181,19 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #modal .adventure-config-dialog>h1{margin:0 0 10px;font-size:20px}
 #modal .adventure-config-dialog .battle-map-column.expedition-control-card{max-height:none!important;overflow:visible!important;margin:0;padding:0!important;border:0;background:none;box-shadow:none}
 #app [data-hunting-switch]:disabled,#modal .seconds-mode-control select:disabled{opacity:.5;cursor:not-allowed}
+/* v0.068: destination row under the battle toolbar. */
+#app .seconds-destination-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 8px}
+#app .seconds-destination-types{display:flex;gap:6px;flex-wrap:wrap}
+#app .seconds-destination-bar button{min-height:32px;padding:4px 12px;font-size:13px}
+#app .seconds-destination-bar select{min-width:min(260px,100%);flex:1 1 220px;max-width:360px;min-height:32px}
+#app .seconds-destination-bar select:disabled{opacity:.55;cursor:not-allowed}
+#app .game-subtabs>.seconds-destination-bar.in-subtabs{margin:0 0 0 auto;flex-wrap:nowrap}
+#app .game-subtabs>.seconds-destination-bar.in-subtabs{align-self:center;gap:6px}
+#app .seconds-destination-bar .seconds-destination-types{flex-wrap:nowrap}
+#app .seconds-destination-bar .seconds-destination-types>button{flex:0 0 auto;white-space:nowrap;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);min-height:32px;padding:4px 12px;font-size:13px}
+#app .seconds-destination-bar .seconds-destination-types>button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+#app .game-subtabs>.seconds-destination-bar.in-subtabs select{width:240px;flex:0 0 240px}
+#app .game-subtabs>.seconds-destination-bar.in-subtabs{display:flex!important;flex:0 0 auto;width:auto}
+#app .seconds-destination-bar>select{margin-left:4px}
+#app .seconds-destination-bar>.seconds-destination-types{flex:0 0 auto}
+#app .game-subtabs>.seconds-destination-bar.in-subtabs>select{min-width:0;width:240px;max-width:240px}

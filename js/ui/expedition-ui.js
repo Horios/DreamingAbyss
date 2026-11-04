@@ -96,6 +96,8 @@
     return destination;
   }
   globalThis.selectedExplorationCategory=()=>party?selectedDestination().category:'explore';
+  globalThis.selectedExplorationMap=()=>party?selectedDestination().map:0;
+  globalThis.explorationMapChoices=category=>MAPS.map((m,i)=>({m,i})).filter(({i})=>category==='boss'||!isFinal(i)).map(({m,i})=>({index:i,name:m.name,min:m.min,unlocked:canVisit(i)}));
   globalThis.setExplorationCategory=function(category){if(!['explore','boss','quest'].includes(category))return;const d=selectedDestination();d.category=category;const maps=MAPS.map((_,i)=>i).filter(i=>category==='boss'||!isFinal(i));if(category!=='quest'&&!maps.includes(d.map))d.map=maps[0]??0;render();};
   globalThis.selectExplorationMap=function(mi){const d=selectedDestination();if(!MAPS[mi])return;d.map=mi;render();};
   globalThis.selectQuestEncounter=function(key){selectedDestination().quest=key;render();};

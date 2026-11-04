@@ -56,7 +56,7 @@
  }
  // Player-chosen setup that changes combat output (levels are recorded separately): members, class stage, loadouts, gear, auto-potion settings, speed.
  function configuration(){
-  const members=heroes().map(h=>[memberKey(h),h.job,!!h.advanced,h.skillLoadout||null,h.passiveEnabled||null,h.activeSkillEquipmentId??null,equipment(h).map(g=>g&&[g.id,g.plus||0,g.skillSockets?.gems||null]),h.autoPotion?[h.autoPotionId,h.autoPotionThresholdPct]:null,h.autoManaPotion?h.autoManaPotionThresholdPct:null]);
+  const members=heroes().map(h=>[memberKey(h),h.job,!!h.advanced,h.skillLoadout||null,h.passiveEnabled||null,h.activeSkillEquipmentId??null,equipment(h).map(g=>g&&[g.id,g.plus||0,g.skillSockets?.gems||null]),h.autoPotion?[h.autoPotionId,h.autoPotionThresholdPct]:null,h.autoManaPotion?h.autoManaPotionThresholdPct:null,h.recoveryHealing===true]);
   return hash(JSON.stringify([typeof battleRate==='number'?battleRate:1,members]));
  }
  function stock(){

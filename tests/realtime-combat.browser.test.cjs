@@ -42,11 +42,20 @@ test('冒險配置 opens 探索與挑戰 as a dialog; BOSS and quest stages lock
  await p.locator('[data-adventure-config]').click();assert.equal(await p.evaluate(()=>isAdventureConfigOpen()),true);
  assert.equal(await p.locator('#modal .expedition-control-card').count(),1);assert.equal(await p.locator('#modal .seconds-recovery-settings').evaluate(d=>d.open),true);
  assert.equal(await p.getByLabel('狩獵模式',{exact:true}).isDisabled(),false);assert.equal(await p.locator('[data-hunting-switch]').isDisabled(),false);
- // Choosing a BOSS or quest destination locks the mode controls; the dialog stays open while choosing.
+ // v0.068: the dialog has no destination row and no pause/stop buttons; those live under the toolbar.
+ assert.equal(await p.locator('#modal .exploration-categories').count(),0);assert.equal(await p.locator('#modal select[aria-label="探索地圖"]').count(),0);
+ assert.equal(await p.locator('#modal button[onclick="toggleBattle()"], #modal button[onclick="stopTeamExploration()"]').count(),0,'no pause or stop in the dialog');
+ await p.getByRole('button',{name:'關閉',exact:true}).click();
  // Live combat delays redraws for a moment after a click (interaction guard); the test clock is fake, so advance it until the redraw.
  const settled=async()=>{for(let i=0;i<20&&await p.evaluate(()=>isEmberwildUIInteracting());i++)await p.clock.runFor(100);};
- for(const name of ['BOSS 難關','任務關卡']){await p.locator('#modal .exploration-categories button',{hasText:name}).click();await settled();assert.equal(await p.evaluate(()=>isAdventureConfigOpen()),true);assert.equal(await p.getByLabel('狩獵模式',{exact:true}).isDisabled(),true,name);assert.equal(await p.locator('[data-hunting-switch]').isDisabled(),true,name);assert.match(await p.locator('#modal .seconds-mode-control small').innerText(),/依關卡規則生成敵人/);}
- await p.locator('#modal .exploration-categories button',{hasText:'一般探索'}).click();await settled();assert.equal(await p.getByLabel('狩獵模式',{exact:true}).isDisabled(),false);
+ assert.deepEqual(await p.locator('.seconds-destination-bar [data-destination-category]').allInnerTexts(),['一般地圖','任務地圖','BOSS地圖']);
+ const mapMenu=p.locator('.seconds-destination-bar select[aria-label="探索地圖"]');
+ // BOSS and quest destinations lock the hunting mode; only quests lock the map menu (final maps are BOSS-only).
+ for(const [name,mapLocked] of [['BOSS地圖',false],['任務地圖',true]]){await p.locator('[data-destination-category]',{hasText:name}).click();await settled();assert.equal(await p.locator('[data-hunting-switch]').isDisabled(),true,name);assert.equal(await mapMenu.isDisabled(),mapLocked,name);
+  await p.locator('[data-adventure-config]').click();assert.equal(await p.getByLabel('狩獵模式',{exact:true}).isDisabled(),true,name);assert.match(await p.locator('#modal .seconds-mode-control small').innerText(),/依關卡規則生成敵人/);assert.equal(await p.locator('#modal select[aria-label="任務關卡"]').count(),name==='任務地圖'?1:0);await p.getByRole('button',{name:'關閉',exact:true}).click();}
+ assert(await p.evaluate(()=>[...document.querySelectorAll('.seconds-destination-bar select option')].some(o=>/LV40|LV 40/.test(o.textContent))||explorationMapChoices('boss').length>explorationMapChoices('explore').length),'BOSS lists the final maps');
+ await p.locator('[data-destination-category]',{hasText:'一般地圖'}).click();await settled();assert.equal(await p.locator('[data-hunting-switch]').isDisabled(),false);assert.equal(await mapMenu.isDisabled(),false);
+ await p.locator('[data-adventure-config]').click();
  await p.getByRole('button',{name:'關閉',exact:true}).click();assert.equal(await p.evaluate(()=>$('modal').open),false);
  // An active BOSS challenge locks the toolbar switch even when the selection says 一般探索.
  await p.evaluate(()=>{stopTeamExploration();bossProgressEntry(party.map).charges=1;setExplorationCategory('boss');startSelectedExploration();setExplorationCategory('explore');});await settled();

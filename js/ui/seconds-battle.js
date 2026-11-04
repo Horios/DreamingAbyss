@@ -76,10 +76,20 @@
   const toolbar=`<section class="seconds-adventure-toolbar seconds-battle-header" aria-label="冒險狀態與快捷操作"><div class="seconds-battle-title"><h2>${esc(MAPS[party.map]?.name||'荒野')}</h2><div class="seconds-battle-xp" title="經驗 ${h.xp.toLocaleString()} / ${need(h.lv).toLocaleString()}"><b>${esc(characterName(h))} · LV ${h.lv}</b><progress aria-label="等級經驗" value="${xp}" max="100"></progress><span class="seconds-party-gold" data-party-gold>全隊金幣 ${(party.members[0].gold||0).toLocaleString()}</span></div></div><div class="seconds-toolbar-actions">${controls}<button type="button" data-hunting-switch ${locked?'disabled':''} onclick="setHuntingMode('${nextMode}')" title="${locked?lockNote:modeHint(current)+'（目前）。點擊切換為'+modeHint(nextMode)+'，下一場遭遇生效。'}">${svg('repeat')}切換：${nextMode==='group'?'群怪':'單怪'}</button><button type="button" data-adventure-config onclick="openAdventureConfig()">${svg('sliders-horizontal')}冒險配置</button></div></section>`;
   html=html.replace(/第 (\d+(?:\.\d+)?) (?:回合|秒)/g,(_m,n)=>'戰鬥 '+fmt(+n)+' 秒');
   // v0.063: 探索與挑戰 (destinations, recovery, hunting mode, boosts, difficulty) lives in the 冒險配置 dialog.
-  const cut=takeSection(html,'<section class="panel battle-map-column expedition-control-card">');configHTML=cut.section;
-  return toolbar+cut.rest;
+  const cut=takeSection(html,'<section class="panel battle-map-column expedition-control-card">');
+  // v0.068: destination type and map sit under the toolbar (一般地圖／任務地圖／BOSS地圖／地圖選單); the dialog keeps the
+  // quest stage, details and other settings, and no pause or stop buttons (the toolbar has them).
+  configHTML=cut.section.replace(/<div class="exploration-categories"[^>]*>[\s\S]*?<\/div>/,'')
+   .replace(/<label><span>選擇地圖<\/span><select aria-label="探索地圖"[\s\S]*?<\/select><\/label>/,'')
+   .replace(/<button[^>]*onclick="(?:toggleBattle|stopTeamExploration)\(\)"[^>]*>[\s\S]*?<\/button>/g,'');
+  return toolbar+destinationBar()+cut.rest;
  };
  let configHTML='',configShown='';
+ function destinationBar(){
+  const category=globalThis.selectedExplorationCategory?.()||'explore',map=globalThis.selectedExplorationMap?.()??party.map,choices=globalThis.explorationMapChoices?.(category==='boss'?'boss':'explore')||[],locked=category==='quest';
+  const buttons=[['explore','一般地圖'],['quest','任務地圖'],['boss','BOSS地圖']].map(([id,name])=>`<button type="button" data-destination-category="${id}" aria-pressed="${category===id}" class="${category===id?'primary':''}" onclick="setExplorationCategory('${id}')">${name}</button>`).join('');
+  return `<section class="seconds-destination-bar" aria-label="探索目的地"><div class="seconds-destination-types" role="group" aria-label="關卡分類">${buttons}</div><select aria-label="探索地圖" ${locked?'disabled title="任務地圖依任務關卡決定，請在冒險配置選擇關卡"':''} onchange="selectExplorationMap(Number(this.value))">${choices.map(c=>`<option value="${c.index}" ${c.index===map?'selected':''}>${esc(c.name)} · LV${c.min}${c.unlocked?'':' · 未解鎖'}</option>`).join('')}</select></section>`;
+ }
  function takeSection(html,open){
   const start=html.indexOf(open);if(start<0)return {section:'',rest:html};
   const tags=/<\/?section\b[^>]*>/g;tags.lastIndex=start;let depth=0,m;
@@ -100,7 +110,9 @@
  // The dialog's content as of the last battle view render.
  globalThis.adventureConfigHTML=()=>configHTML;
  const afterConfig=globalThis.__EMBERWILD_AFTER_RENDER;// Refresh first so later hooks (team locks, reminders) also reach the dialog's controls.
- globalThis.__EMBERWILD_AFTER_RENDER=function(...args){refreshConfig();afterConfig?.(...args);};
+ // Desktop: the destination row fills the blank space beside the 荒野探索／戰鬥統計 tabs, right under the toolbar.
+ function placeDestinationBar(){const bar=document.querySelector('#app .seconds-destination-bar'),tabs=document.querySelector('#app main .game-subtabs');if(!bar||!tabs)return;if(innerWidth>900){if(bar.parentElement!==tabs)tabs.append(bar);bar.classList.add('in-subtabs');}}
+ globalThis.__EMBERWILD_AFTER_RENDER=function(...args){refreshConfig();placeDestinationBar();afterConfig?.(...args);};
  const closeConfig=closeModal;closeModal=function(...args){const modal=$('modal');if(modal.dataset.view==='adventure-config')delete modal.dataset.view;configShown='';return closeConfig(...args);};
  // Starting an exploration or challenge closes the dialog so combat resumes right away.
  $('modal').addEventListener('click',event=>{if($('modal').dataset.view==='adventure-config'&&event.target.closest?.('.exploration-primary-actions button'))closeModal();});
