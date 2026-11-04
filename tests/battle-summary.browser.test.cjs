@@ -123,3 +123,22 @@ test('different monster names have distinct artwork, elites have ornaments and d
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
+test('an enemy without an id renders once with the summary key, and a lasting mismatch never recurses',async()=>{
+ const g=await setup(),p=g.page;
+ try{
+  const out=await p.evaluate(()=>{
+   setTab('battle');const e=makeEnemy(0,state,()=>.9);delete e.id;foes=[e];enemy=e;
+   let renders=0;const base=render;render=function(...a){renders++;return base.apply(this,a);};
+   try{render();}finally{render=base;}
+   const drawn=[...document.querySelectorAll('.squad-field .squad-enemies > .unit[data-combat-id]')].map(n=>n.dataset.combatId);
+   // Simulate a view that can never match the snapshot: at most one extra redraw, no stack overflow.
+   const key=EmberwildBattleSummary.key;let mismatchRenders=0,error='';EmberwildBattleSummary.key=()=>'never-drawn';
+   const counting=render;render=function(...a){mismatchRenders++;return counting.apply(this,a);};
+   try{render();}catch(x){error=x.message;}finally{render=counting;EmberwildBattleSummary.key=key;}
+   return {drawn,renders,mismatchRenders,error};
+  });
+  assert.equal(out.drawn.length,1);assert.match(out.drawn[0],/^visual-\d+$/);
+  assert.equal(out.error,'');assert(out.renders<=2,'renders '+out.renders);assert(out.mismatchRenders<=2,'mismatch renders '+out.mismatchRenders);
+  assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});

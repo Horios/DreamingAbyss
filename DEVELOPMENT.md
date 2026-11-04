@@ -440,3 +440,16 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
   - `balance-roundtrip`：技能系統 v1 後 `classes[].skills`、`supportSkills`、`passiveDefinitions` 由 `skillSystem.definitions` 投影產生，改為編輯對應的技能定義（以 ID 查找）。
   - `shop-options`：預覽頁改用 `https://` 測試網址；遊戲需要 Web Locks，只在安全來源可用。（此檔其他子測試仍失敗，見下一批。）
 - 找到的實際錯誤：平衡器的材料預設售價仍是舊表（以太鍛鐵 100、藥水瓶 1 等），與遊戲不一致。已在平衡器 `21cc678` 修正。
+
+## v0.054 戰鬥畫面無限重繪
+
+整理非 CI 測試時，`timed-boosts-journal` 出現「Maximum call stack size exceeded」。
+
+- 原因：
+  - `battle-summary.js` 的 `sync()` 發現畫面上的單位與快照不一致時會呼叫 `render()`，而 `render()` 結束時又呼叫 `sync()`。
+  - 秒數戰場用 `x.id` 當單位代號，摘要對沒有 id 的敵人改用 `visual-N`；兩邊永遠不一致，造成無限遞迴，整個畫面無法更新。
+  - 一般遊玩時敵人都有 id，所以平常不會發生；測試或日後新增的生成方式只要漏掉 id 就會整頁當掉。
+- 修正：
+  - `seconds-battle.js` 的敵人代號改用摘要的 `key()`，兩邊一致。
+  - `sync()` 每次不一致只重繪一次；重繪後仍不一致就停止，不再遞迴。
+- 新增必要 CI 測試（`battle-summary.browser`）：沒有 id 的敵人畫成 `visual-N`；模擬永遠不一致時最多多重繪一次、不會溢位。拿掉修正時此測試失敗。

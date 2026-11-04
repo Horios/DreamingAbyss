@@ -4,7 +4,7 @@
 (()=>{
  'use strict';
  let owner=null,terminal=null,previous=new Map(),flashes=new Map(),detailCollapsed=false;
- let retainedSummary=null,retainedField=null,openingAction=null,serial=0;
+ let retainedSummary=null,retainedField=null,openingAction=null,serial=0,resyncing=false;
  const fallbackIds=new WeakMap();
  const monsterArtwork=new Map(),usedArtwork=new Set();let artworkOwner=null;
  const iconPool=[...new Set(['ghost','paw-print','sprout','skull','bot','flame','bug','bird','cat','dog','fish','rabbit','rat','snail','turtle','worm','squirrel',...(globalThis.__EMBERWILD_LUCIDE?.names||[])])];
@@ -111,7 +111,8 @@
    // The input guard may defer a page redraw until the current click/scroll
    // finishes. It already queues that redraw; recursively requesting it here
    // would keep observing the previous page and overflow the stack.
-   if(actual!==expected){if(!globalThis.isEmberwildUIInteracting?.())render();return;}
+   // One redraw per mismatch: if the drawn units still differ afterwards, a second render would only repeat it.
+   if(actual!==expected){if(!resyncing&&!globalThis.isEmberwildUIInteracting?.()){resyncing=true;try{render();}finally{resyncing=false;}}return;}
   }
   const status=s.result==='victory'?'戰鬥勝利':s.result==='wipe'?'戰鬥失敗':!s.total?(running?'搜尋敵人':'尚未探索'):!running?'戰鬥暫停':$('modal')?.open?'視窗暫停':round>0&&!roundIterator&&!combatRoundProgress&&foes.some(e=>e.hp>0)?(globalThis.EmberwildSecondsCombat?.phase==='recovery'?'脫戰恢復':'行動充能'):event||'戰鬥中';
   if(summary){
@@ -193,7 +194,7 @@
  }
  $('modal').addEventListener('close',()=>$('modal').classList.remove('battle-unit-dialog'));
  function toggleDetails(){detailCollapsed=!detailCollapsed;sync({animate:false});}
- globalThis.EmberwildBattleSummary={snapshot,sync,finish,toggleDetails,inspect,showUnit,artwork};
+ globalThis.EmberwildBattleSummary={snapshot,sync,finish,toggleDetails,inspect,showUnit,artwork,key};
  const journalBase=sharedBattleJournal;
  sharedBattleJournal=function(){const html=journalBase();return html.replace('<div class="journal-resizer"',summaryHTML()+'<div class="journal-resizer"');};
  const battleBase=battleView;

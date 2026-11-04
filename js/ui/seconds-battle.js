@@ -2,7 +2,8 @@
 (()=>{
  'use strict';
  const C=EmberwildSecondsCombat,S=__EMBERWILD_SKILLS,fmt=n=>Number(Math.max(0,n||0).toFixed(1)).toLocaleString('zh-TW');
- const id=x=>Object.hasOwn(x,'job')?heroKey(x):x.id;
+ // Enemies use the summary's key, so an enemy without an id gets the same fallback id in both views.
+ const id=x=>Object.hasOwn(x,'job')?heroKey(x):globalThis.EmberwildBattleSummary?.key?.(x)??x.id;
  const t=s=>s?.timing||C.source.skillSystem.definitions.find(x=>x.id===s?.id)?.timing;
  const baseCoreDetail=coreSkillDetail,baseSupportDetail=supportSkillDetail;
  const hero=x=>!!x&&Object.hasOwn(x,'job');
