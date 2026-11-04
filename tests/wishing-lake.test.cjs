@@ -73,3 +73,14 @@ test('explicit gear inputs exclude locked, worn, socketed and protected gear; fu
  r.run('state.equipped[1]=null;loose=findGear(loose.id);loose.skillSockets.gems=[0];');assert.equal(r.run('__EMBERWILD_WISHING_LAKE.choices().some(x=>x.id==="loose")'),false);
  assert.throws(()=>r.run("{const d=exportableBalance();d.wishingLake.inputs[0].specialTrigger='future';applyBalanceConfig(d,{persist:false})}"),/不可啟用/);
 });
+test('the 任務 menu shows an unfinished reminder until today\'s offering is made',()=>{
+ const r=game();force(r,'gold');
+ const badge=()=>{r.run('render()');const html=r.elements.get('app').innerHTML,m=html.match(/data-nav-group="missions"[^]*?<\/button>/);return m[0];};
+ assert.equal(r.run('wishingLakeReminder()'),null,'a locked lake has no reminder');
+ r.run("recordMapClear(0);");assert.deepEqual(plain(r,'wishingLakeReminder()'),{ready:1});
+ r.run("state.materials['黏稠凝膠']=150;selectLakeOffering('gel');dailyQuestReminder=()=>null;storyCategoryReminder=()=>null;");
+ assert.match(badge(),/number-badge[^>]*>1</,'the missions category counts the lake');
+ assert.equal(r.run('confirmLakeOffering()'),true);assert.equal(r.run('wishingLakeReminder()'),null);
+ assert.doesNotMatch(badge(),/number-badge|quest-new/,'the reminder clears after the offering');
+ assert.deepEqual(r.errors,[]);
+});

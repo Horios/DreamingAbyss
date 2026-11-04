@@ -52,6 +52,8 @@
   });
  }
  const remaining=()=>{const s=ensure();return s?Math.max(0,design.dailyLimit-s.used):0;};
+ // Until today's offering is made, the lake counts as one unfinished daily task on the 任務 menu.
+ globalThis.wishingLakeReminder=()=>{const s=party&&state?ensure():null;return s?.unlocked&&design.enabled&&design.dailyLimit>0&&s.used===0?{ready:1}:null;};
  function current(){const rows=choices();return rows.find(r=>r.choice===selection)||null;}
  globalThis.selectLakeOffering=function(id){const r=choices().find(r=>r.choice===id);selection=r?.choice||'';quantity=r?.min||0;refresh();};
  globalThis.setLakeQuantity=function(n){quantity=Number(n);refresh();};
@@ -108,9 +110,9 @@
    toast(error.message);refresh();return false;
   }finally{busy=false;}
  };
- const navBase=globalThis.gameNavigationHTML;globalThis.gameNavigationHTML=function(...args){return navBase(...args)+'<button type="button" data-page="wishingLake" onclick="openWishingLake()">'+'<span class="game-nav-label">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:waves',[],{size:18})+'許願湖'+(ensure()?.unlocked?'':__EMBERWILD_SKILL_ICONS.svgFor('lucide:lock',[],{size:12}))+'</span>'+'</button>';};
+ // The lake is a page of the 任務 category in the navigation data; its tab opens this dialog.
  const tabBase=setTab;setTab=function(id){return id==='wishingLake'?openWishingLake():tabBase(id);};
- const after=globalThis.__EMBERWILD_AFTER_RENDER;globalThis.__EMBERWILD_AFTER_RENDER=function(...args){after?.(...args);if(party&&state){const utility=$('utilityNavigation');if(!document.getElementById('utilityButton-wishingLake'))utility.insertAdjacentHTML('beforeend','<button id="utilityButton-wishingLake" class="utility-icon-button" onclick="openWishingLake()" aria-label="許願湖" title="許願湖">'+__EMBERWILD_SKILL_ICONS.svgFor('lucide:waves',[],{size:18})+'<span class="utility-label">許願湖</span></button>');}refresh();};
+ const after=globalThis.__EMBERWILD_AFTER_RENDER;globalThis.__EMBERWILD_AFTER_RENDER=function(...args){after?.(...args);refresh();};
  const closeBase=closeModal;closeModal=function(...args){if($('modal').dataset.view==='wishing-lake')delete $('modal').dataset.view;lastHTML='';return closeBase(...args);};
  setInterval(()=>{if(!party||!state)return;notify();refresh();},1000);
  globalThis.__EMBERWILD_WISHING_LAKE={ensure,choices,remaining,view,normalizeState,ledgerKey,design:()=>copy(design)};

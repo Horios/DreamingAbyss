@@ -171,3 +171,8 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-1{background:linear-gradient(145deg,color-mix(in srgb,#7d5fd0 22%,var(--panel)),color-mix(in srgb,#7d5fd0 9%,var(--panel)))!important}
 #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-2{background:linear-gradient(145deg,color-mix(in srgb,#4f9a55 22%,var(--panel)),color-mix(in srgb,#4f9a55 9%,var(--panel)))!important}
 #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-3{background:linear-gradient(145deg,color-mix(in srgb,#c9a540 22%,var(--panel)),color-mix(in srgb,#c9a540 9%,var(--panel)))!important}
+/* v0.062: one-click page switch for every card on the battlefield. */
+#app .seconds-face-switch{display:flex;justify-content:flex-end;gap:4px;margin:0 0 8px}
+#app .seconds-face-switch>button{min-height:28px;padding:2px 12px;font-size:12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--muted)}
+#app .seconds-face-switch>button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+#app .seconds-face-switch>button:disabled{opacity:.45;cursor:not-allowed}

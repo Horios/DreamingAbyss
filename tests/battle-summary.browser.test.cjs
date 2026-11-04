@@ -154,3 +154,27 @@ test('ally cards are tinted by class and the battle note explains card and portr
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
+test('the battlefield buttons turn every card to the main, cooldown or status page at once',async()=>{
+ const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')}),p=g.page;
+ try{
+  await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);recruitCompanion(10);closeModal();spawnGroup();running=true;setTab('battle');render();});
+  const faces=()=>p.evaluate(()=>[...document.querySelectorAll('.seconds-stack[data-combat-id]')].map(n=>n.dataset.face));
+  const pressed=()=>p.evaluate(()=>[...document.querySelectorAll('[data-seconds-face-all]')].map(b=>b.getAttribute('aria-pressed')));
+  assert.deepEqual(await p.locator('.seconds-face-switch button').allInnerTexts(),['主要','冷卻','狀態']);
+  assert((await faces()).length>=3);assert.deepEqual(await pressed(),['true','false','false']);
+  await p.locator('[data-seconds-face-all="1"]').click();
+  assert((await faces()).every(f=>f==='1'),'every card shows cooldowns');assert.deepEqual(await pressed(),['false','true','false']);
+  await p.locator('[data-seconds-face-all="2"]').click();assert((await faces()).every(f=>f==='2'));
+  // The choice survives a redraw and applies to enemies that appear later.
+  await p.evaluate(()=>{foes.length=0;spawnGroup();render();});assert((await faces()).every(f=>f==='2'),'new enemies follow the chosen page');
+  // Clicking one card still flips only that card; the bar then shows no single page.
+  await p.locator('#battleEnemyIcons .seconds-stack').first().click();
+  const mixed=await faces();assert.equal(mixed.filter(f=>f!=='2').length,1);await p.evaluate(()=>EmberwildSecondsUI.sync());assert.deepEqual(await pressed(),['false','false','false']);
+  await p.locator('[data-seconds-face-all="0"]').click();assert((await faces()).every(f=>f==='0'));
+  // With cooldown bars hidden the cooldown page is unavailable.
+  await p.evaluate(()=>EmberwildSecondsUI.toggleCooldowns());assert.equal(await p.locator('[data-seconds-face-all="1"]').isDisabled(),true);
+  assert.equal(await p.evaluate(()=>EmberwildSecondsUI.showAll(1)),false);assert((await faces()).every(f=>f==='0'));
+  await p.evaluate(()=>EmberwildSecondsUI.toggleCooldowns());
+  assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});

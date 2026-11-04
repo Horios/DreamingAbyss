@@ -1,12 +1,14 @@
 /* v0.024 top game menu: the navigation groups render as one row of category
    buttons above the content; multi-page categories show tabs inside main. */
 @media(min-width:901px){
- #app>.layout{grid-template-columns:minmax(0,1fr) clamp(260px,24vw,360px)!important;grid-template-rows:auto minmax(0,1fr)!important}
- #app>.layout>aside{grid-column:1/-1!important;grid-row:1!important;height:auto!important;min-height:0!important;overflow:visible!important;padding:8px 14px!important;border-right:0!important;border-bottom:1px solid var(--line)!important}
+ /* v0.062: the game menu is the bottom row; mailbox, settings, save and guide stay at the top right. */
+ #app>.layout{grid-template-columns:minmax(0,1fr) clamp(260px,24vw,360px)!important;grid-template-rows:minmax(0,1fr) auto!important}
+ #app>.layout>aside{grid-column:1/-1!important;grid-row:2!important;height:auto!important;min-height:0!important;overflow:visible!important;padding:7px 14px!important;border-right:0!important;border-bottom:0!important;border-top:1px solid var(--line)!important;background:var(--chrome)}
  #app>.layout>aside>:not(nav){display:none!important}
- #app>.layout>main{grid-column:1!important;grid-row:2!important}
- #app>.layout>#globalBattleJournal{grid-column:2!important;grid-row:2!important}
- #app>.layout>aside nav{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px;margin:0!important;height:auto!important}
+ header>#utilityNavigation{width:auto!important;margin-left:auto!important}
+ #app>.layout>main{grid-column:1!important;grid-row:1!important}
+ #app>.layout>#globalBattleJournal{grid-column:2!important;grid-row:1!important}
+ #app>.layout>aside nav{display:flex!important;flex-wrap:nowrap;overflow-x:auto;overflow-y:visible;align-items:center;gap:6px;margin:0!important;height:auto!important;padding-top:6px;scrollbar-width:thin}
 }
 #app>.layout>aside nav .game-menu-item{position:relative;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:36px;padding:6px 12px!important;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:13px;white-space:nowrap;overflow:visible}
 #app>.layout>aside nav .game-menu-item.active{border-color:var(--gold);color:var(--gold)}
@@ -19,12 +21,15 @@
 .game-subtabs>button.active{border-color:var(--gold);color:var(--gold)}
 @media(max-width:900px){.game-menu-title{display:none}.game-subtabs{flex-wrap:nowrap;overflow-x:auto;margin-bottom:6px}.game-subtabs>button{flex:0 0 auto;font-size:12px;min-height:30px}}
 .game-subtabs>button.active,.game-subtabs>button.active:hover{background:var(--panel)!important;color:var(--gold)!important;border-color:var(--gold)!important}
-@media(min-width:901px){#app>.layout>aside nav>[data-page="wishingLake"]{display:none!important}}
 /* The battle header already names the current map. */
 #app main:has(.seconds-battle-header)>.heading{display:none!important}
 /* The top-right corner stays empty in game: save sits beside Settings, gold follows the experience bar,
    and import/export live under Settings → 存檔. The header import remains only on the title screen. */
 header #wallet{display:none!important}
 body.in-game header>label.title-save-import{display:none!important}
+header>label.title-save-import{white-space:nowrap}
 .options-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
 .options-tabs>button{min-height:34px;padding:4px 16px}
+
+/* v0.062: the battle area has its own background so it stands apart from the surrounding panels. */
+.party-combat .squad-field.seconds-battlefield{background:linear-gradient(180deg,color-mix(in srgb,#1f6f86 16%,var(--inset)),color-mix(in srgb,#1f6f86 8%,var(--inset)))!important;border:1px solid color-mix(in srgb,#1f6f86 35%,var(--line))!important;border-radius:12px;padding:10px!important}

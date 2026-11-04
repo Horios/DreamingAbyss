@@ -138,7 +138,9 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
    const b=await p.locator('#modal').boundingBox();assert(b.x>=0&&b.x+b.width<=320&&b.height<=640,id+' fits');
    await p.getByRole('button',{name:'關閉彈窗',exact:true}).click();
   }
-  await p.locator('#utilityButton-wishingLake').click();
+  // v0.062: the wishing lake lives under 任務 next to the daily missions.
+  assert.equal(await p.locator('#utilityButton-wishingLake').count(),0,'the lake has no header button');
+  await p.evaluate(()=>setTab('wishingLake'));
   const lakeBox=await p.locator('#modal').boundingBox();assert(lakeBox.x>=0&&lakeBox.x+lakeBox.width<=320&&lakeBox.height<=640,'locked wishing lake fits on mobile');
   assert.match(await p.locator('#modal').innerText(),/通過第一片冒險區域/);
   assert.equal(await p.locator('#modal .lake-confirm').count(),0,'new characters cannot offer before the first clear');
@@ -150,9 +152,10 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   const order=await p.locator('aside nav .game-menu-item:visible').evaluateAll(nodes=>nodes.map(e=>({id:e.dataset.navGroup,x:e.getBoundingClientRect().x,y:Math.round(e.getBoundingClientRect().y)})).sort((a,b)=>a.y-b.y||a.x-b.x).map(e=>e.id));
   const designed=await p.evaluate(()=>[...EmberwildNavigation.design.groups.map(g=>g.id),'settings']);
   assert.deepEqual(order,designed,'desktop top menu follows the configured categories');
-  assert.equal(await p.locator('#utilityButton-wishingLake').isVisible(),true,'the wishing lake keeps its header entrance');
+  assert.equal(await p.evaluate(()=>EmberwildNavigation.design.groups.find(g=>g.id==='missions').pages.some(x=>x.id==='wishingLake')),true,'the wishing lake is a missions page');
+  assert(await p.evaluate(()=>{const u=document.getElementById('utilityNavigation').getBoundingClientRect(),a=document.querySelector('.layout>aside').getBoundingClientRect();return u.bottom<=a.top&&u.top<100&&u.right>=innerWidth-40;}),'utility buttons stay at the top right');
   const rects=await p.evaluate(()=>['aside','main','#globalBattleJournal'].map(s=>{const r=document.querySelector('.layout').querySelector(s).getBoundingClientRect();return {x:r.x,right:r.right,y:r.y,bottom:r.bottom};}));
-  assert(rects[0].bottom<=rects[1].y+1&&rects[0].bottom<=rects[2].y+1,'desktop menu sits above the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
+  assert(rects[0].y>=rects[1].bottom-1&&rects[0].y>=rects[2].bottom-1,'desktop menu sits below the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
   await p.evaluate(()=>returnToTitle());assert.equal(await p.locator('.mobile-more-toggle').count(),0);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

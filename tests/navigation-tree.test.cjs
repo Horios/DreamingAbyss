@@ -7,7 +7,7 @@ test('navigation defaults group every page once in the top menu categories',()=>
   const runtime=loadRuntime(root),design=json(runtime,'EmberwildNavigation.design');
   assert.deepEqual(design.groups.map(group=>group.label),['探索','隊伍','技能','裝備','背包','夥伴','角色','任務','商店','生活']);
   assert(design.groups.every(group=>group.expanded===false));
-  assert.deepEqual(design.groups.find(group=>group.id==='missions').pages.map(page=>page.label),['主線','支線','NPC 任務','委託']);
+  assert.deepEqual(design.groups.find(group=>group.id==='missions').pages.map(page=>page.label),['主線','支線','NPC 任務','委託','許願湖']);
   assert.deepEqual(design.groups.find(group=>group.id==='life').pages.map(page=>page.label),['採集','煉金']);
   const pageIds=design.groups.flatMap(group=>group.pages.map(page=>page.id));
   assert.equal(new Set(pageIds).size,pageIds.length);
