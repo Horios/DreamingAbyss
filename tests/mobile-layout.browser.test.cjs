@@ -127,6 +127,8 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   assert(await p.locator('.start').evaluate(e=>e.scrollWidth<=e.clientWidth));
   await p.evaluate(()=>{start(0);clearInterval(timer);closeModal();});await p.waitForTimeout(60);await p.evaluate(()=>closeModal());
   for(const id of ['mailbox','achievements','options']){
+   // A catch-up started by the short wait above may still be running; only a settled dialog must carry a receipt.
+   await p.waitForFunction(()=>!globalThis.EmberwildOffline?.busy,{},{timeout:30000});
    const overlay=await p.evaluate(()=>{const el=document.getElementById('offline-settlement'),c=party?.offlineExploration;return {visible:!!el&&!el.hidden,receipt:!!c?.receipt?.complete,stage:c?.status};});
    if(overlay.visible){
     assert(overlay.receipt,'offline dialog must have a completed reward receipt: '+JSON.stringify(overlay));

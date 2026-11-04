@@ -69,7 +69,8 @@ test('Designer links multiple real achievements and exports rules that produce g
 test('Duplicate tickets convert once with a popup and configurable gold; failed saves and gold cap preserve the voucher',t=>{
  if(!fs.existsSync(path.join(editor,'balance-editor.html')))return t.skip('Requires private balance editor fixture');
  const e=loadRuntime(editor,'balance-editor.html');e.run("selectCompanionUnlock(10);document.getElementById('companionDuplicateGold').onchange({target:{value:'123'}})");assert.deepEqual(json(e,'validateData()'),[]);
- const r=game();r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);party.achievements.tickets[10]=2;globalThis.gold=state.gold;');assert.match(r.run('accountItemsView()'),/轉換金幣/);
+ const r=game();r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);party.achievements.tickets[10]=2;globalThis.gold=state.gold;');// Compact item slots; the conversion amount is checked by actually using the duplicate ticket below.
+ assert.match(r.run('accountItemsView()'),/data-item-key="companion-ticket-10"[^>]*data-item-quantity="2"/);
  assert.equal(r.run('useCompanionRecruitmentTicket(10)'),true);assert.equal(r.run('state.gold'),r.run('gold+123'));assert.equal(r.run('companionTicketCount(10)'),1);assert.match(r.elements.get('modal').innerHTML,/已解鎖/);assert.match(r.elements.get('modal').innerHTML,/123 金幣/);assert.equal(r.elements.get('modal').open,true);
  r.run('closeModal();globalThis.originalSave=save;save=()=>false;globalThis.gold=state.gold');assert.equal(r.run('useCompanionRecruitmentTicket(10)'),false);assert.equal(r.run('state.gold'),r.run('gold'));assert.equal(r.run('companionTicketCount(10)'),1);assert.equal(r.elements.get('modal').open,false);
  r.run('save=originalSave;state.gold=1e12');assert.equal(r.run('useCompanionRecruitmentTicket(10)'),false);assert.equal(r.run('companionTicketCount(10)'),1);assert.equal(r.run('state.gold'),1e12);

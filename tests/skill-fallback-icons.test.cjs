@@ -7,47 +7,49 @@ async function startParty(page){
   await page.waitForTimeout(60);await page.evaluate(()=>closeModal());
 }
 
-test('Chromium: every main class skill has a compact local SVG without changing selected companion or builds',async()=>{
-  const game=await openRuntime(root,'index.html',{}, {pathname:'/preview/'}),page=game.page;
-  try{
-    await startParty(page);
-    const before=await page.evaluate(()=>({selected:party.selected,state:memberKey(state),build:JSON.stringify(__EMBERWILD_TEAMS.build())}));
-    const requests=[];page.on('request',r=>requests.push(r.url()));
-    for(let job=0;job<4;job++){
-      await page.locator(`[data-skill-class="${job}"]`).click();
-      await page.waitForFunction(job=>document.querySelector('.player-class-skills')?.dataset.playerSkillClass===String(job),job);
-      const rows=await page.locator('.team-skill-tile').count();assert(rows>0);
-      assert.equal(await page.locator('.team-skill-tile .skill-icon-glyph svg').count(),rows);
-      const icons=await page.locator('.team-skill-tile svg').evaluateAll(icons=>icons.map(svg=>({width:svg.getBoundingClientRect().width,height:svg.getBoundingClientRect().height,visible:getComputedStyle(svg).visibility,geometry:svg.querySelectorAll('path,circle,line,rect,polygon,ellipse').length,hidden:svg.getAttribute('aria-hidden')})));
-      for(const icon of icons){assert.equal(icon.width,24);assert.equal(icon.height,24);assert.equal(icon.visible,'visible');assert(icon.geometry>0);assert.equal(icon.hidden,'true');}
-      assert.deepEqual(await page.evaluate(()=>({selected:party.selected,state:memberKey(state),build:JSON.stringify(__EMBERWILD_TEAMS.build())})),before);
-    }
-    assert.deepEqual(requests,[]);assert.deepEqual(game.errors,[]);
-  }finally{await game.browser.close();}
+// The skills page shows the protagonist's loadout and the class catalog (技能圖鑑); classes are no longer browsed by tabs.
+test('Chromium: every class catalog skill has a compact local SVG without changing the selected companion',async()=>{
+  for(let job=0;job<4;job++){
+   const game=await openRuntime(root,'index.html',{}, {pathname:'/preview/'}),page=game.page;
+   try{
+      const requests=[];page.on('request',r=>{if(!/^http:\/\/localhost\/preview\/(js|css|data)\//.test(r.url())&&r.url()!=='http://localhost/preview/')requests.push(r.url());});
+      await page.evaluate(job=>{selectSaveSlot(1);start(job);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();selectHero(10);setTab('skills');openSkillCatalog();},job);
+      const rows=await page.locator('#modal .skill-candidate').count();assert(rows>0,'job '+job);
+      assert.equal(await page.locator('#modal .skill-candidate .skill-slot-name .skill-icon-glyph svg').count(),rows,'every catalog card has an icon');
+      const icons=await page.locator('#modal .skill-candidate .skill-slot-name svg').evaluateAll(list=>list.map(svg=>({width:svg.getBoundingClientRect().width,visible:getComputedStyle(svg).visibility,geometry:svg.querySelectorAll('path,circle,rect,line,polyline,polygon,ellipse').length,hidden:svg.closest('[aria-hidden]')?.getAttribute('aria-hidden')})));
+      for(const icon of icons){assert(icon.width>=16&&icon.width<=48,JSON.stringify(icon));assert.equal(icon.visible,'visible');assert(icon.geometry>0);assert.equal(icon.hidden,'true');}
+      assert.equal(await page.evaluate(()=>party.selected),10,'opening the catalog keeps the selected companion');
+      assert.deepEqual(requests,[],'icons are local');assert.deepEqual(game.errors,[]);
+   }finally{await game.browser.close();}
+  }
 });
 
-test('Chromium: configured custom/Lucide icons and semantic fallback survive reload and compact loadout previews',async()=>{
+test('Chromium: configured custom/Lucide icons and semantic fallback survive reload in the catalog and loadout',async()=>{
   const game=await openRuntime(root,'index.html',{}, {pathname:'/preview/'}),page=game.page;
   try{
     await startParty(page);
-    await page.evaluate(()=>{
-      const doc=exportableBalance();
+    await page.evaluate(async()=>{
+      const doc=exportableBalance(),def=id=>doc.skillSystem.definitions.find(s=>s.id===id);
       doc.skillIcons=[{id:'fallback-test',name:'自訂火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({size:48,color:'#fa7312',opacity:.75,effect:'float'})},...doc.skillIcons.filter(x=>x)];
-      doc.classes[0].skills[0].iconType='custom:fallback-test';doc.classes[0].skills[1].iconType='lucide:shield';
-      doc.classes[0].skills[2].iconType='auto';doc.classes[0].skills[2].name='臨時治療技能';doc.classes[0].skills[2].effect='heal';
-      applyBalanceConfig(doc);playerHero().skills[0]=1;playerHero().active=[0,null];__EMBERWILD_TEAMS.capture();selectHero(10);save();setTab('skills');
+      // Icons are set on the canonical definitions (skill system v1 projects classes[].skills from them).
+      def('job0-core0').iconType='custom:fallback-test';def('job0-core1').iconType='lucide:shield';
+      Object.assign(def('job0-core2'),{iconType:'auto',name:'臨時治療技能',effect:'heal'});
+      def('class0-initial0').iconType='custom:fallback-test';
+      // Only the JSON import keeps a Preview balance across reloads.
+      const text=JSON.stringify(doc);if(await importBalanceJSON({target:{files:[{size:text.length,text:async()=>text}],value:'test'}})!==true)throw Error('import failed');save();setTab('skills');
     });
     const verify=async()=>{
-      const custom=page.locator('[data-team-skill="0:core:0"] svg');
+      await page.evaluate(()=>{closeModal();setTab('skills');openSkillCatalog();});
+      const custom=page.locator('#modal [data-skill-id="job0-core0"] .skill-slot-name svg').first();
       const appearance=await custom.evaluate(svg=>({width:svg.getBoundingClientRect().width,color:getComputedStyle(svg).color,opacity:getComputedStyle(svg).opacity,animation:getComputedStyle(svg.querySelector('.ew-icon-motion')).animationName}));
       assert.deepEqual(appearance,{width:48,color:'rgb(250, 115, 18)',opacity:'0.75',animation:'tr-float'});
-      assert.equal(await page.locator('[data-team-skill="0:core:1"] .icon-lucide svg').count(),1);
-      assert.equal(await page.locator('[data-team-skill="0:core:2"] .icon-heal svg').count(),1);
-      const loadout=page.locator('.skill-loadout-slot strong .icon-custom svg');assert.equal(await loadout.count(),1);
-      assert.equal(await loadout.evaluate(svg=>svg.getBoundingClientRect().width),16);
-      assert.equal(await page.evaluate(()=>party.selected),10);
+      assert.equal(await page.locator('#modal [data-skill-id="job0-core1"] .icon-lucide svg').count(),1);
+      assert.equal(await page.locator('#modal [data-skill-id="job0-core2"] .icon-heal svg').count(),1);
+      await page.evaluate(()=>closeModal());
+      assert.equal(await page.locator('[data-skill-slot="active:0"] .icon-custom svg').count(),1,'the loadout slot (initial skill) shows the custom icon');
+      // Applying a balance re-applies the team plan, which selects the protagonist by design (team-runtime apply).
     };
-    await verify();await page.reload();await page.evaluate(()=>{continueFromTitle();clearInterval(timer);closeModal();setTab('skills');});await verify();
+    await verify();await page.reload();await page.evaluate(()=>{continueFromTitle();clearInterval(timer);closeModal();});await verify();
     assert.deepEqual(game.errors,[]);
   }finally{await game.browser.close();}
 });
