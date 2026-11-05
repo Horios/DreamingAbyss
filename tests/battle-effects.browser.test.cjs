@@ -89,7 +89,9 @@ test('desktop/mobile animation frames preserve icon boxes and readable HP; captu
    await p.evaluate(()=>{recordAction(heroKey(state),characterName(state),'技能');fxCapture(()=>foes.forEach(e=>resolveHit(e,50,state,'fire',false)));});await p.clock.runFor(100);
    assert.deepEqual(await p.locator('#battleEnemyIcons .unit [data-enemy-id]').evaluateAll(ns=>ns.map(n=>({w:n.offsetWidth,h:n.offsetHeight}))),before);
    assert.equal(await p.locator('#battleEnemyIcons .is-elite').count(),1);assert.equal(await p.locator('#battleAllyIcons .is-acting').count(),1);
-   assert(await p.locator('[data-summary-hp]').isVisible());assert(await p.locator('#battleEnemyIcons').isVisible());
+   assert(await p.locator('#battleEnemyIcons').isVisible());
+   // v0.087: on phones the battle summary (with its HP bar) is read in the 戰況 dialog.
+   if(size.width<=900)await p.evaluate(()=>toggleMobileReport(true));assert(await p.locator('[data-summary-hp]').isVisible());if(size.width<=900)await p.evaluate(()=>toggleMobileReport(false));
    await p.locator('#battleEnemyIcons').screenshot({path:'/tmp/emberwild-fx-icons-'+size.width+'.png'});await p.screenshot({path:'/tmp/emberwild-fx-'+size.width+'.png'});await p.clock.runFor(1600);
   }
   await p.setViewportSize({width:1440,height:900});await p.evaluate(()=>{for(const h of heroes())h.hp=1;fxCapture(()=>{EmberwildBattleEffects.scope({mode:'skill'},()=>heroes()[1].hp+=10);applyPureShield(heroes()[0],300);});});await p.clock.runFor(100);await p.screenshot({path:'/tmp/emberwild-fx-recovery.png'});assert.deepEqual(g.errors,[]);
