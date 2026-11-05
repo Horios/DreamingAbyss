@@ -197,3 +197,12 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #app .seconds-destination-bar>select{margin-left:4px}
 #app .seconds-destination-bar>.seconds-destination-types{flex:0 0 auto}
 #app .game-subtabs>.seconds-destination-bar.in-subtabs>select{min-width:0;width:240px;max-width:240px}
+/* v0.079: centered side titles (the survivor count stays on the right), divider between the sides, and a footer under the allies with the phase text and the 主要／冷卻／狀態 switch. */
+#app .seconds-side-head{position:relative;justify-content:center!important}
+#app .seconds-side-head>.seconds-side-title{font-size:13px;font-weight:700;color:var(--text,#e4e8de);letter-spacing:.08em}
+#app .seconds-side-head>.seconds-side-title+span{position:absolute;right:2px;top:50%;transform:translateY(-50%)}
+#app .seconds-divider{height:1px;background:var(--line)}
+#app .seconds-field-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+#app .seconds-field-foot>.seconds-side-note{margin:0;text-align:left}
+#app .seconds-field-foot>.seconds-face-switch{margin:0}
+#app .seconds-battlefield .seconds-side-ally{border-top:0;padding-top:0}
