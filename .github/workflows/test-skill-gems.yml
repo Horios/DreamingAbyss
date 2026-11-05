@@ -53,7 +53,7 @@ jobs:
               tests/offline-exploration.test.cjs
           - group: offline-lifecycle
             tests: >-
-              tests/offline-fast.test.cjs tests/offline-final-stage.test.cjs tests/gameplay-lifecycle-audit.test.cjs tests/idle-statistics.test.cjs tests/offline-clock-step.test.cjs tests/region-vouchers.test.cjs tests/voucher-average.test.cjs tests/visual-standard.test.cjs
+              tests/offline-fast.test.cjs tests/offline-final-stage.test.cjs tests/gameplay-lifecycle-audit.test.cjs tests/idle-statistics.test.cjs tests/offline-clock-step.test.cjs tests/region-vouchers.test.cjs tests/voucher-average.test.cjs tests/visual-standard.test.cjs tests/equipment-skill-class-limit.test.cjs
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
