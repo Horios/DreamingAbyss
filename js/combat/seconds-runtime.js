@@ -12,21 +12,24 @@
  const timing=s=>s?.timing||source.skillSystem.definitions.find(x=>x.id===s?.id)?.timing;
  const statusList=()=>EmberwildStatusCombatState.seconds.instances(),statusDefs=()=>EmberwildStatusCombatState.seconds.definitions();
  const actorInterval=h=>config().classes.find(x=>x.job===h.job).baseIntervalSeconds;
+ // Cooldown reductions written in legacy action units convert at the fixed action reference (v0.074), so
+ // per-class basic attack intervals do not change any skill or equipment effect.
+ const actionUnit=()=>config().actionReferenceSeconds;
  const mono=()=>engine?engine.now/1e6:partyClock;
  function mana(h){
   const c=config().mana;if(!Object.hasOwn(h,'job')){const t=source.balanceSettings.monsters.catalog.find(m=>m.id===h.monsterId)?.timing||{};return {maxMp:t.maxMp??c.maxMp,regen:t.regenPerSecond??c.regenPerSecond,cost:t.costMultiplier??c.costMultiplier};}const extras=equipment(h).map(g=>g.mana??itemForm(g)?.mana).filter(Boolean);
   return {maxMp:Math.max(1,(h.mana?.maxMp??c.maxMp)+extras.reduce((n,x)=>n+(Number(x.maxMp)||0),0)),regen:Math.max(0,(h.mana?.regenPerSecond??c.regenPerSecond)+extras.reduce((n,x)=>n+(Number(x.regenPerSecond)||0),0)),cost:Math.max(0,(h.mana?.costMultiplier??c.costMultiplier)-extras.reduce((n,x)=>n+(Number(x.costReduction)||0),0))};
  }
  function skillCooldownSeconds(h,s){
-  const t=timing(s),factor=actorInterval(h),flat=allSkillCooldownReduction(h)+(s.adapter.kind==='core'?bonusFor(s.adapter.index,5,h):0);
+  const t=timing(s),factor=actionUnit(),flat=allSkillCooldownReduction(h)+(s.adapter.kind==='core'?bonusFor(s.adapter.index,5,h):0);
   return Math.max(config().minimumActionIntervalSeconds,t.cooldownSeconds-flat*factor);
  }
- function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance?actorInterval(h):0;}
+ function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance?actionUnit():0;}
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
   const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i))].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
    (GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===x.monsterId)?.skillAssignments||[]).map(r=>skill(r.skillId)).filter(s=>s?.type==='active'&&!s.disabled&&x.lv>=(s.requiredLevel||1)&&sharedSkillScopeAllowsEnemy(s.usageScope||'character',x.kind));
-  const skills=[...new Map(rows.map(s=>[s.id,s])).values()].map(s=>{const t=timing(s);return {id:s.id,type:'active',cooldownSeconds:hero?skillCooldownSeconds(x,s):t.cooldownSeconds,castSeconds:t.castSeconds,actionCostSeconds:t.actionCostSeconds,mpCost:t.mpCost,priority:t.priority};});
+  const skills=[...new Map(rows.map(s=>[s.id,s])).values()].map(s=>{const t=timing(s);return {id:s.id,type:'active',cooldownSeconds:hero?skillCooldownSeconds(x,s):t.cooldownSeconds,initialReadyInSeconds:Schema.initialCooldownSeconds(s.timing?s:{...s,timing:t}),castSeconds:t.castSeconds,actionCostSeconds:t.actionCostSeconds,mpCost:t.mpCost,priority:t.priority};});
   return {id:key(x),baseIntervalSeconds:hero?actorInterval(x):source.balanceSettings.monsters.catalog.find(m=>m.id===x.monsterId)?.timing.baseIntervalSeconds??config().actionReferenceSeconds,
    speed:hero?battleStats(x).speed:combatSpeed(x),mp:Math.max(0,Math.min(m.maxMp,Number.isFinite(x.mp)?x.mp:m.maxMp)),maxMp:m.maxMp,mpRegenPerSecond:m.regen,skills};
  }
@@ -71,6 +74,9 @@
   for(const a of engine.actors){const x=unit(a.definition.id);a.alive=!!x&&x.hp>0;}
   syncResources();
  }
+ // v0.074: every encounter re-initializes every actor's basic charge, active/support initial cooldowns and
+ // trigger cooldowns; out-of-combat time never counts toward the next encounter's skill cooldowns.
+ function startEncounterTimers(){engine.resetEncounter(engine.actors.map(a=>a.definition.id));procReady={};}
  function syncResources(){
   if(!engine)return;
   for(const a of engine.actors){const x=unit(a.definition.id);if(!x)continue;
@@ -237,14 +243,15 @@
    if(!ended&&foes.length&&finish()&&phase==='recovery'){scheduledAt=recoveryUntil;return {delaySeconds:Math.max(.000001,recoveryUntil-mono())};}
    if(!running)return {delaySeconds:config().encounterDelaySeconds};
    const next=Math.max(mono(),scheduledAt);engine.advanceTo(next,{maxEvents:1});clock(next);
-   spawnGroup();ended=false;encounterStart=partyClock;syncRoster();
+   spawnGroup();ended=false;encounterStart=partyClock;syncRoster();startEncounterTimers();
    const before=new Set(effects);
    for(const h of heroes()){
     __EMBERWILD_TOKEN_TEST.ensureBattle(h);const g=__EMBERWILD_TOKEN_TEST.item(h);if(g?.snapshot.ability.event==='round'){const t=tokenTiming(g);addTimer('token:'+key(h),key(h),null,t.triggerIntervalSeconds,{kind:'token'});const timer=engine.statuses.find(s=>s.id==='token:'+key(h));timer.next=engine.now+Math.round(t.firstTriggerSeconds*1e6);}
    }
    scheduleEffects(before,null,null);
   }else if(!engine.actors.length||needsRoster){
-   encounterStart=partyClock;syncRoster();
+   const fresh=!engine.actors.some(a=>foes.some(e=>key(e)===a.definition.id));
+   encounterStart=partyClock;syncRoster();if(fresh)startEncounterTimers();
    const before=new Set(effects);
    for(const h of heroes()){
     __EMBERWILD_TOKEN_TEST.ensureBattle(h);const g=__EMBERWILD_TOKEN_TEST.item(h);if(g?.snapshot.ability.event==='round'){
@@ -295,7 +302,9 @@
  }
  const oldValidate=validateBalanceConfig,oldApply=applyBalanceConfig,oldExport=exportableBalance;
  validateBalanceConfig=function(input){if(importing)return oldValidate(input);Schema.assertJSON(input);const d=Schema.normalize(input);return Schema.attach(oldValidate(Schema.legacy(d)),d);};
- applyBalanceConfig=function(input,options={}){Schema.assertJSON(input);const d=Schema.normalize(input);importing++;let out;try{out=oldApply(Schema.legacy(d),{...options,persist:false});}finally{importing--;}install(Schema.normalize(Schema.attach(oldExport(),d)));engine=null;owner=party;if(party?.offlineExploration?.combat?.seconds)restore(party.offlineExploration.combat.seconds);else if(party&&foes.length)migrateLegacy();if(options.persist!==false)localStorage.setItem(BALANCE_KEY,JSON.stringify(exportableBalance()));return out;};
+ // A failed import is rolled back by inner layers with a document exported while importing, which has no seconds fields;
+ // restore the seconds rules in force before this import so monster intervals and skill timing are not reset to defaults.
+ applyBalanceConfig=function(input,options={}){Schema.assertJSON(input);const d=Schema.normalize(input),prior=source;importing++;let out,failed=true;try{out=oldApply(Schema.legacy(d),{...options,persist:false});failed=false;}finally{importing--;if(failed&&importing===0)install(prior);}install(Schema.normalize(Schema.attach(oldExport(),d)));engine=null;owner=party;if(party?.offlineExploration?.combat?.seconds)restore(party.offlineExploration.combat.seconds);else if(party&&foes.length)migrateLegacy();if(options.persist!==false)localStorage.setItem(BALANCE_KEY,JSON.stringify(exportableBalance()));return out;};
  exportableBalance=function(){const d=oldExport();return importing?d:Schema.attach(d,source);};
  const oldEnemyCast=castEnemySharedSkill;castEnemySharedSkill=function(e,s,...args){const d=skill(s?.id);if(d?.type!=='proc')return oldEnemyCast(e,s,...args);const k=key(e)+':'+d.id;if((procReady[k]||0)>partyClock)return false;const out=oldEnemyCast(e,s,...args);if(out!==false)procReady[k]=partyClock+(timing(d)?.cooldownSeconds||0);return out;};
  const oldCast=castPartySkill,oldSupport=castSupport;
@@ -329,7 +338,7 @@
  globalThis.EmberwildSecondsCombat={active:true,maxEncounterSize:MAX_FOES,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
   encounterSize(){party.currentHuntingMode=party.huntingMode||'single';if(party.currentHuntingMode==='single')return 1;const weights=config().groupWeights,total=weights.reduce((a,b)=>a+b,0);let pick=Math.random()*total;for(let i=0;i<weights.length;i++)if((pick-=weights[i])<0)return i+3;return 5;},
   validateSnapshot(raw){if(raw!==null){if(raw.phase!==undefined&&!['combat','recovery'].includes(raw.phase)||raw.recoveryUntil!==undefined&&(!Number.isFinite(raw.recoveryUntil)||raw.recoveryUntil<0)||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
-  reduceCooldowns(h,legacyAmount){if(engine?.actors.some(a=>a.definition.id===key(h)))engine.reduceCooldowns(key(h),legacyAmount*actorInterval(h));},
+  reduceCooldowns(h,legacyAmount){if(engine?.actors.some(a=>a.definition.id===key(h)))engine.reduceCooldowns(key(h),legacyAmount*actionUnit());},
   bossMultiplier(e){const f=GAMEPLAY_SETTINGS.combat.finalBoss,schedule=config().finalBoss,elapsed=partyClock-encounterStart;if(elapsed>schedule.enrageAfterSeconds)return f.enrageMultiplier;e.secondsSpecialAt??=encounterStart+schedule.specialIntervalSeconds;if(partyClock>=e.secondsSpecialAt){while(e.secondsSpecialAt<=partyClock)e.secondsSpecialAt+=schedule.specialIntervalSeconds;return f.specialMultiplier;}return 1;}
  };
  install(source);

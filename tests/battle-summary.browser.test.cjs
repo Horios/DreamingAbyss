@@ -72,6 +72,8 @@ test('offline replay skips icon rendering and settles to the effective encounter
    if(i>=11&&await p.evaluate(()=>foes.some(e=>e.hp<e.maxhp)))break;
   }
   await p.evaluate(async()=>{if(EmberwildOffline.busy)await EmberwildOffline.settle(undefined,false);EmberwildBattleSummary.sync();});
+  // The latest event batch may hold only timers (status ticks, cooldown expiry) with no action; advance until an action batch.
+  for(let i=0;i<30&&!await p.evaluate(()=>lastActionOrder.length>0);i++){await p.clock.runFor(100);await p.evaluate(()=>tick());}
   assert(await p.evaluate(()=>partyClock>0&&lastActionOrder.length>0));assert(await p.evaluate(()=>{const s=EmberwildBattleSummary.snapshot();return s.hp<s.max&&Number($('battleSummary').querySelector('[role="progressbar"]').getAttribute('aria-valuenow'))===s.percent}));
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

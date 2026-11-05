@@ -66,7 +66,8 @@ test('finite expiry removes without explosion; caster/target clocks and disablin
 });
 
 test('mage lethal active gets its newly assigned cooldown reduced in the real round generator',()=>{
- const r=game(1);r.run(`targets(1000,2);foes[0].hp=1;state.supportSlots=[];state.active=[__EMBERWILD_SKILLS.byId('class1-initial0').adapter.index];running=true;initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];globalThis.skillIndex=state.active[0];EmberwildSecondsCombat.step();`);
+ // v0.074: skills wait for their initial cooldown each encounter; this test is about the kill reduction, so open at 0 s.
+ const r=game(1);r.run(`__EMBERWILD_SKILLS.byId('class1-initial0').timing.initialCooldownSeconds=0;targets(1000,2);foes[0].hp=1;state.supportSlots=[];state.active=[__EMBERWILD_SKILLS.byId('class1-initial0').adapter.index];running=true;initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];globalThis.skillIndex=state.active[0];EmberwildSecondsCombat.step();`);
  assert.equal(r.run('actorCooldowns[memberKey(state)+"-"+skillIndex]'),r.run('Math.max(.3,skillCooldown(skillIndex,state)-3)'));
  assert.equal(r.run('state.eventPassiveCooldowns["mage-mana-cycle"]'),6);assert.deepEqual(r.errors,[]);
 });
@@ -85,7 +86,7 @@ test('all four clearing builds produce identical foreground and offline combat w
  }
 });
 test('lethal support effects finish death events and reduce the new support cooldown before their yield',()=>{
- const r=game(1);r.run(`targets(1000,1);state.acquiredSkillIds??=[];state.acquiredSkillIds.push('job1-support0');__EMBERWILD_SKILLS.refreshAll();configureSkill('support',0,'job1-support0');state.active=[];castSupport=(h,i)=>{foes[0].hp=0;return true;};running=true;initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];EmberwildSecondsCombat.step();`);
+ const r=game(1);r.run(`__EMBERWILD_SKILLS.byId('job1-support0').timing.initialCooldownSeconds=0;targets(1000,1);state.acquiredSkillIds??=[];state.acquiredSkillIds.push('job1-support0');__EMBERWILD_SKILLS.refreshAll();configureSkill('support',0,'job1-support0');state.active=[];castSupport=(h,i)=>{foes[0].hp=0;return true;};running=true;initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];EmberwildSecondsCombat.step();`);
  assert.equal(r.run('foes[0].__eventDeathHandled'),true);assert.equal(r.run('state.eventPassiveCooldowns["mage-mana-cycle"]'),6);
  assert.equal(r.run('supportCooldowns[memberKey(state)+"-0"]'),r.run('Math.max(.3,supportSkillCooldown(state,0)-3)'));
 });

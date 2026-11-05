@@ -155,7 +155,7 @@ test('HP block effects preserve layout and readable bars at desktop/mobile width
  }finally{await g.browser.close();}
 });
 
-test('mage blasts retain cast and lethal HP stages across twenty encounters with continuous cooldowns',async t=>{
+test('mage blasts retain cast and lethal HP stages across twenty encounters with per-encounter cooldowns',async t=>{
  const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')}),p=g.page;
  try{
   await p.evaluate(()=>{
@@ -166,7 +166,8 @@ test('mage blasts retain cast and lethal HP stages across twenty encounters with
    new MutationObserver(rows=>{for(const row of rows)for(const n of row.addedNodes)if(n.nodeType===1&&n.matches('.battle-fx'))blastAudit.impacts.push({at:performance.now(),type:n.dataset.fx,event:n.dataset.event,unit:n.parentNode.dataset.combatId||n.parentNode.dataset.heroId||n.parentNode.dataset.enemyId,surface:n.classList.contains('battle-fx-health')?'hp':'icon'});}).observe($('app'),{subtree:true,childList:true});
    state.lv=8;state.shield=1e9;state.mana={regenPerSecond:100};syncParty();party.huntingMode='group';startSelectedExploration();
   });
-  for(let n=0;n<6000;n++){
+  // v0.074: each encounter waits for the blast's initial cooldown, so group fights last longer; allow more battle time.
+  for(let n=0;n<20000;n++){
    await p.clock.runFor(100);
    const count=await p.evaluate(()=>blastAudit.casts.length);
    if(count>=20&&await p.evaluate(()=>blastAudit.battles>=20)){await p.clock.runFor(300);break;}

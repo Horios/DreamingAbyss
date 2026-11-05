@@ -24,7 +24,7 @@
    if(seconds?.active)seconds.reduceCooldowns(h,e.reduction);
    else for(const cds of [actorCooldowns,supportCooldowns])for(const id of Object.keys(cds))if(id.startsWith(memberKey(h)+'-'))cds[id]=Math.max(0,cds[id]-e.reduction);
    h.eventPassiveCooldowns[sk.id]=e.cooldown*(seconds?.active?seconds.config().actionReferenceSeconds:1);
-   const reduction=seconds?.active?e.reduction*seconds.config().classes.find(c=>c.job===h.job).baseIntervalSeconds:e.reduction;
+   const reduction=seconds?.active?e.reduction*seconds.config().actionReferenceSeconds:e.reduction;
    note(characterName(h)+'・'+sk.name+' → 技能冷卻減少 '+reduction+(seconds?.active?' 秒':' 回合'));
   }
  }

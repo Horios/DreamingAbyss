@@ -62,6 +62,15 @@
       for(const s of d.skills)a.ready[s.id]=safeAdd(this.now,time(s.initialReadyInSeconds??0));
       this.actors.push(a);return this.actor(d.id);
     }
+    // Each encounter starts every listed actor's timers afresh: a full basic attack charge and each
+    // skill's initial cooldown; nothing carries over from the previous encounter's cooldowns.
+    resetEncounter(actorIds){
+      if(this.executing)fail('cannot reset inside event callback');
+      for(const actorId of actorIds){
+        const a=this.find(actorId);a.casting=null;a.actionAt=a.actionSpeedAt=a.actionFixedAt=this.now;a.basicAt=safeAdd(this.now,this.interval(a));
+        a.retryAt=Object.create(null);a.readyArchive=Object.create(null);for(const s of a.definition.skills)a.ready[s.id]=safeAdd(this.now,time(s.initialReadyInSeconds??0));
+      }
+    }
     find(actorId){return this.actors.find(a=>a.definition.id===actorId)||fail('unknown actor '+actorId);}
     syncActors(definitions){
       if(this.executing)fail('cannot change roster inside event callback');

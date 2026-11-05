@@ -7,7 +7,9 @@ function recovery(on){
  const drive=ms=>{for(let i=0;i<ms;i+=50){r.advance(50);r.run('tick()');}};
  for(let i=0;i<200&&r.run('EmberwildSecondsCombat.phase')!=='recovery';i++){r.run('for(const e of foes)e.hp=Math.min(e.hp,1);');drive(500);}
  assert.equal(r.run('EmberwildSecondsCombat.phase'),'recovery');
- r.run('state.hp=Math.round(stats(state).hp*.3);globalThis.mp0=EmberwildSecondsCombat.timeline.actor(heroKey(state)).mp;logs=[];');drive(2000);
+ // v0.074: the heal may have been cast during the encounter and still be on its reuse cooldown; clear it so
+ // the check isolates the option itself.
+ r.run('EmberwildSecondsCombat.timeline.reduceCooldowns(heroKey(state),3600);state.hp=Math.round(stats(state).hp*.3);globalThis.mp0=EmberwildSecondsCombat.timeline.actor(heroKey(state)).mp;logs=[];');drive(2000);
  return {r,gain:r.run('state.hp')-r.run('Math.round(stats(state).hp*.3)'),healed:r.run('logs.some(l=>/治療 → .*恢復/.test(String(l.text||l.message||l)))'),spent:r.run('mp0-EmberwildSecondsCombat.timeline.actor(heroKey(state)).mp')};
 }
 test('with the option on, recovery casts equipped heal skills, spending MP; with it off it relies on natural recovery only',()=>{
