@@ -18,12 +18,14 @@ async function start(page){
 async function fits(page,label){
  const b=await page.evaluate(()=>{
   const m=document.querySelector('.layout>main'),layout=document.querySelector('#app>.layout'),nav=document.querySelector('.layout>aside'),journal=document.querySelector('#globalBattleJournal');
-  return {inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,height:innerHeight};
+  return {hidden:getComputedStyle(journal).display==='none',dialog:journal.classList.contains('mobile-report-open'),inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,height:innerHeight};
  });
  assert(b.layoutWidth<=b.viewport+1,label+' layout width '+JSON.stringify(b));
  assert(b.mainScroll<=b.mainWidth+1,label+' horizontal overflow '+JSON.stringify(b));
  assert(b.mainHeight>=90,label+' readable main height '+JSON.stringify(b));
- if(b.inline)assert(b.mainBottom<=b.navTop+1,label+' inline journal stays in the scrollable main area');
+ // v0.087: on phones the journal is not part of the page; it only opens as the full-screen 戰況 dialog.
+ if(b.hidden||b.dialog)assert(b.mainBottom<=b.navTop+1,label+' main area ends above the navigation');
+ else if(b.inline)assert(b.mainBottom<=b.navTop+1,label+' inline journal stays in the scrollable main area');
  else{assert(b.mainBottom<=b.journalTop+1,label+' journal overlaps content');assert(b.journalBottom<=b.navTop+1,label+' nav overlaps journal');}
  assert(Math.abs(b.navBottom-b.height)<=1,label+' nav at viewport bottom');
 }
@@ -77,41 +79,37 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
  }finally{await g.browser.close();}
 });
 
-test('Mobile: folding the live journal preserves combat, filters, loot and page scrolling',async()=>{
+// v0.087: the phone journal is a full-screen 戰況 dialog opened from the header instead of a panel in the page.
+test('Mobile: the 戰況 dialog shows log, battle status and loot, keeps filters and page scroll, and closes cleanly',async()=>{
  const g=await openRuntime(root),p=g.page;
  try{
   await p.setViewportSize({width:390,height:844});await start(p);
   await p.evaluate(()=>{setTab('character');document.querySelector('main').scrollTop=220;});
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),false);
-  await p.locator('.mobile-journal-toggle').click();
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),true);
+  assert.equal(await p.locator('#globalBattleJournal').isVisible(),false,'no journal panel in the page');
+  assert.match(await p.locator('#mobileReportButton').innerText(),/^戰況/);
+  await p.locator('#mobileReportButton').click();
+  for(const part of ['#mobileJournalBody','#globalBattleJournal .battle-summary','#mobileLootBody','.mobile-report-close'])assert.equal(await p.locator(part).isVisible(),true,part);
   await p.locator('.journal-filter select').selectOption('item');
   await p.evaluate(()=>render());
-  assert.equal(await p.locator('.mobile-journal-toggle').getAttribute('aria-expanded'),'true');
+  assert.equal(await p.locator('#globalBattleJournal').isVisible(),true,'the dialog stays open through redraws');
   assert.equal(await p.locator('.journal-filter select').inputValue(),'item');
-  assert.equal(await p.locator('main').evaluate(e=>e.scrollTop),220);
-  await p.locator('.mobile-loot-toggle').click();
-  await p.waitForFunction(()=>!isEmberwildUIInteracting());
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),false);
-  assert.equal(await p.locator('#mobileLootBody').isVisible(),true);
   await p.evaluate(()=>{expeditionLoot.items.set('手機測試素材',{count:3,rar:1});refreshGlobalJournal();});
-  assert.equal(await p.locator('#mobileLootBody details').count(),0);
   await p.waitForFunction(()=>document.querySelector('#journalLootList').textContent.includes('手機測試素材'));
-  await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop=e.scrollHeight);
-  await p.waitForTimeout(30);
+  assert.equal(await p.locator('#mobileLootBody details').count(),0);
+  await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop=e.scrollHeight);await p.waitForTimeout(30);
   const lootScroll=await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop);
   await p.evaluate(()=>refreshGlobalJournal());
   assert.equal(await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop),lootScroll);
-  await p.locator('.mobile-loot-toggle').click();
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),false);
-  // Layout interactions can leave a throttled wall-clock catch-up pending.
+  await p.locator('.mobile-report-close').click();
+  assert.equal(await p.locator('#globalBattleJournal').isVisible(),false);
+  assert.equal(await p.locator('main').evaluate(e=>e.scrollTop),220,'the page keeps its scroll position');
   await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);toggleBattle();clearInterval(timer);render();});
   assert.equal(await p.evaluate(()=>running),true);
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),false);
-  await p.locator('.mobile-journal-toggle').click();
+  await p.locator('#mobileReportButton').click();
   await p.locator('.journal-actions button[onclick="stopTeamExploration()"]').click();
   await p.waitForFunction(()=>!running);
-  await p.setViewportSize({width:844,height:390});await fits(p,'landscape open journal');
+  await p.keyboard.press('Escape');assert.equal(await p.locator('#globalBattleJournal').isVisible(),false,'Escape closes the dialog');
+  await p.setViewportSize({width:844,height:390});await fits(p,'landscape');
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
@@ -288,7 +286,7 @@ test('Mobile: messages and loot are sibling panels without shared or nested scro
  try{
   await p.setViewportSize({width:390,height:844});await start(p);
   await p.evaluate(()=>{for(let i=0;i<45;i++)note('手機長戰報 '+i+' · 玩家造成傷害與狀態文字完整顯示','playerDamage');for(let i=0;i<30;i++)expeditionLoot.items.set('素材 '+i,{count:i+1,rar:0});journalLootOpen=true;render();});
-  await p.locator('.mobile-journal-toggle').click();
+  await p.locator('#mobileReportButton').click();
   const scrollAreas=()=>[...document.querySelectorAll('#mobileJournalBody *')].filter(e=>e.clientHeight>0&&e.scrollHeight>e.clientHeight+1&&['auto','scroll'].includes(getComputedStyle(e).overflowY)).map(e=>e.className);
   assert.deepEqual(await p.evaluate(scrollAreas),[],'no nested vertical scroll areas');
   assert(await p.locator('#mobileJournalBody').evaluate(e=>e.scrollHeight>e.clientHeight));
@@ -314,8 +312,8 @@ test('Mobile: messages and loot are sibling panels without shared or nested scro
   assert.equal(await p.locator('#mobileLootBody #liveLog').count(),0);
   const siblings=await p.evaluate(()=>document.getElementById('mobileJournalBody').parentElement.parentElement===document.getElementById('mobileLootBody').parentElement.parentElement);
   assert(siblings,'panels are siblings');
-  await p.locator('.mobile-loot-toggle').click();
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),false);
+  // v0.087: in the 戰況 dialog the log and the loot are shown together as sibling scroll areas.
+  assert.equal(await p.locator('#mobileJournalBody').isVisible(),true);
   assert.equal(await p.locator('#mobileLootBody').isVisible(),true);
   assert.equal(await p.locator('#mobileLootBody details').count(),0,'loot has no second disclosure');
   assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('#mobileLootBody *')].filter(e=>e.clientHeight>0&&e.scrollHeight>e.clientHeight+1&&['auto','scroll'].includes(getComputedStyle(e).overflowY)).map(e=>e.className)),[]);
@@ -328,9 +326,8 @@ test('Mobile: messages and loot are sibling panels without shared or nested scro
    await p.setViewportSize(viewport);await fits(p,'separate loot '+viewport.width);
    assert(await p.locator('#globalBattleJournal').evaluate(e=>e.scrollHeight<=e.clientHeight+1),'no shared outer scroll');
   }
-  await p.locator('.mobile-journal-toggle').click();
-  assert.equal(await p.locator('#mobileLootBody').isVisible(),false);
-  await fits(p,'separate journal landscape');
+  await p.locator('.mobile-report-close').click();
+  await fits(p,'closed dialog landscape');
   await p.setViewportSize({width:1440,height:900});
   assert.equal(await p.locator('.mobile-loot-toggle').isVisible(),false);
   assert.equal(await p.locator('.journal-loot-compact').count(),1,'desktop keeps its loot disclosure');
@@ -359,7 +356,7 @@ test('Journal: loot collapse survives immediate redraws, queued toggle events an
   await p.evaluate(()=>document.getElementById('journalLootList').click());assert.equal(await p.evaluate(()=>journalLootOpen),true,'loot content clicks do not toggle');
   await p.locator('.journal-loot-compact summary').focus();await p.keyboard.press('Enter');
   assert.equal(await p.evaluate(()=>journalLootOpen),false,'keyboard can collapse');
-  for(const width of [1440,390]){
+  for(const width of [1440]){
    await p.setViewportSize({width,height:900});
    const selector=width===390?'.mobile-loot-toggle':'.journal-loot-compact summary';
    for(let i=0;i<4;i++){
@@ -379,6 +376,11 @@ test('Journal: loot collapse survives immediate redraws, queued toggle events an
    }
    await p.evaluate(()=>clearInterval(foldRefresh));
   }
+  // v0.087: phones show the loot inside the 戰況 dialog without a fold; it stays visible through the 30 ms refresh loop.
+  await p.setViewportSize({width:390,height:900});await p.waitForFunction(()=>!isEmberwildUIInteracting());
+  await p.locator('#mobileReportButton').click();await p.evaluate(()=>globalThis.foldRefresh=setInterval(()=>refreshGlobalJournal(),30));
+  for(let i=0;i<4;i++){await p.waitForTimeout(60);assert.equal(await p.locator('#mobileLootBody').isVisible(),true,'loot stays visible '+i);assert.equal(await p.locator('#globalBattleJournal.mobile-report-open').count(),1);}
+  await p.evaluate(()=>clearInterval(foldRefresh));
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

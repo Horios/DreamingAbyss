@@ -154,3 +154,20 @@
   #app>.start{padding:16px;margin:0;height:100%;overflow:auto}#app .start .cards{grid-template-columns:minmax(0,1fr)}
 }
 @media(min-width:601px) and (max-width:900px){#app .squad-field{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* v0.087: the phone battle journal is removed from the page; the header 戰況 button opens it full screen with log, battle status and loot. */
+.mobile-report-button,.mobile-report-head{display:none}
+@media(max-width:900px){
+  #app .global-battle-journal:not(.mobile-report-open){display:none!important}
+  /* A full-height column: the log and the loot are sibling scroll areas; the dialog itself does not scroll. */
+  #app .global-battle-journal.mobile-report-open{display:flex!important;flex-direction:column;position:fixed;inset:0;z-index:950;height:100dvh!important;max-height:none!important;overflow:hidden!important;background:var(--bg,#101614);padding:0 0 env(safe-area-inset-bottom)!important;border:0}
+  .mobile-report-open>.mobile-report-head{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));background:#181e22;border-bottom:1px solid var(--line)}
+  .mobile-report-open>.mobile-report-head b{font-size:16px;color:var(--gold)}
+  .mobile-report-open .mobile-report-close{min-height:40px;padding:6px 16px}
+  .mobile-report-open .mobile-journal-toggle,.mobile-report-open .mobile-loot-toggle{display:none!important}
+  .mobile-report-open>.mobile-journal-report{display:flex!important;flex-direction:column;flex:1 1 58%;min-height:0;padding:10px 14px 0;border-bottom:1px solid var(--line)}
+  .mobile-report-open .mobile-journal-body{display:block!important;flex:1 1 auto;min-height:0;max-height:none!important;overflow:auto!important;overscroll-behavior:contain;padding:0 0 8px}
+  .mobile-report-open>.battle-summary{flex:0 0 auto;margin:8px 14px}
+  .mobile-report-open>.mobile-journal-loot{display:flex!important;flex-direction:column;flex:1 1 32%;min-height:0;border-top:1px solid var(--line)}
+  .mobile-report-open .mobile-loot-body{display:block!important;flex:1 1 auto;min-height:0;max-height:none!important;overflow:auto!important;overscroll-behavior:contain;padding:10px 14px}
+  #utilityNavigation>.mobile-report-button{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;color:var(--gold);border-color:color-mix(in srgb,var(--gold) 50%,var(--line));font-weight:700}
+}

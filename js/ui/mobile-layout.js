@@ -6,7 +6,8 @@
   // shortcuts are matched by the category that owns each primary page.
   const groupOf=id=>globalThis.EmberwildNavigation?.design.groups.find(g=>g.pages.some(p=>p.id===id))?.id;
   const shortcutIndex=button=>{const group=button.dataset.navGroup;return group?primary.findIndex(id=>groupOf(id)===group):primary.indexOf(button.dataset.page);};
-  let menuOpen=false,journalOpen=false,lootOpen=false,lootScroll=0,menuScroll=0,pendingSkill=null,journalSeen=false;
+  // reportOpen (v0.087): on phones the battle journal is not part of the page; a 戰況 button in the header opens it as a full-screen dialog.
+  let reportOpen=false,menuOpen=false,journalOpen=false,lootOpen=false,lootScroll=0,menuScroll=0,pendingSkill=null,journalSeen=false;
   function sync(){
     const main=document.querySelector('#app>.layout>main');
     if(main&&tab==='roster'){
@@ -44,10 +45,23 @@
       if(pages&&menuOpen&&pages.scrollTop!==menuScroll)pages.scrollTop=menuScroll;
     }
     const journal=document.getElementById('globalBattleJournal');
+    const utility=document.getElementById('utilityNavigation');
+    if(utility&&mobile.matches&&!document.getElementById('mobileReportButton')){
+      const b=document.createElement('button');b.type='button';b.id='mobileReportButton';b.className='utility-icon-button mobile-report-button';b.setAttribute('aria-haspopup','dialog');b.onclick=()=>toggleMobileReport(true);utility.prepend(b);
+    }
+    const reportButton=document.getElementById('mobileReportButton');
+    if(reportButton){const status=journal?.querySelector('.journal-title-row .tag')?.textContent||'';const text='戰況'+(status?' · '+status:'');if(reportButton.textContent!==text)reportButton.textContent=text;reportButton.setAttribute('aria-expanded',String(reportOpen));}
+    if(!mobile.matches)reportOpen=false;
     if(journal){
-      const inline=mobile.matches&&tab==='battle'&&!!main?.querySelector('.seconds-battlefield');
-      journal.classList.toggle('mobile-inline-battle-journal',inline);
-      if(inline&&journal.parentElement!==main)main.appendChild(journal);
+      // The phone journal no longer sits inside the battle page; it lives only in the 戰況 dialog.
+      const layout=document.querySelector('#app>.layout');
+      journal.classList.remove('mobile-inline-battle-journal');
+      if(layout&&journal.parentElement!==layout)layout.appendChild(journal);
+      if(mobile.matches&&reportOpen){journalOpen=true;lootOpen=true;}
+      journal.classList.toggle('mobile-report-open',mobile.matches&&reportOpen);
+      if(mobile.matches){journal.setAttribute('role','dialog');journal.setAttribute('aria-modal','true');journal.setAttribute('aria-label','戰況與戰利品');}else{journal.removeAttribute('role');journal.removeAttribute('aria-modal');}
+      let head=journal.querySelector(':scope>.mobile-report-head');
+      if(mobile.matches&&!head){head=document.createElement('div');head.className='mobile-report-head';head.innerHTML='<b>戰況與戰利品</b><button type="button" class="mobile-report-close" onclick="toggleMobileReport(false)">關閉</button>';journal.prepend(head);}
       journal.classList.toggle('mobile-journal-open',journalOpen);
       journal.classList.toggle('mobile-loot-open',lootOpen);
       const button=journal.querySelector('.mobile-journal-toggle');
@@ -67,6 +81,7 @@
   }
   globalThis.toggleMobileJournal=()=>{journalOpen=!journalOpen;if(journalOpen)lootOpen=false;sync();if(journalOpen&&!journalSeen){journalSeen=true;scrollBattleLogToBottom(document.getElementById('liveLog'));}};
   globalThis.toggleMobileLoot=()=>{lootOpen=!lootOpen;if(lootOpen)journalOpen=false;sync();};
+  globalThis.toggleMobileReport=open=>{reportOpen=open===undefined?!reportOpen:!!open;if(!reportOpen){journalOpen=false;lootOpen=false;}sync();if(reportOpen){journalSeen=true;scrollBattleLogToBottom(document.getElementById('liveLog'));document.querySelector('#globalBattleJournal .mobile-report-close')?.focus();}else document.getElementById('mobileReportButton')?.focus();};
   const journalBase=sharedBattleJournal;
   sharedBattleJournal=function(){
     const html=journalBase();if(!html)return html;
@@ -96,7 +111,7 @@
     const skill=event.target.closest?.('[data-team-skill]');
     if(mobile.matches&&skill)pendingSkill=skill.dataset.teamSkill;
   },true);
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menuOpen){menuOpen=false;sync();document.querySelector('.mobile-more-toggle')?.focus();}});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&reportOpen){toggleMobileReport(false);return;}if(event.key==='Escape'&&menuOpen){menuOpen=false;sync();document.querySelector('.mobile-more-toggle')?.focus();}});
   document.addEventListener('click',event=>{if(menuOpen&&!event.target.closest('#app>.layout>aside')){menuOpen=false;sync();}});
   mobile.addEventListener('change',()=>{menuOpen=false;if(state)render();else sync();});
   if(state)render();else sync();

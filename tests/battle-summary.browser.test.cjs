@@ -28,7 +28,7 @@ test('combat icons and aggregate HP update in place for damage, healing, revive,
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
-test('shared summary stays visible while operating pages and collapsing desktop/mobile reports, without log scrolling or overflow',async()=>{
+test('shared summary stays visible on desktop pages and in the phone 戰況 dialog, without log scrolling or overflow',async()=>{
  const g=await setup(),p=g.page;
  try{
   await p.setViewportSize({width:1440,height:900});
@@ -37,15 +37,18 @@ test('shared summary stays visible while operating pages and collapsing desktop/
    await p.setViewportSize(size);await p.evaluate(()=>render());
    assert(await p.locator('#journalEnemyIcons .battle-enemy-icon').evaluateAll(nodes=>nodes.every(n=>{const box=n.getBoundingClientRect(),svg=n.querySelector('svg').getBoundingClientRect();return svg.left>=box.left&&svg.right<=box.right&&svg.top>=box.top&&svg.bottom<=box.bottom;})),'journal SVGs fit their compact icons');
    for(const tab of ['equipment','forge','skills','lifeSkills','gather','alchemy','story','battle']){
-    await p.evaluate(id=>setTab(id),tab);if(size.width<=900&&tab==='battle')await p.locator('#battleSummary').scrollIntoViewIfNeeded();assert(await p.locator('#battleSummary').isVisible(),tab+' summary');
+    await p.evaluate(id=>setTab(id),tab);
+    // v0.087: phone pages carry no report panel; the summary is read in the full-screen 戰況 dialog.
+    if(size.width<=900){assert(!await p.locator('#battleSummary').isVisible(),tab+' phone page has no report panel');await p.evaluate(()=>toggleMobileReport(true));}
+    assert(await p.locator('#battleSummary').isVisible(),tab+' summary');
     await p.evaluate(()=>{foes[1].hp=Math.max(1,foes[1].hp-1);EmberwildBattleSummary.sync();});
     assert.equal(await p.locator('#battleSummary').count(),1);
     const layout=await p.evaluate(()=>{const s=$('battleSummary').getBoundingClientRect(),main=document.querySelector('.layout>main').getBoundingClientRect(),nav=document.querySelector('.layout>aside').getBoundingClientRect();return {right:s.right,bottom:s.bottom,top:s.top,mainHeight:main.height,navTop:nav.top,overflow:document.documentElement.scrollWidth>innerWidth};});
     assert(layout.right<=size.width+1&&!layout.overflow,JSON.stringify({size,layout}));assert(layout.top>=0&&layout.bottom<=size.height,JSON.stringify({size,layout}));assert(layout.mainHeight>40,JSON.stringify({size,layout}));
-    if(size.width<=900)assert(layout.bottom<=layout.navTop+1,'summary must not overlap mobile navigation');
+    if(size.width<=900)await p.evaluate(()=>toggleMobileReport(false));
    }
    if(size.width>900){await p.evaluate(()=>EmberwildBattleSummary.toggleDetails());assert(!await p.locator('#liveLog').isVisible());assert(await p.locator('#battleSummary').isVisible());await p.evaluate(()=>EmberwildBattleSummary.toggleDetails());}
-   else{await p.evaluate(()=>toggleMobileJournal());assert(await p.locator('#liveLog').isVisible());assert(await p.locator('#battleSummary').isVisible());await p.evaluate(()=>toggleMobileJournal());assert(!await p.locator('#liveLog').isVisible());}
+   else{/* v0.087: phones open the journal as the 戰況 dialog */await p.evaluate(()=>toggleMobileReport(true));assert(await p.locator('#liveLog').isVisible());assert(await p.locator('#battleSummary').isVisible());await p.evaluate(()=>toggleMobileReport(false));assert(!await p.locator('#liveLog').isVisible());}
    assert.equal(await p.locator('#liveLog [data-event-type]').count(),await p.evaluate(()=>originalRows));
   }
   await p.setViewportSize({width:1440,height:900});await p.evaluate(()=>{render();const stream=$('liveLog').querySelector('.battle-log-stream');stream.scrollTop=150;stream.dataset.autoScroll='0';globalThis.beforeTop=stream.scrollTop;for(let i=0;i<10;i++){foes[1].hp--;EmberwildBattleSummary.sync();}});
