@@ -22,7 +22,9 @@ function refreshGlobalJournal(){
 }
 
 function battleLogMatches(event){return battleLogFilter==='all'||event.type===battleLogFilter;}
-function battleLogEntryClass(event){return ['playerDamage','enemyDamage'].includes(event.type)?'event-damage':['exp','item'].includes(event.type)?'event-loot':'';}
+// Information kind of a system row (shown as the row's colored marker): encounter, skill use (「角色・技能・效果」 or 使用／施放) or kill.
+function battleLogKind(event){if(event.type!=='system')return '';const t=String(event.text??'');return /擊敗/.test(t)?'log-kind-kill':/^遭遇/.test(t)?'log-kind-encounter':/使用|施放|・/.test(t)?'log-kind-skill':'';}
+function battleLogEntryClass(event){return [['playerDamage','enemyDamage'].includes(event.type)?'event-damage':['exp','item'].includes(event.type)?'event-loot':'',battleLogKind(event)].filter(Boolean).join(' ');}
 function lootRarityFromText(t){if(/極稀有|傳說/.test(t))return 3;if(/稀有/.test(t))return 2;if(/精良/.test(t))return 1;if(/獲得 /.test(t))return 0;return null;}
 function battleLogTextHTML(event){const t=event?.text??event,rar=event?.type==='item'?lootRarityFromText(t):null;if(rar===null)return esc(t);const m=String(t).match(/^(.*?獲得(?:極稀有道具：)?\s*)(.*)$/);return m?esc(m[1])+`<span class="loot-rarity-${rar}">${esc(m[2])}</span>`:esc(t);}
 function battleLogRowsHTML(){

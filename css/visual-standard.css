@@ -1,0 +1,66 @@
+/* v0.078 visual standard. Only four areas change; layout, text and colors elsewhere stay as they were.
+   1. Equipment T-tier chips and quality (普通/精良/稀有/傳說) emphasis
+   2. Depth and highlight on interactive buttons
+   3. Battle log rows carry a colored marker for their information type
+   4. Battlefield, character and monster card gradients; battlefield section divider
+   The paper theme keeps its flat look. */
+:root:not([data-ui-theme="paper"]){
+  --vs-tier-low:#86b2dc;--vs-tier-mid:#7fd0a8;--vs-tier-high:#b9a2f2;--vs-tier-top:#f1c96b;
+  --vs-q1:#6cc29f;--vs-q2:#6cb2f5;--vs-q3:#e6be62;
+  --vs-log-system:#7d8b86;--vs-log-encounter:#8aa0b8;--vs-log-skill:#6d9cf0;--vs-log-player:#e2763f;--vs-log-enemy:#d8485a;--vs-log-kill:#5fbf7a;--vs-log-exp:#9ad06a;--vs-log-item:#e6be62;
+}
+
+/* 1. T-tier chips: tinted fill, firm border and a soft glow in the tier color. */
+:root:not([data-ui-theme="paper"]) .gear-tier-chip{border-width:1.5px;border-radius:5px;padding:1px 6px;font-weight:800;letter-spacing:.02em;background:color-mix(in srgb,currentColor 16%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,currentColor 22%,transparent),0 0 7px color-mix(in srgb,currentColor 38%,transparent);text-shadow:0 0 6px color-mix(in srgb,currentColor 45%,transparent)}
+:root:not([data-ui-theme="paper"]) .gear-tier-1,:root:not([data-ui-theme="paper"]) .gear-tier-2,:root:not([data-ui-theme="paper"]) .gear-tier-3{color:var(--vs-tier-low)}
+:root:not([data-ui-theme="paper"]) .gear-tier-4,:root:not([data-ui-theme="paper"]) .gear-tier-5,:root:not([data-ui-theme="paper"]) .gear-tier-6{color:var(--vs-tier-mid)}
+:root:not([data-ui-theme="paper"]) .gear-tier-7,:root:not([data-ui-theme="paper"]) .gear-tier-8{color:var(--vs-tier-high)}
+:root:not([data-ui-theme="paper"]) .gear-tier-9,:root:not([data-ui-theme="paper"]) .gear-tier-10{color:var(--vs-tier-top)}
+
+/* 1. Quality: brighter colors; rare and legendary slots and badges get a gradient and glow. */
+:root:not([data-ui-theme="paper"]) .item-quality-1{--item-quality-color:var(--vs-q1)}
+:root:not([data-ui-theme="paper"]) .item-quality-2{--item-quality-color:var(--vs-q2)}
+:root:not([data-ui-theme="paper"]) .item-quality-3{--item-quality-color:var(--vs-q3)}
+:root:not([data-ui-theme="paper"]) .item-slot.item-quality-1{border-width:1.5px}
+:root:not([data-ui-theme="paper"]) .item-slot.item-quality-2,:root:not([data-ui-theme="paper"]) .item-slot.item-quality-3{border-width:1.5px;background-image:linear-gradient(135deg,color-mix(in srgb,var(--item-quality-color) 20%,transparent),transparent 65%);box-shadow:0 0 0 1px color-mix(in srgb,var(--item-quality-color) 25%,transparent),0 0 10px color-mix(in srgb,var(--item-quality-color) 30%,transparent)}
+:root:not([data-ui-theme="paper"]) .item-slot.item-quality-3{box-shadow:0 0 0 1px color-mix(in srgb,var(--item-quality-color) 40%,transparent),0 0 14px color-mix(in srgb,var(--item-quality-color) 42%,transparent)}
+:root:not([data-ui-theme="paper"]) .item-slot.selected[class*="item-quality-"]{box-shadow:inset 3px 0 var(--item-quality-color),0 0 12px color-mix(in srgb,var(--item-quality-color) 40%,transparent)}
+:root:not([data-ui-theme="paper"]) .tag[class*="item-quality-"]{border-width:1.5px;font-weight:700;background:color-mix(in srgb,var(--item-quality-color) 14%,transparent)}
+:root:not([data-ui-theme="paper"]) .tag.item-quality-2,:root:not([data-ui-theme="paper"]) .tag.item-quality-3{background:linear-gradient(180deg,color-mix(in srgb,var(--item-quality-color) 26%,transparent),color-mix(in srgb,var(--item-quality-color) 10%,transparent));box-shadow:0 0 10px color-mix(in srgb,var(--item-quality-color) 40%,transparent),inset 0 1px 0 color-mix(in srgb,var(--item-quality-color) 35%,transparent);text-shadow:0 0 6px color-mix(in srgb,var(--item-quality-color) 55%,transparent)}
+
+/* 2. Interactive buttons: raised edge, drop shadow, highlight on hover, pressed on click. Item slots keep their quality styling. */
+:root:not([data-ui-theme="paper"]) button:not(.item-slot):not(.seconds-charge):not(:disabled){background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.14));box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 2px 0 rgba(0,0,0,.45),0 3px 9px rgba(0,0,0,.3);transition:box-shadow .12s,border-color .12s,transform .06s}
+:root:not([data-ui-theme="paper"]) button:not(.item-slot):not(.seconds-charge):not(:disabled):hover{border-color:color-mix(in srgb,var(--gold) 60%,var(--line));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 2px 0 rgba(0,0,0,.45),0 0 0 1px color-mix(in srgb,var(--gold) 30%,transparent),0 0 12px color-mix(in srgb,var(--gold) 26%,transparent)}
+:root:not([data-ui-theme="paper"]) button:not(.item-slot):not(.seconds-charge):not(:disabled):active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(0,0,0,.4),0 1px 0 rgba(0,0,0,.4)}
+:root:not([data-ui-theme="paper"]) button:disabled{box-shadow:none}
+
+/* 3. Battle log: a colored bar at the head of each row marks its information type. */
+:root:not([data-ui-theme="paper"]) .battle-log-line:not(.battle-log-empty){position:relative;padding-left:9px;--vs-log:var(--vs-log-system)}
+:root:not([data-ui-theme="paper"]) .battle-log-line:not(.battle-log-empty)::before{content:'';position:absolute;left:1px;top:3px;bottom:3px;width:3px;border-radius:2px;background:var(--vs-log);box-shadow:0 0 5px color-mix(in srgb,var(--vs-log) 60%,transparent)}
+:root:not([data-ui-theme="paper"]) .battle-log-line.log-kind-encounter{--vs-log:var(--vs-log-encounter)}
+:root:not([data-ui-theme="paper"]) .battle-log-line.log-kind-skill{--vs-log:var(--vs-log-skill)}
+:root:not([data-ui-theme="paper"]) .battle-log-line.log-kind-kill{--vs-log:var(--vs-log-kill)}
+:root:not([data-ui-theme="paper"]) .battle-log-line[data-event-type="playerDamage"]{--vs-log:var(--vs-log-player)}
+:root:not([data-ui-theme="paper"]) .battle-log-line[data-event-type="enemyDamage"]{--vs-log:var(--vs-log-enemy)}
+:root:not([data-ui-theme="paper"]) .battle-log-line[data-event-type="exp"]{--vs-log:var(--vs-log-exp)}
+:root:not([data-ui-theme="paper"]) .battle-log-line[data-event-type="item"]{--vs-log:var(--vs-log-item)}
+
+/* 4. Battlefield backdrop, section heads and the divider that carries the phase text. */
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield{background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(64,120,92,.3),transparent 70%),radial-gradient(ellipse 80% 55% at 50% 100%,rgba(48,96,78,.24),transparent 70%),linear-gradient(180deg,#14271f,#0f1c18 50%,#13261f)!important;border:1px solid #2c4a3e!important;border-radius:10px;box-shadow:inset 0 0 40px rgba(0,0,0,.45)}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield .seconds-side-head{background:transparent!important;padding:3px 2px 5px;border-bottom:1px solid transparent;border-image:linear-gradient(90deg,transparent,#4c7a64 20%,#4c7a64 80%,transparent) 1}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield .seconds-side-ally{border-top:0}
+:root:not([data-ui-theme="paper"]) #app .seconds-side-note[data-seconds-phase]{display:flex;align-items:center;gap:10px;margin:6px 0 0;color:#cfe3d6;font-size:12px;letter-spacing:.08em}
+:root:not([data-ui-theme="paper"]) #app .seconds-side-note[data-seconds-phase]::before,:root:not([data-ui-theme="paper"]) #app .seconds-side-note[data-seconds-phase]::after{content:'';flex:1;height:9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M5 0L10 5L5 10L0 5Z' fill='%2312241d' stroke='%239cc7ad' stroke-width='1.4'/%3E%3C/svg%3E") center/10px 10px no-repeat,linear-gradient(90deg,transparent,#4f8a6d 15%,#4f8a6d 85%,transparent) center/100% 1px no-repeat}
+:root:not([data-ui-theme="paper"]) #app .seconds-side-note[data-seconds-phase]::before{background-position:right center,center}
+:root:not([data-ui-theme="paper"]) #app .seconds-side-note[data-seconds-phase]::after{background-position:left center,center}
+
+/* 4. Monster cards: deep green gradient with a light top edge. */
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit:not(.fallen){background:linear-gradient(160deg,#1d3a30,#132821 60%,#10211b)!important;border-color:#3f6a56!important;box-shadow:inset 0 1px 0 rgba(160,220,190,.12),0 4px 12px rgba(0,0,0,.35),4px 4px 0 rgba(0,0,0,.25)!important}
+/* 4. Character cards: stronger class-colored gradient, matching border and inner glow. */
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit{--vs-job:#8aa;border-color:color-mix(in srgb,var(--vs-job) 70%,#000)!important;box-shadow:inset 0 1px 0 color-mix(in srgb,var(--vs-job) 35%,transparent),inset 0 0 18px color-mix(in srgb,var(--vs-job) 16%,transparent),0 4px 12px rgba(0,0,0,.35),4px 4px 0 rgba(0,0,0,.25)!important}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-0{--vs-job:#c4563a;background:linear-gradient(160deg,color-mix(in srgb,#c4563a 34%,var(--panel)),color-mix(in srgb,#c4563a 12%,var(--panel)) 70%)!important}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-1{--vs-job:#7d5fd0;background:linear-gradient(160deg,color-mix(in srgb,#7d5fd0 34%,var(--panel)),color-mix(in srgb,#7d5fd0 12%,var(--panel)) 70%)!important}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-2{--vs-job:#4f9a55;background:linear-gradient(160deg,color-mix(in srgb,#4f9a55 34%,var(--panel)),color-mix(in srgb,#4f9a55 12%,var(--panel)) 70%)!important}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-job-3{--vs-job:#c9a540;background:linear-gradient(160deg,color-mix(in srgb,#c9a540 34%,var(--panel)),color-mix(in srgb,#c9a540 12%,var(--panel)) 70%)!important}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-protagonist{border-color:#c6a76b!important}
+:root:not([data-ui-theme="paper"]) #app .seconds-battlefield .seconds-unit.seconds-casting{box-shadow:0 0 16px #dbc56a70!important}
