@@ -196,7 +196,7 @@
   x.mp=engine.actor(event.actorId).mp;
   if(event.type==='castStart'){recordAction(event.actorId,Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x),'詠唱');note((Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x))+'開始施放 '+skill(event.skillId).name);return;}
   if(event.type==='interrupt'){note((Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x))+'的施法被中斷。');return;}
-  if(event.type==='blocked'){note(combatEnemyName(x)+' 因畏懼延後行動。');return;}
+  if(event.type==='blocked'){if(foes.some(e=>e.hp>0))note(combatEnemyName(x)+' 因畏懼延後行動。');return;}
   if(event.type==='basic'){
    basicAction(x);  }else if(event.type==='skill'||event.type==='castComplete'){
    const s=engine.find(event.actorId).definition.skills.find(s=>s.id===event.skillId);if(s){if(castResolved(x,s))recordAction(event.actorId,Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x),skill(s.id).name);}
@@ -204,7 +204,14 @@
   scheduleEffects(new Set(effects.filter(f=>f.secondsId)),null,null);scheduleControls();
   for(const a of engine.actors){const u=unit(a.definition.id);if(!u)continue;const steps=(u.procAdvanceSteps||0)+(u.basicAdvanceRound?1:0)+(u.sharedAdvanceSteps||0);if(steps){const advance=steps*config().advanceStepSeconds*1e6;a.basicAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.basicAt-advance);a.actionSpeedAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.actionSpeedAt-advance);a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);for(const k of ['procAdvanceSteps','basicAdvanceRound','procAdvanceRound','sharedAdvanceSteps','sharedAdvanceRound'])delete u[k];}}
  }
- const handlers={canAct:view=>{const x=unit(view.id);return !!x&&x.hp>0&&living().length>0&&(foes.some(e=>e.hp>0)||recoveryHealer(x));},canUse,
+ // During recovery a hero acts only when a heal/regen skill is ready, affordable and allowed right now (v0.093). Otherwise the
+ // timeline offered its basic attack, beforeAction refused it and the hero was "blocked" every attack interval: the card
+ // flickered and the journal logged 「因畏懼延後行動」 although no fear was involved. Recovery re-checks at least once a second.
+ function recoveryHealReady(view){
+  const a=engine?.find?.(view.id);if(!a)return false;
+  return a.definition.skills.some(s=>{const d=skill(s.id),effect=d?.effect||d?.kind;return ['heal','regen'].includes(effect)&&(a.ready[s.id]||0)<=engine.now&&(a.retryAt?.[s.id]||0)<=engine.now&&engine.mana(a,engine.now)>=engine.mpCost(a,s)&&canUse(view,s)!==false;});
+ }
+ const handlers={canAct:view=>{const x=unit(view.id);return !!x&&x.hp>0&&living().length>0&&(foes.some(e=>e.hp>0)||recoveryHealer(x)&&recoveryHealReady(view));},canUse,
   beforeAction(view,skill){const x=unit(view.id);if(!foes.some(e=>e.hp>0))return !!skill&&recoveryHealer(x);if(Object.hasOwn(x,'job'))return true;const f=__EMBERWILD_CONTROL_TEST_API.states[x.id]?.fear;return !f||Math.random()>=f.skipChance;},onEvent:handleEvent};
  function automaticSupplies(){for(const h of living()){
   const max=stats(h).hp,hpNeeded=h.autoPotion&&h.hp/max<=h.autoPotionThresholdPct/100;
