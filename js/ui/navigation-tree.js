@@ -77,6 +77,7 @@
       const status=taskStatus(page.id);
       return {isNew:!!status?.new,count:status?.new?0:Math.max(0,Number(status?.ready)||0),html:taskBadge(status)};
     }
+    if(globalThis.pageNewReminder?.(page.id))return {isNew:true,count:0,html:'<span class="quest-new" aria-label="有新內容">N</span>'};
     return {isNew:false,count:globalThis.numberReminderCount?.(page.id)||0,html:globalThis.numberBadgeHTML?.(page.id)||''};
   }
   function groupBadge(pages){

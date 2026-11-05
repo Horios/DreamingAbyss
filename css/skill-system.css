@@ -13,3 +13,19 @@
 .equipment-skill-description .equipment-skill-effect{margin:6px 0 0}
 
 .skill-passive-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px}.skill-passive-detail{display:flex;align-items:center;gap:10px;text-align:left;white-space:normal}.skill-passive-disabled .skill-passive-detail{opacity:.5}.skill-locked .skill-icon-glyph{filter:grayscale(1);opacity:.45}.skill-candidate .skill-slot-name{flex-wrap:wrap}.skill-passive-grid h2 small{font-size:12px}
+/* v0.076: newly learned skills */
+.skill-new{width:auto;flex:0 0 auto;padding:0 6px;border-radius:9px;font-size:10px;letter-spacing:.04em}
+.skill-new-guide ul{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px}.skill-new-guide li{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+/* The main pane does not scroll by default; the skills page opts in so the equipment skill block is reachable. */
+.layout>main:has(.skill-system-page){overflow-y:auto;scrollbar-gutter:stable}
+.layout>main:has(.skill-system-page)>*{flex-shrink:0}
+/* v0.076: sectioned skill description */
+.skill-detail{display:grid;gap:8px;margin:6px 0}.skill-detail-section h4{margin:0 0 4px;font-size:12px;letter-spacing:.06em;opacity:.75;font-weight:700}
+.skill-detail-section p{margin:2px 0}.skill-detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;margin:0}
+.skill-detail-grid>div{display:flex;gap:6px;align-items:baseline;min-width:0}.skill-detail-grid dt{opacity:.7;font-size:12px;white-space:nowrap}.skill-detail-grid dd{margin:0;font-size:13px;overflow-wrap:anywhere}
+.skill-detail-grid>.skill-detail-wide{grid-column:1/-1}
+/* v0.076: mailbox actions and NEW marks */
+.mailbox-list-item{position:relative}.mailbox-list-item>.mail-dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#e0484f;box-shadow:0 0 0 2px rgba(0,0,0,.25)}.mail-lock{margin:4px 0 8px}.mailbox-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}.mailbox-actions button{white-space:nowrap!important;width:auto!important}
+.mailbox-list-item b{display:flex;align-items:center;gap:6px;min-width:0;padding-right:14px}
+.mail-title-icon{flex:0 0 32px;width:32px;height:32px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.28);border-radius:6px;background:rgba(0,0,0,.28);padding:4px}
+.mailbox-list-item .mail-title-icon svg{width:20px!important;height:20px!important;max-width:20px;flex:0 0 20px}

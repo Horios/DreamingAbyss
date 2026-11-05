@@ -43,9 +43,21 @@
  }
  function missing(sk,h){const a=EmberwildSkillSystem.adapterFor(sk,h.job),out=[];if(!S.learned(h,sk)){out.push(conditions(sk,h));if(sk.sources.some(s=>s.type==='equipment'))return out;}if(a.kind==='core')out.push(...__EMBERWILD_MASTERY.coreMissingRequirements(h,a.index,true).filter(x=>x!=='尚未取得技能'));else if(a.kind==='support')out.push(...__EMBERWILD_MASTERY.supportMissingRequirements(h,a.index,true).filter(x=>x!=='尚未取得技能'));return [...new Set(out)];}
  function acquired(sk,h){return S.learned(h,sk)||h.acquiredSkillIds?.includes(sk.id)||sk.sources.some(s=>s.type==='equipment')&&(h.bag||[]).some(g=>g.skillId===sk.id);}
+ // v0.076: the skill description is split into sections (effect, numbers, cooldown and cost, learning) instead of one line.
+ const SKIP_PART=/^(主動技能，獨立冷卻|觸發技能，不占行動|常駐被動，不占行動|來源：)/,TIMER_PART=/^(初始冷卻|再使用冷卻|觸發冷卻|冷卻|MP|施法|普攻觸發率)/,REQUIRE_PART=/^需求/;
+ function pair(text){const t=String(text),c=t.indexOf('：');if(c>0&&c<=8)return [t.slice(0,c),t.slice(c+1)];const m=t.match(/^(\S{1,8})\s+(.+)$/);return m?[m[1],m[2]]:[null,t];}
+ function rows(parts){return parts.map(x=>{const [k,v]=pair(x);return k?`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`:`<div class="skill-detail-wide"><dd>${esc(v)}</dd></div>`;}).join('');}
+ function detailSections(sk,h){
+  const parts=String(detail(sk,h)||'').split(/\s*·\s*/).map(x=>x.trim()).filter(Boolean).filter(x=>!SKIP_PART.test(x));
+  const effect=[],numbers=[],timers=[],require=[];
+  for(const x of parts){if(TIMER_PART.test(x))timers.push(x);else if(REQUIRE_PART.test(x))require.push(x);else if(/[。；]/.test(x)||x.length>26)effect.push(x);else numbers.push(x);}
+  const learn=[...require,'解鎖條件：'+conditions(sk,h),'取得來源：'+routes(sk,h).join('／')];
+  const section=(title,body)=>body?`<section class="skill-detail-section"><h4>${title}</h4>${body}</section>`:'';
+  return `<div class="skill-detail">${section('效果',(sk.description?`<p>${esc(sk.description)}</p>`:'')+effect.map(x=>`<p class="small">${esc(x)}</p>`).join(''))}${section('數值',numbers.length?`<dl class="skill-detail-grid">${rows(numbers)}</dl>`:'')}${section('冷卻與消耗',timers.length?`<dl class="skill-detail-grid">${rows(timers)}</dl>`:'')}${section('學習條件',`<dl class="skill-detail-grid">${rows(learn)}</dl>`)}</div>`;
+ }
  function card(sk,h,action=''){
   const locked=!S.learned(h,sk),equipmentSkill=sk.sources.some(s=>s.type==='equipment');
-  return `<article class="skill-candidate ${locked?'skill-locked':''}" data-skill-id="${esc(sk.id)}"><div class="skill-slot-name">${icon(sk)}<b>${esc(sk.name)}</b><span class="tag">${equipmentSkill?'裝備 · ':''}${sk.type==='support'?'主動（輔助）':labels[sk.type]} · ${stage(sk,h)}</span></div><p>${esc(sk.description||'')}</p><p class="small">${esc(detail(sk,h))}</p><p class="small">解鎖條件：${esc(conditions(sk,h))}</p><p class="small">取得來源：${esc(routes(sk,h).join('／'))}</p>${action}</article>`;
+  return `<article class="skill-candidate ${locked?'skill-locked':''}" data-skill-id="${esc(sk.id)}"><div class="skill-slot-name">${icon(sk)}<b>${esc(sk.name)}</b><span class="tag">${equipmentSkill?'裝備 · ':''}${sk.type==='support'?'主動（輔助）':labels[sk.type]} · ${stage(sk,h)}</span></div>${detailSections(sk,h)}${action}</article>`;
  }
  function passives(h){const list=sortedSkills(S.system().definitions.filter(sk=>sk.type==='passive'&&S.learned(h,sk)),h);return `<section class="panel"><h2>被動技能 <small>無槽位上限 · 不占主動槽</small></h2><div class="skill-passive-grid">${list.map(sk=>{const on=S.passiveEnabled(h,sk.id);return `<article class="skill-candidate ${on?'':'skill-passive-disabled'}" data-passive-id="${esc(sk.id)}"><button type="button" class="skill-passive-detail" onclick="showSkillInformation('${esc(sk.id)}')">${icon(sk)}<b>${esc(sk.name)}</b></button><p>${esc(sk.description)}</p><button type="button" role="switch" aria-checked="${on}" onclick="setPassiveSkillEnabled('${esc(sk.id)}',${!on})">${on?'已啟用':'已停用'}</button></article>`;}).join('')||'<p>尚未學會被動技能，可至技能圖鑑查看解鎖條件。</p>'}</div></section>`;}
  globalThis.showSkillInformation=function(id){const h=party.members[0],sk=S.byId(id);if(!sk||!S.learned(h,sk)&&!catalog(h).some(s=>s.id===id))return false;const modal=$('modal');modal.classList.add('skill-system-dialog');modal.innerHTML=card(sk,h)+`<button onclick="closeModal()">關閉</button>`;if(!modal.open)modal.showModal();return true;};
@@ -108,5 +120,25 @@
  resetSession=function(){wornSocketTarget=null;socketSelection=null;return resetSocketSession();};
  const detailBase=inventoryGearDetail;inventoryGearDetail=function(g){return detailBase(g);};
  const slotBase=gearSlotHTML;gearSlotHTML=function(g,options){const html=slotBase(g,options);if(!g?.skillSockets)return html;const text=(g.skillId?'技能 · ':'')+g.skillSockets.gems.filter(x=>x!==null).length+'/'+g.skillSockets.count+' 孔';return html.replace(/(<\/button>)$/,`<small class="equipment-socket-badge">${esc(text)}</small>$1`);};
- globalThis.__EMBERWILD_SKILL_SYSTEM_UI={detail,sockets,catalog,routes,conditions,missing};
+ // v0.076: newly learned skills are not equipped automatically. The skills tab shows NEW until the player has seen them,
+ // and the skills page offers to equip each one. Seen skills are remembered per hero (seenSkillIds); on the first
+ // check every skill already learned counts as seen, so existing saves start without a flood of NEW marks.
+ const SLOT_TYPES=['active','proc','support'];
+ function learnedSkillIds(h){return S.system().definitions.filter(sk=>SLOT_TYPES.includes(sk.type)&&!sk.disabled&&!sk.deleted&&sk.partnerId==null&&sk.jobs.includes(h.job)&&S.learned(h,sk)).map(sk=>sk.id);}
+ function seenSkills(h){if(!Array.isArray(h.seenSkillIds))h.seenSkillIds=learnedSkillIds(h);return h.seenSkillIds;}
+ function newSkillIds(h){if(!h||h!==party?.members?.[0]||__EMBERWILD_TEAMS.plan?.()?.job===null)return [];const seen=new Set(seenSkills(h)),slotted=new Set(Object.values(h.skillLoadout||{}).flat().filter(Boolean));return learnedSkillIds(h).filter(id=>!seen.has(id)&&!slotted.has(id));}
+ function markSkillsSeen(h,ids){const seen=seenSkills(h);let changed=false;for(const id of ids)if(!seen.includes(id)){seen.push(id);changed=true;}if(changed){save();render();}return changed;}
+ globalThis.newSkillCount=()=>{try{return newSkillIds(party?.members?.[0]).length;}catch{return 0;}};
+ const reminderBase=globalThis.pageNewReminder;globalThis.pageNewReminder=id=>id==='skills'?newSkillCount()>0:!!reminderBase?.(id);
+ globalThis.dismissNewSkills=function(){const h=party.members[0];return markSkillsSeen(h,newSkillIds(h));};
+ // Open the first empty slot of the skill's type (or slot 1) with the new skill highlighted; seeing the list marks it.
+ globalThis.equipNewSkill=function(id){const h=party.members[0],sk=S.byId(id);if(!sk||!SLOT_TYPES.includes(sk.type))return false;const slots=h.skillLoadout?.[sk.type]||[];const n=Math.max(0,slots.indexOf(null));return openSkillSlot(sk.type,n);};
+ const slotBaseOpen=globalThis.openSkillSlot;globalThis.openSkillSlot=function(type,n){const h=party.members[0],fresh=newSkillIds(h).filter(id=>S.byId(id)?.type===type);const out=slotBaseOpen(type,n);if(out!==false&&fresh.length){{const modal=$('modal');let html=modal.innerHTML;for(const id of fresh)html=html.replace(`data-skill-id="${id}"><div class="skill-slot-name">`,`data-skill-id="${id}"><div class="skill-slot-name"><span class="quest-new skill-new" aria-label="新技能">NEW</span>`);modal.innerHTML=html;}const seen=seenSkills(h);for(const id of fresh)if(!seen.includes(id))seen.push(id);save();}return out;};
+ const viewBase=skillsView;skillsView=function(){
+  const html=viewBase(),h=party.members[0],fresh=newSkillIds(h);if(!fresh.length)return html;
+  const rows=fresh.map(id=>{const sk=S.byId(id);return `<li><b>${esc(sk.name)}</b> <span class="tag">${sk.type==='support'?'輔助':labels[sk.type]}</span> <button type="button" onclick="equipNewSkill('${esc(id)}')">裝配</button></li>`;}).join('');
+  const notice=`<section class="panel skill-new-guide" role="status"><h2>學會新技能 <span class="quest-new" aria-hidden="true">N</span></h2><p class="small">新技能不會自動裝上。按「裝配」選擇要放入的技能槽；槽位已滿時，可替換現有技能。</p><ul>${rows}</ul><button type="button" onclick="dismissNewSkills()">知道了</button></section>`;
+  const at=html.indexOf('<section');return at<0?html+notice:html.slice(0,at)+notice+html.slice(at);
+ };
+ globalThis.__EMBERWILD_SKILL_SYSTEM_UI={detail,sockets,catalog,routes,conditions,missing,newSkillIds,markSkillsSeen};
 })();

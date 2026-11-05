@@ -99,6 +99,12 @@
     const id=mailIdentity(a);
     return itemSlotHTML(id.kind,id.key,{gear:a.gear,count:a.quantity,mailId,mailIndex:index,className:'mailbox-attachment',detailLabel:'附件數量'});
   };
+  // Icon only (no name, count or button) for the first attachment shown before a mail title.
+  globalThis.mailAttachmentIcon=function(mailId,index=0){
+    const a=party.mailbox.messages.find(m=>m.id===mailId)?.attachments?.[index];if(!a)return '';
+    const id=mailIdentity(a);
+    return `<span class="mail-title-icon" aria-hidden="true">${icon(id.kind,id.key,a.gear)}</span>`;
+  };
   function info(ref){
     const virtual=virtualItem(ref.kind,ref.key);if(virtual)return `<h3>${esc(virtual.name)}</h3><p>${esc(virtual.description||'')}</p>${virtual.detail?.(ref)||''}`;
     const {kind,key,g}=ref,item=definition(kind,key),description=globalThis.EmberwildTokens?.isToken(g)?companionTokenDescription(g):globalThis.__EMBERWILD_ITEM_DESCRIPTION?.(kind,key)||'';

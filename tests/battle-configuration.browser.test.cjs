@@ -39,7 +39,7 @@ test('skill previews, catalog and passive switches work on desktop/mobile and pe
    const rain=p.locator('[data-skill-id="archer-arrow-rain"]');assert(await rain.isVisible());assert(await rain.getByRole('button').isDisabled());assert.match(await rain.innerText(),/LV3/);
    assert.equal(await p.locator('[data-skill-id="job2-core4"]').count(),0);assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
    await p.getByRole('button',{name:'關閉',exact:true}).click();await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
-   assert(await p.locator('[data-skill-id="job2-core4"]').isVisible());assert.equal(await p.locator('[data-skill-id^="partner"]').count(),0);assert.match(await p.locator('[data-skill-id="tutorial_echo"]').innerText(),/解鎖條件：裝備附帶/);
+   assert(await p.locator('[data-skill-id="job2-core4"]').isVisible());assert.equal(await p.locator('[data-skill-id^="partner"]').count(),0);assert.match(await p.locator('[data-skill-id="tutorial_echo"]').innerText(),/解鎖條件\s*裝備附帶/);
    assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.getByRole('button',{name:'關閉',exact:true}).click();
   }
   await p.evaluate(()=>{awardXP(need(1)+need(2));save();render();});await p.locator('[data-skill-slot="active:0"]').click();
