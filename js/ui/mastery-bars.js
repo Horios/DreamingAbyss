@@ -17,11 +17,12 @@
    `<span class="mastery-bar-track" role="progressbar" aria-label="${label}精通進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}"><span class="mastery-bar-fill" style="width:${pct}%"></span></span>`+
    `${compact?'':`<small>${text}${inactive?'':' EXP · 累積 '+xp}${note?' · '+note:''}</small>`}</span>${compact?`<small class="mastery-bar-value">${text}</small>`:''}</div>`;
  }
- // The protagonist's current class mastery, for the exploration header next to the experience bar.
+ // The masteries the protagonist's current class trains (priest light/shadow, mage elements, warrior and archer weapons),
+ // shown in the exploration header after the experience bar (v0.090; v0.083 showed the class mastery instead).
  function current(h){
   const T=globalThis.__EMBERWILD_TEAMS,M=globalThis.__EMBERWILD_MASTERY;if(!h||!T?.build?.()||!M?.masteryProgress||!Number.isInteger(h.job))return '';
-  const v=T.build().permanent.classes?.[h.job],p=M.masteryProgress(v?.xp||0);
-  return bar('class:'+h.job,{label:(CLASSES[h.job]?.name||'')+'精通',level:p.level,current:p.current,next:p.next,xp:p.xp,compact:true});
+  const perm=T.build().permanent,keys=M.validMasteries?.(h.job)||[];if(!keys.length)return '';
+  return `<span class="mastery-bar-row" aria-label="${CLASSES[h.job]?.name||''}精通">${keys.map(k=>{const p=M.masteryProgress(perm.masteries?.[k]||0);return bar(k,{label:M.masteryLabels?.[k]||k,level:p.level,current:p.current,next:p.next,xp:p.xp,compact:true});}).join('')}</span>`;
  }
  globalThis.EmberwildMasteryBars={bar,current,CLASS,KEY};
 })();

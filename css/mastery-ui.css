@@ -123,3 +123,11 @@
 #app .seconds-battle-xp>b{white-space:nowrap;flex:0 0 auto}
 #app .seconds-battle-xp>progress{flex:0 1 90px}
 @media(max-width:700px){#app .seconds-battle-xp:has(.mastery-bar){flex-wrap:wrap;row-gap:4px;max-width:100%}#app .seconds-battle-xp .mastery-bar.compact{flex:1 1 100%;min-width:0;order:3}#app .seconds-battle-xp>b{white-space:normal}}
+
+/* v0.090: the header shows every mastery of the current class as small bars, on their own row under the level and experience. */
+#app .seconds-battle-xp:has(.mastery-bar-row){flex-wrap:wrap;row-gap:4px}
+#app .seconds-battle-xp .mastery-bar-row{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 100%;order:3;min-width:0}
+#app .seconds-battle-xp .mastery-bar-row .mastery-bar.compact{flex:0 1 128px;min-width:96px;padding:2px 7px 2px 2px}
+#app .seconds-battle-xp .mastery-bar-row .mastery-bar-body{flex:1;width:auto}
+#app .seconds-battle-xp .mastery-bar-row .mastery-bar-value{display:none}
+@media(max-width:700px){#app .seconds-battle-xp .mastery-bar-row .mastery-bar.compact{flex:1 1 calc(50% - 4px)}}
