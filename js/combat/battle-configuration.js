@@ -9,7 +9,8 @@
  // frozenActive (v0.083): the lineup that started the encounter; roster changes during it apply from the next encounter.
  let owner=null,rows=null,active=false,live=null,notified=false,frozenActive=null,liveActive=null;
  const gemEffects=new Map();
- const values=h=>Object.fromEntries(fields.filter(k=>h[k]!==undefined).map(k=>[k,h[k]]));
+ // tokenId is always stored (null when absent) so a fresh session and a loaded save produce the same snapshot.
+ const values=h=>Object.fromEntries(fields.filter(k=>k==='tokenId'||h[k]!==undefined).map(k=>[k,k==='tokenId'?h[k]??null:h[k]]));
  function assign(h,v){for(const k of fields){if(Object.hasOwn(v,k))h[k]=v[k];else delete h[k];}}
  // rows is only ever replaced (capture/clear/restore), never edited in place, so lookups
  // are memoised per rows array: combat reads these on every passive and skill check.
