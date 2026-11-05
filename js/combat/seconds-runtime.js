@@ -12,19 +12,22 @@
  const timing=s=>s?.timing||source.skillSystem.definitions.find(x=>x.id===s?.id)?.timing;
  const statusList=()=>EmberwildStatusCombatState.seconds.instances(),statusDefs=()=>EmberwildStatusCombatState.seconds.definitions();
  const actorInterval=h=>config().classes.find(x=>x.job===h.job).baseIntervalSeconds;
- // Cooldown reductions written in legacy action units convert at the fixed action reference (v0.074), so
- // per-class basic attack intervals do not change any skill or equipment effect.
- const actionUnit=()=>config().actionReferenceSeconds;
+ // v0.075: each cooldown reduction source has its own percent or fixed-seconds rule (combat.seconds.cooldownReduction).
+ const cdr=()=>config().cooldownReduction||Schema.defaultCooldownReduction();
+ function cdrPoints(h,s){
+  const core=s?.adapter?.kind==='core',i=s?.adapter?.index,fixed=globalThis.equipmentIdentityEffectNumber;
+  return {affixAll:equipment(h).filter(g=>g.job===h.job||g.slot===1).flatMap(g=>g.affix||[]).filter(a=>a.type===16).reduce((n,a)=>n+(Number(a.value)||0),0),
+   affixSkill:core?bonusFor(i,5,h):0,fixedAll:Math.max(0,Math.round(fixed?.(h,'allCooldownReduction')||0)),fixedSkill:core?Math.max(0,Math.round(fixed?.(h,'skillCooldownReduction',i)||0)):0};
+ }
+ function reducedCooldown(h,s,extra={}){return Schema.applyCooldownReduction(timing(s).cooldownSeconds,{...cdrPoints(h,s),...extra},cdr(),config().minimumActionIntervalSeconds);}
  const mono=()=>engine?engine.now/1e6:partyClock;
  function mana(h){
   const c=config().mana;if(!Object.hasOwn(h,'job')){const t=source.balanceSettings.monsters.catalog.find(m=>m.id===h.monsterId)?.timing||{};return {maxMp:t.maxMp??c.maxMp,regen:t.regenPerSecond??c.regenPerSecond,cost:t.costMultiplier??c.costMultiplier};}const extras=equipment(h).map(g=>g.mana??itemForm(g)?.mana).filter(Boolean);
   return {maxMp:Math.max(1,(h.mana?.maxMp??c.maxMp)+extras.reduce((n,x)=>n+(Number(x.maxMp)||0),0)),regen:Math.max(0,(h.mana?.regenPerSecond??c.regenPerSecond)+extras.reduce((n,x)=>n+(Number(x.regenPerSecond)||0),0)),cost:Math.max(0,(h.mana?.costMultiplier??c.costMultiplier)-extras.reduce((n,x)=>n+(Number(x.costReduction)||0),0))};
  }
- function skillCooldownSeconds(h,s){
-  const t=timing(s),factor=actionUnit(),flat=allSkillCooldownReduction(h)+(s.adapter.kind==='core'?bonusFor(s.adapter.index,5,h):0);
-  return Math.max(config().minimumActionIntervalSeconds,t.cooldownSeconds-flat*factor);
- }
- function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance?actionUnit():0;}
+ function skillCooldownSeconds(h,s){return reducedCooldown(h,s);}
+ // A gem or equipment skill may cut this cast's cooldown; the cut joins the same percent/fixed rule and floor.
+ function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance;}
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
   const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i))].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
@@ -175,7 +178,7 @@
   if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now;engine.deferSkill(key(x),s.id,config().minimumActionIntervalSeconds);return false;}
   scheduleEffects(before,t,d);scheduleControls(t);
   if(Object.hasOwn(x,'job')){
-   const a=engine.find(key(x)),reduction=cooldownReductionOnCast(x,d.id);if(reduction)a.ready[s.id]=Math.max(engine.now+Math.round(config().minimumActionIntervalSeconds*1e6),a.ready[s.id]-Math.round(reduction*1e6));
+   const a=engine.find(key(x));if(cooldownReductionOnCast(x,d.id))a.ready[s.id]=Math.min(a.ready[s.id],engine.now+Math.round(reducedCooldown(x,d,{onCast:1})*1e6));
    EmberwildCombatEvents.endTurn(x,true);
   }
   return true;
@@ -314,8 +317,8 @@
  skillManaCost=function(i,h=state){return timing(S.byPosition(h.job,'core',i))?.mpCost||0;};
  skillCooldown=function(i,h=state){const s=S.byPosition(h.job,'core',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
  supportSkillCooldown=function(h,i){const s=S.byPosition(h.job,'support',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
- gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'?Math.max(config().minimumActionIntervalSeconds,cd-cooldownReductionOnCast(h,s.id)):cd;};
- __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return Math.max(config().minimumActionIntervalSeconds,supportSkillCooldown(h,i)-(s?cooldownReductionOnCast(h,s.id):0));};
+ gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'&&cooldownReductionOnCast(h,s.id)?reducedCooldown(h,s,{onCast:1}):cd;};
+ __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return s&&cooldownReductionOnCast(h,s.id)?reducedCooldown(h,s,{onCast:1}):supportSkillCooldown(h,i);};
  const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
  const MAX_FOES=5;
  const oldSpawn=spawnGroup;spawnGroup=function(...args){
@@ -338,7 +341,11 @@
  globalThis.EmberwildSecondsCombat={active:true,maxEncounterSize:MAX_FOES,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
   encounterSize(){party.currentHuntingMode=party.huntingMode||'single';if(party.currentHuntingMode==='single')return 1;const weights=config().groupWeights,total=weights.reduce((a,b)=>a+b,0);let pick=Math.random()*total;for(let i=0;i<weights.length;i++)if((pick-=weights[i])<0)return i+3;return 5;},
   validateSnapshot(raw){if(raw!==null){if(raw.phase!==undefined&&!['combat','recovery'].includes(raw.phase)||raw.recoveryUntil!==undefined&&(!Number.isFinite(raw.recoveryUntil)||raw.recoveryUntil<0)||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
-  reduceCooldowns(h,legacyAmount){if(engine?.actors.some(a=>a.definition.id===key(h)))engine.reduceCooldowns(key(h),legacyAmount*actionUnit());},
+  // Enemy-death passives cut the remaining cooldowns by their rule: fixed seconds, or a percent of each skill's reuse cooldown.
+  reduceCooldowns(h,points){if(!engine?.actors.some(a=>a.definition.id===key(h)))return;const r=cdr().sources.enemyDeath,a=engine.find(key(h)),now=engine.now;
+   for(const box of [a.ready,a.readyArchive])for(const id of Object.keys(box)){const sk=a.definition.skills.find(x=>x.id===id),amount=r.mode==='percent'?(sk?.cooldownSeconds||0)*points*r.value/100:points*r.value;box[id]=Math.max(now,box[id]-Math.round(amount*1e6));}},
+  cooldownReductionText(source,points){return Schema.cooldownReductionText(source,points,cdr());},
+  cooldownReductionSummary(points){const t=Schema.cooldownReductionTotals(points,cdr()),r=n=>Math.round(n*1e6)/1e6,parts=[];if(t.percent>0)parts.push('−'+r(t.percent)+'%');if(t.flat>0)parts.push('−'+r(t.flat)+' 秒');return parts.join(' ')||'−0 秒';},
   bossMultiplier(e){const f=GAMEPLAY_SETTINGS.combat.finalBoss,schedule=config().finalBoss,elapsed=partyClock-encounterStart;if(elapsed>schedule.enrageAfterSeconds)return f.enrageMultiplier;e.secondsSpecialAt??=encounterStart+schedule.specialIntervalSeconds;if(partyClock>=e.secondsSpecialAt){while(e.secondsSpecialAt<=partyClock)e.secondsSpecialAt+=schedule.specialIntervalSeconds;return f.specialMultiplier;}return 1;}
  };
  install(source);

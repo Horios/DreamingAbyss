@@ -29,7 +29,7 @@ EXTRA_AFFIX_NAMES[16]='全技能冷卻';
 rollAffixes=function(g){return oldAffixRoll(g).map(a=>{const cfg=GAME_BALANCE.affixes,key=balanceQualityKey(a.rank);if(Math.random()>cfg.extendedPoolChance)return a;const attackPct=Number(cfg.extendedValues.attackPercent[key])||0,allCd=Number(cfg.extendedValues.allCooldownReduction?.[key])||0;const specialTypes=[6,7,8,9,12,13,14,...(a.rank>=2&&attackPct>0?[15]:[]),...(allCd>0?[16]:[])],type=specialTypes[rand(specialTypes.length)];const value=type===16?allCd:type===15?attackPct:type===6?cfg.extendedValues.critDamage[key]:type===7?cfg.extendedValues.pierce[key]:type===8?cfg.extendedValues.lifesteal[key]:type===9?cfg.extendedValues.evasion[key]:type===12?cfg.extendedValues.elementDamage[key]:type===13?cfg.extendedValues.raceDamage[key]:cfg.extendedValues.resist[key];const result={type,rank:a.rank,value};if(type===12||type===14)result.element=['fire','ice','wind','light','shadow'][rand(5)];if(type===13)result.race=Object.keys(RACES)[rand(6)];return result;});};
 const actionTurnAffixLabelBase=affixLabel;
 affixLabel=function(a,g){
-  if(a?.type===16)return `全主動／輔助技能冷卻 −${a.value} 回合`;
+  if(a?.type===16)return `全主動／輔助技能冷卻 ${globalThis.EmberwildSecondsCombat?.cooldownReductionText?.('affixAll',a.value)??'−'+a.value+' 回合'}`;
   if(a?.type===5){const sk=CLASSES[g?.job??state.job]?.skills?.[a.skill??0];if(sk?.[1]==='active')return `${sk[0]} 冷卻 −${a.value} 回合`;}
   return actionTurnAffixLabelBase(a,g);
 };

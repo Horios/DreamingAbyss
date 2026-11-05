@@ -77,3 +77,30 @@ test('skill details show the initial and reuse cooldowns',()=>{
  assert.match(text,new RegExp('初始冷卻 '+sk.timing.initialCooldownSeconds+' 秒'));assert.match(text,/再使用冷卻 \d+(?:\.\d+)? 秒/);
  assert.deepEqual(r.errors,[]);
 });
+
+// v0.075: cooldown reduction sources each have a percent or fixed-seconds rule; percent applies first, the part
+// below 5 s is diminished and nothing goes below 2 s.
+test('cooldown reduction applies percent then fixed, diminishes below the threshold and keeps the floor',()=>{
+ const c=S.defaultCooldownReduction();assert.deepEqual(c,doc.balanceSettings.combat.seconds.cooldownReduction);
+ const pct={...c,sources:{...c.sources,affixAll:{mode:'percent',value:10}}};
+ assert.equal(S.applyCooldownReduction(12,{affixAll:3,fixedAll:1},pct,.3),5.4,'12 × 70% − 3');
+ assert.equal(S.applyCooldownReduction(12,{fixedAll:3},c,.3),4,'12 − 9 = 3 → 5 − 2 × 0.5');
+ assert.equal(S.applyCooldownReduction(12,{fixedAll:10},c,.3),2,'never below 2 s');
+ assert.equal(S.applyCooldownReduction(1.5,{fixedAll:2},c,.3),1.5,'a shorter own cooldown is kept');
+ assert.equal(S.applyCooldownReduction(21,{},c,.3),21);
+ const bad=structuredClone(doc);bad.balanceSettings.combat.seconds.cooldownReduction.sources.onCast.mode='turns';assert.throws(()=>S.validate(bad));
+});
+
+test('runtime cooldowns, the on-cast cut and enemy-death reductions follow the configured rules',()=>{
+ const r=game(1);
+ r.run(`stopTeamExploration();const d=exportableBalance();const c=d.balanceSettings.combat.seconds.cooldownReduction;c.sources.fixedAll={mode:'percent',value:20};c.sources.enemyDeath={mode:'percent',value:50};applyBalanceConfig(d,{persist:false});configureSkill('active',0,'class1-initial0');globalThis.equipmentIdentityEffectNumber=(h,key,skill)=>key==='allCooldownReduction'&&skill===undefined?1:0;`);
+ const s=r.run(`JSON.stringify((()=>{const sk=__EMBERWILD_SKILLS.byId('class1-initial0');return {base:sk.timing.cooldownSeconds,cd:skillCooldown(sk.adapter.index,state),text:EmberwildSecondsCombat.cooldownReductionText('fixedAll',1)};})())`);
+ const v=JSON.parse(s);assert.equal(v.cd,Math.round(v.base*.8*1e6)/1e6);assert.equal(v.text,'−20%');
+ r.run(`startSelectedExploration();EmberwildSecondsCombat.step();`);
+ const id=r.run('heroKey(state)');
+ const before=r.run(`EmberwildSecondsCombat.timeline.actor(${JSON.stringify(id)}).skills.find(s=>s.id==='class1-initial0').readyInSeconds`);
+ r.run(`EmberwildSecondsCombat.reduceCooldowns(state,1)`);
+ const after=r.run(`EmberwildSecondsCombat.timeline.actor(${JSON.stringify(id)}).skills.find(s=>s.id==='class1-initial0').readyInSeconds`);
+ assert(Math.abs(Math.max(0,before-v.cd*.5)-after)<1e-6,JSON.stringify({before,after,cd:v.cd}));
+ assert.deepEqual(r.errors,[]);
+});

@@ -63,8 +63,8 @@ test('canonical player skills use first equipment socket for compatible three-ti
    if(x.isProc)assert(x.procs[0]>x.baseline&&x.procs[1]>x.procs[0]&&x.procs[2]>x.procs[1],x.id+' proc tiers');
    else assert.deepEqual(x.procs,[x.baseline,x.baseline,x.baseline],x.id+' active immune to proc gem');
    assert.equal(x.cdOff,x.baseCooldown,x.id+' failed wind roll');
-   // v0.074: legacy action-unit reductions use the fixed action reference, not the class basic interval.
-   assert.equal(x.cdOn,x.isActive?Math.max(.3,x.baseCooldown-r.run('EmberwildSecondsCombat.config().actionReferenceSeconds')):x.baseCooldown,x.id+' wind roll');
+   // v0.075: the wind gem's on-cast cut follows its own cooldown reduction rule (percent or fixed) with the diminishing floor.
+   assert.equal(x.cdOn,x.isActive?r.run(`EmberwildSecondsSchema.applyCooldownReduction(${x.baseCooldown},{onCast:1},EmberwildSecondsCombat.config().cooldownReduction,EmberwildSecondsCombat.config().minimumActionIntervalSeconds)`):x.baseCooldown,x.id+' wind roll');
    assert.equal(x.lifeHeal,30,x.id+' life gem applies once');assert(x.shieldAdded>0,x.id+' guard gem stacks');
    assert.equal(x.enabled,.02);assert.equal(x.otherSockets,0);assert.equal(x.secondMode,'base');assert.equal(x.thirdMode,'base');assert.equal(x.inactive,0);assert.equal(x.baseMode,0);
   }

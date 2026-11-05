@@ -82,7 +82,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
     await t.test('Every supported non-panel affix uses the same ability and units in the upper total',async()=>{
       const rows=await r.page.evaluate(()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});__equipmentTestHero();
-        const cases=[[{key:'pierce',value:6},{type:7,rank:3,value:9},'防禦穿透 +15'],[{key:'lifesteal',value:3},{type:8,rank:3,value:4},'生命竊取 +7%'],[{key:'evasion',value:5},{type:9,rank:3,value:6},'閃避率 +11%'],[{key:'defenseIgnore',value:10},{type:18,rank:3,value:15},'防禦無視 +25%'],[{key:'allCooldownReduction',value:1},{type:16,rank:3,value:2},'全主動／輔助技能冷卻 −3 回合'],[{key:'dropRateBonus',value:8},{type:17,rank:3,value:7},'掉寶率 +15%'],[{key:'elementDamagePct',value:10,element:'fire'},{type:12,rank:3,value:15,element:'fire'},'火 屬性傷害 +25%'],[{key:'elementResistPct',value:10,element:'ice'},{type:14,rank:3,value:15,element:'ice'},'冰 屬性抗性 +25%'],[{key:'raceDamagePct',value:10,race:'beast'},{type:13,rank:3,value:15,race:'beast'},'對野獸 種族增傷 +25%']];
+        const cases=[[{key:'pierce',value:6},{type:7,rank:3,value:9},'防禦穿透 +15'],[{key:'lifesteal',value:3},{type:8,rank:3,value:4},'生命竊取 +7%'],[{key:'evasion',value:5},{type:9,rank:3,value:6},'閃避率 +11%'],[{key:'defenseIgnore',value:10},{type:18,rank:3,value:15},'防禦無視 +25%'],[{key:'allCooldownReduction',value:1},{type:16,rank:3,value:2},'全主動／輔助技能冷卻 −9 秒'],[{key:'dropRateBonus',value:8},{type:17,rank:3,value:7},'掉寶率 +15%'],[{key:'elementDamagePct',value:10,element:'fire'},{type:12,rank:3,value:15,element:'fire'},'火 屬性傷害 +25%'],[{key:'elementResistPct',value:10,element:'ice'},{type:14,rank:3,value:15,element:'ice'},'冰 屬性抗性 +25%'],[{key:'raceDamagePct',value:10,race:'beast'},{type:13,rank:3,value:15,race:'beast'},'對野獸 種族增傷 +25%']];
         return cases.map(([effect,affix,expected])=>{
           ITEM_FORMS[0][0][0].fixedEffects=[effect];
           const g=__equipmentTestGear({affix:[affix]});
@@ -105,7 +105,8 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.ok(Math.abs(out.after/out.before-1.56)<1e-9);
       assert.match(out.text,/核心技能 1 核心技能效果 \+56%/);
-      assert.match(out.text,/核心技能 1 冷卻 −2 回合/);
+      // v0.075: cooldown reduction points convert by their rule (published default: 3 s per point).
+      assert.match(out.text,/核心技能 1 冷卻 −6 秒/);
       assert.match(out.text,/對 BOSS 傷害 \+15%/);assert.match(out.text,/全屬性增傷 \+8%/);
       assert.match(out.text,/此武器攻擊屬性：火/);assert.doesNotMatch(out.text,/普通攻擊改為冰屬性/);assert.equal(out.element,'fire');
       assert.ok(out.proc.includes(out.procExpected),out.proc);

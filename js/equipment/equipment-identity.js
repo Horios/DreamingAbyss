@@ -371,7 +371,7 @@
     const key=effect.key,value=effect.value,label=EFFECT_LABELS[key]||key;
     if(key==='basicElement')return '此武器攻擊屬性：'+(ELEMENTS[value]||value);
     if(key==='basicAdvanceNextRound')return '普攻後，下回合行動往前 '+Math.round(Number(value)||0)+' 格';
-    if(key==='allCooldownReduction'||key==='skillCooldownReduction')return (key==='skillCooldownReduction'?'核心技能 '+((effect.skill??0)+1)+' ':'')+label+' −'+Number(value)+' 回合';
+    if(key==='allCooldownReduction'||key==='skillCooldownReduction')return (key==='skillCooldownReduction'?'核心技能 '+((effect.skill??0)+1)+' ':'')+label+' '+cdText(key==='skillCooldownReduction'?'fixedSkill':'fixedAll',Number(value));
     if(['flatAttack','flatHp','flatDefense','pierce','speed'].includes(key))return label+' '+(Number(value)>=0?'+':'')+Number(value);
     if(key==='elementDamagePct')return (ELEMENTS[effect.element]||effect.element)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
     if(key==='elementResistPct')return (ELEMENTS[effect.element]||effect.element)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
@@ -380,6 +380,11 @@
     return label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
   }
   globalThis.equipmentIdentityEffectText=effectText;
+  // Seconds combat reads the fixed equipment/token cooldown reduction points per hero (and per core skill).
+  globalThis.equipmentIdentityEffectNumber=(h,key,skill)=>skill===undefined?effectNumberForHero(h,key):fixedSkillEffectNumber(h,key,skill);
+  const cdText=(source,n)=>globalThis.EmberwildSecondsCombat?.cooldownReductionText?.(source,n)??'−'+n+' 回合';
+  // Fixed and random-affix cooldown points may follow different rules (percent or seconds); convert each, then combine.
+  const cdSummary=(points,total)=>globalThis.EmberwildSecondsCombat?.cooldownReductionSummary?.(points)??'−'+total+' 回合';
   const identityAffixLabelBase=affixLabel;
   affixLabel=function(a,g){return a.type===15?'角色總攻擊力 +'+a.value+'%':identityAffixLabelBase(a,g);};
 
@@ -681,7 +686,7 @@
         if(!e.value)continue;
       }
       if(e.key!=='basicElement')numeric[[e.key,e.element||'',e.race||'',e.skill??''].join(':')]=e.value;
-      values.push(e.key==='skillProcChance'?'核心技能 '+((e.skill??0)+1)+' 觸發率 '+(e.value>=0?'+':'')+e.value+'%':e.key==='skillCooldownReduction'?'核心技能 '+((e.skill??0)+1)+' 冷卻 −'+e.value+' 回合':effectText(e));
+      values.push(e.key==='skillProcChance'?'核心技能 '+((e.skill??0)+1)+' 觸發率 '+(e.value>=0?'+':'')+e.value+'%':e.key==='skillCooldownReduction'?'核心技能 '+((e.skill??0)+1)+' 冷卻 '+cdSummary({fixedSkill:Math.max(0,Math.round(e.fixedValue)),affixSkill:e.affixValue},e.value):e.key==='allCooldownReduction'?'全主動／輔助技能冷卻 '+cdSummary({fixedAll:Math.max(0,Math.round(e.fixedValue)),affixAll:e.affixValue},e.value):effectText(e));
     }
     const affixes=ledger.rows.filter(row=>row.affix).map(row=>({label:row.label.replace(' 加成',''),rule:row.rule,rank:row.affix.rank??0}));
     return {total:ledger.total,values,affixes,numeric};
