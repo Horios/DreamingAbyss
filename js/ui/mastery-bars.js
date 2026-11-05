@@ -17,12 +17,15 @@
    `<span class="mastery-bar-track" role="progressbar" aria-label="${label}精通進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}"><span class="mastery-bar-fill" style="width:${pct}%"></span></span>`+
    `${compact?'':`<small>${text}${inactive?'':' EXP · 累積 '+xp}${note?' · '+note:''}</small>`}</span>${compact?`<small class="mastery-bar-value">${text}</small>`:''}</div>`;
  }
- // The masteries the protagonist's current class trains (priest light/shadow, mage elements, warrior and archer weapons),
- // shown in the exploration header after the experience bar (v0.090; v0.083 showed the class mastery instead).
+ // Exploration header (v0.091): exactly two bars, the class mastery and the highest weapon/element mastery of that class
+ // (by accumulated EXP; ties keep the listed order). v0.090 listed every weapon/element mastery.
  function current(h){
   const T=globalThis.__EMBERWILD_TEAMS,M=globalThis.__EMBERWILD_MASTERY;if(!h||!T?.build?.()||!M?.masteryProgress||!Number.isInteger(h.job))return '';
-  const perm=T.build().permanent,keys=M.validMasteries?.(h.job)||[];if(!keys.length)return '';
-  return `<span class="mastery-bar-row" aria-label="${CLASSES[h.job]?.name||''}精通">${keys.map(k=>{const p=M.masteryProgress(perm.masteries?.[k]||0);return bar(k,{label:M.masteryLabels?.[k]||k,level:p.level,current:p.current,next:p.next,xp:p.xp,compact:true});}).join('')}</span>`;
+  const perm=T.build().permanent,cls=M.masteryProgress(perm.classes?.[h.job]?.xp||0),keys=M.validMasteries?.(h.job)||[];
+  const best=keys.reduce((a,k)=>a===null||(perm.masteries?.[k]||0)>(perm.masteries?.[a]||0)?k:a,null);
+  const bars=[bar('class:'+h.job,{label:CLASSES[h.job]?.name||'職業',level:cls.level,current:cls.current,next:cls.next,xp:cls.xp,compact:true})];
+  if(best!==null){const p=M.masteryProgress(perm.masteries?.[best]||0);bars.push(bar(best,{label:M.masteryLabels?.[best]||best,level:p.level,current:p.current,next:p.next,xp:p.xp,compact:true}));}
+  return `<span class="mastery-bar-row" aria-label="${CLASSES[h.job]?.name||''}精通">${bars.join('')}</span>`;
  }
  globalThis.EmberwildMasteryBars={bar,current,CLASS,KEY};
 })();

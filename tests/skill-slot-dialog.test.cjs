@@ -24,7 +24,10 @@ test('mastery bars use element colors, gray for warrior and cyan for archer, and
  assert.match(r.run(`${B}('fire',{label:'火',level:1,current:1,next:4,xp:3})`),/--mastery-color:#e0603f[\s\S]*width:25%/);
  r.run("setTab('character')");assert.match(r.run("document.getElementById('app').innerHTML"),/mastery-bar-grid[\s\S]*data-mastery-key="class:3"/);
  r.run("setTab('battle');startSelectedExploration();");for(let i=0;i<8;i++){r.advance(250);r.run('tick()');}
- // v0.090: the header shows the masteries the class trains (priest: light and shadow), not the class mastery.
- const head=r.run("document.getElementById('app').innerHTML");assert.match(head,/<progress aria-label="等級經驗"[^>]*><\/progress><span class="mastery-bar-row" aria-label="牧師精通"><div class="mastery-bar compact" style="--mastery-color:#e6c25a" data-mastery-key="light"[\s\S]*?data-mastery-key="shadow"/);assert.doesNotMatch(head.slice(0,head.indexOf('mastery-bar-row')+2000),/data-mastery-key="class:3"/);
+ // v0.091: the header shows two bars, the class mastery and the class's highest weapon/element mastery.
+ let head=r.run("document.getElementById('app').innerHTML");const row=h=>{const a=h.indexOf('class="mastery-bar-row"');return a<0?'':h.slice(a,h.indexOf('data-party-gold',a));};
+ assert.deepEqual([...row(head).matchAll(/data-mastery-key="([^"]+)"/g)].map(m=>m[1]),['class:3','light'],'ties keep the listed order');
+ r.run("__EMBERWILD_TEAMS.build().permanent.masteries.shadow=50;render();");head=r.run("document.getElementById('app').innerHTML");
+ assert.deepEqual([...row(head).matchAll(/data-mastery-key="([^"]+)"/g)].map(m=>m[1]),['class:3','shadow'],'the highest weapon/element mastery is shown');
  assert.deepEqual(r.errors,[]);
 });
