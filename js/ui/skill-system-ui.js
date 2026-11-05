@@ -61,7 +61,17 @@
  }
  function passives(h){const list=sortedSkills(S.system().definitions.filter(sk=>sk.type==='passive'&&S.learned(h,sk)),h);return `<section class="panel"><h2>被動技能 <small>無槽位上限 · 不占主動槽</small></h2><div class="skill-passive-grid">${list.map(sk=>{const on=S.passiveEnabled(h,sk.id);return `<article class="skill-candidate ${on?'':'skill-passive-disabled'}" data-passive-id="${esc(sk.id)}"><button type="button" class="skill-passive-detail" onclick="showSkillInformation('${esc(sk.id)}')">${icon(sk)}<b>${esc(sk.name)}</b></button><p>${esc(sk.description)}</p><button type="button" role="switch" aria-checked="${on}" onclick="setPassiveSkillEnabled('${esc(sk.id)}',${!on})">${on?'已啟用':'已停用'}</button></article>`;}).join('')||'<p>尚未學會被動技能，可至技能圖鑑查看解鎖條件。</p>'}</div></section>`;}
  globalThis.showSkillInformation=function(id){const h=party.members[0],sk=S.byId(id);if(!sk||!S.learned(h,sk)&&!catalog(h).some(s=>s.id===id))return false;const modal=$('modal');modal.classList.add('skill-system-dialog');modal.innerHTML=card(sk,h)+`<button onclick="closeModal()">關閉</button>`;if(!modal.open)modal.showModal();return true;};
- globalThis.openSkillCatalog=function(){const h=party.members[0],modal=$('modal');modal.classList.add('skill-system-dialog');modal.innerHTML=`<h2>${esc(CLASSES[h.job].name)}技能圖鑑</h2><p class="small">收錄目前版本可取得的本職業與二轉技能。</p><div class="skill-candidate-list">${catalog(h).map(sk=>card(sk,h,`<span class="tag">${acquired(sk,h)?'已取得':'尚未取得'}</span>`)).join('')}</div><button onclick="closeModal()">關閉</button>`;if(!modal.open)modal.showModal();return true;};
+ // v0.092: two-pane catalog. Left: every skill of the class (learned first, then by level) with a strong learned/unlearned
+ // contrast; right: the selected skill's full details. Read-only.
+ let catalogSelected=null;
+ globalThis.openSkillCatalog=function(id){
+  const h=party.members[0],modal=$('modal'),list=catalog(h);if(!list.length)return false;
+  if(id!==undefined)catalogSelected=id;if(!list.some(sk=>sk.id===catalogSelected))catalogSelected=list[0].id;
+  const sel=list.find(sk=>sk.id===catalogSelected),have=list.filter(sk=>acquired(sk,h)).length;
+  modal.classList.add('skill-system-dialog','skill-catalog-dialog');
+  modal.innerHTML=`<h2>${esc(CLASSES[h.job].name)}技能圖鑑</h2><p class="small">收錄目前版本可取得的本職業與二轉技能。已取得 ${have} / ${list.length}。</p><div class="skill-catalog-panes"><nav class="skill-catalog-list" aria-label="技能清單">${list.map(sk=>{const got=acquired(sk,h);return `<button type="button" class="skill-catalog-item ${got?'is-acquired':'is-missing'}" data-skill-pick="${esc(sk.id)}" aria-pressed="${sk.id===catalogSelected}" onclick="openSkillCatalog('${esc(sk.id)}')"><span class="skill-catalog-icon">${icon(sk)}</span><span class="skill-catalog-text"><b>${esc(sk.name)}</b><small>${sk.type==='support'?'主動（輔助）':labels[sk.type]||sk.type} · ${stage(sk,h)}</small></span><span class="skill-catalog-state">${got?'已取得':'未取得'}</span></button>`;}).join('')}</nav><section class="skill-catalog-detail ${acquired(sel,h)?'is-acquired':'is-missing'}">${card(sel,h,`<span class="tag skill-catalog-status">${acquired(sel,h)?'已取得':'尚未取得'}</span>`)}</section></div><div class="actions"><button type="button" onclick="closeModal()">關閉</button></div>`;
+  if(!modal.open)modal.showModal();modal.querySelector('.skill-catalog-item[aria-pressed="true"]')?.scrollIntoView?.({block:'nearest'});return true;
+ };
  // Equipment skills belong to classes: a skill rolled for another class shows its class limit and cannot be enabled.
  const skillJobsText=sk=>(sk?.jobs||[]).map(j=>CLASSES[j]?.name||'').filter(Boolean).join('／');
  const usableBy=(sk,h)=>!!sk&&(sk.jobs||[]).includes(h?.job);
@@ -82,7 +92,7 @@
   modal.innerHTML=`<h2>技能配置 · ${labels[type]}槽 ${n+1}</h2><div class="skill-slot-panes"><nav class="skill-slot-tabs" aria-label="技能槽">${slots}</nav><section class="skill-slot-choices"><div class="skill-slot-toolbar"><label><input type="checkbox" ${slotShowLocked?'checked':''} onchange="toggleSkillSlotLocked('${type}',${n},this.checked)">顯示未學技能</label>${!slotShowLocked&&hidden?`<small>已隱藏 ${hidden} 個未學技能</small>`:''}</div><div class="skill-candidate-list">${cards||(all.length?'<p>目前沒有已學會的此類技能，可勾選「顯示未學技能」查看解鎖條件。</p>':'<p>目前階段沒有符合此類型的技能。</p>')}</div></section></div><div class="actions"><button type="button" onclick="chooseSkillSlot('${type}',${n},null)">清空此技能槽</button><button type="button" onclick="closeModal()">關閉</button></div>`;if(!modal.open)modal.showModal();return true;
  };
  globalThis.chooseSkillSlot=function(t,n,id){const h=party.members[0];return withHero(h,()=>{if(!configureSkill(t,n,id))return false;closeModal();return true;});};
- $('modal').addEventListener('close',()=>$('modal').classList.remove('skill-system-dialog','skill-slot-dialog'));
+ $('modal').addEventListener('close',()=>$('modal').classList.remove('skill-system-dialog','skill-slot-dialog','skill-catalog-dialog'));
  const statNames={atk:'攻擊',hp:'生命',def:'防禦',speed:'速度',crit:'暴擊'};
  function gemText(h,g,id,n){const def=S.system().gems.find(x=>x.kind===id%5),tier=Math.floor(id/5),base=E.mode(h||{},{...g,skillSockets:{...g.skillSockets,gems:g.skillSockets.gems.map((value,index)=>index===n?id:value)}},n)==='base';if(base){const b=def.base,value=b.values[tier];return statNames[b.stat]+' +'+(b.unit==='ratio'?Math.round(value*10000)/100+'%':value);}return ({effect:'技能效果',cooldown:'冷卻縮短機率',procChance:'觸發率',heal:'額外治療',shield:'額外護盾'})[def.skill.key]+' +'+Math.round(def.skill.values[tier]*10000)/100+'%';}
  let socketSelection=null;

@@ -42,3 +42,27 @@
 .skill-slot-toolbar label{display:flex;align-items:center;gap:6px;cursor:pointer}
 .skill-slot-choices .skill-candidate-list{overflow-y:auto;min-height:0;padding-right:4px}
 @media(max-width:700px){.skill-slot-panes{grid-template-columns:1fr;max-height:none}.skill-slot-tabs{flex-direction:row;flex-wrap:wrap;overflow:visible}.skill-slot-group{flex:1 1 140px}}
+/* v0.092: detail rows keep the label width so long values wrap beside it instead of overlapping it. */
+.skill-detail-grid dt{flex:0 0 auto}
+.skill-detail-grid dd{flex:1 1 auto;min-width:0}
+/* v0.092 two-pane skill catalog with a strong learned/unlearned contrast. */
+#modal.skill-catalog-dialog[open]{width:min(1100px,96vw);max-width:96vw;height:min(88vh,860px);display:flex;flex-direction:column;overflow:hidden}
+#modal.skill-catalog-dialog>h2,#modal.skill-catalog-dialog>p,#modal.skill-catalog-dialog>.actions{flex:0 0 auto}
+.skill-catalog-panes{display:grid;grid-template-columns:260px minmax(0,1fr);gap:12px;flex:1 1 auto;min-height:0}
+.skill-catalog-list{display:flex;flex-direction:column;gap:4px;overflow-y:auto;padding-right:4px;min-height:0}
+.skill-catalog-item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:6px 8px;text-align:left}
+.skill-catalog-icon svg{width:24px;height:24px}
+.skill-catalog-text{display:flex;flex-direction:column;min-width:0}
+.skill-catalog-text b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.skill-catalog-text small{font-size:11px;opacity:.8}
+.skill-catalog-state{font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;white-space:nowrap}
+.skill-catalog-item.is-acquired{border-color:color-mix(in srgb,var(--gold) 55%,var(--line))}
+.skill-catalog-item.is-acquired .skill-catalog-state{color:#14231a;background:var(--gold)}
+.skill-catalog-item.is-missing{opacity:.45;filter:grayscale(.85)}
+.skill-catalog-item.is-missing .skill-catalog-state{color:var(--muted);border:1px solid var(--line)}
+.skill-catalog-item.is-missing:hover,.skill-catalog-item.is-missing[aria-pressed="true"]{opacity:.8}
+.skill-catalog-item[aria-pressed="true"]{box-shadow:inset 3px 0 var(--gold),0 0 0 1px var(--gold)!important}
+.skill-catalog-detail{overflow-y:auto;min-height:0;padding-right:4px}
+.skill-catalog-detail.is-missing .skill-candidate{filter:grayscale(.6);opacity:.82}
+.skill-catalog-detail.is-acquired .skill-catalog-status{color:#14231a;background:var(--gold);border-color:var(--gold)}
+@media(max-width:700px){.skill-catalog-panes{grid-template-columns:1fr;grid-template-rows:minmax(0,38%) minmax(0,1fr)}}

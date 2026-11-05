@@ -10,7 +10,8 @@ test('Player skills show canonical slots with SVG icons; the catalog sorts learn
  assert.deepEqual([...html(r).matchAll(/data-skill-slot="([^"]+)"/g)].map(x=>x[1]),['active:0','active:1','active:2','proc:0','support:0']);
  assert.match(slot(r,'active:0'),/<svg[\s\S]*<b>[^<]+<\/b>/);assert.match(slot(r,'active:1'),/選擇技能/);
  assert.equal(r.run('openSkillCatalog()'),true);
- const order=r.run(`JSON.stringify([...$('modal').innerHTML.matchAll(/data-skill-id="([^"]+)"/g)].map(x=>{const sk=__EMBERWILD_SKILLS.byId(x[1]);return [__EMBERWILD_SKILLS.learned(playerHero(),sk)?0:1,sk.requiredLevel??sk.level??1];}))`);
+ // v0.092: the catalog lists every skill on the left (data-skill-pick) and details the selected one on the right.
+ const order=r.run(`JSON.stringify([...$('modal').innerHTML.matchAll(/data-skill-pick="([^"]+)"/g)].map(x=>{const sk=__EMBERWILD_SKILLS.byId(x[1]);return [__EMBERWILD_SKILLS.learned(playerHero(),sk)?0:1,sk.requiredLevel??sk.level??1];}))`);
  const rows=JSON.parse(order);assert(rows.length>1);assert(rows.some(x=>x[0]===0)&&rows.some(x=>x[0]===1));
  assert.deepEqual(rows,[...rows].sort((a,b)=>a[0]-b[0]||a[1]-b[1]));
  assert(!/chooseSkillSlot|configureSkill/.test(modal(r)),'the catalog is read-only');
