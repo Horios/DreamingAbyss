@@ -55,7 +55,10 @@
   const baseRound=pacedRound;
   pacedRound=function*(){if(!globalThis.__EMBERWILD_RESUMING_ROUND&&running&&!$('modal').open){preparingRound=true;try{for(const h of living()){ensureBattle(h);const r=companion(h)?runtime(h):null,a=item(h)?.snapshot.ability;if(r?.started&&a?.event==='round'&&eventClock()-r.round+1>=a.threshold)trigger(h,'round');}}finally{preparingRound=false;}}yield* baseRound();if(!foes.some(e=>e.hp>0)||!living().length)clear();};
   const baseReset=resetEncounter;
-  resetEncounter=function(){clear();return baseReset();};
+  resetEncounter=function(){clear();deferredClear.clear();return baseReset();};
+  // Token changes made during an encounter clear that companion's token state when the next encounter spawns.
+  const deferredClear=new Set(),baseSpawn=spawnGroup;
+  spawnGroup=function(...args){for(const key of deferredClear){const h=partyMember(key);if(h)clear(h);}deferredClear.clear();return baseSpawn.apply(this,args);};
   function makeToken(id,quality=null){const d=config.catalog.find(x=>x.id===id);if(!d)return null;const q=quality??d.quality;const g={id:uid(),type:M.TYPE,tokenId:d.id,name:d.name,slot:4,job:0,tier:1,rar:q,plus:0,affix:[],locked:false,snapshot:copy(d),qualityMultipliers:copy(config.qualityMultipliers)};M.validateItem(g,RULES.enhanceMax);return g;}
   function addToken(g){ensureSharedGear();addGear(g);}
   globalThis.createCompanionToken=makeToken;
@@ -94,10 +97,12 @@
   resetBalanceJSON=function(){const out=baseResetBalance();config=M.normalize();clear();if(state)render();return out;};
   function equipToken(id,key){
     const h=partyMember(key),g=findGear(id);if(!companion(h)||!M.canEquip(g,h)||gearWearer(id)&&gearWearer(id)!==h)return false;
-    if(foes.some(e=>e.hp>0))resetEncounter();const previous=h.tokenId,previousHp=h.hp;h.tokenId=id;clear(h);withHero(h,clampVitals);
-    if(save()===false){h.tokenId=previous;h.hp=previousHp;return false;}render();return true;
+    // During an encounter the change is saved now and applies from the next encounter (EmberwildBattleConfiguration freezes tokenId).
+    const B=globalThis.EmberwildBattleConfiguration,deferred=!!B?.pending();
+    const previous=h.tokenId,previousHp=h.hp;h.tokenId=id;if(deferred)deferredClear.add(memberKey(h));else{clear(h);withHero(h,clampVitals);}
+    if(save()===false){h.tokenId=previous;h.hp=previousHp;return false;}if(deferred)B.notify();render();return true;
   }
-  function unequipToken(key){const h=partyMember(key);if(!companion(h))return false;if(foes.some(e=>e.hp>0))resetEncounter();const previous=h.tokenId,hp=h.hp;h.tokenId=null;clear(h);withHero(h,clampVitals);if(save()===false){h.tokenId=previous;h.hp=hp;return false;}render();return true;}
+  function unequipToken(key){const h=partyMember(key);if(!companion(h))return false;const B=globalThis.EmberwildBattleConfiguration,deferred=!!B?.pending();const previous=h.tokenId,hp=h.hp;h.tokenId=null;if(deferred)deferredClear.add(memberKey(h));else{clear(h);withHero(h,clampVitals);}if(save()===false){h.tokenId=previous;h.hp=hp;return false;}if(deferred)B.notify();render();return true;}
   globalThis.equipCompanionToken=equipToken;globalThis.unequipCompanionToken=unequipToken;
   const baseUnequip=unequipSharedGear;
   unequipSharedGear=function(id){const h=gearWearer(id);return M.isToken(findGear(id))?h&&unequipToken(memberKey(h)):baseUnequip(id);};

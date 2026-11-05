@@ -29,3 +29,16 @@
 .mailbox-list-item b{display:flex;align-items:center;gap:6px;min-width:0;padding-right:14px}
 .mail-title-icon{flex:0 0 32px;width:32px;height:32px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.28);border-radius:6px;background:rgba(0,0,0,.28);padding:4px}
 .mailbox-list-item .mail-title-icon svg{width:20px!important;height:20px!important;max-width:20px;flex:0 0 20px}
+/* v0.083 two-pane skill slot dialog */
+#modal.skill-slot-dialog{width:min(1100px,96vw);max-width:96vw}
+.skill-slot-panes{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;min-height:0;max-height:min(70vh,720px)}
+.skill-slot-tabs{display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding-right:4px}
+.skill-slot-group h3{margin:0 0 4px;font-size:13px;color:var(--muted)}
+.skill-slot-tab{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin-bottom:6px;text-align:left;padding:8px 10px}
+.skill-slot-tab small{color:var(--muted);font-size:11px}
+.skill-slot-tab[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 3px 0 var(--gold)}
+.skill-slot-choices{display:flex;flex-direction:column;min-height:0}
+.skill-slot-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:13px}
+.skill-slot-toolbar label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.skill-slot-choices .skill-candidate-list{overflow-y:auto;min-height:0;padding-right:4px}
+@media(max-width:700px){.skill-slot-panes{grid-template-columns:1fr;max-height:none}.skill-slot-tabs{flex-direction:row;flex-wrap:wrap;overflow:visible}.skill-slot-group{flex:1 1 140px}}

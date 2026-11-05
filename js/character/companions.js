@@ -171,7 +171,8 @@
     const plan=plans.find(p=>p.id===id);if(!party||!plan||plan.availability==='hidden'||!globalThis.companionUnlocked?.(id)||partyMember(id)||party.members.length>=513)return;
     ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureAccountQuests();ensureRoster(party);
     const full=party.active.length>=3;
-    resetEncounter();const h=initial(plan.job);h.companionId=id;
+    // During an encounter the new companion joins the lineup from the next encounter (battle configuration freezes the lineup).
+    const deferRoster=!!globalThis.EmberwildBattleConfiguration?.pending();if(!deferRoster)resetEncounter();const h=initial(plan.job);h.companionId=id;
     h.name=party.companionNames[id];h.lv=playerHero().lv;
     h.won=party.cleared&&h.lv>=GS('progression.levelCaps.beforeClear',30);
     h.bag=[];h.equipped=Array(5).fill(null);h.tokenId=null;
@@ -196,7 +197,7 @@
     const incoming=partyMember(inKey),index=party.active.indexOf(outKey);
     if(!incoming||!isEnlisted(incoming)||!partyMember(outKey)||party.active.length!==3||party.active.includes(inKey)||index<0)return closeModal();
     if(!solo.canVisit(party.map,incoming)){closeModal();return toast('此角色未達目前地圖門檻，請先切換較低級地圖');}
-    resetEncounter();party.active[index]=inKey;closeModal();save();render();
+    const deferRoster=!!globalThis.EmberwildBattleConfiguration?.pending();if(!deferRoster)resetEncounter();party.active[index]=inKey;closeModal();save();if(deferRoster)EmberwildBattleConfiguration.notify();render();
   };
   const originalToggleMember=toggleMember;
   toggleMember=function(key){
