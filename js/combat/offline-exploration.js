@@ -328,7 +328,8 @@
   let c=ensure();if(globalThis.__EMBERWILD_SAVE_OWNER===false)throw Error('存檔已由另一分頁接手');
   if(!c||target<c.lastAt)return false;
   let count=0,resources=null;const batchStart=performance.now();
-  quiet(()=>{while(c.lastAt<target&&count<maxEvents&&(count===0||performance.now()-batchStart<12)){
+  // Stop at the exact event that completed a no-snapshot average, so the conversion point never depends on batch timing.
+  quiet(()=>{while(c.lastAt<target&&count<maxEvents&&(count===0||performance.now()-batchStart<12)&&!(averageWindow!==null&&IS()?.averageReadyFor?.(averageWindow))){
    if(!lastMode||!running){const wait=target-c.lastAt;if(nextActionAt)nextActionAt+=wait;if(roundStartedAt)roundStartedAt+=wait;consumeTo(target,false);break;}
    if(jobOffline&&analysis){checkHours(c.lastAt);if(analysis.ready&&observed&&!roundIterator&&round===0)resources=captureResources(resources);try{if(tryFast(target)){collect(resources);count++;continue;}}catch(error){
     // Restore inventory, receipt, combat cursor and story trackers together.

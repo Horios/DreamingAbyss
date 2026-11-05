@@ -225,7 +225,8 @@
  }
  const averaging=window=>!!party&&P().averageWindow===window;
  // True once, when this window's average became the region's snapshot.
+ const averageReadyFor=window=>!!party&&P().averageReady===window;
  function takeAverage(window){if(!party)return false;const p=P();if(p.averageReady!==window)return false;p.averageReady=null;return true;}
  function cancelAverage(window){if(!party)return;const p=P();if(p.averageWindow===window){p.averageWindow=null;if(p.run?.mode==='average')p.run=null;}}
- globalThis.EmberwildIdleStatistics={RULES,planAverage,averaging,takeAverage,cancelAverage,voucherSettings,checkVoucherSettings,VOUCHER_DEFAULTS,normalize,snapshot,totals,gearKey,configuration,get sampling(){const r=party?.idleStatistics?.progress?.run;return r?{mode:r.mode,ms:r.ms}:null;}};
+ globalThis.EmberwildIdleStatistics={RULES,planAverage,averaging,averageReadyFor,takeAverage,cancelAverage,voucherSettings,checkVoucherSettings,VOUCHER_DEFAULTS,normalize,snapshot,totals,gearKey,configuration,get sampling(){const r=party?.idleStatistics?.progress?.run;return r?{mode:r.mode,ms:r.ms}:null;}};
 })();

@@ -66,3 +66,9 @@ test('closing the page during the average resumes it from the checkpoint and sti
  assert.equal(json(cold,'EmberwildIdleStatistics.snapshot(0,0)').source,'average');assert.equal(tickets(cold).length,1,'one ticket mail');
  assert.equal(cold.run('party.offlineExploration.lastAt'),cold.now);assert.deepEqual(cold.errors,[]);
 });
+
+test('the conversion point is the event that completed the average, independent of batch timing',async()=>{
+ const run=async realClock=>{const r=game(60);if(realClock)r.ctx.performance.now=require('perf_hooks').performance.now.bind(require('perf_hooks').performance);await away(r,3*HOUR);
+  return json(r,'(({kills,xp,goldGained,effectiveMs,voucherMs,vouchers})=>({kills,xp,goldGained,effectiveMs,voucherMs,vouchers}))(party.offlineExploration.receipt)');};
+ const a=await run(false),b=await run(true);assert.deepEqual(b,a);assert(a.vouchers>0);
+});
