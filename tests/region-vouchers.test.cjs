@@ -115,7 +115,7 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
 });
 test('ticket length and potion charging come from balance settings; invalid values are rejected',async()=>{
  const r=await ready(sampled()),before=json(r,'EmberwildRegionVouchers.ticketFor(0,0)');
- assert.deepEqual(json(r,'exportableBalance().balanceSettings.rewards.regionVouchers'),{ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true});
+ assert.deepEqual(json(r,'exportableBalance().balanceSettings.rewards.regionVouchers'),{ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true,averageMinutes:180});
  assert.equal(before.minutes,30);
  // Balance changes are refused while exploring, so stop, apply and resume.
  r.run('stopTeamExploration();closeModal();globalThis.__doc=exportableBalance();__doc.balanceSettings.rewards.regionVouchers={ticketMinutes:15,sampleMinutes:30,maxGapMinutes:10,chargePotions:false}');

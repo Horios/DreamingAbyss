@@ -376,7 +376,9 @@
  // Region vouchers are an alternative to finishing the replay: the remaining settled time of this absence
  // becomes 30-minute tickets of the current region (js/world/region-vouchers.js). Offered only during an
  // offline replay of ordinary exploration in a region that already has a 30-minute earnings snapshot.
- let voucherState=null;
+ let voucherState=null,averageWindow=null;
+ const IS=()=>globalThis.EmberwildIdleStatistics;
+ const averageHours=()=>Math.round((IS()?.RULES.averageMs||3*HOUR)/HOUR*10)/10;
  function voucherQuote(){
   const c=clock(),V=globalThis.EmberwildRegionVouchers;
   if(!job||!jobOffline||!V||party.questChallenge||party.bossChallenge?.active||!V.available(party.map,party.difficulty||0))return null;
@@ -390,6 +392,7 @@
  };
  function voucherHTML(){
   if(voucherState==='requested')return '<p class="small">已確認改領收益券，正在停止計算並寄送收益券。</p>';
+  if(averageWindow!==null&&IS()?.averaging(averageWindow))return `<p class="small offline-voucher-average">此地區還沒有收益樣本：先完整計算 ${averageHours()} 小時，剩餘時間依這段時間的平均收益自動改領收益券。</p>`;
   const q=voucherQuote();if(!q){voucherState=null;return '';}
   const gold=globalThis.EmberwildRegionVouchers.overlevelGold(party.map);
   if(voucherState==='confirm')return `<div class="offline-voucher-confirm" role="group" aria-label="改領收益券確認"><h3>改領收益券</h3><p>停止目前的離線戰鬥計算。已計算的收益照常入帳；剩餘的 ${api.timeText(q.ms,true)} 轉換為 <b>${q.tickets} 張「${esc(q.name)}」${voucherMinutes()} 分鐘收益券</b>，寄到信箱。</p><ul class="small"><li>收益券以道具形式寄到信箱，領取後放入背包的道具欄。</li><li>使用時才計算經驗、金幣與道具，收益寄到信箱。</li><li>收益依此地區收益最高的掛機紀錄換算；道具依地區掉落機率實際抽取。</li><li>主角等級超過 Lv.${MAPS[party.map].max} 後，此券只能兌換固定金幣 ${gold.toLocaleString('zh-TW')}。</li>${q.remainder?`<li>不足 ${voucherMinutes()} 分鐘的 ${api.timeText(q.remainder,true)} 保留，下次改領時累積。</li>`:''}</ul><p>確定要停止計算並改領收益券嗎？</p><div class="actions"><button type="button" class="primary" onclick="offerOfflineVouchers('confirm')">確認改領</button><button type="button" onclick="offerOfflineVouchers('cancel')">繼續計算</button></div></div>`;
@@ -410,10 +413,10 @@
   box.innerHTML=`<section data-offline-progress role="status" aria-live="polite" aria-busy="${!error}"><h2>離線探索收益</h2><p data-progress-message>${esc(message)}</p>${p?`<progress max="${total}" value="${done}" aria-label="離線結算進度"></progress><p class="offline-progress-value">${percent}% · 已計算 ${api.timeText(done,true)} / ${api.timeText(total,true)}</p><p class="small">進度代表已計算時間；計算期間分批儲存，完成時立即儲存全部收益。</p>`:''}${voucher}${error?'<button onclick="retryOfflineExploration()">重試結算</button>':''}</section>`;
  }
  // Stop the replay and turn the rest of this absence (up to its cap) into vouchers, in the same commit.
- function convertToVouchers(){
+ function convertToVouchers(auto=false){
   const c=clock(),end=c.offlineWindow?Math.min(requestedAt,c.offlineWindow.capAt):requestedAt,ms=Math.max(0,end-c.lastAt),r=c.pendingReceipt;
   const n=EmberwildRegionVouchers.issue(party.map,party.difficulty||0,ms);
-  if(r&&!r.complete){r.vouchers=(r.vouchers||0)+n;r.voucherMs=(r.voucherMs||0)+ms;r.voucherRegion=MAPS[party.map].name;r.end=end;recordInterval(r,c.lastAt,end);r.reason='已改領收益券';}
+  if(r&&!r.complete){r.vouchers=(r.vouchers||0)+n;r.voucherMs=(r.voucherMs||0)+ms;r.voucherRegion=MAPS[party.map].name;r.end=end;recordInterval(r,c.lastAt,end);r.reason=auto?`無收益樣本：計算 ${averageHours()} 小時後依平均改領收益券`:'已改領收益券';}
   skipUncreditedTime(requestedAt);
  }
  function showReceipt(){
@@ -442,6 +445,9 @@
   if(offline)track(Math.min(target,c.offlineWindow?.capAt??target));
   metrics={fullMs:0,fastComputeMs:0,dropMs:0,inventoryMs:0,saveMs:0,totalMs:0,fastMs:0,fastBattles:0,fallbacks:{},hours:[],phase:globalThis.EmberwildSecondsCombat?.active?'正在推進戰鬥與產生掉落':'正在分析戰鬥效率'};
   analysis=null;observed=null;replayCache=null;modelSeed=(c.lastAt^playerHero().created^party.map)>>>0;if(offline&&target-c.lastAt>3*HOUR&&!globalThis.__EMBERWILD_OFFLINE_FULL_ONLY){const reason=simpleCombat();if(reason)fastReason(reason);else resetAnalysis(c.lastAt);}
+  averageWindow=null;
+  // A region without any earnings snapshot: replay the configured average time, then price the rest of this absence by it.
+  if(offline&&c.offlineWindow&&IS()?.planAverage?.(c.offlineWindow.capAt,Math.min(target,c.offlineWindow.capAt)-c.lastAt))averageWindow=c.offlineWindow.capAt;
   failed=false;settlementProgress={start:c.lastAt,target};
   job=Promise.resolve().then(async()=>{
    try{
@@ -456,7 +462,8 @@
      if(c.offlineWindow)c.offlineWindow.untilAt=Math.max(c.offlineWindow.untilAt,requestedAt);
      settlementProgress.target=end;
      let more;
-     do{if(voucherState==='requested'){convertToVouchers();voucherState=null;more=false;break;}
+     do{if(averageWindow!==null&&IS()?.takeAverage(averageWindow)){averageWindow=null;if(voucherQuote()){convertToVouchers(true);voucherState=null;more=false;break;}}
+      if(voucherState==='requested'){convertToVouchers();voucherState=null;more=false;break;}
       // While the player reads the voucher confirmation the replay pauses, so its figures and buttons stay still.
       if(voucherState==='confirm'){await new Promise(resolve=>setTimeout(resolve,100));more=true;continue;}
       const start=c.lastAt,r=c.pendingReceipt,status=c.status;more=advance(end);if(c!==clock()){c=clock();more=c.lastAt<end;}else if(jobOffline)recordInterval(r,start,c.lastAt);if(c.status!==status||more&&performance.now()-lastCheckpoint>=checkpointIntervalMs){commit();lastCheckpoint=performance.now();}if(show&&(performance.now()-lastProgress>=100||!more)){showProgress(metrics.fastBattles?'正在快速結算收益 · 正在生成掉落物品':metrics.phase);lastProgress=performance.now();}if(more)await yieldBatch();}while(more);
@@ -467,7 +474,7 @@
     if(show){showProgress('正在完成收益與存檔');await new Promise(resolve=>setTimeout(resolve,0));}if(jobOffline&&!document.hidden)promote();c.offlineWindow=null;commit();metrics.totalMs=performance.now()-settlementStarted;lastRendered=actionSerial;render();showReceipt();
     if(!c.receipt)document.getElementById('offline-settlement').hidden=true;
    }catch(e){rollback(String(e.message||e));}
-   finally{voucherState=null;analysis=null;observed=null;replayCache=null;job=null;lastMode=atTitle()?false:running;lastCheck=nowReal();}
+   finally{if(averageWindow!==null){IS()?.cancelAverage?.(averageWindow);averageWindow=null;}voucherState=null;analysis=null;observed=null;replayCache=null;job=null;lastMode=atTitle()?false:running;lastCheck=nowReal();}
   });return job;
  }
  globalThis.retryOfflineExploration=function(){failed=false;return settle(nowReal(),jobOffline);};

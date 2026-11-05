@@ -27,22 +27,26 @@
 (()=>{
  'use strict';
  // Editable in the balance editor as balanceSettings.rewards.regionVouchers (whole minutes).
- const VOUCHER_DEFAULTS=Object.freeze({ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true});
+ const VOUCHER_DEFAULTS=Object.freeze({ticketMinutes:30,sampleMinutes:30,maxGapMinutes:10,chargePotions:true,averageMinutes:180});
+ // averageMinutes (optional, default 180): a region without any snapshot replays this long offline, then the rest of the absence becomes tickets priced by that replay's average.
+ const AVERAGE_DEFAULT_MINUTES=180;
+ const OPTIONAL_LIMITS={averageMinutes:['無樣本時平均試算分鐘數',60,720]};
  const VOUCHER_LIMITS={ticketMinutes:['每張收益券分鐘數',5,240],sampleMinutes:['收益樣本分鐘數',10,240],maxGapMinutes:['樣本中斷容許分鐘數',1,60]};
  function voucherSettings(){
   const raw=typeof GS==='function'?GS('rewards.regionVouchers',null):null,out={...VOUCHER_DEFAULTS};
-  if(raw&&typeof raw==='object'){for(const k of Object.keys(VOUCHER_LIMITS))if(Number.isInteger(raw[k]))out[k]=raw[k];if(typeof raw.chargePotions==='boolean')out.chargePotions=raw.chargePotions;}
+  if(raw&&typeof raw==='object'){for(const k of [...Object.keys(VOUCHER_LIMITS),...Object.keys(OPTIONAL_LIMITS)])if(Number.isInteger(raw[k]))out[k]=raw[k];if(typeof raw.chargePotions==='boolean')out.chargePotions=raw.chargePotions;}
   return out;
  }
  function checkVoucherSettings(v){
   if(!v||typeof v!=='object')throw Error('收益券設定無效');
   for(const [k,[label,min,max]] of Object.entries(VOUCHER_LIMITS))if(!Number.isInteger(v[k])||v[k]<min||v[k]>max)throw Error(`收益券設定：${label}必須是 ${min}～${max} 的整數`);
+  for(const [k,[label,min,max]] of Object.entries(OPTIONAL_LIMITS))if(v[k]!==undefined&&(!Number.isInteger(v[k])||v[k]<min||v[k]>max))throw Error(`收益券設定：${label}必須是 ${min}～${max} 的整數`);
   if(typeof v.chargePotions!=='boolean')throw Error('收益券設定：是否扣除藥水費用必須是開或關');
   return v;
  }
  if(typeof GAMEPLAY_SETTINGS_DEFAULTS==='object'&&GAMEPLAY_SETTINGS_DEFAULTS.rewards)GAMEPLAY_SETTINGS_DEFAULTS.rewards.regionVouchers??={...VOUCHER_DEFAULTS};
  if(typeof validateGameplaySettings==='function'){const base=validateGameplaySettings;validateGameplaySettings=function(cfg){cfg=base(cfg);checkVoucherSettings(cfg?.rewards?.regionVouchers);return cfg;};}
- const RULES={version:1,get sampleMs(){return voucherSettings().sampleMinutes*60000;},get ticketMs(){return voucherSettings().ticketMinutes*60000;},get maxGapMs(){return voucherSettings().maxGapMinutes*60000;},maxKeys:400};
+ const RULES={version:1,get sampleMs(){return voucherSettings().sampleMinutes*60000;},get ticketMs(){return voucherSettings().ticketMinutes*60000;},get maxGapMs(){return voucherSettings().maxGapMinutes*60000;},get averageMs(){return (voucherSettings().averageMinutes||AVERAGE_DEFAULT_MINUTES)*60000;},maxKeys:400};
  const HOUR=3600000,COUNTS=['kills','monsters','enemies','items','consumed','gear'],NUMBERS=['ms','battles','wipes','deaths','xp','gold','goldLost'];
  let rewarding=null;
  const challenge=()=>!!party.questChallenge||!!party.bossChallenge?.active||typeof isFinalMap==='function'&&isFinalMap(party.map);
@@ -84,14 +88,17 @@
   if(!party||globalThis.isEmberwildTitleOpen?.())return null;
   if(!globalThis.EmberwildOffline?.replaying)return 'online';
   const window=party.offlineExploration?.offlineWindow?.capAt??null;
-  return window!==null&&P().sampledWindow!==window&&onlineMs(key)<RULES.sampleMs?'offline':null;
+  if(window===null)return null;
+  if(P().averageWindow===window)return 'average';
+  // A region with online time but no snapshot (every 30-minute run was broken by a death, wipe or setup change) samples offline too.
+  return P().sampledWindow!==window&&(onlineMs(key)<RULES.sampleMs||!store().regions[key]?.snapshot)?'offline':null;
  }
  function begin(){
-  const p=P(),at=Date.now(),key=regionKey(),m=mode(key),window=m==='offline'?party.offlineExploration.offlineWindow.capAt:null;
+  const p=P(),at=Date.now(),key=regionKey(),m=mode(key),window=m==='offline'||m==='average'?party.offlineExploration.offlineWindow.capAt:null;
   if(p.pending&&p.pending.region===key&&p.pending.mode===m&&p.pending.window===window&&running&&at>=p.pending.end&&at-p.pending.end<=RULES.maxGapMs)credit(p.pending,at-p.pending.start);
-  else if(p.pending)p.run=null;
+  else if(p.pending)p.run=keepAverage(p);
   p.pending=null;p.current=null;
-  if(!m||!running||!foes.length||challenge()){p.run=null;return;}
+  if(!m||!running||!foes.length||challenge()){p.run=keepAverage(p);return;}
   p.current={region:key,mode:m,window,config:configuration(),start:at,end:0,levels:heroes().map(h=>h.lv),boosts:boosts(),stock:stock(),goldAfter:null,...empty()};
  }
  function finish(result){
@@ -109,7 +116,9 @@
  const better=(a,b)=>!b||a.xp*b.ms>b.xp*a.ms||a.xp*b.ms===b.xp*a.ms&&a.gold*b.ms>b.gold*a.ms;
  function region(data,key,at){return data.regions[key]??={map:Number(key.split(':')[0]),difficulty:Number(key.split(':')[1]),first:at,last:0,total:empty(),snapshot:null};}
  function sample(e,cycle){
-  const p=P();if(e.result==='wipe'||e.deaths){p.run=null;return;}
+  const p=P();
+  if(e.mode==='average')return average(e,cycle);
+  if(e.result==='wipe'||e.deaths){p.run=null;return;}
   let run=p.run;
   if(!run||run.region!==e.region||run.mode!==e.mode||run.window!==e.window||run.config!==e.config)run=p.run={region:e.region,mode:e.mode,window:e.window,config:e.config,start:e.start,levelMin:Math.min(...e.levels),levelMax:Math.max(...e.levels),boosts:[],...empty()};
   merge(run,e,cycle);run.levelMin=Math.min(run.levelMin,...e.levels);run.levelMax=Math.max(run.levelMax,...e.levels);for(const b of e.boosts)if(!run.boosts.includes(b))run.boosts.push(b);
@@ -118,6 +127,17 @@
   const r=region(store(),run.region,run.start);
   const candidate={id:run.region+'-'+run.start+'-'+run.config,source:run.mode,config:run.config,at:run.start,levelMin:run.levelMin,levelMax:run.levelMax,boosts:[...run.boosts].sort(),...aggregate(run)};
   if(better(candidate,r.snapshot))r.snapshot=candidate;
+ }
+ // Average of one long offline replay: every encounter counts, including wipes, deaths and setup changes.
+ function average(e,cycle){
+  const p=P();let run=p.run;
+  if(!run||run.mode!=='average'||run.region!==e.region||run.window!==e.window)run=p.run={region:e.region,mode:'average',window:e.window,config:e.config,start:e.start,levelMin:Math.min(...e.levels),levelMax:Math.max(...e.levels),boosts:[],...empty()};
+  merge(run,e,cycle);run.config=e.config;run.levelMin=Math.min(run.levelMin,...e.levels);run.levelMax=Math.max(run.levelMax,...e.levels);for(const b of e.boosts)if(!run.boosts.includes(b))run.boosts.push(b);
+  if(run.ms<RULES.averageMs)return;
+  p.run=null;p.averageWindow=null;p.sampledWindow=run.window;
+  const r=region(store(),run.region,run.start),candidate={id:run.region+'-'+run.start+'-avg',source:'average',config:run.config,at:run.start,levelMin:run.levelMin,levelMax:run.levelMax,boosts:[...run.boosts].sort(),...aggregate(run)};
+  if(better(candidate,r.snapshot))r.snapshot=candidate;
+  if(r.snapshot===candidate)p.averageReady=run.window;
  }
  function credit(e,cycle){
   sample(e,cycle);if(e.mode!=='online')return;
@@ -128,12 +148,12 @@
  function counts(raw,zero=false){const out={};if(raw&&typeof raw==='object'&&!Array.isArray(raw))for(const [k,v] of Object.entries(raw).slice(0,RULES.maxKeys)){const n=num(Number(v));if((n||zero&&Number(v)===0)&&k.length<=120)out[k]=n;}return out;}
  function aggregate(raw){const a=empty();if(!raw||typeof raw!=='object')return a;for(const k of NUMBERS)a[k]=num(raw[k]);for(const k of COUNTS)a[k]=counts(raw[k]);return a;}
  function snapshotOf(raw){
-  if(!raw||typeof raw!=='object'||!['online','offline'].includes(raw.source)||num(raw.ms)<RULES.sampleMs||typeof raw.config!=='string'||raw.config.length>16||typeof raw.id!=='string'||raw.id.length>80)return null;
+  if(!raw||typeof raw!=='object'||!['online','offline','average'].includes(raw.source)||num(raw.ms)<RULES.sampleMs||typeof raw.config!=='string'||raw.config.length>16||typeof raw.id!=='string'||raw.id.length>80)return null;
   return {id:raw.id,source:raw.source,config:raw.config,at:num(raw.at),levelMin:num(raw.levelMin,1,1e4)||1,levelMax:num(raw.levelMax,1,1e4)||1,boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[],...aggregate(raw)};
  }
  // Transient progress is optional: anything malformed is dropped and only delays the next sample.
  function partOf(raw,kind){
-  if(!raw||typeof raw!=='object'||typeof raw.region!=='string'||!/^\d+:[012]$/.test(raw.region)||!['online','offline'].includes(raw.mode)||typeof raw.config!=='string'||raw.config.length>16)return null;
+  if(!raw||typeof raw!=='object'||typeof raw.region!=='string'||!/^\d+:[012]$/.test(raw.region)||!['online','offline','average'].includes(raw.mode)||typeof raw.config!=='string'||raw.config.length>16)return null;
   const out={region:raw.region,mode:raw.mode,window:raw.window==null?null:num(raw.window,0,8.64e15),config:raw.config,start:num(raw.start),...aggregate(raw)};
   if(kind==='run')return {...out,levelMin:num(raw.levelMin,1,1e4)||1,levelMax:num(raw.levelMax,0,1e4),boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[]};
   const extra={end:num(raw.end),levels:Array.isArray(raw.levels)?raw.levels.slice(0,3).map(n=>num(n,1,1e4)||1):[],boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[]};
@@ -141,9 +161,9 @@
   if(kind==='current')return {...out,...extra,stock:counts(raw.stock,true),goldAfter:raw.goldAfter==null?null:num(raw.goldAfter,-1e15,1e15)};
   return {...out,...extra,result:raw.result==='wipe'?'wipe':'victory'};
  }
- function progressOf(raw){raw=raw&&typeof raw==='object'?raw:{};return {current:partOf(raw.current,'current'),pending:partOf(raw.pending,'pending'),run:partOf(raw.run,'run'),sampledWindow:raw.sampledWindow==null?null:num(raw.sampledWindow,0,8.64e15)};}
+ function progressOf(raw){raw=raw&&typeof raw==='object'?raw:{};return {current:partOf(raw.current,'current'),pending:partOf(raw.pending,'pending'),run:partOf(raw.run,'run'),sampledWindow:raw.sampledWindow==null?null:num(raw.sampledWindow,0,8.64e15),averageWindow:raw.averageWindow==null?null:num(raw.averageWindow,0,8.64e15),averageReady:raw.averageReady==null?null:num(raw.averageReady,0,8.64e15)};}
  function normalize(raw){
-  const out={version:RULES.version,regions:{},progress:{current:null,pending:null,run:null,sampledWindow:null}};if(!raw||raw.version!==RULES.version||!raw.regions||typeof raw.regions!=='object')return out;
+  const out={version:RULES.version,regions:{},progress:{current:null,pending:null,run:null,sampledWindow:null,averageWindow:null,averageReady:null}};if(!raw||raw.version!==RULES.version||!raw.regions||typeof raw.regions!=='object')return out;
   out.progress=progressOf(raw.progress);
   for(const [key,r] of Object.entries(raw.regions).slice(0,200)){
    const m=/^(\d+):([012])$/.exec(key);if(!m||!r||typeof r!=='object'||Number(m[1])>=MAPS.length)continue;
@@ -163,13 +183,15 @@
  function totals(map=party?.map,difficulty=party?.difficulty||0){const r=party?.idleStatistics?.regions?.[map+':'+difficulty];return r?{map,difficulty,first:r.first,last:r.last,...JSON.parse(JSON.stringify(r.total)),perHour:perHour(r.total)}:null;}
 
  let loading=false;
- const clear=()=>{if(party&&!loading){const p=P();p.current=p.pending=p.run=null;}};
+ // An offline average keeps its run: wipes, recoveries and setup changes are part of that average.
+ const keepAverage=p=>p.run?.mode==='average'&&p.averageWindow===p.run.window?p.run:null;
+ const clear=()=>{if(party&&!loading){const p=P();p.current=p.pending=null;p.run=keepAverage(p);}};
  const beginBase=beginBattleStatistics;
  beginBattleStatistics=function(...args){const out=beginBase.apply(this,args);try{if(party)begin();}catch(error){try{clear();}catch{}console.warn('地區收益統計失敗',error);}return out;};
  const finalizeBase=finalizeBattleStatistics;
  finalizeBattleStatistics=function(result,...args){
   // Record before the base statistics save, so the same write persists this encounter.
-  try{if(party){const p=P();if(p.current&&(result==='victory'||result==='wipe'))finish(result);else{p.current=null;p.run=null;}}}catch(error){try{clear();}catch{}console.warn('地區收益統計失敗',error);}
+  try{if(party){const p=P();if(p.current&&(result==='victory'||result==='wipe'))finish(result);else{p.current=null;p.run=keepAverage(p);}}}catch(error){try{clear();}catch{}console.warn('地區收益統計失敗',error);}
   return finalizeBase.call(this,result,...args);
  };
  const rewardBase=rewardGroupKill;
@@ -193,5 +215,17 @@
  const validateBase=validateParty;validateParty=function(data){const p=validateBase(data);p.idleStatistics=normalize(data?.idleStatistics);return p;};
  // Loading resets the encounter, but the saved progress belongs to the saved combat cursor: keep it.
  const loadBase=loadParty;loadParty=function(...args){loading=true;try{return loadBase.apply(this,args);}finally{loading=false;}};
- globalThis.EmberwildIdleStatistics={RULES,voucherSettings,checkVoucherSettings,VOUCHER_DEFAULTS,normalize,snapshot,totals,gearKey,configuration,get sampling(){const r=party?.idleStatistics?.progress?.run;return r?{mode:r.mode,ms:r.ms}:null;}};
+ // Offline settlement (js/combat/offline-exploration.js) asks for an average when this absence's region has no snapshot
+ // and the absence is long enough for the average plus at least one ticket. Returns true while that average is running.
+ function planAverage(window,ms){
+  if(!party||!Number.isFinite(window))return false;const p=P();
+  if(p.averageWindow===window)return true;
+  if(p.sampledWindow===window||challenge()||!running||store().regions[regionKey()]?.snapshot||!(ms>=RULES.averageMs+RULES.ticketMs))return false;
+  p.averageWindow=window;if(p.run&&p.run.window!==window)p.run=null;return true;
+ }
+ const averaging=window=>!!party&&P().averageWindow===window;
+ // True once, when this window's average became the region's snapshot.
+ function takeAverage(window){if(!party)return false;const p=P();if(p.averageReady!==window)return false;p.averageReady=null;return true;}
+ function cancelAverage(window){if(!party)return;const p=P();if(p.averageWindow===window){p.averageWindow=null;if(p.run?.mode==='average')p.run=null;}}
+ globalThis.EmberwildIdleStatistics={RULES,planAverage,averaging,takeAverage,cancelAverage,voucherSettings,checkVoucherSettings,VOUCHER_DEFAULTS,normalize,snapshot,totals,gearKey,configuration,get sampling(){const r=party?.idleStatistics?.progress?.run;return r?{mode:r.mode,ms:r.ms}:null;}};
 })();
