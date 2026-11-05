@@ -231,12 +231,15 @@
  }
  function thresholds(){return {...config().recovery,...party.explorationRecovery};}
  function recoveryWait(){const c=thresholds();let wait=Math.max(0,recoveryUntil-mono());for(const h of heroes()){const max=stats(h).hp,m=mana(h),a=engine.actors.find(a=>a.definition.id===key(h)),mpRate=a?.alive?a.definition.mpRegenPerSecond:0,hpMissing=Math.max(0,c.minimumHpRatio*max-h.hp),mpMissing=Math.max(0,c.minimumMpRatio*m.maxMp-(a?engine.actor(key(h)).mp:h.mp??m.maxMp));if(hpMissing)wait=Math.max(wait,c.hpFractionPerSecond>0?hpMissing/(max*c.hpFractionPerSecond):Infinity);if(mpMissing)wait=Math.max(wait,mpRate>0?mpMissing/mpRate:Infinity);}return wait;}
+ const RECOVERY_STEP_SECONDS=1;
  function recoveryStep(){
   let at=Math.max(mono(),scheduledAt);const progress=engine.advanceTo(at,{maxEvents:2000});clock(engine.now/1e6);cleanTimers();syncResources();if(!progress.complete)return {delaySeconds:.000001};
   automaticSupplies();
   if(!living().length){ended=false;phase='combat';finish();return {delaySeconds:config().encounterDelaySeconds};}
   const wait=recoveryWait();if(wait<=.000001){phase='combat';return null;}
-  const next=engine.nextEvent(),target=Math.min(Number.isFinite(wait)?mono()+wait:mono()+config().durationReferenceSeconds,next?next.at/1e6:Infinity);scheduledAt=Math.max(mono()+.000001,target);return {delaySeconds:scheduledAt-mono()};
+  // Advance at most one second per step so HP regeneration and the battle clock update visibly during a long recovery
+  // (v0.089). Regeneration is linear in elapsed time, so splitting the wait does not change when recovery ends.
+  const next=engine.nextEvent(),target=Math.min(Number.isFinite(wait)?mono()+wait:mono()+config().durationReferenceSeconds,mono()+RECOVERY_STEP_SECONDS,next?next.at/1e6:Infinity);scheduledAt=Math.max(mono()+.000001,target);return {delaySeconds:scheduledAt-mono()};
  }
  function step(){if(foes.some(e=>e.hp>0)&&!EmberwildBattleConfiguration.pending())EmberwildBattleConfiguration.begin();return EmberwildBattleConfiguration.combat(stepCore);}
  function stepCore(){
