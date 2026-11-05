@@ -206,3 +206,12 @@ body.seconds-cooldowns-hidden #app .seconds-battlefield .seconds-unit .seconds-c
 #app .seconds-field-foot>.seconds-side-note{margin:0;text-align:left}
 #app .seconds-field-foot>.seconds-face-switch{margin:0}
 #app .seconds-battlefield .seconds-side-ally{border-top:0;padding-top:0}
+/* v0.081: BUFF／DEBUFF details on hover (replaces the 生效效果 panel). */
+#app .seconds-state[data-state-tip]{cursor:help}
+.seconds-state-tip{position:fixed;z-index:1000;max-width:280px;padding:8px 10px;border:1px solid #6c8a74;border-radius:8px;background:#121a17;color:#e4e8de;box-shadow:0 6px 18px rgba(0,0,0,.5);font-size:12px;line-height:1.5;pointer-events:none}
+.seconds-state-tip.debuff{border-color:#a2535b}
+.seconds-state-tip>b{display:block;font-size:13px;color:var(--gold,#dfbe70)}
+.seconds-state-tip.debuff>b{color:#f08a8f}
+.seconds-state-tip>p{margin:3px 0}
+.seconds-state-tip>small{color:var(--muted,#9ba79c)}
+.seconds-state-tip[hidden]{display:none}

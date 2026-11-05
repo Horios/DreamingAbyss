@@ -45,3 +45,11 @@ test('battlefield layout: centered side titles without 上方／下方, divider 
  assert.match(html,/<\/section><div class="seconds-field-foot"><p class="seconds-side-note" data-seconds-phase>[^<]+<\/p><div class="seconds-face-switch"/);
  assert.deepEqual(r.errors,[]);
 });
+
+test('v0.081: no 生效效果 panel on the battle page; status badges carry their details for the hover tooltip',()=>{
+ const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();startSelectedExploration();');for(let i=0;i<20;i++){r.advance(250);r.run('tick()');}
+ const app=r.run("document.getElementById('app').innerHTML");assert.doesNotMatch(app,/battle-effects-bar|生效效果<\/b>/);assert.equal(r.run('battleBuffPanel()'),'');
+ const src=require('node:fs').readFileSync(path.join(root,'js/ui/seconds-battle.js'),'utf8');
+ assert.match(src,/data-state-tip data-tip-name="\$\{esc\(f\.name\)\}" data-tip-detail="\$\{esc\(f\.detail\|\|''\)\}"/);
+ assert.deepEqual(r.errors,[]);
+});

@@ -39,7 +39,7 @@
  function applyPreference(){document.body.classList.toggle('seconds-cooldowns-hidden',!showCooldowns);for(const n of document.querySelectorAll('[data-seconds-toggle]')){n.setAttribute('aria-pressed',String(showCooldowns));n.innerHTML=svg('timer')+(showCooldowns?'隱藏冷卻條':'顯示冷卻條');}}
  function statusBadges(x){
   const rows=EmberwildBattleSummary.inspect(id(x),hero(x)?'ally':'enemy')?.statuses||[];
-  return rows.map(f=>{const permanent=f.remaining===null||f.time==='常駐被動'||f.time==='永久',remaining=permanent?null:f.remaining,wall=f.clockType==='wall',until=(wall?Date.now()/1000:partyClock)+(remaining||0);return `<span class="seconds-state ${esc(f.polarity||'buff')}" title="${esc(f.detail||'')}">${esc(f.name)}（<time ${permanent?'':`data-state-until="${until}" data-state-clock="${wall?'wall':'battle'}"`}>${duration(remaining)}</time>）${f.uses==null?'':' ×'+f.uses}</span>`;}).join('')||'<span class="seconds-state-empty">無持續狀態</span>';
+  return rows.map(f=>{const permanent=f.remaining===null||f.time==='常駐被動'||f.time==='永久',remaining=permanent?null:f.remaining,wall=f.clockType==='wall',until=(wall?Date.now()/1000:partyClock)+(remaining||0);return `<span class="seconds-state ${esc(f.polarity||'buff')}" data-state-tip data-tip-name="${esc(f.name)}" data-tip-detail="${esc(f.detail||'')}" data-tip-source="${esc(f.source||'')}">${esc(f.name)}（<time ${permanent?'':`data-state-until="${until}" data-state-clock="${wall?'wall':'battle'}"`}>${duration(remaining)}</time>）${f.uses==null?'':' ×'+f.uses}</span>`;}).join('')||'<span class="seconds-state-empty">無持續狀態</span>';
  }
  // Card and battlefield colors come from the balance editor (js/ui/visual-colors.js); values are validated #RRGGBB.
  const cardColor=(x,h)=>{const V=globalThis.EmberwildVisualColors;return V?(h?V.cls(x.job):V.monster(x)):'#3f6a56';};
@@ -177,4 +177,21 @@
  const show=EmberwildBattleSummary.showUnit;EmberwildBattleSummary.showUnit=function(...args){const out=show(...args),d=EmberwildBattleSummary.inspect(...args);if(d){const modal=$('modal');modal.innerHTML=modal.innerHTML.replace(/個自身回合|戰鬥回合|回合/g,'秒').replace(/(<p class="battle-unit-vitals"><b>[^<]*<\/b>)/,'$1<span>魔力 '+fmt(d.mp)+' / '+fmt(d.maxMp)+' MP</span>').replace('<div class="battle-unit-inspector"><h2>','<div class="battle-unit-inspector"><div class="battle-unit-portrait" aria-hidden="true">'+unitArt(args[0])+'</div><h2>').replace(/冷卻依該單位自身秒計算/,'冷卻依戰鬥秒數計算');}return out;};
  globalThis.EmberwildSecondsUI={sync,detail,field,viewTime,duration,cycle,showAll,faceButtons,face:currentFace,get showCooldowns(){return showCooldowns;}};
  applyPreference();
+ // v0.081: the 生效效果 panel is removed from the battle page; each BUFF／DEBUFF badge shows its details on hover.
+ if(typeof battleBuffPanel==='function')battleBuffPanel=function(){return '';};
+ function stateTip(){let tip=document.getElementById('seconds-state-tip');if(!tip){tip=document.createElement('div');tip.id='seconds-state-tip';tip.className='seconds-state-tip';tip.setAttribute('role','tooltip');tip.hidden=true;document.body.appendChild(tip);}return tip;}
+ function showStateTip(badge){
+  const d=badge.dataset,tip=stateTip(),time=badge.querySelector('time')?.textContent||'';
+  tip.innerHTML=`<b>${esc(d.tipName||'')}</b>${d.tipDetail?`<p>${esc(d.tipDetail)}</p>`:''}<small>${time?'剩餘 '+esc(time):''}${d.tipSource?(time?' · ':'')+'來源：'+esc(d.tipSource):''}</small>`;
+  tip.className='seconds-state-tip '+(badge.classList.contains('debuff')?'debuff':'buff');tip.hidden=false;
+  const r=badge.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight,left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2)),top=r.top-h-8<8?r.bottom+8:r.top-h-8;
+  tip.style.left=left+'px';tip.style.top=top+'px';
+ }
+ function hideStateTip(){const tip=document.getElementById('seconds-state-tip');if(tip)tip.hidden=true;}
+ if(typeof document.addEventListener==='function'){
+  document.addEventListener('mouseover',e=>{const badge=e.target?.closest?.('[data-state-tip]');if(badge)showStateTip(badge);else hideStateTip();});
+  document.addEventListener('focusin',e=>{const badge=e.target?.closest?.('[data-state-tip]');if(badge)showStateTip(badge);});
+  document.addEventListener('scroll',hideStateTip,true);
+ }
+ globalThis.__EMBERWILD_STATE_TIP={show:showStateTip,hide:hideStateTip};
 })();

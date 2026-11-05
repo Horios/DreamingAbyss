@@ -184,9 +184,11 @@ test('Mobile: expedition settings, readable touch controls and skill details are
    await p.waitForFunction(()=>party.difficulty===1&&!isEmberwildUIInteracting());
    await p.evaluate(()=>render());
    assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),true);
-   for(const button of ['.heal-auto-settings-button','.battle-effects-bar button']){
+   for(const button of ['.heal-auto-settings-button']){
     assert(await p.locator(button).evaluate(e=>e.getBoundingClientRect().height>=40),button+' touch height');
    }
+   // v0.081: the 生效效果 panel is gone; badge details show on hover instead.
+   assert.equal(await p.locator('.battle-effects-bar').count(),0,'no 生效效果 panel');
    await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
   }
   await p.setViewportSize({width:390,height:844});
