@@ -24,9 +24,12 @@ test('every fixed, random, legacy and direct purchase entrance enforces VIP/stat
  for(const vip of [0,1,2,9])for(const [i,id]of ids.entries()){
   r.ctx.vip=vip;r.ctx.id=id;r.run('party.story.vip=vip;state.gold=100000;setHealPotionCount(id,0);party.market=generateMarket()');const allowed=i===0||i===1&&vip>=1;
   for(const action of [`buyHealingPotion(id)`,`buySupply(id)`,`buyFixedShopOffer(id)`,`buyMarketOffer(party.market.offers.find(x=>x.key===id).id)`,`purchaseShopOffer({kind:'item',key:id,qty:2,price:1},'test')`]){
-   r.run('state.gold=100000;setHealPotionCount(id,0);party.market.offers.forEach(o=>o.sold=false)');r.run(action);
-   const qty=action.startsWith('purchaseShopOffer')?2:1,cost=[15,200,500,2000][i]*qty,paid=vip?Math.max(1,Math.floor(cost*.95)):cost;
-   assert.equal(r.run('healPotionCount(id)'),allowed?qty:0,`${vip} ${id} ${action}`);assert.equal(r.run('state.gold'),100000-(allowed?paid:0));
+   r.run('state.gold=100000;setHealPotionCount(id,0);party.market.offers.forEach(o=>o.sold=false)');
+   // Since v0.067 potions charge the shop rule's price: market offers carry it, and the shared
+   // purchaseShopOffer charges the offer price it is given. Fixed-shop entrances use the item price rule.
+   const listed=action.startsWith('buyMarketOffer')?r.run('party.market.offers.find(x=>x.key===id).price'):action.startsWith('purchaseShopOffer')?1:null;r.run(action);
+   const qty=action.startsWith('purchaseShopOffer')?2:1,cost=listed??[15,200,500,2000][i]*qty,paid=vip?Math.max(1,Math.floor(cost*.95)):cost;
+   assert.equal(r.run('healPotionCount(id)'),allowed?qty:0,`${vip} ${id} ${action}`);assert.equal(r.run("state.gold"),100000-(allowed?paid:0),`gold ${vip} ${id} ${action}`);
   }
  }
  r.run("party.story.vip=0;state.gold=100000;setHealPotionCount('heal_standard',0);buyPotion()");assert.equal(r.run("healPotionCount('heal_standard')"),0);

@@ -28,8 +28,10 @@ test('Chromium: create blank plans, choose classes, learn, copy, rename, safety 
    const after=await p.evaluate(()=>({job:__EMBERWILD_TEAMS.plan().job,copy:party.buildSystem.plans[2].skillLoadout,unlocks:party.buildSystem.permanent.unlocks}));
    assert.equal(after.job,0);assert.deepEqual(after.copy,before.copy,'the copied plan keeps its loadout');assert.deepEqual(after.unlocks,before.unlocks,'permanent unlocks stay');
   });
+  // A LV20 party can defeat the LV1 foe at second 0 and end the encounter before the paused-state check;
+  // keep a living, durable foe so the paused state is an unfinished encounter.
   await t.test('running and paused encounters disable UI; stopping and safe switching reset HP, cooldowns and the encounter',async()=>{
-   await p.evaluate(()=>{setTab('battle');toggleBattle();playerHero().hp=4;actorCooldowns={'0-0':7};render();setTab('roster');});assert.equal(await p.getByLabel('本隊主角職業',{exact:true}).isDisabled(),true);assert.equal(await p.locator('.team-plan-card').first().getByRole('button',{name:'切換',exact:true}).isDisabled(),true);
+   await p.evaluate(()=>{setTab('battle');toggleBattle();if(!foes.some(f=>f.hp>0))spawnGroup();foes.forEach(f=>{f.hp=1e9;});playerHero().hp=4;actorCooldowns={'0-0':7};render();setTab('roster');});assert.equal(await p.getByLabel('本隊主角職業',{exact:true}).isDisabled(),true);assert.equal(await p.locator('.team-plan-card').first().getByRole('button',{name:'切換',exact:true}).isDisabled(),true);
    await p.evaluate(()=>{running=false;render();setTab('roster');});assert.equal(await p.getByLabel('本隊主角職業',{exact:true}).isDisabled(),true);await p.getByRole('button',{name:'停止探索並結束遭遇',exact:true}).click();await p.locator('.team-plan-card').first().getByRole('button',{name:'切換',exact:true}).click();const a=await p.evaluate(()=>({hp:playerHero().hp,max:stats(playerHero()).hp,cd:actorCooldowns['0-0']||0,foes:foes.length,clock:partyClock,job:playerHero().job}));assert.equal(a.hp,a.max);assert.equal(a.cd,0);assert.equal(a.foes,0);assert.equal(a.clock,0);assert.equal(a.job,0);
   });
   await t.test('actual save download and file import restore every team and shared resource',async()=>{
