@@ -122,3 +122,4 @@
 #app .seconds-battle-xp:has(.mastery-bar){flex:0 1 auto;min-width:0}
 #app .seconds-battle-xp>b{white-space:nowrap;flex:0 0 auto}
 #app .seconds-battle-xp>progress{flex:0 1 90px}
+@media(max-width:700px){#app .seconds-battle-xp:has(.mastery-bar){flex-wrap:wrap;row-gap:4px;max-width:100%}#app .seconds-battle-xp .mastery-bar.compact{flex:1 1 100%;min-width:0;order:3}#app .seconds-battle-xp>b{white-space:normal}}
