@@ -18,7 +18,7 @@ function refreshGlobalJournal(){
  const oldSummary=panel.querySelector('.journal-loot-compact>summary,.mobile-loot-content>h3'),newSummary=fresh.content.querySelector?.('.journal-loot-compact>summary,.mobile-loot-content>h3');
  if(oldSummary&&newSummary&&oldSummary.textContent!==newSummary.textContent)oldSummary.textContent=newSummary.textContent;
  syncBattleLogHeader(live);
- const wallet=$('wallet');if(wallet)wallet.textContent='全隊金幣 '+party.members[0].gold.toLocaleString();
+ const wallet=$('wallet');if(wallet)wallet.textContent='金幣 '+party.members[0].gold.toLocaleString();
 }
 
 function battleLogMatches(event){return battleLogFilter==='all'||event.type===battleLogFilter;}

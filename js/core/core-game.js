@@ -1038,7 +1038,7 @@ battleView=function(){return beforeSharedSupplies().replace(/<div class="compact
 // Actions always retain their owner, including modal follow-up actions.
 heroMenuAction=function(job,action){const hero=partyMember(job);if(!hero)return;withHero(hero,action);if($('modal').open)$('modal').innerHTML=ownerControls($('modal').innerHTML,job);render();};
 const allTeamRender=render;
-render=function(){allTeamRender();if(party&&state){const wallet=$('wallet');if(wallet)wallet.textContent='全隊金幣 '+party.members[0].gold.toLocaleString();}};
+render=function(){allTeamRender();if(party&&state){const wallet=$('wallet');if(wallet)wallet.textContent='金幣 '+party.members[0].gold.toLocaleString();}};
 
 function newcomerPartyGuide(){if(!party||party.members.length>=3)return '';return `<section class="panel" style="border-color:#b88a45"><h2>新手提示：先招募滿 3 人</h2><p>目前戰鬥固定為群怪遭遇，每場會同時出現 3～6 隻敵人。單人直接開始探索很容易反覆戰敗。</p><div class="actions"><button class="primary" onclick="setTab('roster')">前往隊伍編成</button><span class="small">目前已招募 ${party.members.length} / 3；建議先再招募 ${3-party.members.length} 名同伴並加入出戰。</span></div></section>`;}
 const basePartyBattleView=battleView;
