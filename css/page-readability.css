@@ -1,5 +1,7 @@
 /* Page spacing is shared; list panes and the battlefield retain their own scroll and card geometry. */
 .layout>main>.panel,.companion-management-page>.roster-page,.skill-system-page>.panel,.statistics-layout>.panel{padding:var(--panel-padding)}
+/* The inventory wrapper only frames its own padded inventory panel; keep it flush so the two paddings do not stack. */
+.layout>main>.page-owner-panel:has(.compact-inventory-panel){padding:0}
 .layout>main>.game-subtabs,.layout>main>.inventory-category-tabs,.layout>main>.shop-category-tabs,.layout>main>.team-plan-panel{margin:0}
 .layout>main>.heading>div,.companion-management-page>.heading>div{min-width:0;overflow-wrap:anywhere}
 .layout>main:has(>.story-list,>.statistics-layout,>.companion-management-page,>.life-skills-page,>.cards)>*{flex-shrink:0}

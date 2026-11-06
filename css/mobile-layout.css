@@ -40,7 +40,7 @@
   .layout>main .cards>.card,#app>.start .cards>.card{height:auto;max-height:none;overflow:visible}
   .layout>main .row{flex-wrap:wrap;gap:8px}.layout>main .row>div{min-width:0}
   .layout>main .page-owner-panel,.layout>main .page-owner-content,.layout>main .roster-page,.layout>main .partner-owned-list,.layout>main .player-skill-page,.layout>main .companion-management-page,.layout>main .shared-quests,.layout>main .shared-shop-info,.layout>main .shared-shop-grid,.layout>main .shop-catalog,.layout>main .shop-catalog-scroll,.layout>main .account-material-list,.layout>main .account-gem-list,.layout>main .guide-scroll{height:auto!important;min-height:0!important;max-height:none;overflow:visible;flex:none;scrollbar-gutter:auto}
-  .layout>main .page-owner-content{padding-top:12px}
+  .layout>main .page-owner-content:not(:has(>.compact-inventory-panel)){padding-top:12px}
   .layout>main .cards,.layout>main .shared-shop-grid,.layout>main .grid,.layout>main .forge-layout,.layout>main .worn-overview,.layout>main .worn-loadout-grid,.layout>main .player-skill-layout,.layout>main .life-skill-grid{grid-template-columns:minmax(0,1fr);gap:12px}
   .layout>main .worn-overview,.layout>main .worn-token-page>.worn-overview{height:auto;grid-template-rows:auto;overflow:visible}
   .layout>main .worn-character-pane,.layout>main .worn-member,.layout>main .worn-character-list{height:auto;max-height:none;overflow:visible}

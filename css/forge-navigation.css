@@ -1,7 +1,7 @@
 
 /* Update: inventory forging is now centralized on the forge page. */
 .forge-account-shell{padding:10px 12px;overflow:visible}
-.forge-workbench{display:grid;grid-template-columns:minmax(280px,var(--master-column)) minmax(0,1fr);gap:var(--card-gap);height:auto;min-height:0;max-height:none;align-items:start;margin-top:var(--card-gap)}
+.forge-workbench{display:grid;grid-template-columns:minmax(300px,var(--master-column)) minmax(0,1fr);gap:var(--card-gap);height:auto;min-height:0;max-height:none;align-items:start;margin-top:var(--card-gap)}
 .forge-gear-pane,.forge-detail-pane{min-height:0;border:1px solid var(--line);background:#141c1f}
 .forge-gear-pane{height:clamp(280px,55dvh,600px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
 .forge-gear-toolbar{padding:8px 9px;border-bottom:1px solid var(--line);background:#182124}
