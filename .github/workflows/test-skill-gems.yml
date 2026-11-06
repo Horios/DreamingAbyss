@@ -54,7 +54,7 @@ jobs:
         include:
           - group: receipts-and-compatibility
             tests: >-
-              tests/boot-save-notices.test.cjs tests/published-loader.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs tests/legacy-save-corpus.test.cjs
+              tests/boot-save-notices.test.cjs tests/published-loader.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs tests/legacy-save-corpus.test.cjs tests/offline-receipt-gear-detail.test.cjs
           - group: offline-simulation
             tests: >-
               tests/offline-exploration.test.cjs
