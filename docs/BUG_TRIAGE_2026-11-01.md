@@ -1,6 +1,6 @@
 # Emberwild BUG 分類、修復與驗收計畫
 
-建立日期：2026-11-01。單一工作清單：[Issue #5](https://github.com/Horios/Emberwild/issues/5)。工作分支 `chatgpt-dev`，正式分支 `main` 不修改。本文記錄當前流程，歷史追蹤與逐筆驗收以 Issue 為準。
+建立日期：2026-11-01。單一工作清單：[Issue #5](https://github.com/Horios/DreamingAbyss/issues/5)。工作分支 `chatgpt-dev`，正式分支 `main` 不修改。本文記錄當前流程，歷史追蹤與逐筆驗收以 Issue 為準。
 
 ## 1. BUG 收集與證據
 

@@ -11,7 +11,7 @@ test('every balance navigation page renders through the real grouped menu',async
  }finally{await e.browser.close();}
 });
 test('three real form/download/file-import/reload cycles retain material prices and actual sale proceeds',async()=>{
- const e=await openRuntime(editor,'balance-editor.html'),g=await openRuntime(root,'index.html',{}, {pathname:'/Emberwild/preview/'});
+ const e=await openRuntime(editor,'balance-editor.html'),g=await openRuntime(root,'index.html',{}, {pathname:'/DreamingAbyss/preview/'});
  try{
   await g.page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);});await g.page.waitForTimeout(80);await g.page.evaluate(()=>closeModal());
   for(let cycle=1;cycle<=3;cycle++){

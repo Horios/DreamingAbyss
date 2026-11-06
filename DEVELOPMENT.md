@@ -5,7 +5,7 @@
 
 ## 命名規則
 
-遊戲名稱為「夢淵（Dreaming Abyss）」。畫面文字、文件、註解與匯出檔名中出現的「Emberwild」一律改為「Dreaming Abyss」，之後新增內容也依此辦理。下列名稱屬於程式運作依據，維持原樣：程式內部識別名稱（`Emberwild*` 全域物件、`__EMBERWILD_*`）、localStorage 存檔鍵名，以及實際存在的 GitHub repository 名稱與網址（`Horios/Emberwild`、`Horios/Emberwild-Balance`）。
+遊戲名稱為「夢淵（Dreaming Abyss）」。畫面文字、文件、註解與匯出檔名中出現的「Emberwild」一律改為「Dreaming Abyss」，之後新增內容也依此辦理。下列名稱屬於程式運作依據，維持原樣：程式內部識別名稱（`Emberwild*` 全域物件、`__EMBERWILD_*`）、localStorage 存檔鍵名，以及實際存在的 GitHub repository 名稱與網址（`Horios/DreamingAbyss`、`Horios/DreamingAbyss-BalanceEditor`）。
 
 ## Branch 角色
 
@@ -93,7 +93,7 @@ MP 採 100 點標準池，完整自然恢復為十個原參考期（60 秒）。
 ## 平衡設計器來源
 
 平衡／設計器不放在此公開 Repository。
-其原始碼位於 Private Repository：`Horios/Emberwild-Balance`，主要檔案為 `balance-editor.html`。
+其原始碼位於 Private Repository：`Horios/DreamingAbyss-BalanceEditor`，主要檔案為 `balance-editor.html`。
 修改平衡器時同樣先讀取該 Repository 的最新 branch／檔案 SHA，不以舊附件作為最新版。
 
 ## 裝備技能教學與第一孔規則（追加）
@@ -128,7 +128,7 @@ MP 採 100 點標準池，完整自然恢復為十個原參考期（60 秒）。
 
 秒數 `finish()` 補回原有的一般探索全滅自動重試，與舊回合流程共用 `EmberwildAutoRetry.afterWipe()`；任務關卡與終局關卡全滅仍停止，判斷時採用結算前的關卡狀態。冒險指南與生效效果視窗中的回合制說明改為秒數規則。
 
-平衡器相容性：本工作階段無法讀取 `Horios/Emberwild-Balance`。平衡器內嵌的 `timed-boosts.js` 需同步為本版，並移除 `speed2` 類型與 `pacing.rates` 欄位；在同步前，`tests/timed-boosts-journal.test.cjs` 的內嵌比對會不一致。
+平衡器相容性：本工作階段無法讀取 `Horios/DreamingAbyss-BalanceEditor`。平衡器內嵌的 `timed-boosts.js` 需同步為本版，並移除 `speed2` 類型與 `pacing.rates` 欄位；在同步前，`tests/timed-boosts-journal.test.cjs` 的內嵌比對會不一致。
 
 ## v0.024 恢復一般全滅重試斷言
 
@@ -360,7 +360,7 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
   - `mobile-layout`：選單頁清單移除 guide；捲動測試改用角色頁；新增從標題列開啟指南的檢查。
   - `page-readability`：指南以彈窗作為捲動容器；切換頁面前關閉彈窗；戰鬥頁只檢查主內容區。
   - `navigation-tree`：新增冒險指南位置與舊導覽資料相容的測試。
-- 平衡器的導覽編輯器同步移除 `guide` 頁（Horios/emberwild-balance `v2-developer-mode`）。
+- 平衡器的導覽編輯器同步移除 `guide` 頁（Horios/DreamingAbyss-BalanceEditor `v2-developer-mode`）。
 
 ## v0.048 手機版測試診斷訊息
 

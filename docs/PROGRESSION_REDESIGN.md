@@ -1,6 +1,6 @@
 # LV1～60 成長曲線重新設計與驗證
 
-日期：2026-09-30。遊戲基準為 `Horios/Emberwild@bc435c4ff4304400c8e99ab14b82fcad9436cf25` 的 `chatgpt-dev`；設計器基準為 `Horios/Emberwild-Balance@f33864b55a96f28365d64598a5b213eacdc5a220`。設計器原本只有 `main`，本次建立對應的 `chatgpt-dev`，兩個 `main` 都不修改。
+日期：2026-09-30。遊戲基準為 `Horios/DreamingAbyss@bc435c4ff4304400c8e99ab14b82fcad9436cf25` 的 `chatgpt-dev`；設計器基準為 `Horios/DreamingAbyss-BalanceEditor@f33864b55a96f28365d64598a5b213eacdc5a220`。設計器原本只有 `main`，本次建立對應的 `chatgpt-dev`，兩個 `main` 都不修改。
 
 下列面板採 HP／攻擊／防禦。職業表不穿裝備；LV15 起假設已完成二轉。玩家仍需滿足原有二轉材料、熟練度等條件；夥伴仍在 LV15 自動二轉。合理配點統一用每級攻擊 2 點、生命 1 點作為可重現的輸出基準，並非推薦所有職業唯一配法。完整 LV1～60 資料見同目錄 CSV。
 

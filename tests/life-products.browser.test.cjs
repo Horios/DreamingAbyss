@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),editor=path.resolve(root,'../Emberwild-B
 async function field(box,key,value){const el=box.locator('[data-life-field="'+key+'"]');await el.fill(String(value));await el.dispatchEvent('change');}
 
 test('actual designer controls export/import gathering and five-input alchemy, persist drafts, and run both timers independently',async()=>{
- const e=await openRuntime(editor,'balance-editor.html'),g=await openRuntime(root,'index.html',{}, {pathname:'/Emberwild/preview/',clockTime:new Date('2026-10-13T01:00:00Z')});
+ const e=await openRuntime(editor,'balance-editor.html'),g=await openRuntime(root,'index.html',{}, {pathname:'/DreamingAbyss/preview/',clockTime:new Date('2026-10-13T01:00:00Z')});
  try{
   await openEditorSection(e.page,'gatheringProducts');await e.page.locator('#lifeAdd').click();const gather=e.page.locator('[data-life-key="1"]');
   await field(gather,'name','採集銀草');await field(gather,'seconds',1.001);await field(gather,'percent',100);await field(gather,'quantity',4);await field(gather,'output','銀草');assert.match(await gather.locator('.life-design-summary').innerText(),/1.001 秒，100%.*銀草 ×4/);

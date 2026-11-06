@@ -239,5 +239,5 @@ Additional verification:
 - node --test tests/team-runtime.test.cjs after final rollback fixes: 22 passed, 0 failed.
 - Pages artifact: production index equals origin/main, all JS/CSS present.
 - Production index SHA256: 73d955b1096705bf3b6fe9471068de82ff8d043119cfdfaf25def77710a41b76
-- Chromium launched workflow-assembled /Emberwild/preview/ with preview banner, correct preview storage key, one warrior plan, no browser errors.
+- Chromium launched workflow-assembled /DreamingAbyss/preview/ with preview banner, correct preview storage key, one warrior plan, no browser errors.
 - Direct public Pages HTTP access is restricted here; remote deployment is checked separately with Actions status and checkout SHAs.

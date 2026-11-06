@@ -8,7 +8,7 @@
 
 ## 最終架構
 
-- 公開遊戲 Repository `Horios/Emberwild`：每個 branch 的 `data/balance.json` 是該版本遊戲設計資料的正式來源。`main` 與 `chatgpt-dev` 原有有效數值分別匯出；沒有把測試版數值直接覆寫正式版。
+- 公開遊戲 Repository `Horios/DreamingAbyss`：每個 branch 的 `data/balance.json` 是該版本遊戲設計資料的正式來源。`main` 與 `chatgpt-dev` 原有有效數值分別匯出；沒有把測試版數值直接覆寫正式版。
 - `data/build.json` 只有版本 metadata，不是第二份平衡資料。Pages artifact 會寫入 branch、來源 commit 與 balance blob SHA。
 - `index.html` 先載入共用 document preflight，再由 `published-loader.js` 取得版本 metadata 與 JSON，按原始順序啟動所有遊戲模組。完成最終 validator／apply 後重讀原玩家存檔，保留選取角色與進度。
 - `balance-document.js` 負責 schemaVersion、JSON 值與必要結構、有限數值、型別、ID、機率單位及跨系統引用。沿用現有最終 validator。狀態不另維護第二份 enum：直接比對既有最終 normalizer，拒絕非法值被默默改寫。
@@ -16,7 +16,7 @@
 - `numeric-compression-formula.js`：既有傷害公式與屬性運算邏輯；數值設定由 JSON 套用。
 - `progression-model.js`：成長／EXP／migration 邏輯與 fallback；`progression-runtime.js` 將設定接到角色、存檔及獎勵。
 - `balance-runtime.js` 保留既有战報／獎勵包裝，不引入第二份設定。
-- 私有 `Horios/Emberwild-Balance` 保留 `balance-editor.html`，加上 `server/` 安全發布服務與 `PUBLISHING.md`；未公開平衡器 HTML 或 App 金鑰。
+- 私有 `Horios/DreamingAbyss-BalanceEditor` 保留 `balance-editor.html`，加上 `server/` 安全發布服務與 `PUBLISHING.md`；未公開平衡器 HTML 或 App 金鑰。
 
 ## JSON 管理範圍
 
@@ -64,7 +64,7 @@ Commit 完成只顯示「資料已提交，等待部署」。Pages 成功必須�
 
 完整回歸實際執行 419 項：418 項通過，1 項無效存檔救援失敗已修正；修正後含該失敗案例的 6 項來源／發布／存檔專項全部通過。沒有尚未修正的測試失敗。App API 授權／rate limit／網路等 9 項安全專項也全部通過。真正網路發布仍待 App 安裝，不能視為已驗收。
 
-GitHub Actions 的 main push、chatgpt-dev request 及 main dispatch 工作均 completed／success，最終部署工作為 https://github.com/Horios/Emberwild/actions/runs/38356601369 。實際從正式版與 `/preview/` 下載 build.json、balance.json、HTML 與 published-loader.js；兩份 JSON 的 Git blob SHA 都與部署 metadata、對應分支檔案一致，loader 也完全一致。
+GitHub Actions 的 main push、chatgpt-dev request 及 main dispatch 工作均 completed／success，最終部署工作為 https://github.com/Horios/DreamingAbyss/actions/runs/38356601369 。實際從正式版與 `/preview/` 下載 build.json、balance.json、HTML 與 published-loader.js；兩份 JSON 的 Git blob SHA 都與部署 metadata、對應分支檔案一致，loader 也完全一致。
 
 | 線上版本 | 部署來源 commit | 平衡 JSON blob |
 |---|---|---|
@@ -96,7 +96,7 @@ GitHub Actions 的 main push、chatgpt-dev request 及 main dispatch 工作均 c
 
 即時 connector 檢查登入帳號為 Horios；公開 Emberwild 與私有 Emberwild-Balance 都能讀取，Repository metadata 回報帳號 pull／push／admin 等權限，Emberwild collaborator permission 為 admin。這是帳號權限資訊，不代表 connector 具備所有 administration API 能力。既有提交成功也已確認 connector 的程式提交可用。
 
-ChatGPT GitHub App 安裝目前 repository_selection 為 all；未擅自調整使用者的安裝範圍。專用平衡發布 App 的目標範圍仍只限 Horios/Emberwild，服務要求 Contents write 與 Actions read。
+ChatGPT GitHub App 安裝目前 repository_selection 為 all；未擅自調整使用者的安裝範圍。專用平衡發布 App 的目標範圍仍只限 Horios/DreamingAbyss，服務要求 Contents write 與 Actions read。
 
 本機服務目前沒有設定檔，也没有設定 App ID、Installation ID 或私鑰路徑。不能從這個結果判定使用者帳號下完全沒有其他 GitHub App；只能確認本服務尚未配置其授權。ChatGPT connector 的登入無法交付給本機服務使用，也不把 connector 憑證寫入前端或 repository。
 

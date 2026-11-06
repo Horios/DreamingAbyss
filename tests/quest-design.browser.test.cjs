@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),editor=process.env.EMBERWILD_BALANCE_ROO
 const field=async(page,key,value)=>{const el=page.locator('[data-quest-field="'+key+'"]');await el.fill(String(value));await el.dispatchEvent('change');};
 
 test('real daily and side design forms export/import into the journal, complete chained quests, and retain daily claims after reload',async()=>{
- const e=await openRuntime(editor,'balance-editor.html'),g=await openRuntime(root,'index.html',{}, {pathname:'/Emberwild/preview/',clockTime:new Date('2026-10-12T15:59:59Z')});
+ const e=await openRuntime(editor,'balance-editor.html'),g=await openRuntime(root,'index.html',{}, {pathname:'/DreamingAbyss/preview/',clockTime:new Date('2026-10-12T15:59:59Z')});
  try{
   await openEditorSection(e.page,'dailyQuests');await e.page.locator('#questAdd').click();
   await field(e.page,'title','每日煉金補給');await field(e.page,'description','交付紅色草及簡易治療藥水。');await field(e.page,'rewards.gold',50);

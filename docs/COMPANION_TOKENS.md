@@ -127,8 +127,8 @@
 
 提交 SHA、推送與實際部署結果由隨附交付報告記錄；本檔不嵌入自身 commit hash。遊戲仍採既有 workflow：chatgpt-dev push 發送 dispatch，main context 組裝同時包含正式版與 preview 的 Pages artifact，不建立 main commit。
 
-測試版：https://horios.github.io/Emberwild/preview/
+測試版：https://horios.github.io/DreamingAbyss/preview/
 
-更新版設計器（chatgpt-dev，私有 Repository 需登入）：https://github.com/Horios/Emberwild-Balance/blob/chatgpt-dev/balance-editor.html
+更新版設計器（chatgpt-dev，私有 Repository 需登入）：https://github.com/Horios/DreamingAbyss-BalanceEditor/blob/chatgpt-dev/balance-editor.html
 
 原 main 下載連結仍是正式舊版；本次未合併 main，請使用上述 dev 版本或隨附獨立 HTML。

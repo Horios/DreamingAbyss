@@ -46,7 +46,7 @@ test('icon canvas: fill, transparent erase, rotation, curves, undo, touch, cance
     await p.screenshot({path:'/tmp/icon-canvas-mobile.png'});
     assert.deepEqual(e.errors.filter(x=>!x.includes('404')),[]);
     // Game import uses the same schema and renders both extensions.
-    const g=await openRuntime(root,'index.html',{}, {pathname:'/Emberwild/preview/'});
+    const g=await openRuntime(root,'index.html',{}, {pathname:'/DreamingAbyss/preview/'});
     try{await g.page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();});
       // Preview keeps an imported design across reloads only when it comes through the JSON file import.
       await g.page.evaluate(()=>setTab('options'));await require('./runtime.cjs').importBalanceFile(g.page,'icon-canvas.json',Buffer.from(JSON.stringify(doc)));await g.page.waitForFunction(id=>exportableBalance().skillIcons.some(x=>x.id===id),doc.skillIcons.at(-1).id);await g.page.evaluate(()=>closeModal());

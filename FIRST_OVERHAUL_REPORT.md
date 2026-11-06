@@ -2,7 +2,7 @@
 
 ## 交付範圍
 
-本輪以「等級＋精通＋技能解鎖＋自動戰鬥配置」養成循環為核心，修改測試版 `Horios/Emberwild:chatgpt-dev` 與平衡器 `Horios/Emberwild-Balance:main`。
+本輪以「等級＋精通＋技能解鎖＋自動戰鬥配置」養成循環為核心，修改測試版 `Horios/DreamingAbyss:chatgpt-dev` 與平衡器 `Horios/DreamingAbyss-BalanceEditor:main`。
 
 正式遊戲 `Emberwild:main` 未合併本輪內容。
 

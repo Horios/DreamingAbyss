@@ -49,7 +49,7 @@ suites use Playwright 1.62.1 from `package-lock.json`.
 
 ## Cross-repository and manual checks
 
-The `Horios/Emberwild-Balance` repository is private. End-to-end tests requiring
+The `Horios/DreamingAbyss-BalanceEditor` repository is private. End-to-end tests requiring
 the separately checked-out editor or a deployment token are **not** included in
 these self-contained jobs. The cross-repository tests `material-prices.test.cjs`,
 `shop-options.test.cjs`, `timed-boosts-journal.test.cjs`, and

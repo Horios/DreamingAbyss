@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
 test('Chromium: existing icon maker, offline catalog, appearance/effects, JSON download/import and effective game UI',async t=>{
-  const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root,'index.html',{}, {pathname:'/Emberwild/preview/'}),p=editor.page,g=game.page;
+  const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root,'index.html',{}, {pathname:'/DreamingAbyss/preview/'}),p=editor.page,g=game.page;
   p.setDefaultTimeout(10000);g.setDefaultTimeout(10000);p.on('dialog',d=>d.accept());
   let doc,file,originalId,baseline,iconCount,skillRef;
   // Skill system v1 moved protagonist skills to the workbench; the existing icon picker lives on companion skill pages.
