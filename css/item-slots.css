@@ -40,8 +40,9 @@
 .mailbox-attachment.item-slot{display:flex;width:var(--item-slot-width);max-width:100%;height:auto;min-height:var(--item-slot-height);padding:7px 10px;aspect-ratio:auto;overflow:hidden}
 .mailbox-attachments .item-slot-empty{display:none}
 
-.shop-product-grid{display:grid;grid-template-columns:minmax(0,1fr);justify-content:stretch;align-content:start;gap:6px;padding:5px}
-.shop-product-row.icon-product{display:block;width:304px;max-width:100%;min-width:0;min-height:0;padding:6px;border-radius:8px;box-sizing:border-box}
+/* v0.112: cards fill the row (auto-fill columns, 304px minimum) instead of one left column. */
+.shop-product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(304px,100%),1fr));justify-content:stretch;align-content:start;gap:6px;padding:5px}
+.shop-product-row.icon-product{display:block;width:auto;max-width:100%;min-width:0;min-height:0;padding:6px;border-radius:8px;box-sizing:border-box}
 .shop-product-row:has([data-item-sold="true"]){opacity:.5;filter:grayscale(1) brightness(.8)}
 .shop-product-visual{display:grid;grid-template-columns:minmax(0,var(--item-slot-width)) auto;justify-content:start;align-items:center;gap:10px;min-width:0}
 .shop-product-visual>.item-slot{width:100%}
