@@ -100,7 +100,7 @@
   }
   globalThis.castEnemySharedSkill=castEnemySharedSkill;
   function procChance(sk){const m=sk.meta||{},base=Number(m.procBaseChance);return Math.max(0,Math.min(1,Number.isFinite(base)?base:Number(GS('skills.proc.baseChance',.22))||.22));}
-  function enemyControlState(e){return globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[e?.id]||null;}
+  function enemyControlState(e){return globalThis.EmberwildControlState?.states?.[e?.id]||null;}
   globalThis.performSharedEnemyAction=function(e){
     if(e.__secondsBasic){performEnemyBasic(e);for(const proc of assignments(e).filter(x=>x.activation==='proc'&&BASIC_EFFECTS.has(x.effect)))if(Math.random()<procChance(proc))castEnemySharedSkill(e,proc);return 'attack';}
     const control=enemyControlState(e);

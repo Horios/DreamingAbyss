@@ -108,7 +108,7 @@ function statusApplyShieldAwareDamage(target,amount,bypassShield=false){
   if(!bypassShield&&statusIsHero(target)){
     const absorb=Math.min(Math.max(0,Number(target.shield)||0),amount);target.shield=Math.max(0,(Number(target.shield)||0)-absorb);hpDamage=Math.max(0,amount-absorb);if(absorb>0&&typeof recordCombatContribution==='function')recordCombatContribution(target,'mitigation',absorb);
   }else if(!bypassShield&&!statusIsHero(target)){
-    const api=globalThis.__EMBERWILD_CONTROL_TEST_API,p=api?.states?.[target.id]?.polymorph;
+    const api=globalThis.EmberwildControlState,p=api?.states?.[target.id]?.polymorph;
     if(p?.shield>0){const absorb=Math.min(p.shield,amount);p.shield=Math.max(0,p.shield-absorb);hpDamage=Math.max(0,amount-absorb);if(p.shield<=0){delete api.states[target.id].polymorph;note(combatEnemyName(target)+' 的變形護盾被持續效果打破，變形解除。');}}
     const absorb=Math.min(Math.max(0,Number(target.shield)||0),hpDamage);target.shield=Math.max(0,(Number(target.shield)||0)-absorb);hpDamage-=absorb;
   }
@@ -151,7 +151,7 @@ function executeStatusPeriodic(inst,fx,immediate=false){
   return dealt;
 }
 function applyStatusControl(def,target,source){
-  const c=def.control,api=globalThis.__EMBERWILD_CONTROL_TEST_API;if(!c||!api||statusIsHero(target))return;
+  const c=def.control,api=globalThis.EmberwildControlState;if(!c||!api||statusIsHero(target))return;
   const meta={duration:def.duration,bossDuration:c.bossDuration,slowPct:c.slowPct,basicAttackBonus:c.basicAttackBonus,damageReduction:c.damageReduction,skipChance:c.skipChance,bossSkipChance:c.bossSkipChance};
   if(c.kind==='polymorph')api.applyPolymorph(target,Math.max(1,statusAttack(source)),meta);
   else if(c.kind==='freeze')api.applyFreeze(target,meta);
@@ -182,7 +182,7 @@ function removeStatusEffects(target,polarity,limit=99){
   activeStatuses=activeStatuses.filter(inst=>{
     if(left>0&&inst.targetKey===key&&partyClock<inst.expiresClock&&inst.definition.dispellable!==false&&statusPolarity(inst.definition)===polarity){left--;removed++;if(inst.definition.control)controls.add(inst.definition.control.kind);return false;}return true;
   });
-  const api=globalThis.__EMBERWILD_CONTROL_TEST_API;
+  const api=globalThis.EmberwildControlState;
   for(const kind of controls)if(!activeStatuses.some(inst=>inst.targetKey===key&&partyClock<inst.expiresClock&&inst.definition.control?.kind===kind))api?.clear?.(target,kind);
   effects=effects.filter(fx=>{
     const def={modifiers:[{kind:fx.kind,value:fx.value}],periodic:['dotAttack','dotMaxHp'].includes(fx.kind)?[{kind:'damage',coefficient:fx.value}]:[]};

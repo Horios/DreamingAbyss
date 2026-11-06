@@ -1,7 +1,7 @@
 /* Account actions live in Options.
    Options are grouped into 一般 (appearance), 存檔 (save, export, import, title) and 其他 (codes, test data). */
 (function(){
-  globalThis.isEmberwildPreview=function(){return /(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');};
+  globalThis.isEmberwildPreview=function(){return isPreviewBuild();};
   const tabs=[['general','一般'],['save','存檔'],['other','其他']];
   let current='general';
   globalThis.setOptionsTab=function(id){if(!tabs.some(([key])=>key===id))return false;current=id;render();return true;};

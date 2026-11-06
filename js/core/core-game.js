@@ -70,6 +70,8 @@ function applyGemAfterSkill(h,i,v){
 // Preview has a separate copy so the older production client cannot discard
 // the new permanent/build extension when it saves its single-team projection.
 const IS_PREVIEW=/(?:^|\/)preview(?:\/|$)/.test(location.pathname);
+// Preview path or the deployment banner injected into /preview/index.html.
+function isPreviewBuild(){return IS_PREVIEW||!!document.getElementById('preview-build-banner');}
 const environmentStorageKey=key=>IS_PREVIEW?key.replace(/^emberwild-/,'emberwild-preview-'):key;
 if(IS_PREVIEW){
  try{
@@ -1114,7 +1116,7 @@ function enemyDisplayName(e){
 function combatEnemyName(e){return enemyDisplayName(e)||e?.name||'敵人';}
 function enemyAvailableForSingleTarget(e){
   if(!e||e.hp<=0)return false;
-  return !globalThis.__EMBERWILD_CONTROL_TEST_API?.isPolymorphed?.(e);
+  return !globalThis.EmberwildControlState?.isPolymorphed?.(e);
 }
 function singleTargetEnemyPool(){return foes.filter(enemyAvailableForSingleTarget);}
 function initiativeView(){
@@ -1887,7 +1889,7 @@ try{
   state=null;party=null;
   const message=String(e?.message||e);
   globalThis.__EMBERWILD_BOOT_SAVE_ERROR=message;
-  const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+  const previewBuild=isPreviewBuild();
   if(previewBuild&&message.startsWith('裝備類型無效：')){
     globalThis.__EMBERWILD_DEFERRED_CUSTOM_FORM_SAVE=true;
     console.warn('存檔使用尚未載入的測試裝備類型，等待完整模組或測試 JSON 後重試',e);

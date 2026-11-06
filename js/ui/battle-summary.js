@@ -164,11 +164,11 @@
   }
   for(const e of globalThis.EmberwildStatusCombatState?.pack().active||[])if(e.targetKey===row.id&&e.expiresClock>partyClock&&(e.remainingUses==null||e.remainingUses>0)){
    // Immune controls have no effect unless their real control state exists.
-   if(e.definition.control&&!e.definition.modifiers?.length&&!e.definition.periodic?.length&&!globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[u.id]?.[e.definition.control.kind])continue;
+   if(e.definition.control&&!e.definition.modifiers?.length&&!e.definition.periodic?.length&&!globalThis.EmberwildControlState?.states?.[u.id]?.[e.definition.control.kind])continue;
    const api=globalThis.__EMBERWILD_STATUS_TEST_API;
    statuses.push({name:e.name,polarity:api.polarity(e.definition),detail:api.tooltip(e.definition),remaining:e.definition.permanent?null:api.remainingTurns(e),time:e.definition.permanent?'永久':null,uses:e.remainingUses,source:e.sourceName});
   }
-  if(!ally)for(const [kind,c] of Object.entries(globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[u.id]||{}))if(c&&(c.turns===undefined||c.turns>0)){
+  if(!ally)for(const [kind,c] of Object.entries(globalThis.EmberwildControlState?.states?.[u.id]||{}))if(c&&(c.turns===undefined||c.turns>0)){
    const bits=[];if(c.shield!==undefined)bits.push('變形護盾 '+fmt(c.shield));if(c.slowPct!==undefined)bits.push('速度降低 '+pct(c.slowPct));if(c.damageReduction!==undefined)bits.push('傷害降低 '+pct(c.damageReduction));if(c.skipChance!==undefined)bits.push('無法行動機率 '+pct(c.skipChance));if(c.basicAttackBonus!==undefined)bits.push('普攻加成 '+pct(c.basicAttackBonus));
    statuses.push({name:controlLabels[kind]||kind,polarity:kind==='rage'?'buff':'debuff',detail:bits.join(' · '),remaining:c.turns??null});
   }
@@ -178,7 +178,7 @@
   }
   // Party-wide timed boosts apply to every active member; show their real remaining time.
   if(ally&&heroes().includes(u))for(const b of globalThis.EmberwildTimedBoosts?.active(party)||[])statuses.push({name:b.name,polarity:'buff',detail:(EmberwildTimedBoosts.LABELS[b.boostType]||b.boostType)+'＋'+b.bonusPercent+'% · 全隊',clock:'現實時間',clockType:'wall',remaining:EmberwildTimedBoosts.remainingMs(b)/1000,source:'全隊'});
-  const controls=globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[u.id]||{},max=ally?v.hp:row.max,hp=Math.max(0,Math.min(max,finite(u.hp)));
+  const controls=globalThis.EmberwildControlState?.states?.[u.id]||{},max=ally?v.hp:row.max,hp=Math.max(0,Math.min(max,finite(u.hp)));
   const same=rows.filter(x=>x.unit.name===u.name),name=ally?characterName(u):u.name+(same.length>1?same.indexOf(row)+1:'');
   return {id:row.id,side:ally?'ally':'enemy',name,level:u.lv,kind:ally?(u.companionId===undefined?'主角':'夥伴'):({normal:'普通怪物',elite:'菁英怪物',boss:'BOSS',final:'最終 BOSS'}[u.kind]||'怪物'),alive:hp>0,hp,max,shield:Math.max(0,finite(u.shield)),controlShield:Math.max(0,finite(controls.polymorph?.shield)),element:ally?weaponElement(u):u.element,race:ally?null:u.race,stats:{...v},skills,statuses,nextActiveDamageBonus:Math.max(0,finite(u.nextActiveDamageBonus)),advanceSteps:Math.max(0,finite(ally?u.procAdvanceSteps:u.sharedAdvanceSteps))};
  }

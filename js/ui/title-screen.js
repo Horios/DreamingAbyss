@@ -64,7 +64,7 @@
     return `<div class="save-slot"><button class="save-slot-select" onclick="selectSaveSlot(${slot})" ${snapshot?'':'disabled'}><strong>存檔欄位 ${slot}</strong><span>${details}</span></button><button class="danger save-slot-delete" onclick="requestDeleteSlot(${slot})" ${occupied?'':'disabled'} aria-label="刪除存檔欄位 ${slot}">刪除存檔</button></div>`;
   }
   function titleView(){
-    const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+    const previewBuild=isPreviewBuild();
     const missingTestForm=previewBuild&&!state&&String(globalThis.__EMBERWILD_BOOT_SAVE_ERROR||'').startsWith('裝備類型無效：');
     const testImport=missingTestForm?`<div class="title-actions"><button type="button" onclick="document.getElementById('title-test-json-import')?.click()">匯入測試 JSON</button><input id="title-test-json-import" type="file" accept=".json,application/json" onchange="importTestJSONFromTitle(event)" hidden></div><p class="small">只套用測試設定，不會匯入角色存檔。</p>${missingTestForm?'<p class="small">目前存檔使用測試 JSON 中的自訂裝備類型。請先匯入建立該存檔時使用的測試 JSON；原存檔仍保留，不會被覆寫。</p>':''}`:'';
     $('wallet').textContent='';
@@ -171,7 +171,7 @@
   };
   function showLoadFailure(slot){
     const snapshot=slotSnapshot(slot),reason=globalThis.__EMBERWILD_BOOT_SAVE_ERROR;
-    const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+    const previewBuild=isPreviewBuild();
     const missingTestForm=previewBuild&&String(reason||'').startsWith('裝備類型無效：');
     const help=missingTestForm?'這份存檔使用目前尚未載入的測試裝備類型。原始存檔仍保留，請先匯入建立這份存檔時使用的測試 JSON；匯入成功後會自動重新讀取。':'原始資料仍保留在瀏覽器。若能匯出 JSON，可以先下載備份，再從 JSON 匯入重試。若資料不是合法 JSON，請下載原始文字留存；它無法直接匯入。';
     const retry=missingTestForm?'<button class="primary" onclick="closeModal();document.getElementById(\'title-test-json-import\')?.click()">匯入測試 JSON 後重試</button>':'<button class="primary" onclick="retryImportFromTitle()">匯入存檔 JSON 重試</button>';
