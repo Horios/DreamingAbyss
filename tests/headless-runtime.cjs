@@ -33,7 +33,8 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
     if(filename.includes('startup-guard')||filename.includes('published-loader'))continue;
     let code=src?fs.readFileSync(path.join(root,src[1].split('?')[0]),'utf8'):scripts[i][2];
     if(options.transformSource)code=options.transformSource(filename.split('?')[0],code);
-    try{vm.runInContext(code,ctx,{filename,timeout:10000});}catch(e){throw new Error(filename+': '+e.stack);}
+    // Guards against a module that never returns. 30s (as for the bootstrap below) tolerates parallel test load; a stuck script still fails.
+    try{vm.runInContext(code,ctx,{filename,timeout:Number(process.env.EMBERWILD_MODULE_TIMEOUT_MS)||30000});}catch(e){throw new Error(filename+': '+e.stack);}
   }
   const published=path.join(root,'data/balance.json');
   ctx.__HEADLESS_PUBLISHED_BALANCE=fs.existsSync(published)?JSON.parse(fs.readFileSync(published,'utf8')):null;
