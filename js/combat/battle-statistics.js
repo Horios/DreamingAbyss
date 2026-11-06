@@ -115,6 +115,23 @@ function aggregateCurrentMapStatistics(){
   for(let i=records.length-1;i>=0;i--)for(let j=(records[i].deaths||[]).length-1;j>=0;j--){const d=records[i].deaths[j],m=memberData.get(d.memberId??d.job);if(m&&m.recent.length<5)m.recent.push(d.cause);}
   return {records,xp,wipes,deaths,drops:[...drops.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'zh-Hant')),memberData};
 }
+// v0.114: per-member combat data (damage / taken / healing) for the statistics page.
+// The session-only 累積戰利品 list duplicated 掉落道具 (same kill drops, narrower scope), so only 掉落道具 is shown.
+function statisticsCombatDataPanel(){
+  const fmt=n=>Math.round(Number(n)||0).toLocaleString('zh-TW');
+  const rows=globalThis.combatContributionData?.()||[],metrics=[['damage','傷害'],['taken','承傷'],['healing','治療']];
+  const chart=metrics.map(([key,label])=>{const max=Math.max(0,...rows.map(r=>r[key]));return `<div class="combat-chart-metric" data-metric="${key}"><h3>${label}</h3>${rows.map(r=>{const width=max>0?Math.max(r[key]>0?2:0,r[key]/max*100):0;return `<div class="combat-chart-row"><span class="combat-chart-name" title="${esc(r.name)}">${esc(r.name)}</span><span class="combat-chart-track" role="img" aria-label="${esc(r.name)} ${label} ${fmt(r[key])}"><i class="combat-chart-fill metric-${key}" style="width:${width.toFixed(1)}%"></i></span><b class="combat-chart-value">${fmt(r[key])}</b></div>`;}).join('')}</div>`;}).join('');
+  return `<section class="panel statistics-combat-data"><div class="statistics-panel-head"><h2>戰鬥數據</h2><button type="button" onclick="resetCombatContribution()" ${rows.some(r=>r.damage||r.taken||r.healing||r.mitigation)?'':'disabled'}>重置</button></div>${rows.length?`<div class="combat-chart">${chart}</div><p class="small">統計目前出戰的主角與夥伴；承傷包含護盾吸收。更換出戰隊伍會自動重置。</p>`:'<p class="statistics-empty">組成出戰隊伍後開始統計。</p>'}</section>`;
+}
+// Manual reset of this map's records (completed battles, EXP, drops and deaths). Rewards already earned are kept.
+globalThis.requestResetMapBattleStatistics=function(){
+  if(!party)return false;const n=currentMapBattleRecords().length,name=MAPS[party.map]?.name||'';
+  $('modal').innerHTML=`<h2>重置戰鬥統計？</h2><p>清除「${esc(name)}」最近 ${n} 場的完成戰鬥、總獲得經驗、掉落道具與死亡紀錄。已取得的獎勵不受影響。</p><div class="actions"><button class="danger" onclick="confirmResetMapBattleStatistics()">確認重置</button><button onclick="closeModal()">取消</button></div>`;
+  if(!$('modal').open)$('modal').showModal();return true;
+};
+globalThis.confirmResetMapBattleStatistics=function(){
+  if(!party)return false;ensureBattleStatistics().maps[party.map]=[];closeModal();save();render();return true;
+};
 function statisticsView(){
   const a=aggregateCurrentMapStatistics(),m=MAPS[party.map];
   const difficultyCounts=[0,1,2].map(i=>a.records.filter(r=>r.difficulty===i).length);
@@ -125,7 +142,8 @@ function statisticsView(){
     <article class="card"><span class="statistics-number">${a.wipes.toLocaleString()}</span><span class="statistics-label">總全滅次數</span></article>
     <article class="card"><span class="statistics-number">${a.deaths.toLocaleString()}</span><span class="statistics-label">總死亡次數</span></article>
   </section><p class="small">統計只計算在此地圖完成的群怪遭遇；停止探索保留已取得獎勵並記錄為中止，不計完成場次；中途換圖、換隊員或切換難度不計場次。模式場次：${MODES.map((d,i)=>`${d.name} ${difficultyCounts[i]}`).join(' ／ ')}</p>
-  <div class="statistics-layout"><section class="panel"><h2>掉落道具</h2><div class="statistics-loot-list">${a.drops.length?a.drops.map(([name,n])=>`<div class="statistics-loot-row"><span>${esc(name)}</span><b>×${n.toLocaleString()}</b></div>`).join(''):'<p class="statistics-empty">最近的戰鬥尚無掉落紀錄。</p>'}</div></section>
+  ${statisticsCombatDataPanel()}
+  <div class="statistics-layout"><section class="panel"><div class="statistics-panel-head"><h2>掉落道具</h2><button type="button" onclick="requestResetMapBattleStatistics()" ${a.records.length?'':'disabled'}>重置</button></div><div class="statistics-loot-list">${a.drops.length?a.drops.map(([name,n])=>`<div class="statistics-loot-row"><span>${esc(name)}</span><b>×${n.toLocaleString()}</b></div>`).join(''):'<p class="statistics-empty">最近的戰鬥尚無掉落紀錄。</p>'}</div></section>
   <section class="panel"><h2>隊員死亡統計</h2><div class="statistics-members">${party.members.map(h=>{const d=a.memberData.get(memberKey(h))||{count:0,recent:[]};return `<article class="statistics-member"><h3><span>${esc(characterName(h))}</span><span class="tag">死亡 ${d.count}</span></h3>${d.recent.length?`<ol class="statistics-deaths">${d.recent.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'<p class="statistics-empty">最近 300 場內沒有死亡紀錄。</p>'}</article>`;}).join('')}</div><p class="small">每名隊員最多顯示最近 5 次直接致死來源，格式為「怪物名稱－招式名稱」。</p></section></div>`;
 }
 function ensureStatisticsNavButton(){

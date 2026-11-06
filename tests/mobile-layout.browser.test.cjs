@@ -80,7 +80,8 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
 });
 
 // v0.087: the phone journal is a full-screen 戰況 dialog opened from the header instead of a panel in the page.
-test('Mobile: the 戰況 dialog shows log, battle status and loot, keeps filters and page scroll, and closes cleanly',async()=>{
+// v0.114: 累積戰利品 moved to the 戰鬥統計 page; the 戰況 dialog shows the log and battle status only.
+test('Mobile: the 戰況 dialog shows log and battle status, keeps filters and page scroll, and closes cleanly',async()=>{
  const g=await openRuntime(root),p=g.page;
  try{
   await p.setViewportSize({width:390,height:844});await start(p);
@@ -88,18 +89,14 @@ test('Mobile: the 戰況 dialog shows log, battle status and loot, keeps filters
   assert.equal(await p.locator('#globalBattleJournal').isVisible(),false,'no journal panel in the page');
   assert.match(await p.locator('#mobileReportButton').innerText(),/^戰況/);
   await p.locator('#mobileReportButton').click();
-  for(const part of ['#mobileJournalBody','#globalBattleJournal .battle-summary','#mobileLootBody','.mobile-report-close'])assert.equal(await p.locator(part).isVisible(),true,part);
+  for(const part of ['#mobileJournalBody','#globalBattleJournal .battle-summary','.mobile-report-close'])assert.equal(await p.locator(part).isVisible(),true,part);
+  assert.equal(await p.locator('#globalBattleJournal #mobileLootBody,#globalBattleJournal .mobile-loot-toggle,#globalBattleJournal .journal-loot-compact').count(),0,'no loot panel in the journal');
   await p.locator('.journal-filter select').selectOption('item');
   await p.evaluate(()=>render());
   assert.equal(await p.locator('#globalBattleJournal').isVisible(),true,'the dialog stays open through redraws');
   assert.equal(await p.locator('.journal-filter select').inputValue(),'item');
   await p.evaluate(()=>{expeditionLoot.items.set('手機測試素材',{count:3,rar:1});refreshGlobalJournal();});
-  await p.waitForFunction(()=>document.querySelector('#journalLootList').textContent.includes('手機測試素材'));
-  assert.equal(await p.locator('#mobileLootBody details').count(),0);
-  await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop=e.scrollHeight);await p.waitForTimeout(30);
-  const lootScroll=await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop);
-  await p.evaluate(()=>refreshGlobalJournal());
-  assert.equal(await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop),lootScroll);
+  assert.equal(await p.locator('#globalBattleJournal').innerText().then(t=>t.includes('手機測試素材')),false,'loot is not listed in the journal');
   await p.locator('.mobile-report-close').click();
   assert.equal(await p.locator('#globalBattleJournal').isVisible(),false);
   assert.equal(await p.locator('main').evaluate(e=>e.scrollTop),220,'the page keeps its scroll position');
@@ -282,7 +279,8 @@ test('Mobile: equipment icons, full names and ratings do not become independentl
  }finally{await g.browser.close();}
 });
 
-test('Mobile: messages and loot are sibling panels without shared or nested scrolling',async()=>{
+// v0.114: the journal holds the battle log only; accumulated loot is on the 戰鬥統計 page.
+test('Mobile: the battle log scrolls on its own without shared or nested scrolling',async()=>{
  const g=await openRuntime(root),p=g.page;
  try{
   await p.setViewportSize({width:390,height:844});await start(p);
@@ -310,78 +308,38 @@ test('Mobile: messages and loot are sibling panels without shared or nested scro
   await p.waitForFunction(()=>!isEmberwildUIInteracting());
   assert(await p.evaluate(latestVisible),'filter changes show the latest matching log');
   assert.equal(await p.locator('#mobileJournalBody #journalLootList,#mobileJournalBody .journal-quick-dispose').count(),0);
-  assert.equal(await p.locator('#mobileLootBody #liveLog').count(),0);
-  const siblings=await p.evaluate(()=>document.getElementById('mobileJournalBody').parentElement.parentElement===document.getElementById('mobileLootBody').parentElement.parentElement);
-  assert(siblings,'panels are siblings');
-  // v0.087: in the 戰況 dialog the log and the loot are shown together as sibling scroll areas.
-  assert.equal(await p.locator('#mobileJournalBody').isVisible(),true);
-  assert.equal(await p.locator('#mobileLootBody').isVisible(),true);
-  assert.equal(await p.locator('#mobileLootBody details').count(),0,'loot has no second disclosure');
-  assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('#mobileLootBody *')].filter(e=>e.clientHeight>0&&e.scrollHeight>e.clientHeight+1&&['auto','scroll'].includes(getComputedStyle(e).overflowY)).map(e=>e.className)),[]);
-  await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop=e.scrollHeight);await p.waitForTimeout(30);
-  const top=await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop);
-  await p.evaluate(()=>{note('閱讀戰利品時不強制跳走','playerDamage');refreshGlobalJournal();});
-  assert.equal(await p.locator('#mobileLootBody').evaluate(e=>e.scrollTop),top);
+  assert.equal(await p.locator('#mobileLootBody,.mobile-loot-toggle').count(),0,'no loot panel beside the log');
   assert.equal(await p.locator('.journal-quick-dispose').count(),0,'equipment dismantling is managed in inventory, not the journal');
   for(const viewport of [{width:320,height:640},{width:844,height:390}]){
-   await p.setViewportSize(viewport);await fits(p,'separate loot '+viewport.width);
+   await p.setViewportSize(viewport);await fits(p,'journal '+viewport.width);
    assert(await p.locator('#globalBattleJournal').evaluate(e=>e.scrollHeight<=e.clientHeight+1),'no shared outer scroll');
   }
   await p.locator('.mobile-report-close').click();
   await fits(p,'closed dialog landscape');
   await p.setViewportSize({width:1440,height:900});
-  assert.equal(await p.locator('.mobile-loot-toggle').isVisible(),false);
-  assert.equal(await p.locator('.journal-loot-compact').count(),1,'desktop keeps its loot disclosure');
+  assert.equal(await p.locator('.mobile-loot-toggle,.journal-loot-compact,.journal-resizer').count(),0,'desktop journal has no loot disclosure');
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
 
-test('Journal: loot collapse survives immediate redraws, queued toggle events and repeated clicks',async()=>{
+test('Statistics page: one drops table and combat bars fit desktop and phones; resets clear them',async()=>{
  const g=await openRuntime(root),p=g.page;
  try{
   await p.setViewportSize({width:1440,height:900});await start(p);
-  await p.evaluate(()=>{for(let i=0;i<20;i++)expeditionLoot.items.set('摺疊測試素材 '+i,{count:i+1,rar:0});});
-  for(const open of [false,true,false,true]){
-   const immediate=await p.evaluate(open=>{
-    journalLootOpen=open;render();
-    document.querySelector('.journal-loot-compact summary').click();
-    const committed=journalLootOpen;refreshGlobalJournal();render();
-    return {committed,dom:document.querySelector('.journal-loot-compact').open};
-   },open);
-   assert.deepEqual(immediate,{committed:!open,dom:!open},'commit the click before redraw');
-   await p.waitForTimeout(40);
-   assert.deepEqual(await p.evaluate(()=>({saved:journalLootOpen,dom:document.querySelector('.journal-loot-compact').open})),{saved:!open,dom:!open},'detached toggle events cannot overwrite intent');
+  await p.evaluate(()=>{currentMapBattleRecords().push(...Array.from({length:6},(_,i)=>({time:i,difficulty:0,result:'victory',xp:10,drops:{['統計頁素材 '+i]:i+1},deaths:[]})));for(const h of heroes()){recordCombatContribution(h,'damage',1000+memberKey(h));recordCombatContribution(h,'taken',300);recordCombatContribution(h,'healing',50);}setTab('statistics');});
+  for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:320,height:640}]){
+   await p.setViewportSize(viewport);await p.evaluate(()=>render());
+   assert.equal(await p.locator('h2',{hasText:'累積戰利品'}).count(),0);
+   assert.equal(await p.locator('.statistics-loot-row').count(),6,'drops rows '+viewport.width);
+   assert.equal(await p.locator('.combat-chart-row').count(),3*await p.evaluate(()=>party.active.length));
+   if(viewport.width<=900)await fits(p,'statistics '+viewport.width);
+   else assert(await p.evaluate(()=>{const m=document.querySelector('.layout>main');return m.scrollWidth<=m.clientWidth+1;}),'desktop statistics has no horizontal overflow');
   }
-  await p.locator('.journal-loot-compact summary').focus();await p.keyboard.press('Enter');
-  assert.equal(await p.evaluate(()=>journalLootOpen),true,'keyboard can expand');
-  await p.evaluate(()=>document.getElementById('journalLootList').click());assert.equal(await p.evaluate(()=>journalLootOpen),true,'loot content clicks do not toggle');
-  await p.locator('.journal-loot-compact summary').focus();await p.keyboard.press('Enter');
-  assert.equal(await p.evaluate(()=>journalLootOpen),false,'keyboard can collapse');
-  for(const width of [1440]){
-   await p.setViewportSize({width,height:900});
-   const selector=width===390?'.mobile-loot-toggle':'.journal-loot-compact summary';
-   for(let i=0;i<4;i++){
-    // A real pointer hits the current node even when every animation-frame
-    // stability check would see a replacement from the 30 ms refresh loop.
-    await p.evaluate(()=>clearInterval(globalThis.foldRefresh));
-    await p.waitForFunction(()=>!isEmberwildUIInteracting());
-    await p.locator(selector).waitFor({state:'visible'});await p.locator(selector).scrollIntoViewIfNeeded();
-    const box=await p.evaluate(sel=>{const el=document.querySelector(sel);if(!el)return null;const r=el.getBoundingClientRect(),css=getComputedStyle(el);return css.display!=='none'&&r.width>0&&r.height>0?{x:r.x,y:r.y,width:r.width,height:r.height}:null;},selector);
-    if(!box)console.log('JOURNAL_FOLD_HEADER_DIAG',JSON.stringify(await p.evaluate(sel=>({viewport:innerWidth,matched:matchMedia('(max-width:900px)').matches,node:!!document.querySelector(sel),display:document.querySelector(sel)?getComputedStyle(document.querySelector(sel)).display:null,html:document.getElementById('globalBattleJournal')?.className}),selector)));
-    assert(box,width+' click '+i+' has a visible header');
-    await p.evaluate(()=>globalThis.foldRefresh=setInterval(()=>refreshGlobalJournal(),30));
-    await p.mouse.click(box.x+box.width/2,box.y+box.height/2,{delay:80});await p.waitForTimeout(60);
-    const expected=i%2===0;
-    if(width===390){assert.equal(await p.locator('#mobileLootBody').isVisible(),expected);assert.equal(await p.locator(selector).getAttribute('aria-expanded'),String(expected));}
-    else assert.deepEqual(await p.evaluate(()=>({saved:journalLootOpen,dom:document.querySelector('.journal-loot-compact').open})),{saved:expected,dom:expected});
-   }
-   await p.evaluate(()=>clearInterval(foldRefresh));
-  }
-  // v0.087: phones show the loot inside the 戰況 dialog without a fold; it stays visible through the 30 ms refresh loop.
-  await p.setViewportSize({width:390,height:900});await p.waitForFunction(()=>!isEmberwildUIInteracting());
-  await p.locator('#mobileReportButton').click();await p.evaluate(()=>globalThis.foldRefresh=setInterval(()=>refreshGlobalJournal(),30));
-  for(let i=0;i<4;i++){await p.waitForTimeout(60);assert.equal(await p.locator('#mobileLootBody').isVisible(),true,'loot stays visible '+i);assert.equal(await p.locator('#globalBattleJournal.mobile-report-open').count(),1);}
-  await p.evaluate(()=>clearInterval(foldRefresh));
+  await p.locator('.statistics-layout .statistics-panel-head button').click();
+  await p.locator('#modal button.danger').click();
+  assert.equal(await p.locator('.statistics-loot-row').count(),0);
+  await p.locator('.statistics-combat-data .statistics-panel-head button').click();
+  assert.deepEqual(await p.evaluate(()=>combatContributionData().map(r=>r.damage+r.taken+r.healing)),await p.evaluate(()=>party.active.map(()=>0)));
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
