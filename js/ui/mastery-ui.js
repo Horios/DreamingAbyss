@@ -251,8 +251,21 @@ characterView=function(){
   html=html.replace(/升級獲得\s*\d+\s*能力點[、，]\s*\d+\s*技能點；?/g,'升級後依職業自然成長；').replace(/技能點\s*\+\s*\d+/g,'');
   const req=M.masterySettings().advanceRequiredLevel,best=Math.max(0,...M.validMasteries(h.job).map(k=>M.masteryLevelFromXp(h.mastery[k]))),a=GAMEPLAY_SETTINGS.progression.advance,disabled=h.advanced||h.lv<a.level||best<req;
   html=html.replace(/<button class="primary" onclick="heroMenuAction\((\d+),\(\)=>\{advance\(\)\}\)"\s*(?:disabled)?\s*>/,(_,job)=>`<button class="primary" onclick="heroMenuAction(${job},()=>{advance()})"${disabled?' disabled':''}>`);
-  return html+`<section class="panel"><h2>二轉精通條件</h2><p>除既有角色等級與資源外，需要本職任一主要精通達 Lv${req}。</p><p class="small">目前最高精通 Lv${best}。不要求所有精通平均培養。</p></section>`;
+  // v0.113: the mastery requirement and where 怨念碎片 drops live inside the 二轉 panel (no separate panel).
+  const note=`<p class="small advance-mastery-note">另需本職任一主要精通達 Lv${req}（目前最高 Lv${best}）；不要求所有精通平均培養。</p>`+advanceMaterialHint();
+  const button=/<button class="primary" onclick="heroMenuAction\(\d+,\(\)=>\{advance\(\)\}\)"/;
+  return button.test(html)?html.replace(button,m=>note+m):html+`<section class="panel"><h2>二轉條件</h2>${note}</section>`;
 };
+// Regions whose monsters drop the 二轉 material, from the balance-driven monster catalog (MAPS as fallback).
+function advanceMaterialHint(material='怨念碎片'){
+  const found=new Map(),add=(mapIndex,name)=>{const m=MAPS[mapIndex];if(!m)return;if(!found.has(mapIndex))found.set(mapIndex,new Set());found.get(mapIndex).add(name);};
+  const catalog=typeof monsterCatalog==='function'?monsterCatalog():[];
+  for(const m of catalog)if(m?.material===material&&Number.isInteger(m.mapIndex))add(m.mapIndex,m.name);
+  if(!found.size)MAPS.forEach((m,i)=>{for(const mob of m.mobs||[])if(mob[2]===material)add(i,mob[0]);if(m.boss?.[2]===material)add(i,m.boss[0]);});
+  if(!found.size)return '';
+  const places=[...found].sort((a,b)=>a[0]-b[0]).map(([i,names])=>`${esc(MAPS[i].name)}（LV${MAPS[i].min}～${MAPS[i].max}・${[...names].map(esc).join('、')}）`).join('、');
+  return `<p class="small advance-material-hint">${esc(material)}取得地區：${places}</p>`;
+}
 const masteryGuideBase=guideView;
 guideView=function(){
   return `<section class="panel"><h2>角色成長與精通</h2><p>角色升級後會依職業自然成長並解鎖新的冒險內容。戰士與弓箭手使用對應武器的普攻與技能可累積武器精通；法師與牧師依實際施放技能的體系累積元素或光暗精通。技能學習與二轉可能需要指定的精通等級，習得技能即可使用完整效果。</p></section>`+masteryGuideBase();
