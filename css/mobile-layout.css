@@ -4,7 +4,7 @@
 #app>.layout>aside nav>.mobile-more-toggle{display:none}
 #app>.layout>aside nav [data-page]{order:var(--page-order)}
 @media(max-width:900px){
-  :root{--mobile-nav-height:62px;--mobile-safe-bottom:env(safe-area-inset-bottom,0px)}
+  :root{--page-padding:12px;--section-gap:12px;--panel-padding:14px;--mobile-nav-height:62px;--mobile-safe-bottom:env(safe-area-inset-bottom,0px)}
   html,body{width:100%;height:100%;overflow:hidden;scrollbar-gutter:auto}
   body{display:flex;flex-direction:column;height:100dvh}
   #preview-build-banner{position:static!important;flex:0 0 auto;padding:max(4px,env(safe-area-inset-top)) 10px 4px!important;border-radius:0!important;text-align:center;box-shadow:none!important}
@@ -30,12 +30,12 @@
   #app>.layout>aside nav .mobile-more-pages{display:none;position:absolute;bottom:100%;left:0;right:0;max-height:60dvh;overflow:auto;padding:12px;gap:8px;background:#19242a;border:1px solid var(--line);box-shadow:0 -12px 32px #0007;grid-template-columns:repeat(3,minmax(0,1fr))}
   #app>.layout>aside nav.mobile-menu-open .mobile-more-pages{display:grid}
   #app>.layout>aside nav .mobile-more-pages button{min-width:0;width:100%;height:auto;min-height:48px;padding:10px 6px;font-size:13px;white-space:normal;border:1px solid var(--line);justify-content:center;flex-wrap:wrap}
-  #app>.layout>main{grid-column:1;grid-row:1;display:block;scrollbar-gutter:auto;height:100%;max-width:none;width:100%;min-width:0;min-height:0;overflow:auto;padding:14px 12px 24px;scroll-padding:14px;overscroll-behavior-y:contain;overflow-wrap:anywhere}
-  .layout>main>*{min-width:0;max-width:100%}
-  #app>.layout>main>.heading,.layout>main .heading{height:auto;min-height:0;max-height:none;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+  #app>.layout>main{grid-column:1;grid-row:1;display:flex;flex-direction:column;scrollbar-gutter:auto;height:100%;max-width:none;width:100%;min-width:0;min-height:0;overflow:auto;padding:var(--page-padding) var(--page-padding) 24px;gap:var(--section-gap);scroll-padding:var(--page-padding);overscroll-behavior-y:contain;overflow-wrap:anywhere}
+  .layout>main>*{min-width:0;max-width:100%;flex-shrink:0}
+  #app>.layout>main>.heading,.layout>main .heading{height:auto;min-height:0;max-height:none;margin-bottom:0;flex-wrap:wrap;gap:var(--control-gap)}
   .heading h1{font-size:22px}.heading .eyebrow{display:block}
-  #app>.layout>main>.tutorial{height:auto;max-height:none;margin-bottom:12px;padding:12px;overflow:visible;flex-wrap:wrap}.tutorial p{font-size:13px}
-  .layout>main .panel,.layout>main .card{min-width:0;padding:14px;scrollbar-gutter:auto;overflow:visible}
+  #app>.layout>main>.tutorial{height:auto;max-height:none;margin:0;padding:12px;overflow:visible;flex-wrap:wrap}.tutorial p{font-size:13px}
+  .layout>main .panel,.layout>main .card{min-width:0;padding:var(--panel-padding);scrollbar-gutter:auto;overflow:visible}
   .layout>main .cards,#app>.start .cards{grid-auto-rows:auto}
   .layout>main .cards>.card,#app>.start .cards>.card{height:auto;max-height:none;overflow:visible}
   .layout>main .row{flex-wrap:wrap;gap:8px}.layout>main .row>div{min-width:0}
@@ -45,7 +45,7 @@
   .layout>main .worn-overview,.layout>main .worn-token-page>.worn-overview{height:auto;grid-template-rows:auto;overflow:visible}
   .layout>main .worn-character-pane,.layout>main .worn-member,.layout>main .worn-character-list{height:auto;max-height:none;overflow:visible}
   .layout>main .worn-candidate-pane,.layout>main .skill-detail-pane{position:static}
-  .layout>main .actions{gap:8px;margin-top:12px}
+  .layout>main .actions{gap:var(--control-gap)}.layout>main .actions:not(.inventory-category-tabs){margin-top:12px}
   .layout>main .actions>button,.layout>main .page-hero-tabs>button,.layout>main .roster-member-actions>button,.layout>main .skill-list-controls>button{height:auto!important;min-height:44px;padding:8px!important;max-width:100%;font-size:13px}
   .layout>main button,.layout>main select,.layout>main input:not([type=checkbox]):not([type=radio]),#modal button,#modal select{min-height:40px;max-width:100%}
   .layout>main select,.layout>main input,#modal select,#modal input,#modal textarea{font-size:16px;min-width:0}

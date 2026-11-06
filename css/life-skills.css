@@ -1,8 +1,8 @@
 .layout>main:has(>.life-skills-page){overflow-y:auto;scrollbar-gutter:stable}
-.life-skills-page{display:flex;flex:0 0 auto;flex-direction:column;gap:16px;padding-bottom:20px;overflow-wrap:anywhere}
+.life-skills-page{display:flex;flex:0 0 auto;flex-direction:column;gap:var(--section-gap);padding-bottom:20px;overflow-wrap:anywhere}
 .life-skills-page .panel{margin:0}
 .life-skills-page h2,.life-skills-page h3{margin-bottom:10px}
-.life-skill-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:16px;align-items:start}
+.life-skill-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:var(--section-gap);align-items:start}
 .life-skill-grid.life-skill-single{grid-template-columns:minmax(0,1fr)}
 .life-materials{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:12px}
 .life-progress{display:flex;flex-direction:column;gap:6px;margin:18px 0}

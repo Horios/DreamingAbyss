@@ -17,7 +17,7 @@
     "test:teams": "node --test tests/team-model.test.cjs tests/team-save-compatibility.test.cjs tests/team-save-compatibility.browser.test.cjs tests/team-runtime.test.cjs tests/team-builds.browser.test.cjs",
     "test:icons": "node --test tests/skill-board.test.cjs tests/skill-icons.test.cjs tests/skill-icons.browser.test.cjs tests/skill-fallback-icons.test.cjs",
     "test:pages": "node --test tests/text-rarity-runtime.test.cjs tests/forge-equipped-runtime.test.cjs tests/boss-class-crafting.test.cjs tests/page-boundaries.browser.test.cjs",
-    "test:interface": "node --test tests/mobile-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/skill-fallback-icons.test.cjs tests/character-avatars.browser.test.cjs",
+    "test:interface": "node --test tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/skill-fallback-icons.test.cjs tests/character-avatars.browser.test.cjs",
     "test:skill-effects": "node --test tests/skill-effects.test.cjs tests/status-advanced.test.cjs tests/skill-effects-editor.test.cjs tests/skill-effects.browser.test.cjs tests/skill-induction.test.cjs tests/skill-induction-editor.browser.test.cjs",
     "test:save-compatibility": "node --test tests/team-model.test.cjs tests/team-runtime.test.cjs tests/team-save-compatibility.test.cjs tests/team-save-compatibility.browser.test.cjs",
     "test:life": "node --test tests/life-skills.test.cjs tests/life-products.test.cjs tests/life-products.browser.test.cjs",

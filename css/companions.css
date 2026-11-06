@@ -103,3 +103,8 @@
 .worn-candidate-list{display:grid;gap:7px}
 .worn-candidate{display:grid;gap:5px;text-align:left;white-space:normal;width:100%}
 @media(max-width:1000px){.worn-loadout-grid{grid-template-columns:1fr}.worn-candidate-pane{border-left:0;border-top:1px solid var(--line);padding:10px 0 0}}
+
+/* Roster headings and full-width panels follow the page's document flow. */
+.companion-management-page>.heading{margin:0;min-height:0;max-height:none;flex-wrap:wrap;gap:var(--control-gap)}
+.companion-management-page>.roster-page{width:100%;max-width:none;overflow:visible}
+.companion-management-page .partner-owned-list{overflow:visible;flex:none}

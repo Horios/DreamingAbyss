@@ -1,7 +1,21 @@
-/* Scope natural document flow to equipment, crafting and the guide. */
-.layout>main:has(>.readability-page){overflow-y:auto;scrollbar-gutter:stable;gap:12px}
+/* Page spacing is shared; list panes and the battlefield retain their own scroll and card geometry. */
+.layout>main>.panel,.companion-management-page>.roster-page,.skill-system-page>.panel,.statistics-layout>.panel{padding:var(--panel-padding)}
+.layout>main>.game-subtabs,.layout>main>.inventory-category-tabs,.layout>main>.shop-category-tabs,.layout>main>.team-plan-panel{margin:0}
+.layout>main>.heading>div,.companion-management-page>.heading>div{min-width:0;overflow-wrap:anywhere}
+.layout>main:has(>.story-list,>.statistics-layout,>.companion-management-page,>.life-skills-page,>.cards)>*{flex-shrink:0}
+.layout>main>.story-list{margin-top:0}
+.layout>main>.cards{gap:var(--card-gap)}
+.layout>main>.cards>.card{max-height:none;overflow:visible;padding:var(--panel-padding)}
+.layout>main>.panel>.actions,.companion-management-page .actions{gap:var(--control-gap)}
+.layout>main>.panel>.row{flex-wrap:wrap}
+.layout>main>.panel>.row>div{min-width:0}
+/* Inventory keeps its list scroll; the outer owner panel and details follow main. */
+.layout>main>.page-owner-panel:has(.gear-management-panel){flex:0 0 auto;overflow:visible}
+.page-owner-panel:has(.gear-management-panel)>.page-owner-content{flex:none;overflow:visible}
+/* Existing document-flow pages share the same section rhythm. */
+.layout>main:has(>.readability-page){overflow-y:auto;scrollbar-gutter:stable;gap:var(--section-gap)}
 .layout>main>.readability-page{flex:0 0 auto;min-width:0;width:100%;padding-bottom:18px;overflow-wrap:anywhere}
-.readability-page>.heading{margin:0 0 14px;min-height:0;max-height:none;gap:10px}
+.readability-page>.heading{margin:0 0 var(--section-gap);min-height:0;max-height:none;flex-wrap:wrap;gap:var(--control-gap)}
 .readability-page .heading h1{font-size:21px;line-height:1.4}
 .readability-page .heading>div{min-width:0}
 .readability-page .code{white-space:normal;overflow-wrap:anywhere}
@@ -18,14 +32,14 @@
 .worn-single-player .worn-player-equipment{height:auto;overflow:visible;padding:14px 16px}
 .worn-player-equipment>.row{gap:8px 12px;align-items:center;padding-bottom:12px}
 .worn-player-equipment>.row h2{font-size:17px;line-height:1.5}
-.worn-single-player .worn-loadout-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.worn-single-player .worn-loadout-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--section-gap);align-items:start}
 .worn-reading-page .worn-slot-choice{font-size:14px;line-height:1.6;padding:10px}
 .worn-reading-page .worn-slot .small{font-size:13px;line-height:1.6}
-.worn-reading-page .worn-candidate-pane{position:sticky;top:0;padding-left:18px}
-.worn-reading-page .companion-token-panel{margin-top:18px;padding:16px}
+.worn-reading-page .worn-candidate-pane{position:sticky;top:0;padding-left:var(--section-gap)}
+.worn-reading-page .companion-token-panel{margin-top:0;padding:var(--panel-padding)}
 
 /* Explanations and recipes grow with their text and share the page scroll. */
-.boss-reading-page>.panel{height:auto;flex:none;padding:14px 16px;margin:14px 0 18px}
+.boss-reading-page>.panel{height:auto;flex:none;padding:var(--panel-padding);margin:var(--section-gap) 0}
 .boss-reading-page .resource-line{font-size:14px;line-height:1.8}
 .boss-reading-page .boss-class-tabs{margin:0 0 14px;gap:8px}
 .boss-reading-page .difficulty-panel{height:auto;max-height:none;margin:14px 0;padding:12px 16px;overflow:visible}
@@ -37,9 +51,9 @@
 .boss-reading-page .recipe-cost{gap:12px;flex-wrap:wrap;font-size:14px;line-height:1.6;margin:16px 0}
 
 /* Guide panels stay in normal flow, including fully opened disclosures. */
-.guide-reading-page{display:grid;gap:18px}
+.guide-reading-page{display:grid;gap:var(--section-gap)}
 .guide-reading-page>.heading{margin:0}
-.guide-reading-page>.panel{height:auto;flex:none;overflow:visible;padding:18px 20px;margin:0}
+.guide-reading-page>.panel{height:auto;flex:none;overflow:visible;padding:var(--panel-padding);margin:0}
 .guide-reading-page h2{font-size:19px;line-height:1.5;margin:0 0 12px}
 .guide-reading-page h3{font-size:17px;line-height:1.6;margin:18px 0 8px}
 .guide-reading-page p{margin:10px 0;color:#c2ccca}
@@ -71,7 +85,7 @@
 }
 
 /* Character stats, allocation, advancement and mastery share one page scroll. */
-.character-reading-page{display:grid;gap:16px;container-type:inline-size}
+.character-reading-page{display:grid;gap:var(--section-gap);container-type:inline-size}
 .character-reading-page>.heading{margin:0}
 .character-reading-page .page-owner-panel{display:block;height:auto!important;min-height:0!important;overflow:visible;padding:16px}
 .character-reading-page .page-owner-content{overflow:visible;min-height:0;padding-top:12px}

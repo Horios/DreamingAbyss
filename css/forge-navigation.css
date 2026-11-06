@@ -1,9 +1,9 @@
 
 /* Update: inventory forging is now centralized on the forge page. */
 .forge-account-shell{padding:10px 12px;overflow:visible}
-.forge-workbench{display:grid;grid-template-columns:minmax(300px,34%) minmax(0,1fr);gap:10px;height:calc(100dvh - 190px);min-height:360px;max-height:760px;margin-top:8px}
+.forge-workbench{display:grid;grid-template-columns:minmax(280px,var(--master-column)) minmax(0,1fr);gap:var(--card-gap);height:auto;min-height:0;max-height:none;align-items:start;margin-top:var(--card-gap)}
 .forge-gear-pane,.forge-detail-pane{min-height:0;border:1px solid var(--line);background:#141c1f}
-.forge-gear-pane{display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+.forge-gear-pane{height:clamp(280px,55dvh,600px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
 .forge-gear-toolbar{padding:8px 9px;border-bottom:1px solid var(--line);background:#182124}
 .forge-gear-toolbar .row{align-items:center;flex-wrap:wrap}
 .forge-gear-toolbar label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
@@ -19,7 +19,7 @@
 .forge-gear-name .enhanced-name{font-size:13px}
 .forge-gear-meta{grid-column:1/-1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--muted);font-size:10px;line-height:16px}
 .forge-gear-quality{align-self:end;justify-self:end;font-size:10px;white-space:nowrap}
-.forge-detail-pane{min-height:0;max-height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;padding:14px 16px}
+.forge-detail-pane{min-height:0;max-height:none;overflow:visible;overscroll-behavior:contain;scrollbar-gutter:stable;padding:14px 16px}
 .forge-detail-pane .gear-detail-header{margin-bottom:8px}
 .forge-detail-pane .forge-layout{grid-template-columns:minmax(0,1fr);max-height:none;height:auto;overflow:visible;margin-top:8px}
 .forge-detail-pane .forge-preview,.forge-detail-pane .forge-controls{height:auto;max-height:none;overflow:visible}
@@ -27,4 +27,4 @@
 .forge-detail-pane .forge-action{padding:10px 12px}
 .forge-detail-pane .inline-affix-comparison{margin-top:10px}
 .inventory-detail-forge-note{margin:5px 0 0;color:var(--gold);font-size:11px}
-@media(max-width:900px){.forge-workbench{grid-template-columns:1fr;grid-template-rows:250px auto;max-height:none}.forge-gear-pane{height:250px}.forge-detail-pane{min-height:380px}.forge-account-shell{overflow:visible}}
+@media(max-width:900px){.forge-workbench{grid-template-columns:1fr;grid-template-rows:250px auto;max-height:none}.forge-gear-pane{height:250px}.forge-detail-pane{min-height:0}.forge-account-shell{overflow:visible}}
