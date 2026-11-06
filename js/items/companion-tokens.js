@@ -221,11 +221,30 @@
   };
   const tokenChoose=(key,label,options)=>`<label>${label}<select aria-label="信物${label}" onchange="setTokenFilter('${key}',this.value)">${options.map(([v,text])=>`<option value="${esc(String(v))}" ${String(v)===tokenFilter[key]?'selected':''}>${esc(text)}</option>`).join('')}</select></label>`;
   const tokenInput=(key,label,type='number')=>`<label>${label}<input type="${type}" aria-label="信物${label}" value="${esc(tokenFilter[key])}" onchange="setTokenFilter('${key}',this.value)"></label>`;
+  // Backpack token panel: 穿戴 opens the 裝備與信物 page at the chosen companion's token card.
+  // The highlight is re-applied after redraws (render replaces the page DOM) until it expires.
+  let wearTarget=null;
+  // The interaction guard can defer the redraw after a click, so scroll on whichever draw first has the card.
+  function markWearTarget(){
+    if(!wearTarget||Date.now()>wearTarget.until||tab!=='worn'){wearTarget=null;return;}
+    const card=document.querySelector(`.companion-token-panel [data-token-owner="${wearTarget.owner}"]`)||document.querySelector('.companion-token-panel');
+    if(!card)return;card.classList.add('token-wear-target');
+    if(!wearTarget.scrolled){wearTarget.scrolled=true;card.scrollIntoView({block:'start'});card.querySelector('button')?.focus({preventScroll:true});}
+  }
+  // Installed on first use: later modules (team-builds) replace this hook while loading.
+  let wearHooked=false;
+  function hookWearTarget(){if(wearHooked)return;wearHooked=true;const base=globalThis.__EMBERWILD_AFTER_RENDER;globalThis.__EMBERWILD_AFTER_RENDER=function(...args){const out=base?.(...args);markWearTarget();return out;};}
+  globalThis.openTokenWearPage=function(id,ownerKey){
+    if(!M.isToken(findGear(id)))return false;
+    hookWearTarget();wearTarget={owner:Number(ownerKey),until:Date.now()+1600};
+    setTab('worn');markWearTarget();
+    return true;
+  };
   globalThis.selectInventoryToken=id=>{if(!M.isToken(findGear(id)))return false;tokenDetailId=id;tokenRedraw();return true;};
   function tokenInventoryDetail(g){
     if(!g)return '<div class="inventory-detail-empty">選擇左側信物查看詳細說明。</div>';
     const wearer=gearWearer(g.id),targets=party.members.filter(h=>M.canEquip(g,h)&&(!wearer||wearer===h)),can=tokenActionable(g);
-    return `<div class="inventory-detail-pane">${detail(g)}<p class="small">品質：${AFFIX_RANK[g.rar]} · 強化 +${g.plus}${g.locked?' · 已鎖定':''}</p><div class="actions token-detail-actions"><select id="token-detail-owner" aria-label="信物穿戴對象">${targets.map(h=>`<option value="${memberKey(h)}">${esc(characterName(h))}</option>`).join('')}</select><button onclick="equipCompanionToken('${g.id}',Number(document.getElementById('token-detail-owner').value))" ${targets.length&&!wearer?'':'disabled'}>穿戴</button><button onclick="toggleGearLock('${g.id}')">${g.locked?'解除鎖定':'鎖定'}</button><button onclick="sellGear('${g.id}')" ${tokenActionable(g,'sell')?'':'disabled'}>出售 ${equipmentSellPrice(g)} 金幣</button><button class="danger" onclick="salvage('${g.id}')" ${can?'':'disabled'}>分解</button></div>${tokenOwned(g)?'<p class="small">已裝備或隊伍配置使用中的信物不會被批次出售或分解。</p>':''}</div>`;
+    return `<div class="inventory-detail-pane">${detail(g)}<p class="small">品質：${AFFIX_RANK[g.rar]} · 強化 +${g.plus}${g.locked?' · 已鎖定':''}</p><div class="actions token-detail-actions"><select id="token-detail-owner" aria-label="信物穿戴對象">${targets.map(h=>`<option value="${memberKey(h)}">${esc(characterName(h))}</option>`).join('')}</select><button onclick="openTokenWearPage('${g.id}',Number(document.getElementById('token-detail-owner')?.value))" title="前往裝備與信物頁面穿戴">穿戴</button><button onclick="toggleGearLock('${g.id}')">${g.locked?'解除鎖定':'鎖定'}</button><button onclick="sellGear('${g.id}')" ${tokenActionable(g,'sell')?'':'disabled'}>出售 ${equipmentSellPrice(g)} 金幣</button><button class="danger" onclick="salvage('${g.id}')" ${can?'':'disabled'}>分解</button></div>${tokenOwned(g)?'<p class="small">已裝備或隊伍配置使用中的信物不會被批次出售或分解。</p>':''}</div>`;
   }
   function tokenInventory(){
     const rows=tokenRows(),visible=new Set(rows.map(r=>r.g.id)),all=[['all','全部']],fields=equipmentNumericFields();
