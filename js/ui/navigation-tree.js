@@ -94,7 +94,7 @@
       const target=group.pages.find(page=>page.id===lastPage.get(group.id))||group.pages[0];
       return `<button type="button" class="game-menu-item ${activePage?'active':''}" data-nav-group="${esc(group.id)}" data-page="${esc(target.id)}" onclick="${action(target)}" ${activePage?'aria-current="page"':''}><span class="game-nav-label">${groupIcon(group)}${esc(group.label)}</span>${groupBadge(pages)}</button>`;
     }).join('');
-    return `<span class="game-menu-title">遊戲選單</span>${items}<button type="button" class="game-menu-item ${current==='options'?'active':''}" data-nav-group="settings" data-page="options" onclick="setTab('options')" ${current==='options'?'aria-current="page"':''}><span class="game-nav-label">${__EMBERWILD_SKILL_ICONS.svgFor('lucide:settings',[],{size:18})}設定</span></button>`;
+    return `<span class="game-menu-title">遊戲選單</span>${items}`;
   };
   globalThis.gameSubtabsHTML=function(current){
     const group=orderedGroups().find(group=>group.pages.some(page=>active(page,current)));

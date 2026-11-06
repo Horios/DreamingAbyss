@@ -36,7 +36,7 @@ test('top menu has one button per category, is not draggable, and uses designer-
   runtime.run('selectSaveSlot(1);start(0);closeModal()');
   const html=runtime.elements.get('app').innerHTML;
   const groups=[...html.matchAll(/<button type="button" class="game-menu-item[^"]*" data-nav-group="([^"]+)"/g)];
-  assert.deepEqual(groups.map(match=>match[1]),['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life','settings']);
+  assert.deepEqual(groups.map(match=>match[1]),['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life']);
   assert(!html.includes('<details class="game-nav-group'));
   assert(!html.includes('game-nav-drag')&&!html.includes('data-nav-drag')&&!html.includes('draggable="true"'));
   const order=['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life'];assert.deepEqual(json(runtime,'EmberwildNavigation.order'),order);
