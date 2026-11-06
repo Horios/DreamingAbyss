@@ -46,7 +46,7 @@
   if(!frame)return;
   const ctx=frame.context;
   for(const u of units()){
-   const before=frame.vitals.get(u),after={hp:u.hp,shield:shields(u)};frame.vitals.set(u,after);if(!before||ctx.mode==='settlement'||ctx.mode==='quiet')continue;
+   const before=frame.vitals.get(u),after={hp:u.hp,shield:shields(u)};frame.vitals.set(u,after);if(!before||ctx.mode==='settlement')continue;
    const target=id(u);if(!target)continue;
    if(after.shield>before.shield)enqueue('shield',target);
    if(after.shield<before.shield){
@@ -69,6 +69,13 @@
   if(!frame)return fn();
   checkpoint();const current=frame,old=current.context;if(context.mode==='settlement')current.terminalVitals=sample();current.context={...old,...context};
   try{return fn();}finally{if(frame===current){checkpoint();current.context=old;}}
+ }
+ // v0.094: HP written inside quiet() (per-second recovery regeneration) plays no effect. Only the HP baseline of the
+ // open frame moves by the same amount; no checkpoint runs, so earlier pending changes and combat state are untouched.
+ function quiet(fn){
+  if(!frame)return fn();
+  const before=new Map(units().map(u=>[u,u.hp]));
+  try{return fn();}finally{if(frame)for(const [u,hp] of before){const row=frame.vitals.get(u);if(row&&u.hp!==hp)frame.vitals.set(u,{...row,hp:row.hp+(u.hp-hp)});}}
  }
  function begin(){
   pending=null;
@@ -247,7 +254,7 @@
   if(frame&&!frame.events.size&&frame.encounter!==foes&&frame.owner===party){frame.encounter=foes;encounter=foes;frame.initial=sample();frame.vitals=sample();frame.statuses=statuses();}
   return out;
  };
- globalThis.EmberwildBattleEffects={begin,end,scope,result,sync,clear,present,get holdingEncounter(){return !!held&&held.encounter!==foes&&performance.now()<held.until;},get capturing(){return !!frame;},get preference(){return preference;},get pendingEvents(){return pending?[...pending.events.values()].map(e=>({...e})):[];},get activeCount(){return [...activeNodes.values()].reduce((n,m)=>n+m.size,0);}};
+ globalThis.EmberwildBattleEffects={begin,end,scope,quiet,result,sync,clear,present,get holdingEncounter(){return !!held&&held.encounter!==foes&&performance.now()<held.until;},get capturing(){return !!frame;},get preference(){return preference;},get pendingEvents(){return pending?[...pending.events.values()].map(e=>({...e})):[];},get activeCount(){return [...activeNodes.values()].reduce((n,m)=>n+m.size,0);}};
  globalThis.setBattleEffects=function(value){if(!choices.includes(value))return false;preference=value;clear();try{localStorage.setItem(storageKey,value);}catch{toast('特效已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-battle-effects]').forEach(select=>select.value=value);EmberwildBattleSummary.sync({animate:false});return true;};
  globalThis.battleEffectsOptionsView=()=>'<section class="panel option-row"><div><h2>戰鬥特效</h2><p class="small">調整探索圖示與血條區塊動畫；保留目前行動者金框；減少動態效果時自動簡化。</p></div><select data-battle-effects aria-label="戰鬥特效" onchange="setBattleEffects(this.value)">'+choices.map((value,i)=>'<option value="'+value+'" '+(preference===value?'selected':'')+'>'+['完整','簡化','關閉'][i]+'</option>').join('')+'</select></section>';
  const modal=document.getElementById('modal');if(modal)new MutationObserver(()=>{if(modal.open)clear();}).observe(modal,{attributes:true,attributeFilter:['open']});

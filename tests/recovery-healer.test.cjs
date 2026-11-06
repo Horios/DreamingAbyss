@@ -24,11 +24,11 @@ test('a ready regen skill is cast during recovery when the party is below the re
  const ev=JSON.parse(r.run('JSON.stringify(EV)'));assert(ev.some(e=>e==='skill:job3-support0'),JSON.stringify(ev));
  assert.equal(ev.filter(e=>e.startsWith('blocked')).length,0);assert.deepEqual(r.errors,[]);
 });
-// v0.094: the per-second recovery regeneration runs in the battle-effects 'quiet' scope, so it plays no healing effect.
-test('recovery regeneration updates HP inside the quiet battle-effects scope',()=>{
- const r=priest();r.run(`globalThis.MODES=[];{const fx=EmberwildBattleEffects,base=fx.scope;fx.scope=function(c,fn){MODES.push(c.mode);return base.call(this,c,fn);};}
+// v0.094: the per-second recovery regeneration runs inside EmberwildBattleEffects.quiet, so it plays no healing effect.
+test('recovery regeneration updates HP inside EmberwildBattleEffects.quiet',()=>{
+ const r=priest();r.run(`globalThis.QUIET=0;{const fx=EmberwildBattleEffects,base=fx.quiet;fx.quiet=function(fn){QUIET++;return base.call(this,fn);};}
   playerHero().hp=stats(playerHero()).hp*.5;globalThis.HP0=playerHero().hp;`);
  for(let i=0;i<8;i++){r.advance(250);r.run('tick()');}
  assert(r.run('playerHero().hp>HP0'),'HP regenerates during recovery');
- assert(JSON.parse(r.run('JSON.stringify(MODES)')).includes('quiet'));assert.deepEqual(r.errors,[]);
+ assert(r.run('QUIET')>0,'the regeneration ran inside quiet()');assert.deepEqual(r.errors,[]);
 });

@@ -143,9 +143,9 @@
  }
  function clock(at){
   const delta=Math.max(0,at-partyClock);partyClock=at;
-  // v0.094: the per-second recovery regeneration updates HP quietly; it plays no healing effect (that pulsed every second
+  // v0.094: the per-second recovery regeneration updates HP through EmberwildBattleEffects.quiet; it plays no healing effect (that pulsed every second
   // and hid the effect of real regen ticks such as 晨光祝福).
-  if(phase==='recovery'&&delta>0){const regen=()=>{for(const h of heroes())h.hp=Math.min(stats(h).hp,h.hp+stats(h).hp*config().recovery.hpFractionPerSecond*delta);},fx=globalThis.EmberwildBattleEffects;if(fx)fx.scope({mode:'quiet'},regen);else regen();}
+  if(phase==='recovery'&&delta>0){const regen=()=>{for(const h of heroes())h.hp=Math.min(stats(h).hp,h.hp+stats(h).hp*config().recovery.hpFractionPerSecond*delta);},fx=globalThis.EmberwildBattleEffects;if(fx?.quiet)fx.quiet(regen);else regen();}
   for(const h of heroes()){h.healPotionCooldownRemaining=Math.max(0,(h.healPotionCooldownRemaining||0)-delta);h.manaPotionCooldownRemaining=Math.max(0,(h.manaPotionCooldownRemaining||0)-delta);for(const id of Object.keys(h.eventPassiveCooldowns||{}))h.eventPassiveCooldowns[id]=Math.max(0,h.eventPassiveCooldowns[id]-delta);const b=h.imbue;if(b?.remainingTurns){b.remainingTurns=Math.max(0,b.remainingTurns-delta);if(!b.remainingTurns)h.imbue=null;}}
   for(const c of Object.values(__EMBERWILD_CONTROL_TEST_API.states))for(const s of Object.values(c))if(s.secondsUntil!==undefined)s.turns=Math.max(0,s.secondsUntil-at);
  }

@@ -444,6 +444,10 @@
     rows?.set(g,{plus:g.plus,base:g.baseSnapshot,power:g.powerTier,prefix:g.prefixId,suffix:g.suffixId,value});return value;
   }
   globalThis.gearStatBreakdown=gearStatBreakdown;
+  // v0.094: take the base snapshot when a drop enters the bag, as wishing-lake rewards already do. Before, it was taken on
+  // the first stat read (usually a render), so whether a new item carried it depended on presentation timing, and a balance
+  // update before that first read would have changed the stored base of an owned item.
+  {const addBase=addGear;addGear=function(g,...args){const out=addBase.call(this,g,...args);if(g&&!EmberwildTokens.isToken(g)&&state?.bag?.includes(g))gearStatBreakdown(g);return out;};}
   gearBaseStats=function(g){return gearStatBreakdown(g).total;};
 
   function applyIdentityStatEffect(v,e,attackBox){
