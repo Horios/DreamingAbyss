@@ -14,7 +14,7 @@ function harness({badSchema=false,stallMetadata=false,executionFailure=false,sto
   const app=new Node('app'),body=new Node('body'),head=new Node('head'),published={schema:'emberwild-balance-v1',schemaVersion:badSchema?99:1,items:[{cost:1}]};
   const document={getElementById:()=>app,createElement:tag=>new Node(tag),body,head,querySelectorAll:()=>['first.js','second.js','third.js'].map(file=>({getAttribute:()=>file}))};
   const emit=(type,event)=>{for(const fn of listeners.get(type)||[])fn(event);};
-  const ctx=vm.createContext({state:null,party:null,BACKUP_KEY:'emberwild-save-v1-backup',BATTLE_STATS_STORAGE_KEY:'emberwild-battle-statistics-v1',migrateWorldSave:data=>data,navigator:{locks:{request:(_name,callback)=>Promise.resolve().then(callback)}},document,URL,AbortController,Date,Promise,Error,Array,JSON,Map,Set,order:[],applied:[],loaded:[],toasts:[],__EMBERWILD_BOOT_SAVE_RAW:bootSave,
+  const ctx=vm.createContext({state:null,party:null,BACKUP_KEY:'emberwild-save-v1-backup',VERIFIED_KEY:'emberwild-save-v1-verified',BATTLE_STATS_STORAGE_KEY:'emberwild-battle-statistics-v1',migrateWorldSave:data=>data,navigator:{locks:{request:(_name,callback)=>Promise.resolve().then(callback)}},document,URL,AbortController,Date,Promise,Error,Array,JSON,Map,Set,order:[],applied:[],loaded:[],toasts:[],__EMBERWILD_BOOT_SAVE_RAW:bootSave,
     location:{href:'https://emberwild.test/'+(preview?'preview/':''),pathname:preview?'/preview/':'/',reload(){}},
     localStorage:{getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)},
     setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout:id=>timers.delete(id),clearInterval(){},
@@ -126,4 +126,56 @@ test('a missing custom equipment form does not silently substitute the backup',a
   assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,'裝備類型無效：custom');
   assert.equal(h.values.get('emberwild-save-v1'),primary);
   assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
+});
+
+test('a loaded save becomes the cold-boot verified generation without touching primary or backup',async()=>{
+  const primary=JSON.stringify({version:3,members:[{job:2,lv:9}]}),backup=JSON.stringify({version:3,members:[{job:2,lv:8}]});
+  const h=harness({bootSave:primary,storage:{'emberwild-save-v1':primary,'emberwild-save-v1-backup':backup}});
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+  assert.equal(h.ctx.loaded.length,1,'the verified copy is never loaded while the primary is readable');
+  assert.equal(h.values.get('emberwild-save-v1-verified'),primary);
+  assert.equal(h.values.get('emberwild-save-v1'),primary);
+  assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
+  assert.deepEqual([...h.ctx.toasts],[]);
+});
+
+test('primary and backup both unreadable fall back to the verified generation and keep every raw record',async()=>{
+  const primary=JSON.stringify({broken:'primary'}),backup=JSON.stringify({broken:'backup'}),verified=JSON.stringify({version:3,members:[{job:3,lv:12}]});
+  const h=harness({bootSave:primary,loadFailure:row=>!!row.broken,storage:{
+    'emberwild-save-v1':primary,'emberwild-save-v1-backup':backup,'emberwild-save-v1-verified':verified
+  }});
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+  assert.deepEqual(h.ctx.loaded.map(x=>x.broken??'verified'),['primary','backup','verified'],'order: primary, backup, verified');
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_RAW,verified);
+  assert.equal(h.ctx.__EMBERWILD_RECOVERED_BACKUP_SESSION,true,'autosave must not rotate unreadable bytes over the backup');
+  assert.equal(h.ctx.__EMBERWILD_UNREADABLE_PRIMARY_RAW,primary);
+  assert.equal(h.values.get('emberwild-save-v1'),primary);
+  assert.equal(h.values.get('emberwild-save-v1-backup'),backup);
+  assert.equal(h.values.get('emberwild-save-v1-verified'),verified);
+  assert.deepEqual([...h.ctx.toasts],['主要存檔與備份都無法載入，已讀取上次成功開機時的存檔；原始資料保留']);
+});
+
+test('a valid backup still wins over the verified generation and becomes the new verified copy',async()=>{
+  const primary=JSON.stringify({broken:'primary'}),backup=JSON.stringify({version:3,members:[{job:0,lv:4}]}),verified=JSON.stringify({version:3,members:[{job:0,lv:3}]});
+  const h=harness({bootSave:primary,loadFailure:row=>!!row.broken,storage:{
+    'emberwild-save-v1':primary,'emberwild-save-v1-backup':backup,'emberwild-save-v1-verified':verified
+  }});
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.loaded.length,2);
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_RAW,backup);
+  assert.equal(h.values.get('emberwild-save-v1-verified'),backup);
+  assert.deepEqual([...h.ctx.toasts],['主要存檔無法載入，已讀取上一份備份；原始資料保留']);
+});
+
+test('a verified-copy write failure leaves the loaded save and both stored records untouched',async()=>{
+  const primary=JSON.stringify({version:3,members:[{job:1,lv:5}]});
+  const h=harness({bootSave:primary,storage:{'emberwild-save-v1':primary}});
+  const write=h.ctx.localStorage.setItem;h.ctx.localStorage.setItem=(key,value)=>{if(key==='emberwild-save-v1-verified')throw Error('quota');return write(key,value);};
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);
+  assert.equal(h.values.get('emberwild-save-v1'),primary);
+  assert.equal(h.values.has('emberwild-save-v1-verified'),false);
 });

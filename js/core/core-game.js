@@ -92,8 +92,11 @@ const SAVE_SLOT_SESSION_KEY=environmentStorageKey('emberwild-selected-slot-v1'),
 const ACTIVE_SAVE_SLOT=(()=>{try{const slot=Number(sessionStorage.getItem(SAVE_SLOT_SESSION_KEY));return [1,2,3].includes(slot)?slot:1;}catch{return 1;}})();
 const saveKeyForSlot=slot=>environmentStorageKey('emberwild-save-v1'+(slot===1?'':'-slot-'+slot));
 const backupKeyForSlot=slot=>saveKeyForSlot(slot)+'-backup';
+// Third generation: the last bytes that a complete cold boot actually loaded.
+// Autosaves never rotate it, so it survives a bad state saved twice in a row.
+const verifiedKeyForSlot=slot=>saveKeyForSlot(slot)+'-verified';
 const battleStatsKeyForSlot=slot=>environmentStorageKey('emberwild-battle-statistics-v1'+(slot===1?'':'-slot-'+slot));
-const KEY=saveKeyForSlot(ACTIVE_SAVE_SLOT),BACKUP_KEY=backupKeyForSlot(ACTIVE_SAVE_SLOT);let state=null,tab='battle',running=false,enemy=null,round=0,cd={},logs=[],timer=null;let toastTimer;
+const KEY=saveKeyForSlot(ACTIVE_SAVE_SLOT),BACKUP_KEY=backupKeyForSlot(ACTIVE_SAVE_SLOT),VERIFIED_KEY=verifiedKeyForSlot(ACTIVE_SAVE_SLOT);let state=null,tab='battle',running=false,enemy=null,round=0,cd={},logs=[],timer=null;let toastTimer;
 // Do not persist a partially hydrated save while later modules are still loading.
 let saveReady=false;
 let migrateWorldSave=data=>data;
@@ -542,7 +545,7 @@ function acceptImport() {
 }
 function newGame() {
   resetSession();state=null;
-  try{localStorage.removeItem(KEY);localStorage.removeItem(BACKUP_KEY);}catch{toast('瀏覽器無法移除舊存檔，請允許本機儲存');}
+  try{localStorage.removeItem(KEY);localStorage.removeItem(BACKUP_KEY);localStorage.removeItem(VERIFIED_KEY);}catch{toast('瀏覽器無法移除舊存檔，請允許本機儲存');}
   closeModal();$('wallet').textContent='';render();
 }
 function start(job) {
@@ -755,7 +758,7 @@ guideView=function(){return `<section class="panel"><h2>3.0 · 小隊遠征</h2>
 exportSave=function(){if(!state)return toast('請先建立角色');save();const blob=new Blob([JSON.stringify(packParty(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dreaming-abyss-party.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 importSave=async function(ev){const f=ev.target.files[0];ev.target.value='';if(!f)return;try{if(f.size>8e6)throw Error('存檔過大');const migrated=migrateWorldSave(JSON.parse(await f.text())),preview=validateParty(migrated);pendingImport=migrated;running=false;$('modal').innerHTML=`<h2>載入隊伍？</h2><p>${preview.members.map(h=>esc(characterName(h))+' LV'+h.lv).join('、')}</p><p>確認後取代目前全隊進度。</p><button onclick="acceptImport()">確認載入</button><button onclick="closeModal();pendingImport=null">取消</button>`;$('modal').showModal();}catch(e){pendingImport=null;console.warn('手動匯入存檔失敗',e);toast('匯入失敗：'+e.message);}};
 acceptImport=function(){if(!pendingImport)return;const data=pendingImport;try{loadParty(data);closeModal();const stored=save();pendingImport=null;render();toast(stored===false?'存檔已載入，但瀏覽器無法寫入；請先匯出 JSON 備份':'存檔已匯入');}catch(e){pendingImport=null;console.warn('套用匯入存檔失敗',e);toast('匯入失敗：'+e.message);}};
-newGame=function(){resetSession();party=null;state=null;delete globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION;delete globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW;try{localStorage.removeItem(KEY);localStorage.removeItem(BACKUP_KEY);}catch{}closeModal();$('wallet').textContent='';render();};
+newGame=function(){resetSession();party=null;state=null;delete globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION;delete globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW;try{localStorage.removeItem(KEY);localStorage.removeItem(BACKUP_KEY);localStorage.removeItem(VERIFIED_KEY);}catch{}closeModal();$('wallet').textContent='';render();};
 
 
 const partyGearDetail=showGearDetail;
