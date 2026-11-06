@@ -76,3 +76,18 @@ test('Utility dialogs keep one reading scroll and skill catalog names wrap witho
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Deployed preview badge leaves utility buttons reachable at every viewport',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await setup(p);
+ await p.evaluate(()=>document.body.insertAdjacentHTML('afterbegin','<div id="preview-build-banner" style="position:fixed;top:8px;right:8px;z-index:2147483647;padding:6px 10px;border-radius:4px;background:#8b3a2b;color:#fff;font:700 12px/1.2 system-ui,sans-serif;box-shadow:0 1px 4px #0008;">測試版本 v0.098</div>'));
+ for(const [width,height]of sizes){await p.setViewportSize({width,height});
+  const covered=await p.locator('#utilityNavigation>button').evaluateAll(es=>{const a=document.getElementById('preview-build-banner').getBoundingClientRect();return es.filter(e=>{const b=e.getBoundingClientRect();return b.width&&b.height&&b.left<a.right&&b.right>a.left&&b.top<a.bottom&&b.bottom>a.top;}).map(e=>e.textContent);});
+  assert.deepEqual(covered,[],width+' badge covers utility buttons');
+  const b=await p.evaluate(bounds);assert(b.overflow<=1);assert(b.bottom<=b.navTop+1);
+  await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  await p.locator('#utilityButton-save').click();
+ }
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

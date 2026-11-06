@@ -13,3 +13,6 @@ header #utilityNavigation{display:flex;flex-wrap:nowrap;width:100%;gap:3px}heade
 #app .team-plan-panel .team-plan-card>.actions>button,#app .inventory-detail-actions>button,#app .worn-slot .actions>button{flex:1 1 auto;width:auto!important;min-width:0;grid-column:auto!important;padding:4px 3px!important;font-size:11.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #app .gear-management-top .gear-management-toolbar{flex:1 1 100%;justify-content:stretch;gap:6px}#app .gear-management-toolbar button{flex:1 1 0;min-width:0;white-space:nowrap;margin-inline-start:0}
 }
+/* Pages adds a fixed version badge at the top right. Keep desktop utility
+   buttons outside its footprint; phones already place the badge in normal flow. */
+@media(min-width:901px){body.in-game:has(>#preview-build-banner)>header{padding-right:160px}}
