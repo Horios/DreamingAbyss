@@ -58,7 +58,7 @@
       }
       let dealt=0,hit=false;
       for(let n=0;n<(meta.hitCount??1)&&target.hp>0;n++){
-        const amount=raw*(stored>0?1+stored:1),resolution=meta.damageResolution||'standard',beforeShield=Number(target.shield)||0,beforeMorph=globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[target.id]?.polymorph?.shield||0;let d=0;
+        const amount=raw*(stored>0?1+stored:1),resolution=meta.damageResolution||'standard',beforeShield=Number(target.shield)||0,beforeMorph=globalThis.EmberwildControlState?.states?.[target.id]?.polymorph?.shield||0;let d=0;
         if(resolution==='standard'){
           d=isHero(caster)?resolveHit(target,amount,caster,sk.element,Math.random()<profile.critChance,{critDamage:profile.critDamage,defensePenetration:profile.defensePenetration,defenseIgnore:profile.defenseIgnore}):sharedEnemySkillDamage(caster,target,amount,sk.element,sk);
         }else{
@@ -68,7 +68,7 @@
           if(v.lifesteal>0)healing(caster,caster,d*v.lifesteal);
         }
         // A shield-only hit is still a hit; an evaded hit neither damages HP nor consumes shield.
-        hit=hit||d>0||(Number(target.shield)||0)<beforeShield||(globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[target.id]?.polymorph?.shield||0)<beforeMorph;dealt+=d;
+        hit=hit||d>0||(Number(target.shield)||0)<beforeShield||(globalThis.EmberwildControlState?.states?.[target.id]?.polymorph?.shield||0)<beforeMorph;dealt+=d;
       }
       total+=dealt;
       if(hit)attach(caster,target,meta);

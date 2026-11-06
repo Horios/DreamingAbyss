@@ -5,7 +5,7 @@ function battleShieldValue(target){
   if(!target)return 0;
   if(target===state)return Math.max(0,Number(state.shield)||0);
   const own=Math.max(0,Number(target.shield)||0);
-  const polymorph=Math.max(0,Number(globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[target.id]?.polymorph?.shield)||0);
+  const polymorph=Math.max(0,Number(globalThis.EmberwildControlState?.states?.[target.id]?.polymorph?.shield)||0);
   return Math.max(own,polymorph);
 }
 function battleHealthMeter(hp,max,shield=0){

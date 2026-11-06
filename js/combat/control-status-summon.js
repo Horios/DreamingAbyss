@@ -73,7 +73,7 @@
     globalThis.__EMBERWILD_BOOT_SAVE_ERROR=message;
     if(!state){
       state=null;party=null;
-      const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+      const previewBuild=isPreviewBuild();
       if(previewBuild&&message.startsWith('裝備類型無效：'))globalThis.__EMBERWILD_DEFERRED_CUSTOM_FORM_SAVE=true;
       else if(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)toast('存檔未能載入：'+message+'；可匯入備份。');
     }
@@ -337,7 +337,8 @@
   }
 
   globalThis.EmberwildControlCombatState={pack:()=>({states:controlStates,summons:combatSummons}),restore:v=>{controlStates=v?.states||Object.create(null);combatSummons=v?.summons||[];}};
-  globalThis.__EMBERWILD_CONTROL_TEST_API={
+  // Production name for live control/summon state. The historical test name stays an alias of the same object.
+  globalThis.EmberwildControlState=globalThis.__EMBERWILD_CONTROL_TEST_API={
     get states(){return controlStates;},get summons(){return combatSummons;},
     clear(e,kind){const s=stateFor(e?.id,false),key=kind==='tauntRage'?'rage':kind;if(!s?.[key])return false;delete s[key];cleanState(e.id);return true;},
     applyPolymorph,applyFreeze,applyFrost,applyRage,applyFear,isPolymorphed,ensureControlSkills

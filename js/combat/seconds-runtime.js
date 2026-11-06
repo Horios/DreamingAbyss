@@ -46,7 +46,7 @@
   if(phase==='recovery'&&!foes.some(e=>e.hp>0)){if(!recoveryHealer(x)||!['heal','regen'].includes(effect)||!belowRecoveryTarget())return false;return !!S.learned(x,d)&&!__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length;}
   if((t.minTargets||1)>(hero?foes:living()).filter(e=>e.hp>0).length)return false;
   if(t.requiredTargetStatusId&&!statusList().some(s=>s.statusId===t.requiredTargetStatusId&&unit(s.targetKey)?.hp>0&&(hero?foes:living()).some(x=>key(x)===s.targetKey)))return false;
-  if(!hero){const c=__EMBERWILD_CONTROL_TEST_API.states[x.id];if(c?.rage||!living().length)return false;if(effect==='revive')return foes.some(e=>e.hp<=0);if(t.condition==='injured')return foes.some(e=>e.hp>0&&e.hp/e.maxhp<config().healThreshold);if(t.condition==='missingEffect'&&effect==='shield')return x.shield<x.atk*(d.power||0);return true;}
+  if(!hero){const c=EmberwildControlState.states[x.id];if(c?.rage||!living().length)return false;if(effect==='revive')return foes.some(e=>e.hp<=0);if(t.condition==='injured')return foes.some(e=>e.hp>0&&e.hp/e.maxhp<config().healThreshold);if(t.condition==='missingEffect'&&effect==='shield')return x.shield<x.atk*(d.power||0);return true;}
   if(!S.learned(x,d)||__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length)return false;
   if(['revive'].includes(effect))return heroes().some(h=>h.hp<=0);
   if(['heal','regen'].includes(effect)&&t.condition==='injured')return living().some(h=>h.hp/stats(h).hp<config().healThreshold);
@@ -60,7 +60,7 @@
   if(d.statusId&&d.statusTarget==='rankedAllies'&&!d.statusTargetIncludeSelf&&!living().some(h=>h!==x))return false;
   if(d.type==='support'&&['allies','weakest','self'].includes(d.target))return living().length>0;
   if(d.target==='enemies'||(d.maxTargets||1)>1||d.statusTarget==='enemies')return foes.some(e=>e.hp>0);
-  if(['polymorph','freeze','fear','tauntRage'].includes(effect))return singleTargetEnemyPool().some(e=>!__EMBERWILD_CONTROL_TEST_API.states[e.id]?.[effect==='tauntRage'?'rage':effect]);
+  if(['polymorph','freeze','fear','tauntRage'].includes(effect))return singleTargetEnemyPool().some(e=>!EmberwildControlState.states[e.id]?.[effect==='tauntRage'?'rage':effect]);
   return singleTargetEnemyPool().length>0;
  }
  function ensure(){
@@ -109,7 +109,7 @@
  }
  function scheduleControls(t=null){
   if(!engine)return;
-  const states=__EMBERWILD_CONTROL_TEST_API.states;
+  const states=EmberwildControlState.states;
   for(const [actorId,c] of Object.entries(states))for(const kind of ['polymorph','freeze','fear','rage'])if(c[kind]){
    const row=c[kind];if(row.secondsUntil!==undefined)continue;
    const x=unit(actorId),duration=t?((x?.kind==='boss'||x?.kind==='final')&&kind!=='fear'?t.bossDurationSeconds:t.durationSeconds):row.turns*config().actionReferenceSeconds;
@@ -123,7 +123,7 @@
   if(!t)return;
   inst.duration=t.durationSeconds??0;inst.remainingTurns=inst.duration;inst.expiresClock=t.durationSeconds===null?Number.MAX_SAFE_INTEGER:partyClock+t.durationSeconds;inst.seconds=true;
   const duration=remaining??t.durationSeconds;inst.expiresClock=duration===null?Number.MAX_SAFE_INTEGER:partyClock+duration;
-  if(d.control){const kind=d.control.kind==='tauntRage'?'rage':d.control.kind,c=__EMBERWILD_CONTROL_TEST_API.states[inst.targetKey]?.[kind],target=unit(inst.targetKey),boss=['boss','final'].includes(target?.kind),controlDuration=boss&&kind!=='fear'?(t.bossControlDurationSeconds??d.control.bossDuration*config().actionReferenceSeconds):duration;
+  if(d.control){const kind=d.control.kind==='tauntRage'?'rage':d.control.kind,c=EmberwildControlState.states[inst.targetKey]?.[kind],target=unit(inst.targetKey),boss=['boss','final'].includes(target?.kind),controlDuration=boss&&kind!=='fear'?(t.bossControlDurationSeconds??d.control.bossDuration*config().actionReferenceSeconds):duration;
    if(c&&(controlDuration===null||controlDuration>0)){c.secondsStatus=true;c.secondsUntil=controlDuration===null?Number.MAX_SAFE_INTEGER:partyClock+controlDuration;c.turns=controlDuration??Number.MAX_SAFE_INTEGER;c.total=c.turns;addTimer('control:'+inst.targetKey+':'+kind,inst.targetKey,controlDuration,null,{kind:'control',control:kind},kind==='freeze'||kind==='polymorph');}
   }
   if(d.periodic.length||d.modifiers.some(m=>m.kind==='regen'))addTimer('dot:'+inst.id,inst.targetKey,duration,t.periodicIntervalSeconds,{kind:'statusDot',id:inst.id});
@@ -132,10 +132,10 @@
  }
  function cleanTimers(){
   if(!engine)return;
-  for(const [id,states] of Object.entries(__EMBERWILD_CONTROL_TEST_API.states))for(const [kind,c] of Object.entries(states))if(c.secondsStatus&&!statusList().some(s=>s.targetKey===id&&s.expiresClock>partyClock&&(s.definition.control?.kind===kind||s.definition.control?.kind==='tauntRage'&&kind==='rage')))__EMBERWILD_CONTROL_TEST_API.clear(unit(id),kind);
+  for(const [id,states] of Object.entries(EmberwildControlState.states))for(const [kind,c] of Object.entries(states))if(c.secondsStatus&&!statusList().some(s=>s.targetKey===id&&s.expiresClock>partyClock&&(s.definition.control?.kind===kind||s.definition.control?.kind==='tauntRage'&&kind==='rage')))EmberwildControlState.clear(unit(id),kind);
   const ids=new Set(statusList().map(s=>s.id)),fx=new Set(effects.map(s=>s.secondsId));
   engine.statuses=engine.statuses.filter(s=>{
-   const p=s.payload;if(p?.kind==='control')return !!__EMBERWILD_CONTROL_TEST_API.states[s.actorId]?.[p.control];
+   const p=s.payload;if(p?.kind==='control')return !!EmberwildControlState.states[s.actorId]?.[p.control];
    if(p?.kind==='effect')return fx.has(p.id);
    if(p?.id&&p.kind.startsWith('status'))return ids.has(p.id);
    return true;
@@ -147,12 +147,12 @@
   // and hid the effect of real regen ticks such as 晨光祝福).
   if(phase==='recovery'&&delta>0){const regen=()=>{for(const h of heroes())h.hp=Math.min(stats(h).hp,h.hp+stats(h).hp*config().recovery.hpFractionPerSecond*delta);},fx=globalThis.EmberwildBattleEffects;if(fx?.quiet)fx.quiet(regen);else regen();}
   for(const h of heroes()){h.healPotionCooldownRemaining=Math.max(0,(h.healPotionCooldownRemaining||0)-delta);h.manaPotionCooldownRemaining=Math.max(0,(h.manaPotionCooldownRemaining||0)-delta);for(const id of Object.keys(h.eventPassiveCooldowns||{}))h.eventPassiveCooldowns[id]=Math.max(0,h.eventPassiveCooldowns[id]-delta);const b=h.imbue;if(b?.remainingTurns){b.remainingTurns=Math.max(0,b.remainingTurns-delta);if(!b.remainingTurns)h.imbue=null;}}
-  for(const c of Object.values(__EMBERWILD_CONTROL_TEST_API.states))for(const s of Object.values(c))if(s.secondsUntil!==undefined)s.turns=Math.max(0,s.secondsUntil-at);
+  for(const c of Object.values(EmberwildControlState.states))for(const s of Object.values(c))if(s.secondsUntil!==undefined)s.turns=Math.max(0,s.secondsUntil-at);
  }
  function periodic(event){
   const p=event.payload,x=unit(event.actorId);if(!p)return;
   if(event.type==='statusExpire'){
-   if(p.kind==='supply')automaticSupplies();else if(p.kind==='control')__EMBERWILD_CONTROL_TEST_API.clear(x,p.control);
+   if(p.kind==='supply')automaticSupplies();else if(p.kind==='control')EmberwildControlState.clear(x,p.control);
    else if(p.kind==='effect')effects=effects.filter(f=>f.secondsId!==p.id);
    else if(p.kind==='statusExpiry')EmberwildStatusCombatState.seconds.replaceInstances(statusList().filter(s=>s.id!==p.id));
    return;
@@ -176,7 +176,7 @@
   let ok;
   try{
    if(Object.hasOwn(x,'job'))ok=d.type==='support'?castSupport(x,d.adapter.index):castPartySkill(x,d.adapter.index,battleStats(x));
-   else{const shared=sharedSkillById(d.id),old=x.atk,c=__EMBERWILD_CONTROL_TEST_API.states[x.id];x.atk*=1-(c?.fear?.damageReduction||0);try{ok=EmberwildCombatEvents.action(x,()=>castEnemySharedSkill(x,shared));}finally{x.atk=old;}EmberwildCombatEvents.endTurn(x,ok!==false);}
+   else{const shared=sharedSkillById(d.id),old=x.atk,c=EmberwildControlState.states[x.id];x.atk*=1-(c?.fear?.damageReduction||0);try{ok=EmberwildCombatEvents.action(x,()=>castEnemySharedSkill(x,shared));}finally{x.atk=old;}EmberwildCombatEvents.endTurn(x,ok!==false);}
   }finally{currentTiming=null;}
   if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now;engine.deferSkill(key(x),s.id,config().minimumActionIntervalSeconds);return false;}
   scheduleEffects(before,t,d);scheduleControls(t);
@@ -215,7 +215,7 @@
   return a.definition.skills.some(s=>{const d=skill(s.id),effect=d?.effect||d?.kind;return ['heal','regen'].includes(effect)&&(a.ready[s.id]||0)<=engine.now&&(a.retryAt?.[s.id]||0)<=engine.now&&engine.mana(a,engine.now)>=engine.mpCost(a,s)&&canUse(view,s)!==false;});
  }
  const handlers={canAct:view=>{const x=unit(view.id);return !!x&&x.hp>0&&living().length>0&&(foes.some(e=>e.hp>0)||recoveryHealer(x)&&recoveryHealReady(view));},canUse,
-  beforeAction(view,skill){const x=unit(view.id);if(!foes.some(e=>e.hp>0))return !!skill&&recoveryHealer(x);if(Object.hasOwn(x,'job'))return true;const f=__EMBERWILD_CONTROL_TEST_API.states[x.id]?.fear;return !f||Math.random()>=f.skipChance;},onEvent:handleEvent};
+  beforeAction(view,skill){const x=unit(view.id);if(!foes.some(e=>e.hp>0))return !!skill&&recoveryHealer(x);if(Object.hasOwn(x,'job'))return true;const f=EmberwildControlState.states[x.id]?.fear;return !f||Math.random()>=f.skipChance;},onEvent:handleEvent};
  function automaticSupplies(){for(const h of living()){
   const max=stats(h).hp,hpNeeded=h.autoPotion&&h.hp/max<=h.autoPotionThresholdPct/100;
   if(hpNeeded&&h.healPotionCooldownRemaining<=0)useAutoHealingPotion(h);
@@ -309,7 +309,7 @@
   if(!party)return;const before=partyClock,oldCds=copy(actorCooldowns),oldSupports=copy(supportCooldowns);partyClock=0;scheduledAt=0;round=0;combatRoundProgress=null;roundIterator=null;restore(null);ensure();syncRoster();
   for(const h of party.members){if(h.imbue&&h.imbue.clock!=='battleSeconds'){h.imbue.remainingTurns*=config().durationReferenceSeconds;h.imbue.totalTurns=(h.imbue.totalTurns||0)*config().durationReferenceSeconds;h.imbue.clock='battleSeconds';}h.healPotionCooldownRemaining=(h.healPotionCooldownRemaining||0)*actorInterval(h);}
   for(const fx of effects){fx.until=Math.max(0,fx.until-before)*config().durationReferenceSeconds;delete fx.secondsId;}
-  for(const c of Object.values(__EMBERWILD_CONTROL_TEST_API.states))for(const row of Object.values(c))delete row.secondsUntil;
+  for(const c of Object.values(EmberwildControlState.states))for(const row of Object.values(c))delete row.secondsUntil;
   for(const inst of statusList()){const left=inst.definition.permanent?null:Math.max(.000001,(inst.expiresClock===Number.MAX_SAFE_INTEGER?inst.remainingTurns:inst.expiresClock-before)*config().durationReferenceSeconds);inst.appliedClock=0;delete inst.seconds;scheduleStatus(inst,left);}
   scheduleEffects(new Set(),null,null);scheduleControls();
   for(const h of heroes()){const a=engine.find(key(h));for(const s of a.definition.skills){const d=skill(s.id),old=(d.type==='support'?oldSupports:oldCds)[memberKey(h)+'-'+d.adapter.index]||0;a.ready[s.id]=Math.round(old*actorInterval(h)*1e6);}}
