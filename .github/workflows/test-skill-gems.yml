@@ -29,6 +29,13 @@ jobs:
           - group: combat
             tests: >-
               tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/seconds-encounter-cooldowns.test.cjs tests/skill-new-badge.test.cjs tests/mailbox-actions.test.cjs tests/continuous-exploration.test.cjs tests/recovery-healing.test.cjs
+          # v0.110: files that ran in no CI job; each passed locally without the private balance editor.
+          - group: ui-and-catalogue
+            tests: >-
+              tests/battle-journal-scroll.test.cjs tests/battle-summary.test.cjs tests/navigation-tree.test.cjs tests/utility-navigation.test.cjs tests/item-display-mode.test.cjs tests/inventory-icons.test.cjs tests/inventory-supplies.test.cjs tests/icon-canvas-tools.test.cjs tests/icon-color-palette.test.cjs tests/skill-fallback-icons.test.cjs tests/text-rarity-runtime.test.cjs tests/global-item-catalogue.test.cjs tests/balance-diff.test.cjs tests/balance-document.test.cjs
+          - group: progression-and-teams
+            tests: >-
+              tests/shared-levels.test.cjs tests/skill-board.test.cjs tests/skill-induction.test.cjs tests/skill-system-combat.test.cjs tests/team-plan-management.test.cjs tests/companion-token-management.test.cjs tests/boss-class-crafting.test.cjs tests/equipment-socket-scroll.test.cjs tests/forge-quality-performance.test.cjs tests/starter-mail-items.test.cjs tests/wishing-lake.test.cjs tests/override-guard.test.cjs
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -47,7 +54,7 @@ jobs:
         include:
           - group: receipts-and-compatibility
             tests: >-
-              tests/boot-save-notices.test.cjs tests/published-loader.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs
+              tests/boot-save-notices.test.cjs tests/published-loader.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs tests/team-save-compatibility.test.cjs tests/legacy-save-corpus.test.cjs
           - group: offline-simulation
             tests: >-
               tests/offline-exploration.test.cjs
@@ -84,7 +91,7 @@ jobs:
       - name: Verify actual browser boot and mobile navigation
         env:
           EMBERWILD_PACE_REALTIME: '1'
-        run: node --test --test-concurrency=1 tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
+        run: node --test --test-concurrency=1 tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
 
       - name: Capture baseline and current UI review
         if: contains(github.event.head_commit.message, '[ui-review]')
