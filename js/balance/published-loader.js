@@ -86,7 +86,12 @@
       const backup=localStorage.getItem(BACKUP_KEY);
       if(backup&&!candidates.some(x=>x.raw===backup))candidates.push({raw:backup,label:'備份存檔'});
     }catch(error){console.warn('讀取備份存檔失敗',error);}
-    let recoveredBackup=false,firstError=null;
+    // Last resort only: tried after primary and backup, so existing recovery order is unchanged.
+    try{
+      const verified=localStorage.getItem(VERIFIED_KEY);
+      if(verified&&!candidates.some(x=>x.raw===verified))candidates.push({raw:verified,label:'開機驗證存檔'});
+    }catch(error){console.warn('讀取開機驗證存檔失敗',error);}
+    let recoveredBackup=false,recoveredVerified=false,firstError=null;
     for(const candidate of candidates){
       try{
         const parsed=JSON.parse(candidate.raw);
@@ -102,7 +107,10 @@
         globalThis.__EMBERWILD_BOOT_SAVE_RAW=candidate.raw;
         globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;
         recoveredBackup=candidate.label==='備份存檔';
-        if(recoveredBackup){
+        recoveredVerified=candidate.label==='開機驗證存檔';
+        // These bytes passed every installed validator; keep them as the cold-boot generation.
+        if(!recoveredVerified){try{if(localStorage.getItem(VERIFIED_KEY)!==candidate.raw)localStorage.setItem(VERIFIED_KEY,candidate.raw);}catch(error){console.warn('無法保存開機驗證存檔，主要存檔與備份不受影響',error);}}
+        if(recoveredBackup||recoveredVerified){
           // Keep this known-good backup until the next cold start validates
           // the newly written primary, not just through one autosave.
           globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION=true;
@@ -129,6 +137,7 @@
     const resetBase=resetBalanceJSON;resetBalanceJSON=()=>{const result=resetBase();if(result!==false){globalThis.__EMBERWILD_BALANCE_SOURCE=published;localStorage.removeItem(key);localStorage.removeItem(key+'-published-base');toast('已恢復目前發布版本的平衡資料');}return result;};
     globalThis.__EMBERWILD_BALANCE_READY=true;
     if(recoveredBackup)toast('主要存檔無法載入，已讀取上一份備份；原始資料保留');
+    else if(recoveredVerified)toast('主要存檔與備份都無法載入，已讀取上次成功開機時的存檔；原始資料保留');
     guard.remove();panel.remove();window.emberwildBootComplete=true;app.style.visibility='';window.dispatchEvent(new Event('emberwild-balance-ready'));
   }catch(e){
     if(typeof timer!=='undefined')clearInterval(timer);

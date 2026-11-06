@@ -12,7 +12,7 @@
   }
 
   function slotSnapshot(slot){
-    try{return {primary:localStorage.getItem(saveKeyForSlot(slot)),backup:localStorage.getItem(backupKeyForSlot(slot))};}
+    try{return {primary:localStorage.getItem(saveKeyForSlot(slot)),backup:localStorage.getItem(backupKeyForSlot(slot)),verified:localStorage.getItem(verifiedKeyForSlot(slot))};}
     catch(e){console.warn('無法檢查本地存檔',e);return null;}
   }
   function tryLateHydrateActiveSave(){
@@ -40,11 +40,11 @@
       }else toast('測試設定已套用，但存檔仍無法載入：'+globalThis.__EMBERWILD_BOOT_SAVE_ERROR);
     }
   };
-  function hasSave(snapshot){return snapshot.primary!==null||snapshot.backup!==null;}
+  function hasSave(snapshot){return snapshot.primary!==null||snapshot.backup!==null||(snapshot.verified??null)!==null;}
   function slotInfo(snapshot,slot){
     if(!snapshot||!hasSave(snapshot))return null;
     if(slot===ACTIVE_SAVE_SLOT&&state&&party)return party;
-    for(const raw of [snapshot.primary,snapshot.backup]){
+    for(const raw of [snapshot.primary,snapshot.backup,snapshot.verified??null]){
       if(raw===null)continue;
       try{
         const data=JSON.parse(raw),members=data?.version===3?data.members:[1,2].includes(data?.version)?[data]:null;
@@ -154,13 +154,13 @@
     showCharacterSelection(current);
   };
   function rawDownloadButtons(slot,snapshot){
-    return ['primary','backup'].filter(which=>snapshot[which]!==null).map(which=>{
+    return ['primary','backup','verified'].filter(which=>(snapshot[which]??null)!==null).map(which=>{
       let validJSON=false;try{JSON.parse(snapshot[which]);validJSON=true;}catch{}
-      return `<button onclick="downloadRawLocalSave('${which}',${slot})">${validJSON?'匯出':'下載'}${which==='primary'?'主':'備份'}存檔${validJSON?' JSON':'原始文字'}</button>`;
+      return `<button onclick="downloadRawLocalSave('${which}',${slot})">${validJSON?'匯出':'下載'}${which==='primary'?'主':which==='backup'?'備份':'開機驗證'}存檔${validJSON?' JSON':'原始文字'}</button>`;
     }).join('');
   }
   window.downloadRawLocalSave=function(which,slot=ACTIVE_SAVE_SLOT){
-    if(![1,2,3].includes(slot)||!['primary','backup'].includes(which))return;
+    if(![1,2,3].includes(slot)||!['primary','backup','verified'].includes(which))return;
     const snapshot=slotSnapshot(slot),raw=snapshot?.[which];
     if(raw===null||raw===undefined){toast('這份本地存檔已不存在');return;}
     let validJSON=false;try{JSON.parse(raw);validJSON=true;}catch{}
@@ -193,7 +193,7 @@
     const snapshot=slotSnapshot(slot);
     if(!snapshot||!hasSave(snapshot))return;
     pendingDelete={slot,snapshot};
-    $('modal').innerHTML=`<h2>刪除存檔欄位 ${slot}？</h2><p>此操作會刪除該欄位的主存檔、備份存檔及戰鬥統計。建議先匯出備份。</p><div class="actions">${rawDownloadButtons(slot,snapshot)}<button class="danger" onclick="confirmDeleteSlotStep()">繼續刪除</button><button onclick="closeModal()">取消</button></div>`;
+    $('modal').innerHTML=`<h2>刪除存檔欄位 ${slot}？</h2><p>此操作會刪除該欄位的主存檔、備份存檔、開機驗證存檔及戰鬥統計。建議先匯出備份。</p><div class="actions">${rawDownloadButtons(slot,snapshot)}<button class="danger" onclick="confirmDeleteSlotStep()">繼續刪除</button><button onclick="closeModal()">取消</button></div>`;
     $('modal').showModal();
   };
   window.confirmDeleteSlotStep=function(){
@@ -204,12 +204,12 @@
   window.deleteSaveSlot=function(){
     if(!pendingDelete)return;
     const {slot,snapshot}=pendingDelete,current=slotSnapshot(slot);
-    if(!current||current.primary!==snapshot.primary||current.backup!==snapshot.backup){
+    if(!current||current.primary!==snapshot.primary||current.backup!==snapshot.backup||current.verified!==snapshot.verified){
       pendingDelete=null;closeModal();toast('存檔已變動，請重新確認刪除');render();return;
     }
     try{
       if(slot===ACTIVE_SAVE_SLOT){newGame();globalThis.__EMBERWILD_BOOT_SAVE_RAW=null;}
-      else{localStorage.removeItem(saveKeyForSlot(slot));localStorage.removeItem(backupKeyForSlot(slot));localStorage.removeItem(battleStatsKeyForSlot(slot));localStorage.removeItem(playTimeKey(slot));}
+      else{localStorage.removeItem(saveKeyForSlot(slot));localStorage.removeItem(backupKeyForSlot(slot));localStorage.removeItem(verifiedKeyForSlot(slot));localStorage.removeItem(battleStatsKeyForSlot(slot));localStorage.removeItem(playTimeKey(slot));}
     }catch(e){console.warn('刪除存檔失敗',e);toast('刪除失敗，請檢查瀏覽器儲存權限');return;}
     pendingDelete=null;closeModal();render();toast('欄位 '+slot+' 已刪除');
   };
