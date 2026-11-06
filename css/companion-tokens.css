@@ -1,3 +1,23 @@
-.token-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin:12px 0;max-height:none}.token-slot .actions{margin-top:12px}.token-special{color:var(--gold);line-height:1.6}.token-grid .card{padding:16px;min-width:0}.token-grid select{max-width:100%}#modal .token-grid{max-height:65vh;overflow:auto}
-.companion-management-page{flex:1;min-height:0;overflow:auto;scrollbar-gutter:stable}.companion-token-panel{margin-top:12px}.worn-token-page>.worn-overview{height:clamp(400px,60vh,560px);flex:none}.companion-management-page>.roster-page{height:auto;overflow:visible}.companion-management-page>.page-owner-panel{height:auto!important;overflow:visible}.companion-management-page .player-character-layout{height:auto;overflow:visible}
+.token-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin:12px 0;max-height:none}.token-slot .actions{margin-top:12px}.token-special{color:var(--gold);line-height:1.6}.token-grid .card{padding:16px;min-width:0}.token-grid select{max-width:100%}#modal .token-grid{max-height:none;overflow:visible}
+.token-dialog-header{position:sticky;top:-16px;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);padding:10px 0;border-bottom:1px solid var(--line)}.token-dialog-header h2{margin:0}.token-identity{flex-wrap:wrap}.token-dialog-header button{flex:none}
+.companion-management-page{display:grid;align-content:start;gap:var(--section-gap);flex:0 0 auto;min-width:0;min-height:0;overflow:visible}.companion-token-panel{margin-top:12px}.worn-token-page>.worn-overview{height:clamp(400px,60vh,560px);flex:none}.companion-management-page>.roster-page{height:auto;overflow:visible}.companion-management-page>.page-owner-panel{height:auto!important;overflow:visible}.companion-management-page .player-character-layout{height:auto;overflow:visible}
 @media(max-width:780px){.worn-token-page>.worn-overview{height:620px;grid-template-rows:130px minmax(0,1fr)}}
+
+.token-identity{display:flex;align-items:center;gap:10px;min-width:0}
+.token-inventory-toolbar{justify-content:space-between;align-items:center;margin:8px 0}
+.token-inventory-toolbar label{display:flex;align-items:center;gap:6px;font-size:12px}
+/* Token bag: three compact columns with a persistent detail pane. */
+.token-inventory-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:16px;align-items:start;margin-top:12px}
+.token-inventory-master,.token-inventory-detail{min-width:0}.token-inventory-detail{position:sticky;top:0;border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--panel)}
+.token-inventory-detail .inventory-detail-pane{padding:0}.token-detail-actions{display:flex;flex-wrap:wrap;gap:8px}.token-detail-actions select{width:100%;min-width:0}
+.token-management-panel .token-inventory-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-items:stretch;gap:8px;margin:0}
+.token-management-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px;min-width:0;padding:6px;border:1px solid var(--line);border-radius:6px}
+.token-management-row>.token-inventory-row.item-slot{display:flex;flex-direction:column;justify-content:center;gap:6px;flex:1 1 100%;width:100%;max-width:100%;min-width:0;height:auto;min-height:100px;padding:8px;text-align:center;overflow-wrap:anywhere;white-space:normal}
+.token-management-row .item-slot-name{white-space:normal;overflow-wrap:anywhere;overflow:visible}.token-management-row .token-job-tag,.token-management-row .token-wearer{display:block;margin:3px 0 0}
+.token-management-row>.gear-lock{flex:none;min-width:0;margin-left:auto;font-size:11px;padding:4px}.token-management-row>.gear-selection{min-width:28px;min-height:32px}
+.token-management-panel .gear-batch-controls{position:sticky;top:0;z-index:1;background:var(--panel)}
+@media(max-width:1000px){.token-inventory-layout{grid-template-columns:minmax(0,1fr)}.token-inventory-detail{position:static}}
+@media(max-width:480px){.token-inventory-list{gap:5px}.token-management-row{padding:3px}.token-management-row>.token-inventory-row.item-slot{padding:5px;font-size:11px}.token-inventory-detail{padding:12px}}
+
+/* v0.111: brief highlight when the backpack 穿戴 button opens this card. */
+.token-slot.token-wear-target{outline:2px solid var(--gold);outline-offset:2px}

@@ -12,7 +12,7 @@
   }
 
   function slotSnapshot(slot){
-    try{return {primary:localStorage.getItem(saveKeyForSlot(slot)),backup:localStorage.getItem(backupKeyForSlot(slot))};}
+    try{return {primary:localStorage.getItem(saveKeyForSlot(slot)),backup:localStorage.getItem(backupKeyForSlot(slot)),verified:localStorage.getItem(verifiedKeyForSlot(slot))};}
     catch(e){console.warn('無法檢查本地存檔',e);return null;}
   }
   function tryLateHydrateActiveSave(){
@@ -40,11 +40,11 @@
       }else toast('測試設定已套用，但存檔仍無法載入：'+globalThis.__EMBERWILD_BOOT_SAVE_ERROR);
     }
   };
-  function hasSave(snapshot){return snapshot.primary!==null||snapshot.backup!==null;}
+  function hasSave(snapshot){return snapshot.primary!==null||snapshot.backup!==null||(snapshot.verified??null)!==null;}
   function slotInfo(snapshot,slot){
     if(!snapshot||!hasSave(snapshot))return null;
     if(slot===ACTIVE_SAVE_SLOT&&state&&party)return party;
-    for(const raw of [snapshot.primary,snapshot.backup]){
+    for(const raw of [snapshot.primary,snapshot.backup,snapshot.verified??null]){
       if(raw===null)continue;
       try{
         const data=JSON.parse(raw),members=data?.version===3?data.members:[1,2].includes(data?.version)?[data]:null;
@@ -64,11 +64,11 @@
     return `<div class="save-slot"><button class="save-slot-select" onclick="selectSaveSlot(${slot})" ${snapshot?'':'disabled'}><strong>存檔欄位 ${slot}</strong><span>${details}</span></button><button class="danger save-slot-delete" onclick="requestDeleteSlot(${slot})" ${occupied?'':'disabled'} aria-label="刪除存檔欄位 ${slot}">刪除存檔</button></div>`;
   }
   function titleView(){
-    const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+    const previewBuild=isPreviewBuild();
     const missingTestForm=previewBuild&&!state&&String(globalThis.__EMBERWILD_BOOT_SAVE_ERROR||'').startsWith('裝備類型無效：');
     const testImport=missingTestForm?`<div class="title-actions"><button type="button" onclick="document.getElementById('title-test-json-import')?.click()">匯入測試 JSON</button><input id="title-test-json-import" type="file" accept=".json,application/json" onchange="importTestJSONFromTitle(event)" hidden></div><p class="small">只套用測試設定，不會匯入角色存檔。</p>${missingTestForm?'<p class="small">目前存檔使用測試 JSON 中的自訂裝備類型。請先匯入建立該存檔時使用的測試 JSON；原存檔仍保留，不會被覆寫。</p>':''}`:'';
     $('wallet').textContent='';
-    $('app').innerHTML=`<section class="title-screen"><div class="title-screen-card"><span class="eyebrow">${esc(resolveUIText(UI_TEXT.gameSubtitle))}</span><h1>${esc(resolveUIText(UI_TEXT.gameTitle))}</h1><p>${esc(resolveUIText(UI_TEXT.homeTitle))}</p><div class="save-slots">${[1,2,3].map(slotRow).join('')}</div><p class="small">${IS_PREVIEW?'預覽版首次複製既有存檔，之後獨立保存；正式版進度保留。':'舊存檔保留在欄位 1。遊玩時間從本次更新後開始累計。'}</p>${testImport}</div></section>`;
+    $('app').innerHTML=`<section class="title-screen"><div class="title-screen-card"><span class="eyebrow">${esc(resolveUIText(UI_TEXT.gameSubtitle))}</span><h1>${esc(resolveUIText(UI_TEXT.gameTitle))}</h1><div class="save-slots">${[1,2,3].map(slotRow).join('')}</div><p class="small">${IS_PREVIEW?'預覽版首次複製既有存檔，之後獨立保存；正式版進度保留。':'舊存檔保留在欄位 1。遊玩時間從本次更新後開始累計。'}</p>${testImport}</div></section>`;
     applyUITextDOM();
   }
   render=function(){
@@ -154,24 +154,24 @@
     showCharacterSelection(current);
   };
   function rawDownloadButtons(slot,snapshot){
-    return ['primary','backup'].filter(which=>snapshot[which]!==null).map(which=>{
+    return ['primary','backup','verified'].filter(which=>(snapshot[which]??null)!==null).map(which=>{
       let validJSON=false;try{JSON.parse(snapshot[which]);validJSON=true;}catch{}
-      return `<button onclick="downloadRawLocalSave('${which}',${slot})">${validJSON?'匯出':'下載'}${which==='primary'?'主':'備份'}存檔${validJSON?' JSON':'原始文字'}</button>`;
+      return `<button onclick="downloadRawLocalSave('${which}',${slot})">${validJSON?'匯出':'下載'}${which==='primary'?'主':which==='backup'?'備份':'開機驗證'}存檔${validJSON?' JSON':'原始文字'}</button>`;
     }).join('');
   }
   window.downloadRawLocalSave=function(which,slot=ACTIVE_SAVE_SLOT){
-    if(![1,2,3].includes(slot)||!['primary','backup'].includes(which))return;
+    if(![1,2,3].includes(slot)||!['primary','backup','verified'].includes(which))return;
     const snapshot=slotSnapshot(slot),raw=snapshot?.[which];
     if(raw===null||raw===undefined){toast('這份本地存檔已不存在');return;}
     let validJSON=false;try{JSON.parse(raw);validJSON=true;}catch{}
     const link=document.createElement('a');
     link.href=URL.createObjectURL(new Blob([raw],{type:validJSON?'application/json':'text/plain;charset=utf-8'}));
-    link.download=`emberwild-slot-${slot}-${which}-raw-${new Date().toISOString().slice(0,10)}.${validJSON?'json':'txt'}`;
+    link.download=`dreaming-abyss-slot-${slot}-${which}-raw-${new Date().toISOString().slice(0,10)}.${validJSON?'json':'txt'}`;
     link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);
   };
   function showLoadFailure(slot){
     const snapshot=slotSnapshot(slot),reason=globalThis.__EMBERWILD_BOOT_SAVE_ERROR;
-    const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+    const previewBuild=isPreviewBuild();
     const missingTestForm=previewBuild&&String(reason||'').startsWith('裝備類型無效：');
     const help=missingTestForm?'這份存檔使用目前尚未載入的測試裝備類型。原始存檔仍保留，請先匯入建立這份存檔時使用的測試 JSON；匯入成功後會自動重新讀取。':'原始資料仍保留在瀏覽器。若能匯出 JSON，可以先下載備份，再從 JSON 匯入重試。若資料不是合法 JSON，請下載原始文字留存；它無法直接匯入。';
     const retry=missingTestForm?'<button class="primary" onclick="closeModal();document.getElementById(\'title-test-json-import\')?.click()">匯入測試 JSON 後重試</button>':'<button class="primary" onclick="retryImportFromTitle()">匯入存檔 JSON 重試</button>';
@@ -193,7 +193,7 @@
     const snapshot=slotSnapshot(slot);
     if(!snapshot||!hasSave(snapshot))return;
     pendingDelete={slot,snapshot};
-    $('modal').innerHTML=`<h2>刪除存檔欄位 ${slot}？</h2><p>此操作會刪除該欄位的主存檔、備份存檔及戰鬥統計。建議先匯出備份。</p><div class="actions">${rawDownloadButtons(slot,snapshot)}<button class="danger" onclick="confirmDeleteSlotStep()">繼續刪除</button><button onclick="closeModal()">取消</button></div>`;
+    $('modal').innerHTML=`<h2>刪除存檔欄位 ${slot}？</h2><p>此操作會刪除該欄位的主存檔、備份存檔、開機驗證存檔及戰鬥統計。建議先匯出備份。</p><div class="actions">${rawDownloadButtons(slot,snapshot)}<button class="danger" onclick="confirmDeleteSlotStep()">繼續刪除</button><button onclick="closeModal()">取消</button></div>`;
     $('modal').showModal();
   };
   window.confirmDeleteSlotStep=function(){
@@ -204,12 +204,12 @@
   window.deleteSaveSlot=function(){
     if(!pendingDelete)return;
     const {slot,snapshot}=pendingDelete,current=slotSnapshot(slot);
-    if(!current||current.primary!==snapshot.primary||current.backup!==snapshot.backup){
+    if(!current||current.primary!==snapshot.primary||current.backup!==snapshot.backup||current.verified!==snapshot.verified){
       pendingDelete=null;closeModal();toast('存檔已變動，請重新確認刪除');render();return;
     }
     try{
       if(slot===ACTIVE_SAVE_SLOT){newGame();globalThis.__EMBERWILD_BOOT_SAVE_RAW=null;}
-      else{localStorage.removeItem(saveKeyForSlot(slot));localStorage.removeItem(backupKeyForSlot(slot));localStorage.removeItem(battleStatsKeyForSlot(slot));localStorage.removeItem(playTimeKey(slot));}
+      else{localStorage.removeItem(saveKeyForSlot(slot));localStorage.removeItem(backupKeyForSlot(slot));localStorage.removeItem(verifiedKeyForSlot(slot));localStorage.removeItem(battleStatsKeyForSlot(slot));localStorage.removeItem(playTimeKey(slot));}
     }catch(e){console.warn('刪除存檔失敗',e);toast('刪除失敗，請檢查瀏覽器儲存權限');return;}
     pendingDelete=null;closeModal();render();toast('欄位 '+slot+' 已刪除');
   };
@@ -225,6 +225,9 @@
     }else if(intent==='create:'+ACTIVE_SAVE_SLOT)openCharacterCreation();
     $('app').style.visibility='';
   };
-  if(document.readyState==='loading')window.addEventListener('DOMContentLoaded',finishTitleBoot,{once:true});
+  // Never try to resume a published save while the loader is still installing validators.
+  if(globalThis.__EMBERWILD_BALANCE_SOURCE&&!globalThis.__EMBERWILD_BALANCE_READY)
+    window.addEventListener('emberwild-balance-ready',finishTitleBoot,{once:true});
+  else if(document.readyState==='loading')window.addEventListener('DOMContentLoaded',finishTitleBoot,{once:true});
   else setTimeout(finishTitleBoot,0);
 })();

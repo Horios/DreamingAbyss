@@ -20,18 +20,30 @@ permissions:
   id-token: write
 
 concurrency:
-  group: github-pages
-  cancel-in-progress: false
+  group: ${{ github.ref == 'refs/heads/main' && 'github-pages' || 'emberwild-preview-regression' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  verify-preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/chatgpt-dev'
+    uses: ./.github/workflows/test-skill-gems.yml
+
   request-deploy:
+    needs: verify-preview
     if: github.event_name == 'push' && github.ref == 'refs/heads/chatgpt-dev'
     runs-on: ubuntu-latest
     steps:
       - name: Request Pages deployment from main context
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run deploy-preview.yml --ref main --repo "$GITHUB_REPOSITORY" --field preview_commit="$GITHUB_SHA"
+        run: |
+          set -euo pipefail
+          HEAD=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/chatgpt-dev" --jq '.object.sha')
+          if [ "$HEAD" != "$GITHUB_SHA" ]; then
+            echo "A newer preview commit exists; skip dispatching this tested but superseded commit."
+            exit 0
+          fi
+          gh workflow run deploy-preview.yml --ref main --repo "$GITHUB_REPOSITORY" --field preview_commit="$GITHUB_SHA"
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -50,7 +62,7 @@ jobs:
       - name: Checkout preview source
         uses: actions/checkout@v4
         with:
-          ref: chatgpt-dev
+          ref: ${{ github.event.inputs.preview_commit || 'chatgpt-dev' }}
           path: preview-source
           fetch-depth: 1
 

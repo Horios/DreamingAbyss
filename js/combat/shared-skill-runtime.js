@@ -2,16 +2,19 @@
    Monsters keep only skillId references; definitions remain in CLASSES / SKILL_ELEMENTS. */
 (()=>{
   let enemySharedCooldowns=Object.create(null);
+  globalThis.EmberwildEnemyCombatState={pack:()=>enemySharedCooldowns,restore:v=>{enemySharedCooldowns=v||Object.create(null);}};
+
   const BASIC_EFFECTS=new Set(['cleanse','dispel','revive','damage','heal','shield','drain','nextActiveDamage','advanceNextRound','shieldLowest','applyStatus','induceSkill']);
   const idFor=(job,index)=>CLASSES[job]?.skills?.[index]?.[6]?.sharedId||`job${job}-core${index}`;
   function sharedCoreSkillPool(){
+    const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;if(cache?.sharedSkillPool)return cache.sharedSkillPool;
     const out=[];
     for(let job=0;job<CLASSES.length;job++)for(let index=0;index<(CLASSES[job]?.skills?.length||0);index++){
       const sk=CLASSES[job].skills[index],meta=sk?.[6]&&typeof sk[6]==='object'?sk[6]:{};
       const usageScope=['character','monster','elite','boss','shared'].includes(meta.usageScope)?meta.usageScope:'character';
       out.push({id:idFor(job,index),job,index,name:sk[0],activation:sk[1],requiredLevel:sk[2],cooldown:Math.max(0,Math.round(Number(sk[3])||0)),power:Math.max(0,Number(sk[4])||0),effect:sk[5],element:SKILL_ELEMENTS[job]?.[index]||'physical',maxTargets:Math.max(1,Math.floor(Number(meta.maxTargets)||1)),usageScope,meta});
     }
-    return out;
+    if(cache)cache.sharedSkillPool=out;return out;
   }
   globalThis.sharedCoreSkillPool=sharedCoreSkillPool;
   function sharedSkillById(id){return sharedCoreSkillPool().find(x=>x.id===id)||null;}
@@ -45,7 +48,7 @@
   }
   function damageHero(e,h,amount,element,sk){
     const ev=enemyBattleStats(e),hv=battleStats(h),profile=enemySkillProfile(e,sk),c=GAMEPLAY_SETTINGS.combat,formula=c.damageFormula||{},atkCoef=Number.isFinite(formula.attackCoefficient)?formula.attackCoefficient:1,defCoef=Number.isFinite(formula.defenseCoefficient)?formula.defenseCoefficient:(c.defenseEffectiveness??.55),min=Math.max(0,Number.isFinite(formula.minimumDamage)?formula.minimumDamage:1);
-    if(Math.random()<hv.evasion){note(characterName(h)+'閃避了'+combatEnemyName(e)+'的「'+sk.name+'」');return 0;}
+    if(Math.random()<hv.evasion){globalThis.EmberwildBattleEffects?.result('evade',h,e);note(characterName(h)+'閃避了'+combatEnemyName(e)+'的「'+sk.name+'」');return 0;}
     const ignore=Math.min(.95,profile.defenseIgnore),effectiveDef=Math.max(0,hv.def*(1-ignore)-profile.pierce);
     let hit=Math.max(min,amount*atkCoef-effectiveDef*defCoef);
     const crit=Math.random()<profile.critChance;if(crit)hit*=profile.critDamage;
@@ -55,7 +58,7 @@
     hit=Math.max(min,Math.round(hit*(1-resist)));
     const absorb=Math.min(h.shield,hit);h.shield-=absorb;if(absorb>0&&typeof recordCombatContribution==='function')recordCombatContribution(h,'mitigation',absorb);
     const hpDamage=Math.max(0,hit-absorb),before=h.hp;h.hp=Math.max(0,h.hp-hpDamage);
-    const dealt=Math.max(0,before-h.hp);globalThis.EmberwildTokenRuntime?.afterDamage(h,e,before,h.hp);
+    const dealt=Math.max(0,before-h.hp);if(typeof recordCombatContribution==='function')recordCombatContribution(h,'taken',absorb+dealt);if(crit&&dealt>0)globalThis.EmberwildBattleEffects?.result('critical',h,e);globalThis.EmberwildTokenRuntime?.afterDamage(h,e,before,h.hp);
     if(before>0&&h.hp<=0&&typeof recordBattleDeath==='function')recordBattleDeath(h,e,sk.name);
     return dealt;
   }
@@ -97,8 +100,9 @@
   }
   globalThis.castEnemySharedSkill=castEnemySharedSkill;
   function procChance(sk){const m=sk.meta||{},base=Number(m.procBaseChance);return Math.max(0,Math.min(1,Number.isFinite(base)?base:Number(GS('skills.proc.baseChance',.22))||.22));}
-  function enemyControlState(e){return globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[e?.id]||null;}
+  function enemyControlState(e){return globalThis.EmberwildControlState?.states?.[e?.id]||null;}
   globalThis.performSharedEnemyAction=function(e){
+    if(e.__secondsBasic){performEnemyBasic(e);for(const proc of assignments(e).filter(x=>x.activation==='proc'&&BASIC_EFFECTS.has(x.effect)))if(Math.random()<procChance(proc))castEnemySharedSkill(e,proc);return 'attack';}
     const control=enemyControlState(e);
     if(e?.__controlSkip||control?.rage?.turns>0){performEnemyBasic(e);return 'controlled';}
     const sk=activeReady(e);tickCooldowns(e);
@@ -148,7 +152,7 @@
         if(typeof id!=='string'||!id.trim())throw Error('怪物技能引用缺少 skillId：'+(row?.id||'未知怪物'));
         if(seen.has(id))throw Error('怪物技能引用重複：'+(row?.id||'未知怪物')+' → '+id);seen.add(id);
         const sk=skillById.get(id);if(!sk)throw Error('怪物引用不存在的核心技能：'+(row?.id||'未知怪物')+' → '+id);
-        const kind=row?.kind,allowed=sk.usage==='shared'||(kind==='normal'&&(sk.usage==='monster'||sk.usage==='elite'))||((kind==='boss'||kind==='final')&&sk.usage==='boss');
+        const kind=row?.kind,allowed=sk.usage==='shared'||((kind==='normal'||kind==='elite')&&(sk.usage==='elite'||kind==='normal'&&sk.usage==='monster'))||((kind==='boss'||kind==='final')&&sk.usage==='boss');
         if(!allowed)throw Error('怪物技能用途分類不相容：'+(row?.id||'未知怪物')+' → '+sk.name);
         if(!BASIC_EFFECTS.has(sk.effect))throw Error('此核心技能效果目前不支援怪物施放：'+sk.name);
       }

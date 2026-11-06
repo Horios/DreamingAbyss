@@ -24,7 +24,7 @@
       assert(typeof d.name==='string'&&d.name.trim()&&d.name.length<=80&&typeof (d.description??'')==='string'&&(d.description??'').length<=500,'被動名稱或說明無效：'+d.id);
       const kind=d.kind??'buff',target=d.target??'self';
       assert(['buff','debuff'].includes(kind)&&Object.hasOwn(targets,target),'被動分類或目標無效：'+d.id);
-      assert(Array.isArray(d.effects)&&d.effects.length>=1&&d.effects.length<=32,'被動需要 1～32 個效果：'+d.id);
+      assert(Array.isArray(d.effects)&&(d.effects.length>=1||d.eventPassive)&&d.effects.length<=32,'被動需要 1～32 個效果：'+d.id);
       const effects=d.effects.map(e=>{
         assert(e&&Object.hasOwn(labels,e.key)&&Number.isFinite(e.value)&&Math.abs(e.value)<=1e6,'被動效果無效：'+d.id);
         assert(target==='enemies'?enemyKeys.includes(e.key):!enemyKeys.includes(e.key),'被動效果與目標不相容：'+d.id);
@@ -35,7 +35,7 @@
       });
       const requiredLevel=d.requiredLevel??1;assert(Number.isSafeInteger(requiredLevel)&&requiredLevel>=1,'被動解鎖等級無效：'+d.id);
       assert(d.partnerId==null||Number.isInteger(d.partnerId)&&d.partnerId>=10,'被動指定夥伴無效：'+d.id);
-      return {id:d.id,name:d.name.trim(),description:d.description??'',kind,target,effects,requiredLevel,...(d.partnerId!=null?{partnerId:d.partnerId}:{})};
+      return {...(d.eventPassive?{eventPassive:copy(d.eventPassive)}:{}),id:d.id,name:d.name.trim(),description:d.description??'',kind,target,effects,requiredLevel,...(d.partnerId!=null?{partnerId:d.partnerId}:{})};
     });
   }
   function assignments(raw,id){

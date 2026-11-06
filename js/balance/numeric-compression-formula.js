@@ -15,7 +15,7 @@
     if(!s||typeof s!=='object')return s;
     s.meta??={};
     s.meta.numericCompressionVersion=COMPRESSION_VERSION;
-    s.progression??={};s.progression.statsPerLevel??={};s.progression.statsPerPoint??={};s.progression.advance??={};
+    s.progression??={};s.progression.statsPerLevel??={};s.progression.advance??={};
     Object.assign(s.progression.statsPerLevel,{hp:4,attack:1,defense:1});
     s.skills??={};s.skills.core??={};s.skills.gems??={};
     s.skills.core.effectPerExtraLevel=.18;
@@ -125,8 +125,7 @@
   const compressionStatsBase=stats;
   stats=function(h=state){
     const v=compressionStatsBase(h),effects={};let attackPct=0,speed=0;
-    for(const key of ['imbue','ward','elementTonic']){
-      const buff=activeSupply(h,key);if(!buff)continue;
+    for(const key of ['imbue','ward','elementTonic'])for(const buff of activeSupplies(h,key)){
       const src=normalizeStatEffects(buff.statEffects);
       for(const [k,n] of Object.entries(src))effects[k]=(effects[k]||0)+n;
     }
@@ -175,7 +174,7 @@
   resolveHit=function(e,amount,h,element,crit,options={}){
     const v=battleStats(h),formula=GAMEPLAY_SETTINGS.combat.damageFormula||{},attackCoefficient=Number.isFinite(formula.attackCoefficient)?formula.attackCoefficient:1,defenseCoefficient=Number.isFinite(formula.defenseCoefficient)?formula.defenseCoefficient:(GAMEPLAY_SETTINGS.combat.defenseEffectiveness??.55),minimumDamage=Math.max(0,Number.isFinite(formula.minimumDamage)?formula.minimumDamage:1);
     const enemyStats=typeof enemyBattleStats==='function'?enemyBattleStats(e):null;
-    if(enemyStats?.evasion>0&&Math.random()<enemyStats.evasion){note(combatEnemyName(e)+'閃避了'+characterName(h)+'的攻擊');return 0;}
+    if(enemyStats?.evasion>0&&Math.random()<enemyStats.evasion){globalThis.EmberwildBattleEffects?.result('evade',e,h);note(combatEnemyName(e)+'閃避了'+characterName(h)+'的攻擊');return 0;}
     const bossBonus=(e?.kind==='boss'||e?.kind==='final')?(v.bossDamage||0):0;
     const rawAmount=amount*(1+bossBonus),fracture=Math.min(GAMEPLAY_SETTINGS.combat.caps.fracture,effectTotal(e.id,'fracture'));
     const ignore=Math.min(GAME_BALANCE.combat.statCaps.defenseIgnore??.75,Math.max(0,Number.isFinite(options.defenseIgnore)?options.defenseIgnore:(v.defenseIgnore||0)));
@@ -216,13 +215,14 @@
     return success;
   };
 
-  const compressionUseSupplyBase=useSupply;
   useSupply=function(id){
     const item=SHOP.find(x=>x.id===id);if(!item||(state.consumables[id]||0)<1)return;
     const previous=state[item.type],count=state.consumables[id],previousHp=state.hp;let buff;
     if(EmberwildTimedBoosts.isElementalItem(item)){
-      buff=EmberwildTimedBoosts.createElementalBuff({...item,statEffects:normalizeStatEffects(item.statEffects)});
-    }else{const turns=Math.max(1,Math.round(Number(item.duration)||1));buff={element:item.element,remainingTurns:turns,totalTurns:turns,until:0,statEffects:normalizeStatEffects(item.statEffects)};}
+      const api=EmberwildTimedBoosts;
+      try{buff=api.compactBuffs(api.stackBuff(api.buffRows(previous),api.createElementalBuff({...item,statEffects:normalizeStatEffects(item.statEffects)})));}
+      catch(e){toast(e.message);return false;}
+    }else{const seconds=globalThis.EmberwildSecondsCombat?.active&&item.timing?.durationSeconds,turns=seconds||Math.max(1,Math.round(Number(item.duration)||1));buff={element:item.element,remainingTurns:turns,totalTurns:turns,clock:seconds?'battleSeconds':'battleRounds',until:0,statEffects:normalizeStatEffects(item.statEffects)};}
     state.consumables[id]--;state[item.type]=buff;withHero(state,clampVitals);
     if(save()===false){state.consumables[id]=count;state[item.type]=previous;state.hp=previousHp;return false;}
     render();toast('已使用'+item.name);return true;
@@ -242,7 +242,7 @@
     const out=compressionValidateBase(clean);
     (out.classes||[]).forEach((cls,job)=>(cls.skills||[]).forEach((sk,i)=>Object.assign(sk,normalizeSkillExtras(full.classes?.[job]?.skills?.[i]||{},job,i))));
     for(const item of out.items||[]){const src=(full.items||[]).find(x=>x.id===item.id);item.statEffects=normalizeStatEffects(src?.statEffects);}
-    out.balanceSettings=clone(full.balanceSettings);out.balance=clone(full.balance);
+    out.balanceSettings=clone(full.balanceSettings);out.balance=normalizeRuntimeBalance(full.balance);
     if(full.equipmentPowerSystem)out.equipmentPowerSystem=clone(full.equipmentPowerSystem);
     return out;
   };

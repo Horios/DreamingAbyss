@@ -114,7 +114,7 @@
 .text-rarity-name.tr-border-march{border-color:transparent}
 .text-rarity-name.tr-border-march::after{content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,var(--tr-border,currentColor) 50%,transparent 0) top/10px 2px repeat-x,linear-gradient(90deg,var(--tr-border,currentColor) 50%,transparent 0) bottom/10px 2px repeat-x,linear-gradient(0deg,var(--tr-border,currentColor) 50%,transparent 0) left/2px 10px repeat-y,linear-gradient(0deg,var(--tr-border,currentColor) 50%,transparent 0) right/2px 10px repeat-y;animation:tr-border-march 1s linear infinite}
 
-/* Restored from the earlier Emberwild HTML text-effect showcase. */
+/* Restored from the earlier Dreaming Abyss HTML text-effect showcase. */
 .text-rarity-name .tr-text.tr-special-alphaDemo{opacity:.62}
 .text-rarity-name .tr-text.tr-special-warmGradientDemo{color:transparent!important;-webkit-text-fill-color:transparent!important;background:linear-gradient(90deg,#ffd86f,#ff9f43,#ff5f6d)!important;-webkit-background-clip:text!important;background-clip:text!important}
 .text-rarity-name .tr-text.tr-special-movingRainbowDemo{color:transparent!important;-webkit-text-fill-color:transparent!important;background:linear-gradient(90deg,#ff5f6d,#ffc371,#fff36d,#68e08b,#66c7ff,#a78bfa,#ff78c8,#ff5f6d)!important;background-size:250% 100%!important;-webkit-background-clip:text!important;background-clip:text!important;animation:tr-demo-move-gradient 3s linear infinite}

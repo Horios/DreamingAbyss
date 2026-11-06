@@ -2,7 +2,7 @@
   "name": "emberwild-progression-checks",
   "private": true,
   "scripts": {
-    "test": "node --test --test-concurrency=4 tests/daily-commissions.test.cjs tests/skill-board.test.cjs tests/utility-navigation.test.cjs tests/mailbox.test.cjs tests/achievements.test.cjs tests/companion-unlocks.test.cjs tests/material-prices.test.cjs tests/life-skills.test.cjs tests/companion-skill-toggles.test.cjs tests/companion-skill-toggles.browser.test.cjs tests/skill-effects.test.cjs tests/status-advanced.test.cjs tests/skill-effects-editor.test.cjs tests/skill-effects.browser.test.cjs tests/named-companions.test.cjs tests/companion-skill-ownership.test.cjs tests/companion-passives.test.cjs tests/progression-model.test.cjs tests/element-potions.test.cjs tests/element-potions-runtime.test.cjs tests/progression-runtime.test.cjs tests/equipment-details.test.cjs tests/shop-options.test.cjs tests/timed-boosts-journal.test.cjs tests/battle-journal-scroll.test.cjs tests/companions-roster.test.cjs tests/shared-levels.test.cjs tests/companion-tokens.test.cjs tests/companion-tokens.browser.test.cjs tests/skill-induction.test.cjs tests/skill-induction-editor.browser.test.cjs tests/team-model.test.cjs tests/team-save-compatibility.test.cjs tests/team-save-compatibility.browser.test.cjs tests/team-runtime.test.cjs tests/team-builds.browser.test.cjs tests/skill-icons.test.cjs tests/skill-icons.browser.test.cjs tests/text-rarity-runtime.test.cjs tests/forge-equipped-runtime.test.cjs tests/boss-class-crafting.test.cjs tests/page-boundaries.browser.test.cjs tests/page-readability.browser.test.cjs tests/skill-fallback-icons.test.cjs tests/character-avatars.browser.test.cjs tests/balance-roundtrip.test.cjs tests/balance-roundtrip.browser.test.cjs",
+    "test": "node --test --test-concurrency=4",
     "test:unit": "node --test tests/progression-model.test.cjs tests/element-potions.test.cjs",
     "test:integration": "node --test tests/progression-runtime.test.cjs tests/equipment-details.test.cjs tests/shop-options.test.cjs tests/timed-boosts-journal.test.cjs tests/battle-journal-scroll.test.cjs tests/companions-roster.test.cjs tests/shared-levels.test.cjs",
     "test:equipment": "node --test tests/equipment-details.test.cjs",
@@ -17,11 +17,15 @@
     "test:teams": "node --test tests/team-model.test.cjs tests/team-save-compatibility.test.cjs tests/team-save-compatibility.browser.test.cjs tests/team-runtime.test.cjs tests/team-builds.browser.test.cjs",
     "test:icons": "node --test tests/skill-board.test.cjs tests/skill-icons.test.cjs tests/skill-icons.browser.test.cjs tests/skill-fallback-icons.test.cjs",
     "test:pages": "node --test tests/text-rarity-runtime.test.cjs tests/forge-equipped-runtime.test.cjs tests/boss-class-crafting.test.cjs tests/page-boundaries.browser.test.cjs",
-    "test:interface": "node --test tests/page-readability.browser.test.cjs tests/skill-fallback-icons.test.cjs tests/character-avatars.browser.test.cjs",
+    "test:interface": "node --test tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/skill-fallback-icons.test.cjs tests/character-avatars.browser.test.cjs",
     "test:skill-effects": "node --test tests/skill-effects.test.cjs tests/status-advanced.test.cjs tests/skill-effects-editor.test.cjs tests/skill-effects.browser.test.cjs tests/skill-induction.test.cjs tests/skill-induction-editor.browser.test.cjs",
     "test:save-compatibility": "node --test tests/team-model.test.cjs tests/team-runtime.test.cjs tests/team-save-compatibility.test.cjs tests/team-save-compatibility.browser.test.cjs",
-    "test:life": "node --test tests/life-skills.test.cjs",
-    "test:balance": "node --test tests/balance-roundtrip.test.cjs tests/balance-roundtrip.browser.test.cjs tests/material-prices.test.cjs"
+    "test:life": "node --test tests/life-skills.test.cjs tests/life-products.test.cjs tests/life-products.browser.test.cjs",
+    "test:balance": "node --test tests/balance-roundtrip.test.cjs tests/balance-roundtrip.browser.test.cjs tests/material-prices.test.cjs",
+    "test:quests": "node --test tests/daily-commissions.test.cjs tests/quest-design.test.cjs tests/quest-design.browser.test.cjs",
+    "test:acquisition": "node --test tests/equipment-acquisition.test.cjs tests/speed-boss-progression.test.cjs tests/daily-commissions.test.cjs",
+    "test:inventory": "node --test tests/gear-inventory.test.cjs tests/expedition-stop-dispose.test.cjs",
+    "test:acquisition-simulation": "node tests/equipment-acquisition-simulation.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

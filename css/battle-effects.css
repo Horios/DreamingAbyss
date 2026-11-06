@@ -1,0 +1,121 @@
+/* Independent event/status layers leave the actor border, elite badge and numbering intact. */
+.battle-fx{--fx-color:#ff796f;--fx-rgb:255,121,111;--fx-time:400ms;position:absolute;inset:3px 1px 7px;z-index:3;border:1px solid var(--fx-color);border-radius:7px;color:var(--fx-color);pointer-events:none;contain:layout style;animation:var(--fx-motion,fx-ring) var(--fx-time) ease-out both!important}
+.battle-fx>svg{position:absolute;inset:-1px;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 3px currentColor);animation:var(--fx-glyph,fx-impact) var(--fx-time) ease-out both!important}
+.battle-fx>b{position:absolute;top:12px;left:-3px;right:-3px;text-align:center;font-size:10px;line-height:16px;color:var(--fx-color);text-shadow:0 1px 3px #000,0 0 5px #000;background:#121725d9}
+.battle-fx-slash{border-color:transparent}.battle-fx-slash>svg{--fx-glyph:fx-slash;transform:scaleX(var(--fx-direction))}
+.battle-fx-ranged>svg{--fx-glyph:fx-pierce}
+.battle-fx-fire>svg{--fx-glyph:fx-flame}
+.battle-fx-ice>svg,.battle-fx-break>svg{--fx-glyph:fx-shatter}
+.battle-fx-lightning>svg{--fx-glyph:fx-electric}
+.battle-fx-hit{background:rgba(var(--fx-rgb),0.231);--fx-motion:fx-hit}.battle-fx-hit>svg{display:none}
+.battle-fx-heal>svg,.battle-fx-potion>svg,.battle-fx-drain>svg,.battle-fx-buff>svg{--fx-glyph:fx-rise}
+.battle-fx-heal,.battle-fx-regen,.battle-fx-potion{background:linear-gradient(0deg,rgba(var(--fx-rgb),0.188),transparent 85%)}
+.battle-fx-regen>svg{--fx-glyph:fx-pulse;opacity:.7}.battle-fx-drain{background:rgba(var(--fx-rgb),0.133)}
+.battle-fx-debuff{background:rgba(var(--fx-rgb),0.22)}.battle-fx-debuff>svg{--fx-glyph:fx-contract}
+.battle-fx-shield{background:rgba(var(--fx-rgb),0.094)}.battle-fx-shield>svg{--fx-glyph:fx-shield}
+.battle-fx-absorb>svg,.battle-fx-shield-impact>svg{--fx-glyph:fx-ripple}
+.battle-fx-dissolve>svg{--fx-glyph:fx-dissolve}
+.battle-fx-evade>svg{--fx-glyph:fx-evade}
+.battle-fx-cast,.battle-fx-attack{inset:1px -1px 5px;z-index:2}.battle-fx-cast>svg{--fx-glyph:fx-pulse}.battle-fx-attack>svg{--fx-glyph:fx-pierce}
+.battle-fx-projectile{position:absolute;left:40%;top:40%;width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 5px currentColor;animation:fx-projectile calc(var(--fx-time)*.45) ease-in both!important}
+.battle-fx[data-detail="simple"]>svg{filter:none;--fx-glyph:fx-pulse}.battle-fx[data-detail="simple"]:not(.battle-fx-slash):not(.battle-fx-ranged):not(.battle-fx-heal):not(.battle-fx-shield):not(.battle-fx-break)>svg{opacity:.55}
+.battle-fx-status{position:absolute;left:2px;bottom:1px;display:flex;gap:2px;z-index:2;pointer-events:none}
+.battle-fx-status>i{width:5px;height:5px;border-radius:50%;border:1px solid #ffffff80;background:var(--fx-color)}
+.battle-fx-status>.fx-status-debuff{background:var(--fx-color)}.battle-fx-status>.fx-status-shield{background:var(--fx-color);border-radius:1px}
+/* The older HP-sampling flash must not create an extra animation or override gold. */
+#battleEnemyIcons .battle-enemy-icon[data-effect],#battleAllyIcons .battle-enemy-icon[data-effect]{animation:none}
+@keyframes fx-ring{0%{opacity:.2;box-shadow:0 0 1px currentColor}20%{opacity:1;box-shadow:0 0 5px currentColor}100%{opacity:0;box-shadow:0 0 0 transparent}}
+@keyframes fx-impact{0%{opacity:0;transform:scale(.5)}35%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes fx-slash{0%{opacity:0;transform:scaleX(var(--fx-direction)) translate(-6px,5px) scale(.65)}35%{opacity:1;transform:scaleX(var(--fx-direction)) translate(0,0) scale(1)}100%{opacity:0;transform:scaleX(var(--fx-direction)) translate(4px,-4px) scale(1.07)}}
+@keyframes fx-pierce{0%{opacity:0;transform:translate(-8px,6px)}35%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(4px,-3px)}}
+@keyframes fx-flame{0%{opacity:0;transform:scale(.4) translateY(4px)}30%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.14) translateY(-3px)}}
+@keyframes fx-shatter{0%{opacity:0;transform:scale(.45)}25%{opacity:1;transform:scale(.9)}100%{opacity:0;transform:scale(1.25)}}
+@keyframes fx-electric{0%,45%{opacity:.2;transform:scale(.8)}20%,65%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05)}}
+@keyframes fx-hit{0%{opacity:0;transform:translateX(-1px)}25%{opacity:.8;transform:translateX(1px)}55%{transform:translateX(-1px)}100%{opacity:0;transform:translateX(0)}}
+@keyframes fx-rise{0%{opacity:0;transform:translateY(6px) scale(.85)}35%{opacity:1}100%{opacity:0;transform:translateY(-7px) scale(1.03)}}
+@keyframes fx-pulse{0%{opacity:0;transform:scale(.9)}30%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
+@keyframes fx-contract{0%{opacity:0;transform:scale(1.15)}35%{opacity:.9}100%{opacity:0;transform:scale(.65)}}
+@keyframes fx-shield{0%{opacity:0;transform:scale(.45)}40%{opacity:.9;transform:scale(1.05)}100%{opacity:0;transform:scale(1)}}
+@keyframes fx-ripple{0%{opacity:0;transform:scale(.7)}20%{opacity:1;transform:scale(.85)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes fx-dissolve{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(.95)}}
+@keyframes fx-evade{0%{opacity:0;transform:translateX(0)}30%{opacity:.9;transform:translateX(5px)}100%{opacity:0;transform:translateX(-3px)}}
+@keyframes fx-projectile{0%{opacity:0;transform:translate(var(--fx-from-x),var(--fx-from-y)) scale(.5)}25%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.15)}}
+@media(prefers-reduced-motion:reduce){.battle-fx>svg{--fx-glyph:fx-pulse!important;filter:none}.battle-fx-projectile{display:none}.battle-fx{transform:none!important}}
+
+.battle-enemy-icon[data-fx-shield="true"]>.enemy-icon-art{border-radius:50%;box-shadow:inset 0 0 0 1px #f2f5ff85,inset 0 0 5px #f2f5ff25}
+
+/* Mirror each resolved event on the unit's HP information area. The frame and
+   color wash expand across the card; glyphs retain their aspect ratio. */
+.squad-field .unit[data-combat-id]{position:relative;isolation:isolate}
+.squad-field .unit>.battle-fx-health{inset:1px 1px auto;height:76px;max-height:100%;z-index:1;border-width:2px;border-radius:5px;overflow:hidden}
+.squad-field .unit>.battle-fx-health>svg{inset:1px 12px auto auto;width:62px;height:calc(100% - 4px);max-height:62px;max-width:28%;opacity:.8}
+.squad-field .unit>.battle-fx-health>b{inset:3px 14px auto auto;left:auto;min-width:34px;font-size:11px;background:var(--panel)}
+.squad-field .unit>.battle-fx-health .battle-fx-projectile{left:auto;right:36px;top:30px}
+.squad-field .unit>.unit-title,.squad-field .unit>.unit-numbers,.squad-field .unit>.battle-health-bar,.squad-field .unit>.seconds-face>.unit-title,.squad-field .unit>.seconds-face>.unit-numbers,.squad-field .unit>.seconds-face>.battle-health-bar{position:relative;z-index:2}
+.squad-field .unit>.battle-fx-health.battle-fx-hit{background:rgba(var(--fx-rgb),0.169)}
+.squad-field .unit>.battle-fx-health.battle-fx-fire{background:linear-gradient(90deg,rgba(var(--fx-rgb),0.063),rgba(var(--fx-rgb),0.149))}
+.squad-field .unit>.battle-fx-health.battle-fx-ice{background:linear-gradient(90deg,rgba(var(--fx-rgb),0.031),rgba(var(--fx-rgb),0.137))}
+@media(max-width:900px){.squad-field .unit>.battle-fx-health{height:94px}.squad-field .unit>.battle-fx-health>svg{top:12px}}
+
+/* Effects occupy separate semantic layers and leave text above the color wash. */
+#battleAllyIcons .battle-enemy-icon[data-effect],#battleEnemyIcons .battle-enemy-icon[data-effect]{animation:none}
+.battle-fx[data-critical="true"]{border-width:3px;box-shadow:0 0 12px var(--fx-color)}
+.battle-fx-dot{border-style:dotted;background:radial-gradient(ellipse,rgba(var(--fx-rgb),0.208),transparent 70%)}
+.battle-fx-dot>svg{--fx-glyph:fx-pulse}
+.battle-fx-debuff>svg{--fx-glyph:fx-sink}
+.battle-fx-shield{border-radius:50%;border-style:double;border-width:3px}
+.battle-fx-buff{border-style:dashed}
+.battle-fx:is(.battle-fx-heal,.battle-fx-regen,.battle-fx-buff,.battle-fx-debuff){inset:6px 3px}
+.battle-fx>b{top:auto;bottom:-3px;font-size:10px;z-index:4}
+.battle-enemy-icon:has(>.battle-fx-hit)>.enemy-icon-art{animation:fx-portrait-hit var(--fx-portrait-time,500ms) ease-out!important}
+.battle-enemy-icon:has(>.battle-fx-evade)>.enemy-icon-art{animation:fx-portrait-evade var(--fx-portrait-time,500ms) ease-out!important}
+.squad-field .unit>.battle-fx-health{inset:1px;height:auto;max-height:none;grid-area:auto;position:absolute}
+.squad-field .unit>.battle-fx-health>svg{width:42px;height:42px;max-width:22%;top:2px;right:52px;opacity:.45}
+.squad-allies .unit>.battle-fx-health>svg{right:4px}
+.squad-field .unit>.battle-fx-health>b{top:auto;bottom:2px;right:6px;max-width:65%;font-size:10px;background:var(--panel);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.squad-field .unit>.battle-fx-health.battle-fx-hit{background:rgba(var(--fx-rgb),0.169)}
+.battle-fx-status>.fx-status-buff{clip-path:polygon(50% 0,100% 70%,75% 70%,75% 100%,25% 100%,25% 70%,0 70%);border-radius:0;width:7px;height:8px}
+.battle-fx-status>.fx-status-debuff{clip-path:polygon(25% 0,75% 0,75% 30%,100% 30%,50% 100%,0 30%,25% 30%);border-radius:0;width:7px;height:8px}
+@keyframes fx-sink{0%{opacity:0;transform:translateY(-8px) scale(1.1)}35%{opacity:.95}100%{opacity:0;transform:translateY(8px) scale(.75)}}
+@keyframes fx-portrait-hit{0%,100%{transform:translateX(0)}15%,45%{transform:translateX(-3px)}30%,60%{transform:translateX(3px)}}
+@keyframes fx-portrait-evade{0%,100%{transform:translateX(0)}35%{transform:translateX(7px);opacity:.4}}
+@media(prefers-reduced-motion:reduce){.battle-enemy-icon:has(>.battle-fx)>.enemy-icon-art{animation:none!important}}
+.battle-fx-critical{border-width:3px;background:radial-gradient(ellipse,rgba(var(--fx-rgb),0.251),transparent 65%)}
+.battle-fx-critical>svg{--fx-glyph:fx-shatter}
+
+/* Ongoing combat state stays visible until the state itself is removed. */
+.battle-fx-status{inset:2px;display:block;z-index:1;overflow:hidden;border-radius:6px}
+.battle-fx-status>[data-fx-persistent]{position:absolute;inset:0;width:auto;height:auto;border:0;border-radius:0;clip-path:none!important;background:none!important;color:var(--fx-color);opacity:.75;pointer-events:none}
+.battle-fx-status>i>svg{position:absolute;left:2px;bottom:2px;width:15px!important;height:15px!important;filter:drop-shadow(0 0 2px currentColor)}
+.battle-fx-status>.fx-status-shield{border:2px double var(--fx-color);border-radius:45%;box-shadow:inset 0 0 8px rgba(var(--fx-rgb),0.251);color:var(--fx-color)}
+.battle-fx-status>.fx-status-buff{inset:3px;border-top:2px dashed var(--fx-color);box-shadow:inset 3px 0 7px -5px var(--fx-color)}
+.battle-fx-status>.fx-status-buff>svg{left:1px;top:1px;bottom:auto}
+.battle-fx-status>.fx-status-debuff{inset:5px 2px 2px;border-bottom:2px dotted var(--fx-color);box-shadow:inset 0 -7px 9px -8px var(--fx-color);color:var(--fx-color)}
+.battle-fx-status>.fx-status-debuff>svg{left:auto;right:1px}
+.battle-fx-status>.fx-status-polymorph{inset:6px;border:1px dashed var(--fx-color);border-radius:50%;background:radial-gradient(ellipse,rgba(var(--fx-rgb),0.125),transparent 75%)!important;color:var(--fx-color)}
+.battle-fx-status>.fx-status-polymorph>svg{inset:0;width:100%!important;height:100%!important;opacity:.7}
+.battle-fx-status>:is(.fx-status-freeze,.fx-status-frost){inset:4px;border:1px solid var(--fx-color);clip-path:polygon(12% 0,88% 0,100% 50%,88% 100%,12% 100%,0 50%)!important;color:var(--fx-color)}
+.battle-fx-status>:is(.fx-status-fear,.fx-status-tauntRage,.fx-status-rage){inset:4px;border:1px dotted var(--fx-color);border-radius:8px;color:var(--fx-color)}
+.battle-fx-status[data-detail="full"]>i{animation:fx-status-breathe 2400ms ease-in-out infinite!important}
+.battle-fx-status[data-detail="full"]>.fx-status-debuff{animation-delay:-1200ms!important}
+.squad-field .unit>.battle-fx-status{inset:2px;border-radius:4px}
+.squad-field .unit>.battle-fx-status>i{border-radius:4px}
+.squad-field .unit>.battle-fx-status>i>svg{left:auto;right:3px;bottom:3px;width:18px!important;height:18px!important;opacity:.6}
+.squad-enemies .unit>.battle-fx-status>i>svg{right:56px}
+.squad-field .unit>.battle-fx-status>.fx-status-polymorph{inset:5px;border:0;box-shadow:none;background:radial-gradient(ellipse at 90% 20%,rgba(var(--fx-rgb),0.125),transparent 45%)!important}
+.squad-field .unit>.battle-fx-status>.fx-status-polymorph>svg{left:auto;top:3px;bottom:auto}
+@keyframes fx-status-breathe{0%,100%{opacity:.48}50%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){.battle-fx-status[data-detail]>i{animation:none!important}}
+
+/* Protection is behind status edges; control remains a separate foreground layer. */
+.battle-fx-status>[data-fx-layer="protection"]{z-index:1}
+.battle-fx-status>[data-fx-layer="enhancement"]{z-index:2}
+.battle-fx-status>[data-fx-layer="affliction"]{z-index:3}
+.battle-fx-status>[data-fx-layer="control"]{z-index:4}
+/* Application accents use the same upper/lower lanes as their ongoing layers. */
+.battle-enemy-icon>.battle-fx-buff>svg{inset:0 auto auto 0;width:48%!important;height:48%!important}
+.battle-enemy-icon>.battle-fx-debuff>svg{inset:auto 0 0 auto;width:48%!important;height:48%!important}
+.battle-enemy-icon>.battle-fx-buff>b{top:-2px;bottom:auto}
+.squad-field .unit>.battle-fx-health.battle-fx-buff>svg{top:2px;bottom:auto}
+.squad-field .unit>.battle-fx-health.battle-fx-debuff>svg{top:auto;bottom:2px}
+.squad-field .unit>.battle-fx-health.battle-fx-buff>b{top:2px;bottom:auto}

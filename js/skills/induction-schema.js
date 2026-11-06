@@ -23,7 +23,7 @@
         if(typeof target.chance!=='number'||!Number.isFinite(target.chance)||target.chance<0||target.chance>1)issues.push(label+'：誘發機率必須介於 0～1');
         let key;
         if(target.kind==='activeSlot'||target.kind==='procSlot'){
-          if(!Number.isInteger(target.slot)||target.slot<0||target.slot>1)issues.push(label+'：技能槽必須是 0 或 1');
+          if(!Number.isInteger(target.slot)||target.slot<0||target.slot>(target.kind==='activeSlot'?2:1))issues.push(label+'：主動槽必須是 0～2，觸發槽必須是 0～1');
           key=target.kind+':'+target.slot;
         }else if(target.kind==='skill'){
           const row=pool.get(target.skillId);key='skill:'+target.skillId;

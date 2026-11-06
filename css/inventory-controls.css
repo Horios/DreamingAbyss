@@ -11,3 +11,42 @@
 .inventory-control-fold-body>.small:first-child{margin-top:0}
 .inventory-control-fold-body>.ui-help:last-child{margin-bottom:0}
 .inventory-control-fold-body>.bulk-sell-actions:last-child{margin-bottom:0}
+
+.inventory-hide-equipped{display:flex;align-items:center;gap:6px;margin-left:auto;padding:7px 10px;border:1px solid var(--gold);border-radius:4px;color:var(--gold);background:rgba(223,190,112,.06);font-weight:600;cursor:pointer}
+.inventory-hide-equipped:has(input:checked){background:rgba(223,190,112,.15)}
+.inventory-hide-equipped input{accent-color:var(--gold)}
+@media(max-width:780px){.inventory-hide-equipped{margin-left:0}}
+
+/* Keep common controls visible; advanced controls share a compact disclosure row. */
+.inventory-advanced-controls{display:flex;flex-wrap:wrap;align-items:start;gap:0 14px;margin:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.inventory-advanced-controls>.inventory-control-fold,.inventory-advanced-controls>.ui-help{margin:0;border:0;background:transparent;min-width:0}
+.inventory-advanced-controls>details[open]{flex:1 1 100%}
+.inventory-advanced-controls>details>summary{min-height:32px;margin:0;padding:6px 4px;font-size:12px}
+.inventory-advanced-controls>.ui-help>div{padding:8px;font-size:12px}
+.compact-inventory-panel{container-type:inline-size;padding:10px;border:0;background:transparent}
+.page-owner-panel:has(.compact-inventory-panel){padding:0}
+.page-owner-content:has(>.compact-inventory-panel){padding-top:0}
+.compact-inventory-panel .inventory-master-detail{grid-template-columns:minmax(170px,32%) minmax(0,1fr);height:clamp(320px,55dvh,540px);min-height:320px;margin-top:8px;padding-top:0;border:0}
+.compact-inventory-panel .inventory-master-pane,.compact-inventory-panel .inventory-detail-wrap{border:0;min-width:0}
+.compact-inventory-panel .inventory-master-pane{border-right:1px solid var(--line)}
+.compact-inventory-panel .inventory-master-heading{padding:6px 8px;background:transparent}
+.compact-inventory-panel .inventory-detail-pane{padding:10px 14px}
+.compact-inventory-panel .inventory-detail-heading{gap:8px;padding-bottom:8px}
+.compact-inventory-panel .inventory-detail-heading h2{font-size:17px;margin:0}
+.compact-inventory-panel .inventory-detail-section{padding:10px 0}
+.compact-inventory-panel .inventory-detail-meta{padding:8px 0}
+@container(max-width:620px){
+  .compact-inventory-panel .inventory-master-detail{grid-template-columns:minmax(0,1fr);grid-template-rows:200px auto;height:auto;min-height:0}
+  .compact-inventory-panel .inventory-master-pane{height:200px;border-right:0;border-bottom:1px solid var(--line)}
+  .compact-inventory-panel .inventory-detail-wrap{min-height:0}
+}
+.compact-inventory-panel .inventory-sort-row label{min-width:0;flex-wrap:wrap}
+.compact-inventory-panel .inventory-sortbar select,.compact-inventory-panel .filters select{min-width:0;max-width:100%}
+.compact-inventory-panel .bulk-salvage-actions{display:flex;flex-wrap:wrap;height:auto;gap:5px}
+.compact-inventory-panel .bulk-salvage-actions button{flex:0 1 auto;width:auto!important;max-width:100%;height:auto!important;white-space:normal}
+
+/* Backpack: keep one document scroll and the long gear list scroll;
+   do not stack a scrolling character panel around a scrolling detail pane. */
+.layout>main:has(.gear-management-panel){overflow-y:auto;scrollbar-gutter:stable}
+.page-owner-panel:has(.gear-management-panel){height:auto;max-height:none;min-height:0;overflow:visible}
+.page-owner-content:has(>.gear-management-panel){flex:none;height:auto;min-height:0;max-height:none;overflow:visible;scrollbar-gutter:auto}

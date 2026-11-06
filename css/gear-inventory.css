@@ -1,0 +1,43 @@
+.gear-tier-chip{display:inline-block;white-space:nowrap;font-size:11px;font-weight:700;padding:1px 4px;border:1px solid currentColor;border-radius:3px;margin-inline-start:4px;color:var(--muted)}
+.gear-tier-4,.gear-tier-5,.gear-tier-6{color:#83baa4}.gear-tier-7,.gear-tier-8{color:#aaa4df}.gear-tier-9,.gear-tier-10{color:#dfc275}
+.gear-management-controls{display:grid;gap:10px;margin-top:10px}.gear-basic-filters,.gear-numeric-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;align-items:end}
+.gear-management-controls label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:12px}.gear-management-controls input,.gear-management-controls select{width:100%;min-width:0;box-sizing:border-box;min-height:36px}
+.gear-sort-controls,.gear-batch-controls{display:flex;flex-wrap:wrap;align-items:end;gap:8px}.gear-sort-controls label{flex:1;max-width:360px}.gear-batch-controls{padding:10px;border-top:1px solid var(--line)}
+#app .gear-management-panel .inventory-master-detail{display:grid;height:calc(100dvh - 190px);min-height:360px;max-height:760px;align-items:stretch;grid-template-columns:minmax(300px,var(--master-column)) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+#app .gear-management-panel .inventory-master-pane{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;height:100%;overflow:hidden}#app .gear-management-panel .inventory-list-scroll{min-height:0;max-height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable}
+#app .gear-management-panel .inventory-detail-wrap{min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable;padding-bottom:14px;box-sizing:border-box}#app .gear-management-panel .inventory-detail-pane{min-height:0;box-sizing:border-box}
+#app .gear-management-panel .inventory-list-scroll{display:grid;justify-items:stretch}.gear-management-row{display:flex;align-items:center;gap:8px;padding:9px;border-bottom:1px solid var(--line);width:100%;min-width:0;box-sizing:border-box}
+.gear-management-item{flex:1;min-width:0}#app .gear-management-item .item-slot{display:flex;grid-template-columns:none;grid-template-rows:none;width:100%;max-width:100%;min-height:48px;height:auto;overflow:visible}.gear-management-item .item-slot-name{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;min-width:0}
+.gear-management-meta{font-size:11px;line-height:1.7;margin-top:5px;overflow-wrap:anywhere}.gear-lock{flex:none;min-height:40px;min-width:55px;padding:6px;margin-inline-start:auto}.gear-lock[aria-pressed=true]{color:var(--gold)}
+.gear-management-panel .inventory-quality-tag{font-size:14px;font-weight:600;line-height:1.5;padding:5px 10px;text-align:center}
+.gear-selection{display:flex;align-items:center;justify-content:center;min-width:40px;min-height:44px;cursor:pointer}.gear-selection input{width:20px;height:20px}.gear-overflow-note{color:var(--gold);border:1px solid currentColor;padding:10px}
+@media(max-width:900px){#app .gear-management-panel .inventory-master-detail{display:flex;flex-direction:column;height:auto;min-height:0;max-height:none}#app .gear-management-panel .inventory-master-pane,#app .gear-management-panel .inventory-detail-wrap{width:100%;box-sizing:border-box;overflow:visible}#app .gear-management-panel .inventory-master-pane{height:clamp(280px,40dvh,420px);flex:none;overflow:hidden}#app .gear-management-panel .inventory-detail-wrap{max-height:none}.gear-basic-filters,.gear-numeric-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.gear-management-row{gap:5px;padding:8px 5px}.gear-batch-controls button{min-height:44px;flex:1 1 42%}.gear-sort-controls button{min-height:44px}.gear-management-panel{overflow:visible}#app .gear-management-panel .inventory-list-scroll{overflow-y:auto;overflow-x:hidden}}
+
+/* Compact, persistent filter/sort disclosures; inventory details use page scrolling. */
+.gear-management-panel .gear-control-fold{border:1px solid var(--line);border-radius:5px;min-width:0}
+.gear-management-panel .gear-control-fold>summary{cursor:pointer;padding:7px 10px;font-size:12px;font-weight:600}
+.gear-management-panel .gear-control-fold[open]>summary{border-bottom:1px solid var(--line)}
+.gear-management-panel .gear-control-fold-body{padding:8px 10px}
+.gear-management-panel .gear-numeric-fold{margin-top:8px;border-top:1px solid var(--line);padding-top:5px}
+.gear-management-panel .gear-numeric-fold>summary{cursor:pointer;font-size:12px;padding:5px 0}
+.gear-management-panel .gear-numeric-fold>.small{font-size:11px;margin:6px 0}
+.gear-management-panel .gear-management-actions{display:flex;justify-content:flex-start}
+.gear-management-panel .gear-basic-filters,.gear-management-panel .gear-numeric-filters{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+.gear-management-panel .gear-management-controls input,.gear-management-panel .gear-management-controls select{min-height:32px;font-size:12px}
+.gear-management-panel .gear-management-controls label{font-size:11px}
+#app .gear-management-panel .inventory-master-detail{height:auto;max-height:none;min-height:0;grid-template-rows:minmax(0,auto);align-items:start}
+#app .gear-management-panel .inventory-master-pane{height:clamp(300px,55dvh,520px)}
+#app .gear-management-panel .inventory-detail-wrap{overflow:visible;max-height:none;scrollbar-gutter:auto;padding-bottom:12px}
+#app .gear-management-panel .inventory-detail-pane{overflow:visible}
+@media(max-width:900px){#app .gear-management-panel .inventory-master-pane{height:clamp(250px,38dvh,380px)}.gear-management-panel .gear-basic-filters,.gear-management-panel .gear-numeric-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.inventory-wear-toolbar{display:flex;justify-content:flex-end;margin:0 0 6px}.inventory-wear-toolbar .inventory-wear-help{display:grid;place-items:center;flex:none;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:50%;font-size:16px;font-weight:700;line-height:1}.inventory-wear-help-steps{padding-left:24px;line-height:1.85}.inventory-wear-help-steps li{margin:8px 0}.inventory-wear-target{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 12px}.inventory-wear-target>b{flex-basis:100%}.inventory-wear-skill-link{margin-bottom:12px}
+
+.gear-management-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:8px 0}.gear-filter-button{margin-inline-start:auto}
+.gear-management-panel .inventory-master-heading{display:flex;flex-wrap:wrap;align-items:center;gap:var(--control-gap);padding:8px}.inventory-master-heading>span{margin-inline-start:auto;white-space:nowrap}
+.gear-management-panel .gear-sort-controls{align-items:center;gap:4px;margin-inline-start:auto}.gear-management-panel .gear-sort-controls label{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap}.gear-management-panel .gear-sort-controls select{min-height:30px;max-width:135px;font-size:11px;padding:3px}.gear-management-panel .gear-sort-controls button{min-height:30px;font-size:11px;padding:4px 7px}
+.gear-filter-dialog{width:min(740px,100%);box-sizing:border-box}.gear-filter-dialog h2{margin:0}.gear-filter-dialog .gear-numeric-fold{border-top:1px solid var(--line);padding-top:10px}.gear-filter-dialog summary{cursor:pointer}.gear-filter-dialog select{max-width:100%}
+@media(max-width:900px){.gear-management-panel .inventory-master-heading{gap:4px}.gear-management-panel .gear-sort-controls select{max-width:125px}.gear-management-panel .gear-sort-controls button{min-height:36px}}
+
+.gear-management-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px}.gear-management-top .gear-management-toolbar{flex:1;justify-content:flex-end}.gear-management-top .gear-filter-button{margin-inline-start:4px}#app .gear-management-panel .inventory-master-pane{height:clamp(280px,55dvh,600px)}
+@media(max-width:900px){#app .gear-management-panel .inventory-master-pane{height:clamp(280px,45dvh,440px)}.gear-management-top .gear-management-toolbar{margin:2px 0 6px}}

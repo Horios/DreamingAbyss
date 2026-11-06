@@ -2,16 +2,25 @@
 (function(){
   globalThis.journalLootOpen = globalThis.journalLootOpen ?? false;
   globalThis.journalLootHeight = globalThis.journalLootHeight ?? 180;
+  globalThis.toggleJournalLoot=function(event){
+    const details=event.currentTarget,summary=event.target.closest?.('summary');
+    if(!summary||summary.parentElement!==details)return;
+    event.preventDefault();
+    // Commit before a refresh can replace this details node. Its queued toggle
+    // event may arrive after replacement, so it must not own the shared state.
+    globalThis.journalLootOpen=!details.open;
+    details.open=globalThis.journalLootOpen;
+  };
   const style=document.createElement('style');
   style.textContent=`
     .global-battle-journal{
       --journal-loot-height:180px;
-      grid-template-rows:auto minmax(220px,1fr) 7px var(--journal-loot-height)!important;
+      grid-template-rows:auto minmax(0,1fr) 7px var(--journal-loot-height) auto!important;
     }
     .global-battle-journal:has(.journal-loot-compact:not([open])){
-      grid-template-rows:auto minmax(220px,1fr) 7px auto!important;
+      grid-template-rows:auto minmax(0,1fr) 7px auto auto!important;
     }
-    .global-battle-journal #liveLog{min-height:220px!important;}
+    .global-battle-journal #liveLog{min-height:0!important;}
     .global-battle-journal .battle-log-stream{
       height:100%!important;min-height:0!important;max-height:none!important;
       --battle-log-visible-rows:99!important;
@@ -29,7 +38,8 @@
   document.head.appendChild(style);
   function applyHeight(){
     const journal=document.querySelector('.global-battle-journal');
-    if(journal) journal.style.setProperty('--journal-loot-height',globalThis.journalLootHeight+'px');
+    const height=globalThis.journalLootHeight+'px';
+    if(journal&&journal.style.getPropertyValue('--journal-loot-height')!==height)journal.style.setProperty('--journal-loot-height',height);
   }
   globalThis.startJournalResize=function(ev){
     ev.preventDefault();
@@ -41,7 +51,7 @@
     const move=e=>{
       const total=journal.getBoundingClientRect().height;
       const head=journal.querySelector('.global-journal-head')?.getBoundingClientRect().height||0;
-      const max=Math.max(90,total-head-260);
+      const max=Math.max(90,total-head-(journal.querySelector('.journal-quick-dispose')?.getBoundingClientRect().height||0)-260);
       globalThis.journalLootHeight=Math.max(70,Math.min(max,startH-(e.clientY-startY)));
       applyHeight();
     };

@@ -1,0 +1,12 @@
+const test=require('node:test'),assert=require('node:assert/strict'),crypto=require('node:crypto'),os=require('node:os'),fs=require('node:fs'),path=require('node:path'),{createGithubApp}=require('../../Emberwild-Balance/server/github-app.cjs');
+test('installation JWT stays server-side and tokens request only Emberwild contents/write and actions/read',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ew-app-')),file=path.join(dir,'key.pem'),keys=crypto.generateKeyPairSync('rsa',{modulusLength:2048});fs.writeFileSync(file,keys.privateKey.export({format:'pem',type:'pkcs8'}),{mode:0o600});let issued=0;
+ try{const api=createGithubApp({appId:123,installationId:456,privateKeyPath:file,fetchImpl:async(url,opts)=>{if(url.endsWith('/access_tokens')){issued++;const body=JSON.parse(opts.body);assert.deepEqual(body,{repositories:['DreamingAbyss'],permissions:{contents:'write',actions:'read'}});const jwt=opts.headers.Authorization.slice(7).split('.');assert(crypto.verify('RSA-SHA256',Buffer.from(jwt[0]+'.'+jwt[1]),keys.publicKey,Buffer.from(jwt[2],'base64url')));return {ok:true,status:201,json:async()=>({token:'fixture-installation-token',expires_at:new Date(Date.now()+3600000).toISOString()})};}assert.equal(opts.headers.Authorization,'Bearer fixture-installation-token');return {ok:true,status:200,json:async()=>({ok:true})};}});await api('/repos/Horios/DreamingAbyss');await api('/repos/Horios/DreamingAbyss');assert.equal(issued,1);}finally{fs.rmSync(dir,{recursive:true});}
+});
+test('API authorization, rate limits, missing branches, conflicts and network errors never return success',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ew-app-errors-')),file=path.join(dir,'key.pem'),keys=crypto.generateKeyPairSync('rsa',{modulusLength:2048});fs.writeFileSync(file,keys.privateKey.export({format:'pem',type:'pkcs8'}),{mode:0o600});
+ try{for(const status of [401,403,404,409,422,429]){const api=createGithubApp({appId:1,installationId:2,privateKeyPath:file,fetchImpl:async()=>({ok:false,status,headers:{get:()=>status===403?'0':null}})});await assert.rejects(()=>api('/repos/Horios/DreamingAbyss'),e=>e.status===status);}
+  const api=createGithubApp({appId:1,installationId:2,privateKeyPath:file,fetchImpl:async()=>{throw Error('network');}});await assert.rejects(()=>api('/repos/Horios/DreamingAbyss'),/網路錯誤/);
+  const html=fs.readFileSync('../Emberwild-Balance/balance-editor.html','utf8');assert(!html.includes('fixture-installation-token'));assert(!html.includes('PRIVATE KEY-----'));
+ }finally{fs.rmSync(dir,{recursive:true});}
+});

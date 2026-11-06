@@ -49,9 +49,8 @@
   refreshBattleBuffTimers=function(){
     if(!party)return;
     const summary=$('battle-effect-summary');if(summary)summary.textContent=effectSummaryText();
-    const body=$('battle-effect-modal-rows');if(body)body.innerHTML=rowsHtml();
-    const label=$('supply-status');if(label)label.textContent=supplyStatus(state)||'目前沒有道具增益';
-    if(document.querySelectorAll)for(const el of document.querySelectorAll('.supply-countdown')){const hero=partyMember(Number(el.dataset.job));if(hero)el.textContent=supplyStatus(hero);}
+    const body=$('battle-effect-modal-rows');if(body&&!globalThis.isEmberwildUIInteracting?.()){const next=rowsHtml();if(body.innerHTML!==next)body.innerHTML=next;}
+    refreshSupplyStatus();
   };
 
   /* The previous compacting pass generated the control card as a main-level sibling.

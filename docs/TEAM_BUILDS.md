@@ -8,8 +8,8 @@
 
 | Repository | 修改起點 `chatgpt-dev` | 保留的 `main` |
 | --- | --- | --- |
-| `Horios/Emberwild` | `8e23d0bba46ba7c2320612aa9ab9f4e4ffa85f55` | `f0df9462e3c191b452160f50b4d373b2df0480b9` |
-| `Horios/Emberwild-Balance` | `014af4975ecdd02981df0d9636319813995491be` | `f33864b55a96f28365d64598a5b213eacdc5a220` |
+| `Horios/DreamingAbyss` | `8e23d0bba46ba7c2320612aa9ab9f4e4ffa85f55` | `f0df9462e3c191b452160f50b4d373b2df0480b9` |
+| `Horios/DreamingAbyss-BalanceEditor` | `014af4975ecdd02981df0d9636319813995491be` | `f33864b55a96f28365d64598a5b213eacdc5a220` |
 
 開始前已檢查 branch／檔案來源與修改狀態，建立 `checkpoint/team-plans-20261008` 本地 checkpoint 並保存 Git archive。提交及推送前再次檢查遠端 SHA；不重寫歷史，不合併 `main`。
 
@@ -103,7 +103,7 @@ Preview `/preview/` 使用 `emberwild-preview-*` 的本機與 session keys。首
 
 ## 平衡設計器與取得方式
 
-私有 Repository 的 [balance-editor.html](https://github.com/Horios/Emberwild-Balance/blob/chatgpt-dev/balance-editor.html) 新增「隊伍配置規則」，使用原 `balanceSettings.progression` 的起始／每級 AP／SP，不新增第二份成長曲線；`teamSettings` 管理方案上限與缺省學習成本。技能頁增加 `learnCost` 及 `unlockConditions.classMasteryLevel/quests/materials`；原有等級、二轉、精通、武器、職業和效果設定繼續生效。
+私有 Repository 的 [balance-editor.html](https://github.com/Horios/DreamingAbyss-BalanceEditor/blob/chatgpt-dev/balance-editor.html) 新增「隊伍配置規則」，使用原 `balanceSettings.progression` 的起始／每級 AP／SP，不新增第二份成長曲線；`teamSettings` 管理方案上限與缺省學習成本。技能頁增加 `learnCost` 及 `unlockConditions.classMasteryLevel/quests/materials`；原有等級、二轉、精通、武器、職業和效果設定繼續生效。
 
 `team-model-v1` script 與公開遊戲 `team-model.js` 字元完全一致；可运行 `node tools/sync-team-schema.cjs /path/to/Emberwild-Balance/balance-editor.html` 同步。正規化更新現有對象的必要欄位，保留舊編輯器事件所持的物件，避免複製信物與夥伴設定失效。真正下載 JSON、檔案匯入與遊戲套用都驗證了有效值，不只比較 UI。
 
@@ -135,4 +135,4 @@ node --test tests/team-runtime.test.cjs
 
 已知限制：舊正式版無多隊伍讀取器；自訂技能已產生永久成果時，不允許以刪除該定義的 JSON 或預設設定抹掉成果，需保留相應定義。本地另依實際 Pages workflow 組出 artifact，檢查 root index SHA256 為 `73d955b1096705bf3b6fe9471068de82ff8d043119cfdfaf25def77710a41b76`、與原 main 完全相同，Preview JS／CSS 齊全，並以 Chromium 啟動部署階段加上標示的預覽頁，沒有瀏覽器錯誤。此環境的網路政策阻擋直接讀取 GitHub Pages 網域，因此公開部署需以 Actions 完成狀態及 checkout 的精確來源 SHA 核對；實際瀏覽器驗證使用同一原始碼與部署路徑的本地頁面，不宣稱已直接打開公開網址。
 
-遊戲 Preview：[https://horios.github.io/Emberwild/preview/](https://horios.github.io/Emberwild/preview/)。Push dev 只 dispatch `main` context 的 Pages workflow；artifact 的根頁取原 `main`，Preview 取此 `chatgpt-dev`，不建立或修改 `main` commit。
+遊戲 Preview：[https://horios.github.io/DreamingAbyss/preview/](https://horios.github.io/DreamingAbyss/preview/)。Push dev 只 dispatch `main` context 的 Pages workflow；artifact 的根頁取原 `main`，Preview 取此 `chatgpt-dev`，不建立或修改 `main` commit。

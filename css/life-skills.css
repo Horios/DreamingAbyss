@@ -1,8 +1,9 @@
 .layout>main:has(>.life-skills-page){overflow-y:auto;scrollbar-gutter:stable}
-.life-skills-page{display:flex;flex:0 0 auto;flex-direction:column;gap:16px;padding-bottom:20px;overflow-wrap:anywhere}
+.life-skills-page{display:flex;flex:0 0 auto;flex-direction:column;gap:var(--section-gap);padding-bottom:20px;overflow-wrap:anywhere}
 .life-skills-page .panel{margin:0}
 .life-skills-page h2,.life-skills-page h3{margin-bottom:10px}
-.life-skill-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:16px;align-items:start}
+.life-skill-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:var(--section-gap);align-items:start}
+.life-skill-grid.life-skill-single{grid-template-columns:minmax(0,1fr)}
 .life-materials{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:12px}
 .life-progress{display:flex;flex-direction:column;gap:6px;margin:18px 0}
 .life-progress progress{width:100%;height:18px;accent-color:var(--gold,#b88a45)}
@@ -22,3 +23,21 @@
 .life-gather-selector{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0}
 .life-gather-selector select{width:auto;max-width:100%;min-width:140px}
 @media(max-width:900px){.life-stock-row{grid-template-columns:minmax(0,1fr) auto}.life-stock-actions{grid-column:1/-1}.life-stock-actions button{flex:1 1 auto}}
+
+.life-skills-page{container-type:inline-size}
+.life-action-title{display:flex;align-items:center;gap:8px}
+.life-action-title .inventory-item-icon{height:30px}
+.life-stock>summary{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;cursor:pointer;padding:4px 0;list-style:none}
+.life-stock>summary::before{content:'▸';color:var(--muted)}
+.life-stock[open]>summary::before{content:'▾'}
+.life-stock>summary::-webkit-details-marker{display:none}
+.life-stock-content{margin-top:14px}
+.life-stock-controls{display:flex;flex-wrap:wrap;gap:10px 18px;margin-bottom:12px}
+.life-stock-controls label{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;min-width:0}
+.life-stock-controls select{font-size:12px;min-width:0;max-width:100%;padding:5px 8px}
+.life-stock-row .life-stock-info .small{margin-top:3px;font-size:12px}
+.life-stock-count{max-width:130px;font-size:12px}
+.life-stock-count .small{font-size:11px;line-height:1.5}
+.life-stock-actions input,.life-stock-actions button{height:28px;font-size:11px;padding:3px 7px}
+@container(max-width:620px){.life-skill-grid{grid-template-columns:minmax(0,1fr)}}
+@container(max-width:400px){.life-stock-row{grid-template-columns:minmax(0,1fr)}.life-stock-actions{grid-column:1}.life-stock-count{text-align:left}.life-gather-selector select{min-width:0;width:100%}}

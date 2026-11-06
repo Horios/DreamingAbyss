@@ -21,12 +21,11 @@ test('Elemental durations support fractional real minutes and validate strength 
   api.validateElementalItem({...item('elementTonic'),effectPercent:250});
   assert.throws(()=>api.validateElementalItem({...item(),duration:10}));
 });
-test('Effects snapshot duration, strength and extra stats, and expire at the exact boundary',()=>{
+test('Effects snapshot duration, strength and extra stats, and consume only active exploration at the exact boundary',()=>{
   const {api}=contracts(),source=item(),buff=api.createElementalBuff(source,1000);
   source.statEffects.attack=100;source.effectPercent=90;source.durationMinutes=10;
   assert.equal(buff.statEffects.attack,7);assert.equal(buff.effectPercent,40);assert.equal(buff.durationMinutes,1.5);
-  assert.equal(api.remainingMs(buff,90999),1);assert.equal(api.remainingMs(buff,91000),0);
-  assert.equal(api.migrateElementalBuff(buff,'ward',{now:91000}),null);
+  assert.equal(api.remainingMs(buff,91000),90000);const party={members:[{ward:buff}],timedBoosts:[]};api.consume(party,89999);assert.equal(api.remainingMs(buff),1);api.consume(party,1);assert.equal(api.remainingMs(buff),0);assert.equal(buff.enabled,false);
   assert.equal(api.timeText(90000),'01:30');assert.equal(api.timeText(3600000),'01:00:00');
 });
 test('Old rounds and seconds migrate to real minutes once and preserve custom effects',()=>{
@@ -42,12 +41,21 @@ test('Old rounds and seconds migrate to real minutes once and preserve custom ef
 test('Old active buffs retain remaining time on migration and never refill on load',()=>{
   const {api}=contracts(),options={item:item(),settings:{combat:{pacing:{roundMinimumMs:6000}}},now:1000};
   const buff=api.migrateElementalBuff({element:'fire',remainingTurns:3,totalTurns:50,until:0,statEffects:{hp:10}},'ward',options);
-  assert.equal(buff.expiresAt,19000);assert.equal(buff.durationMinutes,5);assert.equal(buff.effectPercent,40);assert.equal(buff.remainingTurns,undefined);assert.equal(buff.statEffects.hp,10);
-  assert.equal(api.migrateElementalBuff(buff,'ward',{...options,now:5000}).expiresAt,19000);
-  assert.equal(api.migrateElementalBuff(buff,'ward',{...options,now:20000}),null);
-  assert.equal(api.migrateElementalBuff({element:'fire',until:7000},'ward',options).expiresAt,7000);
+  assert.equal(buff.remainingMs,18000);assert.equal(buff.durationMinutes,5);assert.equal(buff.effectPercent,40);assert.equal(buff.remainingTurns,undefined);assert.equal(buff.statEffects.hp,10);
+  assert.equal(api.migrateElementalBuff(buff,'ward',{...options,now:5000}).remainingMs,18000);
+  assert.equal(api.migrateElementalBuff(buff,'ward',{...options,now:20000}).remainingMs,18000);
+  assert.equal(api.migrateElementalBuff({element:'fire',until:7000},'ward',options).remainingMs,6000);
   assert.equal(api.migrateElementalBuff({element:'fire',remainingTurns:0,until:0},'ward',options),null);
-  assert.throws(()=>api.migrateElementalBuff({...buff,expiresAt:Infinity},'ward',options));
+  assert.throws(()=>api.migrateElementalBuff({...buff,remainingMs:-1},'ward',options));
+});
+test('Legacy real-time elemental sources recover missing identity and stack with the next matching dose',()=>{
+  const {api}=contracts(),source={...item(),durationMinutes:5},legacy={element:'fire',durationMinutes:5,effectPercent:40,remainingMs:300000,enabled:true,until:0,statEffects:{attack:7}};
+  const normalized=api.migrateElementalBuff(legacy,'ward',{item:source,now:1000});
+  assert.equal(normalized.name,source.name);assert.equal(normalized.itemId,source.id);
+  assert.equal(api.remainingMs(normalized),300000);
+  const stacked=api.stackBuff([normalized],api.createElementalBuff(source,1000),1000);
+  assert.equal(stacked.length,1);assert.equal(stacked[0].remainingMs,600000);
+  assert.equal(legacy.name,undefined);assert.equal(legacy.itemId,undefined);
 });
 test('Default and old shop pools delist all wards and tonics without deleting definitions',()=>{
   const {api,shop}=contracts(),items=[item(),item('elementTonic'),{id:'imbue_fire',type:'imbue'}];
@@ -65,8 +73,8 @@ test('Explicitly empty current pools stay empty and do not restore reroll produc
     assert.deepEqual(clone(out.randomOffers.entries),[]);assert.deepEqual(clone(out.fixedOffers.entries),[]);
   }
 });
-test('Existing account timed boosts retain their real-time contract',()=>{
-  const {api}=contracts(),source=clone(api.DEFAULT_ITEMS[1]);api.validateItem(source);
+test('Legacy account timed boosts remain readable during exploration-clock migration',()=>{
+  const {api}=contracts(),source=clone(api.DEFAULT_ITEMS.find(x=>x.boostType==='exp'));api.validateItem(source);
   assert.equal(api.bonus({timedBoosts:[{...source,expiresAt:2000}]},'exp',1000),100);
   assert.equal(api.bonus({timedBoosts:[{...source,expiresAt:2000}]},'exp',2000),0);
   assert.throws(()=>api.validateItem({...source,durationMinutes:1.5}));

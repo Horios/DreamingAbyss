@@ -5,7 +5,6 @@
   const configured=def=>schema.EFFECTS.includes(def?.effect)&&(['cleanse','dispel','revive'].includes(def.effect)||(def.commonEffectKeys||[]).length>0);
   const options=meta=>({...meta,target:meta.commonEffectKeys?.includes('target')?meta.target:undefined});
   const isHero=t=>t&&Object.prototype.hasOwnProperty.call(t,'job');
-  const key=t=>isHero(t)?heroKey(t):t.id;
   const name=t=>isHero(t)?characterName(t):combatEnemyName(t);
   const maxHp=t=>status().maxHp(t);
   function members(caster,fallen=false){
@@ -19,7 +18,7 @@
     if(mode==='allies')return members(caster);
     if(mode==='weakest')return members(caster).sort((a,b)=>a.hp/maxHp(a)-b.hp/maxHp(b)).slice(0,1);
     const opponents=isHero(caster)?foes.filter(e=>e.hp>0):living();
-    if(mode==='enemies'||sk.maxTargets>=99)return opponents;
+    if(mode==='enemies'||sk.maxTargets>=99)return meta.targetLimit?opponents.slice(0,sk.maxTargets||1):opponents;
     const n=Math.max(1,Math.floor(sk.maxTargets||1)),pool=isHero(caster)&&n===1?opponents.filter(enemyAvailableForSingleTarget):opponents;
     return shuffleCopy(pool).slice(0,n);
   }
@@ -59,7 +58,7 @@
       }
       let dealt=0,hit=false;
       for(let n=0;n<(meta.hitCount??1)&&target.hp>0;n++){
-        const amount=raw*(stored>0?1+stored:1),resolution=meta.damageResolution||'standard',beforeShield=Number(target.shield)||0,beforeMorph=globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[target.id]?.polymorph?.shield||0;let d=0;
+        const amount=raw*(stored>0?1+stored:1),resolution=meta.damageResolution||'standard',beforeShield=Number(target.shield)||0,beforeMorph=globalThis.EmberwildControlState?.states?.[target.id]?.polymorph?.shield||0;let d=0;
         if(resolution==='standard'){
           d=isHero(caster)?resolveHit(target,amount,caster,sk.element,Math.random()<profile.critChance,{critDamage:profile.critDamage,defensePenetration:profile.defensePenetration,defenseIgnore:profile.defenseIgnore}):sharedEnemySkillDamage(caster,target,amount,sk.element,sk);
         }else{
@@ -69,7 +68,7 @@
           if(v.lifesteal>0)healing(caster,caster,d*v.lifesteal);
         }
         // A shield-only hit is still a hit; an evaded hit neither damages HP nor consumes shield.
-        hit=hit||d>0||(Number(target.shield)||0)<beforeShield||(globalThis.__EMBERWILD_CONTROL_TEST_API?.states?.[target.id]?.polymorph?.shield||0)<beforeMorph;dealt+=d;
+        hit=hit||d>0||(Number(target.shield)||0)<beforeShield||(globalThis.EmberwildControlState?.states?.[target.id]?.polymorph?.shield||0)<beforeMorph;dealt+=d;
       }
       total+=dealt;
       if(hit)attach(caster,target,meta);
@@ -88,7 +87,7 @@
     const tracker=status();tracker?.beginSkillCast?.(h,i);let ok=false;
     try{
       const power=skillPower(i,h)*(1+effectTotal(heroKey(h),'power'));ok=cast(h,sk,options(meta),v,power,skillCombatProfile(h,i,v));
-      if(ok&&h.sockets?.[i]===2&&sk.activation==='active')healing(h,h,v.atk*GS('skills.gems.hybridActiveHealAttack',.10));
+      
       const mastery=globalThis.__EMBERWILD_MASTERY;if(ok&&meta.mastery&&mastery?.gainMastery)mastery.gainMastery(h,meta.mastery,mastery.masterySettings().skillUseXp);
       return ok;
     }finally{tracker?.endSkillCast?.(h,i,ok);}
@@ -138,5 +137,5 @@
     return text;
   };
   // Earlier import layers run before this optional module is installed.
-  try{const saved=JSON.parse(balanceSourceText()||'null');if(saved)applyBalanceConfig(saved,{persist:false});}catch(e){console.warn('共用技能效果還原失敗',e);}
+  try{const saved=globalThis.__EMBERWILD_BALANCE_FINAL_APPLY_PENDING?null:JSON.parse(balanceSourceText()||'null');if(saved)applyBalanceConfig(saved,{persist:false});}catch(e){console.warn('共用技能效果還原失敗',e);}
 })();

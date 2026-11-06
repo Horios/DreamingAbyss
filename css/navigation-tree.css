@@ -1,0 +1,31 @@
+#app>.layout>aside nav>.game-nav-group{margin:0;border:1px solid transparent;border-radius:5px;color:var(--text-soft,var(--muted));font-size:12px;line-height:1.4}
+#app>.layout>aside nav>.game-nav-group[open]{border-color:var(--line);background:color-mix(in srgb,var(--panel) 55%,transparent)}
+#app>.layout>aside nav>.game-nav-group>summary{display:flex;align-items:center;gap:6px;min-height:32px;padding:6px 8px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;list-style:none;text-transform:none}
+#app>.layout>aside nav>.game-nav-group>summary::-webkit-details-marker{display:none}
+#app>.layout>aside nav>.game-nav-group>summary>span:first-child{flex:1}
+#app>.layout>aside nav>.game-nav-group.has-active>summary{color:var(--gold)}
+#app>.layout>aside nav .game-nav-chevron{flex:0 0 auto;font-size:17px;line-height:1;transform:rotate(0);transition:transform .15s ease}
+#app>.layout>aside nav>.game-nav-group[open]>summary .game-nav-chevron{transform:rotate(90deg)}
+#app>.layout>aside nav .game-nav-items{display:grid;gap:2px;padding:0 4px 5px}
+/* Labels and reminder badges use separate rows in the narrow desktop rail. */
+#app>.layout>aside nav .game-nav-items>button{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 6px;width:100%;height:auto;min-height:36px;padding:6px 8px 6px 13px;font-size:12px;line-height:1.5}
+#app>.layout>aside nav .game-nav-items>button>span:first-child{grid-column:1/-1;min-width:0;margin:0;white-space:normal;overflow-wrap:anywhere}
+#app>.layout>aside nav .game-nav-items>button>.number-badge{grid-column:1;grid-row:2;justify-self:end}
+#app>.layout>aside nav .game-nav-items>button>.quest-new{grid-column:2;grid-row:2;margin-left:0}
+#app>.layout>aside nav .game-nav-items>button.active{border-left-width:3px}
+.nav-story-mobile-badge{display:none}
+
+@media(max-width:900px){
+  #app>.layout>aside nav>.game-nav-group{display:none}
+  .nav-story-mobile-badge{display:contents}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #app>.layout>aside nav .game-nav-chevron{transition:none}
+}
+
+.quest-new{display:inline-flex;align-items:center;justify-content:center;flex:0 0 18px;width:18px;height:18px;padding:0;border-radius:50%;background:#258b48;color:#fff!important;font-size:11px;font-weight:800;line-height:1;margin-left:6px;vertical-align:middle;white-space:nowrap}.game-nav-items .number-badge{background:#c93138;color:#fff}.game-nav-items button>span:first-child{margin-right:auto}
+
+#app>.layout>aside nav>.game-nav-group>summary>.quest-new{margin-left:0}
+#app>.layout>aside nav>.game-nav-group[open]>summary>.quest-new,#app>.layout>aside nav>.game-nav-group[open]>summary>.number-badge{display:none}
+.quest-new.quest-new-detail{flex:0 0 auto;width:auto;height:auto;min-width:0;padding:3px 7px;border-radius:4px;font-size:11px;line-height:1.3}

@@ -1,0 +1,111 @@
+/* The same shared journal stays mounted on every game page. */
+.battle-summary{position:relative;min-width:0;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:12px;overflow-anchor:none;font-variant-numeric:tabular-nums}
+.battle-summary-heading,.battle-summary-hp,.battle-summary-foot{display:flex;align-items:center;justify-content:space-between;gap:4px 8px;min-width:0}
+.battle-summary-heading{margin-bottom:7px;font-size:11px}
+.battle-summary-heading>b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.battle-summary-heading>span{flex:none;color:var(--gold)}
+.battle-summary-hp{flex-wrap:wrap}.battle-summary-hp>span{margin-left:auto}
+.battle-summary-meter{height:9px;margin:6px 0;border-radius:8px;overflow:hidden;background:color-mix(in srgb,var(--line) 65%,transparent)}
+.battle-summary-meter>span{display:block;height:100%;width:0;background:#bd6862;transition:width .18s ease-out}
+.battle-summary[data-result="victory"] [data-summary-state]{color:var(--green)}
+.battle-summary-foot{flex-wrap:wrap;font-size:11px;color:var(--muted)}
+#app .battle-summary .battle-details-toggle{width:auto;min-height:26px;height:auto;padding:2px 5px;font-size:11px;margin-left:auto}
+.battle-enemy-icons{display:flex;flex-wrap:wrap;align-content:flex-start;gap:5px;flex:0 0 auto;min-height:62px;max-height:132px;overflow:auto;overflow-anchor:none;padding:3px;order:0}
+.battle-enemy-icon{position:relative;width:44px;height:54px;flex:0 0 44px;border:1px solid var(--line);border-radius:7px;display:grid;place-items:center;background:var(--panel)}
+.battle-enemy-icon .enemy-icon-art{display:block;width:36px;height:36px;line-height:1}
+.battle-enemy-icon svg{width:100%!important;height:100%!important;display:block}
+.battle-enemy-icon small{position:absolute;bottom:0;right:3px;font-size:10px;color:var(--muted)}
+.battle-enemy-icon.is-acting{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.battle-enemy-icon.is-acting:before{content:'▼';position:absolute;top:-7px;left:16px;font-size:9px;color:var(--gold)}
+.battle-enemy-icon.is-boss .enemy-icon-art{color:var(--gold)}
+.battle-enemy-icon.is-dead .enemy-icon-art{filter:grayscale(1);opacity:.3}
+.enemy-icon-elite{display:none;position:absolute;top:-4px;right:-3px;color:#c6a0ee;background:var(--panel);border-radius:50%;font-size:12px;line-height:13px;pointer-events:none}
+/* Elite enemies are marked by colour only: purple artwork, frame and tint (no corner badge). */
+.battle-enemy-icon.is-elite .enemy-icon-art{color:#c6a0ee}
+.battle-enemy-icon.is-elite{background:#a787c926}
+.battle-enemy-icon.is-elite:not(.is-acting){border-color:#a787c9}
+.battle-enemy-icon.is-dead .enemy-icon-elite{filter:grayscale(1);opacity:.3}
+.battle-enemy-icon small:empty{display:none}
+.enemy-icon-event{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:9px;color:var(--green);pointer-events:none;text-shadow:0 1px 3px #000;background:var(--panel);white-space:nowrap;overflow:hidden}
+.enemy-icon-event:empty{display:none}.is-dead .enemy-icon-event{color:var(--muted)}
+.battle-ally-icon .character-avatar-control{width:36px;height:36px;min-width:0;min-height:0;padding:0;border:0;background:transparent}
+.squad-allies:has(>.battle-ally-icons)>.unit{height:auto;min-height:154px;flex:1 0 auto;overflow:visible}
+.journal-enemy-icons{height:38px;min-height:38px;max-height:38px;flex-wrap:nowrap;gap:5px;margin:2px 0;padding:4px 3px;overflow-y:hidden}
+.journal-enemy-icons .battle-enemy-icon{width:28px;height:28px;flex-basis:28px;border-radius:5px}
+.journal-enemy-icons .enemy-icon-art{width:23px;height:23px}
+.journal-enemy-icons .battle-enemy-icon small{font-size:8px;right:1px;bottom:-1px}
+.journal-enemy-icons .battle-enemy-icon.is-acting:before{left:9px;top:-6px}
+.journal-enemy-icons .enemy-icon-event{display:none}
+.journal-enemy-icons .enemy-icon-elite{font-size:9px;line-height:10px;top:-3px;right:-2px}
+.battle-enemy-icon[data-effect="hit"]{animation:enemy-icon-hit .3s ease-out}
+.battle-enemy-icon[data-effect="healed"],.battle-enemy-icon[data-effect="revived"]{animation:enemy-icon-heal .65s ease-out}
+.battle-enemy-icon[data-effect="joined"]{animation:enemy-icon-join .65s ease-out}
+@keyframes enemy-icon-hit{0%{background:#813e35}100%{background:var(--panel)}}
+@keyframes enemy-icon-heal{0%{box-shadow:inset 0 0 12px #67c88a}100%{box-shadow:inset 0 0 0 transparent}}
+@keyframes enemy-icon-join{0%{box-shadow:inset 0 0 15px #e8c06d}100%{box-shadow:inset 0 0 0 transparent}}
+@media(min-width:901px){
+ #app .global-battle-journal>.battle-summary{height:164px;flex:0 0 164px!important;box-sizing:border-box;overflow:hidden}
+ .battle-summary-heading{height:17px;line-height:17px;margin-bottom:4px}
+ .battle-summary-hp{min-height:34px;line-height:17px}
+ .battle-summary-foot{height:26px;flex-wrap:nowrap;font-size:10px;gap:4px}
+ #app .global-battle-journal{display:flex!important;flex-direction:column;gap:5px!important}
+ #app .global-battle-journal>.mobile-journal-report{display:flex;flex-direction:column;flex:1 1 0;min-height:80px;overflow:hidden}
+ #app .global-battle-journal .global-journal-head{flex:none}
+ #app .global-battle-journal .mobile-journal-body{display:flex;flex:1;min-height:0}
+ #app .global-battle-journal #liveLog{flex:1;min-width:0}
+ #app .global-battle-journal>.battle-summary,#app .global-battle-journal>.journal-resizer{flex:none}
+ #app .global-battle-journal>.mobile-journal-loot{display:block;flex:none;min-height:0;max-height:var(--journal-loot-height);overflow:hidden}
+ #app .global-battle-journal:has(.journal-loot-compact[open])>.mobile-journal-loot{height:var(--journal-loot-height)}
+ #app .global-battle-journal .mobile-loot-body{display:block;height:100%;min-height:0}
+ #app .global-battle-journal.journal-details-collapsed>.mobile-journal-report{display:none}
+}
+@media(max-width:900px){
+ #app .global-battle-journal>.battle-summary{display:block;height:108px;box-sizing:border-box;margin:0;border-radius:0;padding:6px 10px;font-size:11px}
+ .battle-summary-heading{margin-bottom:3px}.battle-summary-meter{height:7px;margin:4px 0}
+ #app .battle-summary .battle-details-toggle{display:none}
+ /* Reserve the summary's height when sizing the existing phone drawers. */
+ #app .mobile-journal-open .mobile-journal-body,#app .mobile-loot-open .mobile-loot-body{max-height:min(30dvh,max(20px,calc(100cqh - 368px)))}
+ .battle-enemy-icons{max-height:116px;min-height:54px;gap:4px}
+ .battle-enemy-icon{width:38px;height:48px;flex-basis:38px}.battle-enemy-icon .enemy-icon-art{width:32px;height:32px}
+ .battle-enemy-icon.is-acting:before{left:13px}
+ .battle-ally-icon .character-avatar-control{width:32px;height:32px;min-height:0!important}
+ .journal-enemy-icons{height:24px;min-height:24px;max-height:24px;padding:3px;gap:4px}
+ .journal-enemy-icons .battle-enemy-icon{width:20px;height:18px;flex-basis:20px}
+ .journal-enemy-icons .enemy-icon-art{width:17px;height:17px}
+ .journal-enemy-icons .battle-enemy-icon.is-acting:before{left:5px}
+}
+@media(max-width:900px) and (max-height:500px){
+ #app .global-battle-journal>.battle-summary{padding:2px 10px;height:52px;font-size:10px}
+ .battle-summary-heading,.battle-summary-hp{width:60%}
+ .journal-enemy-icons{position:absolute;right:6px;top:4px;width:calc(40% - 16px);margin:0;height:30px;min-height:30px;max-height:30px}
+ .battle-summary-heading{margin:0;font-size:10px;line-height:12px}
+ .battle-summary-hp,.battle-summary-foot{font-size:10px;line-height:12px}
+ .battle-summary-meter{height:5px;margin:2px 0}
+ #app .global-battle-journal .mobile-journal-toggle,#app .global-battle-journal .mobile-loot-toggle{min-height:30px;padding:3px 10px}
+ #app .mobile-journal-open .mobile-journal-body,#app .mobile-loot-open .mobile-loot-body{max-height:min(50px,max(18px,calc(100cqh - 272px)))}
+}
+@media(prefers-reduced-motion:reduce){.battle-summary-meter>span{transition:none}.battle-enemy-icon{animation:none!important}}
+
+button.battle-enemy-icon{font:inherit;color:inherit;cursor:pointer;padding:0;appearance:none}button.battle-enemy-icon:focus-visible{outline:2px solid var(--gold);outline-offset:3px}.battle-avatar-art{display:inline-flex;align-items:center;justify-content:center;width:100%;height:100%}.battle-avatar-art>svg{width:36px;height:36px}
+#modal.battle-unit-dialog{width:min(780px,calc(100vw - 28px));max-width:calc(100vw - 28px);box-sizing:border-box;max-height:88dvh;overflow-y:auto}.battle-unit-inspector{min-width:0;overflow-wrap:anywhere}.battle-unit-vitals{display:flex;flex-wrap:wrap;gap:12px;color:var(--gold)}.battle-unit-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:5px 14px}.battle-unit-stat-grid>div{display:flex;justify-content:space-between;gap:6px;border-bottom:1px solid var(--line);padding:4px 0}.battle-unit-stat-grid dd{margin:0}.battle-unit-skill-list,.battle-unit-status-list{display:grid;gap:8px}.battle-unit-skill-list article,.battle-unit-status-list article{padding:9px;border:1px solid var(--line);border-radius:5px}.battle-unit-skill-list article>span{display:block;font-size:12px;color:var(--muted);margin-top:3px}.battle-unit-inspector article p{margin:5px 0;font-size:13px}.battle-unit-status-list [data-polarity=buff]{border-inline-start:3px solid #82bba2}.battle-unit-status-list [data-polarity=debuff]{border-inline-start:3px solid #da888c}
+
+#app button.battle-enemy-icon{display:grid!important;place-items:center;padding:0!important;min-height:0!important;min-width:0!important;line-height:1}
+
+/* The existing combat cards own their portrait and HP; no separate battlefield roster. */
+#battleAllyIcons>.unit,#battleEnemyIcons>.unit{display:grid!important;grid-template-columns:48px minmax(0,1fr);grid-template-rows:auto auto 7px auto auto;align-content:center;column-gap:9px;row-gap:4px;flex:0 0 auto!important;height:auto!important;min-height:112px;overflow:visible!important;animation:none!important;opacity:1;filter:none}
+#battleEnemyIcons>.unit{grid-template-columns:minmax(0,1fr) 48px;min-height:88px}
+#battleAllyIcons>.unit>.battle-enemy-icon{grid-column:1;grid-row:1/4;align-self:center}
+#battleEnemyIcons>.unit>.battle-enemy-icon{grid-column:2;grid-row:1/4;align-self:center}
+#battleAllyIcons>.unit>:is(.unit-title,.unit-numbers,.battle-health-bar){grid-column:2}
+#battleEnemyIcons>.unit>:is(.unit-title,.unit-numbers,.battle-health-bar){grid-column:1}
+#battleAllyIcons>.unit>.unit-title,#battleEnemyIcons>.unit>.unit-title{grid-row:1;min-height:18px;height:auto;flex-basis:auto;overflow:visible;flex-wrap:wrap}
+#battleAllyIcons>.unit>.unit-numbers,#battleEnemyIcons>.unit>.unit-numbers{grid-row:2;height:auto;max-height:none;white-space:normal;overflow:visible;line-height:1.5}
+#battleAllyIcons>.unit>.battle-health-bar,#battleEnemyIcons>.unit>.battle-health-bar{grid-row:3;width:100%;height:7px;margin:0}
+#battleAllyIcons>.unit>:is(.unit-skills,.unit-effects),#battleEnemyIcons>.unit>:is(.unit-effects,.enemy-action-status){grid-column:1/-1;height:auto!important;max-height:none;overflow:visible;min-height:0}
+#battleAllyIcons>.unit>.battle-enemy-icon,#battleEnemyIcons>.unit>.battle-enemy-icon{width:46px;height:52px;flex-basis:46px;z-index:3}
+#battleAllyIcons>.unit.fallen>:not(.battle-fx),#battleEnemyIcons>.unit.fallen>:not(.battle-fx){color:var(--muted)}
+#battleAllyIcons>.unit.is-current,#battleEnemyIcons>.unit.is-current{border-left-color:var(--gold)}
+@media(max-width:900px){
+ #battleAllyIcons>.unit,#battleEnemyIcons>.unit{column-gap:7px;padding:7px;min-height:108px}
+ #battleAllyIcons,#battleEnemyIcons{padding:5px;box-sizing:border-box}
+}

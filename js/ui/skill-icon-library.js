@@ -38,7 +38,7 @@
   const colors={steel:'#cdd8df',ember:'#f2a47f',blood:'#e98184',frost:'#a9dcf4',wind:'#a9dfd6',light:'#f0d893',shadow:'#c9adea',arcane:'#d0c6f1',aim:'#dbc69e',neutral:'#d8ded5'};
   const toneByKey=Object.fromEntries(Object.entries(tones).flatMap(([tone,keys])=>keys.map(key=>[key,tone])));
   const keys=Object.keys(paths);
-  const shapeKinds=['icon','line','rect','ellipse','arc','polygon'];
+  const shapeKinds=['icon','line','rect','ellipse','arc','polygon','curve'];
   const bound=(n,min,max,fallback)=>Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;
   const num=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
   const toneColor=(tone,fallbackKey='magic')=>colors[tone]||colors[toneByKey[fallbackKey]]||colors.neutral;
@@ -89,12 +89,29 @@
     if(isLucideReference(type)&&hasIcon(type))return `<g transform="scale(2)" stroke-width="${strokeWidth??2}">${lucideMarkup(type.slice(7))}</g>`;
     return paths.magic;
   }
+  // Editing extensions are optional, preserving legacy layer serialization and SVG.
+  function validEditing(layer){
+    const points=p=>Array.isArray(p)&&p.length>=1&&p.length<=128&&p.every(v=>Array.isArray(v)&&v.length===2&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=192));
+    return (layer.eraseStrokes===undefined||Array.isArray(layer.eraseStrokes)&&layer.eraseStrokes.length<=32&&layer.eraseStrokes.every(s=>s&&Number.isFinite(s.width)&&s.width>=.1&&s.width<=40&&points(s.points)))&&
+      (layer.kind!=='icon'||(layer.filled===undefined||typeof layer.filled==='boolean')&&(layer.fillTone===undefined||Object.hasOwn(colors,layer.fillTone)));
+  }
   function normalizeLayer(layer){
+    const normalized=normalizeLayerGeometry(layer);if(!normalized)return normalized;
+    if(layer.kind==='icon'&&layer.filled!==undefined&&layer.fillTone!==undefined){normalized.filled=!!layer.filled;normalized.fillTone=Object.hasOwn(colors,layer.fillTone)?layer.fillTone:'neutral';}
+    if(Array.isArray(layer.eraseStrokes)&&validEditing({eraseStrokes:layer.eraseStrokes}))normalized.eraseStrokes=layer.eraseStrokes.map(s=>({width:s.width,points:s.points.map(p=>p.slice())}));
+    return normalized;
+  }
+  function normalizeLayerGeometry(layer){
     if(!layer||typeof layer!=='object')return null;
     if(!layer.kind&&layer.icon)layer.kind='icon';
     if(!shapeKinds.includes(layer.kind||''))layer.kind='icon';
     if(layer.kind==='icon'){
       return {kind:'icon',icon:validReference(layer.icon)?layer.icon:'magic',x:bound(num(layer.x),-24,24,0),y:bound(num(layer.y),-24,24,0),scale:bound(num(layer.scale,1),.25,2.5,1),rotation:bound(num(layer.rotation),-180,180,0),tone:layer.tone&&Object.hasOwn(colors,layer.tone)?layer.tone:undefined};
+    }
+    if(layer.kind==='curve'){
+      const out={kind:'curve',x:bound(num(layer.x),-24,24,0),y:bound(num(layer.y),-24,24,0),rotation:bound(num(layer.rotation),-180,180,0),strokeWidth:bound(num(layer.strokeWidth,2.7),.4,10,2.7),tone:Object.hasOwn(colors,layer.tone)?layer.tone:'neutral'};
+      for(const [key,fallback] of Object.entries({x1:-12,y1:0,cx:0,cy:-16,x2:12,y2:0}))out[key]=bound(num(layer[key],fallback),-48,48,fallback);
+      return out;
     }
     if(layer.kind==='line'){
       return {kind:'line',x:bound(num(layer.x),-24,24,0),y:bound(num(layer.y),-24,24,0),length:bound(num(layer.length,18),2,64,18),rotation:bound(num(layer.rotation),-180,180,0),strokeWidth:bound(num(layer.strokeWidth,2.7),.4,10,2.7),tone:layer.tone&&Object.hasOwn(colors,layer.tone)?layer.tone:'neutral'};
@@ -131,19 +148,33 @@
     if(L.kind==='rect')return {x:24+L.x-L.w/2,y:24+L.y-L.h/2,w:L.w,h:L.h};
     if(L.kind==='ellipse')return {x:24+L.x-L.rx,y:24+L.y-L.ry,w:L.rx*2,h:L.ry*2};
     if(L.kind==='arc')return {x:24+L.x-L.r,y:24+L.y-L.r,w:L.r*2,h:L.r*2};
+    if(L.kind==='curve'){const xs=[L.x1,L.cx,L.x2],ys=[L.y1,L.cy,L.y2];return {x:24+L.x+Math.min(...xs),y:24+L.y+Math.min(...ys),w:Math.max(...xs)-Math.min(...xs)||1,h:Math.max(...ys)-Math.min(...ys)||1};}
     const b=polygonBounds(L.points);return {x:24+L.x+b.x*L.scale,y:24+L.y+b.y*L.scale,w:b.w*L.scale,h:b.h*L.scale};
   }
   function layerMarkup(rawLayer,appearance){
     const layer=normalizeLayer(rawLayer);if(!layer)return '';
+    const markup=layerGeometryMarkup(layer,appearance);
+    if(!layer.eraseStrokes?.length)return markup;
+    // Stable content-derived IDs allow the same SVG in multiple preview panes.
+    const transform=`translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation||0}) scale(${layer.scale||1})`;
+    let hash=2166136261;for(const c of JSON.stringify([transform,layer.eraseStrokes]))hash=Math.imul(hash^c.charCodeAt(0),16777619);
+    const id='ew-erase-'+(hash>>>0).toString(16);
+    const strokes=layer.eraseStrokes.map(s=>s.points.length===1?`<circle cx="${s.points[0][0]}" cy="${s.points[0][1]}" r="${s.width/2}" fill="black" stroke="none"/>`:`<polyline points="${s.points.map(p=>p.join(',')).join(' ')}" fill="none" stroke="black" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+    return `<defs><mask id="${id}" maskUnits="userSpaceOnUse" x="-256" y="-256" width="560" height="560" style="mask-type:luminance"><rect x="-256" y="-256" width="560" height="560" fill="white" stroke="none"/><g transform="${transform}">${strokes}</g></mask></defs><g mask="url(#${id})">${markup}</g>`;
+  }
+  function layerGeometryMarkup(rawLayer,appearance){
+    const layer=normalizeLayer(rawLayer);if(!layer)return '';
     const paint=(tone,key)=>appearance?.color||toneColor(tone,key),stroke=appearance?.strokeWidth;
     if(layer.kind==='icon'){
       const color=paint(layer.tone,layer.icon);
-      return `<g transform="translate(${layer.x} ${layer.y}) translate(24 24) rotate(${layer.rotation}) scale(${layer.scale}) translate(-24 -24)" color="${color}" stroke="currentColor">${iconMarkup(layer.icon,stroke)}</g>`;
+      const fill=layer.filled?paint(layer.fillTone||layer.tone,layer.icon):'none',markup=iconMarkup(layer.icon,stroke);
+      return `<g transform="translate(${layer.x} ${layer.y}) translate(24 24) rotate(${layer.rotation}) scale(${layer.scale}) translate(-24 -24)" color="${color}" stroke="currentColor"${layer.filled?` fill="${fill}"`:''}>${layer.filled?markup.replace(/fill="none"/g,`fill="${fill}"`):markup}</g>`;
     }
     if(layer.kind==='line')return `<g transform="translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation})" color="${paint(layer.tone)}"><line x1="${-layer.length/2}" y1="0" x2="${layer.length/2}" y2="0" stroke="currentColor" stroke-width="${stroke??layer.strokeWidth}" stroke-linecap="round"/></g>`;
     if(layer.kind==='rect')return `<g transform="translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation})"><rect x="${-layer.w/2}" y="${-layer.h/2}" width="${layer.w}" height="${layer.h}" rx="${layer.radius}" fill="${layer.filled?paint(layer.fillTone||layer.strokeTone):'none'}" stroke="${paint(layer.strokeTone)}" stroke-width="${stroke??layer.strokeWidth}"/></g>`;
     if(layer.kind==='ellipse')return `<g transform="translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation})"><ellipse cx="0" cy="0" rx="${layer.rx}" ry="${layer.ry}" fill="${layer.filled?paint(layer.fillTone||layer.strokeTone):'none'}" stroke="${paint(layer.strokeTone)}" stroke-width="${stroke??layer.strokeWidth}"/></g>`;
     if(layer.kind==='arc')return `<g transform="translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation})" color="${paint(layer.tone)}"><path d="${arcPath(layer.r,layer.start,layer.end)}" fill="none" stroke="currentColor" stroke-width="${stroke??layer.strokeWidth}"/></g>`;
+    if(layer.kind==='curve')return `<g transform="translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation})" color="${paint(layer.tone)}"><path d="M ${layer.x1} ${layer.y1} Q ${layer.cx} ${layer.cy} ${layer.x2} ${layer.y2}" fill="none" stroke="currentColor" stroke-width="${stroke??layer.strokeWidth}"/></g>`;
     return `<g transform="translate(${24+layer.x} ${24+layer.y}) rotate(${layer.rotation}) scale(${layer.scale})"><polygon points="${escAttr(layer.points)}" fill="${layer.filled?paint(layer.fillTone||layer.strokeTone):'none'}" stroke="${paint(layer.strokeTone)}" stroke-width="${stroke??layer.strokeWidth}" stroke-linejoin="round" stroke-linecap="round"/></g>`;
   }
   function markupFor(type,definitions=[],appearance){
@@ -156,12 +187,13 @@
   }
   function svgFor(type,definitions=[],options={}){
     const icon=typeof type==='string'&&type.startsWith('custom:')&&(Array.isArray(definitions)?definitions:[]).find(item=>item?.id===type.slice(7));
-    if(!icon?.appearance&&!isLucideReference(type)&&options.size===undefined)return `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">${markupFor(type,definitions)}</svg>`;
-    const a=normalizeAppearance(icon?.appearance??{strokeWidth:isLucideReference(type)||icon?.layers?.some(layer=>isLucideReference(layer.icon))?2:2.7}),effect=effects[a.effect],size=options.size===undefined?a.size:bound(num(options.size,34),8,128,34);
+    const templateColor=globalThis.EmberwildIconColors?.resolve(icon);
+    if(!icon?.appearance&&!isLucideReference(type)&&options.size===undefined&&!options.color&&!templateColor)return `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">${markupFor(type,definitions)}</svg>`;
+    const a=normalizeAppearance({...icon?.appearance,...(!icon?.appearance?{strokeWidth:isLucideReference(type)||icon?.layers?.some(layer=>isLucideReference(layer.icon))?2:2.7}:{}),...(templateColor?{color:templateColor}:{}),...(options.color?{color:options.color}:{})}),effect=effects[a.effect],size=options.size===undefined?a.size:bound(num(options.size,34),8,128,34);
     const style=`width:${size}px;height:${size}px;stroke-width:${a.strokeWidth};opacity:${a.opacity}${a.color?';color:'+a.color:''}`;
     const animation=options.animate!==false&&effect.keyframe?` style="--ew-icon-animation:${effect.keyframe} ${a.effectDuration}s ${a.effectTiming} infinite ${effect.direction||'normal'}"`:'';
     const glow=a.glowStrength?` style="filter:drop-shadow(0 0 ${a.glowStrength}px ${a.glowColor})"`:'';
-    return `<svg class="emberwild-icon" viewBox="0 0 48 48" preserveAspectRatio="xMidYMid meet" fill="none" stroke="currentColor" stroke-width="${a.strokeWidth}" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true" style="${style}"><g class="ew-icon-glow"${glow}><g transform="rotate(${a.rotation} 24 24)"><g class="ew-icon-motion"${animation}>${markupFor(type,definitions,icon?.appearance?a:undefined)}</g></g></g></svg>`;
+    return `<svg class="emberwild-icon" viewBox="0 0 48 48" preserveAspectRatio="xMidYMid meet" fill="none" stroke="currentColor" stroke-width="${a.strokeWidth}" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true" style="${style}"><g class="ew-icon-glow"${glow}><g transform="rotate(${a.rotation} 24 24)"><g class="ew-icon-motion"${animation}>${markupFor(type,definitions,icon?.appearance||options.color||templateColor?a:undefined)}</g></g></g></svg>`;
   }
-  globalThis.__EMBERWILD_SKILL_ICONS=Object.freeze({paths:Object.freeze(paths),labels:Object.freeze(labels),keys:Object.freeze(keys),tones:Object.freeze(tones),colors:Object.freeze(colors),toneByKey:Object.freeze(toneByKey),shapeKinds:Object.freeze(shapeKinds),normalizeLayer,layerBounds,layerMarkup,markupFor,svgFor,hasIcon,validReference,isLucideReference,normalizeAppearance,validAppearance,effects});
+  globalThis.__EMBERWILD_SKILL_ICONS=Object.freeze({paths:Object.freeze(paths),labels:Object.freeze(labels),keys:Object.freeze(keys),tones:Object.freeze(tones),colors:Object.freeze(colors),toneByKey:Object.freeze(toneByKey),shapeKinds:Object.freeze(shapeKinds),normalizeLayer,layerBounds,layerMarkup,markupFor,svgFor,hasIcon,validReference,isLucideReference,normalizeAppearance,validAppearance,validEditing,effects});
 })();

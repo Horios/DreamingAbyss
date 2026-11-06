@@ -28,7 +28,7 @@ node tests/collect-progression.cjs /tmp/progression-rows.json
 
 原始統計另存於 `../docs/progression-battles.csv`、`../docs/progression-curves.csv` 與 `../docs/progression-xp.csv`。CSV 的回合、HP 壓力等為固定種子平均值，人物與怪物的 HP／攻擊／防禦仍是整數。
 
-`npm run test:boosts` 驗證限時道具與戰報。測試載入完整遊戲，使用瀏覽器可控制的現實時鐘推進既有 `tick()` 定時器，檢查 4× 鎖定／到期降回 2×、任意百分比與分鐘、同名刷新、多來源加算、真正獎勵／掉落判定、商店購買、設計器操作與 JSON 匯出、戰鬥／戰報暫停、五種事件篩選及存檔重載。1×／2×／4× 各推進十秒，確認掛機時間相同、實際行動數隨倍速增加。限時券按現實時間到期，離線不增加掛機時間。
+`npm run test:boosts` 驗證限時道具與戰報。測試載入完整遊戲，使用瀏覽器可控制的現實時鐘推進既有 `tick()` 定時器，確認戰鬥倍速與倍速券已移除，並檢查任意百分比與分鐘、同名刷新、多來源加算、真正獎勵／掉落判定、商店購買、設計器操作與 JSON 匯出、戰鬥／戰報暫停、五種事件篩選及存檔重載。推進十秒，確認掛機時間與實際行動。限時券按現實時間到期，離線不增加掛機時間。
 
 限時道具契約在 `js/items/timed-boosts.js`，設計器的 `timed-boost-schema-v1` 必須嵌入完全相同內容。`items[].bonusPercent`、`durationMinutes` 與既有 `shopSettings.randomOffers.entries` 是編輯、匯出、匯入及遊戲實際生效的共同來源。
 

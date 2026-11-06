@@ -33,7 +33,7 @@
   };
 
   spawnGroup=function(){
-    const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],final=isFinalMap(party.map),g=GAMEPLAY_SETTINGS.combat.groupSize,min=Math.max(1,Math.round(g.min)),max=Math.max(min,Math.round(g.max)),n=final?1:min+rand(max-min+1);
+    const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],final=isFinalMap(party.map),g=GAMEPLAY_SETTINGS.combat.groupSize,min=Math.max(1,Math.round(g.min)),max=Math.max(min,Math.round(g.max)),n=final?1:globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.encounterSize():min+rand(max-min+1);
     foes=[];effects=[];actorCooldowns={};supportCooldowns={};for(const h of heroes())h.shield=0;
     for(let i=0;i<n;i++){const e=makeEnemy(party.map,weak);e.id='foe-'+uid();e.rewarded=false;foes.push(e);}enemy=foes[0];round=0;
     if(typeof beginBattleStatistics==='function')beginBattleStatistics();
@@ -45,7 +45,12 @@
   victory=function(){
     let e=enemy;if(!e)return;lastDefeatedEnemy={...e};let mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards,mult=[r.kindMultiplier.normal,r.kindMultiplier.elite,r.kindMultiplier.boss][kindIndex],gateFinal=e.kind==='final'&&isGateMap(mi),firstClear=gateFinal&&!state.won;
     state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);
-    let gold=Math.round((r.gold.base+e.lv*r.gold.perLevel)*mult*d.xp),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode);state.gold+=gold;state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
+    const playerLevel=party?.members?.[0]?.lv??state?.lv;
+    const gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel);
+    state.gold+=gold;
+    const oreFactor=generalDropLevelGapFactor({type:'ore'},e);
+    if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)
+      state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
     rollConfiguredDrops(e);awardEther(e);
     if(e.kind==='final'){
       running=false;
@@ -82,7 +87,7 @@
   }
   if(typeof guideView==='function'){
     const finalMapGuideBase=guideView;
-    guideView=function(){const html=finalMapGuideBase().replace('終焉王座群怪模式為噬日者及最多五隻星隕護衛。','終局地圖採固定關卡編成；可設定最終首領並加入普通或菁英隨從。');return html.includes('終局地圖採固定關卡編成')?html:html+`<section class=\"panel\"><h2>終局地圖</h2><p>終局地圖採固定關卡編成：必須有 1 名最終首領，可加入普通或菁英隨從並設定數量與集火隊列。索引 6 的終焉王座是預設等級突破關卡；後續可新增更多終局地圖，擊敗它們不會再次改變等級上限。</p></section>`;};
+    guideView=function(){return finalMapGuideBase()+`<section class="panel"><h2>終局地圖</h2><p>終局關卡會出現最終首領，部分關卡也有普通或菁英隨從。擊敗終焉王座的噬日者可以突破等級上限；其他終局關卡的勝利不會重複提高等級上限。</p></section>`;};
   }
   if(typeof showRegionBestiary==='function'){
     showRegionBestiary=function(){

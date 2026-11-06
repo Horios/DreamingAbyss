@@ -23,7 +23,7 @@ function validateSkillIconDefinitions(input){
     if(icon.appearance!==undefined&&!globalThis.__EMBERWILD_SKILL_ICONS.validAppearance(icon.appearance))throw Error('自訂技能圖示外觀無效：'+icon.id);
     for(const layer of icon.layers){
       const kind=layer?.kind||'icon',range=(key,min,max,required=true)=>layer[key]===undefined&&!required||Number.isFinite(layer[key])&&layer[key]>=min&&layer[key]<=max;
-      let ok=!!layer&&kinds.has(kind)&&range('x',-24,24)&&range('y',-24,24)&&range('rotation',-180,180,false);
+      let ok=!!layer&&kinds.has(kind)&&range('x',-24,24)&&range('y',-24,24)&&range('rotation',-180,180,false)&&globalThis.__EMBERWILD_SKILL_ICONS.validEditing(layer);
       if(ok&&kind==='icon')ok=globalThis.__EMBERWILD_SKILL_ICONS.validReference(layer.icon)&&range('scale',.25,2.5);
       else if(ok){
         ok=range('strokeWidth',.4,10);
@@ -31,6 +31,7 @@ function validateSkillIconDefinitions(input){
         if(kind==='rect')ok=ok&&range('w',1,64)&&range('h',1,64)&&range('radius',0,24);
         if(kind==='ellipse')ok=ok&&range('rx',.5,32)&&range('ry',.5,32);
         if(kind==='arc')ok=ok&&range('r',.5,32)&&range('start',-360,360)&&range('end',-360,360);
+        if(kind==='curve')ok=ok&&['x1','y1','cx','cy','x2','y2'].every(key=>range(key,-48,48));
         if(kind==='polygon')ok=ok&&range('scale',.2,4)&&typeof layer.points==='string'&&/^\s*-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?(?:\s+-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?){2,}\s*$/.test(layer.points);
         if(['rect','ellipse','polygon'].includes(kind))ok=ok&&typeof layer.filled==='boolean';
       }
@@ -109,15 +110,24 @@ function ensureMasterySettings(settings){
 ensureMasterySettings(GAMEPLAY_SETTINGS_DEFAULTS);
 ensureMasterySettings(GAMEPLAY_SETTINGS);
 
-function masterySettings(){ensureMasterySettings(GAMEPLAY_SETTINGS);return GAMEPLAY_SETTINGS.skills.mastery;}
+function masterySettings(){
+  // Simulation batches cannot edit design data; normalize once per batch.
+  const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;
+  if(cache?.masteryOwner===GAMEPLAY_SETTINGS)return cache.mastery;
+  ensureMasterySettings(GAMEPLAY_SETTINGS);
+  if(cache){cache.masteryOwner=GAMEPLAY_SETTINGS;cache.mastery=GAMEPLAY_SETTINGS.skills.mastery;}
+  return GAMEPLAY_SETTINGS.skills.mastery;
+}
 function masteryStepCost(level){
   const s=masterySettings(),l=Math.max(0,Math.floor(Number(level)||0));
   return Math.max(1,Math.round(s.xpBase+l*s.xpLinear+l*l*s.xpQuadratic));
 }
 function masteryLevelFromXp(xp){
-  const s=masterySettings(),value=Math.max(0,Math.floor(Number(xp)||0));let level=0,spent=0;
+  const s=masterySettings(),value=Math.max(0,Math.floor(Number(xp)||0)),cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;
+  const levels=cache?(cache.masteryLevels??=new Map()):null;if(levels?.has(value))return levels.get(value);
+  let level=0,spent=0;
   while(level<s.maxLevel){const cost=masteryStepCost(level);if(value<spent+cost)break;spent+=cost;level++;}
-  return level;
+  levels?.set(value,level);return level;
 }
 function masteryProgress(xp){
   const value=Math.max(0,Math.floor(Number(xp)||0)),level=masteryLevelFromXp(value),max=masterySettings().maxLevel;
@@ -202,7 +212,15 @@ function ensureGearWeaponType(g){
   else if(Number.isInteger(Number(g.job))&&DEFAULT_WEAPON_BY_JOB[Number(g.job)])g.weaponType=DEFAULT_WEAPON_BY_JOB[Number(g.job)];
   return g;
 }
-function migrateGearList(list){if(Array.isArray(list))for(const g of list)ensureGearWeaponType(g);}
+function migrateGearList(list){
+  if(!Array.isArray(list))return;
+  // Replay blocks inventory edits: only the appended tail can need migration.
+  const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;
+  const lengths=cache?(cache.migratedGear??=new WeakMap()):null;
+  const start=lengths&&lengths.get(list)<=list.length?lengths.get(list):0;
+  for(let i=start;i<list.length;i++)ensureGearWeaponType(list[i]);
+  lengths?.set(list,list.length);
+}
 function migrateAllKnownWeapons(){
   for(const h of party?.members||[]){migrateGearList(h.bag);if(h.equipped)for(const id of h.equipped){if(!id)continue;ensureGearWeaponType(h.bag?.find(g=>g.id===id));}}
   migrateGearList(party?.sharedGear?.items);migrateGearList(state?.bag);
@@ -330,7 +348,9 @@ advance=function(){
 };
 
 const masteryNeedBase=need;
-need=function(level){return Math.max(1,Math.round(masteryNeedBase(level)*masterySettings().characterXpMultiplier));};
+// requiredXp (EmberwildProgression) already applies skills.mastery.characterXpMultiplier; applying it here again
+// squared the multiplier whenever it was not 1. Keep the single, shared formula.
+need=function(level){return Math.max(1,Math.round(masteryNeedBase(level)));};
 
 function prepSaveForLegacyValidator(input){
   const out=clone(input),rows=out?.version===3?out.members:[out];

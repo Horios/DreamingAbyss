@@ -118,7 +118,7 @@ function skillIconFor(job,kind,index,options={}){
   const meta=kind==='core'?M.coreMeta(job,index):sk;
   const type=kind==='core'?inferredCoreIcon(sk,index,job):inferredSupportIcon(sk,job);
   const size=meta?.iconType&&meta.iconType!=='auto'?{}:{size:24};
-  return skillIconHTML(type,{...size,...options},true);
+  return skillIconHTML(type,{...size,...options,color:globalThis.__EMBERWILD_ICON_COLOR?.('skill',kind+':'+job+':'+index)||options.color},true);
 }
 function skillMasteryTooltip(meta){
   if(!meta?.requiredMastery)return '精通要求：無';
@@ -148,14 +148,14 @@ function coreSelectedDetail(i){
   const sk=CLASSES[state.job].skills[i];if(!sk)return '';
   const kind=sk[1],learned=learnedCore(i),missing=learned?M.coreMissingRequirements(state,i,true):M.coreMissingRequirements(state,i,false),usable=learned&&!M.coreMissingRequirements(state,i,true).length,gem=state.sockets[i]??null,parts=coreRequirementParts(sk,i);
   const slots=kind==='active'?Array.from({length:2},(_,slot)=>state.active?.[slot]??null):state.procSlots,slotFn=kind==='active'?'equipSkill':'slotProcSkill';
-  return `<section class="panel skill-selected-panel ${kind==='proc'?'skill-kind-proc':'skill-kind-active'}"><div class="skill-selected-heading">${skillIconHTML(inferredCoreIcon(sk,i))}<div><h2>${esc(sk[0])}</h2><div class="skill-list-title"><span class="skill-state ${learned?'learned':'locked'}">${learned?'已學':'未學'}</span><span>${kind==='proc'?'普攻觸發':'主動'}</span></div></div></div>${skillTypeBadges(state.job,i)}${skillMechanicsDetails(state.job,i)}<p class="skill-flavor"><b>說明：</b>${esc(typeof coreSkillFlavor==='function'?coreSkillFlavor(state.job,i):'')}</p><p class="skill-detail"><b>詳細：</b>${esc(coreDetailText(i))}</p>${requirementHTML(parts,missing)}${learned&&!usable?`<p class="small">目前無法使用：${esc(M.coreMissingRequirements(state,i,true).join('、'))}</p>`:''}<div class="skill-selected-controls"><button onclick="learn(${i})" ${learned||missing.length?'disabled':''}>${learned?'已學會':missing.length?'尚未達成':'學習'}</button>${[0,1].map(slot=>`<button onclick="${slotFn}(${i},${slot})" ${learned?'':'disabled'}>${slots[slot]===i?'已配置槽':'設為槽'} ${slot+1}</button>`).join('')}<label>寶石 <select aria-label="${esc(sk[0])}寶石" onchange="socket(${i},this.value)" ${learned?'':'disabled'}><option value="-1" ${gem===null?'selected':''}>不鑲嵌</option>${GEMS.map((g,j)=>`<option value="${j}" ${gem===j?'selected':''} ${state.gems[j]<1&&gem!==j?'disabled':''}>${esc(g.name)} ×${state.gems[j]} · ${esc(g.desc)}</option>`).join('')}</select></label></div></section>`;
+  return `<section class="panel skill-selected-panel ${kind==='proc'?'skill-kind-proc':'skill-kind-active'}"><div class="skill-selected-heading">${skillIconHTML(inferredCoreIcon(sk,i),{color:globalThis.__EMBERWILD_ICON_COLOR?.('skill','core:'+state.job+':'+i)})}<div><h2>${esc(sk[0])}</h2><div class="skill-list-title"><span class="skill-state ${learned?'learned':'locked'}">${learned?'已學':'未學'}</span><span>${kind==='proc'?'普攻觸發':'主動'}</span></div></div></div>${skillTypeBadges(state.job,i)}${skillMechanicsDetails(state.job,i)}<p class="skill-flavor"><b>說明：</b>${esc(typeof coreSkillFlavor==='function'?coreSkillFlavor(state.job,i):'')}</p><p class="skill-detail"><b>詳細：</b>${esc(coreDetailText(i))}</p>${requirementHTML(parts,missing)}${learned&&!usable?`<p class="small">目前無法使用：${esc(M.coreMissingRequirements(state,i,true).join('、'))}</p>`:''}<div class="skill-selected-controls"><button onclick="learn(${i})" ${learned||missing.length?'disabled':''}>${learned?'已學會':missing.length?'尚未達成':'學習'}</button>${[0,1].map(slot=>`<button onclick="${slotFn}(${i},${slot})" ${learned?'':'disabled'}>${slots[slot]===i?'已配置槽':'設為槽'} ${slot+1}</button>`).join('')}<label>寶石 <select aria-label="${esc(sk[0])}寶石" onchange="socket(${i},this.value)" ${learned?'':'disabled'}><option value="-1" ${gem===null?'selected':''}>不鑲嵌</option>${GEMS.map((g,j)=>`<option value="${j}" ${gem===j?'selected':''} ${state.gems[j]<1&&gem!==j?'disabled':''}>${esc(g.name)} ×${state.gems[j]} · ${esc(g.desc)}</option>`).join('')}</select></label></div></section>`;
 }
 function supportSelectedDetail(i){
   const sk=SUPPORT[state.job]?.[i];if(!sk)return '';
   const learned=learnedSupport(i),missing=learned?M.supportMissingRequirements(state,i,true):M.supportMissingRequirements(state,i,false),usable=learned&&!M.supportMissingRequirements(state,i,true).length,parts=supportRequirementParts(sk,i);
   let detail='';try{detail=supportSkillDetail(state.job,i,state);}catch{detail=`${TARGET_NAMES[sk.target]||sk.target} · ${EFFECT_NAMES[sk.kind]||sk.kind} ${Number((supportAmount(state.job,i)*100).toFixed(1))}% · 冷卻 ${sk.cooldown} 回合`;}
   if(sk.mastery)detail+=` · 使用時培養 ${masteryLabel(sk.mastery)}精通`;
-  return `<section class="panel skill-selected-panel skill-kind-support"><div class="skill-selected-heading">${skillIconHTML(inferredSupportIcon(sk))}<div><h2>${esc(sk.name)}</h2><div class="skill-list-title"><span class="skill-state ${learned?'learned':'locked'}">${learned?'已學':'未學'}</span><span>輔助</span></div></div></div>${skillTypeBadges(state.job,i,'support')}${skillMechanicsDetails(state.job,i,'support')}<p class="skill-flavor"><b>說明：</b>${esc(sk.description||'')}</p><p class="skill-detail"><b>詳細：</b>${esc(detail)}</p>${requirementHTML(parts,missing)}${learned&&!usable?`<p class="small">目前無法使用：${esc(M.supportMissingRequirements(state,i,true).join('、'))}</p>`:''}<div class="skill-selected-controls"><button onclick="learnSupport(${i})" ${learned||missing.length?'disabled':''}>${learned?'已學會':missing.length?'尚未達成':'學習'}</button>${[0,1].map(slot=>`<button onclick="slotSupport(${i},${slot})" ${learned?'':'disabled'}>${state.supportSlots[slot]===i?'已配置槽':'設為槽'} ${slot+1}</button>`).join('')}</div></section>`;
+  return `<section class="panel skill-selected-panel skill-kind-support"><div class="skill-selected-heading">${skillIconHTML(inferredSupportIcon(sk),{color:globalThis.__EMBERWILD_ICON_COLOR?.('skill','support:'+state.job+':'+i)})}<div><h2>${esc(sk.name)}</h2><div class="skill-list-title"><span class="skill-state ${learned?'learned':'locked'}">${learned?'已學':'未學'}</span><span>輔助</span></div></div></div>${skillTypeBadges(state.job,i,'support')}${skillMechanicsDetails(state.job,i,'support')}<p class="skill-flavor"><b>說明：</b>${esc(sk.description||'')}</p><p class="skill-detail"><b>詳細：</b>${esc(detail)}</p>${requirementHTML(parts,missing)}${learned&&!usable?`<p class="small">目前無法使用：${esc(M.supportMissingRequirements(state,i,true).join('、'))}</p>`:''}<div class="skill-selected-controls"><button onclick="learnSupport(${i})" ${learned||missing.length?'disabled':''}>${learned?'已學會':missing.length?'尚未達成':'學習'}</button>${[0,1].map(slot=>`<button onclick="slotSupport(${i},${slot})" ${learned?'':'disabled'}>${state.supportSlots[slot]===i?'已配置槽':'設為槽'} ${slot+1}</button>`).join('')}</div></section>`;
 }
 function selectedSkillDetailHTML(entries){
   if(skillSelectionJob!==memberKey(state)){skillSelectionJob=memberKey(state);skillSelection=null;skillTurn=1;}
@@ -186,7 +186,7 @@ function devToolHTML(){
     <div class="mastery-dev-box"><b>主角進度（夥伴等級同步）</b><div class="actions"><label>LV <input id="dev-mastery-level" type="number" min="1" max="${RULES.maxLevel}" value="${player.lv}"></label><button onclick="devMasterySetLevel()">設定</button></div><div class="actions"><label>EXP <input id="dev-mastery-exp" type="number" min="0" value="${player.xp}"></label><button onclick="devMasterySetExp()">設定</button></div></div>
     <div class="mastery-dev-box"><b>精通 XP</b>${masteryKeys().map(key=>`<div class="actions"><span style="min-width:54px">${esc(masteryLabel(key))}</span><button onclick="devMasteryAdjust('${key}',-10)">−10</button><input id="dev-mastery-${key}" type="number" min="0" value="${state.mastery[key]}"><button onclick="devMasterySet('${key}')">設定</button><button onclick="devMasteryAdjust('${key}',10)">+10</button></div>`).join('')}<button onclick="devMasteryReset()">重置此角色精通</button></div>
     <div class="mastery-dev-box"><b>武器切換</b><div class="actions">${weaponTypes.map(type=>`<button onclick="devMasteryWeapon('${type}')">${esc(weaponLabel(type))}</button>`).join('')||'<span class="small">目前資料沒有可切換武器。</span>'}</div><p class="small">沒有對應武器時會建立一件基底評級：D 的測試武器並直接穿戴。</p></div>
-    <div class="mastery-dev-box"><b>戰鬥模擬</b><div class="actions"><label>回合 <input id="dev-mastery-rounds" type="number" min="1" max="2000" value="100"></label><button onclick="devMasterySimulate()">模擬</button></div><p class="small">上次完整遭遇精通：${masteryGainHTML(M.lastBattleGain())}</p><p class="small">目前遭遇精通：${masteryGainHTML(M.currentBattleGain())}</p></div>
+    <div class="mastery-dev-box"><b>戰鬥模擬</b><div class="actions"><label>秒 <input id="dev-mastery-rounds" type="number" min="1" max="2000" value="100"></label><button onclick="devMasterySimulate()">模擬</button></div><p class="small">上次完整遭遇精通：${masteryGainHTML(M.lastBattleGain())}</p><p class="small">目前遭遇精通：${masteryGainHTML(M.currentBattleGain())}</p></div>
   </div><div class="divider"></div><b>技能測試開關</b><div class="actions">${CLASSES[state.job].skills.map((sk,i)=>`<button onclick="devMasteryToggleCore(${i})">${learnedCore(i)?'取消':'學會'} ${esc(sk[0])}</button>`).join('')}</div><div class="actions">${SUPPORT[state.job].map((sk,i)=>`<button onclick="devMasteryToggleSupport(${i})">${learnedSupport(i)?'取消':'學會'} ${esc(sk.name)}</button>`).join('')}</div></details>`;
 }
 skillsView=function(){
@@ -229,13 +229,12 @@ globalThis.devMasterySimulate=function(){
   stopForDev();const el=$('dev-mastery-rounds'),target=Math.max(1,Math.min(2000,Math.floor(Number(el?.value)||100)));let completed=0,actions=0;
   running=true;if(!foes.some(e=>e.hp>0))spawnGroup();
   try{
-    for(;completed<target;completed++){
-      if($('modal')?.open)break;
-      const gen=pacedRound();let guard=0,step;
-      do{step=gen.next();guard++;actions++;if(guard>200)throw Error('單回合動作超過安全上限');}while(!step.done);
-    }
+    if(globalThis.EmberwildSecondsCombat?.active){
+      const end=partyClock+target;let guard=0;
+      while(running&&partyClock<end&&!$('modal')?.open){const step=EmberwildSecondsCombat.step();completed=target-Math.max(0,end-partyClock);if(++guard>100000)throw Error('模擬事件超過安全上限');}
+    }else for(;completed<target;completed++){const gen=pacedRound();for(const step of gen)if(++actions>400000)throw Error('模擬事件超過安全上限');}
   }catch(e){console.warn('長時間戰鬥模擬中止',e);toast('模擬中止：'+e.message);}
-  running=false;save();render();if(completed)toast(`已模擬 ${completed} 個戰鬥回合`);
+  running=false;save();render();if(completed)toast(`已模擬 ${Number(completed.toFixed(1))} ${globalThis.EmberwildSecondsCombat?.active?'秒':'個戰鬥回合'}`);
 };
 
 if(GAMEPLAY_SETTINGS.quests?.tutorial)GAMEPLAY_SETTINGS.quests.tutorial.skillLevelRequirement=1;
@@ -249,16 +248,27 @@ tutorial=function(){
 const masteryCharacterViewBase=characterView;
 characterView=function(){
   const h=typeof pageHero==='function'?pageHero('character'):state;M.ensureHero(h);let html=masteryCharacterViewBase();
-  html=html.replace(/升級獲得\s*\d+\s*能力點[、，]\s*\d+\s*技能點；?/g,'升級獲得能力點；').replace(/技能點\s*\+\s*\d+/g,'');
+  html=html.replace(/升級獲得\s*\d+\s*能力點[、，]\s*\d+\s*技能點；?/g,'升級後依職業自然成長；').replace(/技能點\s*\+\s*\d+/g,'');
   const req=M.masterySettings().advanceRequiredLevel,best=Math.max(0,...M.validMasteries(h.job).map(k=>M.masteryLevelFromXp(h.mastery[k]))),a=GAMEPLAY_SETTINGS.progression.advance,disabled=h.advanced||h.lv<a.level||best<req;
   html=html.replace(/<button class="primary" onclick="heroMenuAction\((\d+),\(\)=>\{advance\(\)\}\)"\s*(?:disabled)?\s*>/,(_,job)=>`<button class="primary" onclick="heroMenuAction(${job},()=>{advance()})"${disabled?' disabled':''}>`);
-  return html+`<section class="panel"><h2>二轉精通條件</h2><p>除既有角色等級與資源外，需要本職任一主要精通達 Lv${req}。</p><p class="small">目前最高精通 Lv${best}。不要求所有精通平均培養。</p></section>`;
+  // v0.113: the mastery requirement and where 怨念碎片 drops live inside the 二轉 panel (no separate panel).
+  const note=`<p class="small advance-mastery-note">另需本職任一主要精通達 Lv${req}（目前最高 Lv${best}）；不要求所有精通平均培養。</p>`+advanceMaterialHint();
+  const button=/<button class="primary" onclick="heroMenuAction\(\d+,\(\)=>\{advance\(\)\}\)"/;
+  return button.test(html)?html.replace(button,m=>note+m):html+`<section class="panel"><h2>二轉條件</h2>${note}</section>`;
 };
+// Regions whose monsters drop the 二轉 material, from the balance-driven monster catalog (MAPS as fallback).
+function advanceMaterialHint(material='怨念碎片'){
+  const found=new Map(),add=(mapIndex,name)=>{const m=MAPS[mapIndex];if(!m)return;if(!found.has(mapIndex))found.set(mapIndex,new Set());found.get(mapIndex).add(name);};
+  const catalog=typeof monsterCatalog==='function'?monsterCatalog():[];
+  for(const m of catalog)if(m?.material===material&&Number.isInteger(m.mapIndex))add(m.mapIndex,m.name);
+  if(!found.size)MAPS.forEach((m,i)=>{for(const mob of m.mobs||[])if(mob[2]===material)add(i,mob[0]);if(m.boss?.[2]===material)add(i,m.boss[0]);});
+  if(!found.size)return '';
+  const places=[...found].sort((a,b)=>a[0]-b[0]).map(([i,names])=>`${esc(MAPS[i].name)}（LV${MAPS[i].min}～${MAPS[i].max}・${[...names].map(esc).join('、')}）`).join('、');
+  return `<p class="small advance-material-hint">${esc(material)}取得地區：${places}</p>`;
+}
 const masteryGuideBase=guideView;
 guideView=function(){
-  let html=masteryGuideBase();
-  html=html.replace(/每級獲得\s*([\d.]+)\s*能力點[、，]\s*[\d.]+\s*技能點/g,'每級獲得 $1 能力點').replace(/每級增加[^。<]*。/g,'').replace(/技能上限[^。<]*。/g,'').replace(/每級消耗 1 技能點[^。<]*。/g,'').replace(/技能點/g,'');
-  return `<section class="panel"><h2>角色成長與精通</h2><p>角色升級改為較慢的重大階段；技能學會即完整，不再升技能等級。戰士／弓箭手靠對應武器普攻與技能培養武器精通；法師／牧師依實際施放技能的魔法體系培養元素／光暗精通。精通主要用於解鎖技能與二轉條件。</p></section>`+html;
+  return `<section class="panel"><h2>角色成長與精通</h2><p>角色升級後會依職業自然成長並解鎖新的冒險內容。戰士與弓箭手使用對應武器的普攻與技能可累積武器精通；法師與牧師依實際施放技能的體系累積元素或光暗精通。技能學習與二轉可能需要指定的精通等級，習得技能即可使用完整效果。</p></section>`+masteryGuideBase();
 };
 if(state){save();render();}
 })();

@@ -25,7 +25,7 @@
     const d=JSON.parse(JSON.stringify(raw));
     const validMap=i=>Number.isInteger(i)&&i>=0&&i<MAPS.length;
     const validBoardTask=q=>q&&validMap(q.map)&&q.map!==6&&EmberwildCommissions.validSource(q,MAPS);
-    const scrubBoard=b=>{if(!b||typeof b!=='object')return;if(Array.isArray(b.tasks)){b.tasks=b.tasks.filter(validBoardTask);if(b.dailyVersion!==1&&b.tasks.length!==3)b.next=0;}};
+    const scrubBoard=b=>{if(!b||typeof b!=='object')return;if(Array.isArray(b.tasks)){b.tasks=b.tasks.filter(validBoardTask);if(![1,2].includes(b.dailyVersion)&&b.tasks.length!==3)b.next=0;}};
     const scrubGear=g=>{if(!g||typeof g!=='object'||g.region===undefined)return;if(!validMap(g.region)||g.region===6||g.boss===undefined||regionFamily(g.region)!==g.boss||regionTier(g.region)!==g.tier)delete g.region;};
     const scrubHero=h=>{if(!h||typeof h!=='object')return;if(Array.isArray(h.bag))h.bag.forEach(scrubGear);scrubBoard(h.board);};
     if(d.version===3){
@@ -44,13 +44,13 @@
   migrateWorldSave=migrateWorldSaveForCurrentMaps;
   try{
     const raw=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);
-    if(raw){
+    if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
       const migrated=migrateWorldSaveForCurrentMaps(JSON.parse(raw));
       loadParty(migrated);save();
     }
   }catch(e){
     console.warn('動態地圖套用後重新載入存檔失敗',e);
-    if(!state){state=null;party=null;toast('存檔未能載入：'+e.message+'；可匯入備份。');}
+    if(!state){state=null;party=null;if(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)toast('存檔未能載入：'+e.message+'；可匯入備份。');}
   }
 
   // Keep the player-facing bestiary consistent with per-map BOSS switches.

@@ -10,6 +10,12 @@
     });
   }
 
+  const characterBase=characterView;
+  characterView=function(){
+    const html=characterBase().replace(/<p class="speed-description">[\s\S]*?<\/p>/,'');
+    return `<div class="readability-page character-reading-page">${html}</div>`;
+  };
+
   const wornBase=wornEquipmentView;
   wornEquipmentView=function(){
     let html=wornBase();

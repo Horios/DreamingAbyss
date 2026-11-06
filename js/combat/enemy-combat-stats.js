@@ -6,8 +6,10 @@
   function zeroMap(keys,src){const out={};for(const k of keys){const v=Number(src?.[k]);out[k]=Number.isFinite(v)?v:0;}return out;}
   function rowForEnemy(e){return (GAMEPLAY_SETTINGS?.monsters?.catalog||[]).find(m=>m.id===e?.monsterId)||null;}
   function profileForEnemy(e){
-    const row=rowForEnemy(e),raw=typeof normalizeMonsterCombatStats==='function'?normalizeMonsterCombatStats(row?.combatStats):row?.combatStats||{};
-    return {
+    const row=rowForEnemy(e),cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE,profiles=cache?(cache.enemyProfiles??=new Map()):null;
+    if(profiles?.has(row))return profiles.get(row);
+    const raw=typeof normalizeMonsterCombatStats==='function'?normalizeMonsterCombatStats(row?.combatStats):row?.combatStats||{};
+    const profile={
       crit:Number.isFinite(raw.crit)?raw.crit:0,
       critDamage:Number.isFinite(raw.critDamage)?raw.critDamage:Number(GS('combat.baseCritDamage',1.5))||1.5,
       pierce:Number.isFinite(raw.pierce)?raw.pierce:0,
@@ -21,6 +23,7 @@
       raceDamage:zeroMap(RACE_KEYS,raw.raceDamage),
       resist:zeroMap(ELEMENT_KEYS,raw.resist)
     };
+    profiles?.set(row,profile);return profile;
   }
   function hydrateEnemyCombatStats(e){
     if(!e||typeof e!=='object')return e;const p=profileForEnemy(e);

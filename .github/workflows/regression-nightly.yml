@@ -1,0 +1,121 @@
+name: Extended regression
+
+on:
+  workflow_dispatch:
+  # Push-triggered on-demand verification works without changing the main branch.
+  # Regular commits skip these jobs; a commit with [extended-regression] runs them.
+  push:
+    branches: [chatgpt-dev]
+  schedule:
+    # 02:00 Asia/Taipei; schedule is active when this file is on the default branch.
+    - cron: '0 18 * * *'
+
+permissions:
+  contents: read
+
+# Superseded preview commits must not compete for six extended CI runners.
+concurrency:
+  group: emberwild-extended-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  headless:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[extended-regression]')
+    name: Extended / ${{ matrix.area }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        area: [world, economy, equipment, companions, offline]
+    steps:
+      # Pin push-triggered verification to its exact commit. Scheduled/manual
+      # runs deliberately read the current chatgpt-dev head.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || 'chatgpt-dev' }}
+      - name: Verify checked-out source revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          echo "Extended regression source SHA: $actual"
+          if [ "$GITHUB_EVENT_NAME" = push ]; then
+            test "$actual" = "$GITHUB_SHA" || {
+              echo "::error::Checkout SHA $actual does not match event SHA $GITHUB_SHA"
+              exit 1
+            }
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run independent game regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ matrix.area }}" in
+            world)
+              files=(tests/progression-model.test.cjs tests/monster-design.test.cjs tests/exploration-controls.test.cjs tests/story-system.test.cjs tests/daily-commissions.test.cjs tests/speed-boss-progression.test.cjs)
+              ;;
+            economy)
+              files=(tests/life-skills.test.cjs tests/element-potions.test.cjs tests/element-potions-runtime.test.cjs tests/realtime-stacking.test.cjs)
+              ;;
+            equipment)
+              files=(tests/equipment-acquisition.test.cjs tests/equipment-enhancement.test.cjs tests/equipment-comparison.test.cjs tests/forge-equipped-runtime.test.cjs tests/reroll-dust.test.cjs)
+              ;;
+            companions)
+              files=(tests/team-model.test.cjs tests/team-runtime.test.cjs tests/companion-skill-ownership.test.cjs tests/companion-passives.test.cjs tests/companion-tokens.test.cjs tests/mailbox.test.cjs tests/achievements.test.cjs)
+              ;;
+            offline)
+              files=(tests/offline-exploration.test.cjs tests/offline-final-stage.test.cjs tests/expedition-stop-dispose.test.cjs tests/offline-checkpoints.test.cjs tests/offline-receipts.test.cjs)
+              ;;
+          esac
+          node --test --test-concurrency=1 "${files[@]}"
+
+  browser:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[extended-regression]')
+    name: Extended / Chromium interfaces
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # Pin push-triggered verification to its exact commit. Scheduled/manual
+      # runs deliberately read the current chatgpt-dev head.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || 'chatgpt-dev' }}
+      - name: Verify checked-out source revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          echo "Extended regression source SHA: $actual"
+          if [ "$GITHUB_EVENT_NAME" = push ]; then
+            test "$actual" = "$GITHUB_SHA" || {
+              echo "::error::Checkout SHA $actual does not match event SHA $GITHUB_SHA"
+              exit 1
+            }
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: Check equipment, page scrolling, inventory and legacy saves
+        shell: bash
+        run: |
+          set -uo pipefail
+          failed=0
+          files=(tests/equipment-details.test.cjs tests/page-readability.browser.test.cjs tests/equipment-sockets.browser.test.cjs tests/item-display-mode.browser.test.cjs tests/team-save-compatibility.browser.test.cjs tests/item-hover-tooltip.browser.test.cjs)
+          for file in "${files[@]}"; do
+            echo "::group::${file}"
+            if timeout --signal=TERM --kill-after=10s 6m node --test --test-concurrency=1 "${file}"; then
+              echo "::notice file=${file}::Completed successfully"
+            else
+              rc=$?
+              echo "::error file=${file}::Failed or timed out (exit ${rc})"
+              failed=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "${failed}"

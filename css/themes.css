@@ -1,0 +1,124 @@
+/* Appearance only. Loaded last so the same palette reaches legacy UI surfaces. */
+:root,:root[data-ui-theme="ember"],.theme-choice[data-theme-choice="ember"]{
+  color-scheme:dark;--bg:#15131d;--panel:#211e2c;--surface:#292534;--inset:#1a1723;--chrome:#1c1925;
+  --line:#484050;--muted:#b6aebe;--text:#eee8e2;--text-soft:#d3c9d8;--gold:#e6bf7c;--green:#b9ceae;
+  --control:#302a3b;--control-hover:#40364d;--control-border:#74647e;--selected:#443447;
+  --primary:#e6bf7c;--on-primary:#261b16;--primary-hover:#f2d39b;--focus:#e6bf7c;
+  --positive:#9ed9b5;--negative:#f4a49d;--info:#92caff;--violet:#ceaff5;--backdrop:#100d19c9;
+  --progress-track:#302a39;--progress-fill:#4f6740;--progress-text:#f4f5e9;
+}
+:root[data-ui-theme="forest"],.theme-choice[data-theme-choice="forest"]{
+  color-scheme:dark;--bg:#101a17;--panel:#192823;--surface:#22362d;--inset:#13211c;--chrome:#14211b;
+  --line:#3e5548;--muted:#a9bdb0;--text:#e7eee4;--text-soft:#c5d6c7;--gold:#dcc58d;--green:#aad3a2;
+  --control:#273d31;--control-hover:#34513d;--control-border:#647e69;--selected:#324b37;
+  --primary:#b1cf9a;--on-primary:#16251b;--primary-hover:#c8dfb3;--focus:#d9c98f;
+  --positive:#a9d9b4;--negative:#f3aaa0;--info:#9bcde0;--violet:#d0b5ed;--backdrop:#07140ec9;
+  --progress-track:#1a2b22;--progress-fill:#4b6941;--progress-text:#f4f5e9;
+}
+:root[data-ui-theme="paper"],.theme-choice[data-theme-choice="paper"]{
+  color-scheme:light;--bg:#eee9df;--panel:#faf7ef;--surface:#e9e3d6;--inset:#f2ede3;--chrome:#e2dccf;
+  --line:#c5bcab;--muted:#625d53;--text:#302e28;--text-soft:#514b41;--gold:#805e26;--green:#365e49;
+  --control:#f7f2e8;--control-hover:#e5dece;--control-border:#a19886;--selected:#dce5d8;
+  --primary:#3c604c;--on-primary:#fffdf5;--primary-hover:#2b4938;--focus:#805e26;
+  --positive:#286343;--negative:#a03532;--info:#255e91;--violet:#76509a;--backdrop:#342e2566;
+  --progress-track:#d9d4c5;--progress-fill:#b2c6a2;--progress-text:#273b28;
+}
+body{background:var(--bg);color:var(--text)}
+header,.layout>aside,.party-picker{background:var(--chrome);border-color:var(--line)}
+.panel,.card,.start .card,dialog{background:var(--panel);color:var(--text);border-color:var(--line)}
+.brand span,h1,h2,h3,summary{color:var(--text)}
+.brand small,.eyebrow,.chapter b{color:var(--muted)}
+button,.button,select{background:var(--control);color:var(--text);border-color:var(--control-border)}
+button:hover,.button:hover{background:var(--control-hover);border-color:var(--gold)}
+button.primary,nav button.active{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+button.primary:hover,nav button.active:hover{background:var(--primary-hover)}
+button.danger{color:var(--negative)}
+button:focus-visible,.button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+nav button{background:transparent;color:var(--text-soft)}
+nav button:hover{background:var(--control-hover)}
+input,textarea{background:var(--inset);color:var(--text);border-color:var(--control-border);accent-color:var(--green)}
+.tag{background:transparent;border-color:var(--control-border);color:var(--green)}
+.tutorial{background:var(--surface);border-color:var(--gold)}
+dialog::backdrop{background:var(--backdrop)}
+#toast{background:var(--primary);color:var(--on-primary);border-color:var(--gold)}
+.divider,.inventory-row,.account-material-list>.row,.skill-list-row,.quest-list-row,.team-plan-card,.team-skill-row{border-color:var(--line)}
+.team-plan-card.current{border-color:var(--gold)}
+
+/* Nested panels, lists and crafting controls use the same surface hierarchy. */
+.stat-grid span,.detail-stat,.companion-key-stats span,.companion-extra-stats span,.companion-skill-slot-group,
+.team-member>summary,.inventory-control-fold[open]>summary,.forge-gear-toolbar{background:var(--surface)}
+.forge-preview,.forge-action,.mastery-card,.mastery-dev-box,.skill-level-row,.mastery-icon-box,
+.roster-team-slot,.companion-roster-details>details,.inventory-control-fold,
+.pending-quality-group,.pending-color-group,.pending-affix-group,.forge-gear-pane,.forge-detail-pane,
+.heal-auto-row,.equipment-identity-line,.forge-power-reroll,.inline-affix-comparison,
+.empty,.skill-slot,.encounter-topline,.battle-arena{background:var(--inset);border-color:var(--line)}
+.inventory-row:hover,.forge-gear-item:hover,.worn-character-item:hover{background:var(--control-hover)}
+.map,.map-list-row{background:var(--inset)}
+.map.selected,.map-list-row.selected,.forge-gear-item.selected,.worn-character-item.selected{background:var(--selected);color:var(--text);border-color:var(--green)}
+.inventory-control-fold>summary,.team-member>summary,.unit-numbers b,.equipment-identity-line span,
+.heal-auto-chip,.heal-auto-detail,.heal-shop-card .heal-spec,.shop-card-detail,.account-item-desc .detail,
+.token-inventory-row .account-item-desc>p:first-child,.guide-reading-page p,.skill-flavor,.item-flavor{color:var(--text-soft)}
+.resource-line,.team-build-note,.skill-mechanics-details,.heal-auto-cd,.equipment-identity-line b,
+.skill-detail b,.item-detail b,.skill-flavor b,.item-flavor b,.inventory-detail-actions .sell-gear-button{color:var(--gold)}
+.boss-exclusive-note{background:var(--surface);border-color:var(--gold)}
+:root .inventory-master-pane,:root .inventory-detail-wrap,:root .statistics-member{background:var(--inset);border-color:var(--line)}
+:root .inventory-master-heading{background:var(--surface)}
+:root .inventory-list-item{border-bottom-color:var(--line)}
+:root .inventory-list-item:hover{background:var(--control-hover)}
+:root .inventory-list-item.selected{background:var(--selected)}
+:root .inventory-visibility-group label,:root .equipment-total-summary,:root .equipment-attribute-details>summary{color:var(--text-soft)}
+:root .inventory-detail-section h3,:root .inventory-detail-stats{color:var(--text)}
+:root .inventory-detail-section{border-color:var(--line)}
+.skill-type-tag{background:var(--surface);border-color:var(--control-border);color:var(--text-soft)}
+.skill-icon-tooltip,.mastery-icon-tooltip,.skill-upgrade-tip[data-tooltip]::after,.skill-rules-help::after{background:var(--inset);color:var(--text);border-color:var(--control-border)}
+.skill-rules-help:hover,.skill-rules-help:focus-visible{color:var(--text)}
+.player-exp-bar{background:var(--progress-track);border-color:var(--control-border)}
+.player-exp-fill{background:var(--progress-fill)}
+.player-exp-text{color:var(--progress-text)}
+.bar{background:var(--surface)}
+.delta-up,.quest-objectives .quest-met,.skill-state.learned,.skill-icon-status,.event-heal{color:var(--positive)}
+.delta-down,.skill-state.locked,.skill-requirements .tag.missing,.skill-icon-tooltip .missing{color:var(--negative)}
+.event-loot,.round-counter{color:var(--gold)}
+
+/* Light-mode semantic colors keep rarity, element and skill categories distinct.
+   Configured item text effects and artwork retain their own palettes. */
+:root[data-ui-theme="paper"] .skill-kind-active{--skill-bg:#1c3042;--skill-panel:#edf3f6;--skill-border:#6591ab;--skill-accent:#28536e}
+:root[data-ui-theme="paper"] .skill-kind-proc{--skill-bg:#402b1c;--skill-panel:#f7eee1;--skill-border:#ac8355;--skill-accent:#78512d}
+:root[data-ui-theme="paper"] .skill-kind-support{--skill-bg:#19392b;--skill-panel:#ecf3e9;--skill-border:#6c9775;--skill-accent:#355f42}
+:root[data-ui-theme="paper"] :is(.effect-quality-0,.loot-rarity-0,.rank-0,.member-rating-c,.member-rating-d){color:var(--text-soft)}
+:root[data-ui-theme="paper"] :is(.effect-quality-1,.loot-rarity-1,.rank-1,.member-rating-b,.element-wind){color:var(--positive)}
+:root[data-ui-theme="paper"] :is(.effect-quality-2,.loot-rarity-2,.rank-2,.element-ice){color:var(--info)}
+:root[data-ui-theme="paper"] :is(.member-rating-a,.element-shadow){color:var(--violet)}
+:root[data-ui-theme="paper"] :is(.effect-quality-3,.loot-rarity-3,.rank-3,.member-rating-s,.element-light){color:var(--gold)}
+:root[data-ui-theme="paper"] :is(.event-damage,.element-fire){color:#9b4a2b}
+:root[data-ui-theme="paper"] .starter-equipment-name{color:var(--positive)!important}
+/* Keep pale SVG artwork legible while preserving each skill category color. */
+:root[data-ui-theme="paper"] :is(.skill-icon-tile,.skill-selected-heading .skill-icon-glyph,.mastery-icon-box,.skill-gem-slot){background:var(--skill-bg,#24322d)}
+
+/* Theme cards preview the palette they select, including in the other themes. */
+.theme-options h2{margin:0 0 5px;font-size:16px}
+.theme-options>p{margin:0}
+.theme-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.theme-choice{display:grid;gap:7px;min-width:0;padding:14px;text-align:left;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;white-space:normal}
+.theme-choice:hover{background:var(--panel);border-color:var(--gold)}
+.theme-choice[aria-pressed="true"]{border:2px solid var(--gold);padding:13px}
+.theme-choice:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.theme-choice strong{font-size:15px}
+.theme-choice-description{font-size:12px;color:var(--muted);line-height:1.6}
+.theme-choice-state{font-size:12px;color:var(--gold);font-weight:700}
+.theme-preview{display:flex;gap:5px;padding:9px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.theme-preview i{height:18px;flex:1;border-radius:2px;background:var(--chrome)}
+.theme-preview i:nth-child(2){background:var(--control)}
+.theme-preview i:nth-child(3){background:var(--green)}
+.theme-preview i:nth-child(4){background:var(--gold)}
+@media(max-width:900px){
+  #app>.layout>aside{background:var(--chrome)}
+  #app>.layout>aside nav>button.active{background:var(--selected);color:var(--gold)}
+  #app>.layout>aside nav .mobile-more-pages{background:var(--panel)}
+  .mobile-journal-toggle,.mobile-loot-toggle{background:var(--surface);color:var(--gold)}
+}
+@media(max-width:600px){.theme-choices{grid-template-columns:minmax(0,1fr);gap:10px}.theme-choice{padding:12px}.theme-choice[aria-pressed="true"]{padding:11px}}
+/* v0.109: light theme only. Mastery identity colors and the party HP line were tuned
+   for dark backgrounds (contrast 1.6～2.4 on paper); darken them toward the text color. */
+:root[data-ui-theme="paper"] .mastery-bar-head>span{color:color-mix(in srgb,var(--mastery-color) 40%,var(--text))}
+:root[data-ui-theme="paper"] .seconds-party-hp{color:var(--muted)}

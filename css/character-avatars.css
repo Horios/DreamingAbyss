@@ -14,4 +14,3 @@ button.character-avatar-option{display:flex;flex-direction:column;align-items:ce
 .character-avatar-option svg{display:block;width:64px;height:64px}.character-avatar-option span{font-size:14px}.character-avatar-option small{font-size:11px;color:var(--muted,#b5c2c2)}
 .character-avatar-option[aria-pressed="true"]{border:2px solid var(--avatar-color);background:#263537}.character-avatar-option:hover{border-color:var(--avatar-color)}
 @media(max-width:480px){.character-avatar-options{gap:7px}.character-avatar-option svg{width:54px;height:54px}button.character-avatar-option{min-height:116px;padding:7px}.squad-allies .unit-title:has(.character-avatar-control){flex-wrap:wrap}.squad-allies .unit-title:has(.character-avatar-control)>span{flex-basis:100%;margin-left:43px}}
-@media(max-width:700px){#app>.layout:has(.squad-allies .character-avatar-control){min-width:681px;grid-template-columns:116px minmax(320px,1fr) 245px!important}}

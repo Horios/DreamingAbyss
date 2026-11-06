@@ -23,7 +23,9 @@ test('game keeps configured equipment/item appearances through JSON and reload w
   const reloaded=loadRuntime(root,'index.html',Object.fromEntries(game.values));
   assert.deepEqual(JSON.parse(reloaded.run('JSON.stringify(exportableBalance().textStyles)')),[style]);
   assert.equal(reloaded.run('textRarityStyleById("designer-only").blockColor'),style.blockColor);
-  game.run('resetBalanceJSON()');assert.deepEqual(JSON.parse(game.run('JSON.stringify(exportableBalance().textStyles)')),[]);
+  // In the browser the published loader always provides this; reset restores it (the load-time fallback predates the skill system).
+  game.ctx.published=JSON.parse(require('node:fs').readFileSync(path.join(root,'data/balance.json'),'utf8'));game.run('globalThis.__EMBERWILD_PUBLISHED_BALANCE=published;');
+  assert.equal(game.run('resetBalanceJSON()'),true);assert.deepEqual(JSON.parse(game.run('JSON.stringify(exportableBalance().textStyles)')),[]);
   assert.deepEqual(game.errors,[]);assert.deepEqual(reloaded.errors,[]);
 });
 

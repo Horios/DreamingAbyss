@@ -68,33 +68,19 @@ test('Chromium: protagonist pages stay independent of companion selection and cl
   assert.equal(await p.locator('.companion-character-section').count(),0);
   assert.match(await p.locator('main').innerText(),/主角測試/);
   assert.doesNotMatch(await p.locator('main').innerText(),/夥伴測試/);
-  const companionStats=await p.evaluate(()=>partyMember(10).stats.slice());
-  await p.locator('#stat-alloc-0').fill('2');
-  await p.locator('#stat-alloc-0').locator('..').getByRole('button',{name:'分配',exact:true}).click();
-  assert.deepEqual(await p.evaluate(()=>playerHero().stats),[2,0,0]);
-  assert.deepEqual(await p.evaluate(()=>partyMember(10).stats),companionStats);
+  // Stat point allocation was retired (natural growth only); the character page offers no allocation control.
+  assert.equal(await p.locator('[id^="stat-alloc-"]').count(),0);
+  const statsOf=()=>p.evaluate(()=>JSON.stringify([stats(playerHero()),stats(partyMember(10))]));const statsBefore=await statsOf();
+  await p.evaluate(()=>render());assert.equal(await statsOf(),statsBefore,'viewing the page changes nobody');
+  // Skill system v1: the skills page and its 技能圖鑑 always describe the protagonist; there is no class browsing or learning.
   await p.evaluate(()=>{pageHeroSelection.set('skills',10);state=partyMember(10);setTab('skills');});
   assert.equal(await p.locator('.page-hero-tabs').count(),0);
-  assert.equal(await p.locator('[data-skill-class]').count(),4);
-  const before=await p.evaluate(()=>{save();return {job:playerHero().job,selected:party.selected,state:memberKey(state),player:playerHero().skills.slice(),companion:partyMember(10).skills.slice()};});
-  const builds=await p.evaluate(buildSnapshot);
-  for(const job of [1,2,3]){
-   await p.locator('[data-skill-class="'+job+'"]').click();
-   await p.waitForFunction(j=>document.querySelector('.player-class-skills')?.dataset.playerSkillClass===String(j),job);
-   assert.equal(await p.locator('.player-class-skills').getAttribute('data-player-skill-class'),String(job));
-   assert.equal(await p.locator('.team-skill-detail button,.team-skill-detail select').count(),0);
-   assert.equal(await p.locator('.skill-loadout-summary').count(),0);
-   assert.equal(await p.evaluate(()=>playerHero().job),before.job);
-   assert.deepEqual(await p.evaluate(buildSnapshot),builds);
-   assert.equal(await p.evaluate(()=>memberKey(state)),before.state);
-  }
-  await p.locator('[data-skill-class="0"]').click();
-  await p.waitForFunction(()=>document.querySelector('.player-class-skills')?.dataset.playerSkillClass==='0');
-  assert.equal(await p.getByRole('button',{name:'免費重置本隊技能',exact:true}).count(),1);
-  assert.deepEqual(await p.evaluate(()=>({player:playerHero().skills,companion:partyMember(10).skills})),{player:before.player,companion:before.companion});
-  await p.locator('[data-team-skill="0:core:1"]').click();await p.locator('[data-team-skill-detail="0:core:1"]').getByRole('button',{name:'學習',exact:true}).click();
-  await p.waitForFunction(()=>playerHero().skills[1]===1);
-  assert.deepEqual(await p.evaluate(()=>partyMember(10).skills),before.companion);
+  const builds=await p.evaluate(buildSnapshot),before=await p.evaluate(()=>({job:playerHero().job,player:structuredClone(playerHero().skillLoadout),companion:structuredClone(partyMember(10).skillLoadout)}));
+  await p.getByRole('button',{name:'技能圖鑑'}).click();
+  assert.match(await p.locator('#modal h2').innerText(),new RegExp(await p.evaluate(()=>CLASSES[playerHero().job].name)+'技能圖鑑'));
+  assert.equal(await p.evaluate(()=>[...document.querySelectorAll('#modal [data-skill-id]')].every(n=>__EMBERWILD_SKILLS.byId(n.dataset.skillId).jobs.includes(playerHero().job))),true,'only protagonist class skills');
+  await p.evaluate(()=>closeModal());
+  assert.deepEqual(await p.evaluate(buildSnapshot),builds);assert.deepEqual(await p.evaluate(()=>({job:playerHero().job,player:playerHero().skillLoadout,companion:partyMember(10).skillLoadout})),before);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
@@ -103,14 +89,13 @@ test('Chromium: protagonist class catalog excludes companion-exclusive and monst
  const g=await openRuntime(root),p=g.page;
  try{
   await startParty(p);
-  await p.evaluate(()=>{const d=exportableBalance();d.classes[0].skills[1].partnerId=10;d.supportSkills[0][1].partnerId=10;d.classes[0].skills[2].usageScope='monster';applyBalanceConfig(d);setTab('skills');});
-  assert.equal(await p.locator('[data-team-skill="0:core:0"]').count(),1);
-  for(const key of ['0:core:1','0:core:2','0:support:1'])assert.equal(await p.locator('[data-team-skill="'+key+'"]').count(),0,key);
-  await p.locator('[data-skill-class="1"]').click();
-  await p.waitForFunction(()=>document.querySelector('.player-class-skills')?.dataset.playerSkillClass==='1');
-  await p.locator('[data-skill-class="0"]').click();
-  await p.waitForFunction(()=>document.querySelector('.player-class-skills')?.dataset.playerSkillClass==='0');
-  for(const key of ['0:core:1','0:core:2','0:support:1'])assert.equal(await p.locator('[data-team-skill="'+key+'"]').count(),0,key);
+  // Skill system v1: companion-exclusive definitions (partnerId) never appear in the protagonist's 技能圖鑑.
+  await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'技能圖鑑'}).click();
+  const ids=await p.locator('#modal [data-skill-id]').evaluateAll(n=>n.map(e=>e.dataset.skillId));
+  const rows=await p.evaluate(ids=>ids.map(id=>{const sk=__EMBERWILD_SKILLS.byId(id);return {id,partner:sk.partnerId??null,jobs:sk.jobs,disabled:!!sk.disabled,scope:sk.usageScope||null};}),ids);
+  assert(rows.length>0);for(const r of rows){assert.equal(r.partner,null,r.id);assert(r.jobs.includes(0),r.id);assert.equal(r.disabled,false,r.id);assert.notEqual(r.scope,'monster',r.id);}
+  const exclusive=await p.evaluate(()=>__EMBERWILD_SKILLS.system().definitions.filter(sk=>sk.partnerId!=null&&sk.jobs.includes(0)).map(sk=>sk.id));
+  assert(exclusive.length>0,'the data has warrior-class companion skills to exclude');for(const id of exclusive)assert(!ids.includes(id),id);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

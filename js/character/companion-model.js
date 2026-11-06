@@ -3,11 +3,11 @@
   const ratings=['D','C','B','A','S','SS','SSS'],statKeys=['hp','atk','def','crit','critDamage','speed','pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage'];
   const copy=x=>JSON.parse(JSON.stringify(x));
   const defaultPlans=[
-    {id:10,job:0,role:'攻擊戰士',description:'劍術輸出、戰吼與破甲；優先提升攻擊。',names:['洛恩','雷昂','凱斯','艾伯'],points:[0,0,1],core:[0,2,4],active:[4,0],proc:[2],support:[0,2],weapon:'sword'},
-    {id:11,job:0,role:'保護戰士',description:'堅毅壁壘、守護誓言與嘲諷；優先提升防禦與生命。',names:['維恩','瑟琳','賽德','塔莉'],points:[2,1,2],core:[0,1,2,6],active:[6,1,0],proc:[2],support:[1],weapon:'sword'},
-    {id:12,job:1,role:'法師',description:'火焰箭、餘燼爆發與奧術共鳴；優先提升攻擊。',names:['伊瑟','梅洛','席昂','菲娜'],points:[0,0,1],core:[0,2,4],active:[4,0],proc:[2],support:[0,1],weapon:'staff'},
-    {id:13,job:3,role:'祭司',description:'治癒禱言、晨光祝福與聖光庇護；偏重續航。',names:['艾琳','露薇','諾雅','米菈'],points:[1,1,0],core:[0,1,3,5],active:[1,0],proc:[3,5],support:[0,1],weapon:'holyStaff'},
-    {id:14,job:2,role:'弓箭手',description:'穿透箭、連射與鷹眼指引；優先提升攻擊。',names:['希雅','凜羽','緹亞','菲爾'],points:[0,0,1],core:[0,2,4],active:[4,0],proc:[2],support:[0,1],weapon:'bow'}
+    {id:10,job:0,role:'攻擊戰士',description:'劍術輸出、戰吼與破甲；優先提升攻擊。',names:['洛恩','雷昂','凱斯','艾伯'],core:[0,2,4],active:[4,0],proc:[2],support:[0,2],weapon:'sword'},
+    {id:11,job:0,role:'保護戰士',description:'堅毅壁壘、守護誓言與嘲諷；優先提升防禦與生命。',names:['維恩','瑟琳','賽德','塔莉'],core:[0,1,2,6],active:[6,1,0],proc:[2],support:[1],weapon:'sword'},
+    {id:12,job:1,role:'法師',description:'火焰箭、餘燼爆發與奧術共鳴；優先提升攻擊。',names:['伊瑟','梅洛','席昂','菲娜'],core:[0,2,4],active:[4,0],proc:[2],support:[0,1],weapon:'staff'},
+    {id:13,job:3,role:'祭司',description:'治癒禱言、晨光祝福與聖光庇護；偏重續航。',names:['艾琳','露薇','諾雅','米菈'],core:[0,1,3,5],active:[1,0],proc:[3,5],support:[0,1],weapon:'holyStaff'},
+    {id:14,job:2,role:'弓箭手',description:'穿透箭、連射與鷹眼指引；優先提升攻擊。',names:['希雅','凜羽','緹亞','菲爾'],core:[0,2,4],active:[4,0],proc:[2],support:[0,1],weapon:'bow'}
   ].map(p=>({...p,rating:'D'}));
   function definition(plan,classes,settings){
     const cls=classes[plan.job],speed=settings?.combat?.speed||{},per=settings?.progression?.statsPerLevel||{};
@@ -25,20 +25,17 @@
       const values=p[field];if(!values||typeof values!=='object'||Array.isArray(values)||Object.entries(values).some(([k,v])=>!statKeys.includes(k)||!Number.isFinite(v)||v<0)||field==='initialStats'&&['hp','atk'].some(k=>values[k]!==undefined&&values[k]<=0))throw Error('夥伴初始／成長資料無效：'+p.id);
     }
     if(p.growthSteps!==undefined&&(!Array.isArray(p.growthSteps)||p.growthSteps.length>12||p.growthSteps.some(s=>!s||!Number.isInteger(s.every)||s.every<1||s.every>60||['hp','atk','def'].some(k=>!Number.isInteger(s[k])||s[k]<0))))throw Error('夥伴階梯成長無效：'+p.id);
-    return {...copy(p),rating:p.rating??'D'};
+    const {points:_legacyPoints,...clean}=copy(p);return {...clean,rating:p.rating??'D'};
   }
   function totals(plan,classes,settings,weights){
     const def=definition(plan,classes,settings),base={...def.initialStats,...Progression.naturalStats(def,1)},last=Progression.naturalStats(def,60),growth={...def.growthPerLevel},levels=59;
     for(const key of ['hp','atk','def'])growth[key]=(last[key]-base[key])/levels;
-    const starting=settings?.progression?.starting?.abilityPoints??0,startCount=Math.max(0,Math.round(starting)),count=Math.max(0,Math.round(starting+levels*(settings?.progression?.levelRewards?.abilityPoints??3))),points=[0,0,0],cycle=plan.points||[0,1,2];
-    for(let n=startCount;n<count;n++)points[cycle[n%cycle.length]]++;
-    const per=settings?.progression?.statsPerPoint||{hp:3,attack:1,defense:1};
-    growth.atk+=points[0]*(per.attack??1)/levels;growth.hp+=points[1]*(per.hp??3)/levels;growth.def+=points[2]*(per.defense??1)/levels;
+    
     const sum=v=>statKeys.reduce((n,k)=>n+(v[k]||0)*(weights[k]||0),0);
     return {base:sum(base),growth:sum(growth),baseStats:base,effectiveGrowth:growth,rawBase:base.hp+base.atk+base.def,rawGrowth:growth.hp+growth.atk+growth.def};
   }
   function defaults(classes,settings){
-    const per=settings?.progression?.statsPerPoint||{},weights={...Object.fromEntries(statKeys.map(k=>[k,0])),hp:1/(per.hp||3),atk:1/(per.attack||1),def:1/(per.defense||1),crit:100,critDamage:10,speed:.1};
+    const weights={...Object.fromEntries(statKeys.map(k=>[k,0])),hp:1/3,atk:1,def:1,crit:100,critDamage:10,speed:.1};
     const rows=defaultPlans.map(p=>totals(p,classes,settings,weights)),range=key=>({min:Math.floor(Math.min(...rows.map(r=>r[key]))*100)/100,max:Math.ceil(Math.max(...rows.map(r=>r[key]))*100)/100}),base=range('base'),growth=range('growth');
     const gap=key=>Math.ceil((Math.max(...rows.map(r=>r[key]))/Math.min(...rows.map(r=>r[key]))-1)*100);
     return {activeLimit:6,ratings:{weights,maxBaseGapPercent:gap('base'),maxGrowthGapPercent:gap('growth'),ranges:Object.fromEntries(ratings.map(r=>[r,{base:copy(base),growth:copy(growth)}]))}};

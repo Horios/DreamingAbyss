@@ -32,9 +32,9 @@
   .expedition-control-card .supply-actions button{height:27px;font-size:11px;padding:2px 5px}
   .expedition-control-card .supply-actions label{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--muted)}
   .party-combat>.actions>.icon-help{width:28px!important;height:28px!important;min-width:28px!important;padding:0!important;border-radius:999px;font-size:11px;flex:0 0 28px!important}
-  .party-combat>.actions{grid-template-columns:auto minmax(0,1fr) auto auto}
+  .party-combat>.actions{grid-template-columns:auto minmax(0,1fr) auto auto auto}
   .party-combat>.actions>button[onclick="restartExploration()"]{width:auto;white-space:nowrap}
-  @media(max-width:700px){.party-combat>.actions{grid-template-columns:minmax(0,1fr) auto auto}.party-combat>.actions>.tag{display:none}}
+  @media(max-width:700px){.party-combat>.actions{grid-template-columns:minmax(0,1fr) auto auto auto}.party-combat>.actions>.tag{display:none}}
   /* Remove the superseded standalone panels that used to repeat the same controls. */
   .difficulty-panel,.pace-controls,.boss-meter-panel,.expedition-tools{display:none!important}
 
@@ -65,7 +65,7 @@
   const isFinal=mi=>typeof globalThis.isFinalMap==='function'?globalThis.isFinalMap(mi):GAMEPLAY_SETTINGS?.maps?.catalog?.[mi]?.mapType==='final';
   const mapCfg=mi=>typeof globalThis.worldMapConfig==='function'?globalThis.worldMapConfig(mi):GAMEPLAY_SETTINGS?.maps?.catalog?.[mi];
   const progressEntry=mi=>typeof globalThis.bossProgressEntry==='function'?globalThis.bossProgressEntry(mi):(party?.bossProgress?.[mapCfg(mi)?.id]||{progress:0,charges:0});
-  const bossRows=mi=>typeof globalThis.configuredBossStageRows==='function'?globalThis.configuredBossStageRows(mi):[];
+  const bossRows=mi=>typeof globalThis.configuredBossStageRows==='function'?globalThis.configuredBossStageRows(mi,Math.random,{preview:true}):[];
   const finalRows=mi=>typeof globalThis.configuredFinalStageRows==='function'?globalThis.configuredFinalStageRows(mi):[];
   const fmt=n=>Math.round((Number(n)||0)*100)/100;
   function tooltip(label,text){return `<button type="button" class="icon-help" title="${safeEsc(text)}" aria-label="${safeEsc(label+'：'+text)}">?</button>`;}
@@ -90,9 +90,50 @@
     return `<div class="boss-compact"><div class="boss-head"><b>${active?'BOSS 關卡':'BOSS 進度'}</b><span class="tag">${entry.charges}/${bm.maxCharges} 次</span></div><div class="boss-meter"><span style="width:${pct}%"></span></div><div class="boss-meta"><span>${fmt(entry.progress)}/${bm.progressPerCharge}%</span><span>普通 +${bm.normalProgress}%</span><span>菁英 ×${bm.eliteMultiplier}</span><span>${total} 隻／場</span></div><div class="boss-actions">${active?`<button class="danger" onclick="leaveBossChallenge()" title="離開會放棄目前已消耗的一次，剩餘次數保留。">離開關卡</button>`:`<button class="primary" onclick="startBossChallenge()" ${!enabled||entry.charges<1?'disabled':''} title="${enabled?'使用 1 次累積挑戰進入本地圖 BOSS 關卡。':'此地圖 BOSS 挑戰已停用。'}">挑戰 BOSS</button>`}${tooltip('BOSS 規則','普通與菁英怪擊殺會累積進度；進度滿後增加一次挑戰，次數用完會自動返回一般探索。')}</div></div>`;
   }
 
+  let destinationOwner=null,destination={category:'explore',map:0,quest:''};
+  function selectedDestination(){
+    if(destinationOwner!==party){destinationOwner=party;destination={category:isFinal(party.map)?'boss':'explore',map:party.map,quest:''};}
+    return destination;
+  }
+  globalThis.selectedExplorationCategory=()=>party?selectedDestination().category:'explore';
+  globalThis.selectedExplorationMap=()=>party?selectedDestination().map:0;
+  globalThis.explorationMapChoices=category=>MAPS.map((m,i)=>({m,i})).filter(({i})=>category==='boss'||!isFinal(i)).map(({m,i})=>({index:i,name:m.name,min:m.min,unlocked:canVisit(i)}));
+  globalThis.setExplorationCategory=function(category){if(!['explore','boss','quest'].includes(category))return;const d=selectedDestination();d.category=category;const maps=MAPS.map((_,i)=>i).filter(i=>category==='boss'||!isFinal(i));if(category!=='quest'&&!maps.includes(d.map))d.map=maps[0]??0;render();};
+  globalThis.selectExplorationMap=function(mi){const d=selectedDestination();if(!MAPS[mi])return;d.map=mi;render();};
+  globalThis.selectQuestEncounter=function(key){selectedDestination().quest=key;render();};
+  const busy=()=>!!globalThis.__EMBERWILD_TEAMS?.busy();
+  globalThis.explorationStateText=function(){return running?($('modal')?.open?'視窗暫停':'探索中'):globalThis.expeditionChallengeResult?'挑戰結束':busy()?'已暫停':'已停止';};
+  globalThis.currentExplorationName=function(){return party?.questChallenge?.name||(party?.bossChallenge?.active?MAPS[party.map]?.name+' · BOSS 難關':MAPS[party?.map]?.name)||'';};
+  globalThis.explorationControlButtons=function(quick=false){
+    if(running||busy()&&!globalThis.expeditionChallengeResult)return `<button class="primary" onclick="toggleBattle()">${running?'暫停':'繼續'}</button><button onclick="stopTeamExploration()">停止</button>`;
+    if(quick)return `<button onclick="setTab('battle')">前往探索</button>`;
+    const d=selectedDestination(),single=d.category!=='explore';
+    return `<button class="primary" onclick="startSelectedExploration()">${single?'開始挑戰':'開始探索'}</button>`;
+  };
+  globalThis.startSelectedExploration=function(){
+    if(running||busy()&&!globalThis.expeditionChallengeResult)return false;
+    const d=selectedDestination();if(d.category==='quest')return globalThis.startQuestEncounter?.(d.quest);
+    if(!canVisit(d.map))return toast('尚未符合此地區的探索條件');
+    if(!globalThis.__EMBERWILD_TEAMS?.valid())return toast('請先完成可探索的隊伍編成');
+    if(state.bag.length>=RULES.bagCapacity)return toast('背包已滿，請先整理裝備');
+    globalThis.expeditionChallengeResult=null;
+    if(party.bossChallenge?.active&&d.category==='boss'&&d.map===party.map)return toggleBattle();
+    chooseMap(d.map);
+    if(d.category==='boss'&&!isFinal(d.map))return startBossChallenge();
+    return toggleBattle();
+  };
+  globalThis.refreshExplorationStatus=function(){
+    document.querySelectorAll('[data-exploration-state]').forEach(n=>n.textContent=explorationStateText());
+    document.querySelectorAll('[data-exploration-name]').forEach(n=>n.textContent=currentExplorationName());
+  };
   function expeditionControlCard(){
-    const mi=party.map,mode=party.difficulty||0;
-    return `<section class="panel battle-map-column expedition-control-card"><div class="control-head"><div><span class="eyebrow">EXPEDITION CONTROL</span><h2>探索控制</h2></div>${tooltip('探索控制','地圖、難度與倍速共用此面板。切換地圖或難度會結束目前遭遇。介面中的「回合」是指該角色每次輪到自己行動一次；技能與治療藥水等冷卻只在該角色行動時遞減 1，不受戰鬥倍速影響。自動喝水在角色回合開始時判定，且不會取消原本的攻擊。')}</div><div class="control-grid"><label class="control-row"><span>地圖</span><select aria-label="探索地圖" onchange="chooseMap(Number(this.value))">${MAPS.map((m,i)=>`<option value="${i}" ${i===mi?'selected':''} ${canVisit(i)?'':'disabled'}>${safeEsc(m.name)} · LV${m.min}${isFinal(i)?' 終局':'–'+m.max}</option>`).join('')}</select><button onclick="showRegionBestiary()" title="查看目前區域怪物、BOSS 關卡與掉落">圖鑑</button></label><label class="control-row"><span>難度</span><select aria-label="探索難度" onchange="changeDifficulty(this.value)">${MODES.map((d,i)=>`<option value="${i}" ${i===mode?'selected':''}>${safeEsc(d.name)}</option>`).join('')}</select>${tooltip('難度','切換難度會結束目前遭遇；不會恢復生命。詳細倍率可在冒險指南查看。')}</label><div class="control-row"><span>倍速</span>${typeof battleSpeedButtons==='function'?battleSpeedButtons():''}${tooltip('戰鬥節奏','倍速只影響等待時間，不改變回合制冷卻與行動順序。')}</div></div>${bossBlock(mi)}${compactSupply()}${combatContributionPanel()}</section>`;
+    const d=selectedDestination(),mi=d.map,mode=party.difficulty||0,questRows=globalThis.questEncounterRows?.()||[];
+    if(!questRows.some(x=>x.key===d.quest))d.quest=questRows.find(x=>x.unlocked)?.key||questRows[0]?.key||'';
+    const q=questRows.find(x=>x.key===d.quest),maps=MAPS.map((m,i)=>({m,i})).filter(({i})=>d.category==='boss'||!isFinal(i));
+    const enemies=d.category==='quest'?(q?.enemies||[]).map(x=>{const row=monsterCatalog().find(m=>m.id===x.monsterId);return (row?.name||x.monsterId)+' ×'+x.count;}):d.category==='boss'?(isFinal(mi)?finalRows(mi):bossRows(mi)).map(x=>x.row.name+' ×'+x.count):monsterCatalog().filter(m=>m.mapIndex===mi&&['normal','elite'].includes(m.kind)&&m.enabled!==false).map(m=>m.name);
+    const info=d.category==='quest'?(q?`任務來源：${safeEsc(q.source)} · ${q.completed?'已通關':q.unlocked?'已開放':'尚未符合任務進度'} · ${q.repeatable?'可重複挑戰':'完成後不可重複挑戰'}`:'依任務進度開放，目前沒有已設定的任務關卡。'):d.category==='boss'&&!isFinal(mi)?`累積挑戰 ${progressEntry(mi).charges} 次 · 保留原有連續挑戰與獎勵規則`:`LV ${MAPS[mi]?.min}–${MAPS[mi]?.max} · ${isFinal(mi)?'擊敗全部敵人後結束挑戰':'持續探索，直到暫停或停止'}`;
+    const result=globalThis.expeditionChallengeResult;
+    return `<section class="panel battle-map-column expedition-control-card"><div class="control-head"><h2>探索與挑戰</h2><span class="tag" data-exploration-state>${explorationStateText()}</span></div><div class="exploration-categories" role="group" aria-label="關卡分類">${[['explore','一般探索'],['boss','BOSS 難關'],['quest','任務關卡']].map(([id,name])=>`<button aria-pressed="${d.category===id}" class="${d.category===id?'primary':''}" onclick="setExplorationCategory('${id}')">${name}</button>`).join('')}</div><div class="exploration-selection"><label><span>${d.category==='quest'?'任務關卡':'選擇地圖'}</span>${d.category==='quest'?`<select aria-label="任務關卡" onchange="selectQuestEncounter(this.value)">${questRows.map(x=>`<option value="${x.key}" ${x.key===d.quest?'selected':''}>${safeEsc(x.name)} · ${x.unlocked?'可挑戰':x.completed?'已完成':'未解鎖'}</option>`).join('')||'<option>目前無任務關卡</option>'}</select>`:`<select aria-label="探索地圖" onchange="selectExplorationMap(Number(this.value))">${maps.map(({m,i})=>`<option value="${i}" ${i===mi?'selected':''}>${safeEsc(m.name)} · LV${m.min}${canVisit(i)?'':' · 未解鎖'}</option>`).join('')}</select>`}</label><div class="exploration-destination-detail"><b>${safeEsc(d.category==='quest'?q?.name||'任務關卡':MAPS[mi]?.name)}</b><p>${info}</p><p>敵人：${safeEsc(enemies.join('、')||'未設定')}</p></div><div class="exploration-primary-actions">${explorationControlButtons()}</div></div><div class="exploration-live-status"><span>目前${running||busy()?'探索':'所在'}：</span><b data-exploration-name>${safeEsc(currentExplorationName())}</b><small>${running||busy()?'選擇其他目的地僅供準備，停止後再開始才會切換。':'選擇目的地後按下開始。'}</small></div>${result?`<div class="exploration-result" role="status">${safeEsc(result.name)} · ${result.success?'挑戰成功':'挑戰失敗'}${result.key?`<button onclick="openStory('${result.key.split('/')[0]}')">查看任務</button>`:''}</div>`:''}<div class="exploration-secondary-settings">${typeof timedBoostManagement==='function'?timedBoostManagement():''}<details class="exploration-secondary"><summary>難度與隊伍補給</summary><label class="control-row"><span>難度</span><select aria-label="探索難度" onchange="changeDifficulty(this.value)">${MODES.map((x,i)=>`<option value="${i}" ${i===mode?'selected':''}>${safeEsc(x.name)}</option>`).join('')}</select><button onclick="showRegionBestiary()">目前地區圖鑑</button></label><p class="small">切換難度會停止探索並放棄目前遭遇。</p>${compactSupply()}${combatContributionPanel()}</details></div></section>`;
   }
 
   if(typeof battleView==='function'){
@@ -110,18 +151,22 @@
       }
       /* Keep combat rules available without occupying a separate row. */
       html=html.replace(/<p class="small combat-rule">[\s\S]*?<\/p>/,'');
-      html=html.replace(/(<button class="primary" onclick="toggleBattle\(\)">[\s\S]*?<\/button>)/,`$1<button onclick="restartExploration()" title="${party.bossChallenge?.active?'放棄本場 BOSS 關卡並消耗下一次挑戰；次數用完返回一般探索':'放棄目前遭遇，立即開始新一場'}">重新探索</button>${tooltip('戰鬥規則','• 冷卻：技能與治療藥水等只在對應角色完成自己的行動時遞減 1，不受戰鬥倍速影響。\n• 自動攻擊：集中攻擊敵方隊列中第一名仍存活的敵人，擊倒後再依序切換下一名。\n• 遭遇結束：全隊生命回滿並清空護盾。\n• 技能冷卻：每次新遭遇開始時重置。')}`);
+      html=html.replace(/<div class="actions">(?:(?!<\/div>)[\s\S])*?<\/div>/g,match=>match.includes('onclick="toggleBattle()"')?'':match);
+      html=html.replace(/<section class="panel boss-meter-panel">[\s\S]*?<\/section>/,'');
       return html;
     };
   }
 
+  // v0.114: 累積戰利品 moved to the 戰鬥統計 page; the journal ends with the battle log (summary is appended later).
   if(typeof sharedBattleJournal==='function'){
     sharedBattleJournal=function(){
       if(!party)return '';
-      const paused=$('modal').open,alive=living().length,total=heroes().length,enemies=foes.filter(e=>e.hp>0).length,allEnemies=foes.length,lootKinds=expeditionLoot.items.size;
-      return `<section id="globalBattleJournal" class="global-battle-journal" aria-label="全隊共通戰報"><div class="global-journal-head"><div class="journal-title-row"><h2>全隊戰報</h2><span class="tag">${running?(paused?'視窗暫停':'探索中'):'已暫停'} · ${battleRate}×</span></div><div class="journal-summary">${safeEsc(MAPS[party.map].name)} · ${safeEsc(MODES[party.difficulty||0].name)} · 隊員 ${alive}/${total} · 敵人 ${enemies}/${allEnemies}</div><div class="journal-actions"><button onclick="toggleBattle()">${running?'暫停戰鬥':'開始戰鬥'}</button>${tab==='battle'?'':`<button onclick="setTab('battle')">戰場</button>`}<button onclick="toggleBattleReport()">${battleReportPaused?'恢復戰報':'戰報暫停'}</button></div>${typeof battleJournalStatus==='function'?battleJournalStatus():''}${battleJournalFilter()}</div><div id="liveLog" role="log" aria-label="即時戰鬥紀錄">${logContent()}</div><div class="journal-resizer" title="拖曳調整戰報與累積戰利品高度" onpointerdown="startJournalResize(event)"></div><details class="journal-loot-compact" ${globalThis.journalLootOpen?'open':''} ontoggle="globalThis.journalLootOpen=this.open"><summary>累積戰利品 · 擊敗 ${expeditionLoot.kills} · ${lootKinds} 種</summary><div id="journalLootList" class="journal-loot-list">${[...expeditionLoot.items].map(([name,item])=>`<div class="journal-loot-row"><span class="loot-rarity-${item.rar??0}">${safeEsc(name)}</span><b>+${(item.count??item).toLocaleString()}</b></div>`).join('')||'<p class="small">尚無戰利品。</p>'}</div></details></section>`;
+      const alive=living().length,total=heroes().length,enemies=foes.filter(e=>e.hp>0).length,allEnemies=foes.length;
+      return `<section id="globalBattleJournal" class="global-battle-journal" aria-label="全隊共通戰報"><div class="global-journal-head"><div class="journal-title-row"><h2>全隊戰報</h2><span class="tag" data-exploration-state>${explorationStateText()}</span></div><div class="journal-summary"><b data-exploration-name>${safeEsc(currentExplorationName())}</b> · ${safeEsc(MODES[party.difficulty||0].name)} · 隊員 ${alive}/${total} · 敵人 ${enemies}/${allEnemies}</div><div class="journal-actions">${explorationControlButtons(true)}${tab==='battle'?'':``}<button onclick="toggleBattleReport()">${battleReportPaused?'恢復戰報':'戰報暫停'}</button></div>${typeof battleJournalStatus==='function'?battleJournalStatus():''}${battleJournalFilter()}</div><div id="liveLog" role="log" aria-label="即時戰鬥紀錄">${logContent()}</div></section>`;
     };
   }
 
+  const preserveSettingsRender=render;
+  render=function(...args){const open=$('explorationBoostSettings')?.open,secondary=document.querySelector('.exploration-secondary-settings>details:last-child')?.open;const out=preserveSettingsRender(...args);if(open&&$('explorationBoostSettings'))$('explorationBoostSettings').open=true;if(secondary){const node=document.querySelector('.exploration-secondary-settings>details:last-child');if(node)node.open=true;}return out;};
   if(typeof render==='function'&&typeof party!=='undefined'&&party)render();
 })();

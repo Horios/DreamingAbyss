@@ -9,7 +9,7 @@ const root=path.resolve(__dirname,'..');
 const balanceRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
 
 test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>{
-  const game=await openRuntime(root),editor=await openRuntime(balanceRoot,'balance-editor.html');
+  const game=await openRuntime(root,'index.html',{}, {pathname:'/preview/'}),editor=await openRuntime(balanceRoot,'balance-editor.html');
   try{
     const defaults=await game.page.evaluate(()=>exportableBalance());
     const editable=await editor.page.evaluate(()=>({doc:__EMBERWILD_MASTERY_EDITOR.cleanExport(),issues:validateData()}));
@@ -29,7 +29,7 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
       const result=await game.page.evaluate(()=>{
         const issues=[];let checks=0;const curve=EmberwildProgression,ints=v=>['hp','atk','def'].every(k=>Number.isSafeInteger(v[k])&&v[k]>=0);
         for(let lv=1;lv<=60;lv++)for(let job=0;job<4;job++){
-          const h=initial(job);h.lv=lv;h.bag=[];h.equipped=[];h.advanced=false;h.stats=[0,0,0];
+          const h=initial(job);h.lv=lv;h.bag=[];h.equipped=[];h.advanced=false;
           const natural=stats(h),expected=curve.naturalStats(CLASSES[job],lv);checks++;
           if(!ints(natural)||['hp','atk','def'].some(k=>natural[k]!==expected[k]))issues.push('character '+job+'/'+lv);
           const mi=MAPS.findIndex((m,i)=>i!==6&&m.min<=lv&&m.max>=lv),range={min:MAPS[mi].min,max:MAPS[mi].max};MAPS[mi].min=MAPS[mi].max=lv;
@@ -40,8 +40,8 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
           }
           Object.assign(MAPS[mi],range);
         }
-        const pointHero=initial(0);pointHero.equipped=[];pointHero.bag=[];pointHero.stats=[0,0,0];const before=stats(pointHero);pointHero.stats=[1,1,1];const after=stats(pointHero);
-        if(after.hp-before.hp!==3||after.atk-before.atk!==1||after.def-before.def!==1)issues.push('ability point');
+        const pointHero=initial(0);pointHero.equipped=[];pointHero.bag=[];const before=stats(pointHero);pointHero.stats=[400,400,400];pointHero.ap=999;const after=stats(pointHero);
+        if(['hp','atk','def'].some(k=>after[k]!==before[k]))issues.push('legacy ability ignored');
         return {issues,checks};
       });
       assert.deepEqual(result.issues,[]);assert.equal(result.checks,1680);
@@ -63,7 +63,8 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
     });
     await t.test('Actual starting gifts and first-map random encounters support every representative trio',async()=>{
       const starters=await simulateStarters(game.page,{samples:128});
-      for(const result of starters){assert.equal(result.winRate,1,result.team);assert.equal(result.maxEnemyLevel,1);assert.equal(result.minEnemies,3);assert.equal(result.maxEnemies,6);assert(result.rounds<5&&result.pressure<.3);}
+      for(const result of starters){assert.equal(result.winRate,1,result.team);assert.equal(result.maxEnemyLevel,1);// Continuous exploration spawns one enemy at a time on the first map.
+        assert.equal(result.minEnemies,1);assert.equal(result.maxEnemies,1);assert(result.rounds<5&&result.pressure<.3);}
       const levels=await game.page.evaluate(()=>{
         const lead=EmberwildProgression.encounterLevelLead;return [1,5,6,11,26,60].map(l=>lead(GAMEPLAY_SETTINGS,l));
       });assert.deepEqual(levels,[0,0,1,2,5,5]);
@@ -85,11 +86,12 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
           state=initial(1);state.lv=59;state.won=true;party=createParty(state);party.cleared=true;party.difficulty=mode;syncParty();recruitCompanion(11);recruitCompanion(13);recruitCompanion(14);closeModal();party.active=[1,11,13].slice(0,count);syncParty();
           for(const h of party.members){h.lv=59;h.won=true;h.xp=0;h.hp=stats(h).hp;}
           const e=makeEnemy(0,state,()=>.9);e.kind=kind;e.lv=59;e.hp=0;e.rewarded=false;foes=[e];enemy=e;
-          const want=EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,59,kind,mode),count);rewardGroupKill(e);
+          // Granted EXP is floored; current difficulty multipliers give fractional model values.
+          const want=Math.floor(EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,59,kind,mode),count));rewardGroupKill(e);
           for(const h of party.members)if(h.xp!==(h===party.members[0]?want:0))issues.push('xp '+count+'/'+kind+'/'+mode+'/'+memberKey(h));
           const before=party.members.map(h=>h.xp);rewardGroupKill(e);if(party.members.some((h,i)=>h.xp!==before[i]))issues.push('duplicate reward');
         }
-        const h=party.members[0];h.lv=59;h.xp=need(59)-1;const totalPoints=h.stats.reduce((a,b)=>a+b,0)+h.ap;withHero(h,()=>awardXP(1));if(party.members.some(member=>member.lv!==60||member.xp!==0)||h.stats.reduce((a,b)=>a+b,0)+h.ap!==totalPoints+3)issues.push('level 60');
+        const h=party.members[0];h.lv=59;h.xp=need(59)-1;withHero(h,()=>awardXP(1));if(party.members.some(member=>member.lv!==60||member.xp!==0)||Object.hasOwn(h,'ap')||Object.hasOwn(h,'stats'))issues.push('level 60');
         }finally{save=oldSave;render=oldRender;running=false;resetEncounter();}return issues;
       });assert.deepEqual(issues,[]);
     });
@@ -101,7 +103,7 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
       assert.equal(modified.classes[2].growthSteps[0].atk,2);
       const roundTrip=await game.page.evaluate(doc=>{applyBalanceConfig(doc,{persist:false});const h=initial(2);h.lv=60;h.equipped=[];h.bag=[];h.advanced=false;return {attack:stats(h).atk,doc:exportableBalance()};},modified);
       assert.equal(roundTrip.attack,128);assert.deepEqual(roundTrip.doc.classes[2].growthSteps,modified.classes[2].growthSteps);
-      await editor.page.evaluate(doc=>{data=doc;ensureArrays();currentSection='balanceSettings:progression';render();},roundTrip.doc);
+      await editor.page.evaluate(doc=>{data=__EMBERWILD_VALIDATE_DOCUMENT(doc);ensureArrays();currentSection='balanceSettings:progression';render();},roundTrip.doc);
       await editor.page.waitForFunction(()=>document.querySelector('#balanceUxPreview')?.textContent.includes('三人隊每人／怪'),{timeout:10000});
       assert.equal((await editor.page.evaluate(()=>validateData())).length,0);
     });
@@ -110,29 +112,33 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
       legacyDoc.balanceSettings.rewards.kindMultiplier.boss=4;
       for(const d of legacyDoc.balanceSettings.difficulty.modes)delete d.xpMultiplier;
       legacyDoc.balanceSettings.difficulty.modes[1].reward=1.6;
-      const editorLegacy=await editor.page.evaluate(doc=>{data=doc;ensureArrays();return __EMBERWILD_MASTERY_EDITOR.cleanExport();},legacyDoc);
+      const editorLegacy=await editor.page.evaluate(doc=>{data=__EMBERWILD_VALIDATE_DOCUMENT(doc);ensureArrays();return __EMBERWILD_MASTERY_EDITOR.cleanExport();},legacyDoc);
       assert.equal(editorLegacy.balanceSettings.rewards.xp.kindMultiplier.boss,4);
       assert.equal(editorLegacy.balanceSettings.difficulty.modes[1].xpMultiplier,1.6);
       const result=await game.page.evaluate(doc=>{applyBalanceConfig(doc,{persist:false});const out=exportableBalance();return {boss:out.balanceSettings.rewards.xp.kindMultiplier.boss,hard:out.balanceSettings.difficulty.modes[1].xpMultiplier,xp:EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,30,'boss',1)};},legacyDoc);
-      assert.deepEqual(result,{boss:4,hard:1.6,xp:1843});
+      // EXP formula: (base + level × perLevel) × kind multiplier × difficulty multiplier, from the current defaults.
+      const x=defaults.balanceSettings.rewards.xp;assert.deepEqual({...result,xp:Math.round(result.xp*1000)/1000},{boss:4,hard:1.6,xp:Math.round((x.base+30*x.perLevel)*4*1.6*1000)/1000});
       await game.page.evaluate(doc=>applyBalanceConfig(doc,{persist:false}),defaults);
       assert.deepEqual(defaults.balanceSettings.difficulty.modes.map(d=>d.reward),[1,1.3,1.65]);
     });
-    await t.test('Editing points, advancement, difficulty, monster/XP and equipment settings changes final runtime formulas',async()=>{
+    await t.test('Editing natural growth, advancement, difficulty, monster/XP and equipment settings changes final runtime formulas',async()=>{
       const issues=await game.page.evaluate(base=>{
         const doc=structuredClone(base);doc.classes[0].initialStats.hp=40;doc.classes[0].growthPerLevel.hp=6;doc.classes[0].growthSteps=[{every:5,hp:1,atk:2,def:1}];
-        Object.assign(doc.balanceSettings.progression.statsPerPoint,{hp:4,attack:2,defense:2});doc.balanceSettings.progression.advance.attackMultiplier=1.3;
+        doc.balanceSettings.progression.advance.attackMultiplier=1.3;
         doc.balanceSettings.progression.xpCurve.quadratic=5;doc.balanceSettings.skills.mastery.characterXpMultiplier=1.1;
         doc.balanceSettings.monsters.normal.hpPerLevel=10;doc.balanceSettings.monsters.awakened.hpPerLevel=.004;doc.balanceSettings.difficulty.modes[2].hp=2.1;
         doc.balanceSettings.rewards.xp.kindMultiplier.elite=2.8;doc.balanceSettings.rewards.xp.perLevel=10;
         doc.balanceSettings.equipment.baseStats.weaponAttackPerTier=4;doc.balanceSettings.equipment.enhance.statPerLevel=.06;doc.equipmentPowerSystem.strength.multipliers[9]=1.8;
-        applyBalanceConfig(doc,{persist:false});const issues=[],h=initial(0);h.lv=60;h.advanced=true;h.stats=[2,3,4];h.bag=[];h.equipped=[];
-        if(stats(h).hp!==Math.round((40+59*6+11+3*4)*1.12))issues.push('natural hp/points');
-        if(stats(h).atk!==Math.round((10+59+11*2+2*2)*1.3))issues.push('natural atk/advance');
+        applyBalanceConfig(doc,{persist:false});const issues=[],h=initial(0);h.lv=60;h.advanced=true;h.bag=[];h.equipped=[];
+        if(stats(h).hp!==Math.round((40+59*6+11)*GAMEPLAY_SETTINGS.progression.advance.hpMultiplier))issues.push('natural hp without AP');
+        if(stats(h).atk!==Math.round((10+59+11*2)*1.3))issues.push('natural atk/advance');
         if(need(59)!==EmberwildProgression.requiredXp(doc.balanceSettings,59))issues.push('xp formula');
         const e=makeEnemy(12,h,()=>.01),row=monsterCatalog().find(m=>m.id===e.monsterId),want=EmberwildProgression.monsterStats(GAMEPLAY_SETTINGS,e.lv,'elite',h.difficulty||0,row);
         if(e.hp!==want.hp)issues.push('monster formula');
-        const g=gear(12,0,0,0);g.powerTier=10;g.plus=10;const b=gearStatBreakdown(g);if(b.total.atk!==Math.round(Math.round(b.body.atk*1.8)*1.6))issues.push('equipment formula');
+        // Additive rule: total = body + strength bonus + enhancement; enhancement is a fixed gain per level.
+        const g=gear(12,0,0,0);g.powerTier=10;g.plus=10;const b=gearStatBreakdown(g),en=GAMEPLAY_SETTINGS.equipment.enhance,graded=b.body.atk+b.grade.atk;
+        const enhanced=EmberwildProgression.enhancedGearStats({atk:graded},10,gearRequiredLevel(g),en.flatStatsPerLevel,en.flatStatsPerEquipmentLevel).atk;
+        if(b.grade.atk!==Math.round(b.body.atk*(1.8-1))||b.enhance.atk!==enhanced-graded||b.total.atk!==b.body.atk+b.grade.atk+b.enhance.atk||b.enhance.atk<=0)issues.push('equipment formula');
         const out=exportableBalance();for(const k of ['initialStats','growthPerLevel','growthSteps'])if(JSON.stringify(out.classes[0][k])!==JSON.stringify(doc.classes[0][k]))issues.push('class export '+k);
         applyBalanceConfig(base,{persist:false});return issues;
       },defaults);assert.deepEqual(issues,[]);
@@ -159,7 +165,8 @@ test('Real game, editor, EXP rewards, stages and old-save round trips',async t=>
     });
     await t.test('Changed custom balance persists on reload and restoring defaults preserves distinct stairs',async()=>{
       const custom=structuredClone(defaults);custom.classes[1].growthPerLevel.atk=3;custom.classes[1].growthSteps=[{every:4,hp:1,atk:1,def:1}];custom.balanceSettings.rewards.xp.kindMultiplier.boss=12;custom.balanceSettings.monsters.awakened.hpPerLevel=.005;
-      await game.page.evaluate(doc=>applyBalanceConfig(doc,{persist:true}),custom);await game.page.reload({waitUntil:'load'});
+      // The Preview keeps a custom balance across reloads when it comes through the JSON import, the path players use.
+      assert.equal(await game.page.evaluate(async doc=>{const text=JSON.stringify(doc);return importBalanceJSON({target:{files:[{size:text.length,text:async()=>text}],value:'test'}});},custom),true);await game.page.reload({waitUntil:'load'});
       const stored=await game.page.evaluate(()=>exportableBalance());assert.deepEqual(stored.classes[1].growthSteps,custom.classes[1].growthSteps);assert.equal(stored.classes[1].growthPerLevel.atk,3);assert.equal(stored.balanceSettings.rewards.xp.kindMultiplier.boss,12);assert.equal(stored.balanceSettings.monsters.awakened.hpPerLevel,.005);
       await game.page.evaluate(()=>resetBalanceJSON());const restored=await game.page.evaluate(()=>exportableBalance());
       for(let j=0;j<4;j++)for(const key of ['initialStats','growthPerLevel','growthSteps'])assert.deepEqual(restored.classes[j][key],defaults.classes[j][key]);

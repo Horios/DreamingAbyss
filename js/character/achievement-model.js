@@ -31,11 +31,21 @@
   function validateMailbox(raw){
     if(raw===undefined)return mailboxDefaults();
     const fail=()=>{throw Error('信箱存檔無效');};
-    if(!raw||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||raw.serial>1e12||!Array.isArray(raw.messages)||raw.messages.length>512)fail();
+    if(!raw||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||raw.serial>1e12||!Array.isArray(raw.messages))fail();
     const ids=new Set(),keys=new Set();
     for(const m of raw.messages){
-      if(!m||!Number.isSafeInteger(m.id)||m.id<1||m.id>raw.serial||ids.has(m.id)||typeof m.rewardKey!=='string'||!/^companion-[1-9]\d{1,9}$/.test(m.rewardKey)||keys.has(m.rewardKey)||typeof m.subject!=='string'||!m.subject.trim()||m.subject.length>100||typeof m.body!=='string'||m.body.length>1000||!Number.isSafeInteger(m.at)||m.at<0||typeof m.read!=='boolean'||typeof m.claimed!=='boolean'||m.claimed&&!m.read||!Array.isArray(m.attachments)||m.attachments.length!==1)fail();
-      const item=m.attachments[0];if(!item||item.type!=='companionTicket'||!Number.isInteger(item.companionId)||item.companionId<10||item.companionId>1e9||m.rewardKey!=='companion-'+item.companionId||!Number.isSafeInteger(item.quantity)||item.quantity<1||item.quantity>1e9||typeof item.name!=='string'||!item.name.trim()||item.name.length>100)fail();
+      if(!m||!Number.isSafeInteger(m.id)||m.id<1||m.id>raw.serial||ids.has(m.id)||typeof m.rewardKey!=='string'||!/^(?:companion-[1-9]\d{1,9}|starter-[0-3]-[1-9]\d*)$/.test(m.rewardKey)||keys.has(m.rewardKey)||typeof m.subject!=='string'||!m.subject.trim()||m.subject.length>100||typeof m.body!=='string'||m.body.length>1000||!Number.isSafeInteger(m.at)||m.at<0||typeof m.read!=='boolean'||typeof m.claimed!=='boolean'||m.claimed&&!m.read||!Array.isArray(m.attachments)||m.attachments.length<1||m.attachments.length>6)fail();
+      for(const item of m.attachments){
+        if(!item||!Number.isSafeInteger(item.quantity)||item.quantity<1||item.quantity>1e9||typeof item.name!=='string'||!item.name.trim()||item.name.length>200)fail();
+        if(item.type==='companionTicket'){
+          if(!Number.isInteger(item.companionId)||item.companionId<10||item.companionId>1e9||m.rewardKey.startsWith('companion-')&&m.rewardKey!=='companion-'+item.companionId)fail();
+        }else if(item.type==='catalogue'){
+          if(!['item','material','gem'].includes(item.kind)||typeof item.key!=='string'||!item.key||item.key.length>100||/[<>]/.test(item.key)||['__proto__','constructor','prototype'].includes(item.key)||item.kind==='gem'&&!['0','1','2'].includes(item.key))fail();
+        }else if(item.type==='gear'){
+          if(!item.gear||typeof item.gear.id!=='string'||!Number.isInteger(item.gear.plus)||item.gear.plus<0)fail();
+        }else fail();
+        if(m.rewardKey.startsWith('companion-')&&(item.type!=='companionTicket'||m.attachments.length!==1))fail();
+      }
       ids.add(m.id);keys.add(m.rewardKey);
     }
     return copy(raw);

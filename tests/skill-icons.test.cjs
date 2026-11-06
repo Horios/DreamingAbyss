@@ -24,17 +24,18 @@ test('unknown names, unsafe appearance values and raw markup never become execut
 test('standalone designer embeds the exact deployed catalog, renderer and shared CSS; old text CSS is still shared',()=>{
   const html=fs.readFileSync(path.join(editor,'balance-editor.html'),'utf8');
   for(const [tag,id,file] of [['script','lucide-catalog-v1','js/ui/lucide-catalog.js'],['script','skill-icon-library-v1','js/ui/skill-icon-library.js'],['style','skill-icons-shared-style','css/skill-icons.css'],['style','text-rarity-shared-style','css/text-rarity.css']]){
-    const embedded=html.split(`<${tag} id="${id}">\n`)[1].split(`\n</${tag}>`)[0],original=fs.readFileSync(path.join(root,file),'utf8');assert.equal(id==='text-rarity-shared-style'?embedded.trimEnd():embedded,id==='text-rarity-shared-style'?original.trimEnd():original,id);
+    const embedded=html.split(`<${tag} id="${id}">\n`)[1].split(`\n</${tag}>`)[0],original=fs.readFileSync(path.join(root,file),'utf8');// Embedding drops only the file's final newline; everything else must match byte for byte.
+    assert.equal(embedded.trimEnd(),original.trimEnd(),id);
   }
 });
 test('effective game validation/export/save-load preserve appearance and identifiers without changing balance or combat',()=>{
   const g=loadRuntime(root);g.run('selectSaveSlot(1);start(0);closeModal();applyBalanceConfig(exportableBalance());');
   const before=g.run('JSON.stringify(exportableBalance())');
-  const out=g.run(`(()=>{const doc=exportableBalance();doc.skillIcons=[{id:'lucide-test',name:'火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({color:'#fa7312',size:42,strokeWidth:3.2,rotation:35,opacity:.7,glowColor:'#33bbff',glowStrength:6,effect:'float',effectDuration:2.4,effectTiming:'ease-in-out'})}];doc.classes[0].skills[0].iconType='custom:lucide-test';applyBalanceConfig(doc);save();return JSON.stringify({json:exportableBalance(),save:packParty()});})()`);
+  const out=g.run(`(()=>{const doc=exportableBalance();doc.skillIcons=[{id:'lucide-test',name:'火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({color:'#fa7312',size:42,strokeWidth:3.2,rotation:35,opacity:.7,glowColor:'#33bbff',glowStrength:6,effect:'float',effectDuration:2.4,effectTiming:'ease-in-out'})},...doc.skillIcons.filter(x=>x)];doc.classes[0].skills[0].iconType='custom:lucide-test';applyBalanceConfig(doc);save();return JSON.stringify({json:exportableBalance(),save:packParty()});})()`);
   const expected=JSON.parse(out),baseline=JSON.parse(before),newDoc=expected.json;assert.equal(newDoc.skillIcons[0].layers[0].icon,'lucide:flame');assert.equal(newDoc.skillIcons[0].appearance.glowStrength,6);
   const normalized=structuredClone(newDoc);normalized.skillIcons=baseline.skillIcons;normalized.classes[0].skills[0].iconType=baseline.classes[0].skills[0].iconType;assert.deepEqual(normalized,baseline);
   const reloaded=loadRuntime(root,'index.html',Object.fromEntries(g.values));assert.deepEqual(JSON.parse(reloaded.run('JSON.stringify(exportableBalance().skillIcons)')),newDoc.skillIcons);assert.deepEqual(reloaded.errors,[]);
-  const old=structuredClone(baseline);delete old.skillIcons;g.ctx.old=old;g.run('applyBalanceConfig(old)');assert.deepEqual(JSON.parse(g.run('JSON.stringify(exportableBalance().skillIcons)')),[]);
+  const old=structuredClone(baseline);delete old.skillIcons;for(const r of old.inventoryIcons||[])if(String(r.iconType).startsWith('custom:'))r.iconType='auto';g.ctx.old=old;g.run('applyBalanceConfig(old)');assert.deepEqual(JSON.parse(g.run('JSON.stringify(exportableBalance().skillIcons)')),[]);
   const unknown=structuredClone(newDoc);unknown.skillIcons[0].layers[0].icon='lucide:future-icon';g.ctx.unknown=unknown;assert.doesNotThrow(()=>g.run('applyBalanceConfig(unknown)'));
   const unsafe=structuredClone(newDoc);unsafe.skillIcons[0].appearance.glowColor='url(javascript:alert(1))';g.ctx.unsafe=unsafe;assert.throws(()=>g.run('applyBalanceConfig(unsafe)'),/圖示外觀/);
   assert.deepEqual(g.errors,[]);

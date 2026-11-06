@@ -1,0 +1,68 @@
+.skill-system-page{display:grid;gap:var(--section-gap);min-width:0}.skill-system-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--card-gap)}.skill-system-slot{display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;white-space:normal;min-width:0;padding:16px;overflow-wrap:anywhere}.skill-slot-name{display:flex;align-items:center;gap:10px;min-width:0}.skill-slot-name b{overflow-wrap:anywhere}.skill-slot-name .skill-icon-glyph{flex:0 0 32px}.skill-equipment-list{display:grid;gap:10px}.skill-equipment-list button{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;white-space:normal}.skill-equipment-list button[aria-pressed=true]{border-color:var(--gold,#cba76a);box-shadow:inset 3px 0 var(--gold,#cba76a)}.skill-system-dialog{width:min(800px,calc(100vw - 24px));max-height:85dvh;overflow-y:auto}.skill-candidate-list{display:grid;gap:12px}.skill-candidate{padding:12px;border:1px solid var(--line);border-radius:8px}.skill-candidate p{overflow-wrap:anywhere}.equipment-socket-editor{margin-top:20px;border-top:1px solid var(--line);padding-top:12px;min-width:0}.equipment-socket-list{display:flex;gap:10px;align-items:flex-start}.equipment-socket-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:72px;min-height:76px;padding:8px;flex:0 0 72px}.equipment-socket-slot.empty{border-style:dashed}.equipment-socket-slot[aria-pressed=true],.equipment-gem-choice[aria-pressed=true]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}.equipment-socket-mode{display:grid;gap:6px;margin:12px 0}.equipment-socket-mode label{display:grid;gap:6px;max-width:240px}.equipment-socket-mode select{width:100%;min-width:0}.equipment-socket-mode small{color:var(--muted)}.equipment-socket-choices{border-top:1px solid var(--line);padding-top:8px}.equipment-gem-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px}.equipment-gem-choice{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:8px 4px;white-space:normal;overflow-wrap:anywhere;font-size:12px}.equipment-gem-choice small{color:var(--muted)}.equipment-gem-choice[aria-pressed=true]{opacity:1}.equipment-gem-remove{margin-top:10px}.equipment-socket-badge{display:block;font-size:11px;opacity:.8}.gear-management-detail:has(.equipment-socket-editor){overflow:visible;max-height:none}@media(max-width:650px){.skill-system-slots{grid-template-columns:1fr}.skill-system-slot{min-height:100px}.skill-slot-name{flex-wrap:wrap}.skill-system-dialog{padding:16px}}
+
+#modal.skill-system-dialog{height:auto;min-height:0;max-height:85dvh}
+
+/* A static sparkle stays on the icon; skill copy uses each theme's readable palette. */
+.equipment-skill-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;vertical-align:middle}
+.equipment-skill-icon>.equipment-skill-star{position:absolute;top:-3px;right:-4px;display:block;width:13px;height:13px;pointer-events:none;color:var(--gold)}
+.equipment-skill-icon>.equipment-skill-star>svg{display:block;width:100%;height:100%;fill:currentColor;stroke:var(--panel);stroke-width:1.5;stroke-linejoin:round}
+.equipment-skill-description{margin:12px 0;padding:10px 12px;border-left:3px solid var(--violet);border-radius:4px;background:var(--inset);min-width:0;overflow-wrap:anywhere;line-height:1.65}
+.equipment-skill-description h3{margin:0 0 6px;font-size:12px}
+.equipment-skill-name{color:var(--violet);line-height:1.65}
+.equipment-skill-effect{color:var(--info);line-height:1.7;white-space:normal;overflow-wrap:anywhere}
+.equipment-skill-description .equipment-skill-effect{margin:6px 0 0}
+
+.skill-passive-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px}.skill-passive-detail{display:flex;align-items:center;gap:10px;text-align:left;white-space:normal}.skill-passive-disabled .skill-passive-detail{opacity:.5}.skill-locked .skill-icon-glyph{filter:grayscale(1);opacity:.45}.skill-candidate .skill-slot-name{flex-wrap:wrap}.skill-passive-grid h2 small{font-size:12px}
+/* v0.076: newly learned skills */
+.skill-new{width:auto;flex:0 0 auto;padding:0 6px;border-radius:9px;font-size:10px;letter-spacing:.04em}
+.skill-new-guide ul{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px}.skill-new-guide li{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+/* The main pane does not scroll by default; the skills page opts in so the equipment skill block is reachable. */
+.layout>main:has(.skill-system-page){overflow-y:auto;scrollbar-gutter:stable}
+.layout>main:has(.skill-system-page)>*{flex-shrink:0}
+/* v0.076: sectioned skill description */
+.skill-detail{display:grid;gap:8px;margin:6px 0}.skill-detail-section h4{margin:0 0 4px;font-size:12px;letter-spacing:.06em;opacity:.75;font-weight:700}
+.skill-detail-section p{margin:2px 0}.skill-detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;margin:0}
+.skill-detail-grid>div{display:flex;gap:6px;align-items:baseline;min-width:0}.skill-detail-grid dt{opacity:.7;font-size:12px;white-space:nowrap}.skill-detail-grid dd{margin:0;font-size:13px;overflow-wrap:anywhere}
+.skill-detail-grid>.skill-detail-wide{grid-column:1/-1}
+/* v0.076: mailbox actions and NEW marks */
+.mailbox-list-item{position:relative}.mailbox-list-item>.mail-dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#e0484f;box-shadow:0 0 0 2px rgba(0,0,0,.25)}.mail-lock{margin:4px 0 8px}.mailbox-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}.mailbox-actions button{white-space:nowrap!important;width:auto!important}
+.mailbox-list-item b{display:flex;align-items:center;gap:6px;min-width:0;padding-right:14px}
+.mail-title-icon{flex:0 0 32px;width:32px;height:32px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.28);border-radius:6px;background:rgba(0,0,0,.28);padding:4px}
+.mailbox-list-item .mail-title-icon svg{width:20px!important;height:20px!important;max-width:20px;flex:0 0 20px}
+/* v0.083 two-pane skill slot dialog */
+#modal.skill-slot-dialog{width:min(1100px,96vw);max-width:96vw}
+.skill-slot-panes{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;min-height:0;max-height:min(70vh,720px)}
+.skill-slot-tabs{display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding-right:4px}
+.skill-slot-group h3{margin:0 0 4px;font-size:13px;color:var(--muted)}
+.skill-slot-tab{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin-bottom:6px;text-align:left;padding:8px 10px}
+.skill-slot-tab small{color:var(--muted);font-size:11px}
+.skill-slot-tab[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 3px 0 var(--gold)}
+.skill-slot-choices{display:flex;flex-direction:column;min-height:0}
+.skill-slot-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--control-gap);margin-bottom:8px;font-size:13px}
+.skill-slot-toolbar label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.skill-slot-choices .skill-candidate-list{overflow-y:auto;min-height:0;padding-right:4px}
+@media(max-width:700px){.skill-slot-panes{grid-template-columns:1fr;max-height:none}.skill-slot-tabs{flex-direction:row;flex-wrap:wrap;overflow:visible}.skill-slot-group{flex:1 1 140px}}
+/* v0.092: detail rows keep the label width so long values wrap beside it instead of overlapping it. */
+.skill-detail-grid dt{flex:0 0 auto}
+.skill-detail-grid dd{flex:1 1 auto;min-width:0}
+/* v0.092 two-pane skill catalog with a strong learned/unlearned contrast. */
+#modal.skill-catalog-dialog[open]{width:min(1100px,96vw);max-width:96vw;height:min(88vh,860px);display:flex;flex-direction:column;overflow:hidden}
+#modal.skill-catalog-dialog>h2,#modal.skill-catalog-dialog>p,#modal.skill-catalog-dialog>.actions{flex:0 0 auto}
+.skill-catalog-panes{display:grid;grid-template-columns:260px minmax(0,1fr);gap:12px;flex:1 1 auto;min-height:0}
+.skill-catalog-list{display:flex;flex-direction:column;gap:4px;overflow-y:auto;padding-right:4px;min-height:0}
+.skill-catalog-item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:6px 8px;text-align:left}
+.skill-catalog-icon svg{width:24px;height:24px}
+.skill-catalog-text{display:flex;flex-direction:column;min-width:0}
+.skill-catalog-text b{white-space:normal;overflow-wrap:anywhere}
+.skill-catalog-text small{font-size:11px;opacity:.8}
+.skill-catalog-state{font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;white-space:nowrap}
+.skill-catalog-item.is-acquired{border-color:color-mix(in srgb,var(--gold) 55%,var(--line))}
+.skill-catalog-item.is-acquired .skill-catalog-state{color:#14231a;background:var(--gold)}
+.skill-catalog-item.is-missing{opacity:.45;filter:grayscale(.85)}
+.skill-catalog-item.is-missing .skill-catalog-state{color:var(--muted);border:1px solid var(--line)}
+.skill-catalog-item.is-missing:hover,.skill-catalog-item.is-missing[aria-pressed="true"]{opacity:.8}
+.skill-catalog-item[aria-pressed="true"]{box-shadow:inset 3px 0 var(--gold),0 0 0 1px var(--gold)!important}
+.skill-catalog-detail{overflow-y:auto;min-height:0;padding-right:4px}
+.skill-catalog-detail.is-missing .skill-candidate{filter:grayscale(.6);opacity:.82}
+.skill-catalog-detail.is-acquired .skill-catalog-status{color:#14231a;background:var(--gold);border-color:var(--gold)}
+@media(max-width:700px){.skill-catalog-panes{grid-template-columns:1fr;grid-template-rows:minmax(0,38%) minmax(0,1fr)}}

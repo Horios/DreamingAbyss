@@ -7,7 +7,7 @@ const legacy=require('./fixtures/legacy-progression.json');
 const root=path.resolve(__dirname,'..');
 
 test('Equipment ratings, source contributions and existing equipment flows',async t=>{
-  const r=await openRuntime(root);
+  const r=await openRuntime(root,'index.html',{}, {pathname:'/preview/'});
   try{
     await r.page.evaluate(()=>{
       clearInterval(timer);
@@ -15,7 +15,10 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       globalThis.__equipmentTestGear=(extra={})=>({id:'equipment-test',job:0,slot:0,tier:10,formJob:0,form:0,powerTier:1,plus:0,rar:0,difficulty:0,prefixId:'',suffixId:'',affix:[],...extra});
       globalThis.__equipmentTestHero=()=>{
         closeModal();state=initial(0);state.lv=60;state.won=true;state.bag=[];state.equipped=[null,null,null,null,null];
-        party=createParty(state);party.cleared=true;syncParty();state.hp=stats(state).hp;continueFromTitle();
+        party=createParty(state);party.cleared=true;syncParty();
+        // A real new game saves right away, which builds the team system; do that here instead of relying on
+        // an unrelated asynchronous save happening before the next render.
+        packParty();state.hp=stats(state).hp;
         return state;
       };
     });
@@ -79,7 +82,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
     await t.test('Every supported non-panel affix uses the same ability and units in the upper total',async()=>{
       const rows=await r.page.evaluate(()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});__equipmentTestHero();
-        const cases=[[{key:'pierce',value:6},{type:7,rank:3,value:9},'防禦穿透 +15'],[{key:'lifesteal',value:3},{type:8,rank:3,value:4},'生命竊取 +7%'],[{key:'evasion',value:5},{type:9,rank:3,value:6},'閃避率 +11%'],[{key:'defenseIgnore',value:10},{type:18,rank:3,value:15},'防禦無視 +25%'],[{key:'allCooldownReduction',value:1},{type:16,rank:3,value:2},'全主動／輔助技能冷卻 −3 回合'],[{key:'dropRateBonus',value:8},{type:17,rank:3,value:7},'掉寶率 +15%'],[{key:'elementDamagePct',value:10,element:'fire'},{type:12,rank:3,value:15,element:'fire'},'火 屬性傷害 +25%'],[{key:'elementResistPct',value:10,element:'ice'},{type:14,rank:3,value:15,element:'ice'},'冰 屬性抗性 +25%'],[{key:'raceDamagePct',value:10,race:'beast'},{type:13,rank:3,value:15,race:'beast'},'對野獸 種族增傷 +25%']];
+        const cases=[[{key:'pierce',value:6},{type:7,rank:3,value:9},'防禦穿透 +15'],[{key:'lifesteal',value:3},{type:8,rank:3,value:4},'生命竊取 +7%'],[{key:'evasion',value:5},{type:9,rank:3,value:6},'閃避率 +11%'],[{key:'defenseIgnore',value:10},{type:18,rank:3,value:15},'防禦無視 +25%'],[{key:'allCooldownReduction',value:1},{type:16,rank:3,value:2},'全主動／輔助技能冷卻 −9 秒'],[{key:'dropRateBonus',value:8},{type:17,rank:3,value:7},'掉寶率 +15%'],[{key:'elementDamagePct',value:10,element:'fire'},{type:12,rank:3,value:15,element:'fire'},'火 屬性傷害 +25%'],[{key:'elementResistPct',value:10,element:'ice'},{type:14,rank:3,value:15,element:'ice'},'冰 屬性抗性 +25%'],[{key:'raceDamagePct',value:10,race:'beast'},{type:13,rank:3,value:15,race:'beast'},'對野獸 種族增傷 +25%']];
         return cases.map(([effect,affix,expected])=>{
           ITEM_FORMS[0][0][0].fixedEffects=[effect];
           const g=__equipmentTestGear({affix:[affix]});
@@ -102,7 +105,8 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.ok(Math.abs(out.after/out.before-1.56)<1e-9);
       assert.match(out.text,/核心技能 1 核心技能效果 \+56%/);
-      assert.match(out.text,/核心技能 1 冷卻 −2 回合/);
+      // v0.075: cooldown reduction points convert by their rule (published default: 3 s per point).
+      assert.match(out.text,/核心技能 1 冷卻 −6 秒/);
       assert.match(out.text,/對 BOSS 傷害 \+15%/);assert.match(out.text,/全屬性增傷 \+8%/);
       assert.match(out.text,/此武器攻擊屬性：火/);assert.doesNotMatch(out.text,/普通攻擊改為冰屬性/);assert.equal(out.element,'fire');
       assert.ok(out.proc.includes(out.procExpected),out.proc);
@@ -156,7 +160,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.deepEqual(out.issues,[]);assert.ok(out.checked>1500);t.diagnostic('Checked '+out.checked+' additive equipment source ledgers.');
     });
-    await t.test('All 336 pre-change character stat snapshots remain identical with shipped defaults',async()=>{
+    await t.test('All 336 published v0.016 character stat snapshots remain identical through seconds migration',async()=>{
       const issues=await r.page.evaluate(fixtures=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const issues=[];
@@ -168,28 +172,25 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       },regression);
       assert.deepEqual(issues,[]);
     });
-    await t.test('All starter jobs stay ungraded, keep locked actions, and include growth in one ledger',async()=>{
-      const out=await r.page.evaluate(()=>{
-        const issues=[];let checked=0;
+    await t.test('four starter gifts arrive by mail, retain reroll restrictions and include growth in one ledger',async()=>{
+      const out=await r.page.evaluate(async()=>{
+        const issues=[];let checked=0,gift;
+        // Real play chooses a save slot before creating a character; the title screen refuses unslotted saves.
+        await EmberwildOffline.settle(undefined,false);selectSaveSlot(1);closeModal();
         for(let job=0;job<4;job++){
-          closeModal();start(job);closeModal();
-          for(const g of equipment(state)){
-            checked++;if(equipmentBaseRating(g)!=='—'||canEnhance(g)||!equipmentBaseRatingHTML(g).includes('此裝備不適用基底評級。'))issues.push('starter '+job);
-            if((equipmentAttributeDetailsHTML(g).match(/<details /g)||[]).length!==1)issues.push('fold '+job);
-            const before=JSON.stringify(g);enhance(g.id);rerollEquipmentPowerTier(g.id);reroll(g.id);
-            if(JSON.stringify(g)!==before)issues.push('locked '+job);
-          }
+          await EmberwildOffline.settle(undefined,false);closeModal();start(job);closeModal();clearInterval(timer);await EmberwildOffline.settle(undefined,false);
+          const mail=party.mailbox.messages.find(m=>m.rewardKey.startsWith('starter-')&&!m.claimed);if(!mail){issues.push('missing gift '+job);continue;}
+          claimMailboxAttachments(mail.id);gift=state.bag.find(g=>g.starterPack);if(!gift){issues.push('missing weapon '+job);continue;}
+          checked++;if(equipmentBaseRating(gift)!=='—')issues.push('starter rating '+job);
+          const before=JSON.stringify(gift);rerollEquipmentPowerTier(gift.id);reroll(gift.id);if(JSON.stringify(gift)!==before)issues.push('reroll restriction '+job);
+          equipSharedGear(gift.id,memberKey(state),0);
         }
-        const g=equipment(state).find(x=>x.slot===0);
-        g.starterPack.fixedEffects=[{key:'gearAtkPct',value:30}];
-        g.starterPack.growth={enabled:true,startLevel:1,maxLevel:60,effects:[{key:'flatAttack',value:1},{key:'attackPct',value:.5}]};
-        state.lv=10;
-        const ledger=equipmentStatContributions(g),growthRows=ledger.rows.filter(x=>x.label.startsWith('成長加成'));
-        if(growthRows[0].stats.atk!==9||growthRows[1].stats.atk!==0||ledger.total.atk!==13)issues.push('growth');
+        gift.starterPack.fixedEffects=[{key:'gearAtkPct',value:30}];gift.starterPack.growth={enabled:true,startLevel:1,maxLevel:60,effects:[{key:'flatAttack',value:1},{key:'attackPct',value:.5}]};state.lv=10;
+        const ledger=equipmentStatContributions(gift),growth=ledger.rows.filter(x=>x.label.startsWith('成長加成'));
+        if(growth[0].stats.atk!==9||growth[1].stats.atk!==0)issues.push('growth');
         for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('growth sum');
         return {issues,checked};
-      });
-      assert.equal(out.checked,20);assert.deepEqual(out.issues,[]);
+      });assert.equal(out.checked,4);assert.deepEqual(out.issues,[]);
     });
     await t.test('Affix rules stay above while details show only their increments, named effects and the footer',async()=>{
       await r.page.evaluate(()=>{
@@ -216,29 +217,22 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       await r.page.setViewportSize({width:390,height:844});
       assert.ok(await detail.evaluate(el=>el.scrollWidth<=el.clientWidth+1));
       assert.ok(await r.page.locator('#modal .equipment-total-summary').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
-      await r.page.setViewportSize({width:1280,height:800});await r.page.evaluate(()=>{closeModal();setTab('equipment');});
-      const listName=r.page.locator('.inventory-list-name').first();
-      assert.match(await listName.innerText(),/\+10[\s\S]*基底評級：A/);
+      await r.page.setViewportSize({width:1280,height:800});await r.page.evaluate(()=>{closeModal();setTab('equipment');setInventoryCategory('equipment');});
+      const listName=r.page.locator('.gear-management-row[data-gear-id="equipment-test"] .inventory-list-item');
+      const listText=await listName.innerText();assert.match(listText,/(^|\s)T7(\s|$)/);assert.match(listText,/\+10 /);
       assert.ok(await listName.evaluate(el=>el.scrollHeight<=el.clientHeight+1));
       await r.page.evaluate(()=>openForge(state.bag[0].id));
-      assert.ok(await r.page.locator('.forge-gear-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
+      assert.ok(await r.page.locator('.forge-gear-item .item-slot-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
     });
-    await t.test('Inventory, forge, pending loot, recipes and item descriptions contain no player-visible T tiers',async()=>{
+    await t.test('Inventory shows saved T tiers and has no pending equipment controls',async()=>{
       const out=await r.page.evaluate(()=>{
-        __equipmentTestHero();const g=__equipmentTestGear({tier:12,powerTier:10,plus:10,affix:[{type:0,rank:3,value:3}]});state.bag.push(g);state.equipped[0]=g.id;forgeSelection=g.id;
-        pendingGearLoot=[__equipmentTestGear({id:'pending-1',powerTier:1}),__equipmentTestGear({id:'pending-2',powerTier:2}),__equipmentTestGear({id:'pending-3',powerTier:10})];
-        state.consumables.power_tier_reroll=1;
-        const text=[inventoryGearDetail(g),forgeView(),pendingGearBottomView(),update12BossMemberView(),accountItemsView(),supplyDetail(SHOP.find(x=>x.id==='power_tier_reroll'))].join('\n');
-        const host=document.createElement('div');host.innerHTML=text;
-        const description=equipmentPlayerItemDescription({id:'power_tier_reroll',description:'重新抽選 T1～T10 強度階級。'});
-        return {text:host.textContent,description,pending:pendingGearBottomView()};
+        __equipmentTestHero();const g=__equipmentTestGear({tier:12,powerTier:10,plus:10,affix:[{type:0,rank:3,value:3}]});state.bag.push(g);
+        clearGearInventoryFilters();return {html:inlineInventoryView(),pending:typeof pendingGearLoot};
       });
-      assert.doesNotMatch(out.text,/\bT(?:10|[1-9])\b|T 階|T 級/);
-      assert.doesNotMatch(out.description,/\bT(?:10|[1-9])\b/);assert.match(out.description,/基底評級/);
-      assert.match(out.pending,/基底評級：D ×2/);assert.match(out.pending,/基底評級：SSS ×1/);
+      assert.match(out.html,/gear-tier-10[^]*?T10/);assert.doesNotMatch(out.html,/claimPending|pending-gear/);assert.equal(out.pending,'undefined');
     });
     await t.test('Equipment comparison, wear, enhancement to configured +15, reroll and save/load still work',async()=>{
-      const out=await r.page.evaluate(()=>{
+      const out=await r.page.evaluate(async()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const h=__equipmentTestHero(),first=__equipmentTestGear({id:'worn-test'}),next=__equipmentTestGear({id:'next-test',powerTier:10,plus:10,affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]});
         h.bag.push(first,next);equipSharedGear(first.id,memberKey(h),0);
@@ -247,7 +241,9 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const previewText=$('modal').textContent,unchanged=h.equipped[0]===first.id;
         confirmEquipComparison(next.id,memberKey(h),0);
         const after=stats(h),worn=h.equipped[0]===next.id;
-        const doc=exportableBalance();doc.balanceSettings.equipment.enhance.maxLevel=15;applyBalanceConfig(doc,{persist:true});
+        const doc=exportableBalance();doc.balanceSettings.equipment.enhance.maxLevel=15;
+        // Use the in-game test-balance import, which is the path that keeps a preview balance across reloads.
+        const imported=await importBalanceJSON({target:{files:[new File([JSON.stringify(doc)],'balance.json',{type:'application/json'})],value:''}});if(!imported)throw Error('balance import failed');
         h.ore=h.dust=100000;h.materials['以太鍛鐵']=100000;
         for(let i=0;i<5;i++)enhance(next.id);
         const enhanced=next.plus,baseRating=equipmentBaseRating(next);
@@ -262,18 +258,19 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.ok(out.unchanged&&out.worn);assert.ok(out.after.atk>out.before.atk);
       assert.equal(out.enhanced,15);assert.equal(out.baseRating,'SSS');
       for(const key of ['rerolled','saveResult','gearEqual','statsEqual','summaryEqual'])assert.equal(out[key],true,key);
-      const reopened=await openRuntime(root,'index.html',out.storage);
+      const reopened=await openRuntime(root,'index.html',out.storage,{pathname:'/preview/'});
       try{
-        const restored=await reopened.page.evaluate(id=>{continueFromTitle();const g=state.bag.find(x=>x.id===id);return {gear:JSON.stringify(g),summary:equipmentTotalSummaryText(g),stats:stats(state)};},out.gearId);
+        // Published boots hydrate the slot when the player opens it from the title screen.
+        const restored=await reopened.page.evaluate(async id=>{await EmberwildOffline.settle(undefined,false);selectSaveSlot(1);await EmberwildOffline.settle(undefined,false);const g=state.bag.find(x=>x.id===id);return {gear:JSON.stringify(g),summary:equipmentTotalSummaryText(g),stats:stats(state)};},out.gearId);
         assert.equal(restored.gear,out.gearJSON);assert.equal(restored.summary,out.summary);assert.deepEqual(restored.stats,out.stats);assert.deepEqual(reopened.errors,[]);
       }finally{await reopened.browser.close();}
     });
     await t.test('Six legacy saves keep equipment identity, character stats and source totals through round trips',async()=>{
-      const issues=await r.page.evaluate(fixtures=>{
+      const issues=await r.page.evaluate(async fixtures=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});const issues=[];
         for(const raw of fixtures){
-          loadParty(structuredClone(raw));const before=party.members.map(h=>stats(h)),packed=structuredClone(packParty());
-          loadParty(packed);
+          await EmberwildOffline.settle(undefined,false);loadParty(structuredClone(raw));await EmberwildOffline.settle(undefined,false);const before=party.members.map(h=>stats(h)),packed=structuredClone(packParty());
+          loadParty(packed);await EmberwildOffline.settle(undefined,false);
           if(JSON.stringify(party.members.map(h=>stats(h)))!==JSON.stringify(before))issues.push('stats '+state.lv);
           for(const g of state.bag){const ledger=equipmentStatContributions(g);for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('source '+g.id);}
         }

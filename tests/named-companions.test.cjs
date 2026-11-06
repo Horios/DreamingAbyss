@@ -20,7 +20,8 @@ test('Designer names import, recruit deterministically and keep sibling stats, s
  const e=loadRuntime(editorRoot,'balance-editor.html'),r=game();e.run("data.companions.find(p=>p.id===15).availability='visible';");r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);playerHero().lv=10;syncParty();recruitCompanion(10);recruitCompanion(15);closeModal();');
  assert.deepEqual(json(r,'[partyMember(10).name,partyMember(15).name]'),['洛恩','雷昂']);
  const definitions=json(r,'exportableBalance().companions'),first=definitions.find(p=>p.id===10),other=definitions.find(p=>p.id===15);assert.deepEqual(first.initialStats,other.initialStats);assert.deepEqual(first.growthPerLevel,other.growthPerLevel);
- r.run('const edited=exportableBalance(),owner=edited.companions.find(p=>p.id===15);edited.classes[0].skills[owner.core[0]].power=7;edited.classes[0].skills[owner.core[0]].requiredLevel=20;applyBalanceConfig(edited);');
+ // Skill system v1: edit the canonical definition that classes[0].skills is projected from.
+ r.run('const edited=exportableBalance(),owner=edited.companions.find(p=>p.id===15),sk=edited.skillSystem.definitions.find(x=>x.adapter?.job===0&&x.adapter.kind==="core"&&x.adapter.index===owner.core[0]);sk.power=7;sk.requiredLevel=20;applyBalanceConfig(edited);');
  assert.equal(r.run('partyMember(15).skills[__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(15)).core[0]]'),0);assert.equal(r.run('CLASSES[0].skills[__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(10)).core[0]][4]'),first?json(e,'data.classes[0].skills[data.companions.find(p=>p.id===10).core[0]].power'):0);
  r.run('save();loadParty(structuredClone(packParty()));');const restarted=loadRuntime(root,'index.html',Object.fromEntries(r.values));assert.equal(restarted.run('partyMember(15).name'),'雷昂');assert.equal(restarted.run('__EMBERWILD_COMPANION_TEST_API.plans.length'),20);assert.deepEqual(restarted.errors,[]);
 });

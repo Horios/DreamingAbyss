@@ -7,7 +7,9 @@ const root=path.resolve(__dirname,'..');
 
 async function start(page){
   await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();});
-  await page.waitForTimeout(60);await page.evaluate(()=>closeModal());
+  // Starting a save settles offline time asynchronously and may show its receipt; finish it before clicking.
+  await page.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline settlement failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);});
+  await page.locator('#offline-settlement').waitFor({state:'hidden',timeout:30000});
 }
 async function show(page,tab,selector){
   await page.evaluate(t=>setTab(t),tab);
@@ -38,9 +40,12 @@ test('Chromium: equipment uses one compact protagonist header and keeps real equ
     const widths=await p.evaluate(()=>({overview:document.querySelector('.worn-overview').clientWidth,detail:document.querySelector('.worn-player-equipment').getBoundingClientRect().width}));
     assert(widths.detail>=widths.overview-2);
     await p.locator('[data-equip-position="0"]').click();
-    await p.locator('[data-gear-id="'+ids.gear+'"]').waitFor();
-    await p.locator('[data-gear-id="'+ids.gear+'"]').click();
-    await p.locator('#modal').getByRole('button',{name:'確認穿戴',exact:true}).click();
+    const candidate=p.locator('.worn-candidate-list [data-item-gear="'+ids.gear+'"]');
+    await candidate.waitFor({state:'visible'});
+    await candidate.click();
+    // Empty slots equip immediately; replacing worn gear opens comparison.
+    if(await p.locator('#modal').evaluate(el=>el.open))
+      await p.locator('#modal').getByRole('button',{name:'確認穿戴',exact:true}).click();
     assert.equal(await p.evaluate(()=>playerHero().equipped[0]),ids.gear);
     await p.locator('.worn-slot').first().getByRole('button',{name:'卸下',exact:true}).click();
     assert.equal(await p.evaluate(()=>playerHero().equipped[0]),null);
@@ -55,7 +60,7 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
   try{
     await start(p);
     for(const width of [1440,768,390]){
-      await p.setViewportSize({width,height:900});
+      await p.setViewportSize({width,height:900});await p.evaluate(()=>closeModal());
       await show(p,'bossCraft','.boss-reading-page');
       await p.locator('.boss-reading-page .ui-help').filter({has:p.getByText('製作說明',{exact:true})}).locator('summary').click();
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.boss-reading-page details'))el.open=true;});
@@ -71,7 +76,8 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
       await show(p,'guide','.guide-reading-page');
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.guide-reading-page details'))el.open=true;});
       const guide=await p.evaluate(()=>{
-        const root=document.querySelector('.guide-reading-page'),main=root.closest('main');
+        // The guide opens as a header dialog; the dialog is its single scroll container.
+        const root=document.querySelector('.guide-reading-page'),main=root.closest('main')||root.closest('dialog');
         return {mainHeight:main.clientHeight,mainScroll:main.scrollHeight,overflow:getComputedStyle(main).overflowY,pageWidth:root.clientWidth,pageScroll:root.scrollWidth,fonts:[...root.querySelectorAll('p,.ui-help>div')].map(el=>Number.parseFloat(getComputedStyle(el).fontSize)),first:root.firstElementChild.className};
       });
       assert.equal(guide.overflow,'auto');assert(guide.mainScroll>guide.mainHeight);
@@ -83,17 +89,19 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
         assert(await p.locator('.guide-reading-page td[data-reading-label]').count()>0);
       }
       const journalBefore=await p.locator('.global-battle-journal').boundingBox();
-      await p.locator('.guide-reading-page').getByRole('button',{name:'建立新角色',exact:true}).scrollIntoViewIfNeeded();
+      await p.locator('.guide-reading-page .panel').last().scrollIntoViewIfNeeded();
       const journalAfter=await p.locator('.global-battle-journal').boundingBox();
       assert.deepEqual(journalAfter,journalBefore);
-      assert(await p.locator('.layout>main').evaluate(el=>el.scrollTop>0));
+      assert(await p.locator('.guide-reading-page').evaluate(el=>(el.closest('main')||el.closest('dialog')).scrollTop>0),'the guide scrolls inside its own container');
+      await p.evaluate(()=>closeModal());
       await show(p,'worn','.worn-single-player');
       assert.equal(await p.locator('.worn-character-pane,.worn-character-item').count(),0);
       assert.deepEqual(await p.evaluate(overflowingChildren),[],width+' worn nested scrolls');
     }
     await show(p,'battle','.text-battle-layout');
-    assert.equal(await p.locator('.readability-page').count(),0);
-    assert.equal(await p.locator('.layout>main').evaluate(el=>getComputedStyle(el).overflowY),'hidden');
+    // A closed dialog may keep its last markup; only the battle page itself must not use the reading wrapper.
+    assert.equal(await p.locator('.layout>main .readability-page').count(),0);
+    assert(['auto','scroll'].includes(await p.locator('.layout>main').evaluate(el=>getComputedStyle(el).overflowY)),'continuous battle cards remain reachable through main scrolling');
     assert.deepEqual(r.errors,[]);
   }finally{await r.browser.close();}
 });

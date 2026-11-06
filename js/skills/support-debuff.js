@@ -87,7 +87,9 @@
       followup=Math.max(minimumDamage,Math.round(followup*elementFactor(element,target.element)));
       followup=Math.max(minimumDamage,Math.round(followup*(1-Math.min(cap.guard,effectTotal(target.id,'guard')))));
       const dealt=Math.min(target.hp,followup);
-      target.hp=Math.max(0,target.hp-dealt);
+      const visual=globalThis.EmberwildBattleEffects;
+      if(visual?.capturing)visual.scope({source:caster,mode:'damage',element},()=>{target.hp=Math.max(0,target.hp-dealt);});
+      else target.hp=Math.max(0,target.hp-dealt);
       if(dealt>0)recordCombatContribution(caster,'damage',dealt);
       total+=dealt;
       note(`${fx.name}追打 [${ELEMENTS[element]}] → ${combatEnemyName(target)} ${dealt} 傷害${crit?'（暴擊）':''}`,'playerDamage');
@@ -119,6 +121,7 @@
   };
 
   function tickFixedDotBeforeEnemyAction(e){
+    if(globalThis.EmberwildSecondsCombat?.active)return 0;
     if(!e||e.hp<=0)return 0;
     let total=0;
     const dots=effects.filter(fx=>fx.target===e.id&&fx.until>partyClock&&(fx.kind==='dotAttack'||fx.kind==='dotMaxHp'));
@@ -141,7 +144,8 @@
 
   const debuffPerformEnemyActionBase=performEnemyAction;
   performEnemyAction=function(e){
-    tickFixedDotBeforeEnemyAction(e);
+    const visual=globalThis.EmberwildBattleEffects;
+    if(visual?.capturing)visual.scope({mode:'damage',periodic:true},()=>tickFixedDotBeforeEnemyAction(e));else tickFixedDotBeforeEnemyAction(e);
     if(!e||e.hp<=0){note((e?.name||'敵人')+'受到持續傷害倒下，未能行動。');return 'dot';}
     return debuffPerformEnemyActionBase(e);
   };
@@ -167,7 +171,7 @@
     }
     for(const h of party.members){
       const who=characterName(h)+(party.active.includes(memberKey(h))?'':'（候補）');
-      for(const key of ['imbue','ward','elementTonic']){const b=activeSupply(h,key);if(!b)continue;const d=supplyBuffDetails(b,key);rows.push(row(who,d.name,d.detail,d.time,d.clock));}
+      for(const key of ['imbue','ward','elementTonic'])for(const b of activeSupplies(h,key)){const d=supplyBuffDetails(b,key);rows.push(row(who,d.name,d.detail,d.time,d.clock));}
       if(h.shield>0)rows.push(row(who,'護盾','可抵擋所有來源傷害 · 剩餘 '+Math.round(h.shield),'無回合期限','耗盡或戰鬥結束'));
     }
     return rows.join('')||'<tr><td colspan="5" class="no-buffs">目前沒有生效中的 BUFF、DEBUFF 或消耗品效果。</td></tr>';

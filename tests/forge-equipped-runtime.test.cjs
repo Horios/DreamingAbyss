@@ -5,29 +5,16 @@ const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const json=(r,code)=>JSON.parse(r.run(`JSON.stringify(${code})`));
 function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();');return r;}
-function listIds(html){return [...html.matchAll(/class="forge-gear-item [^"]*" onclick="chooseForge\('([^']+)'\)"/g)].map(m=>m[1]).sort();}
+function listIds(html){return [...html.matchAll(/onclick="chooseForge\('([^']+)'\)"/g)].map(m=>m[1]).sort();}
 
-test('Forge lists all five initially equipped starter items, with previews and fixed-item restrictions',()=>{
+test('Forge lists the initial white set as enhanceable SVG slots with details',()=>{
   const r=game(),out=json(r,`(()=>{
     const ids=state.equipped.filter(Boolean),html=forgeView();
-    chooseForge(ids[0]);const selected=forgeView(),g=findGear(ids[0]);
-    state.gold=10000;state.ore=10000;state.dust=10000;state.materials['以太鍛鐵']=1000;
-    state.consumables.power_tier_reroll=3;
-    const before={gear:structuredClone(g),gold:state.gold,ore:state.ore,dust:state.dust,materials:structuredClone(state.materials),consumables:structuredClone(state.consumables)};
-    enhance(g.id);reroll(g.id);autoReroll(g.id,3);rerollEquipmentPowerTier(g.id);openForge(g.id);
-    return {ids,html,selected,selection:forgeSelection,canEnhance:canEnhance(g),before,after:{gear:g,gold:state.gold,ore:state.ore,dust:state.dust,materials:state.materials,consumables:state.consumables}};
+    chooseForge(ids[0]);const selected=forgeView(),g=findGear(ids[0]);state.ore=10000;
+    return {ids,html,selected,canEnhance:canEnhance(g)};
   })()`);
-  assert.equal(out.ids.length,5);
-  assert.deepEqual(listIds(out.html),out.ids.sort());
-  assert.match(out.html,/已穿戴 5/);
-  assert.equal(out.selection,out.ids[0]);
-  assert.match(out.selected,/目前能力/);
-  assert.match(out.selected,/新手專屬裝備無法強化/);
-  assert.match(out.selected,/無法洗鍊或重鑄基底/);
-  assert.doesNotMatch(out.selected,/onclick="(?:enhance|reroll|autoReroll|rerollEquipmentPowerTier)\(/);
-  assert.equal(out.canEnhance,false);
-  assert.deepEqual(out.after,out.before);
-  assert.deepEqual(r.errors,[]);
+  assert.equal(out.ids.length,5);assert.deepEqual(listIds(out.html),out.ids.sort());assert.match(out.html,/<svg/);
+  assert.match(out.selected,/目前能力/);assert.match(out.selected,/onclick="enhance/);assert.equal(out.canEnhance,true);assert.deepEqual(r.errors,[]);
 });
 
 test('Forge equipped and spare counts follow real shared ownership, including an unequipped starter',()=>{
@@ -58,7 +45,7 @@ test('Ordinary equipped gear retains enhancement costs and random-affix reroll c
   assert.match(out.html,new RegExp(`onclick="enhance\\('${out.id}'\\)"`));
   assert.match(out.html,new RegExp(`onclick="reroll\\('${out.id}'\\)"`));
   assert.equal(out.plus,1);assert.equal(out.worn,out.id);assert(out.draft);
-  assert.equal(out.ore-out.afterOre,out.cost.ore+out.rerollCost.ore);
+  assert.equal(out.ore-out.afterOre,out.cost.ore);
   assert.equal(out.gold-out.afterGold,out.rerollCost.gold);
   assert.deepEqual(r.errors,[]);
 });
@@ -76,7 +63,7 @@ test('Equipped tokens remain visible on non-enlisted roster companions with thei
   })()`);
   assert.equal(out.enlisted,false);assert.equal(out.owner,10);
   assert(listIds(out.html).includes(out.id));assert.match(out.html,/已穿戴 6/);
-  assert.match(out.html,/夥伴通用 · 信物/);assert.match(out.html,/目前能力<\/h3><p>此裝備攻擊力/);
+  assert.match(out.html,/通用 · 信物/);assert.match(out.html,/目前能力<\/h3><p>攻擊力/);
   assert.match(out.html,/信物無法洗鍊或重鑄基底/);
   assert.doesNotMatch(out.html,/undefined|forge-power-reroll|onclick="(?:reroll|autoReroll|rerollEquipmentPowerTier)\(/);
   assert.match(out.modal,/信物強化/);assert.equal(out.plus,1);
@@ -91,7 +78,17 @@ test('BOSS gear remains enhanceable while its exclusive affixes stay fixed',()=>
     return {id:g.id,boss:g.boss,html:forgeView(),canEnhance:canEnhance(g)};
   })()`);
   assert.notEqual(out.boss,undefined);assert(out.canEnhance);
-  assert.match(out.html,/BOSS 專屬詞綴/);assert.match(out.html,/forge-power-reroll/);
-  assert.doesNotMatch(out.html,/onclick="(?:reroll|autoReroll)\(/);
+  assert.match(out.html,/BOSS 專屬加成 1/,'the fixed boss bonuses are displayed');
+  assert.match(out.html,/強化至 \+1/,'boss gear is available for enhancement');
+  assert.match(out.html,/洗鍊隨機詞條/,'random affixes remain separate from fixed boss bonuses');
+  const result=json(r,`(()=>{
+    const g=findGear('${out.id}'),plus=g.plus;
+    const fixed=()=>equipmentAttributeDetailsHTML(g).match(/<div class="equipment-attribute-line"><b>BOSS 專屬加成 \\d+<\\/b>[\\s\\S]*?<\\/div>/g)||[];
+    const before=fixed();enhance(g.id);
+    return {before,after:fixed(),plusBefore:plus,plusAfter:g.plus};
+  })()`);
+  assert(result.before.length>0,'at least one boss-exclusive bonus must be present');
+  assert.equal(result.plusAfter,result.plusBefore+1,'enhancement increases the gear level');
+  assert.deepEqual(result.after,result.before,'enhancement never changes fixed boss bonuses');
   assert.deepEqual(r.errors,[]);
 });

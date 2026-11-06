@@ -1,0 +1,100 @@
+:root{--item-slot-width:240px;--item-slot-height:48px}
+.item-slot{
+  position:relative;display:inline-flex;align-items:center;justify-content:flex-start;gap:10px;
+  width:var(--item-slot-width);max-width:100%;min-width:0;min-height:var(--item-slot-height);flex:0 1 auto;padding:7px 10px;box-sizing:border-box;
+  border:1px solid var(--line);border-radius:6px;background:var(--panel,#17221c);
+  color:var(--text,#dfe8de);text-align:left;vertical-align:middle;cursor:pointer;overflow:hidden
+}
+.item-slot-art,.item-slot-art>span{display:flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;height:32px}
+.item-slot svg{width:28px;height:28px;max-width:100%;flex:none}
+.item-slot-name{min-width:0;flex:1;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.item-slot-count{flex:none;margin-left:auto;padding:1px 5px;border-radius:3px;background:var(--inset,#111c);font-size:11px;font-weight:700;line-height:18px;white-space:nowrap}
+.item-slot-plus{display:none}
+.item-slot-worn{display:flex;align-items:center;justify-content:center;flex:none;color:#88d09d}
+.item-slot-worn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+.item-slot-empty{cursor:default;opacity:.4}
+.item-slot.selected,.item-slot:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.item-quality-0{--item-quality-color:var(--muted)}
+.item-quality-1{--item-quality-color:#669e8a}.item-quality-2{--item-quality-color:#64aaf0}.item-quality-3{--item-quality-color:#b9a46b}
+:root[data-ui-theme="paper"] .item-quality-1{--item-quality-color:var(--positive)}
+:root[data-ui-theme="paper"] .item-quality-2{--item-quality-color:var(--info)}
+:root[data-ui-theme="paper"] .item-quality-3{--item-quality-color:var(--gold)}
+/* Keep the quality border on selection, hover and every theme. */
+:root .item-slot[class*="item-quality-"],:root .tag[class*="item-quality-"]{border-color:var(--item-quality-color)}
+:root .tag[class*="item-quality-"]{color:var(--item-quality-color)}
+.item-slot.selected{outline-color:var(--item-quality-color,var(--gold));box-shadow:inset 3px 0 var(--item-quality-color,var(--gold))}
+
+:root[data-item-display="name"] .item-slot-art,
+:root[data-item-display="name"] .inventory-item-icon,
+:root[data-item-display="name"] .item-detail-art{display:none!important}
+
+.inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.life-materials,.account-gem-slots,.token-inventory-list,.worn-candidate-list{
+  display:grid!important;grid-template-columns:minmax(0,1fr);align-content:start;justify-items:start;gap:6px;padding:5px
+}
+.inventory-list-item.item-slot,.forge-gear-item.item-slot,.worn-candidate.item-slot,.token-inventory-row.item-slot{
+  display:flex;width:var(--item-slot-width);max-width:100%;height:auto;min-height:var(--item-slot-height);padding:7px 10px;gap:10px
+}
+.account-item-row.icon-only-row,.account-material-row.icon-only-row,.life-stock-row.icon-only-row{display:block;min-width:0}
+
+.mailbox-attachments{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;width:100%;max-width:480px;margin:12px 0 20px}
+.mailbox-attachment.item-slot{display:flex;width:var(--item-slot-width);max-width:100%;height:auto;min-height:var(--item-slot-height);padding:7px 10px;aspect-ratio:auto;overflow:hidden}
+.mailbox-attachments .item-slot-empty{display:none}
+
+/* v0.112: cards fill the row (auto-fill columns, 304px minimum) instead of one left column. */
+.shop-product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(304px,100%),1fr));justify-content:stretch;align-content:start;gap:6px;padding:5px}
+.shop-product-row.icon-product{display:block;width:auto;max-width:100%;min-width:0;min-height:0;padding:6px;border-radius:8px;box-sizing:border-box}
+.shop-product-row:has([data-item-sold="true"]){opacity:.5;filter:grayscale(1) brightness(.8)}
+.shop-product-visual{display:grid;grid-template-columns:minmax(0,var(--item-slot-width)) auto;justify-content:start;align-items:center;gap:10px;min-width:0}
+.shop-product-visual>.item-slot{width:100%}
+.shop-product-stock{font-size:10px;line-height:1.35;color:var(--muted);white-space:nowrap;text-align:right}
+.shop-product-stock b{font-size:11px;color:var(--text);font-weight:600}
+.shop-product-label{display:none}
+.shop-product-grid>.shop-empty{grid-column:1/-1}
+
+.recipe-item-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.recipe-item-line>.item-slot,.recipe-input{flex:0 1 var(--item-slot-width);min-width:0}
+.recipe-input{display:grid;gap:3px;justify-items:stretch}
+.recipe-input small{font-size:11px;text-align:right}
+.gather-output-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gather-output-line .item-slot{flex:0 1 var(--item-slot-width)}
+.account-gem-list .actions{margin-top:14px}
+.forge-action .item-cost-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+.worn-slot-choice .item-slot{pointer-events:auto}
+.item-cost-line{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:100%}
+.item-cost-line .item-slot,.boss-recipe .recipe-cost .item-slot{width:var(--item-slot-width);max-width:100%;min-width:0;min-height:var(--item-slot-height);padding:7px 10px}
+.boss-recipe>.item-slot{margin:12px 0}
+
+.item-hover-tooltip{position:fixed;inset:auto;margin:0;z-index:2147483647;width:min(340px,calc(100vw - 16px));max-height:min(520px,calc(100dvh - 16px));overflow:auto;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel,#17221c);color:var(--text,#e0e8df);box-shadow:0 8px 30px #0008;pointer-events:none;text-align:left;font-size:12px;line-height:1.5}
+.item-hover-tooltip[hidden]{display:none}.item-hover-tooltip h3{margin:0 0 8px;font-size:14px}.item-hover-tooltip p{margin:6px 0}.item-hover-tooltip details{display:block}.item-hover-tooltip details>*{display:block!important}.item-hover-tooltip summary{display:none}.item-hover-tooltip::backdrop{background:transparent}
+#item-detail-dialog{width:min(580px,calc(100vw - 28px));max-height:85dvh;padding:20px;overflow:auto}#item-detail-dialog .actions{flex-wrap:wrap}#item-detail-dialog input{width:95px;max-width:100%}.item-detail-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.item-detail-art svg{width:44px;height:44px}.item-detail-top button{flex:none}
+
+@media(max-width:600px){
+  .inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.life-materials,.account-gem-slots,.token-inventory-list,.worn-candidate-list,.shop-product-grid{gap:5px;padding:3px}
+  .item-slot,.inventory-list-item.item-slot,.forge-gear-item.item-slot,.worn-candidate.item-slot,.token-inventory-row.item-slot,.mailbox-attachment.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px}
+  .mailbox-attachments{max-width:none}
+}
+
+/* Mobile legacy list rules must not enlarge shared item slots. */
+@media(max-width:600px){#app .inventory-list-item.item-slot,#app .forge-gear-item.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px;align-items:center}}
+
+/* Reference slots keep hover information without opening another dialog. */
+.item-slot:not(button){cursor:default}.shop-inline-controls{display:flex;flex-direction:column;gap:6px;min-width:0;margin-top:6px}.shop-inline-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.shop-inline-actions input{width:64px;min-width:0}.shop-inline-actions button{min-height:32px}
+.shop-product-visual>.shop-inline-controls{grid-column:1/-1;grid-row:2}.shop-product-visual>.shop-product-stock{grid-column:2;grid-row:1}
+
+/* Five skill gem identities retain their colors through every alchemy tier. */
+.item-slot[data-item-kind="gem"][data-item-key="0"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="5"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="10"] .item-slot-art { color: #ef5d5d; }
+.item-slot[data-item-kind="gem"][data-item-key="1"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="6"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="11"] .item-slot-art { color: #49b976; }
+.item-slot[data-item-kind="gem"][data-item-key="2"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="7"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="12"] .item-slot-art { color: #ae83ec; }
+.item-slot[data-item-kind="gem"][data-item-key="3"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="8"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="13"] .item-slot-art { color: #e8edf7; }
+.item-slot[data-item-kind="gem"][data-item-key="4"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="9"] .item-slot-art,
+.item-slot[data-item-kind="gem"][data-item-key="14"] .item-slot-art { color: #64aaf0; }

@@ -1,7 +1,7 @@
 (function starterModule(){
   const clone=value=>JSON.parse(JSON.stringify(value));
-  const SLOT_BY_POSITION=[0,1,2,3,3];
-  const POSITION_NAMES=['武器','護甲','副手','飾品 1','飾品 2'];
+  const SLOT_BY_POSITION=[0];
+  const POSITION_NAMES=['武器'];
   const SKILL_EFFECT_KEYS=new Set(['skillEffectPct','skillCooldownReduction']);
   const VALID_AFFIX_TYPES=new Set([0,1,2,3,4,5,6,7,8,9,12,13,14,15,16,17,18]);
   const VALID_AFFIX_ELEMENTS=new Set(['fire','ice','wind','light','shadow']);
@@ -42,6 +42,7 @@
     if(!refs.length)throw Error(`職業 ${job} 的${POSITION_NAMES[position]}沒有可用的新手禮包裝備`);
     return {
       ...clone(position===4?(refs[1]||refs[0]):refs[0]),
+      baseAttack:GS('equipment.baseStats.weaponAttackPerTier',3)+1,
       powerTier:1,
       plus:0,
       fixedEffects:null,
@@ -151,8 +152,11 @@
     const plus=raw?.plus===undefined?0:Number(raw.plus);
     if(!Number.isInteger(powerTier)||powerTier<1||powerTier>10)throw Error(`starterPacks[${job}][${position}] 的初始 T 階無效`);
     if(!Number.isInteger(plus)||plus<0||plus>enhanceMax)throw Error(`starterPacks[${job}][${position}] 的初始強化值無效`);
+    const baseAttack=raw?.baseAttack===undefined?GS('equipment.baseStats.weaponAttackPerTier',3)+1:Number(raw.baseAttack);
+    if(!Number.isFinite(baseAttack)||baseAttack<0||baseAttack>10000)throw Error('新手武器基礎攻擊無效');
     return {
       ...ref,
+      baseAttack,
       powerTier,
       plus,
       fixedEffects:normalizeStarterEffects(raw?.fixedEffects,job,{allowNull:true}),
@@ -168,16 +172,30 @@
     if(value===undefined||value===null)return defaultStarterPacks(forms);
     if(!Array.isArray(value)||value.length!==CLASSES.length)throw Error(`starterPacks 必須包含 ${CLASSES.length} 個職業`);
     return value.map((row,job)=>{
-      if(!Array.isArray(row)||row.length!==SLOT_BY_POSITION.length)throw Error(`starterPacks[${job}] 必須包含 5 件裝備`);
-      return row.map((raw,position)=>normalizeStarterEntry(raw,job,position,data));
+      if(!Array.isArray(row)||![1,5].includes(row.length))throw Error(`starterPacks[${job}] 只能設定 1 件武器`);
+      return row.slice(0,1).map((raw,position)=>normalizeStarterEntry(raw,job,position,data));
     });
   }
 
-  let starterPacks=defaultStarterPacks();
+  function normalizeStarterItems(value,data){
+    if(value===undefined)return CLASSES.map(()=>[]);
+    if(!Array.isArray(value)||value.length!==CLASSES.length)throw Error('新手禮包贈品必須包含所有職業');
+    const catalogue=new Set(EmberwildInventoryIcons.entries(data).filter(r=>r.kind!=='skill').map(r=>r.id));
+    return value.map(rows=>{
+      if(!Array.isArray(rows))throw Error('新手禮包贈品必須為陣列');
+      return rows.map(row=>{
+        if(!row||!catalogue.has(row.kind+':'+row.key))throw Error('新手禮包引用不存在的道具');
+        if(!Number.isSafeInteger(row.quantity)||row.quantity<1||row.quantity>1e9)throw Error('新手禮包數量必須為 1～1000000000 的整數');
+        return {kind:row.kind,key:String(row.key),quantity:row.quantity};
+      });
+    });
+  }
+  let starterPacks=defaultStarterPacks(),starterPackItems=CLASSES.map(()=>[]);
   try{
     const raw=balanceSourceText();
     if(raw){
       const saved=JSON.parse(raw);
+      starterPackItems=clone(saved.starterPackItems||CLASSES.map(()=>[]));
       starterPacks=normalizeStarterPacks(saved.starterPacks,{
         equipmentForms:saved.equipmentForms||ITEM_FORMS,
         equipmentPowerSystem:saved.equipmentPowerSystem||globalThis.__EMBERWILD_EQUIPMENT_POWER,
@@ -185,7 +203,7 @@
       });
     }
   }catch(error){
-    console.warn('新手禮包設定載入失敗，改用目前裝備資料的預設整套裝備',error);
+    console.warn('新手禮包設定載入失敗，改用目前裝備資料的預設武器',error);
     starterPacks=defaultStarterPacks();
   }
 
@@ -193,6 +211,7 @@
   validateBalanceConfig=function(input){
     const data=starterValidateBase(input);
     data.starterPacks=normalizeStarterPacks(data.starterPacks,data);
+    data.starterPackItems=normalizeStarterItems(data.starterPackItems,data);
     return data;
   };
 
@@ -200,10 +219,11 @@
   exportableBalance=function(){
     const data=starterExportBase();
     data.starterPacks=clone(starterPacks);
+    data.starterPackItems=clone(starterPackItems);
     data.notes=[...(data.notes||[]),
-      'starterPacks 只在建立第一名初始職業時發放；後續招募角色不會取得此禮包。',
+      'starterPacks 只在建立第一名初始職業時寄至信箱；後續招募角色不會取得此禮包。',
       'starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects、prefixId、suffixId 與兩條固定 affixes。',
-      '新手裝備不可在遊戲內強化、洗鍊或重鑄 T 階；growth 只允許依角色等級增加固定屬性。'
+      '新手武器可強化，不可洗鍊或重鑄 T 階；growth 只允許依角色等級增加固定屬性。'
     ];
     return data;
   };
@@ -213,12 +233,17 @@
     const copy=clone(input);
     const next=normalizeStarterPacks(copy.starterPacks,copy);
     copy.starterPacks=clone(next);
+    const nextItems=normalizeStarterItems(copy.starterPackItems,copy);
+    copy.starterPackItems=clone(nextItems);
+    const previousItems=starterPackItems;
     const previous=starterPacks;
     starterPacks=clone(next);
+    starterPackItems=clone(nextItems);
     try{
       return starterApplyBase(copy,options);
     }catch(error){
       starterPacks=previous;
+      starterPackItems=previousItems;
       throw error;
     }
   };
@@ -227,6 +252,7 @@
   resetBalanceJSON=function(){
     const result=starterResetBase();
     starterPacks=defaultStarterPacks();
+    starterPackItems=CLASSES.map(()=>[]);
     return result;
   };
 
@@ -318,21 +344,9 @@
   }
 
   function starterLockedMessage(){
-    return '新手專屬裝備無法強化、洗鍊或重鑄基底；只會依設定的每級屬性成長。';
+    return '新手專屬武器可強化，但無法洗鍊詞綴或重鑄基底。';
   }
 
-  if(typeof canEnhance==='function'){
-    const starterCanEnhanceBase=canEnhance;
-    canEnhance=function(g){return g?.starterPack?false:starterCanEnhanceBase(g);};
-  }
-  if(typeof enhance==='function'){
-    const starterEnhanceBase=enhance;
-    enhance=function(id){
-      const g=typeof findGear==='function'?findGear(id):null;
-      if(g?.starterPack)return toast(starterLockedMessage());
-      return starterEnhanceBase(id);
-    };
-  }
   if(typeof reroll==='function'){
     const starterRerollBase=reroll;
     reroll=function(id){
@@ -357,23 +371,13 @@
       return starterPowerRerollBase(id);
     };
   }
-  if(typeof openForge==='function'){
-    const starterOpenForgeBase=openForge;
-    openForge=function(id){
-      const g=typeof findGear==='function'?findGear(id):null;
-      if(g?.starterPack)return toast(starterLockedMessage());
-      return starterOpenForgeBase(id);
-    };
-  }
-
   if(typeof forgeView==='function'){
     const starterForgeViewBase=forgeView;
     forgeView=function(){
       let html=starterForgeViewBase();
       const g=typeof findGear==='function'?findGear(forgeSelection):null;
       if(!g?.starterPack)return html;
-      const locked='<button disabled>新手裝備固定，無法操作</button>';
-      html=html.replace(/<button[^>]*onclick="enhance\('[^']+'\)"[^>]*>[\s\S]*?<\/button>/g,locked);
+      const locked='<button disabled>新手武器不可洗鍊或重鑄</button>';
       html=html.replace(/<button[^>]*onclick="reroll\('[^']+'\)"[^>]*>[\s\S]*?<\/button>/g,locked);
       html=html.replace(/<button[^>]*onclick="autoReroll\('[^']+',\s*[23]\)"[^>]*>[\s\S]*?<\/button>/g,locked);
       html=html.replace(/<button[^>]*onclick="rerollEquipmentPowerTier\('[^']+'\)"[^>]*>[\s\S]*?<\/button>/g,locked);
@@ -383,6 +387,7 @@
 
   function createStarterGear(job,position,entry){
     const g=gear(1,entry.slot,0,job);
+    if(globalThis.__EMBERWILD_EQUIPMENT_SKILLS)globalThis.__EMBERWILD_EQUIPMENT_SKILLS.generate(g,{source:'starter',force:true});
     g.job=job;
     g.formJob=entry.group;
     g.form=entry.form;
@@ -400,6 +405,7 @@
       job,
       position,
       basePowerTier:entry.powerTier,
+      baseAttack:entry.baseAttack,
       fixedEffects:entry.fixedEffects===null?null:clone(entry.fixedEffects),
       growth:clone(entry.growth)
     };
@@ -410,35 +416,21 @@
     return g;
   }
 
-  function grantStarterPack(hero,job){
-    const pack=starterPacks[job];
-    if(!hero||!Array.isArray(pack)||pack.length!==5)return [];
+  function prepareStarterPack(hero,job){
+    // Initial white gear is ordinary equipment, independent of the gift settings.
     const oldEquipped=new Set((hero.equipped||[]).filter(Boolean));
     hero.bag=(hero.bag||[]).filter(g=>!oldEquipped.has(g.id));
     hero.equipped=[null,null,null,null,null];
-    const granted=[];
-    for(let position=0;position<pack.length;position++){
-      const g=createStarterGear(job,position,pack[position]);
-      hero.bag.push(g);
-      hero.equipped[position]=g.id;
-      granted.push(g);
+    for(const [position,slot] of [0,1,2,3,3].entries()){
+      const entry=defaultStarterEntry(job,slot,position);
+      const g=createStarterGear(job,position,{...entry,baseAttack:undefined});
+      delete g.starterPack;g.affix=[];
+      hero.bag.push(g);hero.equipped[position]=g.id;
     }
-    normalizeEquippedWearability();
-    hero.hp=stats(hero).hp;
-    hero.shield=0;
-    note(`已領取 ${CLASSES[job].name} 專屬新手禮包，完整裝備已自動穿戴。`);
-    return granted;
-  }
-
-  function starterGiftItemHTML(g){
-    const meta=normalizeExistingStarterMeta(g),label=POSITION_NAMES[meta?.position??0]||'裝備';
-    return `<div class="starter-gift-item"><div class="row"><b>${esc(label)}</b><span>${equipmentNameHTML(g)}</span></div><p class="equipment-total-summary">${globalThis.equipmentTotalSummaryHTML(g)}</p>${globalThis.equipmentAttributeDetailsHTML(g,{summary:'詳細數值來源'})}</div>`;
-  }
-
-  function showStarterGiftModal(hero,job,granted){
-    if(!hero||!Array.isArray(granted)||!granted.length||!document?.body)return;
-    $('modal').innerHTML=`<h2>已取得 ${esc(CLASSES[job].name)} 新手禮包</h2><p>第一個職業會獲得一整套專屬新手裝，以下 5 件已自動穿戴。新手裝名稱以鮮綠色顯示，無法強化、洗鍊或重鑄基底。</p><div class="starter-gift-list">${granted.map(starterGiftItemHTML).join('')}</div><p>接下來請到「隊伍編成」招募兩位夥伴，組成三人出戰隊伍，再開始荒野探索。</p><div class="actions"><button class="primary" onclick="closeModal();setTab('roster')">前往隊伍編成招募夥伴</button></div>`;
-    $('modal').showModal();
+    hero.hp=stats(hero).hp;hero.shield=0;
+    const g=createStarterGear(job,0,starterPacks[job][0]);
+    const names=new Map(EmberwildInventoryIcons.entries(exportableBalance()).map(r=>[r.id,r.name]));
+    sendStarterPackMail(job,[{type:'gear',gear:g,name:equipmentDisplayName(g),quantity:1},...starterPackItems[job].map(row=>({type:'catalogue',...clone(row),name:names.get(row.kind+':'+row.key)||row.key}))]);
   }
 
   if(typeof requestHeroName==='function'){
@@ -450,7 +442,7 @@
         if(input){
           const notice=document.createElement('div');
           notice.className='starter-pack-choice-notice';
-          notice.innerHTML=`<b>初始職業獎勵</b><br>你選擇的第一個職業會立即獲得一整套專屬新手禮包。`;
+          notice.innerHTML=`<b>初始職業獎勵</b><br>角色內建最初級白板裝備；專屬新手武器與禮包道具會寄到信箱，請自行領取。`;
           input.parentNode.insertBefore(notice,input);
         }
       }
@@ -462,10 +454,10 @@
   start=function(job){
     const result=starterStartBase(job);
     if(state&&party&&party.members?.length===1&&state.job===job){
-      const granted=grantStarterPack(state,job);
+      prepareStarterPack(state,job);
       save();
       render();
-      setTimeout(()=>showStarterGiftModal(state,job,granted),0);
+
     }
     return result;
   };

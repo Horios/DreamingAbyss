@@ -20,9 +20,10 @@ test('tagged, missing, self and cross-job named targets are rejected',()=>{
  const d=doc();d.classes[0].skills[1].tags=['induce'];d.classes[0].skills[1].induction={targets:[target(1)]};assert.ok(api.validate(d).some(x=>x.includes('不可誘發')));
  const other=doc();other.classes.push({skills:[{id:'other',activation:'active',effect:'shield'}]});other.classes[0].skills[0].induction.targets[0].skillId='other';assert.ok(api.validate(other).length);
 });
+// Canonical classes have three active slots (0-2) and up to two proc slots (0-1); slots beyond them are invalid.
 test('pure induction requires its tag; depth overrides, >2 targets, duplicate and invalid slots rejected',()=>{
  let d=doc();d.classes[0].skills[0].effect=api.EFFECT;assert.equal(api.validate(d).length,0);delete d.classes[0].skills[0].tags;assert.ok(api.validate(d).length);
- for(const config of [{targets:[target(0)],maxDepth:99},{targets:[target(0),target(1),{kind:'procSlot',slot:0,chance:1}]},{targets:[target(0),target(0)]},{targets:[target(2)]},{targets:[]}]){d=doc();d.classes[0].skills[0].induction=config;assert.ok(api.validate(d).length);}
+ for(const config of [{targets:[target(0)],maxDepth:99},{targets:[target(0),target(1),{kind:'procSlot',slot:0,chance:1}]},{targets:[target(0),target(0)]},{targets:[target(3)]},{targets:[{kind:'procSlot',slot:2,chance:1}]},{targets:[]}]){d=doc();d.classes[0].skills[0].induction=config;assert.ok(api.validate(d).length);}
 });
 function harness(){
  const calls=[],logs=[],behavior={};

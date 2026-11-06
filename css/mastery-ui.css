@@ -100,3 +100,34 @@
 .skill-loadout-slot>button{padding:2px 5px;font-size:10px}
 .skill-turn-tabs{margin-top:6px}
 @media(max-width:860px){.skill-loadout-panel{grid-template-columns:1fr}.skill-loadout-slots{grid-template-columns:1fr 1fr}}
+/* v0.083 mastery bars: icon + fill bar in the mastery color */
+.mastery-bar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.mastery-bar{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid color-mix(in srgb,var(--mastery-color) 45%,var(--line));border-radius:8px;background:linear-gradient(135deg,color-mix(in srgb,var(--mastery-color) 12%,transparent),transparent 70%)}
+.mastery-bar.inactive{opacity:.55}
+.mastery-bar-icon{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;border:1.5px solid var(--mastery-color);color:var(--mastery-color);background:color-mix(in srgb,var(--mastery-color) 14%,transparent)}
+.mastery-bar-icon svg{width:18px;height:18px}
+.mastery-bar-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.mastery-bar-head{display:flex;justify-content:space-between;gap:6px;font-size:13px}
+.mastery-bar-head>span{color:var(--mastery-color);font-weight:700}
+.mastery-bar-track{display:block;height:7px;border-radius:4px;background:rgba(0,0,0,.35);overflow:hidden;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mastery-color) 30%,transparent)}
+.mastery-bar-fill{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,color-mix(in srgb,var(--mastery-color) 70%,#000),var(--mastery-color));box-shadow:0 0 6px color-mix(in srgb,var(--mastery-color) 60%,transparent)}
+.mastery-bar small{color:var(--muted);font-size:11px}
+/* Compact form in the exploration header, after the experience bar. */
+.mastery-bar.compact{flex:0 1 210px;min-width:150px;padding:2px 8px 2px 2px;gap:6px;border-radius:14px}
+.mastery-bar.compact .mastery-bar-icon{flex-basis:22px;width:22px;height:22px}
+.mastery-bar.compact .mastery-bar-icon svg{width:13px;height:13px}
+.mastery-bar.compact .mastery-bar-head{font-size:11px}
+.mastery-bar.compact .mastery-bar-track{height:5px}
+.mastery-bar.compact .mastery-bar-value{font-size:10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#app .seconds-battle-xp:has(.mastery-bar){flex:0 1 auto;min-width:0}
+#app .seconds-battle-xp>b{white-space:nowrap;flex:0 0 auto}
+#app .seconds-battle-xp>progress{flex:0 1 90px}
+@media(max-width:700px){#app .seconds-battle-xp:has(.mastery-bar){flex-wrap:wrap;row-gap:4px;max-width:100%}#app .seconds-battle-xp .mastery-bar.compact{flex:1 1 100%;min-width:0;order:3}#app .seconds-battle-xp>b{white-space:normal}}
+
+/* v0.090: the header shows every mastery of the current class as small bars, on their own row under the level and experience. */
+#app .seconds-battle-xp:has(.mastery-bar-row){flex-wrap:wrap;row-gap:4px}
+#app .seconds-battle-xp .mastery-bar-row{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 100%;order:3;min-width:0}
+#app .seconds-battle-xp .mastery-bar-row .mastery-bar.compact{flex:0 1 128px;min-width:96px;padding:2px 7px 2px 2px}
+#app .seconds-battle-xp .mastery-bar-row .mastery-bar-body{flex:1;width:auto}
+#app .seconds-battle-xp .mastery-bar-row .mastery-bar-value{display:none}
+@media(max-width:700px){#app .seconds-battle-xp .mastery-bar-row .mastery-bar.compact{flex:1 1 calc(50% - 4px)}}

@@ -1,6 +1,6 @@
 
 /* Update 17: editable main-screen/interface copy. */
-const UI_TEXT_DEFAULTS={"browserTitle":"餘燼荒野 · Emberwild","gameTitle":"餘燼荒野","gameSubtitle":"EMBERWILD / IDLE RPG · 4.0","chapterTitle":"遠征者手札","chapterSubtitle":"純文字遠征手札","homeEyebrow":"EMBERWILD · 選擇你的遠征者","homeTitle":"向荒野出發。","homeDescription":"一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。","homeFooter":"自動存檔 · 無離線戰鬥"};
+const UI_TEXT_DEFAULTS={"browserTitle":"夢淵 · Dreaming Abyss","gameTitle":"夢淵","gameSubtitle":"DREAMING ABYSS","chapterTitle":"","chapterSubtitle":"","homeEyebrow":"DREAMING ABYSS · 選擇你的遠征者","homeTitle":"","homeDescription":"一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。","homeFooter":"自動存檔 · 無離線戰鬥"};
 let UI_TEXT=structuredClone(UI_TEXT_DEFAULTS);
 function normalizeUIText(input){
   const src=input&&typeof input==='object'&&!Array.isArray(input)?input:{};
@@ -116,7 +116,7 @@ function inventorySortControls(){
   return '<div class="inventory-sortbar"><div class="inventory-sort-row"><label>排序 <select onchange="setInventorySort(this.value)">'+
     options.map(([value,label])=>'<option value="'+value+'" '+(inventorySortKey===value?'selected':'')+'>'+label+'</option>').join('')+
     '</select></label><button type="button" onclick="toggleInventorySortDirection()">'+(inventorySortDirection==='desc'?'高 → 低':'低 → 高')+'</button></div>'+
-    '<div class="inventory-visibility-filters">'+checks('slot',slotOptions,inventoryVisibleSlots)+checks('job',jobOptions,inventoryVisibleJobs)+'</div></div>';
+    '<div class="inventory-visibility-filters">'+checks('slot',slotOptions,inventoryVisibleSlots)+checks('job',jobOptions,inventoryVisibleJobs)+'<label class="inventory-hide-equipped"><input type="checkbox" '+(filters.hideEquipped?'checked':'')+' onchange="setFilter(\'hideEquipped\',this.checked)"> 隱藏已穿戴裝備</label></div></div>';
 }
 globalThis.setInventorySort=function(key){
   if(!['quality','plus','job'].includes(key))return;
@@ -133,26 +133,19 @@ globalThis.setInventoryVisibility=function(kind,value,checked){
   render();
 };
 function inventoryGearListItem(g,selected){
-  const wearer=gearWearer(g.id),worn=!!wearer,locked=!!g.locked;
-  const rarityRow=globalThis.textRarityEquipmentBlockPresentation?.(g);
-  const styledRow=rarityRow&&(rarityRow.bg||rarityRow.block);
-  return `<button type="button" class="inventory-list-item ${selected?'selected':''} ${styledRow?rarityRow.classes:''}"${styledRow?rarityRow.attrs:''} onclick="selectInventoryGear('${g.id}')" title="${esc(equipmentDisplayName(g))}">
-    <span class="inventory-list-name">${equipmentNameHTML(g)}</span>
-    <span class="inventory-list-meta">${gearWearableJobsText(g)} · ${CLASS_GEAR[g.job][g.slot]} · LV ${gearRequiredLevelByTier(g.tier)}${worn?' · '+esc(characterName(wearer))+'已穿戴':''}${locked?' · 已鎖定':''}</span>
-    <span class="inventory-list-quality effect-quality-${gearQualityRank(g)}">${qualityTag(g)}</span>
-  </button>`;
+  return gearSlotHTML(g,{selected,className:'inventory-list-item',onclick:`selectInventoryGear('${g.id}')`});
 }
 function inventoryGearDetail(g){
   if(!g)return `<div class="inventory-detail-empty"><b>沒有可顯示的裝備</b><p class="small">調整左側篩選條件後選擇裝備。</p></div>`;
   const wearer=gearWearer(g.id),worn=!!wearer,draft=inlineAffixDrafts.has(affixDraftKey(g)),locked=!!g.locked;
   return `<div class="inventory-detail-pane">
     <div class="inventory-detail-heading">
-      <div><div class="eyebrow">EQUIPMENT DETAIL / 裝備詳細</div><h2>${equipmentNameHTML(g)}</h2></div>
+      <div><h2>${equipmentNameHTML(g)}</h2></div>
       <span class="tag">${qualityTag(g)}${locked?' · 已鎖定':''}</span>
     </div>
-    <div class="inventory-detail-meta">${gearWearableJobsText(g)} · ${CLASS_GEAR[g.job][g.slot]} · LV ${gearRequiredLevelByTier(g.tier)}${worn?' · 目前由 '+esc(characterName(wearer))+' 穿戴':''}</div>
+    <div class="inventory-detail-meta">${gearWearableJobsText(g)} · ${CLASS_GEAR[g.job][g.slot]} · LV ${gearRequiredLevel(g)}${worn?' · 目前由 '+esc(characterName(wearer))+' 穿戴':''}</div>
     <section class="inventory-detail-section"><h3>裝備能力</h3><p class="inventory-detail-stats equipment-total-summary">${globalThis.equipmentTotalSummaryHTML(g)}</p>${globalThis.equipmentAttributeDetailsHTML(g)}</section>
-    <section class="inventory-detail-section"><h3>操作</h3><div class="actions inventory-detail-actions"><button onclick="enhance('${g.id}')" ${g.plus>=RULES.enhanceMax||!canEnhance(g)?'disabled':''}>${g.plus>=RULES.enhanceMax?'已達 +'+RULES.enhanceMax:'強化 +'+(g.plus+1)+'／'+upgradeCostText(g)}</button><button onclick="reroll('${g.id}')" ${(()=>{const c=rerollCostFor(g);return draft||state.gold<c.gold||state.ore<c.ore;})()?'disabled':''}>洗鍊／${rerollCostFor(g).gold} 金幣＋${rerollCostFor(g).ore} 鍛鐵</button><button onclick="toggleGearLock('${g.id}')">${locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="salvage('${g.id}')" ${worn||draft||locked?'disabled':''}>分解</button></div></section>
+    <section class="inventory-detail-section"><div class="actions inventory-detail-actions"><button onclick="enhance('${g.id}')" ${g.plus>=RULES.enhanceMax||!canEnhance(g)?'disabled':''}>${g.plus>=RULES.enhanceMax?'已達 +'+RULES.enhanceMax:'強化 +'+(g.plus+1)+'／'+upgradeCostText(g)}</button><button onclick="reroll('${g.id}')" ${(()=>{const c=rerollCostFor(g);return draft||state.gold<c.gold||state.dust<c.dust;})()?'disabled':''}>洗鍊／${rerollCostFor(g).gold} 金幣＋${rerollCostFor(g).dust} 粉塵</button><button onclick="toggleGearLock('${g.id}')">${locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="salvage('${g.id}')" ${worn||draft||locked?'disabled':''}>分解</button></div></section>
     ${inlineAffixComparison(g)}
   </div>`;
 }
@@ -161,7 +154,7 @@ inlineInventoryView=function(){
   if(items.length && !items.some(g=>g.id===inventorySelectedGearId))inventorySelectedGearId=items[0].id;
   if(!items.length)inventorySelectedGearId=null;
   const selected=items.find(g=>g.id===inventorySelectedGearId)||null;
-  return `<section class="panel compact-inventory-panel">${resourceLine()}${gearFilters()}${inventorySortControls()}${bulkSalvageControls()}
+  return `<section class="panel compact-inventory-panel">${resourceLine()}${inventorySortControls()}<div class="inventory-advanced-controls">${gearFilters()}${bulkSalvageControls()}${uiHelp('裝備規則','背包與資源共用。主角可穿戴武器、護甲、副手各一件與兩件飾品；裝備須符合職業限制，武器固定屬性決定普攻屬性。')}</div>
     <div class="inventory-master-detail">
       <section class="inventory-master-pane">
         <div class="inventory-master-heading"><b>裝備列表</b><span class="small">顯示 ${items.length} 件</span></div>
@@ -228,17 +221,20 @@ inlineInventoryView=function(){
     initial=function(job){const h=initHero(finalInitialBase(job));if(typeof syncHeroSkillArrays==='function')syncHeroSkillArrays(h);return h;};
   }
 
-  if(typeof rewardGroupKill==='function'){
-    const finalPendingRewardBase=rewardGroupKill;
-    rewardGroupKill=function(e){
-      if(e?.rewarded)return;
-      const previous=collectingBattleGear;
-      collectingBattleGear=true;
-      try{return finalPendingRewardBase(e);}
-      finally{collectingBattleGear=previous;}
-    };
+  // Shared by the legacy round cursor and the seconds timeline: an ordinary
+  // (non-quest, non-final) wipe keeps exploring after the existing refill.
+  function autoRetryAfterWipe(){
+    if(party&&!party.questChallenge&&!globalThis.isFinalMap?.(party.map)&&!running&&!foes.length&&!enemy&&living().length){
+      running=true;
+      note('全隊恢復後，自動重新挑戰目前區域。');
+      save();
+      if(tab==='battle'||!isEditingControl())render();
+      else refreshGlobalJournal();
+      return true;
+    }
+    return false;
   }
-
+  globalThis.EmberwildAutoRetry={afterWipe:autoRetryAfterWipe};
   if(typeof pacedRound==='function'){
     const finalAutoRetryPacedRoundBase=pacedRound;
     pacedRound=function*(){
@@ -247,22 +243,14 @@ inlineInventoryView=function(){
       // A wipe is the only normal round outcome that clears foes/enemy after
       // starting in the running state. Final-boss victory keeps the defeated
       // foe list, while a manual pause does not clear the encounter.
-      if(startedRunning&&party&&!running&&!foes.length&&!enemy&&living().length){
-        running=true;
-        note('全隊恢復後，自動重新挑戰目前區域。');
-        save();
-        if(tab==='battle'||!isEditingControl())render();
-        else refreshGlobalJournal();
-      }
+      if(startedRunning)autoRetryAfterWipe();
     };
   }
 
   if(typeof resetSession==='function'){
-    const finalPendingResetSessionBase=resetSession;
+    const finalInventoryResetSessionBase=resetSession;
     resetSession=function(){
-      const result=finalPendingResetSessionBase();
-      pendingGearLoot=[];
-      collectingBattleGear=false;
+      const result=finalInventoryResetSessionBase();
       if(typeof inventorySelectedGearId!=='undefined')inventorySelectedGearId=null;
       // resetSession() still came from the legacy filter model. Always restore
       // the current inventory filter schema so a new game/import does not
@@ -397,13 +385,6 @@ inlineInventoryView=function(){
     };
   }
 
-  function configuredBattleRates(){const raw=GS('combat.pacing.rates',[1,2,4]);return Array.isArray(raw)?raw.map(Number).filter(x=>Number.isFinite(x)&&x>0):[1,2,4];}
-  function normalizeBattleRateToSettings(){const rates=configuredBattleRates();if(rates.length&&!rates.includes(battleRate))battleRate=rates[0];}
-  normalizeBattleRateToSettings();
-  if(typeof applyBalanceConfig==='function'){
-    const auditedApplyBalanceConfigBase=applyBalanceConfig;
-    applyBalanceConfig=function(...args){const out=auditedApplyBalanceConfigBase(...args);normalizeBattleRateToSettings();return out;};
-  }
 
   // Final-boss completion text should follow configurable level caps as the
   // actual progression code does.
@@ -418,46 +399,6 @@ inlineInventoryView=function(){
     };
   }
 
-  // Preserve late pending-loot data through validateParty() so manual JSON
-  // import does not silently discard it. The actual gear objects are validated
-  // after the party state is available by reusing the final validateSave().
-  if(typeof validateParty==='function'){
-    const auditedValidatePartyBase=validateParty;
-    validateParty=function(data){
-      data=EmberwildTokens.prepareSave(data,RULES.bagCapacity);
-      const out=auditedValidatePartyBase(data);
-      if(data?.pendingGearLoot!==undefined){
-        if(!Array.isArray(data.pendingGearLoot))throw Error('待結算裝備資料無效');
-        out.pendingGearLoot=validatePendingGearArray(data.pendingGearLoot,out);
-      }
-      return out;
-    };
-  }
-  function validatePendingGearArray(raw,validatedParty=null){
-    if(raw===undefined)return [];
-    if(!Array.isArray(raw))throw Error('待結算裝備資料無效');
-    const members=validatedParty?.members||[state],hero=validatedParty?members.find(h=>memberKey(h)===validatedParty.selected):state;
-    const existing=new Set(members.flatMap(h=>(h?.bag||[]).map(g=>g.id))),seen=new Set(),out=[],template=clonePlain(hero);
-    for(const item of raw){
-      if(!item||typeof item.id!=='string'||existing.has(item.id)||seen.has(item.id))throw Error('待結算裝備 ID 無效');
-      seen.add(item.id);
-      const probe={...template,map:0,bag:[clonePlain(item)],equipped:[null,null,null,null,null]};
-      const valid=validateSave(probe);
-      if(!valid?.bag?.[0])throw Error('待結算裝備資料無效');
-      out.push(valid.bag[0]);
-    }
-    return out;
-  }
-  if(typeof loadParty==='function'){
-    const auditedLoadPartyBase=loadParty;
-    loadParty=function(data){
-      const validated=validateParty(data),queued=validated.pendingGearLoot;
-      const copy=clonePlain(data);copy.pendingGearLoot=[];
-      const out=auditedLoadPartyBase(copy);
-      pendingGearLoot=queued||[];
-      return out;
-    };
-  }
 })();
 
 
@@ -487,7 +428,7 @@ inlineInventoryView=function(){
 // not silently discarded even when the early/core load succeeded.
 try{
   const raw=globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);
-  if(raw){
+  if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
     const parsed=JSON.parse(raw),fallbackStats=party?.battleStatistics;
     loadParty(parsed);
     if(!parsed.battleStatistics){
@@ -504,6 +445,6 @@ try{
   }
 }catch(e){
   console.warn('最終存檔完整載入失敗',e);
-  if(!state){state=null;party=null;toast('存檔未能載入：'+e.message+'；可匯入備份。');}
+  if(!state){state=null;party=null;if(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)toast('存檔未能載入：'+e.message+'；可匯入備份。');}
 }
 render();

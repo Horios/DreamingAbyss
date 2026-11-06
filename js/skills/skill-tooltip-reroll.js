@@ -73,7 +73,7 @@
   function autoRerollJobKey(id){const g=findGear(id);return g?affixDraftKey(g):'shared:'+id;}
   function autoRerollTitle(meta){
     if(!meta)return '費用已扣除';
-    const spent=`共花費 ${meta.gold} 金幣／${meta.ore} 鍛鐵`;
+    const spent=`共花費 ${meta.gold} 金幣／${meta.dust} 粉塵`;
     if(meta.running)return `自動洗鍊第 ${meta.attempts} 次 · 未達${AFFIX_RANK[meta.target]}以上 · 1 秒後繼續 · ${spent}`;
     if(meta.reached)return `自動洗鍊 ${meta.attempts} 次 · 已達${AFFIX_RANK[meta.target]}以上 · ${spent}`;
     if(meta.stopped)return `自動洗鍊 ${meta.attempts} 次 · 已手動停止 · ${spent}`;
@@ -105,23 +105,23 @@
       if(!party?.members?.includes(hero)){job.stopped=true;break;}
       const g=withHero(hero,()=>findGear(id));if(!g){job.stopped=true;break;}
       const cost=withHero(hero,()=>rerollCostFor(g));
-      if(hero.gold<cost.gold||hero.ore<cost.ore)break;
-      const previous={gold:hero.gold,ore:hero.ore,rerolled:g.rerolled,draft:inlineAffixDrafts.get(key),meta:autoRerollMeta.get(key)};
+      if(hero.gold<cost.gold||hero.dust<cost.dust)break;
+      const previous={gold:hero.gold,dust:hero.dust,rerolled:g.rerolled,draft:inlineAffixDrafts.get(key),meta:autoRerollMeta.get(key)};
       const draft=withHero(hero,()=>rollAffixes(g));
       job.attempts++;
-      job.gold+=cost.gold;job.ore+=cost.ore;
-      hero.gold-=cost.gold;hero.ore-=cost.ore;g.rerolled=true;
+      job.gold+=cost.gold;job.dust+=cost.dust;
+      hero.gold-=cost.gold;hero.dust-=cost.dust;g.rerolled=true;
       inlineAffixDrafts.set(key,draft);
       const reached=draft.some(a=>(a.rank??0)>=targetRank);
-      autoRerollMeta.set(key,{attempts:job.attempts,target:targetRank,reached,running:!reached,stopped:false,gold:job.gold,ore:job.ore});
+      autoRerollMeta.set(key,{attempts:job.attempts,target:targetRank,reached,running:!reached,stopped:false,gold:job.gold,dust:job.dust});
       const saved=withHero(hero,()=>save());
       if(!saved){
-        hero.gold=previous.gold;hero.ore=previous.ore;
+        hero.gold=previous.gold;hero.dust=previous.dust;
         if(previous.rerolled===undefined)delete g.rerolled;else g.rerolled=previous.rerolled;
         if(previous.draft===undefined)inlineAffixDrafts.delete(key);else inlineAffixDrafts.set(key,previous.draft);
         if(previous.meta===undefined)autoRerollMeta.delete(key);else autoRerollMeta.set(key,previous.meta);
-        job.gold-=cost.gold;job.ore-=cost.ore;job.attempts--;
-        autoRerollMeta.set(key,{attempts:job.attempts,target:targetRank,reached:false,running:false,stopped:false,saveFailed:true,gold:job.gold,ore:job.ore});
+        job.gold-=cost.gold;job.dust-=cost.dust;job.attempts--;
+        autoRerollMeta.set(key,{attempts:job.attempts,target:targetRank,reached:false,running:false,stopped:false,saveFailed:true,gold:job.gold,dust:job.dust});
         autoRerollJobs.delete(key);render();return;
       }
       render();
@@ -136,7 +136,7 @@
     autoRerollJobs.delete(key);
     const meta=autoRerollMeta.get(key);
     if(meta){meta.running=false;meta.stopped=false;}
-    render();toast(job.attempts?`資源不足：已洗鍊 ${job.attempts} 次，尚未出現${AFFIX_RANK[targetRank]}以上詞條`:'金幣或鍛鐵不足');
+    render();toast(job.attempts?`資源不足：已洗鍊 ${job.attempts} 次，尚未出現${AFFIX_RANK[targetRank]}以上詞條`:'金幣或粉塵不足');
   }
 
   autoReroll=function(id,targetRank){
@@ -144,8 +144,8 @@
     const key=affixDraftKey(g);if(autoRerollJobs.has(key))return toast('這件裝備正在自動洗鍊');
     if(inlineAffixDrafts.has(key))return toast('請先採用或保留這件裝備的詞條');
     if(g.affixLock!==undefined)return toast('自動洗鍊不支援鎖定詞條，請先取消鎖定');
-    const cost=rerollCostFor(g);if(state.gold<cost.gold||state.ore<cost.ore)return toast('金幣或鍛鐵不足');
-    const job={id,targetRank,hero:state,key,attempts:0,gold:0,ore:0,stopped:false};
+    const cost=rerollCostFor(g);if(state.gold<cost.gold||state.dust<cost.dust)return toast('金幣或粉塵不足');
+    const job={id,targetRank,hero:state,key,attempts:0,gold:0,dust:0,stopped:false};
     autoRerollJobs.set(key,job);
     setTimeout(()=>{if(autoRerollJobs.get(key)===job)void runAutoReroll(job);},0);
   };

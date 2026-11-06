@@ -1,25 +1,22 @@
 /* Shared, versioned quest contract. The standalone editor embeds this file verbatim. */
 (function(root){
   'use strict';
-  const copy=v=>JSON.parse(JSON.stringify(v)),ID=/^[a-zA-Z0-9_-]{1,80}$/,TYPES=['material','potion','item','kill','totalKills','level','region','bossKill','eliteKill'];
+  const copy=v=>JSON.parse(JSON.stringify(v)),ID=/^[a-zA-Z0-9_-]{1,80}$/,TYPES=['material','potion','item','kill','totalKills','level','region','bossKill','eliteKill','nearKill','salvage','enhance'];
   const int=(v,min=0,max=1e9)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
   const text=(v,max=80)=>typeof v==='string'&&v.trim().length>0&&v.length<=max&&!/[<>\u0000-\u001f]/.test(v)&&!['__proto__','constructor','prototype'].includes(v);
   const reward=()=>({gold:0,goldPerTier:0,ore:0,orePerTier:0,dust:0,xp:0,randomGems:0,gemCounts:[0,0,0],materials:[],potions:[],items:[],gear:[],choice:'all',gearChance:.5});
   const objective=(type='material',key='紅色草',quantity=1)=>({type,key,quantity,quantityMax:quantity,perTier:0,consume:['material','potion','item'].includes(type)});
   const entry=(id,title)=>({id,title,description:'',enabled:true,weight:1,minLevel:1,maxLevel:0,mapIndices:[],prerequisites:[],objectives:[objective()],rewards:reward()});
   function defaults(legacy={}){
-    const b=legacy.board||{},base=Math.max(1,Math.round(b.taskBase??8)),max=base+Math.max(0,Math.round(b.taskRandomRange??9)-1),step=Math.max(0,Math.round(b.taskPerTier??2));
-    const daily=[['daily_explore','探索物資募集','material','@currentMap',1],['daily_herb','紅色草募集','material','紅色草',1],['daily_paste','紅色草泥募集','material','紅色草泥',.5],['daily_potion','營地治療補給','potion','heal_small',.25]].map(([id,title,type,key,scale])=>{
-      const q=entry(id,title);q.weight=id==='daily_paste'||id==='daily_potion'?1:2;
-      q.description=type==='potion'?'營地需要煉製的簡易治療藥水。':'準備物資，協助營地的日常補給。';
-      q.objectives=[{...objective(type,key,Math.ceil(base*scale)),quantityMax:Math.ceil(max*scale),perTier:Math.floor(step*scale)}];
-      q.rewards={...reward(),goldPerTier:Math.round(b.goldPerTier??180),orePerTier:Math.round(b.orePerTier??8),randomGems:Math.round(b.gemReward??2),choice:'gearOrGems',gear:[{quantity:1,tier:0,slot:-1,rar:2,job:-1,legendaryChance:b.legendaryGearChance??.2}]};return q;
-    });
     const side=[['wolves','縫補獵人的披肩','林間野狼的狼牙，是獵人交換皮革的憑證。','完整狼牙',5,300,20],['witch','淨化沼澤','採集女巫符印，協助營地研究暮色詛咒。','女巫符印',2,800,55],['stars','鍛造師的最後一課','取得星隕監視者的稜鏡，準備迎戰噬日者。','星隕稜鏡',3,2000,120]].map(([id,title,description,key,n,gold,ore],i)=>{
       const old=legacy.side?.[i]||{},q=entry(id,title);q.description=description;q.objectives=[objective('material',key,Math.round(old.required??n))];q.rewards={...reward(),gold:Math.round(old.gold??gold),ore:Math.round(old.ore??ore),randomGems:Math.round(old.gem??1)};return q;
     });
-    return {version:1,daily:{enabled:true,entries:daily},side};
+    const make=(id,title,type,key,n,max=n)=>{const q=entry(id,title);q.objectives=[{...objective(type,key,n),quantityMax:max}];q.rewards=reward();q.description=['salvage','enhance'].includes(type)?'開始任務後進行裝備作業，協助營地整備。':'完成日常委託，協助營地補給。';return q;};
+    const expanded=[make('daily_hunt','附近怪物討伐','nearKill','@nearLevel',12,20),make('daily_salvage','裝備回收作業','salvage','',3,5),make('daily_enhance','裝備強化作業','enhance','',1,2),make('daily_explore','探索物資募集','material','@currentMap',6,10),make('daily_herb','紅色草募集','material','紅色草',8,12),make('daily_paste','紅色草泥募集','material','紅色草泥',3,5),make('daily_potion','營地治療補給','potion','heal_small',2,3)];
+    return {version:1,daily:{version:2,enabled:true,entries:expanded,materialRewards:materialRewards()},side};
   }
+  function materialRewards(){return [{key:'鍛鐵',min:4,max:8},{key:'粉塵',min:3,max:6},{key:'紅色草',min:4,max:8},{key:'紅色草泥',min:2,max:4}];}
+  function migrate(d){const out=copy(d);if(!out||!out.daily||!Array.isArray(out.daily.entries))return out;if(out.daily.version!==2){const def=defaults();const builtin=new Set(['daily_explore','daily_herb','daily_paste','daily_potion']);out.daily.entries=[...def.daily.entries,...out.daily.entries.filter(q=>!builtin.has(q.id))];out.daily.version=2;out.daily.materialRewards=materialRewards();}return out;}
   function objectivesIssues(rows,{daily=false,resolved=false,mapCount=1000,items}={}){
     const errors=[];
     if(!Array.isArray(rows)||!rows.length||rows.length>16)return ['需求必須有 1～16 項'];
@@ -32,7 +29,11 @@
       if(['level','region'].includes(o.type)&&o.quantity!==1&&o.type==='region')errors.push('開放地圖需求數量固定為 1');
       if(['region','bossKill','eliteKill'].includes(o.type)&&!(int(o.key,0,mapCount-1)||o.key===-1&&o.type!=='region'))errors.push('需求地圖不存在');
       if(['material','potion','item','kill'].includes(o.type)&&!text(o.key))errors.push('需求名稱或 ID 無效');
-      if(['level','totalKills'].includes(o.type)&&o.key!=='')errors.push('等級與全怪擊殺不指定品項');
+      if(['level','totalKills','salvage','enhance'].includes(o.type)&&o.key!=='')errors.push('等級與全怪擊殺不指定品項');
+      if(o.type==='nearKill'&&(!text(o.key)||(!resolved&&o.key!=='@nearLevel')))errors.push('附近怪物需求必須使用 @nearLevel');
+      if(o.type==='nearKill'&&resolved&&(!int(o.levelMin,1,1000)||!int(o.levelMax,o.levelMin,1000)||o.key==='@nearLevel'))errors.push('附近怪物等級快照無效');
+      if(o.progress!==undefined&&(!['nearKill','salvage','enhance'].includes(o.type)||!int(o.progress,0,1000000)))errors.push('任務進度無效');
+      if(['nearKill','salvage','enhance'].includes(o.type)&&!daily)errors.push('作業與附近怪物需求只支援每日委託');
       if(o.key==='@currentMap'&&(o.type!=='material'||!daily||resolved))errors.push('本地素材只支援每日委託範本');
       if(items&&['potion','item'].includes(o.type)){const item=items.find(i=>i.id===o.key);if(!item||o.type==='potion'&&item.type!=='healPotion'||o.type==='item'&&item.type==='healPotion')errors.push('需求道具引用不存在或類型不符');}
       const key=o.type+':'+o.key;if(seen.has(key))errors.push('同一需求不可重複');seen.add(key);
@@ -54,6 +55,7 @@
   }
   function issues(d,context={}){
     const errors=[];if(!d||d.version!==1||!d.daily||typeof d.daily.enabled!=='boolean'||!Array.isArray(d.daily.entries)||d.daily.entries.length>150||!Array.isArray(d.side)||d.side.length>120)return ['委託設計版本或清單無效'];
+    if(d.daily.version!==2||!Array.isArray(d.daily.materialRewards)||!d.daily.materialRewards.length||d.daily.materialRewards.length>16||d.daily.materialRewards.some(x=>!text(x.key)||!int(x.min,1,1000)||!int(x.max,x.min,1000)))errors.push('每日隨機素材獎勵無效');
     const ids=new Set(),sideIds=new Set(d.side.map(q=>q?.id));
     for(const [kind,rows] of [['每日委託',d.daily.entries],['支線',d.side]])for(const q of rows){
       const prefix=kind+' '+(q?.id||'未命名')+'：',add=s=>errors.push(prefix+s);
@@ -69,9 +71,9 @@
     function visit(id){if(active.has(id)){errors.push('支線前置條件形成循環：'+id);return;}if(visited.has(id))return;visited.add(id);active.add(id);const deps=byId.get(id)?.prerequisites;for(const p of Array.isArray(deps)?deps:[])if(byId.has(p))visit(p);active.delete(id);}
     for(const id of byId.keys())visit(id);return [...new Set(errors)];
   }
-  function validate(d,context={}){const e=issues(d,context);if(e.length)throw Error(e.join('；'));return copy(d);}
+  function validate(d,context={}){d=migrate(d);const e=issues(d,context);if(e.length)throw Error(e.join('；'));return copy(d);}
   function eligible(q,{level,map,claimed}){return q.enabled&&level>=q.minLevel&&(!q.maxLevel||level<=q.maxLevel)&&(!q.mapIndices.length||q.mapIndices.includes(map))&&q.prerequisites.every(id=>claimed.includes(id));}
   function weighted(rows,rng=Math.random){const total=rows.reduce((n,q)=>n+q.weight,0);if(!total)return null;let roll=rng()*total;for(const q of rows){roll-=q.weight;if(roll<0)return q;}return rows.at(-1);}
   function validSnapshot(q){return !!q&&q.designVersion===1&&typeof q.templateId==='string'&&ID.test(q.templateId)&&text(q.title,80)&&typeof q.description==='string'&&q.description.length<=2000&&!/[<>]/.test(q.description)&&typeof q.done==='boolean'&&objectivesIssues(q.objectives,{daily:true,resolved:true}).length===0&&rewardIssues(q.rewards).length===0&&q.rewards.choice==='all'&&q.rewards.goldPerTier===0&&q.rewards.orePerTier===0&&q.rewards.gear.every(g=>g.tier>0&&g.slot>=0&&g.job>=0&&g.legendaryChance===0);}
-  const api={copy,TYPES,ID,reward,objective,entry,defaults,issues,validate,eligible,weighted,validSnapshot};root.EmberwildQuestDesign=api;if(typeof module==='object'&&module.exports)module.exports=api;
+  const api={copy,TYPES,ID,reward,objective,entry,defaults,migrate,materialRewards,issues,validate,eligible,weighted,validSnapshot};root.EmberwildQuestDesign=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

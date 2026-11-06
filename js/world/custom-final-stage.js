@@ -23,7 +23,7 @@
       if(!Number.isInteger(m.stageCount)||m.stageCount<1||m.stageCount>20||!Number.isInteger(m.stageOrder)||m.stageOrder<0||m.stageOrder>999||typeof m.stageElite!=='boolean')throw Error('終局關卡怪物設定無效：'+m.id);
     }
     for(let mi=0;mi<(cfg.maps?.catalog?.length||0);mi++)if(cfg.maps.catalog[mi]?.mapType==='final'){
-      const rows=cfg.monsters.catalog.filter(m=>m.mapIndex===mi),bosses=rows.filter(m=>m.kind==='final'),adds=rows.filter(m=>m.kind==='normal'&&m.enabled!==false);
+      const rows=cfg.monsters.catalog.filter(m=>m.mapIndex===mi),bosses=rows.filter(m=>m.kind==='final'),adds=rows.filter(m=>['normal','elite'].includes(m.kind)&&m.enabled!==false);
       if(bosses.length!==1)throw Error('終局地圖必須恰好有 1 名最終首領：'+cfg.maps.catalog[mi].name);
       const total=1+adds.reduce((n,m)=>n+m.stageCount,0);
       if(total<1||total>20)throw Error('終局關卡總敵人數必須為 1～20：'+cfg.maps.catalog[mi].name);
@@ -43,10 +43,10 @@
     return {name:row.name,icon:'',mat:row.material,lv,hp,maxhp:hp,atk,def,kind:'final',turn:0,monsterId:row.id,maxDrops:row.maxDrops,element:row.element,race:row.race,difficulty:mode,region:mi,stageOrder:row.stageOrder};
   }
   function configuredStageRows(mi){
-    const cat=monsterCatalog(),boss=cat.find(m=>m.mapIndex===mi&&m.kind==='final'),adds=cat.filter(m=>m.mapIndex===mi&&m.kind==='normal'&&m.enabled!==false);
+    const cat=monsterCatalog(),boss=cat.find(m=>m.mapIndex===mi&&m.kind==='final'),adds=cat.filter(m=>m.mapIndex===mi&&['normal','elite'].includes(m.kind)&&m.enabled!==false);
     if(!boss)throw Error('終局首領未設定');
     const rows=[{row:boss,kind:'final',count:1,order:boss.stageOrder??100}];
-    for(const row of adds)rows.push({row,kind:row.stageElite?'elite':'normal',count:row.stageCount??1,order:row.stageOrder??10});
+    for(const row of adds)rows.push({row,kind:row.kind==='elite'||row.stageElite?'elite':'normal',count:row.stageCount??1,order:row.stageOrder??10});
     return rows.sort((a,b)=>a.order-b.order||((a.kind==='final')-(b.kind==='final'))||a.row.id.localeCompare(b.row.id));
   }
   globalThis.configuredFinalStageRows=configuredStageRows;
@@ -83,17 +83,21 @@
     if(globalThis.__EMBERWILD_FINAL_STAGE_CLEARED)return;
     globalThis.__EMBERWILD_FINAL_STAGE_CLEARED=true;
     const boss=foes.find(e=>e.kind==='final'),mode=boss?.difficulty??state.difficulty??0,d=MODES[mode],gate=isGate(mi),firstClear=gate&&!party.cleared,before=Math.floor(GS('progression.levelCaps.beforeClear',30));
-    running=false;refillParty();
+    globalThis.expeditionChallengeResult={name:MAPS[mi]?.name||'終局關卡',success:true};running=false;refillParty();
+    globalThis.recordMapClear?.(mi);
     if(gate){party.cleared=true;for(const h of heroes()){h.modeClears[mode]=(h.modeClears[mode]||0)+1;if(h.lv>=before)h.won=true;}}
     note(`終局關卡「${MAPS[mi]?.name||'未命名'}」已完成。`);
     if(!partyBusy){const title=gate?(firstClear?'等級界限已突破':'再次完成突破關卡'):'終局關卡已完成',body=gate?(firstClear?'等級上限提升，通關後區域已解鎖。':'可繼續探索通關後區域，或挑戰其他終局地圖。'):`已擊敗首領與所有隨從，完成「${MAPS[mi]?.name||'終局地圖'}」。此關卡不會改變等級上限。`;$('modal').innerHTML=`<h1>${title}</h1><p>${esc(body)}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}
     save();if(tab==='battle'||!isEditingControl())render();else refreshGlobalJournal();
   }
 
+  globalThis.EmberwildFinalEncounter={complete:completeFinalStage,fail(mi){globalThis.expeditionChallengeResult={name:MAPS[mi]?.name||'終局關卡',success:false};}};
   if(typeof pacedRound==='function'){
     const customStagePacedBase=pacedRound;
     pacedRound=function*(){
+      const finalAttempt=party&&isFinal(party.map)&&running;
       yield* customStagePacedBase();
+      if(finalAttempt&&party&&!running&&!foes.length){globalThis.expeditionChallengeResult={name:MAPS[party.map]?.name||'終局關卡',success:false};save();render();}
       if(party&&isFinal(party.map)&&foes.length&&foes.some(e=>e.kind==='final')&&foes.every(e=>e.hp<=0))completeFinalStage(party.map);
     };
   }

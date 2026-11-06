@@ -1,0 +1,17 @@
+const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');const {loadRuntime}=require('./headless-runtime.cjs');
+function game(job){const r=loadRuntime(path.resolve(__dirname,'..'));r.run(`selectSaveSlot(1);start(${job});closeModal();state.lv=5;save();configureSkill('active',1,'class${job}-initial1');configureSkill('active',2,'class${job}-initial2');globalThis.targets=()=>{foes=Array.from({length:4},(_,n)=>({id:'test-'+n,name:'測試敵人',kind:'normal',monsterId:'map0_mob0',hp:1000,maxhp:1000,atk:1,def:0,lv:1,shield:0,element:'physical',race:'beast',turn:0}));enemy=foes[0];};targets();Math.random=()=>.99;`);return r;}
+test('warrior taunt redirects basics without adding rage; guard reduces received damage and heavy strike damages one target',()=>{
+ const r=game(0);r.run('castPartySkill(state,state.active[0],battleStats(state))');assert.equal(r.run('effects.filter(e=>e.kind==="skillTaunt").length'),4);assert.equal(r.run('Object.values(__EMBERWILD_CONTROL_TEST_API.states).some(s=>s.rage)'),false);r.run('castPartySkill(state,state.active[1],battleStats(state))');assert.equal(r.run('effectTotal(heroKey(state),"guard")'),.3);r.run('castPartySkill(state,state.active[2],battleStats(state))');assert.equal(r.run('foes.filter(e=>e.hp<1000).length'),1);
+});
+test('mage uses bounded area damage and polymorph; bosses remain playable and immune to polymorph',()=>{
+ const r=game(1);r.run('castPartySkill(state,state.active[0],battleStats(state))');assert.equal(r.run('foes.filter(e=>e.hp<1000).length'),3);r.run('targets();castPartySkill(state,state.active[1],battleStats(state))');assert.equal(r.run('Object.values(__EMBERWILD_CONTROL_TEST_API.states).filter(s=>s.polymorph).length'),1);r.run('targets();foes=foes.slice(0,1);foes[0].kind="boss"');assert.equal(r.run('castPartySkill(state,state.active[1],battleStats(state))'),false);assert.equal(r.run('castPartySkill(state,state.active[2],battleStats(state))'),true);assert.deepEqual(r.errors,[]);
+});
+test('archer rapid fire and snipe remain single target; rope trap reduces actual initiative speed',()=>{
+ const r=game(2);r.run('castPartySkill(state,state.active[0],battleStats(state))');assert.equal(r.run('foes.filter(e=>e.hp<1000).length'),1);r.run('targets();castPartySkill(state,state.active[1],battleStats(state))');assert.equal(r.run('foes.filter(e=>e.hp<1000).length'),1);const before=r.run('combatSpeed(foes[0])');r.run('castPartySkill(state,state.active[2],battleStats(state))');assert(r.run('combatSpeed(foes[0])')<before);assert.equal(r.run('effects.filter(e=>e.kind==="skillSlow").length'),3);
+});
+test('priest heal restores one ally and team regeneration persists through the shared round engine',()=>{
+ const r=game(3);r.run('state.hp=1;castPartySkill(state,state.active[1],battleStats(state))');assert(r.run('state.hp')>1);r.run('castPartySkill(state,state.active[2],battleStats(state))');assert.equal(r.run('effectTotal(heroKey(state),"regen")'),.025);r.run('state.hp=1;running=true;[...pacedRound()];running=false');assert(r.run('state.hp')>1);assert.deepEqual(r.errors,[]);
+});
+test('unconfigured skills never cast and sources disappear immediately after an equipment switch or deletion',()=>{
+ const r=game(1);assert.equal(r.run('castPartySkill(state,0,battleStats(state))'),false);r.run('foes=[];configureSkill("active",1,null);targets()');assert.equal(r.run('castPartySkill(state,22,battleStats(state))'),false);assert.deepEqual(r.errors,[]);
+});

@@ -66,7 +66,6 @@ function migrateEquipmentManaAffixes(list){
 }
 function migrateCurrentEquipmentMana(){
   if(state?.bag)migrateEquipmentManaAffixes(state.bag);
-  if(Array.isArray(pendingGearLoot))migrateEquipmentManaAffixes(pendingGearLoot);
   if(typeof inlineAffixDrafts!=='undefined')for(const [key,list] of inlineAffixDrafts){
     const id=String(key).replace(/^shared:/,''),g=state?.bag?.find(x=>x.id===id);
     inlineAffixDrafts.set(key,list.map(a=>convertLegacyManaAffix(a,g)));
@@ -156,7 +155,8 @@ gearDesc=function(g){
 
 // Equipment comparison deliberately contains no MP / MP-regen rows.
 equipmentComparison=function(h,g,position=null){
-  const afterHero={...h,equipped:[...h.equipped]};while(afterHero.equipped.length<5)afterHero.equipped.push(null);const positions=gearEquipPositions(g);let target=Number.isInteger(position)&&positions.includes(position)?position:positions.find(p=>!afterHero.equipped[p]);if(target===undefined)target=positions[0];afterHero.equipped[target]=g.id;
+  const afterHero={...h,equipped:[...h.equipped]};while(afterHero.equipped.length<5)afterHero.equipped.push(null);const positions=gearEquipPositions(g);let target=Number.isInteger(position)&&positions.includes(position)?position:positions.find(p=>!afterHero.equipped[p]);if(target===undefined)target=positions[0];afterHero.equipped=afterHero.equipped.map(id=>id===g.id?null:id);afterHero.equipped[target]=g.id;
+  const compare=()=>{
   const before=stats(h),after=stats(afterHero),rows=[];
   const labels={hp:'生命上限',atk:'攻擊力',def:'防禦力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷',speed:'速度'};
   const percent=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
@@ -165,19 +165,22 @@ equipmentComparison=function(h,g,position=null){
   for(const key of ['elementDamage','raceDamage','resist'])for(const type of new Set([...Object.keys(before[key]||{}),...Object.keys(after[key]||{})]))add((key==='raceDamage'?RACES[type]:ELEMENTS[type])+' '+({elementDamage:'傷害',raceDamage:'種族增傷',resist:'抗性'}[key]),before[key]?.[type],after[key]?.[type],true);
   for(let i=0;i<CLASSES[h.job].skills.length;i++){const skill=CLASSES[h.job].skills[i];if(!h.skills[i])continue;add(skill[0]+' 威力倍率',skillPower(i,h),skillPower(i,afterHero));if(skill[1]==='active')add(skill[0]+' 冷卻',skillCooldown(i,h),skillCooldown(i,afterHero),false,true);else add(skill[0]+' 觸發率',procChance(i,h),procChance(i,afterHero),true);}
   return rows;
+  };
+  // Compare current inventory values, even while combat uses its encounter snapshot.
+  return globalThis.__EMBERWILD_TEAM_EQUIPMENT?.withLiveEquipment(compare)??compare();
 };
 
 // Test JSON accepts fixedEffects (1–5 rows) and transparently migrates legacy exclusive / mana / form fields.
 validateBalanceConfig=function(input){
   const data=validateBalanceConfigCore(input),elements=new Set(Object.keys(ELEMENTS));
-  data.equipmentForms.forEach((jobs,job)=>jobs.forEach((forms,slot)=>forms.forEach((form,i)=>{normalizeEquipmentFormObject(form);for(const key of Object.keys(form))if(!['id','name','wearableJobs','fixedEffects','textStyleId'].includes(key))throw Error(`未知裝備欄位：${key}`);if(!Array.isArray(form.fixedEffects)||form.fixedEffects.length<1||form.fixedEffects.length>5)throw Error(`裝備固定屬性必須為 1～5 條：${job}-${slot}-${i}`);const wearJobs=Array.isArray(form.wearableJobs)?form.wearableJobs.filter(j=>Number.isInteger(j)&&j>=0&&j<data.classes.length):(job<data.classes.length?[job]:data.classes.map((_,j)=>j)),skillCount=wearJobs.reduce((max,j)=>Math.max(max,(data.classes[j]?.skills||[]).length),0);for(const [j,fx] of form.fixedEffects.entries()){if(!fx||!EQUIPMENT_FIXED_EFFECT_KEYS.has(fx.key))throw Error(`裝備固定屬性無效：${job}-${slot}-${i}-${j}`);if(fx.key==='basicElement'){if(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.value))throw Error('裝備普通攻擊屬性無效');}else if(!Number.isFinite(fx.value))throw Error(`裝備固定屬性數值無效：${job}-${slot}-${i}-${j}`);if(['elementDamagePct','elementResistPct'].includes(fx.key)&&(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.element)||fx.element==='physical'))throw Error('裝備固定屬性的元素目標無效');if(fx.key==='raceDamagePct'&&!EQUIPMENT_EFFECT_RACES.has(fx.race))throw Error('裝備固定屬性的種族目標無效');if(['skillEffectPct','skillCooldownReduction'].includes(fx.key)&&(!Number.isInteger(fx.skill)||fx.skill<0||fx.skill>=skillCount))throw Error('裝備固定屬性的技能目標無效');}})));
+  data.equipmentForms.forEach((jobs,job)=>jobs.forEach((forms,slot)=>forms.forEach((form,i)=>{normalizeEquipmentFormObject(form);for(const key of Object.keys(form))if(!['id','name','wearableJobs','fixedEffects','textStyleId','mana'].includes(key))throw Error(`未知裝備欄位：${key}`);if(!Array.isArray(form.fixedEffects)||form.fixedEffects.length<1||form.fixedEffects.length>5)throw Error(`裝備固定屬性必須為 1～5 條：${job}-${slot}-${i}`);const wearJobs=Array.isArray(form.wearableJobs)?form.wearableJobs.filter(j=>Number.isInteger(j)&&j>=0&&j<data.classes.length):(job<data.classes.length?[job]:data.classes.map((_,j)=>j)),skillCount=wearJobs.reduce((max,j)=>Math.max(max,(data.classes[j]?.skills||[]).length),0);for(const [j,fx] of form.fixedEffects.entries()){if(!fx||!EQUIPMENT_FIXED_EFFECT_KEYS.has(fx.key))throw Error(`裝備固定屬性無效：${job}-${slot}-${i}-${j}`);if(fx.key==='basicElement'){if(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.value))throw Error('裝備普通攻擊屬性無效');}else if(!Number.isFinite(fx.value))throw Error(`裝備固定屬性數值無效：${job}-${slot}-${i}-${j}`);if(['elementDamagePct','elementResistPct'].includes(fx.key)&&(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.element)||fx.element==='physical'))throw Error('裝備固定屬性的元素目標無效');if(fx.key==='raceDamagePct'&&!EQUIPMENT_EFFECT_RACES.has(fx.race))throw Error('裝備固定屬性的種族目標無效');if(['skillEffectPct','skillCooldownReduction'].includes(fx.key)&&(!Number.isInteger(fx.skill)||fx.skill<0||fx.skill>=skillCount))throw Error('裝備固定屬性的技能目標無效');}})));
   return data;
 };
 
 const equipmentCleanupApplyBalanceConfig=applyBalanceConfig;
 applyBalanceConfig=function(input,options={}){const result=equipmentCleanupApplyBalanceConfig(input,options);normalizeAllEquipmentForms();migrateCurrentEquipmentMana();if(state)render();return result;};
 const equipmentCleanupExportableBalance=exportableBalance;
-exportableBalance=function(){normalizeAllEquipmentForms();const data=equipmentCleanupExportableBalance();data.balance=cloneBalance(GAME_BALANCE);data._reference=balanceReference();data.notes=[...(data.notes||[]),'equipmentForms.fixedEffects 為每件基底裝備的 1～5 條固定屬性；武器攻擊屬性唯一來源為 basicElement。舊 element 僅在匯入時轉換為 basicElement，隨即移除。','魔力資源系統已移除；技能只受冷卻限制。舊裝備中的 mp / mpRegen 欄位僅在匯入時轉換為少量 attackPct，以保留舊裝備價值。','balance.affixes 可直接調整品質機率、詞條倍率、攻擊%與洗鍊成本；_reference 僅為欄位說明。'];return data;};
+exportableBalance=function(){normalizeAllEquipmentForms();const data=equipmentCleanupExportableBalance();data.balance=cloneBalance(GAME_BALANCE);data._reference=balanceReference();data.notes=[...(data.notes||[]),'equipmentForms.fixedEffects 為每件基底裝備的 1～5 條固定屬性；武器攻擊屬性唯一來源為 basicElement。舊 element 僅在匯入時轉換為 basicElement，隨即移除。','主動技能同時受秒數冷卻、共同行動間隔與 MP 限制；equipmentForms.mana 可設定額外魔力、每秒恢復與消耗減免。已轉換的舊裝備能力維持原值。','balance.affixes 可直接調整品質機率、詞條倍率、攻擊%與洗鍊成本；_reference 僅為欄位說明。'];return data;};
 
 const equipmentCleanupLoadParty=loadParty;
 loadParty=function(data){const out=equipmentCleanupLoadParty(data);normalizeAllEquipmentForms();migrateCurrentEquipmentMana();return out;};
@@ -189,7 +192,7 @@ migrateCurrentEquipmentMana();
 function stripLegacyManaState(){
   if(!party)return;
   for(const h of party.members){
-    delete h.mp;
+    if(!globalThis.EmberwildSecondsCombat?.active)delete h.mp;
     if(h.consumables&&Object.prototype.hasOwnProperty.call(h.consumables,'mana'))delete h.consumables.mana;
   }
   if(party.sharedItems?.consumables&&Object.prototype.hasOwnProperty.call(party.sharedItems.consumables,'mana'))delete party.sharedItems.consumables.mana;
@@ -202,7 +205,7 @@ refillParty=function(){for(const h of party.members){const v=stats(h);h.hp=v.hp;
 const noManaLoadParty=loadParty;
 loadParty=function(data){const out=noManaLoadParty(data);stripLegacyManaState();return out;};
 const noManaPackParty=packParty;
-packParty=function(){stripLegacyManaState();const data=noManaPackParty();for(const h of data.members||[]){delete h.mp;if(h.consumables)delete h.consumables.mana;}return data;};
+packParty=function(){stripLegacyManaState();const data=noManaPackParty();for(const h of data.members||[]){if(!globalThis.EmberwildSecondsCombat?.active)delete h.mp;if(h.consumables)delete h.consumables.mana;}return data;};
 const noManaRecruitHero=recruitHero;
 recruitHero=function(job){const out=noManaRecruitHero(job);stripLegacyManaState();return out;};
 
@@ -210,8 +213,8 @@ stripLegacyManaState();
 if(state){for(const h of party?.members||[state])withHero(h,clampVitals);save();render();}
 
 // Update 12 final runtime hooks. These are deliberately last so every later compatibility layer uses the JSON settings.
-need=function(l){return Math.round((GS('progression.xpCurve.base',45)+l*GS('progression.xpCurve.linear',18)+l*l*GS('progression.xpCurve.quadratic',2))*(GS('progression.xpCurve.multiplierBase',2.2)+l*GS('progression.xpCurve.multiplierPerLevel',.16)));};
-initial=function(job){let g=gear(1,0,0,job);return migrate({version:1,job,lv:1,xp:0,gold:Math.round(GS('progression.starting.gold',150)),ore:Math.round(GS('progression.starting.ore',12)),dust:Math.round(GS('progression.starting.dust',0)),hp:CLASSES[job].hp,shield:0,map:0,advanced:false,sp:Math.round(GS('progression.starting.skillPoints',2)),ap:Math.round(GS('progression.starting.abilityPoints',0)),stats:[0,0,0],skills:[1,0,0,0,0,0],active:[0,null],procSlots:[null,null],gems:[0,0,0],sockets:[null,null,null,null,null,null],bag:[g],equipped:[g.id,null,null,null,null],materials:{},kills:{},totalKills:0,tutorial:0,claimed:[],repeat:0,won:false,autoPotion:true,potions:Math.round(GS('progression.starting.potions',5)),discovered:[],created:Date.now()});};
+need=function(l){return EmberwildProgression.requiredXp(GAMEPLAY_SETTINGS,l);};
+initial=function(job){let g=gear(1,0,0,job);return migrate({version:1,job,lv:1,xp:0,gold:Math.round(GS('progression.starting.gold',150)),ore:Math.round(GS('progression.starting.ore',12)),dust:Math.round(GS('progression.starting.dust',0)),hp:CLASSES[job].hp,shield:0,map:0,advanced:false, skills:[1,0,0,0,0,0],active:[0,null],procSlots:[null,null],gems:Array(GEMS.length).fill(0),sockets:[null,null,null,null,null,null],bag:[g],equipped:[g.id,null,null,null,null],materials:{},kills:{},totalKills:0,tutorial:0,claimed:[],repeat:0,won:false,autoPotion:true,potions:Math.round(GS('progression.starting.potions',5)),discovered:[],created:Date.now()});};
 solo.initial=initial;
 levelCap=function(s=state){return s?.won?Math.floor(GS('progression.levelCaps.afterClear',60)):Math.floor(GS('progression.levelCaps.beforeClear',30));};
 regionTier=function(mi){if(!MAPS[mi])return 1;return Math.max(1,Math.ceil(MAPS[mi].min/Math.max(1,GS('progression.regionTierLevels',5))));};
@@ -225,7 +228,7 @@ gearBaseStats=function(g){const f=(1+(g.plus||0)*GS('equipment.enhance.statPerLe
 bossPower=function(g){const a=GS('equipment.boss.powerByDifficulty',[1,1.25,1.55]);return g.boss!==undefined?(a[g.difficulty||0]??1):1;};
 
 stats=function(h=state){
-  const c=CLASSES[h.job],v={hp:c.hp+(h.lv-1)*GS('progression.statsPerLevel.hp',20)+h.stats[1]*GS('progression.statsPerPoint.hp',12),atk:c.atk+(h.lv-1)*GS('progression.statsPerLevel.attack',4)+h.stats[0]*GS('progression.statsPerPoint.attack',2),def:c.def+(h.lv-1)*GS('progression.statsPerLevel.defense',2)+h.stats[2]*GS('progression.statsPerPoint.defense',1.3),crit:h.job===2?GS('progression.baseCrit.archer',.17):GS('progression.baseCrit.default',.07),critDamage:GS('combat.baseCritDamage',1.5),pierce:0,lifesteal:0,evasion:0,elementBonus:0,elementDamage:{},raceDamage:{},resist:{}};
+  const c=CLASSES[h.job],natural=EmberwildProgression.naturalStats(c,h.lv),v={hp:natural.hp,atk:natural.atk,def:natural.def,crit:h.job===2?GS('progression.baseCrit.archer',.17):GS('progression.baseCrit.default',.07),critDamage:GS('combat.baseCritDamage',1.5),pierce:0,lifesteal:0,evasion:0,elementBonus:0,elementDamage:{},raceDamage:{},resist:{}};
   if(h.advanced){v.hp*=GS('progression.advance.hpMultiplier',1.18);v.atk*=GS('progression.advance.attackMultiplier',1.22);v.def*=GS('progression.advance.defenseMultiplier',1.15);}
   let totalAttackPct=0;
   for(const g of equipment(h)){
@@ -238,14 +241,14 @@ stats=function(h=state){
   const heroBase=GS('combat.speed.heroBase',[102,108,116,96]);v.speed=Math.round((heroBase[h.job]??100)+h.lv*GS('combat.speed.heroPerLevel',.5)+Math.min(GS('combat.speed.bonusCap',5),(v.evasion||0)*GS('combat.speed.evasionWeight',10)+(v.crit||0)*GS('combat.speed.critWeight',5)));for(const k of ['hp','atk','def'])v[k]=Math.round(v[k]);return v;
 };solo.stats=stats;
 
-skillPower=function(i,h=state){const sk=CLASSES[h.job].skills[i],perLevel=Number.isFinite(sk?.[6]?.powerPerLevel)?sk[6].powerPerLevel:GS('skills.core.effectPerExtraLevel',.4);return (sk[4]+Math.max(0,(Number(h.skills[i])||0)-1)*perLevel)*(h.sockets[i]===0?GS('skills.gems.effectMultiplier',1.18):h.sockets[i]===2?GS('skills.gems.hybridMultiplier',1.10):1)*(1+bonusFor(i,4,h)/100);};
-skillCooldown=function(i,h=state){return Math.max(GAME_BALANCE.combat.minimumActiveCooldown,CLASSES[h.job].skills[i][3]-(h.sockets[i]===1?GS('skills.gems.cooldownReduction',1):0)-bonusFor(i,5,h));};
-procChance=function(i,h=state){const meta=ensureProcSkillMeta(h.job,i);if(!meta)return 0;const level=Math.max(1,Number(h.skills[i])||1),gem=h.sockets[i]===1?GS('skills.gems.cooldownProcBonus',.10):h.sockets[i]===2?GS('skills.gems.hybridProcBonus',.05):0,affix=bonusFor(i,5,h)*(GAME_BALANCE.affixes.procChancePerPointPercent/100);return Math.min(GAME_BALANCE.combat.statCaps.crit,Math.max(0,meta.procBaseChance+(level-1)*meta.procChancePerLevel+gem+affix));};
+skillPower=function(i,h=state){const sk=CLASSES[h.job].skills[i],perLevel=Number.isFinite(sk?.[6]?.powerPerLevel)?sk[6].powerPerLevel:GS('skills.core.effectPerExtraLevel',.4);return (sk[4]+Math.max(0,(Number(h.skills[i])||0)-1)*perLevel)*(1+gemRate(h,i,0)+bonusFor(i,4,h)/100);};
+skillCooldown=function(i,h=state){return Math.max(GAME_BALANCE.combat.minimumActiveCooldown,CLASSES[h.job].skills[i][3]-bonusFor(i,5,h));};
+procChance=function(i,h=state){const meta=ensureProcSkillMeta(h.job,i);if(!meta)return 0;const level=Math.max(1,Number(h.skills[i])||1),gem=gemRate(h,i,2),affix=bonusFor(i,5,h)*(GAME_BALANCE.affixes.procChancePerPointPercent/100);return Math.min(GAME_BALANCE.combat.statCaps.crit,Math.max(0,meta.procBaseChance+(level-1)*meta.procChancePerLevel+gem+affix));};
 supportAmount=function(job,index){const h=party.members.find(h=>h.job===job),sk=SUPPORT[job][index];return sk.value+Math.max(0,(Number(h.supportLevels[index])||0)-1)*(Number.isFinite(sk.effectPerLevel)?sk.effectPerLevel:GS('skills.support.effectPerExtraLevel',.2));};
 
 claimTutorial=function(){const t=GAMEPLAY_SETTINGS.quests.tutorial;if(state.tutorial===0&&state.bag.length>=RULES.bagCapacity)return toast('背包已滿，請先整理再領取新手護甲');let ok=[state.totalKills>=t.killRequirement,state.bag.some(g=>g.plus>0),state.skills[0]>=t.skillLevelRequirement][state.tutorial];if(!ok)return;state.tutorial++;state.gold+=Math.round(t.rewardGold);state.ore+=Math.round(t.rewardOre);if(state.tutorial===1){addGear(gear(Math.max(1,Math.round(t.armorTier)),Math.max(0,Math.min(3,Math.round(t.armorSlot))),Math.max(0,Math.min(3,Math.round(t.armorQuality))),state.job));}save();render();toast('獲得 '+Math.round(t.rewardGold)+' 金幣與 '+Math.round(t.rewardOre)+' 鍛鐵');};
 advance=function(){const a=GAMEPLAY_SETTINGS.progression.advance;if(state.advanced||state.lv<a.level)return;if(state.gold<a.gold||state.ore<a.ore||(state.materials['怨念碎片']||0)<a.materialCount)return toast('二轉資源不足');state.gold-=Math.round(a.gold);state.ore-=Math.round(a.ore);state.materials['怨念碎片']=(state.materials['怨念碎片']||0)-Math.round(a.materialCount);state.advanced=true;state.hp=stats().hp;save();render();toast('二轉完成，進階技能已開放！');};
-awardXP=function(amount){if(state.lv>=levelCap())return;state.xp+=amount;while(state.lv<levelCap()&&state.xp>=need(state.lv)){state.xp-=need(state.lv);state.lv++;const ap=Math.round(GS('progression.levelRewards.abilityPoints',3)),sp=Math.round(GS('progression.levelRewards.skillPoints',2));state.ap+=ap;state.sp+=sp;state.hp=stats().hp;note(`升至 LV${state.lv}！能力點 +${ap}、技能點 +${sp}`);}if(state.lv===levelCap())state.xp=0;};
+awardXP=function(amount){if(state.lv>=levelCap())return;const grant=Math.max(0,Number(amount)||0);const total=(state.xpFraction||0)+grant;const integral=Math.floor(total+1e-10);state.xpFraction=Math.max(0,total-integral);state.xp+=integral;while(state.lv<levelCap()&&state.xp>=need(state.lv)){state.xp-=need(state.lv);state.lv++;state.hp=stats().hp;note(`升至 LV${state.lv}！`);}if(state.lv===levelCap()){state.xp=0;state.xpFraction=0;}};
 
 makeBaseEnemy=function(map=state.map,h=state,rng=Math.random){const m=MAPS[map],f=GAMEPLAY_SETTINGS.monsters.finalBoss;if(map===6)return{name:m.boss[0],icon:m.boss[1],mat:m.boss[2],lv:Math.round(f.level),hp:Math.round(f.hp),maxhp:Math.round(f.hp),atk:Math.round(f.attack),def:Math.round(f.defense),kind:'final',turn:0};const ec=GAMEPLAY_SETTINGS.monsters.encounter,r=rng(),bossAllowed=m.max<=h.lv+GS('progression.mapAheadAllowance',5),kind=r<ec.bossChance&&bossAllowed?'boss':r<ec.bossChance+ec.eliteChance?'elite':'normal',mob=kind==='boss'?m.boss:m.mobs[Math.floor(rng()*m.mobs.length)],maxLv=Math.min(m.max,h.lv+GS('progression.mapAheadAllowance',5)),lv=kind==='boss'?m.max:m.min+Math.floor(rng()*Math.max(1,maxLv-m.min+1)),n=GAMEPLAY_SETTINGS.monsters.normal,k=GAMEPLAY_SETTINGS.monsters.kindMultipliers,hp=Math.round((n.hpBase+lv*n.hpPerLevel+lv*lv*n.hpQuadratic)*(kind==='boss'?k.bossHp:kind==='elite'?k.eliteHp:1)),atk=Math.round((n.attackBase+lv*n.attackPerLevel)*(kind==='boss'?k.bossAttack:kind==='elite'?k.eliteAttack:1));return{name:(kind==='elite'?'菁英・':'')+mob[0],icon:mob[1],mat:mob[2],lv,hp,maxhp:hp,atk,def:Math.round(lv*n.defensePerLevel),kind,turn:0};};
 makeEnemy=function(mi=state.map,h=state,rng=Math.random){let e=makeBaseEnemy(mi,h,rng),mode=h.difficulty||0;Object.assign(e,EmberwildProgression.scaleMonsterStats(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,e));e.maxhp=e.hp;e.difficulty=mode;e.region=mi;const meta=species.get(e.mat)||{element:'physical',race:'beast'};return {...e,...meta};};
@@ -257,33 +260,46 @@ craftBoss=function(mi,job=state.job){if(!Number.isInteger(job)||!CLASSES[job]||m
 upgradeMaterials=function(g){const next=g.plus+1,e=GAMEPLAY_SETTINGS.equipment.enhance,dust=next>=e.dustStartLevel?g.tier*Math.max(0,next-e.dustStartLevel+1)*e.dustPerTierPerLevelAboveStart:0,ether=next>=e.etherStartLevel?e.etherCost:0;return {ore:Math.max(0,Math.round(g.tier*next*e.orePerTierPerLevel)),dust:Math.max(0,Math.round(dust)),ether:Math.max(0,Math.round(ether))};};
 enhanceCost=function(g){return upgradeMaterials(g).ore;};
 canEnhance=function(g){const c=upgradeMaterials(g);return g.plus<RULES.enhanceMax&&state.ore>=c.ore&&state.dust>=c.dust&&(state.materials['以太鍛鐵']||0)>=c.ether;};
-enhance=function(id){const g=findGear(id);if(!g||g.plus>=RULES.enhanceMax)return;if(!canEnhance(g))return toast('材料不足：'+upgradeCostText(g));const c=upgradeMaterials(g),ether=state.materials['以太鍛鐵']||0;state.ore-=c.ore;state.dust-=c.dust;if(c.ether)state.materials['以太鍛鐵']=ether-c.ether;g.plus++;if(!save()){g.plus--;state.ore+=c.ore;state.dust+=c.dust;if(c.ether)state.materials['以太鍛鐵']=ether;return;}render();toast('已強化至 +'+g.plus);};
+enhance=function(id){ensureBoard();const g=findGear(id);if(!g||g.plus>=RULES.enhanceMax)return;if(!canEnhance(g))return toast('材料不足：'+upgradeCostText(g));const c=upgradeMaterials(g),ether=state.materials['以太鍛鐵']||0;state.ore-=c.ore;state.dust-=c.dust;if(c.ether)state.materials['以太鍛鐵']=ether-c.ether;const oldProgress=party?.progressStats?JSON.parse(JSON.stringify(party.progressStats)):null,oldBoard=JSON.parse(JSON.stringify(playerHero().board));g.plus++;globalThis.recordEnhancement?.(g.plus);if(!save()){if(oldProgress)party.progressStats=oldProgress;playerHero().board=oldBoard;g.plus--;state.ore+=c.ore;state.dust+=c.dust;if(c.ether)state.materials['以太鍛鐵']=ether;return;}render();toast('已強化至 +'+g.plus);};
 
 function update12SalvageRewards(g,includeEnhance=true){const q=gearQualityRank(g),c=GAMEPLAY_SETTINGS.equipment.salvage;return {ore:Math.max(0,Math.round(g.tier*(c.oreBasePerTier+q*c.orePerQualityPerTier+(includeEnhance?(g.plus||0)*c.orePerEnhancePerTier:0)))),dust:Math.max(0,Math.round(c.dustBase+q*c.dustPerQuality))};}
 salvage=function(id){const g=findGear(id);if(!g||g.locked||gearWearer(g.id)||inlineAffixDrafts.has(affixDraftKey(g)))return;const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;state.bag=state.bag.filter(x=>x.id!==id);pruneGearSelections();save();render();};
 confirmMassSalvage=function(){if(!massSalvageIds)return;const items=massSalvageTargets(massSalvageIds),ids=new Set(items.map(g=>g.id)),bag=state.bag,ore=state.ore,dust=state.dust;for(const g of items){const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));if(!save()){state.bag=bag;state.ore=ore;state.dust=dust;return;}massSalvageIds=null;pruneGearSelections();closeModal();render();toast('已分解 '+items.length+' 件裝備');};
 salvageAll=function(){const targets=state.bag.filter(g=>gearQualityRank(g)===0&&(g.plus||0)===0&&!g.affix.length&&g.boss===undefined&&!state.equipped.includes(g.id)&&!g.locked),ids=new Set(targets.map(g=>g.id));for(const g of targets){const r=update12SalvageRewards(g,false);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));pruneGearSelections();save();render();toast(`已分解 ${ids.size} 件未養成普通裝備`);};
-addGear=function(g){g.rar=0;const q=gearQualityRank(g);if(typeof collectingBattleGear!=='undefined'&&collectingBattleGear){pendingGearLoot.push(g);note(`獲得 ${AFFIX_RANK[q]} ${equipmentDisplayName(g)}${g.boss!==undefined?'（BOSS 專屬）':''}（待結算）`,'item');if(typeof addExpeditionLoot==='function')addExpeditionLoot(equipmentDisplayName(g),1,q);return;}if(state.bag.length>=RULES.bagCapacity){const r=update12SalvageRewards(g,false);state.ore+=r.ore;state.dust+=r.dust;note('背包已滿，掉落裝備自動分解。','item');}else{state.bag.push(g);note(`獲得 ${AFFIX_RANK[q]} ${equipmentDisplayName(g)}${g.boss!==undefined?'（BOSS 專屬）':''}`,'item');}};
+addGear=function(g){
+  if(!g)return;
+  g.acquiredAt??=Date.now();
+  const q=gearQualityRank(g);
+  // This late module replaces core addGear. It must use the same overflow
+  // contract: never append beyond capacity, salvage only the new drop, and
+  // keep exploration running. The old implementation appended then stopped.
+  if(state.bag.length>=RULES.bagCapacity){
+    state.ore+=g.tier*(3+q*2);
+    state.dust+=1+q;
+    note('背包已滿，掉落裝備自動分解。','item');
+    return;
+  }
+  state.bag.push(g);
+  note(`獲得 ${AFFIX_RANK[q]} ${equipmentDisplayName(g)}${g.boss!==undefined?'（BOSS 專屬）':''}`,'item');
+};
 
 combatSpeed=function(e){const s=GAMEPLAY_SETTINGS.combat.speed;return Math.round(s.enemyBase+e.lv*s.enemyPerLevel+(s.race[e.race]||0)+(s.kind[e.kind]||0)+(e.difficulty||0)*s.difficultyBonus);};
 resolveHit=function(e,amount,h,element,crit){const v=battleStats(h),cap=GAMEPLAY_SETTINGS.combat.caps,def=e.def*(1-Math.min(cap.fracture,effectTotal(e.id,'fracture')))*(1-v.pierce);let d=Math.max(1,Math.round(amount-def*GS('combat.defenseEffectiveness',.65)));if(crit)d=Math.round(d*v.critDamage);const tonic=activeSupply(h,'elementTonic'),bonus=(v.elementDamage[element]||0)+(element==='physical'?0:v.elementBonus)+(tonic&&tonic.element===element?GS('combat.supply.elementTonicDamage',.2):0);d=Math.max(1,Math.round(d*elementFactor(element,e.element)*(1+bonus)*(1+(v.raceDamage[e.race]||0))*(1+effectTotal(e.id,'vulnerable'))));const actual=Math.min(e.hp,d);e.hp=Math.max(0,e.hp-d);h.hp=Math.min(v.hp,h.hp+actual*v.lifesteal);return actual;};
 performEnemyBasic=function(e){e.turn++;const targets=living(),h=targets[rand(targets.length)],v=battleStats(h),c=GAMEPLAY_SETTINGS.combat,fb=c.finalBoss,multi=e.kind==='final'?(e.turn>fb.enrageAfterTurn?fb.enrageMultiplier:e.turn%Math.max(1,Math.round(fb.specialEveryTurns))===0?fb.specialMultiplier:1):1+Math.max(0,e.lv-h.lv)*c.levelGapDamagePerLevel;let hit=Math.max(1,Math.round(e.atk*(1-Math.min(c.caps.weaken,effectTotal(e.id,'weaken')))*multi-v.def*c.defenseEffectiveness));hit=Math.max(1,Math.round(hit*(1-Math.min(c.caps.guard,effectTotal(heroKey(h),'guard')))));if(Math.random()<v.evasion){note(characterName(h)+'閃避了'+e.name+'的攻擊');return;}const ward=activeSupply(h,'ward'),resist=Math.min(c.caps.resistance,(v.resist[e.element]||0)+(ward&&ward.element===e.element?c.supply.wardResistance:0));hit=Math.max(1,Math.round(hit*(1-resist)));const absorb=Math.min(h.shield,hit);h.shield-=absorb;if(absorb>0)recordCombatContribution(h,'mitigation',absorb);const hpDamage=Math.max(0,hit-absorb);h.hp=Math.max(0,h.hp-hpDamage);if(absorb>0&&hpDamage===0)note(e.name+' → '+characterName(h)+' 的護盾 '+absorb+' 傷害（剩餘 '+Math.round(h.shield)+'）');else note(e.name+' → '+characterName(h)+' '+hpDamage+' 傷害'+(absorb?`（護盾吸收 ${absorb}，剩餘 ${Math.round(h.shield)}）`:''));};
 spawnGroup=function(){const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],g=GAMEPLAY_SETTINGS.combat.groupSize,min=Math.max(1,Math.round(g.min)),max=Math.max(min,Math.round(g.max)),n=min+rand(max-min+1);foes=[];effects=[];actorCooldowns={};supportCooldowns={};for(const h of heroes())h.shield=0;for(let i=0;i<n;i++){const mi=party.map===6&&i>0?5:party.map,e=makeEnemy(mi,weak);e.id='foe-'+uid();e.rewarded=false;foes.push(e);}enemy=foes[0];round=0;note('遭遇 '+foes.length+' 隻敵人。');};
 
-toggleBattleRate=function(){const rates=GS('combat.pacing.rates',[1,2,4]).filter(x=>Number.isFinite(x)&&x>0);if(!rates.length)return;const now=Date.now(),old=battleRate,idx=rates.findIndex(x=>x===battleRate);battleRate=rates[(idx+1+rates.length)%rates.length];if(roundStartedAt)roundStartedAt=now-(now-roundStartedAt)*old/battleRate;nextActionAt=now+Math.max(0,nextActionAt-now)*old/battleRate;render();};
 tick=function(){if(!party||!running||$('modal').open)return;const now=Date.now();if(now<nextActionAt)return;if(!roundIterator){roundIterator=pacedRound();roundStartedAt=now;}const step=roundIterator.next(),actionMs=Math.max(0,GS('combat.pacing.actionIntervalMs',900)),roundMs=Math.max(actionMs,GS('combat.pacing.roundMinimumMs',6000));if(step.done){roundIterator=null;nextActionAt=Math.max(now+actionMs/battleRate,roundStartedAt+roundMs/battleRate);}else{nextActionAt=now+actionMs/battleRate;if(tab==='battle')render();}if(tab!=='battle')refreshGlobalJournal();};
 
 potion=function(quiet=false){if(state.potions<1)return;let v=stats();if(state.hp>=v.hp)return;state.potions--;const f=GS('quests.potion.healFraction',.45);state.hp=Math.min(v.hp,state.hp+v.hp*f);note('使用治療藥水，恢復 '+Math.round(f*10000)/100+'% 生命。');if(!quiet){save();render();}};
 buyPotion=function(){const c=Math.max(0,Math.round(GS('quests.potion.buyCost',75))),q=Math.max(1,Math.round(GS('quests.potion.buyQuantity',5)));if(state.gold<c)return toast('金幣不足');state.gold-=c;state.potions+=q;save();render();};
 radiantDropChance=function(kind){return kind==='boss'||kind==='final'?GS('rewards.radiant.bossFinal',.01):kind==='normal'||kind==='elite'?GS('rewards.radiant.normalElite',.0005):0;};
 etherDropChance=function(e){const c=GAMEPLAY_SETTINGS.rewards.ether;if(e.kind==='elite')return Math.min(c.eliteCap,c.eliteBase+c.elitePerTier*(regionTier(e.region??party.map)-1));if(e.kind==='boss'||e.kind==='final')return c.bossRepeat;return 0;};
-awardEther=function(e){if(!party)return;let n=0;const c=GAMEPLAY_SETTINGS.rewards.ether,boss=e.kind==='boss'||e.kind==='final',key=(e.region??party.map)+':'+(e.difficulty||0);party.etherBossClaims??=[];if(boss&&!party.etherBossClaims.includes(key)){const min=Math.round(c.firstBossMin),max=Math.max(min,Math.round(c.firstBossMax));n=min+rand(max-min+1);party.etherBossClaims.push(key);}else if(Math.random()<etherDropChance(e))n=1;if(n){state.materials['以太鍛鐵']=(state.materials['以太鍛鐵']||0)+n;note('獲得以太鍛鐵 ×'+n,'item');}};
+awardEther=function(e){if(!party)return;let n=0;const c=GAMEPLAY_SETTINGS.rewards.ether,boss=e.kind==='boss'||e.kind==='final',key=(e.region??party.map)+':'+(e.difficulty||0);party.etherBossClaims??=[];if(boss&&!party.etherBossClaims.includes(key)){const min=Math.round(c.firstBossMin),max=Math.max(min,Math.round(c.firstBossMax));n=min+rand(max-min+1);party.etherBossClaims.push(key);}else {const factor=e.kind==='elite'?generalDropLevelGapFactor({type:'material'},e):1;if(Math.random()<etherDropChance(e)*factor)n=1;}if(n){state.materials['以太鍛鐵']=(state.materials['以太鍛鐵']||0)+n;note('獲得以太鍛鐵 ×'+n,'item');}};
 
-const update12VictoryBase=victory;
-victory=function(){let e=enemy;if(!e)return;lastDefeatedEnemy={...e};let mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards,mult=[r.kindMultiplier.normal,r.kindMultiplier.elite,r.kindMultiplier.boss][kindIndex],firstClear=e.kind==='final'&&!state.won;state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);let gold=Math.round((r.gold.base+e.lv*r.gold.perLevel)*mult*d.xp),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode);state.gold+=gold;state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);if(Math.random()<(GAMEPLAY_SETTINGS.difficulty.materialChance[mode]??0)||kindIndex>0){let mat=e.kind==='boss'?bossMaterial(mi,mode):e.mat;state.materials[mat]=(state.materials[mat]||0)+1;note('獲得 '+mat+' ×1');}if(Math.random()<d.equip[kindIndex]){let g=gear(tier,rand(4),Math.random()<r.equipmentQuality.rareChance?2:Math.random()<r.equipmentQuality.fineConditionalChance?1:0);modeAffixes(g,mode);addGear(g);}if(Math.random()<d.rare){let g=gear(tier,rand(4),3);modeAffixes(g,mode);addGear(g);}if(e.kind==='boss'&&mi!==6&&Math.random()<d.boss)addGear(bossGear(mi,state.job,mode));if(Math.random()<d.gem[kindIndex]){let i=rand(3);state.gems[i]++;note('獲得 '+GEMS[i].name);}awardEther(e);if(Math.random()<r.potionDropChance)state.potions++;if(Math.random()<radiantDropChance(e.kind)){state.materials['光輝碎塊']=(state.materials['光輝碎塊']||0)+1;note('獲得極稀有道具：光輝碎塊 ×1');}if(e.kind==='final'){state.won=true;state.modeClears[mode]++;state.materials['日蝕王冠']=1;running=false;}awardXP(xp);state.hp=Math.min(stats().hp,state.hp+stats().hp*r.postVictoryHeal);state.shield=0;note(`擊敗 ${e.name}（${d.name}）· +${xp} EXP、${gold} 金幣`);enemy=null;if(e.kind==='final'){$('modal').innerHTML=`<h1>${firstClear?'等級界限已突破':'再次戰勝噬日者'}</h1><p>${d.name}模式通關。${firstClear?'等級上限提升。':'可繼續探索或挑戰更高難度。'}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}save();};solo.victory=victory;
+victory=function(){let e=enemy;if(!e)return;lastDefeatedEnemy={...e};let mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards,mult=[r.kindMultiplier.normal,r.kindMultiplier.elite,r.kindMultiplier.boss][kindIndex],firstClear=e.kind==='final'&&!state.won;state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);let gold=Math.round((r.gold.base+e.lv*r.gold.perLevel)*mult*d.xp),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,party?.members?.[0]?.lv??state?.lv);state.gold+=gold;state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);if(Math.random()<(GAMEPLAY_SETTINGS.difficulty.materialChance[mode]??0)||kindIndex>0){let mat=e.kind==='boss'?bossMaterial(mi,mode):e.mat;state.materials[mat]=(state.materials[mat]||0)+1;note('獲得 '+mat+' ×1');}if(Math.random()<d.equip[kindIndex]){let g=gear(tier,rand(4),Math.random()<r.equipmentQuality.rareChance?2:Math.random()<r.equipmentQuality.fineConditionalChance?1:0);modeAffixes(g,mode);addGear(g);}if(Math.random()<d.rare){let g=gear(tier,rand(4),3);modeAffixes(g,mode);addGear(g);}if(e.kind==='boss'&&mi!==6&&Math.random()<d.boss)addGear(bossGear(mi,state.job,mode));if(Math.random()<d.gem[kindIndex]){let i=rand(3);state.gems[i]++;note('獲得 '+GEMS[i].name);}awardEther(e);if(Math.random()<r.potionDropChance)state.potions++;if(Math.random()<radiantDropChance(e.kind)){state.materials['光輝碎塊']=(state.materials['光輝碎塊']||0)+1;note('獲得極稀有道具：光輝碎塊 ×1');}if(e.kind==='final'){state.won=true;state.modeClears[mode]++;state.materials['日蝕王冠']=1;running=false;}awardXP(xp);state.hp=Math.min(stats().hp,state.hp+stats().hp*r.postVictoryHeal);state.shield=0;note(`擊敗 ${e.name}（${d.name}）· +${xp} EXP、${gold} 金幣`);enemy=null;if(e.kind==='final'){$('modal').innerHTML=`<h1>${firstClear?'等級界限已突破':'再次戰勝噬日者'}</h1><p>${d.name}模式通關。${firstClear?'等級上限提升。':'可繼續探索或挑戰更高難度。'}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}save();};solo.victory=victory;
 rewardGroupKill=function(e){
   if(e.rewarded)return;e.rewarded=true;
-  const members=heroes(),receiver=members[rand(members.length)],isFinal=e.kind==='final',xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0),hp=receiver.hp,shield=receiver.shield;
+  const members=heroes(),receiver=members[rand(members.length)],isFinal=e.kind==='final',xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,party?.members?.[0]?.lv??state?.lv),hp=receiver.hp,shield=receiver.shield;
   const oldAward=awardXP;awardXP=()=>{};enemy=e;partyBusy=true;
   try{withHero(receiver,()=>solo.victory());}finally{awardXP=oldAward;partyBusy=false;receiver.hp=hp;receiver.shield=shield;}
   if(isFinal){party.cleared=true;closeModal();running=true;}
@@ -322,7 +338,7 @@ if(state){for(const h of party?.members||[state])withHero(h,clampVitals);render(
 tutorial=function(){if(state.tutorial>=3)return '';const t=GAMEPLAY_SETTINGS.quests.tutorial,texts=[['01 / 初次狩獵',`在苔光林地開始自動探索，擊敗 ${Math.round(t.killRequirement)} 隻怪物。`,state.totalKills>=t.killRequirement],['02 / 整理行囊','前往「裝備強化」，將任一裝備強化一次。',state.bag.some(g=>g.plus>0)],['03 / 學習技能',`前往「技能」，將初始主動技能提升至 ${Math.round(t.skillLevelRequirement)} 級。`,state.skills[0]>=t.skillLevelRequirement]][state.tutorial];return `<div class="tutorial"><div><b>${texts[0]}</b><p>${texts[1]}</p></div><button ${texts[2]?'':'disabled'} onclick="claimTutorial()">領取獎勵</button></div>`;};
 
 const update12CharacterViewBase=characterView;
-characterView=function(){let html=update12CharacterViewBase(),a=GAMEPLAY_SETTINGS.progression.advance,l=GAMEPLAY_SETTINGS.progression.levelRewards,p=GAMEPLAY_SETTINGS.progression.statsPerPoint;html=html.replace(/升級獲得 \d+(?:\.\d+)? 能力點、\d+(?:\.\d+)? 技能點/g,`升級獲得 ${l.abilityPoints} 能力點、${l.skillPoints} 技能點`).replace(/攻擊力 \+2/g,`攻擊力 +${p.attack}`).replace(/生命上限 \+12/g,`生命上限 +${p.hp}`).replace(/防禦力 \+1\.3/g,`防禦力 +${p.defense}`).replace(/LV15 ·/g,`LV${a.level} ·`).replace(/進階後生命 \+18%、攻擊 \+22%、防禦 \+15%/g,`進階後生命 +${Math.round((a.hpMultiplier-1)*10000)/100}%、攻擊 +${Math.round((a.attackMultiplier-1)*10000)/100}%、防禦 +${Math.round((a.defenseMultiplier-1)*10000)/100}%`).replace(/需求：LV15、500 金幣、20 鍛鐵、怨念碎片 ×3/g,`需求：LV${a.level}、${a.gold} 金幣、${a.ore} 鍛鐵、怨念碎片 ×${a.materialCount}`);return html;};
+characterView=function(){let html=update12CharacterViewBase(),a=GAMEPLAY_SETTINGS.progression.advance;html=html.replace(/LV15 ·/g,`LV${a.level} ·`).replace(/進階後生命 \+18%、攻擊 \+22%、防禦 \+15%/g,`進階後生命 +${Math.round((a.hpMultiplier-1)*10000)/100}%、攻擊 +${Math.round((a.attackMultiplier-1)*10000)/100}%、防禦 +${Math.round((a.defenseMultiplier-1)*10000)/100}%`).replace(/需求：LV15、500 金幣、20 鍛鐵、怨念碎片 ×3/g,`需求：LV${a.level}、${a.gold} 金幣、${a.ore} 鍛鐵、怨念碎片 ×${a.materialCount}`);return html;};
 
 const update12ForgeViewBase=forgeView;
 forgeView=function(){return update12ForgeViewBase().replace(/最高 \+10/g,'最高 +'+RULES.enhanceMax).replace(/已達 \+10 強化上限/g,'已達 +'+RULES.enhanceMax+' 強化上限');};
@@ -335,8 +351,30 @@ shopView=function(){ensureMarket();const h=pageHero('shop'),pc=Math.round(GS('qu
 const update12RenderBase=render;
 render=function(){update12RenderBase();if(!state)return;const after=GS('progression.levelCaps.afterClear',60),before=GS('progression.levelCaps.beforeClear',30);document.querySelectorAll('.aside-foot .gold').forEach(el=>{el.textContent=state.won?' 已突破 · 上限 LV'+after:'LV'+before+' · 挑戰噬日者';});};
 
-guideView=function(){const g=GAMEPLAY_SETTINGS,c=g.combat,r=g.rewards,e=g.equipment,m=g.monsters;return heading('FIELD NOTES / 冒險指南','目前平衡設定摘要')+`<section class="panel"><h2>成長與戰鬥</h2><p>通關前等級上限 LV${g.progression.levelCaps.beforeClear}，通關後 LV${g.progression.levelCaps.afterClear}。每級獲得 ${g.progression.levelRewards.abilityPoints} 能力點。二轉需求 LV${g.progression.advance.level}。</p><p>基礎暴擊傷害 ${Math.round(c.baseCritDamage*10000)/100}%；防禦係數 ${Math.round(c.defenseEffectiveness*10000)/100}%。一般越級每級增加 ${Math.round(c.levelGapDamagePerLevel*10000)/100}% 敵方傷害。全隊戰敗損失 ${Math.round(c.defeatGoldLoss*10000)/100}% 金幣。</p><h2>遭遇與掉落</h2><p>一般地圖的菁英遭遇率由各地圖 <span class="code">maps.catalog[].eliteChance</span> 決定；BOSS 不會隨機遭遇，而是由擊殺累積 BOSS 挑戰進度。裝備、素材、寶石、消耗品等實際掉落由 <span class="code">drops.entries</span> 逐條判定。</p><h2>裝備與強化</h2><p>裝備背包 ${e.bagCapacity} 件，強化上限 +${e.enhance.maxLevel}，每 +1 的基礎能力增幅 ${Math.round(e.enhance.statPerLevel*10000)/100}%。升到 +${e.enhance.dustStartLevel} 開始消耗粉塵，+${e.enhance.etherStartLevel} 開始消耗以太鍛鐵。</p><div class="actions"><button class="danger" onclick="confirmNew()">建立新角色</button></div></section>`;};
-
+guideView=function(){
+ const g=GAMEPLAY_SETTINGS,p=g.progression,e=g.equipment,c=g.combat,x=p.xpLevelGap,drop=e.dropLevelGap;
+ const xpHint=x?.enabled?`<p>挑戰低等怪物時，高於怪物 ${x.freeLevels} 級以內仍可獲得完整經驗；高出 ${x.midGap} 級時剩 ${Math.round(x.midMultiplier*100)}%、高出 ${x.highGap} 級時剩 ${Math.round(x.highMultiplier*100)}%，高出 ${x.highGap+1} 級以上剩 ${Math.round(x.minimumMultiplier*100)}%。中間等級差逐級遞減，BOSS 也適用。</p>`:'';
+ const dropHint=drop?.enabled?`<p>角色高於地圖最高等級 ${drop.freeLevels} 級後，普通怪與菁英怪的裝備掉落率會逐漸降低，最低為基礎掉落率的 ${Math.round(drop.minimumMultiplier*100)}%。素材與 BOSS 裝備不受這項限制。</p>`:'';
+ return heading('FIELD NOTES / 冒險指南','遊戲系統說明')+`<section class="panel guide-scroll">
+ <h2>角色成長與隊伍</h2>
+ <p>主角透過探索獲得經驗並升級，夥伴等級與主角同步。最多三人出戰，其他夥伴可以留在候補。LV${p.advance.level} 可以二轉。擊敗界限突破首領後，等級上限由 LV${p.levelCaps.beforeClear} 提升至 LV${p.levelCaps.afterClear}。</p>
+ <p>金幣、素材、消耗品與背包由隊伍共用；角色的技能與穿戴裝備則可分別設定。</p>
+ <h2>探索與戰鬥</h2>
+ <p>開始探索後會自動遭遇並攻擊怪物。普通探索的擊殺可累積地區 BOSS 挑戰進度。技能依裝備的技能槽與冷卻時間使用，普攻觸發技能須配置到觸發槽才會生效。火剋風、風剋冰、冰剋火，光與暗互相剋制。</p>
+ <p>遭遇結束後全隊恢復生命；戰敗會停止探索並損失 ${Math.round(c.defeatGoldLoss*100)}% 金幣。暫停不會回復生命，停止探索則結束目前的掛機。</p>
+ <h2>經驗與戰利品</h2>
+ <p>怪物等級、種類與探索難度會影響獲得的經驗。經驗由出戰隊伍人數分配，再由主角累積並同步夥伴等級；經驗加倍券可額外提高收益。</p>
+ ${xpHint}
+ <p>裝備、素材與其他戰利品依怪物掉落表判定；擊敗怪物取得的裝備會直接放入背包。一般裝備掉率依探索難度不同，詳情可在怪物資訊查看。</p>
+ ${dropHint}
+ <h2>裝備與養成</h2>
+ <p>裝備需符合職業及等級需求。背包最多持有 ${e.bagCapacity} 件裝備，可篩選、排序、鎖定及批次處理。強化最多 +${e.enhance.maxLevel}，能提升裝備能力；洗鍊可重新產生詞條，並選擇採用新結果或保留原詞條。BOSS 專屬裝備可使用對應素材製作。</p>
+ <h2>任務與生活技能</h2>
+ <p>主線、支線、NPC 任務與每日委託會依各自條件推進並提供獎勵。採集會按時間取得材料；煉金則依配方消耗材料製作道具。</p>
+ <h2>存檔與離線探索</h2>
+ <p>遊戲會自動保存進度，也可以匯出存檔備份或移轉裝置。探索進行中關閉網頁，重新進入後會補算離線期間完成的戰鬥與收益；暫停或停止探索的時間不會產生探索收益。</p>
+ </section>`;
+};
 
 // Update 12 views whose original renderers captured old constants before the settings layer existed.
 function update12BossMemberView(){
@@ -360,3 +398,11 @@ characterView=function(){let html=update12CharacterViewConsistency(),a=GAMEPLAY_
 // The battle page was composed by earlier wrappers; replace only the stale balance-dependent supply text.
 const update12BattleViewConsistency=battleView;
 battleView=function(){let html=update12BattleViewConsistency(),pc=Math.round(GS('quests.potion.buyCost',75)),pq=Math.round(GS('quests.potion.buyQuantity',5)),th=Math.round(GS('combat.autoPotionThreshold',.35)*10000)/100;return html.replace(/\+\d+ 瓶／\d+ 金幣/g,`+${pq} 瓶／${pc} 金幣`).replace(/低於\d+(?:\.\d+)?%自動喝藥/g,`低於${th}%自動喝藥`);};
+
+// Roaming equipment attenuation is data; all other loot retains the same rates.
+(()=>{
+ GAMEPLAY_SETTINGS_DEFAULTS.equipment.dropLevelGap={enabled:true,freeLevels:5,penaltyPerLevel:.4,minimumMultiplier:.05};
+ const normalizeBase=normalizeGameplaySettings;normalizeGameplaySettings=function(input){const cfg=normalizeBase(input);cfg.equipment.dropLevelGap={enabled:true,freeLevels:5,penaltyPerLevel:.4,minimumMultiplier:.05,...input?.equipment?.dropLevelGap};return cfg;};
+ const validateBase=validateGameplaySettings;validateGameplaySettings=function(input){const cfg=validateBase(input),v=cfg.equipment.dropLevelGap;if(typeof v.enabled!=='boolean'||!Number.isFinite(v.freeLevels)||v.freeLevels<0||!Number.isFinite(v.penaltyPerLevel)||v.penaltyPerLevel<0||!Number.isFinite(v.minimumMultiplier)||v.minimumMultiplier<0||v.minimumMultiplier>1)throw Error('裝備掉落等級差設定無效');return cfg;};
+ GAMEPLAY_SETTINGS=normalizeGameplaySettings(GAMEPLAY_SETTINGS);
+})();

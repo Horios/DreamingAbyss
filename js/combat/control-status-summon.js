@@ -12,7 +12,6 @@
     {job:2,controlId:'archer-morph-trap',name:'變形陷阱',level:12,cooldown:7,power:1.0,effect:'summonMorphTrap',element:'physical',maxTargets:1,description:'召喚 1 點生命的變形陷阱。陷阱被擊破時，使攻擊者進入變形狀態。',trapHp:1,duration:3,bossDuration:0},
     {job:3,controlId:'priest-implant-fear',name:'植入恐怖',level:10,cooldown:6,power:0,effect:'fear',element:'shadow',maxTargets:1,description:'植入恐怖，使敵人傷害降低並有機率無法行動。BOSS 的失去行動機率降低。',duration:3,damageReduction:.20,skipChance:.30,bossSkipChance:.15}
   ];
-  const CONTROL_LABELS={polymorph:'變形',freeze:'冰凍',frost:'結霜',rage:'狂暴',summonMorphTrap:'變形陷阱',summonFreezeTrap:'冰凍陷阱',fear:'畏懼',tauntRage:'嘲諷／狂暴'};
   let controlStates=Object.create(null),combatSummons=[];
 
   function clamp01(v,fallback=0){v=Number(v);return Number.isFinite(v)?Math.max(0,Math.min(1,v)):fallback;}
@@ -59,7 +58,8 @@
   // restored instead of being rejected or truncated by the core six-skill schema.
   try{
     const raw=globalThis.__EMBERWILD_PRE_CONTROL_SAVE_RAW??globalThis.__EMBERWILD_BOOT_SAVE_RAW??localStorage.getItem(KEY);
-    if(raw){
+    // The published loader restores exact save bytes after all modules are installed.
+    if(raw&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)){
       const parsed=JSON.parse(raw),fallbackStats=party?.battleStatistics;
       loadParty(migrateWorldSave(parsed));
       if(!parsed.battleStatistics&&fallbackStats&&typeof normalizeBattleStatistics==='function')party.battleStatistics=normalizeBattleStatistics(fallbackStats);
@@ -73,15 +73,15 @@
     globalThis.__EMBERWILD_BOOT_SAVE_ERROR=message;
     if(!state){
       state=null;party=null;
-      const previewBuild=/(?:^|\/)preview(?:\/|$)/.test(location.pathname)||!!document.getElementById('preview-build-banner');
+      const previewBuild=isPreviewBuild();
       if(previewBuild&&message.startsWith('裝備類型無效：'))globalThis.__EMBERWILD_DEFERRED_CUSTOM_FORM_SAVE=true;
-      else toast('存檔未能載入：'+message+'；可匯入備份。');
+      else if(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY)toast('存檔未能載入：'+message+'；可匯入備份。');
     }
   }
 
   function applyPolymorph(e,shield,meta){
     if(!e||e.hp<=0)return false;
-    if(isBossEnemy(e)){note(combatEnemyName(e)+' 對變形免疫。');return true;}
+    if(isBossEnemy(e)){globalThis.EmberwildBattleEffects?.result('resist',e);note(combatEnemyName(e)+' 對變形免疫。');return true;}
     meta=normalizeControlMeta(meta,'polymorph');
     const s=stateFor(e.id),amount=Math.max(1,Math.round(Number(shield)||1));
     s.polymorph={turns:Math.max(1,meta.duration),total:Math.max(1,meta.duration),shield:amount,maxShield:amount};
@@ -91,7 +91,7 @@
   function applyFreeze(e,meta,forcedTurns=null){
     if(!e||e.hp<=0)return false;meta=normalizeControlMeta(meta,'freeze');
     const turns=forcedTurns===null?(isBossEnemy(e)?meta.bossDuration:meta.duration):Math.max(1,int0(forcedTurns,1));
-    if(turns<=0)return true;
+    if(turns<=0){globalThis.EmberwildBattleEffects?.result('resist',e);return true;}
     const s=stateFor(e.id);s.freeze={turns,total:turns};
     note(combatEnemyName(e)+' 冰凍 '+turns+' 回合。');return true;
   }
@@ -102,7 +102,7 @@
   }
   function applyRage(e,meta,tauntHeroJob=null){
     if(!e||e.hp<=0)return false;meta=normalizeControlMeta(meta,'rage');
-    const turns=isBossEnemy(e)?meta.bossDuration:meta.duration;if(turns<=0)return true;
+    const turns=isBossEnemy(e)?meta.bossDuration:meta.duration;if(turns<=0){globalThis.EmberwildBattleEffects?.result('resist',e);return true;}
     const s=stateFor(e.id);s.rage={turns,total:turns,basicAttackBonus:meta.basicAttackBonus,tauntHeroJob:Number.isInteger(tauntHeroJob)?tauntHeroJob:null};
     note(combatEnemyName(e)+' 狂暴 '+turns+' 回合：無法使用技能，普攻傷害 +'+Math.round(meta.basicAttackBonus*100)+'%。');return true;
   }
@@ -157,8 +157,9 @@
     if(e.__controlSkip){note(combatEnemyName(e)+' 因'+e.__controlSkip+'無法行動。');return;}
     e.turn=(e.turn||0)+1;
     const s=stateFor(e.id,false),rage=s?.rage;
-    let target=null;
-    if(rage&&Number.isInteger(rage.tauntHeroJob))target=living().find(h=>memberKey(h)===rage.tauntHeroJob)||null;
+    const taunt=effects.find(x=>x.kind==='skillTaunt'&&x.target===e.id&&x.until>partyClock);
+    let target=taunt?living().find(h=>memberKey(h)===taunt.source)||null:null;
+    if(!target&&rage&&Number.isInteger(rage.tauntHeroJob))target=living().find(h=>memberKey(h)===rage.tauntHeroJob)||null;
     if(!target){
       const candidates=[...living(),...combatSummons.filter(x=>x.hp>0)];
       if(!candidates.length)return;
@@ -167,19 +168,21 @@
     if(target.__controlSummon){
       target.hp=Math.max(0,target.hp-1);note(combatEnemyName(e)+' 攻擊 '+target.name+'，陷阱生命 -1（剩餘 '+target.hp+'）。','enemyDamage');onTrapHit(target,e);return;
     }
-    const h=target,beforeHp=h.hp,v=battleStats(h),ev=enemyBattleStats(e),c=GAMEPLAY_SETTINGS.combat,fb=c.finalBoss,multi=e.kind==='final'?(e.turn>fb.enrageAfterTurn?fb.enrageMultiplier:e.turn%Math.max(1,Math.round(fb.specialEveryTurns))===0?fb.specialMultiplier:1):1+Math.max(0,e.lv-h.lv)*c.levelGapDamagePerLevel;
+    const h=target,beforeHp=h.hp,v=battleStats(h),ev=enemyBattleStats(e),c=GAMEPLAY_SETTINGS.combat,fb=c.finalBoss,multi=e.kind==='final'?(globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.bossMultiplier(e):(e.turn>fb.enrageAfterTurn?fb.enrageMultiplier:e.turn%Math.max(1,Math.round(fb.specialEveryTurns))===0?fb.specialMultiplier:1)):1+Math.max(0,e.lv-h.lv)*c.levelGapDamagePerLevel;
     const formula=c.damageFormula||{},attackCoefficient=Number.isFinite(formula.attackCoefficient)?formula.attackCoefficient:1,defenseCoefficient=Number.isFinite(formula.defenseCoefficient)?formula.defenseCoefficient:c.defenseEffectiveness,minimumDamage=Math.max(0,Number.isFinite(formula.minimumDamage)?formula.minimumDamage:1);
     const effectiveDefense=Math.max(0,v.def*(1-Math.min(.95,ev.defenseIgnore))-ev.pierce);
     let hit=Math.max(minimumDamage,Math.round(ev.atk*(1-Math.min(c.caps.weaken,effectTotal(e.id,'weaken')))*multi*attackCoefficient-effectiveDefense*defenseCoefficient));
-    if(ev.crit>0&&Math.random()<ev.crit)hit=Math.round(hit*ev.critDamage);
+    const critical=ev.crit>0&&Math.random()<ev.crit;if(critical)hit=Math.round(hit*ev.critDamage);
     const elementBonus=(ev.elementDamage[e.element]||0)+(e.element==='physical'?0:ev.elementBonus);
     if(elementBonus)hit=Math.max(minimumDamage,Math.round(hit*(1+elementBonus)));
     hit=Math.max(minimumDamage,Math.round(hit*(1-Math.min(c.caps.guard,effectTotal(heroKey(h),'guard')))));
-    if(Math.random()<v.evasion){note(characterName(h)+'閃避了'+combatEnemyName(e)+'的攻擊');return;}
+    if(Math.random()<v.evasion){globalThis.EmberwildBattleEffects?.result('evade',h,e);note(characterName(h)+'閃避了'+combatEnemyName(e)+'的攻擊');return;}
     const resist=Math.min(c.caps.resistance,(v.resist[e.element]||0)+supplyEffect(h,'ward',e.element));
     hit=Math.max(minimumDamage,Math.round(hit*(1-resist)));const absorb=Math.min(h.shield,hit);h.shield-=absorb;
     if(absorb>0&&typeof recordCombatContribution==='function')recordCombatContribution(h,'mitigation',absorb);
     const hpDamage=Math.max(0,hit-absorb);h.hp=Math.max(0,h.hp-hpDamage);
+    if(typeof recordCombatContribution==='function')recordCombatContribution(h,'taken',absorb+Math.max(0,beforeHp-h.hp));
+    if(critical&&beforeHp>h.hp)globalThis.EmberwildBattleEffects?.result('critical',h,e);
     globalThis.EmberwildTokenRuntime?.afterDamage(h,e,beforeHp,h.hp);
     if(ev.lifesteal>0)e.hp=Math.min(e.maxhp,e.hp+Math.round((beforeHp-h.hp)*ev.lifesteal));
     if(absorb>0&&hpDamage===0)note(combatEnemyName(e)+' → '+characterName(h)+' 的護盾 '+absorb+' 傷害（剩餘 '+Math.round(h.shield)+'）','enemyDamage');
@@ -188,6 +191,7 @@
   };
 
   function tickEnemyControlTurns(e){
+    if(globalThis.EmberwildSecondsCombat?.active)return;
     const s=stateFor(e?.id,false);if(!s)return;
     for(const key of ['polymorph','freeze','rage','fear'])if(s[key]){
       s[key].turns=Math.max(0,int0(s[key].turns,0)-1);
@@ -202,9 +206,9 @@
     let skip='';
     if(polymorph&&polymorph.shield>0&&polymorph.turns>0)skip='變形';
     else if(freeze&&freeze.turns>0)skip='冰凍';
-    else if(fear&&fear.turns>0&&Math.random()<fear.skipChance)skip='畏懼';
+    else if(!e.__secondsFearChecked&&fear&&fear.turns>0&&Math.random()<fear.skipChance)skip='畏懼';
     const oldAtk=e.atk;
-    if(skip)e.__controlSkip=skip;
+    if(skip){e.__controlSkip=skip;globalThis.EmberwildBattleEffects?.result('skip',e,e,{label:skip+'・無法行動'});}
     else{
       const fearMul=fear&&fear.turns>0?1-clamp01(fear.damageReduction,.20):1;
       const rageMul=rage&&rage.turns>0?1+clamp01(rage.basicAttackBonus,.20):1;
@@ -231,10 +235,6 @@
     }else if(effect==='summonMorphTrap'||effect==='summonFreezeTrap'){
       const trapMeta={...meta,controlId:sk[6]?.controlId,powerMultiplier:Math.max(0,skillPower(i,h))};
       success=summonTrap(h,effect,trapMeta);
-    }
-    if(success&&h.sockets?.[i]===2&&sk[1]==='active'){
-      const before=h.hp;h.hp=Math.min(profileV.hp,h.hp+Math.round(healingAmount(h,profileV.atk*GS('skills.gems.hybridActiveHealAttack',.10))));
-      const recovered=Math.max(0,h.hp-before);if(recovered>0&&typeof recordCombatContribution==='function')recordCombatContribution(h,'healing',recovered);
     }
     const mastery=globalThis.__EMBERWILD_MASTERY;
     if(success&&sk[6]?.mastery&&mastery?.gainMastery)mastery.gainMastery(h,sk[6].mastery,mastery.masterySettings().skillUseXp);
@@ -337,7 +337,9 @@
     resetBalanceJSON=function(){const out=controlResetBalanceBase();ensureControlSkills();if(state)render();return out;};
   }
 
-  globalThis.__EMBERWILD_CONTROL_TEST_API={
+  globalThis.EmberwildControlCombatState={pack:()=>({states:controlStates,summons:combatSummons}),restore:v=>{controlStates=v?.states||Object.create(null);combatSummons=v?.summons||[];}};
+  // Production name for live control/summon state. The historical test name stays an alias of the same object.
+  globalThis.EmberwildControlState=globalThis.__EMBERWILD_CONTROL_TEST_API={
     get states(){return controlStates;},get summons(){return combatSummons;},
     clear(e,kind){const s=stateFor(e?.id,false),key=kind==='tauntRage'?'rage':kind;if(!s?.[key])return false;delete s[key];cleanState(e.id);return true;},
     applyPolymorph,applyFreeze,applyFrost,applyRage,applyFear,isPolymorphed,ensureControlSkills
