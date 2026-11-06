@@ -196,7 +196,7 @@
  function toggleDetails(){detailCollapsed=!detailCollapsed;sync({animate:false});}
  globalThis.EmberwildBattleSummary={snapshot,sync,finish,toggleDetails,inspect,showUnit,artwork,key};
  const journalBase=sharedBattleJournal;
- sharedBattleJournal=function(){const html=journalBase();return html.replace('<div class="journal-resizer"',summaryHTML()+'<div class="journal-resizer"');};
+ sharedBattleJournal=function(){const html=journalBase(),at=html.indexOf('<div class="journal-resizer"'),end=html.lastIndexOf('</section>');if(at>=0)return html.slice(0,at)+summaryHTML()+html.slice(at);return end>=0?html.slice(0,end)+summaryHTML()+html.slice(end):html;};
  const battleBase=battleView;
  battleView=function(){
   const s=snapshot();

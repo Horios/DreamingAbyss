@@ -1,5 +1,5 @@
 
-/* Persistent active-party contribution meter: damage, healing and shield absorption. */
+/* Persistent active-party contribution meter: damage, damage taken, healing and shield absorption. */
 (()=>{
   const BASE_KEY='emberwild-combat-contribution-v1';
   let cacheKey='',cache=null,selectedMetric='damage';
@@ -13,7 +13,9 @@
     if(!party?.active)return '';
     return [...party.active].filter(Number.isInteger).sort((a,b)=>a-b).join(',');
   }
-  function blankRow(){return {damage:0,healing:0,mitigation:0};}
+  // v0.114: taken = damage that reached the member (shield absorption + HP lost). Older stored rows start it at 0.
+  const METRICS=['damage','taken','healing','mitigation'];
+  function blankRow(){return {damage:0,taken:0,healing:0,mitigation:0};}
   function blankState(signature=activeSignature()){
     const out={teamSignature:signature,byJob:{}};
     for(const key of party?.active||[])out.byJob[key]=blankRow();
@@ -24,7 +26,7 @@
     const out=blankState(signature),src=raw&&typeof raw==='object'&&raw.byJob&&typeof raw.byJob==='object'?raw.byJob:{};
     for(const key of party?.active||[]){
       const row=src[key]||{},clean=blankRow();
-      for(const key of ['damage','healing','mitigation']){
+      for(const key of METRICS){
         const n=Number(row[key]);
         clean[key]=Number.isFinite(n)&&n>0?Math.min(1e15,n):0;
       }
@@ -54,7 +56,7 @@
     writeCache();
   }
   globalThis.recordCombatContribution=function(hero,key,amount){
-    if(!party||!['damage','healing','mitigation'].includes(key))return;
+    if(!party||!METRICS.includes(key))return;
     const memberId=typeof hero==='number'?hero:memberKey(hero),n=Number(amount);
     if(!Number.isInteger(memberId)||!party.active.includes(memberId)||!Number.isFinite(n)||n<=0)return;
     const stats=ensure(),row=stats.byJob[memberId]||(stats.byJob[memberId]=blankRow());
@@ -64,8 +66,14 @@
     if(!party)return;
     cache=blankState(activeSignature());cacheKey=storageKey();writeCache();save();render();
   };
+  // Read-only rows for the statistics page: active members in party order with every metric.
+  globalThis.combatContributionData=function(){
+    if(!party)return [];
+    const stats=ensure();
+    return party.active.map(partyMember).filter(Boolean).map(h=>({key:memberKey(h),name:characterName(h),...blankRow(),...Object.fromEntries(METRICS.map(k=>[k,Number(stats.byJob[memberKey(h)]?.[k])||0]))}));
+  };
   globalThis.setCombatContributionMetric=function(metric){
-    if(!['damage','healing','mitigation'].includes(metric))return;
+    if(!METRICS.includes(metric))return;
     selectedMetric=metric;
     render();
   };
@@ -83,7 +91,7 @@
   globalThis.combatContributionPanel=function(){
     if(!party)return '';
     const stats=ensure(),fmt=n=>Math.round(Number(n)||0).toLocaleString('zh-TW');
-    const labels={damage:'傷害',healing:'治療',mitigation:'減傷'};
+    const labels={damage:'傷害',taken:'承傷',healing:'治療',mitigation:'減傷'};
     const active=party.active.map(partyMember).filter(Boolean);
     const values=active.map(h=>({h,value:Number(stats.byJob[memberKey(h)]?.[selectedMetric])||0}));
     const max=Math.max(0,...values.map(x=>x.value));
@@ -94,7 +102,7 @@
         '<div class="combat-contribution-track" aria-label="'+esc(characterName(h))+' '+labels[selectedMetric]+' '+fmt(value)+'"><div class="combat-contribution-fill" style="width:'+width+'%"></div></div>'+
         '<span class="combat-contribution-value">'+fmt(value)+'</span></div>';
     }).join('');
-    const tabs=['damage','healing','mitigation'].map(key=>'<button class="'+(selectedMetric===key?'active':'')+'" onclick="setCombatContributionMetric(\''+key+'\')">'+labels[key]+'</button>').join('');
+    const tabs=METRICS.map(key=>'<button class="'+(selectedMetric===key?'active':'')+'" onclick="setCombatContributionMetric(\''+key+'\')">'+labels[key]+'</button>').join('');
     return '<div class="combat-contribution-meter"><div class="combat-contribution-head"><b>隊伍戰鬥統計</b><button onclick="resetCombatContribution()" title="將目前隊伍的累積統計歸零">重置</button></div>'+
       '<div class="combat-contribution-tabs">'+tabs+'</div>'+
       '<div class="combat-contribution-bars">'+bars+'</div>'+

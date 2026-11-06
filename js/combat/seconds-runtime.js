@@ -166,7 +166,7 @@
   }else if(p.kind==='effect'){
    const fx=effects.find(f=>f.secondsId===p.id);if(!fx)return;const caster=partyMember(fx.sourceKey??fx.source);
    if(fx.kind==='regen'){const before=x.hp;x.hp=Math.min(__EMBERWILD_STATUS_TEST_API.maxHp(x),x.hp+__EMBERWILD_STATUS_TEST_API.maxHp(x)*fx.value);if(caster&&x.hp>before)recordCombatContribution(caster,'healing',x.hp-before);}
-   else{const amount=(fx.kind==='dotAttack'?(caster?battleStats(caster).atk:0):__EMBERWILD_STATUS_TEST_API.maxHp(x))*fx.value,dealt=Math.min(x.hp,Math.max(1,Math.round(amount)));x.hp-=dealt;if(caster)recordCombatContribution(caster,'damage',dealt);note(fx.name+' → '+(Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x))+' '+dealt+' 持續傷害','playerDamage');}
+   else{const amount=(fx.kind==='dotAttack'?(caster?battleStats(caster).atk:0):__EMBERWILD_STATUS_TEST_API.maxHp(x))*fx.value,dealt=Math.min(x.hp,Math.max(1,Math.round(amount)));x.hp-=dealt;if(caster)recordCombatContribution(caster,'damage',dealt);if(Object.hasOwn(x,'job'))recordCombatContribution(x,'taken',dealt);note(fx.name+' → '+(Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x))+' '+dealt+' 持續傷害','playerDamage');}
   }else if(p.kind==='token'){
    const api=__EMBERWILD_TOKEN_TEST,g=api.item(x);if(g&&g.snapshot.ability.event==='round')api.trigger(x,'round');
   }

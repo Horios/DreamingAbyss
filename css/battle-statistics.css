@@ -4,3 +4,17 @@
 .statistics-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:10px;align-items:start}.statistics-loot-list{display:grid;gap:5px;max-height:520px;overflow:auto}.statistics-loot-row{display:flex;justify-content:space-between;gap:12px;padding:7px 9px;border-bottom:1px solid var(--line)}
 .statistics-members{display:grid;gap:8px}.statistics-member{padding:10px;border:1px solid var(--line);background:#151d20}.statistics-member h3{display:flex;justify-content:space-between;gap:10px;margin:0 0 7px}.statistics-deaths{margin:0;padding-left:20px;color:var(--muted);font-size:12px;line-height:1.7}.statistics-empty{color:var(--muted);font-size:12px;margin:5px 0}
 @media(max-width:900px){.statistics-summary{grid-template-columns:repeat(2,minmax(120px,1fr))}.statistics-layout{grid-template-columns:1fr}}
+/* v0.114: per-member combat bar chart on the statistics page; reset buttons in panel heads. */
+.statistics-combat-data{margin-bottom:10px}
+.statistics-panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.statistics-panel-head>button{flex:0 0 auto}
+.combat-chart{display:grid;gap:12px}
+.combat-chart-metric h3{margin:0 0 6px;font-size:13px;color:var(--muted)}
+.combat-chart-row{display:grid;grid-template-columns:minmax(64px,7em) minmax(0,1fr) minmax(4.5em,auto);align-items:center;gap:8px;margin:4px 0}
+.combat-chart-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.combat-chart-track{display:block;height:12px;border-radius:6px;background:var(--progress-track,#26302b);overflow:hidden}
+.combat-chart-fill{display:block;height:100%;border-radius:6px}
+.combat-chart-fill.metric-damage{background:#d9785a}
+.combat-chart-fill.metric-taken{background:#8e8fd6}
+.combat-chart-fill.metric-healing{background:#6fbf86}
+.combat-chart-value{text-align:right;font-variant-numeric:tabular-nums}
