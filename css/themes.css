@@ -118,3 +118,7 @@ dialog::backdrop{background:var(--backdrop)}
   .mobile-journal-toggle,.mobile-loot-toggle{background:var(--surface);color:var(--gold)}
 }
 @media(max-width:600px){.theme-choices{grid-template-columns:minmax(0,1fr);gap:10px}.theme-choice{padding:12px}.theme-choice[aria-pressed="true"]{padding:11px}}
+/* v0.109: light theme only. Mastery identity colors and the party HP line were tuned
+   for dark backgrounds (contrast 1.6～2.4 on paper); darken them toward the text color. */
+:root[data-ui-theme="paper"] .mastery-bar-head>span{color:color-mix(in srgb,var(--mastery-color) 40%,var(--text))}
+:root[data-ui-theme="paper"] .seconds-party-hp{color:var(--muted)}
