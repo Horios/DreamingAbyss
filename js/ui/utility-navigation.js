@@ -72,7 +72,9 @@
   };
   const after=globalThis.__EMBERWILD_AFTER_RENDER;globalThis.__EMBERWILD_AFTER_RENDER=function(...args){after?.(...args);refreshBadges();refreshDialog();if(buildingPage)pageRefreshed=true;};
   const baseClose=closeModal;closeModal=function(...args){clearUtilityMarker();const out=baseClose(...args);refreshBadges();return out;};
-  $('modal').addEventListener('close',()=>{clearUtilityMarker();refreshBadges();});
+  // The close event is dispatched asynchronously. If the dialog was reopened first (closeModal then
+  // openUtilityPanel in one task), the stale event must not strip the new utility view's marker.
+  $('modal').addEventListener('close',()=>{if(!$('modal').open)clearUtilityMarker();refreshBadges();});
   const baseCodes=showTestCodes;showTestCodes=function(...args){clearUtilityMarker();return baseCodes(...args);};
   const baseReturn=returnToTitle;globalThis.returnToTitle=function(...args){closeModal();return baseReturn(...args);};
   let refreshQueued=false;
