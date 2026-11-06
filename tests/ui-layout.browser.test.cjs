@@ -56,7 +56,7 @@ test('Long reading content and expanded rosters use the page scroll; inventory s
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
-test('Utility dialogs keep one reading scroll and skill catalog names wrap without hiding text',async()=>{
+test('Utility dialogs keep readable scroll regions and skill catalog names wrap without hiding text',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await setup(p);
  for(const [width,height]of [[1366,768],[768,1024],[390,844],[320,568],[844,390]]){
@@ -65,7 +65,7 @@ test('Utility dialogs keep one reading scroll and skill catalog names wrap witho
    await p.evaluate(t=>{closeModal();setTab(t);},id);
    const d=await p.locator('#modal').evaluate(e=>({open:e.open,width:e.scrollWidth-e.clientWidth,height:e.getBoundingClientRect().height,viewport:innerHeight,overflow:getComputedStyle(e).overflowY}));
    assert(d.open,id+' opens');assert(d.width<=1,id+' fits width');assert(d.height<=d.viewport,id+' fits height');assert.equal(d.overflow,'auto');
-   if(id==='mailbox'||id==='achievements')assert.equal(await p.locator(id==='mailbox'?'.mailbox-list':'.achievement-list').evaluate(e=>getComputedStyle(e).overflowY),'visible');
+   if(id==='achievements')assert.equal(await p.locator('.achievement-list').evaluate(e=>getComputedStyle(e).overflowY),'visible');
    await p.evaluate(()=>closeModal());
   }
   await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
@@ -80,13 +80,32 @@ test('Utility dialogs keep one reading scroll and skill catalog names wrap witho
 test('Deployed preview badge leaves utility buttons reachable at every viewport',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await setup(p);
- await p.evaluate(()=>document.body.insertAdjacentHTML('afterbegin','<div id="preview-build-banner" style="position:fixed;top:8px;right:8px;z-index:2147483647;padding:6px 10px;border-radius:4px;background:#8b3a2b;color:#fff;font:700 12px/1.2 system-ui,sans-serif;box-shadow:0 1px 4px #0008;">測試版本 v0.098</div>'));
+ await p.evaluate(()=>document.body.insertAdjacentHTML('afterbegin','<div id="preview-build-banner" style="position:fixed;top:8px;right:8px;z-index:2147483647;padding:6px 10px;border-radius:4px;background:#8b3a2b;color:#fff;font:700 12px/1.2 system-ui,sans-serif;box-shadow:0 1px 4px #0008;">測試版本 v0.099</div>'));
  for(const [width,height]of sizes){await p.setViewportSize({width,height});
   const covered=await p.locator('#utilityNavigation>button').evaluateAll(es=>{const a=document.getElementById('preview-build-banner').getBoundingClientRect();return es.filter(e=>{const b=e.getBoundingClientRect();return b.width&&b.height&&b.left<a.right&&b.right>a.left&&b.top<a.bottom&&b.bottom>a.top;}).map(e=>e.textContent);});
   assert.deepEqual(covered,[],width+' badge covers utility buttons');
   const b=await p.evaluate(bounds);assert(b.overflow<=1);assert(b.bottom<=b.navTop+1);
   await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
   await p.locator('#utilityButton-save').click();
+ }
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
+
+test('Long mailbox lists preserve visible desktop detail and reachable mobile mail actions',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await setup(p);
+ const saved=await p.evaluate(()=>{for(let i=0;i<30;i++)party.mailbox.messages.push({id:++party.mailbox.serial,rewardKey:'starter-0-'+(i+10),subject:'信件 '+i,body:'完整信件內容',at:Date.now()+i,read:true,claimed:true,attachments:[{type:'catalogue',kind:'item',key:'heal_small',quantity:1,name:'簡易治療藥水'}]});return save();});assert.equal(saved,true,'mail fixtures use the real validated save contract');
+ for(const [width,height]of [[1366,768],[1024,768],[390,844],[320,568]]){
+  await p.setViewportSize({width,height});await p.evaluate(()=>{closeModal();setTab('mailbox');});
+  const item=p.locator('.mailbox-list-item').last(),id=await item.getAttribute('data-mail-id');await item.scrollIntoViewIfNeeded();
+  const scrolled=await p.locator('.mailbox-list').evaluate(e=>e.scrollTop);assert(scrolled>0,'the list reaches later mail before the selection redraw');await item.click();
+  const detail=p.locator('.mailbox-detail');await p.waitForFunction(id=>document.querySelector('.mailbox-detail')?.dataset.mailDetail===id,id);
+  const visible=await detail.evaluate(e=>{const b=e.getBoundingClientRect(),m=e.closest('dialog').getBoundingClientRect();return b.top>=m.top&&b.top<m.bottom;});
+  if(width>700)assert(visible,'selecting the last mail keeps desktop detail in view');
+  await detail.locator('.mail-lock').scrollIntoViewIfNeeded();const before=await detail.locator('.mail-lock').getAttribute('aria-pressed');await detail.locator('.mail-lock').click();
+  await p.waitForFunction(({id,on})=>document.querySelector('[data-mail-detail="'+id+'"] .mail-lock')?.getAttribute('aria-pressed')===on,{id,on:before==='true'?'false':'true'});
+  await p.evaluate(()=>closeModal());
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
