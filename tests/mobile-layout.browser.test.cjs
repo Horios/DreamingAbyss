@@ -148,8 +148,9 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   assert.equal(await p.locator('.mobile-more-toggle').isVisible(),false);
   assert.equal(await p.locator('#mobileJournalBody').isVisible(),true);
   const order=await p.locator('aside nav .game-menu-item:visible').evaluateAll(nodes=>nodes.map(e=>({id:e.dataset.navGroup,x:e.getBoundingClientRect().x,y:Math.round(e.getBoundingClientRect().y)})).sort((a,b)=>a.y-b.y||a.x-b.x).map(e=>e.id));
-  const designed=await p.evaluate(()=>[...EmberwildNavigation.design.groups.map(g=>g.id),'settings']);
+  const designed=await p.evaluate(()=>EmberwildNavigation.design.groups.map(g=>g.id));
   assert.deepEqual(order,designed,'desktop top menu follows the configured categories');
+  assert.equal(await p.locator('#utilityButton-options').isVisible(),true,'settings stay reachable in the header');
   assert.equal(await p.evaluate(()=>EmberwildNavigation.design.groups.find(g=>g.id==='missions').pages.some(x=>x.id==='wishingLake')),true,'the wishing lake is a missions page');
   assert(await p.evaluate(()=>{const u=document.getElementById('utilityNavigation').getBoundingClientRect(),a=document.querySelector('.layout>aside').getBoundingClientRect();return u.bottom<=a.top&&u.top<100&&u.right>=innerWidth-40;}),'utility buttons stay at the top right');
   const rects=await p.evaluate(()=>['aside','main','#globalBattleJournal'].map(s=>{const r=document.querySelector('.layout').querySelector(s).getBoundingClientRect();return {x:r.x,right:r.right,y:r.y,bottom:r.bottom};}));
