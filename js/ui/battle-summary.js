@@ -231,7 +231,10 @@
    const slots=':scope > .battle-enemy-icon, :scope > .seconds-face-main > .battle-enemy-icon',portrait=old.querySelector(slots);
    if(portrait){const replaced=fresh.querySelector(slots);if(replaced)replaced.replaceWith(portrait);else fresh.prepend(portrait);}
    for(const child of [...old.children])if(!child.matches('.battle-fx,.battle-fx-status'))child.remove();
-   old.append(...fresh.children);for(const a of [...fresh.attributes])old.setAttribute(a.name,a.value);old.className=fresh.className;old.style.cssText=fresh.style.cssText;fresh.replaceWith(old);
+   old.append(...fresh.children);
+   // Copy the raw style attribute: it carries the card color (--vs-card). Re-serializing through
+   // style.cssText can drop custom properties, which turns the card back to the fallback gray.
+   for(const a of [...fresh.attributes])old.setAttribute(a.name,a.value);if(!fresh.hasAttribute('style'))old.removeAttribute('style');fresh.replaceWith(old);
   }
   retainedField=document.querySelector('.squad-field')||retainedField;
   sync();return out;
