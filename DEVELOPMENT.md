@@ -47,6 +47,30 @@
 正式發布只處理已確認的遊戲差異。不要因為 `main` 與 `chatgpt-dev` 的 commit 數量或 ahead/behind 顯示不同，就直接整枝 merge 或覆蓋。
 發布前應先比較實際 `index.html` 內容，辨識哪些差異是已測試遊戲修改，哪些只是部署／文件歷史。
 
+## 平衡資料模組（v0.120）
+
+`data/balance/` 是平衡資料唯一的編輯來源，依資料種類分成 35 個模組（`world/monsters.json`、`combat/skills.json`、`systems/shop.json` 等）。`data/balance.json` 由模組自動產生，遊戲仍只讀這一份整合檔；請勿直接修改它。
+
+- `data/balance/manifest.json`：模組清單、對應的原始資料路徑、模組版本（內容改變才遞增）、內容 SHA-256、直接依賴、使用的驗證器、頂層鍵順序與整合檔雜湊。
+- 模組配置、拆分／整合、差異路徑、引用索引與依賴推導在 `js/balance/balance-modules.js`，遊戲、建置工具與平衡器共用同一份程式。
+- 拆分與整合互為反函數：相同來源永遠產生逐位元組相同的 `data/balance.json`（含鍵順序）。
+- 遊戲載入時讀取 manifest：缺少必要模組或清單無效時停止啟動並顯示原因，存檔不變；沒有 manifest 的舊版部署照常載入整合檔。整合檔雜湊與清單不符（舊版發布器只寫了整合檔）時只記錄警告，整合檔本身仍經完整驗證。
+
+常用指令：
+
+```bash
+node scripts/balance-modules.cjs build      # 修改模組後重建 manifest 與 data/balance.json
+node scripts/balance-modules.cjs check      # 模組、manifest、整合檔一致
+node scripts/balance-modules.cjs affected --base HEAD   # 改了哪些模組、哪些記錄與欄位、需要哪些測試
+node scripts/balance-modules.cjs validate --base HEAD   # 只驗證變更與引用它們的資料
+node scripts/balance-modules.cjs refs monster map0_mob0 # 哪些記錄引用此 ID
+node scripts/balance-modules.cjs resync     # 舊版發布器直接寫入整合檔後，把變更拆回模組
+```
+
+增量驗證：`EmberwildBalanceDocument.inspect(doc,{scope})` 的每個規則區塊宣告自己讀取的資料路徑。變更分為一般欄位（`value`）、被其他模組讀取的鍵欄位（`key`，如怪物 `id`、`mapIndex`、`kind`、`material`）與結構變更（新增、刪除、重排記錄）。一般欄位只檢查該筆記錄的欄位規則；鍵欄位與結構變更才執行讀取它的跨模組規則與引用檢查。沒有 scope 時與原本完全相同（完整檢查）。`tests/balance-modules.test.cjs` 以多種突變確認範圍化檢查找得到完整檢查找到的每個問題。
+
+CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產生的整合檔、版本號）時，只跑讀取變更模組的測試；鍵欄位或結構變更會加入依賴它的模組的測試。程式、測試、流程、manifest 結構改變，或無法判定範圍（例如整合檔與模組不一致）時執行完整閘門。`balance-modules` 工作每次都檢查一致性並做增量驗證。完整回歸仍由 Extended regression（每日與 `[extended-regression]`）負責。
+
 ## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。

@@ -1,0 +1,69 @@
+{
+  "regionVouchers": {
+    "ticketMinutes": 30,
+    "sampleMinutes": 30,
+    "maxGapMinutes": 10,
+    "chargePotions": true,
+    "averageMinutes": 180
+  },
+  "kindMultiplier": {
+    "normal": 1,
+    "elite": 1.7,
+    "boss": 3
+  },
+  "gold": {
+    "base": 2,
+    "perLevel": 0.45,
+    "quadratic": 0.003,
+    "kindMultiplier": {
+      "normal": 1,
+      "elite": 2.6,
+      "boss": 7
+    },
+    "levelGap": {
+      "enabled": true,
+      "freeLevels": 2,
+      "midGap": 3,
+      "midMultiplier": 0.5,
+      "highGap": 5,
+      "highMultiplier": 0.2,
+      "zeroGap": 10
+    }
+  },
+  "xp": {
+    "base": 18,
+    "perLevel": 9,
+    "kindMultiplier": {
+      "normal": 1,
+      "elite": 2.2,
+      "boss": 10
+    }
+  },
+  "ore": {
+    "normalKindMultiplier": 0.25,
+    "eliteBossKindMultiplier": 0.6,
+    "normalChanceByDifficulty": [
+      0.08,
+      0.1,
+      0.12
+    ]
+  },
+  "equipmentQuality": {
+    "rareChance": 0.22,
+    "fineConditionalChance": 0.46
+  },
+  "potionDropChance": 0.08,
+  "postVictoryHeal": 0.12,
+  "radiant": {
+    "normalElite": 0.0004,
+    "bossFinal": 0.008
+  },
+  "ether": {
+    "eliteBase": 0.01,
+    "elitePerTier": 0.004,
+    "eliteCap": 0.06,
+    "bossRepeat": 0.01,
+    "firstBossMin": 1,
+    "firstBossMax": 2
+  }
+}

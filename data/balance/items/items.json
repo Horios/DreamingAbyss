@@ -1,0 +1,316 @@
+[
+  {
+    "id": "imbue_fire",
+    "element": "fire",
+    "type": "imbue",
+    "cost": 180,
+    "duration": 50,
+    "name": "火屬性附魔藥水",
+    "sellPrice": 45,
+    "statEffects": {},
+    "shopEnabled": true,
+    "timing": {
+      "cooldownSeconds": 0,
+      "durationSeconds": 300
+    }
+  },
+  {
+    "id": "ward_fire",
+    "element": "fire",
+    "type": "ward",
+    "cost": 140,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 25,
+    "name": "火屬性抗性藥水",
+    "sellPrice": 35,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "elementTonic_fire",
+    "element": "fire",
+    "type": "elementTonic",
+    "cost": 200,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 20,
+    "name": "火屬性增幅藥水",
+    "sellPrice": 50,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "imbue_ice",
+    "element": "ice",
+    "type": "imbue",
+    "cost": 180,
+    "duration": 50,
+    "name": "冰屬性附魔藥水",
+    "sellPrice": 45,
+    "statEffects": {},
+    "shopEnabled": true,
+    "timing": {
+      "cooldownSeconds": 0,
+      "durationSeconds": 300
+    }
+  },
+  {
+    "id": "ward_ice",
+    "element": "ice",
+    "type": "ward",
+    "cost": 140,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 25,
+    "name": "冰屬性抗性藥水",
+    "sellPrice": 35,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "elementTonic_ice",
+    "element": "ice",
+    "type": "elementTonic",
+    "cost": 200,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 20,
+    "name": "冰屬性增幅藥水",
+    "sellPrice": 50,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "imbue_wind",
+    "element": "wind",
+    "type": "imbue",
+    "cost": 180,
+    "duration": 50,
+    "name": "風屬性附魔藥水",
+    "sellPrice": 45,
+    "statEffects": {},
+    "shopEnabled": true,
+    "timing": {
+      "cooldownSeconds": 0,
+      "durationSeconds": 300
+    }
+  },
+  {
+    "id": "ward_wind",
+    "element": "wind",
+    "type": "ward",
+    "cost": 140,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 25,
+    "name": "風屬性抗性藥水",
+    "sellPrice": 35,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "elementTonic_wind",
+    "element": "wind",
+    "type": "elementTonic",
+    "cost": 200,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 20,
+    "name": "風屬性增幅藥水",
+    "sellPrice": 50,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "imbue_light",
+    "element": "light",
+    "type": "imbue",
+    "cost": 180,
+    "duration": 50,
+    "name": "光屬性附魔藥水",
+    "sellPrice": 45,
+    "statEffects": {},
+    "shopEnabled": true,
+    "timing": {
+      "cooldownSeconds": 0,
+      "durationSeconds": 300
+    }
+  },
+  {
+    "id": "ward_light",
+    "element": "light",
+    "type": "ward",
+    "cost": 140,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 25,
+    "name": "光屬性抗性藥水",
+    "sellPrice": 35,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "elementTonic_light",
+    "element": "light",
+    "type": "elementTonic",
+    "cost": 200,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 20,
+    "name": "光屬性增幅藥水",
+    "sellPrice": 50,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "imbue_shadow",
+    "element": "shadow",
+    "type": "imbue",
+    "cost": 180,
+    "duration": 50,
+    "name": "暗屬性附魔藥水",
+    "sellPrice": 45,
+    "statEffects": {},
+    "shopEnabled": true,
+    "timing": {
+      "cooldownSeconds": 0,
+      "durationSeconds": 300
+    }
+  },
+  {
+    "id": "ward_shadow",
+    "element": "shadow",
+    "type": "ward",
+    "cost": 140,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 25,
+    "name": "暗屬性抗性藥水",
+    "sellPrice": 35,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "elementTonic_shadow",
+    "element": "shadow",
+    "type": "elementTonic",
+    "cost": 200,
+    "duration": 0,
+    "durationMinutes": 5,
+    "effectPercent": 20,
+    "name": "暗屬性增幅藥水",
+    "sellPrice": 50,
+    "statEffects": {},
+    "shopEnabled": false
+  },
+  {
+    "id": "exp_100_30m",
+    "type": "timedBoost",
+    "boostType": "exp",
+    "bonusPercent": 100,
+    "durationMinutes": 30,
+    "duration": 0,
+    "cost": 600,
+    "sellPrice": 150,
+    "shopEnabled": false,
+    "name": "經驗值＋100％ 30分鐘",
+    "statEffects": {}
+  },
+  {
+    "id": "drop_50_30m",
+    "type": "timedBoost",
+    "boostType": "drop",
+    "bonusPercent": 50,
+    "durationMinutes": 30,
+    "duration": 0,
+    "cost": 600,
+    "sellPrice": 150,
+    "shopEnabled": false,
+    "name": "掉寶率＋50％ 30分鐘",
+    "statEffects": {}
+  },
+  {
+    "id": "heal_small",
+    "type": "healPotion",
+    "cost": 15,
+    "sellPrice": 2,
+    "duration": 0,
+    "cooldown": 2,
+    "name": "簡易治療藥水",
+    "statEffects": {},
+    "shopEnabled": true,
+    "healAmount": 20,
+    "shopAvailable": true,
+    "requiredVip": 0,
+    "timing": {
+      "cooldownSeconds": 6,
+      "durationSeconds": 0
+    }
+  },
+  {
+    "id": "heal_standard",
+    "type": "healPotion",
+    "cost": 200,
+    "sellPrice": 4,
+    "duration": 0,
+    "cooldown": 3,
+    "name": "治療藥水",
+    "statEffects": {},
+    "shopEnabled": true,
+    "healAmount": 50,
+    "shopAvailable": true,
+    "requiredVip": 1,
+    "timing": {
+      "cooldownSeconds": 9,
+      "durationSeconds": 0
+    }
+  },
+  {
+    "id": "heal_greater",
+    "type": "healPotion",
+    "cost": 500,
+    "sellPrice": 7,
+    "duration": 0,
+    "cooldown": 4,
+    "name": "強效治療藥水",
+    "statEffects": {},
+    "shopEnabled": true,
+    "healAmount": 200,
+    "shopAvailable": false,
+    "requiredVip": 0,
+    "timing": {
+      "cooldownSeconds": 12,
+      "durationSeconds": 0
+    }
+  },
+  {
+    "id": "heal_supreme",
+    "type": "healPotion",
+    "cost": 2000,
+    "sellPrice": 12,
+    "duration": 0,
+    "cooldown": 5,
+    "name": "特級治療藥水",
+    "statEffects": {},
+    "shopEnabled": true,
+    "healAmount": 500,
+    "shopAvailable": false,
+    "requiredVip": 0,
+    "timing": {
+      "cooldownSeconds": 15,
+      "durationSeconds": 0
+    }
+  },
+  {
+    "id": "power_tier_reroll",
+    "type": "gearTierReroll",
+    "cost": 0,
+    "sellPrice": 80,
+    "duration": 0,
+    "name": "強度重鑄石",
+    "shopEnabled": false,
+    "textStyleId": "",
+    "statEffects": {}
+  }
+]

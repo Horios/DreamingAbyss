@@ -1,0 +1,873 @@
+{
+  "version": 1,
+  "classRules": [
+    {
+      "job": 0,
+      "initial": [
+        {
+          "skillId": "class0-initial0",
+          "level": 1
+        },
+        {
+          "skillId": "class0-initial1",
+          "level": 3
+        },
+        {
+          "skillId": "class0-initial2",
+          "level": 5
+        },
+        {
+          "skillId": "warrior-cleave-chain",
+          "level": 3
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job0-core4",
+          "level": 15
+        },
+        {
+          "skillId": "job0-core5",
+          "level": 20
+        },
+        {
+          "skillId": "job0-support2",
+          "level": 15
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "堅守前線，以嘲諷與減傷保護隊伍。"
+    },
+    {
+      "job": 1,
+      "initial": [
+        {
+          "skillId": "class1-initial0",
+          "level": 1
+        },
+        {
+          "skillId": "class1-initial1",
+          "level": 3
+        },
+        {
+          "skillId": "class1-initial2",
+          "level": 5
+        },
+        {
+          "skillId": "mage-mana-cycle",
+          "level": 3
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job1-core4",
+          "level": 15
+        },
+        {
+          "skillId": "job1-core5",
+          "level": 20
+        },
+        {
+          "skillId": "job1-support2",
+          "level": 15
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "以群體魔法清理敵群，兼具控制能力。"
+    },
+    {
+      "job": 2,
+      "initial": [
+        {
+          "skillId": "class2-initial0",
+          "level": 1
+        },
+        {
+          "skillId": "class2-initial1",
+          "level": 3
+        },
+        {
+          "skillId": "class2-initial2",
+          "level": 5
+        },
+        {
+          "skillId": "archer-arrow-rain",
+          "level": 3
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job2-core4",
+          "level": 15
+        },
+        {
+          "skillId": "job2-core5",
+          "level": 20
+        },
+        {
+          "skillId": "job2-support2",
+          "level": 15
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "專注單體射擊，以連射與狙擊擊倒目標。"
+    },
+    {
+      "job": 3,
+      "initial": [
+        {
+          "skillId": "class3-initial0",
+          "level": 1
+        },
+        {
+          "skillId": "class3-initial1",
+          "level": 3
+        },
+        {
+          "skillId": "class3-initial2",
+          "level": 5
+        },
+        {
+          "skillId": "priest-holy-prison",
+          "level": 3
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job3-core4",
+          "level": 15
+        },
+        {
+          "skillId": "job3-core5",
+          "level": 20
+        },
+        {
+          "skillId": "job3-support2",
+          "level": 15
+        },
+        {
+          "skillId": "job3-support3",
+          "level": 15
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "以聖光攻擊，透過治療與持續恢復支援隊伍。"
+    }
+  ],
+  "equipment": {
+    "chanceByDifficulty": [
+      0.15,
+      0.15,
+      0.15
+    ],
+    "formRules": [],
+    "pool": [
+      {
+        "skillId": "job0-core0",
+        "jobs": [
+          0
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job0-core2",
+        "jobs": [
+          0
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job0-core3",
+        "jobs": [
+          0
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job0-core6",
+        "jobs": [
+          0
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job0-support1",
+        "jobs": [
+          0
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-core0",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-core2",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-core3",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-core6",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-core7",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-core8",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job1-support1",
+        "jobs": [
+          1
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job2-core0",
+        "jobs": [
+          2
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job2-core2",
+        "jobs": [
+          2
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job2-core3",
+        "jobs": [
+          2
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job2-core6",
+        "jobs": [
+          2
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job2-core7",
+        "jobs": [
+          2
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job2-support1",
+        "jobs": [
+          2
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job3-core0",
+        "jobs": [
+          3
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job3-core2",
+        "jobs": [
+          3
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job3-core3",
+        "jobs": [
+          3
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job3-core6",
+        "jobs": [
+          3
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      },
+      {
+        "skillId": "job3-support1",
+        "jobs": [
+          3
+        ],
+        "slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "minLevel": 1,
+        "maxLevel": 999,
+        "weight": 1,
+        "maps": [],
+        "monsters": [],
+        "bosses": [],
+        "allowShop": true,
+        "allowCraft": true
+      }
+    ],
+    "socketBands": [
+      {
+        "minLevel": 1,
+        "maxLevel": 10,
+        "weights": [
+          0.7,
+          0.3,
+          0,
+          0
+        ]
+      },
+      {
+        "minLevel": 11,
+        "maxLevel": 20,
+        "weights": [
+          0.35,
+          0.5,
+          0.15,
+          0
+        ]
+      },
+      {
+        "minLevel": 21,
+        "maxLevel": 999,
+        "weights": [
+          0.1,
+          0.35,
+          0.35,
+          0.2
+        ]
+      }
+    ],
+    "sourceRules": [
+      {
+        "source": "starter",
+        "weights": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "boss",
+        "weights": [
+          0,
+          0.3,
+          0.4,
+          0.3
+        ]
+      }
+    ]
+  },
+  "gems": [
+    {
+      "kind": 0,
+      "base": {
+        "stat": "atk",
+        "unit": "flat",
+        "values": [
+          2,
+          4,
+          6
+        ]
+      },
+      "skill": {
+        "key": "effect",
+        "values": [
+          0.02,
+          0.04,
+          0.06
+        ],
+        "types": [
+          "active",
+          "proc",
+          "support"
+        ],
+        "effects": [],
+        "slots": [
+          0
+        ]
+      },
+      "cap": 1
+    },
+    {
+      "kind": 1,
+      "base": {
+        "stat": "speed",
+        "unit": "flat",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "skill": {
+        "key": "cooldown",
+        "values": [
+          0.05,
+          0.1,
+          0.15
+        ],
+        "types": [
+          "active",
+          "support"
+        ],
+        "effects": [],
+        "slots": [
+          0
+        ]
+      },
+      "cap": 1
+    },
+    {
+      "kind": 2,
+      "base": {
+        "stat": "crit",
+        "unit": "ratio",
+        "values": [
+          0.01,
+          0.02,
+          0.03
+        ]
+      },
+      "skill": {
+        "key": "procChance",
+        "values": [
+          0.01,
+          0.02,
+          0.03
+        ],
+        "types": [
+          "proc"
+        ],
+        "effects": [],
+        "slots": [
+          0
+        ]
+      },
+      "cap": 1
+    },
+    {
+      "kind": 3,
+      "base": {
+        "stat": "hp",
+        "unit": "flat",
+        "values": [
+          10,
+          20,
+          30
+        ]
+      },
+      "skill": {
+        "key": "heal",
+        "values": [
+          0.03,
+          0.06,
+          0.09
+        ],
+        "types": [
+          "active",
+          "proc",
+          "support"
+        ],
+        "effects": [],
+        "slots": [
+          0
+        ]
+      },
+      "cap": 1
+    },
+    {
+      "kind": 4,
+      "base": {
+        "stat": "def",
+        "unit": "flat",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "skill": {
+        "key": "shield",
+        "values": [
+          0.01,
+          0.02,
+          0.03
+        ],
+        "types": [
+          "active",
+          "proc",
+          "support"
+        ],
+        "effects": [],
+        "slots": [
+          0
+        ]
+      },
+      "cap": 1
+    }
+  ],
+  "gemSlotRuleVersion": 2
+}

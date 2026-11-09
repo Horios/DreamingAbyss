@@ -1,0 +1,70 @@
+[
+  {
+    "polarity": "buff",
+    "dispellable": true,
+    "id": "pain-spread",
+    "name": "苦痛蔓延",
+    "tags": [
+      "modifier"
+    ],
+    "duration": 99,
+    "modifiers": [
+      {
+        "kind": "damageSpread",
+        "value": 0.3,
+        "element": "physical",
+        "targets": 2
+      }
+    ],
+    "control": null,
+    "periodic": [],
+    "uses": 1,
+    "stackable": false,
+    "timing": {
+      "durationSeconds": 594,
+      "periodicIntervalSeconds": 6,
+      "triggerIntervalSeconds": 3
+    }
+  },
+  {
+    "id": "holy-prison-mark",
+    "name": "神聖光牢",
+    "tags": [],
+    "polarity": "debuff",
+    "dispellable": true,
+    "duration": 99,
+    "permanent": true,
+    "durationClock": "target",
+    "stackable": true,
+    "uses": 1,
+    "removeOnTrigger": true,
+    "modifiers": [],
+    "control": null,
+    "periodic": [],
+    "triggers": [
+      {
+        "event": "targetTurnEnd",
+        "effect": "damage",
+        "power": 0.5,
+        "target": "enemies",
+        "element": "light",
+        "allowDeathChain": true,
+        "chainMultiplier": 1
+      },
+      {
+        "event": "targetDeath",
+        "effect": "damage",
+        "power": 0.3,
+        "target": "enemies",
+        "element": "light",
+        "allowDeathChain": true,
+        "chainMultiplier": 1
+      }
+    ],
+    "timing": {
+      "durationSeconds": null,
+      "periodicIntervalSeconds": 6,
+      "triggerIntervalSeconds": 3
+    }
+  }
+]

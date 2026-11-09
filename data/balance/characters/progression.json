@@ -1,0 +1,54 @@
+{
+  "xpCurve": {
+    "base": 24,
+    "linear": 18,
+    "quadratic": 8,
+    "multiplierBase": 16,
+    "multiplierPerLevel": 0,
+    "lateStart": 30,
+    "latePerLevel": 0.05,
+    "endStart": 45,
+    "endPerLevel": 0.075
+  },
+  "starting": {
+    "gold": 150,
+    "ore": 12,
+    "dust": 0,
+    "potions": 5
+  },
+  "levelCaps": {
+    "beforeClear": 30,
+    "afterClear": 60
+  },
+  "levelRewards": {},
+  "statsPerLevel": {
+    "hp": 4,
+    "attack": 1,
+    "defense": 1
+  },
+  "baseCrit": {
+    "default": 0.07,
+    "archer": 0.17
+  },
+  "advance": {
+    "level": 15,
+    "gold": 500,
+    "ore": 20,
+    "materialCount": 3,
+    "hpMultiplier": 1.12,
+    "attackMultiplier": 1.15,
+    "defenseMultiplier": 1.12
+  },
+  "regionTierLevels": 5,
+  "mapAheadAllowance": 5,
+  "xpLevelGap": {
+    "enabled": true,
+    "freeLevels": 2,
+    "midGap": 3,
+    "midMultiplier": 0.5,
+    "highGap": 5,
+    "highMultiplier": 0.2,
+    "zeroGap": 10,
+    "minimumMultiplier": 0
+  }
+}

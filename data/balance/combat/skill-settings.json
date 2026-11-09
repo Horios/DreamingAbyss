@@ -1,0 +1,26 @@
+{
+  "core": {},
+  "proc": {
+    "baseChance": 0.22
+  },
+  "support": {},
+  "gems": {
+    "craftDust": 12,
+    "effectMultiplier": 1.1,
+    "cooldownReduction": 1,
+    "cooldownProcBonus": 0.1,
+    "hybridMultiplier": 1.05,
+    "hybridProcBonus": 0.05,
+    "hybridActiveHealAttack": 0.1
+  },
+  "mastery": {
+    "characterXpMultiplier": 1,
+    "xpBase": 8,
+    "xpLinear": 5,
+    "xpQuadratic": 1,
+    "skillUseXp": 2,
+    "basicAttackXp": 1,
+    "maxLevel": 30,
+    "advanceRequiredLevel": 4
+  }
+}

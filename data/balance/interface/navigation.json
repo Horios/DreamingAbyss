@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "id": "map",
+      "label": "探索",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "battle",
+          "label": "荒野探索"
+        },
+        {
+          "id": "statistics",
+          "label": "戰鬥統計"
+        }
+      ]
+    },
+    {
+      "id": "adventure-config",
+      "label": "隊伍",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "roster",
+          "label": "隊伍編成"
+        }
+      ]
+    },
+    {
+      "id": "skills",
+      "label": "技能",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "skills",
+          "label": "技能"
+        }
+      ]
+    },
+    {
+      "id": "gear",
+      "label": "裝備",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "worn",
+          "label": "裝備與信物"
+        },
+        {
+          "id": "forge",
+          "label": "裝備強化"
+        },
+        {
+          "id": "bossCraft",
+          "label": "BOSS 製作"
+        }
+      ]
+    },
+    {
+      "id": "bag",
+      "label": "背包",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "equipment",
+          "label": "背包"
+        }
+      ]
+    },
+    {
+      "id": "partners",
+      "label": "夥伴",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "partnerRoster",
+          "label": "夥伴名冊"
+        }
+      ]
+    },
+    {
+      "id": "character",
+      "label": "角色",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "character",
+          "label": "角色能力"
+        }
+      ]
+    },
+    {
+      "id": "missions",
+      "label": "任務",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "story-main",
+          "label": "主線"
+        },
+        {
+          "id": "story-side",
+          "label": "支線"
+        },
+        {
+          "id": "story-npc",
+          "label": "NPC 任務"
+        },
+        {
+          "id": "quests",
+          "label": "委託"
+        },
+        {
+          "id": "wishingLake",
+          "label": "許願湖"
+        }
+      ]
+    },
+    {
+      "id": "shop",
+      "label": "商店",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "shop",
+          "label": "商品列表"
+        }
+      ]
+    },
+    {
+      "id": "life",
+      "label": "生活",
+      "expanded": false,
+      "pages": [
+        {
+          "id": "gather",
+          "label": "採集"
+        },
+        {
+          "id": "alchemy",
+          "label": "煉金"
+        }
+      ]
+    }
+  ]
+}

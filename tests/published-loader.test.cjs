@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const source=fs.readFileSync(require.resolve('../js/balance/published-loader.js'),'utf8');
-function harness({badSchema=false,stallMetadata=false,executionFailure=false,storage={},preview=false,bootSave=null,loadFailure=false}={}){
+function harness({badSchema=false,stallMetadata=false,executionFailure=false,storage={},preview=false,bootSave=null,loadFailure=false,manifest=null,modules=null}={}){
   const nodes=[],links=[],scripts=[],listeners=new Map(),timers=new Map(),values=new Map(Object.entries(storage));let nextTimer=0;
   class Node{
     constructor(tag){this.tag=tag;this.style={};this.children=[];this.textContent='';this.removed=false;nodes.push(this);}
@@ -18,8 +18,8 @@ function harness({badSchema=false,stallMetadata=false,executionFailure=false,sto
     location:{href:'https://emberwild.test/'+(preview?'preview/':''),pathname:preview?'/preview/':'/',reload(){}},
     localStorage:{getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)},
     setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout:id=>timers.delete(id),clearInterval(){},
-    fetch:async(url,{signal})=>{if(stallMetadata&&url.startsWith('data/build.json'))return new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Error('aborted'))));return {ok:true,json:async()=>url.startsWith('data/build.json')?{commit:'a'.repeat(40)}:published};},
-    EmberwildBalanceDocument:{inspect:()=>[]},applyBalanceConfig(data){ctx.applied.push(data);},loadParty(data){ctx.loaded.push(data);if(loadFailure===true||typeof loadFailure==='function'&&loadFailure(data))throw Error('道具資料無效');ctx.party=data;ctx.state=data.members?.[0]||{};},
+    fetch:async(url,{signal})=>{if(stallMetadata&&url.startsWith('data/build.json'))return new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Error('aborted'))));if(url.startsWith('data/balance/manifest.json'))return manifest?{ok:true,status:200,json:async()=>manifest}:{ok:false,status:404,json:async()=>({})};const body=url.startsWith('data/build.json')?{commit:'a'.repeat(40)}:published;return {ok:true,status:200,json:async()=>body,text:async()=>JSON.stringify(body)};},
+    EmberwildBalanceDocument:{inspect:()=>[]},EmberwildBalanceModules:modules,applyBalanceConfig(data){ctx.applied.push(data);},loadParty(data){ctx.loaded.push(data);if(loadFailure===true||typeof loadFailure==='function'&&loadFailure(data))throw Error('道具資料無效');ctx.party=data;ctx.state=data.members?.[0]||{};},
     importBalanceJSON:async()=>true,resetBalanceJSON:()=>true,exportableBalance:()=>ctx.__EMBERWILD_BALANCE_SOURCE,toast(message){ctx.toasts.push(message);},backToTitle(){ctx.returnedToTitle=true;},
     addEventListener:(type,fn)=>{if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(fn);},removeEventListener:(type,fn)=>listeners.get(type)?.delete(fn),dispatchEvent(){},Event:class{}
   });ctx.window=ctx;
@@ -178,4 +178,17 @@ test('a verified-copy write failure leaves the loaded save and both stored recor
   assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);
   assert.equal(h.values.get('emberwild-save-v1'),primary);
   assert.equal(h.values.has('emberwild-save-v1-verified'),false);
+});
+
+test('a manifest whose modules are missing from data/balance.json stops boot before any module download',async()=>{
+  const modules={checkManifest:()=>[],split:()=>({modules:{'world/monsters':undefined}})};
+  const h=harness({manifest:{modules:[{id:'world/monsters',present:true,source:'balanceSettings.monsters'}],integrated:{sha256:'0'.repeat(64)}},modules});await h.done;
+  assert.match(h.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,/缺少必要模組：world\/monsters/);assert.equal(h.links.length,0);assert.equal(h.ctx.applied.length,0);
+  const bad=harness({manifest:{modules:[]},modules:{checkManifest:()=>['manifest 缺少模組：world/maps'],split:()=>({modules:{}})}});await bad.done;
+  assert.match(bad.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,/模組清單無效/);assert.equal(bad.links.length,0);
+});
+
+test('a deployment without a manifest still loads the integrated document (pre-module builds)',async()=>{
+  const h=harness();await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);assert.equal(h.ctx.__EMBERWILD_BALANCE_MODULES.state,'legacy');
 });

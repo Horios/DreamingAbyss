@@ -1,0 +1,7240 @@
+{
+  "encounter": {
+    "bossChance": 0,
+    "eliteChance": 0.12,
+    "levelLeadInterval": 5
+  },
+  "normal": {
+    "hpBase": 18,
+    "hpPerLevel": 9,
+    "hpQuadratic": 0.12,
+    "attackBase": 4,
+    "attackPerLevel": 1.7,
+    "defensePerLevel": 0.6
+  },
+  "kindMultipliers": {
+    "bossHp": 9,
+    "eliteHp": 1.6,
+    "bossAttack": 2,
+    "eliteAttack": 1.2,
+    "eliteDefense": 1.1,
+    "bossDefense": 1.2
+  },
+  "finalBoss": {
+    "level": 40,
+    "hp": 5500,
+    "attack": 95,
+    "defense": 35
+  },
+  "awakened": {
+    "threshold": 30,
+    "hpBaseMultiplier": 1,
+    "hpPerLevel": 0.003,
+    "attackBaseMultiplier": 1,
+    "attackPerLevel": 0.002,
+    "defenseMultiplier": 1
+  },
+  "catalog": [
+    {
+      "id": "map0_mob0",
+      "name": "苔原史萊姆",
+      "mapIndex": 0,
+      "kind": "normal",
+      "material": "黏稠凝膠",
+      "element": "wind",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map0_mob1",
+      "name": "林間野狼",
+      "mapIndex": 0,
+      "kind": "normal",
+      "material": "完整狼牙",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map0_mob2",
+      "name": "迷路樹精",
+      "mapIndex": 0,
+      "kind": "normal",
+      "material": "活性樹芯",
+      "element": "wind",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map0_boss",
+      "name": "古木守望者",
+      "mapIndex": 0,
+      "kind": "boss",
+      "material": "古木年輪",
+      "element": "wind",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map1_mob0",
+      "name": "洞穴蝙蝠",
+      "mapIndex": 1,
+      "kind": "normal",
+      "material": "薄翼膜",
+      "element": "physical",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map1_mob1",
+      "name": "岩背蜥蜴",
+      "mapIndex": 1,
+      "kind": "normal",
+      "material": "堅硬石鱗",
+      "element": "physical",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map1_mob2",
+      "name": "礦坑魔偶",
+      "mapIndex": 1,
+      "kind": "normal",
+      "material": "魔偶齒輪",
+      "element": "physical",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map1_boss",
+      "name": "礦脈巨人",
+      "mapIndex": 1,
+      "kind": "boss",
+      "material": "礦脈之心",
+      "element": "physical",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map2_mob0",
+      "name": "劇毒蛙",
+      "mapIndex": 2,
+      "kind": "normal",
+      "material": "劇毒腺體",
+      "element": "shadow",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map2_mob1",
+      "name": "幽光飛蛾",
+      "mapIndex": 2,
+      "kind": "normal",
+      "material": "微光鱗粉",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map2_mob2",
+      "name": "沼地亡魂",
+      "mapIndex": 2,
+      "kind": "normal",
+      "material": "怨念碎片",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map2_boss",
+      "name": "泥沼女巫",
+      "mapIndex": 2,
+      "kind": "boss",
+      "material": "女巫符印",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map3_mob0",
+      "name": "霜牙雪狼",
+      "mapIndex": 3,
+      "kind": "normal",
+      "material": "霜牙",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map3_mob1",
+      "name": "冰晶妖精",
+      "mapIndex": 3,
+      "kind": "normal",
+      "material": "冰晶翅片",
+      "element": "ice",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map3_mob2",
+      "name": "雪原巨熊",
+      "mapIndex": 3,
+      "kind": "normal",
+      "material": "厚暖熊皮",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map3_boss",
+      "name": "凜冬巨獸",
+      "mapIndex": 3,
+      "kind": "boss",
+      "material": "永凍結晶",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map4_mob0",
+      "name": "熔岩蟲",
+      "mapIndex": 4,
+      "kind": "normal",
+      "material": "灼熱甲殼",
+      "element": "fire",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map4_mob1",
+      "name": "火羽渡鴉",
+      "mapIndex": 4,
+      "kind": "normal",
+      "material": "不熄火羽",
+      "element": "fire",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map4_mob2",
+      "name": "失控鎧甲",
+      "mapIndex": 4,
+      "kind": "normal",
+      "material": "焦黑鋼片",
+      "element": "fire",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map4_boss",
+      "name": "熔爐暴君",
+      "mapIndex": 4,
+      "kind": "boss",
+      "material": "熔核",
+      "element": "fire",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map5_mob0",
+      "name": "虛空獵犬",
+      "mapIndex": 5,
+      "kind": "normal",
+      "material": "虛空尖牙",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.4
+      }
+    },
+    {
+      "id": "map5_mob1",
+      "name": "星塵水母",
+      "mapIndex": 5,
+      "kind": "normal",
+      "material": "星塵觸鬚",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map5_mob2",
+      "name": "墜星魔像",
+      "mapIndex": 5,
+      "kind": "normal",
+      "material": "隕鐵核心",
+      "element": "shadow",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map5_boss",
+      "name": "星隕監視者",
+      "mapIndex": 5,
+      "kind": "boss",
+      "material": "星隕稜鏡",
+      "element": "shadow",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map6_boss",
+      "name": "噬日者・厄爾",
+      "mapIndex": 6,
+      "kind": "final",
+      "material": "日蝕王冠",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map7_mob0",
+      "name": "覺醒・苔原史萊姆",
+      "mapIndex": 7,
+      "kind": "normal",
+      "material": "覺醒黏稠凝膠",
+      "element": "wind",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map7_mob1",
+      "name": "覺醒・林間野狼",
+      "mapIndex": 7,
+      "kind": "normal",
+      "material": "覺醒完整狼牙",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map7_mob2",
+      "name": "覺醒・迷路樹精",
+      "mapIndex": 7,
+      "kind": "normal",
+      "material": "覺醒活性樹芯",
+      "element": "wind",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map7_boss",
+      "name": "覺醒・古木守望者",
+      "mapIndex": 7,
+      "kind": "boss",
+      "material": "覺醒古木年輪",
+      "element": "wind",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map8_mob0",
+      "name": "覺醒・洞穴蝙蝠",
+      "mapIndex": 8,
+      "kind": "normal",
+      "material": "覺醒薄翼膜",
+      "element": "physical",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map8_mob1",
+      "name": "覺醒・岩背蜥蜴",
+      "mapIndex": 8,
+      "kind": "normal",
+      "material": "覺醒堅硬石鱗",
+      "element": "physical",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map8_mob2",
+      "name": "覺醒・礦坑魔偶",
+      "mapIndex": 8,
+      "kind": "normal",
+      "material": "覺醒魔偶齒輪",
+      "element": "physical",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map8_boss",
+      "name": "覺醒・礦脈巨人",
+      "mapIndex": 8,
+      "kind": "boss",
+      "material": "覺醒礦脈之心",
+      "element": "physical",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map9_mob0",
+      "name": "覺醒・劇毒蛙",
+      "mapIndex": 9,
+      "kind": "normal",
+      "material": "覺醒劇毒腺體",
+      "element": "shadow",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map9_mob1",
+      "name": "覺醒・幽光飛蛾",
+      "mapIndex": 9,
+      "kind": "normal",
+      "material": "覺醒微光鱗粉",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map9_mob2",
+      "name": "覺醒・沼地亡魂",
+      "mapIndex": 9,
+      "kind": "normal",
+      "material": "覺醒怨念碎片",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map9_boss",
+      "name": "覺醒・泥沼女巫",
+      "mapIndex": 9,
+      "kind": "boss",
+      "material": "覺醒女巫符印",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map10_mob0",
+      "name": "覺醒・霜牙雪狼",
+      "mapIndex": 10,
+      "kind": "normal",
+      "material": "覺醒霜牙",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map10_mob1",
+      "name": "覺醒・冰晶妖精",
+      "mapIndex": 10,
+      "kind": "normal",
+      "material": "覺醒冰晶翅片",
+      "element": "ice",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map10_mob2",
+      "name": "覺醒・雪原巨熊",
+      "mapIndex": 10,
+      "kind": "normal",
+      "material": "覺醒厚暖熊皮",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map10_boss",
+      "name": "覺醒・凜冬巨獸",
+      "mapIndex": 10,
+      "kind": "boss",
+      "material": "覺醒永凍結晶",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map11_mob0",
+      "name": "覺醒・熔岩蟲",
+      "mapIndex": 11,
+      "kind": "normal",
+      "material": "覺醒灼熱甲殼",
+      "element": "fire",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map11_mob1",
+      "name": "覺醒・火羽渡鴉",
+      "mapIndex": 11,
+      "kind": "normal",
+      "material": "覺醒不熄火羽",
+      "element": "fire",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map11_mob2",
+      "name": "覺醒・失控鎧甲",
+      "mapIndex": 11,
+      "kind": "normal",
+      "material": "覺醒焦黑鋼片",
+      "element": "fire",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map11_boss",
+      "name": "覺醒・熔爐暴君",
+      "mapIndex": 11,
+      "kind": "boss",
+      "material": "覺醒熔核",
+      "element": "fire",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map12_mob0",
+      "name": "覺醒・虛空獵犬",
+      "mapIndex": 12,
+      "kind": "normal",
+      "material": "覺醒虛空尖牙",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.4
+      }
+    },
+    {
+      "id": "map12_mob1",
+      "name": "覺醒・星塵水母",
+      "mapIndex": 12,
+      "kind": "normal",
+      "material": "覺醒星塵觸鬚",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map12_mob2",
+      "name": "覺醒・墜星魔像",
+      "mapIndex": 12,
+      "kind": "normal",
+      "material": "覺醒隕鐵核心",
+      "element": "shadow",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map12_boss",
+      "name": "覺醒・星隕監視者",
+      "mapIndex": 12,
+      "kind": "boss",
+      "material": "覺醒星隕稜鏡",
+      "element": "shadow",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map13_mob0",
+      "name": "燼翼火蛾",
+      "mapIndex": 13,
+      "kind": "normal",
+      "material": "燼翼粉",
+      "element": "fire",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map13_mob1",
+      "name": "赤鬃山狼",
+      "mapIndex": 13,
+      "kind": "normal",
+      "material": "赤鬃毛皮",
+      "element": "fire",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map13_mob2",
+      "name": "焦根樹人",
+      "mapIndex": 13,
+      "kind": "normal",
+      "material": "焦根木髓",
+      "element": "fire",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map13_mob3",
+      "name": "炭殼魔偶",
+      "mapIndex": 13,
+      "kind": "normal",
+      "material": "炭殼碎片",
+      "element": "fire",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map13_boss",
+      "name": "赤楓炎靈",
+      "mapIndex": 13,
+      "kind": "boss",
+      "material": "炎靈心木",
+      "element": "fire",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map14_mob0",
+      "name": "潮影蝙蝠",
+      "mapIndex": 14,
+      "kind": "normal",
+      "material": "潮影翼膜",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map14_mob1",
+      "name": "寒潮蜥蜴",
+      "mapIndex": 14,
+      "kind": "normal",
+      "material": "寒潮腺體",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map14_mob2",
+      "name": "海霧幽魂",
+      "mapIndex": 14,
+      "kind": "normal",
+      "material": "海霧結珠",
+      "element": "ice",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map14_mob3",
+      "name": "鹽晶魔像",
+      "mapIndex": 14,
+      "kind": "normal",
+      "material": "鹽晶塊",
+      "element": "ice",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map14_boss",
+      "name": "潮汐巨像",
+      "mapIndex": 14,
+      "kind": "boss",
+      "material": "深潮齒輪",
+      "element": "ice",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map15_mob0",
+      "name": "墓園亡魂",
+      "mapIndex": 15,
+      "kind": "normal",
+      "material": "亡者殘響",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map15_mob1",
+      "name": "噬骨獵犬",
+      "mapIndex": 15,
+      "kind": "normal",
+      "material": "噬骨獠牙",
+      "element": "shadow",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map15_mob2",
+      "name": "墓火飛蛾",
+      "mapIndex": 15,
+      "kind": "normal",
+      "material": "墓火鱗片",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map15_mob3",
+      "name": "腐枝守衛",
+      "mapIndex": 15,
+      "kind": "normal",
+      "material": "腐枝黑核",
+      "element": "shadow",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map15_boss",
+      "name": "白骨巫后",
+      "mapIndex": 15,
+      "kind": "boss",
+      "material": "巫后骨印",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map16_mob0",
+      "name": "雷牙蒼狼",
+      "mapIndex": 16,
+      "kind": "normal",
+      "material": "雷牙",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map16_mob1",
+      "name": "風暴妖精",
+      "mapIndex": 16,
+      "kind": "normal",
+      "material": "風暴晶羽",
+      "element": "wind",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map16_mob2",
+      "name": "雷殼魔偶",
+      "mapIndex": 16,
+      "kind": "normal",
+      "material": "雷殼銅片",
+      "element": "wind",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map16_mob3",
+      "name": "高地巨熊",
+      "mapIndex": 16,
+      "kind": "normal",
+      "material": "高地熊膽",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map16_boss",
+      "name": "雷鳴獸王",
+      "mapIndex": 16,
+      "kind": "boss",
+      "material": "獸王雷角",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map17_mob0",
+      "name": "聖樹幼靈",
+      "mapIndex": 17,
+      "kind": "normal",
+      "material": "聖樹芽核",
+      "element": "light",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map17_mob1",
+      "name": "晶光妖精",
+      "mapIndex": 17,
+      "kind": "normal",
+      "material": "晶光翼",
+      "element": "light",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map17_mob2",
+      "name": "聖羽渡鴉",
+      "mapIndex": 17,
+      "kind": "normal",
+      "material": "聖羽",
+      "element": "light",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map17_mob3",
+      "name": "失序聖鎧",
+      "mapIndex": 17,
+      "kind": "normal",
+      "material": "聖鎧殘片",
+      "element": "light",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map17_boss",
+      "name": "聖所守護者",
+      "mapIndex": 17,
+      "kind": "boss",
+      "material": "聖所徽核",
+      "element": "light",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map18_mob0",
+      "name": "冥界獵犬",
+      "mapIndex": 18,
+      "kind": "normal",
+      "material": "冥犬黑牙",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.4
+      }
+    },
+    {
+      "id": "map18_mob1",
+      "name": "幽影水母",
+      "mapIndex": 18,
+      "kind": "normal",
+      "material": "幽影觸鬚",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map18_mob2",
+      "name": "黑曜魔像",
+      "mapIndex": 18,
+      "kind": "normal",
+      "material": "黑曜脊核",
+      "element": "shadow",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map18_mob3",
+      "name": "游蕩冤魂",
+      "mapIndex": 18,
+      "kind": "normal",
+      "material": "邊境魂塵",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map18_boss",
+      "name": "幽冥觀測者",
+      "mapIndex": 18,
+      "kind": "boss",
+      "material": "冥視之瞳",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map19_mob0",
+      "name": "上古・燼翼火蛾",
+      "mapIndex": 19,
+      "kind": "normal",
+      "material": "上古燼翼粉",
+      "element": "fire",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map19_mob1",
+      "name": "上古・赤鬃山狼",
+      "mapIndex": 19,
+      "kind": "normal",
+      "material": "上古赤鬃毛皮",
+      "element": "fire",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map19_mob2",
+      "name": "上古・焦根樹人",
+      "mapIndex": 19,
+      "kind": "normal",
+      "material": "上古焦根木髓",
+      "element": "fire",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map19_mob3",
+      "name": "上古・炭殼魔偶",
+      "mapIndex": 19,
+      "kind": "normal",
+      "material": "上古炭殼碎片",
+      "element": "fire",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map19_boss",
+      "name": "上古・赤楓炎靈",
+      "mapIndex": 19,
+      "kind": "boss",
+      "material": "上古炎靈心木",
+      "element": "fire",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map20_mob0",
+      "name": "上古・潮影蝙蝠",
+      "mapIndex": 20,
+      "kind": "normal",
+      "material": "上古潮影翼膜",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map20_mob1",
+      "name": "上古・寒潮蜥蜴",
+      "mapIndex": 20,
+      "kind": "normal",
+      "material": "上古寒潮腺體",
+      "element": "ice",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map20_mob2",
+      "name": "上古・海霧幽魂",
+      "mapIndex": 20,
+      "kind": "normal",
+      "material": "上古海霧結珠",
+      "element": "ice",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map20_mob3",
+      "name": "上古・鹽晶魔像",
+      "mapIndex": 20,
+      "kind": "normal",
+      "material": "上古鹽晶塊",
+      "element": "ice",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map20_boss",
+      "name": "上古・潮汐巨像",
+      "mapIndex": 20,
+      "kind": "boss",
+      "material": "上古深潮齒輪",
+      "element": "ice",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map21_mob0",
+      "name": "上古・墓園亡魂",
+      "mapIndex": 21,
+      "kind": "normal",
+      "material": "上古亡者殘響",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map21_mob1",
+      "name": "上古・噬骨獵犬",
+      "mapIndex": 21,
+      "kind": "normal",
+      "material": "上古噬骨獠牙",
+      "element": "shadow",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map21_mob2",
+      "name": "上古・墓火飛蛾",
+      "mapIndex": 21,
+      "kind": "normal",
+      "material": "上古墓火鱗片",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map21_mob3",
+      "name": "上古・腐枝守衛",
+      "mapIndex": 21,
+      "kind": "normal",
+      "material": "上古腐枝黑核",
+      "element": "shadow",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map21_boss",
+      "name": "上古・白骨巫后",
+      "mapIndex": 21,
+      "kind": "boss",
+      "material": "上古巫后骨印",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map22_mob0",
+      "name": "上古・雷牙蒼狼",
+      "mapIndex": 22,
+      "kind": "normal",
+      "material": "上古雷牙",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map22_mob1",
+      "name": "上古・風暴妖精",
+      "mapIndex": 22,
+      "kind": "normal",
+      "material": "上古風暴晶羽",
+      "element": "wind",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map22_mob2",
+      "name": "上古・雷殼魔偶",
+      "mapIndex": 22,
+      "kind": "normal",
+      "material": "上古雷殼銅片",
+      "element": "wind",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map22_mob3",
+      "name": "上古・高地巨熊",
+      "mapIndex": 22,
+      "kind": "normal",
+      "material": "上古高地熊膽",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map22_boss",
+      "name": "上古・雷鳴獸王",
+      "mapIndex": 22,
+      "kind": "boss",
+      "material": "上古獸王雷角",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map23_mob0",
+      "name": "上古・聖樹幼靈",
+      "mapIndex": 23,
+      "kind": "normal",
+      "material": "上古聖樹芽核",
+      "element": "light",
+      "race": "plant",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map23_mob1",
+      "name": "上古・晶光妖精",
+      "mapIndex": 23,
+      "kind": "normal",
+      "material": "上古晶光翼",
+      "element": "light",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map23_mob2",
+      "name": "上古・聖羽渡鴉",
+      "mapIndex": 23,
+      "kind": "normal",
+      "material": "上古聖羽",
+      "element": "light",
+      "race": "beast",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map23_mob3",
+      "name": "上古・失序聖鎧",
+      "mapIndex": 23,
+      "kind": "normal",
+      "material": "上古聖鎧殘片",
+      "element": "light",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map23_boss",
+      "name": "上古・聖所守護者",
+      "mapIndex": 23,
+      "kind": "boss",
+      "material": "上古聖所徽核",
+      "element": "light",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    },
+    {
+      "id": "map24_mob0",
+      "name": "上古・冥界獵犬",
+      "mapIndex": 24,
+      "kind": "normal",
+      "material": "上古冥犬黑牙",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.4
+      }
+    },
+    {
+      "id": "map24_mob1",
+      "name": "上古・幽影水母",
+      "mapIndex": 24,
+      "kind": "normal",
+      "material": "上古幽影觸鬚",
+      "element": "shadow",
+      "race": "spirit",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map24_mob2",
+      "name": "上古・黑曜魔像",
+      "mapIndex": 24,
+      "kind": "normal",
+      "material": "上古黑曜脊核",
+      "element": "shadow",
+      "race": "construct",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3.2
+      }
+    },
+    {
+      "id": "map24_mob3",
+      "name": "上古・游蕩冤魂",
+      "mapIndex": 24,
+      "kind": "normal",
+      "material": "上古邊境魂塵",
+      "element": "shadow",
+      "race": "undead",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 2.9
+      }
+    },
+    {
+      "id": "map24_boss",
+      "name": "上古・幽冥觀測者",
+      "mapIndex": 24,
+      "kind": "boss",
+      "material": "上古冥視之瞳",
+      "element": "shadow",
+      "race": "demon",
+      "maxDrops": 99,
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    }
+  ],
+  "bossMeter": {
+    "normalProgress": 1,
+    "eliteMultiplier": 1.5,
+    "progressPerCharge": 100,
+    "maxCharges": 100,
+    "maxStageEnemies": 20
+  }
+}

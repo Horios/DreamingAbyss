@@ -1,0 +1,565 @@
+[
+  [
+    [
+      {
+        "id": "job0-slot0-form0",
+        "name": "闊刃劍",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 5
+          },
+          {
+            "key": "critDamage",
+            "value": 10
+          }
+        ],
+        "weaponType": "sword"
+      },
+      {
+        "id": "job0-slot0-form1",
+        "name": "穿甲槍",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": -5
+          },
+          {
+            "key": "pierce",
+            "value": 12
+          }
+        ],
+        "weaponType": "sword"
+      },
+      {
+        "id": "job0-slot0-form2",
+        "name": "汲血斧",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 8
+          },
+          {
+            "key": "lifesteal",
+            "value": 3
+          }
+        ],
+        "weaponType": "axe"
+      }
+    ],
+    [
+      {
+        "id": "job0-slot1-form0",
+        "name": "重型板甲",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearHpPct",
+            "value": 15
+          },
+          {
+            "key": "gearDefPct",
+            "value": 25
+          }
+        ]
+      },
+      {
+        "id": "job0-slot1-form1",
+        "name": "決鬥鎧",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearHpPct",
+            "value": -10
+          },
+          {
+            "key": "gearDefPct",
+            "value": -10
+          },
+          {
+            "key": "evasion",
+            "value": 6
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job0-slot2-form0",
+        "name": "征戰旗",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 20
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job0-slot3-form0",
+        "name": "守誓印",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 2
+          },
+          {
+            "key": "gearHpPct",
+            "value": 30
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "job1-slot0-form0",
+        "name": "炎晶杖",
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 15
+          },
+          {
+            "key": "basicElement",
+            "value": "fire"
+          }
+        ],
+        "wearableJobs": [
+          1
+        ],
+        "weaponType": "staff"
+      },
+      {
+        "id": "job1-slot0-form1",
+        "name": "霜紋杖",
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 3
+          },
+          {
+            "key": "basicElement",
+            "value": "ice"
+          }
+        ],
+        "wearableJobs": [
+          1
+        ],
+        "weaponType": "staff"
+      },
+      {
+        "id": "job1-slot0-form2",
+        "name": "疾風法器",
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": -5
+          },
+          {
+            "key": "attackPct",
+            "value": 2
+          },
+          {
+            "key": "basicElement",
+            "value": "wind"
+          }
+        ],
+        "wearableJobs": [
+          1
+        ],
+        "weaponType": "grimoire"
+      }
+    ],
+    [
+      {
+        "id": "job1-slot1-form0",
+        "name": "秘法袍",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 4
+          }
+        ]
+      },
+      {
+        "id": "job1-slot1-form1",
+        "name": "月影袍",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearHpPct",
+            "value": -10
+          },
+          {
+            "key": "evasion",
+            "value": 6
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job1-slot2-form0",
+        "name": "元素魔典",
+        "wearableJobs": [
+          1
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 15
+          },
+          {
+            "key": "elementBonus",
+            "value": 8
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job1-slot3-form0",
+        "name": "回響符環",
+        "wearableJobs": [
+          1
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 2
+          },
+          {
+            "key": "gearHpPct",
+            "value": 10
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "job2-slot0-form0",
+        "name": "狙擊長弓",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 15
+          },
+          {
+            "key": "critDamage",
+            "value": 12
+          }
+        ],
+        "weaponType": "bow"
+      },
+      {
+        "id": "job2-slot0-form1",
+        "name": "穿雲弩",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "pierce",
+            "value": 12
+          }
+        ],
+        "weaponType": "crossbow"
+      },
+      {
+        "id": "job2-slot0-form2",
+        "name": "風羽短弓",
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": -5
+          },
+          {
+            "key": "evasion",
+            "value": 4
+          },
+          {
+            "key": "basicElement",
+            "value": "wind"
+          }
+        ],
+        "wearableJobs": [
+          2
+        ],
+        "weaponType": "bow"
+      }
+    ],
+    [
+      {
+        "id": "job2-slot1-form0",
+        "name": "獵手皮甲",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearDefPct",
+            "value": 10
+          }
+        ]
+      },
+      {
+        "id": "job2-slot1-form1",
+        "name": "輕羽衣",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearHpPct",
+            "value": -10
+          },
+          {
+            "key": "gearDefPct",
+            "value": -10
+          },
+          {
+            "key": "evasion",
+            "value": 8
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job2-slot2-form0",
+        "name": "破甲箭袋",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "pierce",
+            "value": 8
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job2-slot3-form0",
+        "name": "鷹眼指環",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          },
+          {
+            "key": "critDamage",
+            "value": 15
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "job3-slot0-form0",
+        "name": "晨光權杖",
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          },
+          {
+            "key": "basicElement",
+            "value": "light"
+          }
+        ],
+        "wearableJobs": [
+          3
+        ],
+        "weaponType": "holyStaff"
+      },
+      {
+        "id": "job3-slot0-form1",
+        "name": "淨化槌",
+        "wearableJobs": [
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "pierce",
+            "value": 10
+          }
+        ],
+        "weaponType": "holyStaff"
+      },
+      {
+        "id": "job3-slot0-form2",
+        "name": "祈禱法杖",
+        "wearableJobs": [
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 5
+          },
+          {
+            "key": "gearAtkPct",
+            "value": -5
+          }
+        ],
+        "weaponType": "holyStaff"
+      }
+    ],
+    [
+      {
+        "id": "job3-slot1-form0",
+        "name": "祝禱聖衣",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 3
+          },
+          {
+            "key": "gearHpPct",
+            "value": 15
+          }
+        ]
+      },
+      {
+        "id": "job3-slot1-form1",
+        "name": "守護祭袍",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearDefPct",
+            "value": 20
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job3-slot2-form0",
+        "name": "聖光徽記",
+        "wearableJobs": [
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          },
+          {
+            "key": "elementBonus",
+            "value": 8
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job3-slot3-form0",
+        "name": "生命念珠",
+        "wearableJobs": [
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 2
+          },
+          {
+            "key": "gearHpPct",
+            "value": 25
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [],
+    [],
+    [],
+    [
+      {
+        "id": "job4-slot3-form0",
+        "name": "啟程護符",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 5
+          }
+        ]
+      }
+    ]
+  ]
+]

@@ -1,0 +1,85 @@
+{
+  "bagCapacity": 720,
+  "requiredLevel": {
+    "base": 1,
+    "perTier": 5
+  },
+  "baseStats": {
+    "weaponAttackPerTier": 3,
+    "armorHpPerTier": 8,
+    "armorDefensePerTier": 2,
+    "accessoryAttackPerTier": 1,
+    "accessoryHpPerTier": 3,
+    "offhandAttackPerTier": 1,
+    "offhandHpPerTier": 3
+  },
+  "enhance": {
+    "maxLevel": 10,
+    "statPerLevel": 0.05,
+    "flatStatsPerLevel": {
+      "atk": 0.5,
+      "hp": 1,
+      "def": 0.2
+    },
+    "flatStatsPerEquipmentLevel": {
+      "atk": 0.02,
+      "hp": 0.08,
+      "def": 0.015
+    },
+    "orePerTierPerLevel": 2,
+    "dustStartLevel": 6,
+    "dustPerTierPerLevelAboveStart": 1,
+    "etherStartLevel": 10,
+    "etherCost": 1
+  },
+  "salvage": {
+    "oreBasePerTier": 3,
+    "orePerQualityPerTier": 2,
+    "orePerEnhancePerTier": 1,
+    "dustBase": 1,
+    "dustPerQuality": 1,
+    "extraRewards": []
+  },
+  "lootOwnerSameJobChance": 0.75,
+  "boss": {
+    "powerByDifficulty": [
+      1,
+      1.25,
+      1.55
+    ],
+    "skillEffectByDifficulty": [
+      30,
+      40,
+      55
+    ],
+    "affixRankByDifficulty": [
+      2,
+      2,
+      3
+    ],
+    "craftGoldPerTier": 250,
+    "craftMaterialCount": 5,
+    "baseLevelBonus": 7
+  },
+  "difficultyAffix": {
+    "hardChance": 0.65,
+    "hellChance": 0.9,
+    "hardFineThreshold": 0.7,
+    "hardRareThreshold": 0.95,
+    "hellFineThreshold": 0.35,
+    "hellRareThreshold": 0.85,
+    "skillChance": 0.4,
+    "baseAttackPerTier": 0.6,
+    "baseHpPerTier": 2.2,
+    "defenseBasePerTier": 0.5,
+    "defensePerRankPerTier": 0.2,
+    "critBase": 2,
+    "critPerRank": 2
+  },
+  "dropLevelGap": {
+    "enabled": true,
+    "freeLevels": 5,
+    "penaltyPerLevel": 0.4,
+    "minimumMultiplier": 0.05
+  }
+}

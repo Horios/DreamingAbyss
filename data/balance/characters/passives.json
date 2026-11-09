@@ -1,0 +1,384 @@
+[
+  {
+    "id": "partner10-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 10
+  },
+  {
+    "id": "partner11-passive1",
+    "name": "防禦強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "defensePct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 11
+  },
+  {
+    "id": "partner12-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 12
+  },
+  {
+    "id": "partner13-passive1",
+    "name": "治療強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "healingPct",
+        "value": 15
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 13
+  },
+  {
+    "id": "partner14-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 14
+  },
+  {
+    "id": "partner15-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 15
+  },
+  {
+    "id": "partner16-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 16
+  },
+  {
+    "id": "partner17-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 17
+  },
+  {
+    "id": "partner18-passive1",
+    "name": "防禦強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "defensePct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 18
+  },
+  {
+    "id": "partner19-passive1",
+    "name": "防禦強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "defensePct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 19
+  },
+  {
+    "id": "partner20-passive1",
+    "name": "防禦強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "defensePct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 20
+  },
+  {
+    "id": "partner21-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 21
+  },
+  {
+    "id": "partner22-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 22
+  },
+  {
+    "id": "partner23-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 23
+  },
+  {
+    "id": "partner24-passive1",
+    "name": "治療強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "healingPct",
+        "value": 15
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 24
+  },
+  {
+    "id": "partner25-passive1",
+    "name": "治療強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "healingPct",
+        "value": 15
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 25
+  },
+  {
+    "id": "partner26-passive1",
+    "name": "治療強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "healingPct",
+        "value": 15
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 26
+  },
+  {
+    "id": "partner27-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 27
+  },
+  {
+    "id": "partner28-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 28
+  },
+  {
+    "id": "partner29-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 8,
+    "partnerId": 29
+  },
+  {
+    "id": "warrior-cleave-chain",
+    "name": "順勢斬",
+    "description": "普攻或技能擊殺後，以 80% 攻擊追擊目前生命最低敵人；擊殺可連續追擊，最多 3 次。常駐生效、不占槽。",
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 3,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 0,
+    "element": "physical",
+    "target": "self",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "kind": "buff",
+    "effects": [],
+    "eventPassive": {
+      "event": "kill",
+      "power": 0.8,
+      "maxAttacks": 3
+    },
+    "weaponTypes": []
+  },
+  {
+    "id": "mage-mana-cycle",
+    "name": "魔力循環",
+    "description": "敵人死亡事件群組使自身所有技能冷卻縮減；縮減秒數與獨立內部冷卻依秒數設定換算。常駐生效、不占槽。",
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 3,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 0,
+    "element": "physical",
+    "target": "self",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "kind": "buff",
+    "effects": [],
+    "eventPassive": {
+      "event": "enemyDeath",
+      "reduction": 1,
+      "cooldown": 2
+    },
+    "weaponTypes": []
+  }
+]

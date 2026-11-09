@@ -66,6 +66,14 @@ jobs:
           path: preview-source
           fetch-depth: 1
 
+      - name: Verify modular balance sources before publishing
+        run: |
+          set -euo pipefail
+          # Production may still be a pre-module build; it has no manifest and deploys data/balance.json as before.
+          for source in production preview-source; do
+            if [ -f "$source/data/balance/manifest.json" ]; then node "$source/scripts/balance-modules.cjs" check --allow-legacy-integrated; else echo "$source: 沒有模組清單（舊版資料格式）"; fi
+          done
+
       - name: Assemble Pages artifact
         run: |
           set -euo pipefail

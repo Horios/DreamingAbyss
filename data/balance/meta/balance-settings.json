@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "progressionCurveVersion": 2,
+    "numericCompressionVersion": 1,
+    "teamBuildVersion": 1,
+    "masteryOverhaulVersion": 1,
+    "activeCooldownFloorVersion": 1,
+    "skillSystemVersion": 1,
+    "combatTimingVersion": 1,
+    "independentActionsVersion": 1,
+    "continuousExplorationVersion": 1
+  }
+}

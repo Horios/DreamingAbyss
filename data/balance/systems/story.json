@@ -1,0 +1,1115 @@
+{
+  "version": 1,
+  "quests": [
+    {
+      "id": "goddess_intro",
+      "name": "女神的指引",
+      "type": "main",
+      "npc": "女神",
+      "description": "認識介面、招募夥伴，完成第一次探索與強化。",
+      "enabled": true,
+      "hidden": false,
+      "unlock": {
+        "mode": "all",
+        "conditions": []
+      },
+      "prerequisites": [],
+      "entry": "welcome",
+      "stages": [
+        {
+          "id": "welcome",
+          "name": "初次相遇",
+          "speaker": "女神",
+          "description": "歡迎來到營地。接下來我會引導你完成一次冒險。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "歡迎來到營地。接下來我會引導你完成一次冒險。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "interface",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        },
+        {
+          "id": "interface",
+          "name": "認識介面",
+          "speaker": "女神",
+          "description": "劇情用來閱讀對話與確認任務；探索、夥伴、背包、強化與生活技能各自有獨立頁面。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "劇情用來閱讀對話與確認任務；探索、夥伴、背包、強化與生活技能各自有獨立頁面。"
+            },
+            {
+              "kind": "player",
+              "speaker": "玩家",
+              "text": "我可以先探索，再回來查看已完成的進度。"
+            },
+            {
+              "kind": "narrator",
+              "speaker": "旁白",
+              "text": "條件完成時，劇情入口與任務會顯示可繼續提示。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "recruit",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle",
+            "partnerRoster",
+            "equipment",
+            "forge"
+          ]
+        },
+        {
+          "id": "recruit",
+          "name": "招募同行夥伴",
+          "speaker": "女神",
+          "description": "前往夥伴名冊招募兩位夥伴。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "前往夥伴名冊招募兩位夥伴。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "companions",
+                "key": "",
+                "count": 2,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "team",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "partnerRoster"
+          ]
+        },
+        {
+          "id": "team",
+          "name": "組成探索隊伍",
+          "speaker": "女神",
+          "description": "在隊伍編成選擇主角職業，並讓三人上陣。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "在隊伍編成選擇主角職業，並讓三人上陣。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "party",
+                "key": "",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "depart",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "roster"
+          ]
+        },
+        {
+          "id": "depart",
+          "name": "前往苔光林地",
+          "speaker": "女神",
+          "description": "前往第一張地圖「苔光林地」。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "前往第一張地圖「苔光林地」。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "visit",
+                "key": "0",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "battle",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "battle",
+          "name": "完成實際戰鬥",
+          "speaker": "女神",
+          "description": "在苔光林地擊敗任意一隻怪物。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "在苔光林地擊敗任意一隻怪物。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "explore",
+                "key": "0",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "equipment",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "equipment",
+          "name": "查看探索收穫",
+          "speaker": "女神",
+          "description": "打開背包查看取得的裝備，再到裝備與信物頁確認穿戴。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "打開背包查看取得的裝備，再到裝備與信物頁確認穿戴。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 20,
+            "items": []
+          },
+          "effects": [],
+          "next": "forge",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment",
+            "worn"
+          ]
+        },
+        {
+          "id": "forge",
+          "name": "第一次強化",
+          "speaker": "女神",
+          "description": "在裝備強化頁將任意裝備強化一次。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "在裝備強化頁將任意裝備強化一次。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "enhance",
+                "key": "",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "finish",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "forge"
+          ]
+        },
+        {
+          "id": "finish",
+          "name": "啟程的準備已完成",
+          "speaker": "女神",
+          "description": "你已學會營地與探索的基本操作，也可以到支線與特殊 NPC 任務繼續冒險。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "你已學會營地與探索的基本操作，也可以到支線與特殊 NPC 任務繼續冒險。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        }
+      ],
+      "rewards": {
+        "gold": 200,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [],
+      "nextQuests": []
+    },
+    {
+      "id": "two_regions",
+      "name": "兩地巡查（測試）",
+      "type": "side",
+      "npc": "巡查員",
+      "description": "巡查兩張地圖，確認各地怪物與 BOSS 的狀況。",
+      "enabled": true,
+      "hidden": false,
+      "unlock": {
+        "mode": "all",
+        "conditions": []
+      },
+      "prerequisites": [],
+      "entry": "explore_0",
+      "stages": [
+        {
+          "id": "explore_0",
+          "name": "巡查苔光林地",
+          "speaker": "巡查員",
+          "description": "前往苔光林地並擊敗 2 隻怪物。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "巡查員",
+              "text": "前往苔光林地並擊敗 2 隻怪物。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "visit",
+                "key": "0",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "explore",
+                "key": "0",
+                "count": 2,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "hunt_0",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "hunt_0",
+          "name": "調查苔原史萊姆",
+          "speaker": "巡查員",
+          "description": "擊敗 苔原史萊姆 3 隻。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "巡查員",
+              "text": "擊敗 苔原史萊姆 3 隻。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "kill",
+                "key": "map0_mob0",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "boss_0",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "boss_0",
+          "name": "挑戰苔光林地 BOSS",
+          "speaker": "巡查員",
+          "description": "擊敗此地區的 BOSS 一次。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "巡查員",
+              "text": "擊敗此地區的 BOSS 一次。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "boss",
+                "key": "0",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "explore_1",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "explore_1",
+          "name": "巡查風蝕礦坑",
+          "speaker": "巡查員",
+          "description": "前往風蝕礦坑並擊敗 2 隻怪物。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "巡查員",
+              "text": "前往風蝕礦坑並擊敗 2 隻怪物。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "visit",
+                "key": "1",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "explore",
+                "key": "1",
+                "count": 2,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "hunt_1",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "hunt_1",
+          "name": "調查洞穴蝙蝠",
+          "speaker": "巡查員",
+          "description": "擊敗 洞穴蝙蝠 3 隻。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "巡查員",
+              "text": "擊敗 洞穴蝙蝠 3 隻。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "kill",
+                "key": "map1_mob0",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "boss_1",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "boss_1",
+          "name": "挑戰風蝕礦坑 BOSS",
+          "speaker": "巡查員",
+          "description": "擊敗此地區的 BOSS 一次。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "巡查員",
+              "text": "擊敗此地區的 BOSS 一次。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "boss",
+                "key": "1",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        }
+      ],
+      "rewards": {
+        "gold": 300,
+        "ore": 20,
+        "items": []
+      },
+      "effects": [],
+      "nextQuests": []
+    },
+    {
+      "id": "shop_rescue",
+      "name": "商店任務線",
+      "type": "npc",
+      "npc": "商人",
+      "description": "解救商人並協助準備補給，取得永久銅級 VIP 資格。",
+      "enabled": true,
+      "hidden": false,
+      "unlock": {
+        "mode": "all",
+        "conditions": []
+      },
+      "prerequisites": [],
+      "entry": "rescue",
+      "stages": [
+        {
+          "id": "rescue",
+          "name": "解救商人",
+          "speaker": "商人",
+          "description": "我在苔光林地被史萊姆包圍了，請幫我擊敗 3 隻苔原史萊姆。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "我在苔光林地被史萊姆包圍了，請幫我擊敗 3 隻苔原史萊姆。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "kill",
+                "key": "map0_mob0",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "supplies",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ],
+          "encounter": {
+            "enabled": true,
+            "name": "解救商人",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": [
+              {
+                "monsterId": "map0_mob0",
+                "count": 3
+              }
+            ]
+          }
+        },
+        {
+          "id": "supplies",
+          "name": "收集材料",
+          "speaker": "商人",
+          "description": "請準備 2 個黏稠凝膠讓我查看；此階段不消耗材料。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "請準備 2 個黏稠凝膠讓我查看；此階段不消耗材料。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "stock",
+                "key": "黏稠凝膠",
+                "count": 2,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "gather",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle",
+            "equipment"
+          ]
+        },
+        {
+          "id": "gather",
+          "name": "親手採集",
+          "speaker": "商人",
+          "description": "請用採集系統取得 3 株紅色草；以往採集的紀錄也計入。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "請用採集系統取得 3 株紅色草；以往採集的紀錄也計入。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "gatherItem",
+                "key": "紅色草",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "gather",
+                "key": "",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "delivery",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "gather"
+          ]
+        },
+        {
+          "id": "delivery",
+          "name": "準備補給",
+          "speaker": "商人",
+          "description": "請確認持有紅色草，並完成一次煉製簡易治療藥水。你可以在商店買到清水與藥水瓶。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "請確認持有紅色草，並完成一次煉製簡易治療藥水。你可以在商店買到清水與藥水瓶。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "stock",
+                "key": "紅色草",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "recipe",
+                "key": "alchemy",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 20,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "vip",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "alchemy",
+            "shop"
+          ]
+        },
+        {
+          "id": "vip",
+          "name": "商人的謝禮",
+          "speaker": "商人",
+          "description": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折，並解鎖煉金自動購買基礎材料。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折，並解鎖煉金自動購買基礎材料。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [
+            {
+              "id": "thanks",
+              "text": "收下 VIP 卡",
+              "conditions": {
+                "mode": "all",
+                "conditions": []
+              },
+              "effects": [],
+              "next": "",
+              "nextQuests": []
+            }
+          ],
+          "guides": []
+        }
+      ],
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [
+        {
+          "type": "vip",
+          "key": "shop_vip_bronze",
+          "value": 1
+        }
+      ],
+      "nextQuests": []
+    },
+    {
+      "id": "skill_equipment_intro",
+      "name": "裝備技能與寶石入門",
+      "type": "main",
+      "npc": "女神",
+      "description": "學會啟用裝備技能、強化技能與角色能力，取得第一招職業輔助技能。",
+      "enabled": true,
+      "hidden": false,
+      "unlock": {
+        "mode": "all",
+        "conditions": []
+      },
+      "prerequisites": [
+        "goddess_intro"
+      ],
+      "entry": "equipment_gift",
+      "effects": [],
+      "nextQuests": [],
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": [
+          {
+            "type": "skill",
+            "key": "job0-support0",
+            "quantity": 1,
+            "job": 0
+          },
+          {
+            "type": "skill",
+            "key": "job1-support0",
+            "quantity": 1,
+            "job": 1
+          },
+          {
+            "type": "skill",
+            "key": "job2-support0",
+            "quantity": 1,
+            "job": 2
+          },
+          {
+            "type": "skill",
+            "key": "job3-support0",
+            "quantity": 1,
+            "job": 3
+          }
+        ]
+      },
+      "completionGuides": [
+        "skills"
+      ],
+      "recovery": {
+        "limit": 2,
+        "gearKey": "initiation_charm",
+        "afterStage": "equipment_gift",
+        "gemKey": "0",
+        "gemQuantity": 2
+      },
+      "stages": [
+        {
+          "id": "equipment_gift",
+          "name": "技能裝備入門：領取裝備",
+          "speaker": "女神",
+          "description": "領取所有初始職業可穿戴的啟程護符，固定兩孔，附帶觸發技能「追擊」。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "領取所有初始職業可穿戴的啟程護符，固定兩孔，附帶觸發技能「追擊」。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": [
+              {
+                "type": "gear",
+                "key": "initiation_charm",
+                "quantity": 1
+              }
+            ]
+          },
+          "effects": [],
+          "next": "equip_skill",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment"
+          ]
+        },
+        {
+          "id": "equip_skill",
+          "name": "技能裝備入門",
+          "speaker": "女神",
+          "description": "背包選取啟程護符並穿戴；前往技能頁，在裝備技能區啟用護符，再點觸發槽選擇「追擊」。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "背包選取啟程護符並穿戴；前往技能頁，在裝備技能區啟用護符，再點觸發槽選擇「追擊」。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "gearWorn",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "gearSkillActive",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "skillSlotted",
+                "key": "tutorial_echo",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": [
+              {
+                "type": "gem",
+                "key": "0",
+                "quantity": 1
+              }
+            ]
+          },
+          "effects": [],
+          "next": "gem_skill",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment",
+            "skills"
+          ]
+        },
+        {
+          "id": "gem_skill",
+          "name": "寶石鑲嵌：技能強化",
+          "speaker": "女神",
+          "description": "背包點選啟程護符，將赤焰石放入第一孔，保留技能模式。護符需保持穿戴與啟用；下方顯示實際技能增幅。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "背包點選啟程護符，將赤焰石放入第一孔，保留技能模式。護符需保持穿戴與啟用；下方顯示實際技能增幅。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "gearWorn",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "gearSkillActive",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "skillSlotted",
+                "key": "tutorial_echo",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "gearSkillGem",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": [
+              {
+                "type": "gem",
+                "key": "0",
+                "quantity": 1
+              }
+            ]
+          },
+          "effects": [],
+          "next": "gem_base",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment",
+            "skills"
+          ]
+        },
+        {
+          "id": "gem_base",
+          "name": "寶石鑲嵌：能力強化",
+          "speaker": "女神",
+          "description": "將第二顆赤焰石放入同一護符第二孔。第二、第三孔固定提供基礎能力，赤焰石增加攻擊力。第一孔也可手動切換基礎模式，但本任務不要求切換、取消啟用或拆除第一顆寶石。完成後前往技能頁配置新取得的職業輔助技能。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "將第二顆赤焰石放入同一護符第二孔。第二、第三孔固定提供基礎能力，赤焰石增加攻擊力。第一孔也可手動切換基礎模式，但本任務不要求切換、取消啟用或拆除第一顆寶石。完成後前往技能頁配置新取得的職業輔助技能。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "gearBaseGem",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material",
+                "slot": 1
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment",
+            "skills"
+          ]
+        }
+      ]
+    }
+  ],
+  "gearRewards": [
+    {
+      "id": "initiation_charm",
+      "name": "啟程護符",
+      "formId": "job4-slot3-form0",
+      "skillId": "tutorial_echo",
+      "socketCount": 2,
+      "level": 1,
+      "powerTier": 1,
+      "rarity": 0
+    }
+  ]
+}

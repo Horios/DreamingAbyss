@@ -25,6 +25,7 @@ test('all modules download ahead of the first execution; execution order and pub
     assert.deepEqual(await r.page.evaluate(()=>globalThis.__bootOrder),modules);
     assert.deepEqual(await r.page.evaluate(()=>globalThis.__EMBERWILD_PUBLISHED_BALANCE),published,'canonical downloaded balance JSON remains unchanged');
     assert.equal(await r.page.evaluate(()=>exportableBalance().schema),published.schema);
+    assert.equal(await r.page.evaluate(()=>globalThis.__EMBERWILD_BALANCE_MODULES?.state),'verified','modules listed by data/balance/manifest.json match the integrated file hash');
     assert.equal(await r.page.getByRole('progressbar',{name:'遊戲載入進度'}).count(),0);
     await r.page.evaluate(()=>{selectSaveSlot(1);start(1);closeModal();save();});
     await r.page.reload();

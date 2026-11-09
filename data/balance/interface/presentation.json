@@ -1,0 +1,85 @@
+{
+  "uiText": {
+    "browserTitle": "夢淵 · Dreaming Abyss",
+    "gameTitle": "夢淵",
+    "gameSubtitle": "DREAMING ABYSS",
+    "chapterTitle": "遠征者手札",
+    "chapterSubtitle": "純文字遠征手札",
+    "homeEyebrow": "DREAMING ABYSS · 選擇你的遠征者",
+    "homeTitle": "向荒野出發。",
+    "homeDescription": "一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。",
+    "homeFooter": "自動存檔 · 無離線戰鬥"
+  },
+  "textStyles": [],
+  "skillIcons": [
+    {
+      "id": "icon_1",
+      "name": "leaf",
+      "layers": [
+        {
+          "kind": "icon",
+          "icon": "lucide:leaf",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
+        }
+      ],
+      "appearance": {
+        "color": "",
+        "size": 34,
+        "strokeWidth": 2,
+        "rotation": 0,
+        "opacity": 1,
+        "glowColor": "#ffd86f",
+        "glowStrength": 0,
+        "effect": "",
+        "effectDuration": 2,
+        "effectTiming": "ease-in-out"
+      }
+    },
+    {
+      "id": "icon_2",
+      "name": "藍色葉片",
+      "layers": [
+        {
+          "kind": "icon",
+          "icon": "lucide:leaf",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0
+        }
+      ],
+      "appearance": {
+        "color": "#382cdd",
+        "size": 34,
+        "strokeWidth": 2,
+        "rotation": 0,
+        "opacity": 1,
+        "glowColor": "#ffd86f",
+        "glowStrength": 0,
+        "effect": "",
+        "effectDuration": 2,
+        "effectTiming": "ease-in-out"
+      }
+    }
+  ],
+  "iconColorTemplates": [
+    {
+      "id": "color_1",
+      "name": "鮮紅",
+      "color": "#fa2929"
+    },
+    {
+      "id": "color_3",
+      "name": "鮮藍",
+      "color": "#382cdd"
+    },
+    {
+      "id": "color_2",
+      "name": "灰暗",
+      "color": "#696c6d"
+    }
+  ]
+}

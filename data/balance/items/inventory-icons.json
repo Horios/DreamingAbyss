@@ -1,0 +1,2072 @@
+[
+  {
+    "iconType": "auto",
+    "id": "material:紅色草",
+    "kind": "material",
+    "key": "紅色草",
+    "colorTemplateId": "color_1",
+    "description": "採集後可與清水、藥水瓶直接煉製簡易治療藥水。"
+  },
+  {
+    "id": "material:藍色草",
+    "kind": "material",
+    "key": "藍色草",
+    "iconType": "custom:icon_2",
+    "colorTemplateId": "color_3",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "iconType": "auto",
+    "id": "material:小蟲",
+    "kind": "material",
+    "key": "小蟲",
+    "colorTemplateId": "color_2",
+    "description": "尚無用途。"
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:0:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:1:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:0:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:1:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:0:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:1:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:0:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:1:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:3:0",
+    "iconType": "auto",
+    "description": "新手教學取得的通用飾品，四個職業皆可穿戴。"
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:1:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:1:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:1:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:2:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:2:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:2:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:3:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:3:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:3:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:4:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:4:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:4:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:4:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:5:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:5:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:5:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:5:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:7:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:7:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:7:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:7:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:8:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:8:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:8:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:8:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:9:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:9:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:9:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:9:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:10:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:10:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:10:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:10:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:11:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:11:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:11:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:11:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:12:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:12:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:12:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:12:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:13:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:13:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:13:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:13:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:14:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:14:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:14:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:14:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:15:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:15:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:15:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:15:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:16:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:16:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:16:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:16:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:17:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:17:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:17:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:17:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:18:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:18:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:18:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:18:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:19:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:19:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:19:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:19:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:20:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:20:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:20:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:20:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:21:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:21:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:21:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:21:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:22:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:22:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:22:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:22:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:23:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:23:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:23:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:23:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:24:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:24:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:24:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:24:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "item",
+    "key": "imbue_fire",
+    "iconType": "auto",
+    "description": "讓武器暫時附著火之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_fire",
+    "iconType": "auto",
+    "description": "以火之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_fire",
+    "iconType": "auto",
+    "description": "強化對火之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_ice",
+    "iconType": "auto",
+    "description": "讓武器暫時附著冰之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_ice",
+    "iconType": "auto",
+    "description": "以冰之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_ice",
+    "iconType": "auto",
+    "description": "強化對冰之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_wind",
+    "iconType": "auto",
+    "description": "讓武器暫時附著風之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_wind",
+    "iconType": "auto",
+    "description": "以風之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_wind",
+    "iconType": "auto",
+    "description": "強化對風之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_light",
+    "iconType": "auto",
+    "description": "讓武器暫時附著光之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_light",
+    "iconType": "auto",
+    "description": "以光之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_light",
+    "iconType": "auto",
+    "description": "強化對光之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_shadow",
+    "iconType": "auto",
+    "description": "讓武器暫時附著暗之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_shadow",
+    "iconType": "auto",
+    "description": "以暗之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_shadow",
+    "iconType": "auto",
+    "description": "強化對暗之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "exp_100_30m",
+    "iconType": "auto",
+    "description": "暫時增加出戰角色取得的經驗值。"
+  },
+  {
+    "kind": "item",
+    "key": "drop_50_30m",
+    "iconType": "auto",
+    "description": "暫時提高物品掉落機率。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_small",
+    "iconType": "auto",
+    "description": "恢復少量固定生命值，供戰鬥中緊急補血使用。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_standard",
+    "iconType": "auto",
+    "description": "恢復固定生命值，可作為戰鬥中的備用補給。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_greater",
+    "iconType": "auto",
+    "description": "恢復較多固定生命值，適合生命偏低時救急。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_supreme",
+    "iconType": "auto",
+    "description": "提供大量固定生命值恢復，供危急戰況使用。"
+  },
+  {
+    "kind": "item",
+    "key": "power_tier_reroll",
+    "iconType": "auto",
+    "description": "重新抽選一件裝備的 T1～T10 強度階級；抽選分布依該裝備原始掉落難度決定。"
+  },
+  {
+    "kind": "item",
+    "key": "level_scroll",
+    "iconType": "auto",
+    "description": "提升全隊共用等級 1 級，後備與名冊夥伴同步成長。"
+  },
+  {
+    "kind": "material",
+    "key": "鍛鐵",
+    "iconType": "auto",
+    "description": "裝備強化材料。"
+  },
+  {
+    "kind": "material",
+    "key": "粉塵",
+    "iconType": "auto",
+    "description": "裝備強化、洗鍊與寶石合成材料。"
+  },
+  {
+    "kind": "material",
+    "key": "以太鍛鐵",
+    "iconType": "auto",
+    "description": "高階裝備強化材料。"
+  },
+  {
+    "kind": "material",
+    "key": "光輝碎塊",
+    "iconType": "auto",
+    "description": "洗鍊時用於保留指定詞條。"
+  },
+  {
+    "kind": "material",
+    "key": "清水",
+    "iconType": "auto",
+    "description": "製作簡易治療藥水的煉金材料，每份配方消耗 1 份。"
+  },
+  {
+    "kind": "material",
+    "key": "藥水瓶",
+    "iconType": "auto",
+    "description": "製作簡易治療藥水的空瓶，每份配方消耗 1 個。"
+  },
+  {
+    "kind": "material",
+    "key": "黏稠凝膠",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "完整狼牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "活性樹芯",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "薄翼膜",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "堅硬石鱗",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "魔偶齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "礦脈之心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "劇毒腺體",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "微光鱗粉",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "怨念碎片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "女巫符印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "霜牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "冰晶翅片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "厚暖熊皮",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "永凍結晶",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "灼熱甲殼",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "不熄火羽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "焦黑鋼片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "熔核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "虛空尖牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "星塵觸鬚",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "隕鐵核心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "星隕稜鏡",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "日蝕王冠",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒黏稠凝膠",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒完整狼牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒活性樹芯",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒薄翼膜",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒堅硬石鱗",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒魔偶齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒礦脈之心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒劇毒腺體",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒微光鱗粉",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒怨念碎片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒女巫符印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒霜牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒冰晶翅片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒厚暖熊皮",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒永凍結晶",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒灼熱甲殼",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒不熄火羽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒焦黑鋼片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒熔核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒虛空尖牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒星塵觸鬚",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒隕鐵核心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "覺醒星隕稜鏡",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "燼翼粉",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "赤鬃毛皮",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "焦根木髓",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "炭殼碎片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "炎靈心木",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "潮影翼膜",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "寒潮腺體",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "海霧結珠",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "鹽晶塊",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "深潮齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "亡者殘響",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "噬骨獠牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "墓火鱗片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "腐枝黑核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "巫后骨印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "雷牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "風暴晶羽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "雷殼銅片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "高地熊膽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "獸王雷角",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "聖樹芽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "晶光翼",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "聖羽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "聖鎧殘片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "聖所徽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "冥犬黑牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "幽影觸鬚",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "黑曜脊核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "邊境魂塵",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "冥視之瞳",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古燼翼粉",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古赤鬃毛皮",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古焦根木髓",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古炭殼碎片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古炎靈心木",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古潮影翼膜",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古寒潮腺體",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古海霧結珠",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古鹽晶塊",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古深潮齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古亡者殘響",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古噬骨獠牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古墓火鱗片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古腐枝黑核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古巫后骨印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古雷牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古風暴晶羽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古雷殼銅片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古高地熊膽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古獸王雷角",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古聖樹芽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古晶光翼",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古聖羽",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古聖鎧殘片",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古聖所徽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古冥犬黑牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古幽影觸鬚",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古黑曜脊核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古邊境魂塵",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "上古冥視之瞳",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "gem",
+    "key": "0",
+    "iconType": "auto",
+    "description": "技能效果 +2%（加算型增幅）",
+    "color": "#EF5D5D",
+    "displayName": "赤焰石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "1",
+    "iconType": "auto",
+    "description": "主動技能成功施放後，5% 機率減少 1 回合冷卻（最低 1 回合）",
+    "color": "#49B976",
+    "displayName": "疾風石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "2",
+    "iconType": "auto",
+    "description": "普攻觸發技能觸發率 +1 個百分點",
+    "color": "#AE83EC",
+    "displayName": "靈巧石・1階"
+  },
+  {
+    "kind": "token",
+    "key": "berserk",
+    "iconType": "auto",
+    "description": "狂戰信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "guardian",
+    "iconType": "auto",
+    "description": "守護信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "pursuit",
+    "iconType": "auto",
+    "description": "追擊信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "arcane",
+    "iconType": "auto",
+    "description": "魔導信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "echo",
+    "iconType": "auto",
+    "description": "迴響信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "hunt",
+    "iconType": "auto",
+    "description": "狩獵信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "prayer",
+    "iconType": "auto",
+    "description": "祈禱信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "revival",
+    "iconType": "auto",
+    "description": "復甦信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "plunder",
+    "iconType": "auto",
+    "description": "掠奪信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "endurance",
+    "iconType": "auto",
+    "description": "持久信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】礦脈之心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】礦脈之心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】女巫符印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】女巫符印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】永凍結晶",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】永凍結晶",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】熔核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】熔核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】星隕稜鏡",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】星隕稜鏡",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】覺醒古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】覺醒古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】覺醒礦脈之心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】覺醒礦脈之心",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】覺醒女巫符印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】覺醒女巫符印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】覺醒永凍結晶",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】覺醒永凍結晶",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】覺醒熔核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】覺醒熔核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】覺醒星隕稜鏡",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】覺醒星隕稜鏡",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】炎靈心木",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】炎靈心木",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】深潮齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】深潮齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】巫后骨印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】巫后骨印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】獸王雷角",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】獸王雷角",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】聖所徽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】聖所徽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】冥視之瞳",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】冥視之瞳",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】上古炎靈心木",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】上古炎靈心木",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】上古深潮齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】上古深潮齒輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】上古巫后骨印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】上古巫后骨印",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】上古獸王雷角",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】上古獸王雷角",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】上古聖所徽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】上古聖所徽核",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】上古冥視之瞳",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】上古冥視之瞳",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "gem",
+    "key": "3",
+    "iconType": "auto",
+    "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 3% 的生命",
+    "color": "#E8EDF7",
+    "displayName": "生息石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "4",
+    "iconType": "auto",
+    "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 1% 的護盾，能與其他護盾累加",
+    "color": "#64AAF0",
+    "displayName": "守護石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "5",
+    "iconType": "auto",
+    "description": "技能效果 +4%（加算型增幅）",
+    "color": "#EF5D5D",
+    "displayName": "赤焰石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "6",
+    "iconType": "auto",
+    "description": "主動技能成功施放後，10% 機率減少 1 回合冷卻（最低 1 回合）",
+    "color": "#49B976",
+    "displayName": "疾風石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "7",
+    "iconType": "auto",
+    "description": "普攻觸發技能觸發率 +2 個百分點",
+    "color": "#AE83EC",
+    "displayName": "靈巧石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "8",
+    "iconType": "auto",
+    "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 6% 的生命",
+    "color": "#E8EDF7",
+    "displayName": "生息石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "9",
+    "iconType": "auto",
+    "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 2% 的護盾，能與其他護盾累加",
+    "color": "#64AAF0",
+    "displayName": "守護石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "10",
+    "iconType": "auto",
+    "description": "技能效果 +6%（加算型增幅）",
+    "color": "#EF5D5D",
+    "displayName": "赤焰石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "11",
+    "iconType": "auto",
+    "description": "主動技能成功施放後，15% 機率減少 1 回合冷卻（最低 1 回合）",
+    "color": "#49B976",
+    "displayName": "疾風石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "12",
+    "iconType": "auto",
+    "description": "普攻觸發技能觸發率 +3 個百分點",
+    "color": "#AE83EC",
+    "displayName": "靈巧石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "13",
+    "iconType": "auto",
+    "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 9% 的生命",
+    "color": "#E8EDF7",
+    "displayName": "生息石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "14",
+    "iconType": "auto",
+    "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 3% 的護盾，能與其他護盾累加",
+    "color": "#64AAF0",
+    "displayName": "守護石・3階"
+  }
+]

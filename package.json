@@ -25,7 +25,14 @@
     "test:quests": "node --test tests/daily-commissions.test.cjs tests/quest-design.test.cjs tests/quest-design.browser.test.cjs",
     "test:acquisition": "node --test tests/equipment-acquisition.test.cjs tests/speed-boss-progression.test.cjs tests/daily-commissions.test.cjs",
     "test:inventory": "node --test tests/gear-inventory.test.cjs tests/expedition-stop-dispose.test.cjs",
-    "test:acquisition-simulation": "node tests/equipment-acquisition-simulation.cjs"
+    "test:acquisition-simulation": "node tests/equipment-acquisition-simulation.cjs",
+    "balance:check": "node scripts/balance-modules.cjs check",
+    "balance:build": "node scripts/balance-modules.cjs build",
+    "balance:resync": "node scripts/balance-modules.cjs resync",
+    "balance:affected": "node scripts/balance-modules.cjs affected --base HEAD",
+    "balance:validate": "node scripts/balance-modules.cjs validate --base HEAD",
+    "balance:bench": "node scripts/balance-modules.cjs bench",
+    "test:balance-modules": "node --test tests/balance-modules.test.cjs tests/balance-document.test.cjs tests/published-loader.test.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

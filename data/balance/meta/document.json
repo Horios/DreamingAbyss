@@ -1,0 +1,52 @@
+{
+  "schema": "emberwild-balance-v1",
+  "timeUnits": {
+    "consumableClock": "wall",
+    "supportDuration": "battleSeconds",
+    "itemDuration": "battleSeconds",
+    "elementPotionDuration": "realMinutes",
+    "timedBoostDuration": "realMinutes",
+    "combat": "battleSeconds",
+    "skillCooldown": "battleSeconds",
+    "statusDuration": "battleSeconds"
+  },
+  "masteryTypes": [
+    {
+      "job": 0,
+      "types": [
+        "sword",
+        "axe",
+        "hammer"
+      ]
+    },
+    {
+      "job": 1,
+      "types": [
+        "fire",
+        "ice",
+        "wind",
+        "shadow"
+      ]
+    },
+    {
+      "job": 2,
+      "types": [
+        "bow",
+        "crossbow"
+      ]
+    },
+    {
+      "job": 3,
+      "types": [
+        "light",
+        "shadow"
+      ]
+    }
+  ],
+  "companionSkillVersion": 1,
+  "companionNameVersion": 1,
+  "teamSettings": {
+    "maxPlans": 6
+  },
+  "schemaVersion": 1
+}

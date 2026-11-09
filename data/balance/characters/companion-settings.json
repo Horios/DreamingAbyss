@@ -1,0 +1,621 @@
+{
+  "companionSettings": {
+    "activeLimit": 6,
+    "ratings": {
+      "weights": {
+        "hp": 0.3333333333333333,
+        "atk": 1,
+        "def": 1,
+        "crit": 100,
+        "critDamage": 10,
+        "speed": 0.1,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0
+      },
+      "maxBaseGapPercent": 18,
+      "maxGrowthGapPercent": 13,
+      "ranges": {
+        "D": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        },
+        "C": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        },
+        "B": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        },
+        "A": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        },
+        "S": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        },
+        "SS": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        },
+        "SSS": {
+          "base": {
+            "min": 67.84,
+            "max": 79.99
+          },
+          "growth": {
+            "min": 7.37,
+            "max": 8.31
+          }
+        }
+      }
+    }
+  },
+  "companionTokens": {
+    "schemaVersion": 1,
+    "qualityMultipliers": [
+      1,
+      1.12,
+      1.25,
+      1.4
+    ],
+    "drop": {
+      "enabled": true,
+      "chanceByDifficulty": [
+        0.008,
+        0.012,
+        0.016
+      ],
+      "qualityWeights": [
+        61,
+        26,
+        11,
+        2
+      ],
+      "minLevel": 1,
+      "maxLevel": 60,
+      "maps": [],
+      "monsters": [],
+      "kinds": [
+        "normal",
+        "elite",
+        "boss",
+        "final"
+      ]
+    },
+    "catalog": [
+      {
+        "id": "berserk",
+        "name": "狂戰信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 2
+          },
+          {
+            "key": "critDamage",
+            "value": 5
+          },
+          {
+            "key": "flatHp",
+            "value": 6
+          }
+        ],
+        "ability": {
+          "event": "kill",
+          "action": "attack",
+          "value": 0.12,
+          "chance": 1,
+          "duration": 2,
+          "cooldown": 1,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 3,
+            "durationSeconds": 12,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "guardian",
+        "name": "守護信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatHp",
+            "value": 10
+          },
+          {
+            "key": "flatDefense",
+            "value": 2
+          },
+          {
+            "key": "elementResistPct",
+            "value": 3,
+            "element": "physical"
+          }
+        ],
+        "ability": {
+          "event": "receivedHit",
+          "action": "guard",
+          "value": 0.1,
+          "chance": 1,
+          "duration": 2,
+          "cooldown": 2,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 6,
+            "durationSeconds": 12,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "pursuit",
+        "name": "追擊信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 2
+          },
+          {
+            "key": "speed",
+            "value": 2
+          },
+          {
+            "key": "crit",
+            "value": 2
+          }
+        ],
+        "ability": {
+          "event": "basicHit",
+          "action": "extraDamage",
+          "value": 0.35,
+          "chance": 0.18,
+          "duration": 0,
+          "cooldown": 1,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 3,
+            "durationSeconds": 0,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "arcane",
+        "name": "魔導信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 3
+          },
+          {
+            "key": "pierce",
+            "value": 1
+          },
+          {
+            "key": "critDamage",
+            "value": 3
+          }
+        ],
+        "ability": {
+          "event": "activeSkill",
+          "action": "damageBonus",
+          "value": 0.08,
+          "chance": 1,
+          "duration": 0,
+          "cooldown": 0,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 0,
+            "durationSeconds": 0,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "echo",
+        "name": "迴響信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 2
+          },
+          {
+            "key": "speed",
+            "value": 3
+          },
+          {
+            "key": "flatHp",
+            "value": 4
+          }
+        ],
+        "ability": {
+          "event": "skillCast",
+          "action": "power",
+          "value": 0.08,
+          "chance": 1,
+          "duration": 2,
+          "cooldown": 2,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 6,
+            "durationSeconds": 12,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "hunt",
+        "name": "狩獵信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 2
+          },
+          {
+            "key": "crit",
+            "value": 2
+          },
+          {
+            "key": "critDamage",
+            "value": 5
+          }
+        ],
+        "ability": {
+          "event": "sameTarget",
+          "action": "damageBonus",
+          "value": 0.1,
+          "chance": 1,
+          "duration": 0,
+          "cooldown": 0,
+          "maxTriggers": 0,
+          "threshold": 3,
+          "timing": {
+            "cooldownSeconds": 0,
+            "durationSeconds": 0,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 18
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "prayer",
+        "name": "祈禱信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 2
+          },
+          {
+            "key": "flatHp",
+            "value": 8
+          },
+          {
+            "key": "flatDefense",
+            "value": 1
+          }
+        ],
+        "ability": {
+          "event": "activeSkill",
+          "action": "healingBonus",
+          "value": 0.12,
+          "chance": 1,
+          "duration": 0,
+          "cooldown": 0,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 0,
+            "durationSeconds": 0,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "revival",
+        "name": "復甦信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatHp",
+            "value": 12
+          },
+          {
+            "key": "flatDefense",
+            "value": 2
+          },
+          {
+            "key": "evasion",
+            "value": 1
+          }
+        ],
+        "ability": {
+          "event": "lowHealth",
+          "action": "shield",
+          "value": 0.18,
+          "chance": 1,
+          "duration": 0,
+          "cooldown": 1,
+          "maxTriggers": 1,
+          "threshold": 0.3,
+          "timing": {
+            "cooldownSeconds": 3,
+            "durationSeconds": 0,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 1.8
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "plunder",
+        "name": "掠奪信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatAttack",
+            "value": 2
+          },
+          {
+            "key": "flatHp",
+            "value": 6
+          },
+          {
+            "key": "speed",
+            "value": 1
+          }
+        ],
+        "ability": {
+          "event": "damage",
+          "action": "heal",
+          "value": 0.04,
+          "chance": 0.15,
+          "duration": 0,
+          "cooldown": 1,
+          "maxTriggers": 0,
+          "threshold": 0,
+          "timing": {
+            "cooldownSeconds": 3,
+            "durationSeconds": 0,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 0
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      },
+      {
+        "id": "endurance",
+        "name": "持久信物",
+        "quality": 1,
+        "effects": [
+          {
+            "key": "flatHp",
+            "value": 10
+          },
+          {
+            "key": "flatAttack",
+            "value": 1
+          },
+          {
+            "key": "flatDefense",
+            "value": 1
+          }
+        ],
+        "ability": {
+          "event": "round",
+          "action": "attack",
+          "value": 0.1,
+          "chance": 1,
+          "duration": 3,
+          "cooldown": 1,
+          "maxTriggers": 1,
+          "threshold": 4,
+          "timing": {
+            "cooldownSeconds": 3,
+            "durationSeconds": 18,
+            "triggerIntervalSeconds": 6,
+            "firstTriggerSeconds": 24
+          }
+        },
+        "drop": {
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 60,
+          "maps": [],
+          "monsters": [],
+          "kinds": [
+            "normal",
+            "elite",
+            "boss",
+            "final"
+          ]
+        }
+      }
+    ]
+  }
+}

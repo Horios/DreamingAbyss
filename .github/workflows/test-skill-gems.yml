@@ -8,7 +8,79 @@ permissions:
   contents: read
 
 jobs:
+  # Decides what this commit needs. A commit that only changes data/balance/** (and the generated
+  # data/balance.json / preview version) runs the tests that read the changed modules; anything else, or a
+  # change whose reach cannot be determined, runs the full gate below.
+  plan:
+    name: Balance change scope
+    runs-on: ubuntu-latest
+    outputs:
+      scope: ${{ steps.scope.outputs.scope }}
+      headless: ${{ steps.scope.outputs.headless }}
+      browser: ${{ steps.scope.outputs.browser }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - id: scope
+        name: Changed modules, change kinds and selected tests
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" != push ] || ! git rev-parse -q --verify HEAD^ >/dev/null; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"; echo "### 平衡資料影響範圍：full（非 push 事件或沒有上一個 commit）" >> "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
+          node scripts/balance-modules.cjs affected --base HEAD^ --head HEAD --github-output "$GITHUB_OUTPUT"
+
+  # Always runs: sources, manifest and generated data/balance.json agree; the changed modules pass the
+  # shared document checks (incremental; the first modular commit or a structural change runs them in full).
+  balance-modules:
+    name: Balance modules · consistency and incremental validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Module sources, manifest hashes and data/balance.json agree
+        run: node scripts/balance-modules.cjs check --allow-legacy-integrated
+      - name: Validate the changed modules and the references into them
+        run: node scripts/balance-modules.cjs validate --base HEAD^
+      - name: Module model tests
+        run: node --test tests/balance-modules.test.cjs tests/balance-document.test.cjs
+
+  data-incremental:
+    name: Data change · selected tests
+    needs: plan
+    if: needs.plan.outputs.scope == 'data'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Headless tests that read the changed modules
+        if: needs.plan.outputs.headless != ''
+        run: node --test --test-concurrency=2 ${{ needs.plan.outputs.headless }}
+      - name: Install Chromium for selected browser tests
+        if: needs.plan.outputs.browser != ''
+        run: |
+          npm ci
+          npx playwright install chromium
+      - name: Browser tests that read the changed modules
+        if: needs.plan.outputs.browser != ''
+        run: node --test --test-concurrency=1 ${{ needs.plan.outputs.browser }}
+
   core:
+    needs: plan
+    if: needs.plan.outputs.scope == 'full'
     name: Core · ${{ matrix.group }}
     strategy:
       fail-fast: false
@@ -48,6 +120,8 @@ jobs:
         run: node --test --test-concurrency=1 ${{ matrix.tests }}
 
   persistence:
+    needs: plan
+    if: needs.plan.outputs.scope == 'full'
     name: Saves · ${{ matrix.group }}
     strategy:
       fail-fast: false
@@ -73,6 +147,8 @@ jobs:
         run: node --test --test-concurrency=1 ${{ matrix.tests }}
 
   browser-smoke:
+    needs: plan
+    if: needs.plan.outputs.scope == 'full'
     name: Chromium boot and responsive navigation
     runs-on: ubuntu-latest
     timeout-minutes: 25
