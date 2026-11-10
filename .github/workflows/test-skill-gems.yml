@@ -39,7 +39,7 @@ jobs:
   balance-modules:
     name: Balance modules · consistency and incremental validation
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,7 +57,7 @@ jobs:
       # the running game does (spawned monster, character stats, price, cooldown seconds, title), restoring the
       # document must restore them, and the deployment check itself must reject a site that is not this build.
       - name: Published values take effect in the running game; deployment check rejects other builds
-        run: node --test --test-concurrency=1 tests/balance-effects.test.cjs tests/verify-deployment.test.cjs
+        run: node --test --test-concurrency=2 tests/balance-effects.test.cjs tests/balance-effects-systems.test.cjs tests/verify-deployment.test.cjs
 
   data-incremental:
     name: Data change · selected tests
