@@ -123,3 +123,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # A finished deploy job is not proof of what the site serves. Read build.json, data/balance.json, the
+      # module manifest and every script index.html loads back from Pages and compare them with the two
+      # checkouts. Retries while the CDN catches up; fails the job when the site is not these commits.
+      - name: Verify the deployed site serves these commits
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          VERIFY=preview-source/scripts/verify-deployment.cjs
+          if [ ! -f "$VERIFY" ]; then
+            echo "### 部署驗證：未驗證（測試版來源沒有 scripts/verify-deployment.cjs）" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node "$VERIFY" --url "${PAGE_URL%/}/" --branch main --commit "$(git -C production rev-parse HEAD)" --source production --attempts 30 --interval 10
+          node "$VERIFY" --url "${PAGE_URL%/}/preview/" --branch chatgpt-dev --commit "$(git -C preview-source rev-parse HEAD)" --source preview-source --attempts 30 --interval 10

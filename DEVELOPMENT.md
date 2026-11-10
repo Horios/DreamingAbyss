@@ -71,6 +71,22 @@ node scripts/balance-modules.cjs resync     # 舊版發布器直接寫入整合�
 
 CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產生的整合檔、版本號）時，只跑讀取變更模組的測試；鍵欄位或結構變更會加入依賴它的模組的測試。程式、測試、流程、manifest 結構改變，或無法判定範圍（例如整合檔與模組不一致）時執行完整閘門。`balance-modules` 工作每次都檢查一致性並做增量驗證。完整回歸仍由 Extended regression（每日與 `[extended-regression]`）負責。
 
+## 發布後的部署與生效驗證（v0.121）
+
+對應平衡器 `Horios/DreamingAbyss-BalanceEditor` issue #2 的排查。這一版只加入驗證工具與測試，沒有修改任何平衡數值、遊戲程式或畫面；`data/balance/**` 與 `data/balance.json` 的內容與 v0.120 相同。
+
+- `scripts/verify-deployment.cjs`：從網站讀回實際內容，確認 Pages 提供的就是指定的 commit。依序檢查 `data/build.json` 的分支、commit 與資料 blob（部署層）；`data/balance.json` 逐位元組等於該 commit 的 Git blob 且可解析；模組清單與來源相同、清單記錄的整合檔雜湊等於網站的整合檔；`index.html` 引用的每個程式與樣式檔（含快取參數）內容與來源相同（載入層）。前兩項在 CDN 更新前會重試，任何一項不符即失敗並標示層級。
+
+  ```bash
+  node scripts/verify-deployment.cjs --url https://horios.github.io/DreamingAbyss/preview/ --branch chatgpt-dev --commit <SHA> --source .
+  ```
+
+- `.github/workflows/deploy-preview.yml` 在 `deploy-pages` 之後執行上述檢查（正式版與測試版各一次）。部署工作完成不等於網站已更新；這一步未通過時該次部署視為失敗。部署固定從 `main` 的 workflow 執行，所以這一步要等此 workflow 檔案進入 `main` 後才會生效；在那之前可在本機執行上面的指令。
+- `tests/balance-effects.test.cjs`（每個 commit 都跑，包含平衡器發布的資料 commit）：修改文件後讀取玩家實際遇到的數字。難度與怪物倍率改變生成怪物的生命與攻擊；職業初始能力即時作用於現有角色、存檔重讀後與新建角色；道具價格、技能冷卻秒數（含小數）、介面標題跟著文件改變；還原文件後全部恢復；含有無效引用的文件整份拒絕，執行中的數值不變。
+- `tests/verify-deployment.test.cjs`：以本機 HTTP 伺服器模擬網站，確認其他 commit、其他資料 blob、過期的整合檔、過期的模組清單、其他版本的程式檔與不同的快取參數都會被判定為未通過，並確認重試行為。
+
+數值何時採用：上述測試確認職業能力、怪物、難度、道具價格、技能秒數與介面文字在載入新資料後立即作用於現有存檔（執行時直接讀取設定表）。已經生成並寫入存檔的內容（例如已掉落的裝備）屬於存檔資料，是否隨新資料改變不在這組測試範圍內，驗收發布時不應以舊角色身上既有的物品沒有變化判定發布失敗。
+
 ## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。
