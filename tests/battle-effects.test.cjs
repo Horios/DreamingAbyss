@@ -125,3 +125,10 @@ test('numeric capture is bounded, prioritizes crit/healing and is absent offscre
  r.run('setBattleEffects("full");tab="options"');capture(r,`resolveHit(foes[1],50,state,'physical',false)`);assert.equal(r.run('EmberwildBattleEffects.pendingNumbers.length'),0);
  r.run('tab="battle"');r.ctx.setTimeout=fn=>setImmediate(fn);r.advance(60000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildBattleEffects.pendingNumbers.length'),0);assert.deepEqual(r.errors,[]);
 });
+test('polymorph proxy keeps the primary hit and each follow-up as separate shield values on the real target',()=>{
+ const r=game();r.run(`__EMBERWILD_CONTROL_TEST_API.applyPolymorph(foes[1],10000,{duration:3});effects.push({source:state.job,sourceKey:memberKey(state),skill:0,target:foes[1].id,kind:'followup',value:.3,until:partyClock+3,name:'追打'});globalThis.polyBefore=EmberwildControlState.states[foes[1].id].polymorph.shield;`);
+ capture(r,`resolveHit(foes[1],50,state,'fire',false)`);
+ const numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)')).filter(e=>e.target==='fx-1');
+ assert.equal(numbers.length,2);assert(numbers.every(e=>e.kind==='absorb'));assert.equal(numbers.reduce((n,e)=>n+e.amount,0),r.run('polyBefore-EmberwildControlState.states[foes[1].id].polymorph.shield'));
+ assert.equal(r.run('foes[1].hp'),10000);assert.deepEqual(r.errors,[]);
+});

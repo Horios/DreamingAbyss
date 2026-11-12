@@ -22,7 +22,7 @@
  const visible=()=>!!party&&tab==='battle'&&!document.hidden&&!$('modal')?.open&&!globalThis.isEmberwildTitleOpen?.()&&!globalThis.EmberwildOffline?.busy&&!party.offlineExploration?.receipt;
  const mode=()=>preference==='full'&&(motion.matches||battleRate>2)?'simple':preference;
  const control=u=>globalThis.EmberwildControlState?.states?.[u.id]||{};
- function shields(u){return Math.max(0,Number(u.shield)||0)+Math.max(0,Number(control(u).polymorph?.shield)||0);}
+ function shields(u){const proxy=frame?.context?.shieldProxy;return Math.max(0,Number(u.shield)||0)+Math.max(0,Number(proxy?.target===u?proxy.unit.hp:control(u).polymorph?.shield)||0);}
  function statuses(){
   const rows=new Map(),add=(key,target,polarity,ref,kind)=>rows.set(key,{target,polarity,ref,kind});
   for(const e of effects)if(e.until>partyClock)add(e,e.target,['weaken','fracture','vulnerable','damageAmp','followup','dotAttack','dotMaxHp','skillTaunt','slow','skillSlow'].includes(e.kind)?'debuff':'buff',e);
@@ -96,6 +96,7 @@
  function result(type,target,source,details={}){
   if(!frame)return;
   if(type==='resolved'){
+   const proxy=frame.context.shieldProxy;if(proxy?.unit===target)target=proxy.target;
    const before=frame.vitals.get(target);
    // Called at the existing resolver's HP write, before lifesteal, retaliation or recovery procs.
    const context=frame.context;frame.context={...context,critical:!!details.critical};checkpoint();frame.context=context;

@@ -140,10 +140,14 @@
     const polymorph=stateFor(e?.id,false)?.polymorph;
     if(!polymorph||polymorph.shield<=0)return controlResolveHitBase(e,amount,h,element,crit,options);
     const proxy={...e,hp:polymorph.shield,maxhp:polymorph.maxShield,shield:0};
-    const dealt=controlResolveHitBase(proxy,amount,h,element,crit,options);
-    polymorph.shield=Math.max(0,proxy.hp);
-    if(polymorph.shield<=0){const s=stateFor(e.id,false);if(s)delete s.polymorph;cleanState(e.id);note(combatEnemyName(e)+' 的變形護盾被打破，變形解除。');}
-    return dealt;
+    const resolve=()=>{
+      const dealt=controlResolveHitBase(proxy,amount,h,element,crit,options);
+      polymorph.shield=Math.max(0,proxy.hp);
+      if(polymorph.shield<=0){const s=stateFor(e.id,false);if(s)delete s.polymorph;cleanState(e.id);note(combatEnemyName(e)+' 的變形護盾被打破，變形解除。');}
+      return dealt;
+    };
+    const visual=globalThis.EmberwildBattleEffects;
+    return visual?.capturing?visual.scope({shieldProxy:{target:e,unit:proxy}},resolve):resolve();
   };
 
   const controlCombatSpeedBase=combatSpeed;
