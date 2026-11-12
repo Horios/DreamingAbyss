@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 1,
+  "dataRevision": 2,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "02b2b55e8133a28ce33bde2719ab3db7d4e5aca8e973d5fd23328691c9994ea0",
-    "bytes": 1165818
+    "sha256": "8a9298374cac8526845d90efa6b23206bcd523523c24723237dc865a89775c35",
+    "bytes": 1165782
   },
   "layout": {
     "": [
@@ -519,9 +519,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 1,
-      "sha256": "ed629a100b50fc0df5c65833563b90c47a5fc63187e0de839832858a20ef000d",
-      "bytes": 46595,
+      "version": 2,
+      "sha256": "aad0e601f3c2090e350cf92eeb92b16a8c3e1d620c4e21244448bdc024ba633c",
+      "bytes": 46559,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",

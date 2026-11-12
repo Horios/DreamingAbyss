@@ -117,7 +117,14 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
   - `tests/companions-roster.test.cjs`：30 名夥伴的捲動判定只看名冊清單與夥伴頁。這兩層現在是 `overflow:visible`，由頁面的 `<main>` 捲動。判定改為三層其中之一可捲動，並確認最後一名夥伴能捲進畫面。
 - 平衡器倉庫的三個未通過項目：內嵌的遊戲檔案停在 v0.120（需要執行 `node scripts/sync-game.cjs`）；`tests/seconds-authoring.browser.cjs` 沒有讀取 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`；第三個是流程本身同時執行建置與產物驗證，已改為依序執行。
 
-## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
+## 疾風石說明改為秒數（v0.124）
+
+第二次完整執行（v0.123）245 個項目中 244 個通過。未通過的是 `tests/shop-options.test.cjs`：隨機商店抽到疾風石時，說明文字仍是「減少 1 回合冷卻（最低 1 回合）」，測試要求商品說明不使用回合。第一次執行沒有抽到疾風石，所以沒有出現。
+
+- 疾風石在秒制戰鬥的效果由 `combat.seconds.cooldownReduction.sources.onCast` 決定，目前是固定減少 3 秒。三階說明（`data/balance/items/inventory-icons.json`）與 `js/core/game-catalog.js` 的預設說明改為「機率使該技能冷卻減少 3 秒」。只改文字，沒有改動數值。
+- 之後調整 `onCast` 的秒數時，這三筆說明要一起改。
+
+
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。
 

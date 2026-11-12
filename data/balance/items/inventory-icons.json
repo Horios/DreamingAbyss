@@ -1613,7 +1613,7 @@
     "kind": "gem",
     "key": "1",
     "iconType": "auto",
-    "description": "主動技能成功施放後，5% 機率減少 1 回合冷卻（最低 1 回合）",
+    "description": "主動技能成功施放後，5% 機率使該技能冷卻減少 3 秒",
     "color": "#49B976",
     "displayName": "疾風石・1階"
   },
@@ -2001,7 +2001,7 @@
     "kind": "gem",
     "key": "6",
     "iconType": "auto",
-    "description": "主動技能成功施放後，10% 機率減少 1 回合冷卻（最低 1 回合）",
+    "description": "主動技能成功施放後，10% 機率使該技能冷卻減少 3 秒",
     "color": "#49B976",
     "displayName": "疾風石・2階"
   },
@@ -2041,7 +2041,7 @@
     "kind": "gem",
     "key": "11",
     "iconType": "auto",
-    "description": "主動技能成功施放後，15% 機率減少 1 回合冷卻（最低 1 回合）",
+    "description": "主動技能成功施放後，15% 機率使該技能冷卻減少 3 秒",
     "color": "#49B976",
     "displayName": "疾風石・3階"
   },
