@@ -190,10 +190,9 @@
   element.dataset.caption=event.kind==='absorb'?'吸收':event.kind==='shield'?'護盾':event.critical?'暴擊':'';
   const duration=simple?600:900;
   element.style.setProperty('--number-time',duration+'ms');element.style.setProperty('--number-lane',lane);
-  // Anchor to the visible portrait even when the player flips the card to cooldowns/statuses.
-  const portrait=node.querySelector('.battle-enemy-icon'),a=node.getBoundingClientRect(),b=portrait?.getBoundingClientRect();
-  const center=b?b.x-a.x+b.width/2:28;
-  element.style.left=Math.max(2,center-28+Math.floor(slot/4)*4)+'px';element.style.width=Math.min(72,Math.max(48,center*2-4))+'px';
+  // The portrait column stays at the card's left edge on every face and breakpoint.
+  // Avoid measuring it during the summary's responsive DOM rearrangement.
+  element.style.left=(4+Math.floor(slot/4)*4)+'px';element.style.width='64px';
   layer.append(element);
   const size=event.critical?21:event.kind==='dot'?13:17;
   element.style.fontSize=Math.max(11,Math.min(size,(parseFloat(element.style.width)-2)/Math.max(1,element.textContent.length*.62)))+'px';
