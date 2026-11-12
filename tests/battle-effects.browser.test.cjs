@@ -272,7 +272,7 @@ test('resolved numbers keep each hit and its target, preserve last damage and re
   await p.clock.runFor(1100);assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);
   await p.evaluate(()=>fxCapture(()=>{for(let i=0;i<8;i++)resolveHit(foes[1],1,state,'physical',false);}));
   const slots=await p.locator('.battle-number[data-target="fx-1"]').evaluateAll(ns=>ns.map(n=>n.style.left+'|'+n.style.getPropertyValue('--number-lane')));assert.equal(slots.length,3);assert.equal(new Set(slots).size,3);await p.clock.runFor(1100);
-  await p.evaluate(()=>{foes[1].hp=1;fxCapture(()=>resolveHit(foes[1],50,state,'physical',false));});assert.equal(await p.locator('.battle-number[data-target="fx-1"][data-amount="1"]').count(),1);
+  await p.evaluate(()=>{fxCapture(()=>{for(let i=0;i<3;i++)resolveHit(foes[1],1,state,'physical',true);});foes[1].hp=1;fxCapture(()=>resolveHit(foes[1],50,state,'physical',false));});assert.equal(await p.locator('.battle-number[data-target="fx-1"][data-amount="1"]').count(),1);
   await p.evaluate(()=>{spawnGroup();render();});assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

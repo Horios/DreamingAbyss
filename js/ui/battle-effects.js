@@ -7,7 +7,7 @@
  let preference='full',frame=null,pending=null,owner=null,encounter=null,sequence=0,staged=null,held=null;
  const timers=new Set(),numberNodes=new Map();
  const numberLimit=128,smallScreen=matchMedia('(max-width: 600px)');
- const priority=e=>e.critical?4:e.kind==='heal'?3:['damage','absorb','shield','text'].includes(e.kind)?2:1;
+ const priority=e=>e.lethal?5:e.critical?4:e.kind==='heal'?3:['damage','absorb','shield','text'].includes(e.kind)?2:1;
  // Bounded, ordered resolved values; particles may coalesce, numbers never merge.
  function number(kind,target,amount,extra={}){
   if(!frame||!target||frame.context.mode==='settlement')return;
@@ -62,7 +62,7 @@
     const hit=ctx.mode==='damage';enqueue(hit?'absorb':'dissolve',target);if(hit)number('absorb',target,before.shield-after.shield);
     if(hit&&after.shield<=0)enqueue('break',target);
    }
-   if(after.hp<before.hp){number(ctx.periodic?'dot':'damage',target,before.hp-after.hp);enqueue(ctx.periodic?'dot':attackType(ctx),target);enqueue('hit',target);}
+   if(after.hp<before.hp){number(ctx.periodic?'dot':'damage',target,before.hp-after.hp,{lethal:after.hp<=0});enqueue(ctx.periodic?'dot':attackType(ctx),target);enqueue('hit',target);}
    else if(after.hp>before.hp){number('heal',target,after.hp-before.hp,{critical:false});const kind=ctx.mode==='potion'?'potion':ctx.mode==='damage'||ctx.effect==='drain'?'drain':ctx.mode==='regen'?'regen':'heal';enqueue(kind,target,kind==='regen'?{label:'+'+Math.max(1,Math.round(after.hp-before.hp))+' HP'}:{});}
    // A shield-only attack has an impact on the shield, never a red HP hit.
 

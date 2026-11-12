@@ -90,7 +90,7 @@ test('numbers preserve each settled hit, overkill, critical, AoE and shield valu
  assert.deepEqual(numbers.map(e=>e.critical),[false,true,false,false,true,false,false,true,false]);
  r.run('foes[1].shield=3;foes[1].hp=2');capture(r,`resolveHit(foes[1],500,state,'ice',true)`);
  numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)')).filter(e=>e.target==='fx-1');
- assert.deepEqual(numbers.map(e=>[e.kind,e.amount]),[['absorb',3],['damage',2]]);
+ assert.deepEqual(numbers.map(e=>[e.kind,e.amount]),[['absorb',3],['damage',2]]);assert.equal(numbers.find(e=>e.kind==='damage').lethal,true);
  r.run('foes[1].hp=100;foes[1].shield=10000');capture(r,`globalThis.shieldBefore=foes[1].shield;resolveHit(foes[1],50,state,'physical',false)`);
  numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)')).filter(e=>e.target==='fx-1');
  assert.deepEqual(numbers.map(e=>[e.kind,e.amount]),[['absorb',r.run('shieldBefore-foes[1].shield')]]);
