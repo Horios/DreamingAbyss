@@ -172,7 +172,7 @@
  }
  // One number surface per combat individual, confined to the portrait area of its card.
  function playNumber(node,event){
-  const simple=mode()==='simple',limit=smallScreen.matches||simple?32:64,perTarget=smallScreen.matches?(simple?3:5):(simple?4:8);
+  const simple=mode()==='simple',limit=smallScreen.matches||simple?32:64,perTarget=simple?2:3;
   const all=[...numberNodes.values()].flatMap(rows=>[...rows.values()]),peers=[...(numberNodes.get(node)?.values()||[])];
   for(const candidates of [peers.length>=perTarget?peers:[],all.length>=limit?all:[]])if(candidates.length){
    const victim=candidates.reduce((a,b)=>priority(a.event)<=priority(b.event)?a:b);
@@ -187,12 +187,12 @@
   if(event.amount!==null)element.dataset.amount=String(event.amount);
   const value=event.amount===null?'':event.amount.toLocaleString('en-US',{maximumFractionDigits:8});
   element.textContent=event.label||(['heal','shield'].includes(event.kind)?'+'+value:value);
-  element.dataset.caption=event.kind==='absorb'?'吸收':event.kind==='shield'?'護盾':event.critical?'暴擊':'';
+  element.dataset.caption=event.kind==='absorb'?'吸收':event.kind==='shield'?'護盾':'';
   const duration=simple?600:900;
   element.style.setProperty('--number-time',duration+'ms');element.style.setProperty('--number-lane',lane);
   // The portrait column stays at the card's left edge on every face and breakpoint.
   // Avoid measuring it during the summary's responsive DOM rearrangement.
-  element.style.left=(4+Math.floor(slot/4)*4)+'px';element.style.width='64px';
+  element.style.left=(4+Math.floor(slot/4)*4)+'px';element.style.width='56px';
   layer.append(element);
   const size=event.critical?21:event.kind==='dot'?13:17;
   element.style.fontSize=Math.max(11,Math.min(size,(parseFloat(element.style.width)-2)/Math.max(1,element.textContent.length*.62)))+'px';
