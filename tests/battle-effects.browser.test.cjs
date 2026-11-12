@@ -270,6 +270,8 @@ test('resolved numbers keep each hit and its target, preserve last damage and re
   assert(await critical.evaluate(n=>parseFloat(n.style.fontSize))>await normal.evaluate(n=>parseFloat(n.style.fontSize)));
   await p.evaluate(()=>{globalThis.retainedNumber=document.querySelector('.battle-number');render();});assert(await p.evaluate(()=>retainedNumber.isConnected));
   await p.clock.runFor(1100);assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);
+  await p.evaluate(()=>fxCapture(()=>{for(let i=0;i<8;i++)resolveHit(foes[1],1,state,'physical',false);}));
+  const slots=await p.locator('.battle-number[data-target="fx-1"]').evaluateAll(ns=>ns.map(n=>n.style.left+'|'+n.style.getPropertyValue('--number-lane')));assert.equal(slots.length,8);assert.equal(new Set(slots).size,8);await p.clock.runFor(1100);
   await p.evaluate(()=>{foes[1].hp=1;fxCapture(()=>resolveHit(foes[1],50,state,'physical',false));});assert.equal(await p.locator('.battle-number[data-target="fx-1"][data-amount="1"]').count(),1);
   await p.evaluate(()=>{spawnGroup();render();});assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
@@ -294,7 +296,7 @@ test('numbers stay bounded at high speed, readable within phone cards, obey mode
  const g=await setup(),p=g.page;try{
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:844});await p.evaluate(()=>{render();setBattleEffects('full');battleRate=1;fxCapture(()=>{for(const e of foes)for(let i=0;i<3;i++)resolveHit(e,20,state,'fire',i===1);});});
-   require('node:fs').mkdirSync(path.join(root,'battle-feedback-review'),{recursive:true});await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
+   await p.clock.runFor(320);require('node:fs').mkdirSync(path.join(root,'battle-feedback-review'),{recursive:true});await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
    const layout=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect(),s=getComputedStyle(n);return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,card:{left:card.left,right:card.right,top:card.top,bottom:card.bottom},font:parseFloat(s.fontSize),pointer:s.pointerEvents};}));
    for(const n of layout){assert(n.left>=n.card.left-1&&n.right<=n.card.right+1,JSON.stringify(n));assert(n.top>=n.card.top-1&&n.bottom<=n.card.bottom+1);assert(n.font>=11);assert.equal(n.pointer,'none');}
    await p.locator('#battleEnemyIcons .battle-enemy-icon').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.equal(await p.locator('.battle-number').count(),0);await p.locator('#modal button').last().click();

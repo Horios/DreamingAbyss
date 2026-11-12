@@ -180,7 +180,8 @@
   let entries=numberNodes.get(node);if(!entries){entries=new Map();numberNodes.set(node,entries);}
   let layer=node.querySelector(':scope > .battle-number-layer');
   if(!layer){layer=document.createElement('span');layer.className='battle-number-layer';layer.setAttribute('aria-hidden','true');node.append(layer);}
-  const key=++sequence,element=document.createElement('b'),lane=key%5;
+  const used=new Set([...entries.values()].map(row=>row.slot)),slot=Array.from({length:perTarget},(_,i)=>i).find(i=>!used.has(i))??0;
+  const key=++sequence,element=document.createElement('b'),lane=slot%4;
   element.className='battle-number';element.dataset.kind=event.kind;element.dataset.critical=String(event.critical);element.dataset.detail=simple?'simple':'full';element.dataset.target=event.target;
   if(event.amount!==null)element.dataset.amount=String(event.amount);
   const value=event.amount===null?'':event.amount.toLocaleString('en-US',{maximumFractionDigits:8});
@@ -191,11 +192,11 @@
   // Anchor to the visible portrait even when the player flips the card to cooldowns/statuses.
   const portrait=node.querySelector('.battle-enemy-icon'),a=node.getBoundingClientRect(),b=portrait?.getBoundingClientRect();
   const center=b?b.x-a.x+b.width/2:28;
-  element.style.left=Math.max(2,center-28)+'px';element.style.width=Math.min(72,Math.max(48,center*2-4))+'px';
+  element.style.left=Math.max(2,center-28+Math.floor(slot/4)*4)+'px';element.style.width=Math.min(72,Math.max(48,center*2-4))+'px';
   layer.append(element);
   const size=event.critical?21:event.kind==='dot'?13:17;
   element.style.fontSize=Math.max(11,Math.min(size,(parseFloat(element.style.width)-2)/Math.max(1,element.textContent.length*.62)))+'px';
-  const row={event,timer:null,remove:()=>{if(!entries.has(key))return;clearTimeout(row.timer);element.remove();entries.delete(key);if(!entries.size){numberNodes.delete(node);layer.remove();}}};
+  const row={event,slot,timer:null,remove:()=>{if(!entries.has(key))return;clearTimeout(row.timer);element.remove();entries.delete(key);if(!entries.size){numberNodes.delete(node);layer.remove();}}};
   entries.set(key,row);row.timer=setTimeout(row.remove,duration+80);element.addEventListener('animationend',e=>{if(e.target===element)row.remove();});
  }
  function sync(s){
