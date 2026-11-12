@@ -170,7 +170,7 @@
   const row={element,timer:null,channel},remove=()=>{if(entries.get(eventKey)!==row)return;clearTimeout(row.timer);element.remove();entries.delete(eventKey);if(!entries.size)activeNodes.delete(node);};
   row.timer=setTimeout(remove,duration+80);entries.set(eventKey,row);element.addEventListener('animationend',e=>{if(e.target===element)remove();});
  }
- // One number surface per combat individual, confined to the portrait area of its card.
+ // One centered number surface per combat individual, sized against the whole card.
  function playNumber(node,event){
   const simple=mode()==='simple',limit=smallScreen.matches||simple?32:64,perTarget=simple?2:3;
   const all=[...numberNodes.values()].flatMap(rows=>[...rows.values()]),peers=[...(numberNodes.get(node)?.values()||[])];
@@ -182,7 +182,7 @@
   let layer=node.querySelector(':scope > .battle-number-layer');
   if(!layer){layer=document.createElement('span');layer.className='battle-number-layer';layer.setAttribute('aria-hidden','true');node.append(layer);}
   const used=new Set([...entries.values()].map(row=>row.slot)),slot=Array.from({length:perTarget},(_,i)=>i).find(i=>!used.has(i))??0;
-  const key=++sequence,element=document.createElement('b'),lane=slot%4;
+  const key=++sequence,element=document.createElement('b'),lane=slot===0?0:slot===1?-1:1;
   element.className='battle-number';element.dataset.kind=event.kind;element.dataset.critical=String(event.critical);element.dataset.detail=simple?'simple':'full';element.dataset.target=event.target;
   if(event.amount!==null)element.dataset.amount=String(event.amount);
   const value=event.amount===null?'':event.amount.toLocaleString('en-US',{maximumFractionDigits:8});
@@ -190,12 +190,18 @@
   element.dataset.caption=event.kind==='absorb'?'吸收':event.kind==='shield'?'護盾':'';
   const duration=simple?600:900;
   element.style.setProperty('--number-time',duration+'ms');element.style.setProperty('--number-lane',lane);
-  // The portrait column stays at the card's left edge on every face and breakpoint.
-  // Avoid measuring it during the summary's responsive DOM rearrangement.
-  element.style.left=(4+Math.floor(slot/4)*4)+'px';element.style.width='56px';
   layer.append(element);
-  const size=event.critical?21:event.kind==='dot'?13:17;
-  element.style.fontSize=Math.max(11,Math.min(size,(parseFloat(element.style.width)-2)/Math.max(1,element.textContent.length*.62)))+'px';
+  // Measure the rendered text, so even a single digit spans at least half a card.
+  element.style.fontSize='100px';
+  const range=document.createRange();range.selectNodeContents(element);
+  const width=range.getBoundingClientRect().width||100;
+  const ratio=event.critical?.64:event.kind==='dot'?.52:.56;
+  const size=100*node.clientWidth*ratio/width;
+  element.style.fontSize=size+'px';
+  // Keep large single digits inside short cards without narrowing their width.
+  const height=size*.9,compression=Math.min(1,Math.max(1,layer.clientHeight-36)/height);
+  element.style.setProperty('--number-compression',compression);
+  element.style.setProperty('--number-lane-step',Math.max(0,Math.min(30,(layer.clientHeight-height*compression)/2-18))+'px');
   const row={event,slot,timer:null,remove:()=>{if(!entries.has(key))return;clearTimeout(row.timer);element.remove();entries.delete(key);if(!entries.size){numberNodes.delete(node);layer.remove();}}};
   entries.set(key,row);row.timer=setTimeout(row.remove,duration+80);element.addEventListener('animationend',e=>{if(e.target===element)row.remove();});
  }
