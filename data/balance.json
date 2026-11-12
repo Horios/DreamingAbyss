@@ -32196,341 +32196,6 @@
     "version": 1,
     "quests": [
       {
-        "id": "goddess_intro",
-        "name": "女神的指引",
-        "type": "main",
-        "npc": "女神",
-        "description": "認識介面、招募夥伴，完成第一次探索與強化。",
-        "enabled": true,
-        "hidden": false,
-        "unlock": {
-          "mode": "all",
-          "conditions": []
-        },
-        "prerequisites": [],
-        "entry": "welcome",
-        "stages": [
-          {
-            "id": "welcome",
-            "name": "初次相遇",
-            "speaker": "女神",
-            "description": "歡迎來到營地。接下來我會引導你完成一次冒險。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "歡迎來到營地。接下來我會引導你完成一次冒險。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "interface",
-            "branches": [],
-            "choices": [],
-            "guides": []
-          },
-          {
-            "id": "interface",
-            "name": "認識介面",
-            "speaker": "女神",
-            "description": "劇情用來閱讀對話與確認任務；探索、夥伴、背包、強化與生活技能各自有獨立頁面。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "劇情用來閱讀對話與確認任務；探索、夥伴、背包、強化與生活技能各自有獨立頁面。"
-              },
-              {
-                "kind": "player",
-                "speaker": "玩家",
-                "text": "我可以先探索，再回來查看已完成的進度。"
-              },
-              {
-                "kind": "narrator",
-                "speaker": "旁白",
-                "text": "條件完成時，劇情入口與任務會顯示可繼續提示。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "recruit",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle",
-              "partnerRoster",
-              "equipment",
-              "forge"
-            ]
-          },
-          {
-            "id": "recruit",
-            "name": "招募同行夥伴",
-            "speaker": "女神",
-            "description": "前往夥伴名冊招募兩位夥伴。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "前往夥伴名冊招募兩位夥伴。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "companions",
-                  "key": "",
-                  "count": 2,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "team",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "partnerRoster"
-            ]
-          },
-          {
-            "id": "team",
-            "name": "組成探索隊伍",
-            "speaker": "女神",
-            "description": "在隊伍編成選擇主角職業，並讓三人上陣。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "在隊伍編成選擇主角職業，並讓三人上陣。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "party",
-                  "key": "",
-                  "count": 3,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "depart",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "roster"
-            ]
-          },
-          {
-            "id": "depart",
-            "name": "前往苔光林地",
-            "speaker": "女神",
-            "description": "前往第一張地圖「苔光林地」。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "前往第一張地圖「苔光林地」。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "visit",
-                  "key": "0",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "battle",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "battle",
-            "name": "完成實際戰鬥",
-            "speaker": "女神",
-            "description": "在苔光林地擊敗任意一隻怪物。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "在苔光林地擊敗任意一隻怪物。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "explore",
-                  "key": "0",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "equipment",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "equipment",
-            "name": "查看探索收穫",
-            "speaker": "女神",
-            "description": "打開背包查看取得的裝備，再到裝備與信物頁確認穿戴。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "打開背包查看取得的裝備，再到裝備與信物頁確認穿戴。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 20,
-              "items": []
-            },
-            "effects": [],
-            "next": "forge",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment",
-              "worn"
-            ]
-          },
-          {
-            "id": "forge",
-            "name": "第一次強化",
-            "speaker": "女神",
-            "description": "在裝備強化頁將任意裝備強化一次。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "在裝備強化頁將任意裝備強化一次。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "enhance",
-                  "key": "",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "finish",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "forge"
-            ]
-          },
-          {
-            "id": "finish",
-            "name": "啟程的準備已完成",
-            "speaker": "女神",
-            "description": "你已學會營地與探索的基本操作，也可以到支線與特殊 NPC 任務繼續冒險。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "女神",
-                "text": "你已學會營地與探索的基本操作，也可以到支線與特殊 NPC 任務繼續冒險。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [],
-            "guides": []
-          }
-        ],
-        "rewards": {
-          "gold": 200,
-          "ore": 0,
-          "items": []
-        },
-        "effects": [],
-        "nextQuests": []
-      },
-      {
         "id": "two_regions",
         "name": "兩地巡查（測試）",
         "type": "side",
@@ -33047,9 +32712,7 @@
           "mode": "all",
           "conditions": []
         },
-        "prerequisites": [
-          "goddess_intro"
-        ],
+        "prerequisites": [],
         "entry": "equipment_gift",
         "effects": [],
         "nextQuests": [],
@@ -33103,7 +32766,7 @@
               {
                 "kind": "npc",
                 "speaker": "女神",
-                "text": "領取所有初始職業可穿戴的啟程護符，固定兩孔，附帶觸發技能「追擊」。"
+                "text": "啟程護符是所有初始職業都能穿戴的飾品，固定兩孔，附帶觸發技能「追擊」。已經在造物室取得的不會重複發放；尚未持有時會在這裡領取。"
               }
             ],
             "conditions": {
@@ -33558,7 +33221,7 @@
                 },
                 {
                   "job": 2,
-                  "text": "弓手",
+                  "text": "弓箭手",
                   "description": "使用遠距離武器攻擊"
                 },
                 {
@@ -33836,7 +33499,13 @@
             "rewards": {
               "gold": 0,
               "ore": 0,
-              "items": []
+              "items": [
+                {
+                  "type": "gear",
+                  "key": "initiation_charm",
+                  "quantity": 1
+                }
+              ]
             },
             "effects": [],
             "next": "gift",
@@ -33910,7 +33579,15 @@
             ],
             "conditions": {
               "mode": "all",
-              "conditions": []
+              "conditions": [
+                {
+                  "type": "gearWorn",
+                  "key": "initiation_charm",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material"
+                }
+              ]
             },
             "rewards": {
               "gold": 0,
@@ -34087,10 +33764,6 @@
           },
           "training": {
             "name": "訓練對象"
-          },
-          "gift": {
-            "subject": "女神的贈禮",
-            "body": "女神在造物室交給你的武器與護符。"
           },
           "chapter": {
             "title": "第一章：斷絕的商路",

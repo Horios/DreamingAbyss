@@ -27,7 +27,7 @@
   if(h.advanced&&r.advanced.some(x=>x.skillId===sk.id&&h.lv>=x.level))return true;
   for(const src of sk.sources){
    if(src.level&&h.lv<src.level)continue;
-   if(src.type==='quest'){if(src.rewardOnly){if(h.acquiredSkillIds?.includes(sk.id))return true;continue;}const qs=src.questIds||sk.unlockConditions?.quests||['tutorial'];const required=qs.length?qs:['tutorial'];if(required.every(q=>q==='tutorial'?player()?.tutorial>=3||party?.story?.quests?.goddess_intro?.done:player()?.claimed?.includes(q)||party?.story?.quests?.[q]?.done)||h.acquiredSkillIds?.includes(sk.id))return true;}
+   if(src.type==='quest'){if(src.rewardOnly){if(h.acquiredSkillIds?.includes(sk.id))return true;continue;}const qs=src.questIds||sk.unlockConditions?.quests||['tutorial'];const required=qs.length?qs:['tutorial'];if(required.every(q=>q==='tutorial'?player()?.tutorial>=3||party?.story?.quests?.goddess_intro?.done||!!globalThis.__EMBERWILD_STORY?.tutorialDone?.():player()?.claimed?.includes(q)||party?.story?.quests?.[q]?.done)||h.acquiredSkillIds?.includes(sk.id))return true;}
    if(src.type==='equipment'&&h.activeSkillEquipmentId&&worn(h).some(g=>g.id===h.activeSkillEquipmentId&&g.skillId===sk.id))return true;
   }
   return false;

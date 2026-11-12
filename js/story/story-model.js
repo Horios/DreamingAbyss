@@ -19,7 +19,6 @@
   if(!p||p.version!==1||!Array.isArray(p.scenes)||p.scenes.length!==PROLOGUE_SCENES||p.scenes.some((s,i)=>!s||s.id!==i+1||!text(s.name,60)||!s.name.trim()||!text(s.description)))add('需要 '+PROLOGUE_SCENES+' 個場景（id 1～'+PROLOGUE_SCENES+'，含名稱與說明）');
   if(!p||!p.helper||!text(p.helper.name,20)||!p.helper.name.trim()||!text(p.helper.title,40)||!text(p.helper.description)||!Array.isArray(p.helper.templates)||p.helper.templates.length!==4||p.helper.templates.some(id=>!Number.isInteger(id)))add('臨時隊友設定無效（名稱、說明與四個職業的範本夥伴）');
   if(!p||!p.training||!text(p.training.name,20)||!p.training.name.trim())add('訓練對象名稱無效');
-  if(!p||!p.gift||!text(p.gift.subject,60)||!text(p.gift.body))add('贈禮說明無效');
   if(!p||!p.chapter||!text(p.chapter.title,60)||!p.chapter.title.trim()||!Array.isArray(p.chapter.lines)||p.chapter.lines.some(x=>!line(x)))add('章節標題或轉場文字無效');
   if(!p||!p.ui||typeof p.ui!=='object'||Object.values(p.ui).some(v=>!text(v,120)))add('介面文字無效');
   const stages=Array.isArray(q.stages)?q.stages:[],byId=new Map(stages.map(s=>[s?.id,s])),chain=[];
@@ -41,6 +40,9 @@
    if(at('enterWorld')!==chain.length-1)add('降臨事件必須是最後一個階段');
    const fights=chain.filter(s=>s.encounter?.enabled),h=at('recruitHelper');
    if(!fights.some(s=>chain.indexOf(s)>at('skillLesson')&&chain.indexOf(s)<h)||!fights.some(s=>chain.indexOf(s)>h&&chain.indexOf(s)<at('equipLesson')))add('需要一場單人訓練戰（技能教學之後）與一場隊伍訓練戰（臨時隊友加入之後）');
+   // The gear lesson can only ask for story gear the stage before it has just handed over.
+   const lesson=chain[at('equipLesson')],giver=chain[at('equipLesson')-1],given=new Set((giver?.rewards?.items||[]).filter(x=>x.type==='gear').map(x=>x.key));
+   if(lesson.conditions.conditions.some(c=>c.type!=='gearWorn'||!given.has(c.key)))add('裝備教學階段只能要求穿戴前一個階段發放的任務裝備');
    for(const s of fights)if(!s.conditions.conditions.some(c=>c.type==='encounter'&&c.key===q.id+'/'+s.id))add('階段 '+s.id+'：訓練戰階段需要以該場戰鬥通關作為條件');
   }
   if(q.rewards?.gold||q.rewards?.ore||q.rewards?.items?.length||q.nextQuests?.length||q.prerequisites?.length||q.unlock?.conditions?.length)add('序章任務本身不設定獎勵、前置或後續任務');

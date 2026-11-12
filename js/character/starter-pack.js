@@ -423,7 +423,7 @@
     hero.equipped=[null,null,null,null,null];
     for(const [position,slot] of [0,1,2,3,3].entries()){
       const entry=defaultStarterEntry(job,slot,position);
-      // Prologue creation: the charm (position 4) is handed over by the goddess together with the starter weapon.
+      // Prologue creation: the second accessory position stays empty; the goddess hands over the charm (the story reward) with the starter weapon.
       if(options.prologue&&position===4)continue;
       const g=createStarterGear(job,position,{...entry,baseAttack:undefined});
       delete g.starterPack;g.affix=[];
@@ -433,13 +433,11 @@
     if(options.prologue)return;
     sendStarterPackMail(job,starterPackRows(job));
   }
-  // The same contents the starter mail carries; the prologue adds the withheld charm and delivers them as a quest gift.
-  function starterPackRows(job,withCharm=false){
-    const rows=[];
-    if(withCharm){const c=createStarterGear(job,4,{...defaultStarterEntry(job,3,4),baseAttack:undefined});delete c.starterPack;c.affix=[];rows.push({type:'gear',gear:c,name:equipmentDisplayName(c),quantity:1});}
+  // The same contents the starter mail carries; the prologue delivers them directly as a quest gift.
+  function starterPackRows(job){
     const g=createStarterGear(job,0,starterPacks[job][0]);
     const names=new Map(EmberwildInventoryIcons.entries(exportableBalance()).map(r=>[r.id,r.name]));
-    return [{type:'gear',gear:g,name:equipmentDisplayName(g),quantity:1},...rows,...starterPackItems[job].map(row=>({type:'catalogue',...clone(row),name:names.get(row.kind+':'+row.key)||row.key}))];
+    return [{type:'gear',gear:g,name:equipmentDisplayName(g),quantity:1},...starterPackItems[job].map(row=>({type:'catalogue',...clone(row),name:names.get(row.kind+':'+row.key)||row.key}))];
   }
   let prologueCreation=false;
   globalThis.__EMBERWILD_STARTER_PACK={rows:starterPackRows,asPrologue(action){prologueCreation=true;try{return action();}finally{prologueCreation=false;}}};

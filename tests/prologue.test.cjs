@@ -21,6 +21,8 @@ function create(r,job,name='測試者'){
 test('published prologue: eight scenes, every system action once and in order, original text marked',()=>{
  const q=M.prologueQuest(published.story);assert(q);assert.deepEqual(q.prologue.scenes.map(s=>s.id),[1,2,3,4,5,6,7,8]);
  assert.deepEqual(q.stages.map(s=>s.prologue.action).filter(Boolean),M.PROLOGUE_ORDER);
+ assert.equal(published.story.quests.some(x=>x.id==='goddess_intro'),false,'the old intro quest is gone');assert.deepEqual(published.story.quests.find(x=>x.id==='skill_equipment_intro').prerequisites,[]);
+ assert.equal(q.stages.find(s=>s.id==='calling').prologue.options[2].text,published.classes[2].name);
  assert.deepEqual([...new Set(q.stages.map(s=>s.prologue.scene))],[1,2,3,4,5,6,7,8]);
  const lines=q.stages.flatMap(s=>[...s.dialogue,...s.prologue.after]).concat(q.prologue.chapter.lines);assert(lines.every(l=>['original','draft'].includes(l.source)),'every line records its source');
  const original=q.stages[0].dialogue.filter(l=>l.source==='original').map(l=>l.text);
@@ -41,6 +43,7 @@ test('removing or reordering a system stage is rejected; editing text is not',()
  assert.match(edit(q=>{q.stages.find(s=>s.id==='practice').encounter.enabled=false;}).join('\n'),/需要一場單人訓練戰/);
  assert.match(edit(q=>{q.stages.find(s=>s.id==='calling').prologue.options.pop();}).join('\n'),/職業選項必須依序對應全部初始職業/);
  assert.match(edit(q=>{q.stages[1].rewards.gold=5;}).join('\n'),/選擇職業之前的階段不可設定/);
+ assert.match(edit(q=>{q.stages.find(s=>s.id==='trial').rewards.items=[];}).join('\n'),/只能要求穿戴前一個階段發放的任務裝備/);
  assert.match(edit(q=>{q.stages[0].dialogue[0].source='ai';}).join('\n'),/對話來源標記無效/);
  assert.match(edit((q,d)=>{d.quests.push({...structuredClone(q),id:'prologue2'});}).join('\n'),/只能有一個序章任務/);
 });
@@ -79,8 +82,8 @@ for(const job of [0,1,2,3])test('class '+job+' plays all eight scenes with the r
  r.run('prologueReturn()');
 
  r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.run('tab'),'equipment');
- const gift=()=>r.json('{bag:playerHero().bag.map(g=>g.name),starter:playerHero().bag.filter(g=>g.starterPack).length,mail:party.mailbox.messages.map(m=>[m.rewardKey,m.subject,m.claimed])}');
- s=gift();assert.equal(s.bag.length,6);assert.equal(s.starter,1);assert.equal(s.bag.filter(n=>n==='啟程護符').length,1);assert.deepEqual(s.mail,[['starter-'+job+'-1','女神的贈禮',true]]);
+ const gift=()=>r.json('{bag:playerHero().bag.map(g=>g.name),starter:playerHero().bag.filter(g=>g.starterPack).length,charm:playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").map(g=>[g.skillId,g.skillSockets.count]),mail:party.mailbox.messages.length}');
+ s=gift();assert.equal(s.bag.length,6);assert.equal(s.starter,1);assert.equal(s.bag.filter(n=>n.includes('啟程護符')).length,1,'one charm only');assert.deepEqual(s.charm,[['tutorial_echo',2]],'it is the story charm with its skill and two sockets');assert.equal(s.mail,0,'no mail and no receipt');
  r.run('prologueOpenTask();prologueOpenTask()');assert.deepEqual(gift(),s,'asking again does not hand out a second set');
  assert.equal(r.at().ok,false);
  for(const g of r.json('playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id)'))r.run(`withHero(playerHero(),()=>equipGear(${JSON.stringify(g)}))`);
@@ -88,10 +91,11 @@ for(const job of [0,1,2,3])test('class '+job+' plays all eight scenes with the r
 
  r.until('departure','chapter');for(let i=0;i<4;i++)r.run('prologueNext()');r.run('prologueEnter()');
  s=r.json('{active:__EMBERWILD_PROLOGUE.active(),done:party.story.quests.prologue.done,quests:Object.keys(party.story.quests),members:party.members.map(memberKey),lineup:party.active,enlisted:party.enlisted,profiles:Object.keys(party.companionProfiles),unlocked:party.companionUnlocks.unlocked.includes(__EMBERWILD_PROLOGUE_HELPER.id),map:party.map,tab,name:characterName(playerHero()),job:playerHero().job,loadout:playerHero().skillLoadout.active[0]}');
- assert.deepEqual(s,{active:false,done:true,quests:['prologue','goddess_intro','two_regions','shop_rescue'],members:[job],lineup:[job],enlisted:[job],profiles:[],unlocked:false,map:0,tab:'battle',name:'測試者',job,loadout:skills[0].id});
+ assert.deepEqual(s,{active:false,done:true,quests:['prologue','two_regions','shop_rescue','skill_equipment_intro'],members:[job],lineup:[job],enlisted:[job],profiles:[],unlocked:false,map:0,tab:'battle',name:'測試者',job,loadout:skills[0].id});
  assert.equal(r.run("setTab('shop')")===false,false,'navigation opens after arrival');
  r.run("setTab('battle');running=true");assert.notEqual(r.run('spawnGroup()'),false,'ordinary exploration opens after arrival');r.run('stopTeamExploration()');
- assert.equal(r.run('sendStarterPackMail('+job+',__EMBERWILD_STARTER_PACK.rows('+job+'))'),false,'the starter mail cannot be sent again');
+ // The later gear-skill quest does not hand out a second charm.
+ assert.equal(r.run("completeStoryStage('skill_equipment_intro','','equipment_gift')"),true);assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);assert.equal(r.json('playerHero().bag.length'),6);
  assert.deepEqual(r.errors,[]);
  const again=await r.resume();s=again.json('{active:__EMBERWILD_PROLOGUE.active(),bag:playerHero().bag.length,members:party.members.length,name:characterName(playerHero()),error:globalThis.__EMBERWILD_BOOT_SAVE_ERROR||null}');
  assert.deepEqual(s,{active:false,bag:6,members:1,name:'測試者',error:null});assert.deepEqual(again.errors,[]);
@@ -114,7 +118,7 @@ test('progress survives a reload at every stage; nothing is asked or granted twi
  r=await r.resume();assert.deepEqual(r.at(),{stage:'helper',phase:'after',ok:true,active:true});
  r.until('trial','action');r.run('prologueOpenTask();prologueStartBattle()');assert.equal(r.fight().success,true);r.run('prologueReturn()');
  r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),6);
- r=await r.resume();assert.equal(r.at().stage,'gift');r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),6,'reloading does not grant the gear again');assert.equal(r.json('party.mailbox.messages.length'),1);
+ r=await r.resume();assert.equal(r.at().stage,'gift');r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),6,'reloading does not grant the gear again');assert.equal(r.json('party.mailbox.messages.length'),0);
  for(const g of r.json('playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id)'))r.run(`withHero(playerHero(),()=>equipGear(${JSON.stringify(g)}))`);
  r=await r.resume();assert.deepEqual(r.at(),{stage:'gift',phase:'after',ok:true,active:true});
  r.until('departure','chapter');r=await r.resume();assert.equal(r.at().stage,'departure');assert.equal(r.json('party.members.length'),2);
@@ -134,7 +138,7 @@ test('a lost training fight can be retried and is not counted',()=>{
 test('characters made outside the prologue and existing saves never enter it',async()=>{
  const r=open();r.run('selectSaveSlot(1);start(2);closeModal();');
  let s=r.json('{active:__EMBERWILD_PROLOGUE.active(),record:party.story.quests.prologue||null,mail:party.mailbox.messages.map(m=>m.rewardKey),worn:playerHero().equipped.map(x=>!!x),slot:playerHero().skillLoadout.active[0]!==null,quests:Object.keys(party.story.quests)}');
- assert.deepEqual(s,{active:false,record:null,mail:['starter-2-1'],worn:[true,true,true,true,true],slot:true,quests:['goddess_intro','two_regions','shop_rescue']},'direct creation keeps the previous kit and starter mail');
+ assert.deepEqual(s,{active:false,record:null,mail:['starter-2-1'],worn:[true,true,true,true,true],slot:true,quests:['two_regions','shop_rescue','skill_equipment_intro']},'direct creation keeps the previous kit and starter mail');
  r.run('playerHero().lv=12;playerHero().gold=4321;recruitCompanion(10);closeModal();save()');
  const facts=x=>x.json('{story:party.story,mailbox:party.mailbox,members:party.members.map(h=>[memberKey(h),h.lv,h.name,h.bag.map(g=>g.id),h.equipped,h.skillLoadout]),gold:playerHero().gold,active:party.active,enlisted:party.enlisted,unlocked:party.companionUnlocks.unlocked,tickets:party.achievements.tickets}'),packed=facts(r);
  const again=await r.resume();assert.equal(again.at().active,false);assert.equal(again.json('party.story.quests.prologue||null'),null,'no prologue record is written into an existing save');
@@ -161,10 +165,13 @@ test('a script changed under a running prologue keeps moving; an update that can
  // Import while a fight is running: the game refuses the document and says so instead of reporting success.
  r.until('calling','action');r.run('prologuePickClass(0);prologueConfirmClass()');r.until('skills','action');r.run('prologueOpenTask()');r.run(`chooseSkillSlot('active',0,${JSON.stringify(learnedActive(r)[0].id)})`);r.run('prologueReturn()');
  r.until('practice','action');r.run('prologueOpenTask();prologueStartBattle()');assert.equal(r.run('running'),true);
- r.run("globalThis.next=exportableBalance();next.story.quests.find(q=>q.prologue).prologue.training.name='改名的對象';");
+ const before=r.json('exportableBalance()');
+ // Values owned by other modules (item prices, maps) change too: none of them may be taken while the update is refused.
+ r.run("globalThis.next=exportableBalance();next.story.quests.find(q=>q.prologue).prologue.training.name='改名的對象';next.items[0].cost+=7;next.balanceSettings.maps.catalog[0].name='改名的地圖';");
  const file=text=>`({target:{files:[{size:${'text'}.length,text:async()=>${'text'}}],value:''}})`;
  r.run('globalThis.text=JSON.stringify(next)');assert.equal(await r.run('importBalanceJSON('+file()+')'),false);
  assert.match(r.run("$('toast').textContent"),/未套用/);assert.equal(r.json('exportableBalance().story.quests.find(q=>q.prologue).prologue.training.name'),'訓練對象','the running document is unchanged');
+ assert.deepEqual(r.json('exportableBalance()'),before,'no module took the refused document');
  assert.equal(r.fight().success,true);assert.equal(await r.run('importBalanceJSON('+file()+')'),true);assert.match(r.run("$('toast').textContent"),/已套用/);
  assert.equal(r.json('exportableBalance().story.quests.find(q=>q.prologue).prologue.training.name'),'改名的對象');assert.equal(r.at().stage,'practice');assert.equal(r.at().ok,true,'progress is kept across the update');
 });

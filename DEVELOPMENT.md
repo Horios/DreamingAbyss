@@ -139,6 +139,14 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 - 修正兩個既有問題：`story-runtime.js` 的區域函式 `effects` 會被任務關卡生成時的 `effects=[]` 覆寫，之後完成任何任務階段都會失敗（改名為 `applyEffects`）；`importBalanceJSON` 在隊伍探索或戰鬥中會顯示已套用，現在回報未套用，劇情資料也維持原狀。
 - `tools/override-baseline.json`：`render` 多一層包裝（序章圖層），已檢視並更新基準。
 
+## 序章調整：護符合併、移除舊引導任務、整份拒絕套用（v0.136）
+
+- 啟程護符合併成一件：序章在隊伍試煉完成時發放任務裝備 `initiation_charm`（兩孔、附帶「追擊」）。主線「裝備技能與寶石入門」不再有前置任務，第一階段遇到已持有的護符不會再發。序章角色不再有另一件沒有技能的啟程護符。v0.135 的說明中「新手武器與啟程護符用信件領取流程交付、信箱留下收據」已不適用。
+- 新手武器改為直接放進背包（`grantStarterPackDirect`），與階段完成寫在同一次存檔；信箱不再留下「女神的贈禮」。
+- 移除任務「女神的指引」（`goddess_intro`）。原本以它完成作為條件的基礎技能解鎖，改為 `__EMBERWILD_STORY.tutorialDone()`：舊任務已完成、序章已完成，或資料中已沒有這個任務，三者之一即成立。舊存檔裡進行到一半的紀錄會留在存檔中但不再顯示。`tests/story-system.test.cjs` 以 `tests/fixtures/story-goddess-intro.json` 保留這個任務作為測試樣本。
+- 職業選項「弓手」改為「弓箭手」，與職業名稱一致。
+- `js/balance/apply-guard.js`（最後載入）：隊伍探索或戰鬥中，`applyBalanceConfig` 在最外層就回傳 `false`，任何模組都不會換成新文件。v0.122 記錄的「外層模組已先套用新文件」不再發生。
+
 ## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。

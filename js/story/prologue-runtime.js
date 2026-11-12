@@ -25,8 +25,8 @@
  const isTask=s=>TASK_ACTIONS.includes(s.prologue.action)||!!s.encounter?.enabled;
 
  function skillInstalled(){const h=playerHero(),K=globalThis.__EMBERWILD_SKILLS;return (h.skillLoadout?.active||[]).some(id=>{const sk=id&&K.byId(id);return !!sk&&K.learned(h,sk);});}
- function starterMail(){return party.mailbox?.messages.filter(m=>m.rewardKey.startsWith('starter-'))||[];}
- function gearWorn(){const h=playerHero(),worn=new Set(h.equipped.filter(Boolean));return starterMail().length>0&&starterMail().every(m=>m.claimed)&&h.bag.some(g=>g.starterPack&&worn.has(g.id))&&h.equipped[4]!==null;}
+ // The starter weapon is the bag item that still carries its starter record; the charm is checked by the stage's own gearWorn condition.
+ function gearWorn(s){const h=playerHero(),worn=new Set(h.equipped.filter(Boolean));return h.bag.some(g=>g.starterPack&&worn.has(g.id))&&S().met(s.conditions,record());}
  function helperReady(){const id=HELPER().id;return !!HELPER().member()&&party.active.includes(id);}
  function satisfied(s){
   const a=s.prologue.action;
@@ -35,7 +35,7 @@
   if(!inPrologue())return false;
   if(a==='skillLesson')return skillInstalled();
   if(a==='recruitHelper')return helperReady();
-  if(a==='equipLesson')return gearWorn();
+  if(a==='equipLesson')return gearWorn(s);
   return S().met(s.conditions,record());
  }
  // On entry or reload: an already satisfied step resumes at its closing lines, otherwise the stage is read from the top.
@@ -64,16 +64,10 @@
  function beginAction(s){
   const a=s.prologue.action;
   if(a==='nameHero'||a==='chooseClass'||a==='recruitHelper'&&!HELPER().member())return;
-  if(a==='equipLesson'&&!grantGift())return;
+  if(a==='equipLesson')bannerNotice=ui('giftReceived');
   openTask(s);
  }
  function openTask(s){taskOpen=true;if(s.guides.length&&!s.guides.includes(tab))return baseSetTab(s.guides[0]);}
- function grantGift(){
-  const h=playerHero();
-  if(!starterMail().length){sendStarterPackMail(h.job,globalThis.__EMBERWILD_STARTER_PACK.rows(h.job,true),P().gift);if(save()!==true){party.mailbox.messages=party.mailbox.messages.filter(m=>!m.rewardKey.startsWith('starter-'));return false;}}
-  if(starterMail().some(m=>!m.claimed)&&!claimStarterPackMail())return false;
-  bannerNotice=ui('giftReceived');return true;
- }
 
  globalThis.prologueNext=function(){
   const s=sync();if(!s||!cursor)return;const lines=linesOf(s);
@@ -177,7 +171,11 @@
  globalThis.__EMBERWILD_PROLOGUE={
   active,running:inPrologue,creating,stage:()=>active()?sync()?.id||null:null,phase:()=>active()&&sync()?cursor.phase:null,satisfied:()=>{const s=active()&&sync();return !!s&&satisfied(s);},draftKey:DRAFT_KEY,
   // Runs inside the story stage transaction, so it commits or rolls back with the stage.
-  commitStage(q,s){if(s.prologue?.action==='enterWorld'){HELPER().remove();party.questChallenge=null;party.map=0;}}
+  commitStage(q,s){
+   // The stage right before the gear lesson hands over the starter pack with its own rewards (the charm); no mail is involved.
+   if(q.stages.find(x=>x.id===s.next)?.prologue?.action==='equipLesson'){const h=playerHero();grantStarterPackDirect(h.job,globalThis.__EMBERWILD_STARTER_PACK.rows(h.job));}
+   if(s.prologue?.action==='enterWorld'){HELPER().remove();party.questChallenge=null;party.map=0;}
+  }
  };
  draw();
 })();

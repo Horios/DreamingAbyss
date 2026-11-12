@@ -104,8 +104,8 @@
   if(out===false){design=old;return out;}if(party)sync();return out;}catch(e){design=old;throw e;}};
  try{const d=JSON.parse(balanceSourceText()||'null');if(d?.story)design=M.validate(d.story,context(d));}catch(e){console.warn(e);}
  newcomerPartyGuide=function(){return '';};
- tutorial=function(){if(prologueRunning())return '';const target=record('goddess_intro')?.done?'skill_equipment_intro':'goddess_intro';return tab==='story'||!party||record(target)?.done?'':`<div class="tutorial"><p>新手引導與任務進度可在「主要任務」查看。</p><button onclick="openStory('${target}','main')">前往主線</button></div>`;};
- claimTutorial=function(){openStory('goddess_intro','main');return false;};
+ tutorial=function(){if(prologueRunning())return '';const target=record('goddess_intro')?.done||!design.quests.some(q=>q.id==='goddess_intro')?'skill_equipment_intro':'goddess_intro';return tab==='story'||!party||record(target)?.done?'':`<div class="tutorial"><p>新手引導與任務進度可在「主要任務」查看。</p><button onclick="openStory('${target}','main')">前往主線</button></div>`;};
+ claimTutorial=function(){openStory(design.quests.some(q=>q.id==='goddess_intro')?'goddess_intro':'skill_equipment_intro','main');return false;};
  globalThis.storyCategoryReminder=type=>{if(!party||!state)return {ready:0,new:0};sync();const rows=design.quests.filter(q=>q.type===type&&q.enabled&&record(q.id)&&!record(q.id).done);const out={ready:0,new:0};for(const q of rows){const r=record(q.id),s=q.stages.find(s=>s.id===r.current);if(s&&met(s.conditions,r)&&(!s.choices.length||s.choices.some(c=>met(c.conditions,r))))out.ready++;if(!r.started)out.new++;}if(type==='side'){const extra=sideQuestReminder();out.ready+=extra.ready;out.new+=extra.new;}return out;};
  const badgeBase=numberBadgeHTML;globalThis.numberBadgeHTML=function(id){if(id!=='story')return badgeBase(id);const n=storyReadyCount();return n?`<span class="number-badge" aria-label="可繼續任務 ${n}">${n}</span>`:'';};
 
@@ -156,6 +156,6 @@
  const stopBase=stopTeamExploration;stopTeamExploration=function(...args){if(party)party.questChallenge=null;return stopBase(...args);};
  const changeMapBase=chooseMap;chooseMap=function(...args){if(party)party.questChallenge=null;globalThis.expeditionChallengeResult=null;return changeMapBase(...args);};
 
- globalThis.__EMBERWILD_STORY={prologueRunning,prologueQuest:()=>M.prologueQuest(design),begin(id,stageId,completed=[]){const q=design.quests.find(q=>q.id===id);if(!q||record(id))return false;if(q.prologue)ensure().quests={};const r={current:'',started:true,done:false,completed:[...completed],baseline:{},choices:{}};ensure().quests[id]=r;enter(q,r,stageId);return true;},get design(){return copy(design);},isRewardForm:id=>design.gearRewards.some(g=>g.formId===id),protectedGear,value,progress,met,sync,record,transaction,stats,resetTracking,validateProgress};
+ globalThis.__EMBERWILD_STORY={/* The basic tutorial gate for skills: the old intro quest, the prologue, or neither exists any more. */tutorialDone:()=>!!record('goddess_intro')?.done||!!record(M.prologueQuest(design)?.id)?.done||!design.quests.some(q=>q.id==='goddess_intro'),prologueRunning,prologueQuest:()=>M.prologueQuest(design),begin(id,stageId,completed=[]){const q=design.quests.find(q=>q.id===id);if(!q||record(id))return false;if(q.prologue)ensure().quests={};const r={current:'',started:true,done:false,completed:[...completed],baseline:{},choices:{}};ensure().quests[id]=r;enter(q,r,stageId);return true;},get design(){return copy(design);},isRewardForm:id=>design.gearRewards.some(g=>g.formId===id),protectedGear,value,progress,met,sync,record,transaction,stats,resetTracking,validateProgress};
 })();
 

@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/story/story-model.js'),K=require('../js/skills/skill-system-model.js');
 const root=path.resolve(__dirname,'..'),seed=JSON.parse(fs.readFileSync(path.join(root,'data/balance.json'))),qid='skill_equipment_intro';
-function game(job=0){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(${job});closeModal();party.story.quests.goddess_intro.done=true;__EMBERWILD_STORY.sync();globalThis.lesson=()=>party.story.quests.skill_equipment_intro;globalThis.claim=()=>completeStoryStage('skill_equipment_intro','',lesson().current);`);return r;}
+function game(job=0){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(${job});closeModal();__EMBERWILD_STORY.sync();globalThis.lesson=()=>party.story.quests.skill_equipment_intro;globalThis.claim=()=>completeStoryStage('skill_equipment_intro','',lesson().current);`);return r;}
 function gift(r){assert.equal(r.run('claim()'),true);r.run("globalThis.charm=state.bag.find(g=>g.storyRewardKey==='initiation_charm')");}
 function equip(r){r.run("equipGear(charm.id)");assert.equal(r.run('selectSkillEquipment(charm.id)'),true);assert.equal(r.run("configureSkill('proc',0,'tutorial_echo')"),true);}
 function finish(r){gift(r);equip(r);assert.equal(r.run('claim()'),true);assert.equal(r.run('socketEquipmentGem(charm.id,0,0)'),true);assert.equal(r.run('claim()'),true);assert.equal(r.run('socketEquipmentGem(charm.id,1,0)'),true);assert.equal(r.run('claim()'),true);}

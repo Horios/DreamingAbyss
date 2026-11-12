@@ -117,17 +117,19 @@
     if(row.kind==='item'&&row.key.startsWith('companion-ticket-'))return {type:'companionTicket',companionId:Number(row.key.slice(17)),quantity:row.quantity,name:row.name};
     return copy(row);
   }
-  globalThis.sendStarterPackMail=function(job,rows,text={}){
+  globalThis.sendStarterPackMail=function(job,rows){
     syncUnlocks();const mailbox=party.mailbox;
     if(mailbox.messages.some(m=>m.rewardKey.startsWith('starter-')))return false;
     const doc=exportableBalance(),attachments=rows.map(row=>row.type==='catalogue'?catalogueAttachment(row,job,doc):copy(row));
     const parts=Math.ceil(attachments.length/6);
-    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:(text.subject||CLASSES[job].name+'新手禮包')+(parts>1?`（${i+1}/${parts}）`:''),body:text.body||'歡迎來到夢淵！初始裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
+    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:CLASSES[job].name+'新手禮包'+(parts>1?`（${i+1}/${parts}）`:''),body:'歡迎來到夢淵！初始裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
     return true;
   };
-  function claimMail(ids){
+  // `direct` delivers a list of attachments without a mail: no message, no save, and a failure throws so the caller's
+  // transaction rolls back (the prologue hands over the starter pack this way).
+  function claimMail(ids,direct=null){
     syncUnlocks();ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureHealingPotionState();
-    const messages=party.mailbox.messages.filter(m=>ids.includes(m.id)&&!m.claimed);if(!messages.length)return false;
+    const messages=direct?[{attachments:direct}]:party.mailbox.messages.filter(m=>ids.includes(m.id)&&!m.claimed);if(!messages.length)return false;
     const tickets=copy(party.achievements.tickets),bag=[...state.bag],materials=copy(state.materials),consumables=copy(state.consumables),gems=[...state.gems],potions=copy(healingInventory());
     let ore=state.ore,dust=state.dust;
     const add=(object,key,n,limit=1e9)=>{const next=(object[key]||0)+n;if(!Number.isSafeInteger(next)||next>limit)throw Error('道具庫存已達上限，附件保留在信箱');object[key]=next;};
@@ -149,16 +151,17 @@
           else add(isHealPotion(definition)?potions:consumables,item.key,item.quantity);
         }
       }
-    }catch(error){toast(error.message);return false;}
+    }catch(error){if(direct)throw error;toast(error.message);return false;}
     const before={tickets:party.achievements.tickets,bag:state.bag,materials:state.materials,consumables:state.consumables,gems:state.gems,potions:party.members[0].healingPotions,ore:state.ore,dust:state.dust,mailbox:copy(party.mailbox)};
     party.achievements.tickets=tickets;state.bag=bag;state.materials=materials;state.consumables=consumables;state.gems=gems;state.ore=ore;state.dust=dust;party.members[0].healingPotions=potions;
+    if(direct)return true;
     for(const m of messages){m.claimed=true;m.read=true;}
     let saved=false;try{saved=save()===true;}catch(error){toast('儲存失敗，附件保留在信箱');}
     if(!saved){party.achievements.tickets=before.tickets;state.bag=before.bag;state.materials=before.materials;state.consumables=before.consumables;state.gems=before.gems;state.ore=before.ore;state.dust=before.dust;party.members[0].healingPotions=before.potions;party.mailbox=before.mailbox;return false;}
     render();toast('已領取 '+messages.length+' 封郵件的附件，道具已放入背包');return true;
   }
   globalThis.claimMailboxAttachments=id=>claimMail([id]);
-  globalThis.claimStarterPackMail=()=>{syncUnlocks();const ids=party.mailbox.messages.filter(m=>m.rewardKey.startsWith('starter-')&&!m.claimed).map(m=>m.id);return ids.length?claimMail(ids):party.mailbox.messages.some(m=>m.rewardKey.startsWith('starter-'));};
+  globalThis.grantStarterPackDirect=function(job,rows){const doc=exportableBalance();return claimMail([],rows.map(row=>row.type==='catalogue'?catalogueAttachment(row,job,doc):copy(row)));};
   globalThis.claimAllMailboxAttachments=function(){syncUnlocks();return claimMail(unclaimedMail().map(m=>m.id));};
   // v0.076: read everything, and delete only mail that is both read and claimed. Unread or unclaimed (NEW) mail stays.
   // Reward resends are guarded elsewhere (starter packs only on a new game, companion rewards by rewardCompanions).
