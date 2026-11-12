@@ -1,5 +1,13 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{openRuntime}=require('./runtime.cjs'),D=require('../js/balance/balance-diff.js');
 const root=process.cwd(),published=JSON.parse(fs.readFileSync('data/balance.json'));
+// A runtime that accepts the document keeps every published value. It may add derived fields; the only removals are the
+// two deliberate normalizations below. Applies to the current runtime and to an upgraded production checkout alike.
+function retainsPublished(exported){
+ const d=D.diff(published,exported);
+ assert.equal(d.modified,0,JSON.stringify(d.rows.filter(r=>r.type==='修改').slice(0,3)));
+ const allowed=r=>/^starterPacks\.\d+\.[1-4]$/.test(r.path)||r.path==='balanceSettings.meta.activeCooldownFloorVersion';
+ assert.deepEqual(d.rows.filter(r=>r.type==='刪除'&&!allowed(r)).map(r=>r.path),[]);
+}
 test('production ignores old browser balance and player-save design snapshots; preview overrides expire on a new published base',async()=>{
  const old=structuredClone(published);old.items[0].cost=99999;
  const main=await openRuntime(root,'index.html',{'emberwild-balance-test-v1':JSON.stringify(old)});
@@ -16,17 +24,14 @@ test('older production fails closed on expanded life data; upgraded runtime reta
   await r.page.waitForFunction(()=>/資料載入失敗/.test(document.getElementById('app')?.innerText||'')||window.emberwildBootComplete===true,{},{timeout:30000});
   const version=await r.page.evaluate(()=>/資料載入失敗/.test(document.getElementById('app').innerText)?0:EmberwildBalanceDocument.lifeProductsVersion||0);
   if(version<1){assert.match(await r.page.locator('#app').innerText(),/資料載入失敗.*lifeSkills/);assert.equal(await r.page.evaluate(()=>typeof exportableBalance),'undefined');}
-  else{const actual=await r.page.evaluate(()=>exportableBalance());assert.equal(D.diff(published,actual).total,0);}
+  else retainsPublished(await r.page.evaluate(()=>exportableBalance()));
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
  const updated=await openRuntime(root);try{
   // The current runtime keeps every published value. It adds derived fields (seconds timing, defaults) and applies two
   // deliberate normalizations: legacy five-item starter packs keep only the weapon, and the cooldown-floor migration
   // marker is consumed. Nothing else may be removed and no published value may change; the export round-trips.
-  const exported=await updated.page.evaluate(()=>exportableBalance()),d=D.diff(published,exported);
-  assert.equal(d.modified,0,JSON.stringify(d.rows.filter(r=>r.type==='修改').slice(0,3)));
-  const allowed=r=>/^starterPacks\.\d+\.[1-4]$/.test(r.path)||r.path==='balanceSettings.meta.activeCooldownFloorVersion';
-  assert.deepEqual(d.rows.filter(r=>r.type==='刪除'&&!allowed(r)).map(r=>r.path),[]);
+  const exported=await updated.page.evaluate(()=>exportableBalance());retainsPublished(exported);
   const again=await updated.page.evaluate(doc=>{applyBalanceConfig(doc,{persist:false});return exportableBalance();},exported);assert.equal(D.diff(exported,again).total,0,'the export round-trips unchanged');assert.equal(await updated.page.evaluate(()=>!!GAMEPLAY_SETTINGS.quests.design),true);assert.deepEqual(updated.errors,[]);}finally{await updated.browser.close();}
 });
 test('unsupported published schema stops before game scripts and keeps saved bytes intact',async()=>{

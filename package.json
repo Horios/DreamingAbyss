@@ -32,7 +32,9 @@
     "balance:affected": "node scripts/balance-modules.cjs affected --base HEAD",
     "balance:validate": "node scripts/balance-modules.cjs validate --base HEAD",
     "balance:bench": "node scripts/balance-modules.cjs bench",
-    "test:balance-modules": "node --test tests/balance-modules.test.cjs tests/balance-document.test.cjs tests/published-loader.test.cjs"
+    "test:balance-modules": "node --test tests/balance-modules.test.cjs tests/balance-document.test.cjs tests/published-loader.test.cjs",
+    "test:full": "node scripts/full-test.cjs",
+    "test:full:long": "node scripts/full-test.cjs --long"
   },
   "devDependencies": {
     "playwright": "1.62.1"

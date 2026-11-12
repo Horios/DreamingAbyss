@@ -105,6 +105,18 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 - 已知行為（未修改）：隊伍正在探索或遭遇中時，`applyBalanceConfig` 回傳 `false` 且不套用隊伍相關設定（`js/character/team-runtime.js`）。這個判斷位於包裝鏈的內層，在它之後載入的模組（秒數與 MP、劇情、許願湖、導覽、介面文字等）此時已經換成新文件，遊戲會處於新舊設定混合的狀態；核心的 `importBalanceJSON` 也沒有檢查回傳值，仍顯示「測試設定已套用」。正式的資料載入發生在啟動時、存檔載入之前，不受影響。平衡器的預覽橋接已改為檢查回傳值並把先前的文件放回去。遊戲內開發工具在探索中匯入的情況建議另開 issue 處理。
 - `test-skill-gems.yml` 的 `balance-modules` 工作加入上述測試，逾時由 10 分鐘改為 25 分鐘。
 
+## 測試版與平衡器的完整測試流程（v0.123）
+
+只新增流程與修正測試；沒有修改平衡數值、遊戲程式或畫面。
+
+- `scripts/full-test.cjs`（`npm run test:full`）：把遊戲與平衡器兩個倉庫的全部自動檢查放進同一個流程，包含 CI 排除的跨倉庫測試。階段、判定規則、報告與量測時間見 `docs/FULL_TEST_FLOW.md`。
+- 流程把「有平衡器卻被略過的測試案例」視為未通過，並以 `check-game-sync --strict` 要求平衡器記錄的遊戲 commit 等於受測的遊戲 commit。
+- 第一次完整執行（v0.122、平衡器 `a14f1b6`）246 個項目中 240 個通過。遊戲倉庫的三個未通過項目都是測試本身過時，已修正：
+  - `tests/story-system.test.cjs`：平衡器路徑寫成 `../balance-site`，設計器往返的案例一直被略過。改為 `EMBERWILD_BALANCE_ROOT` 或 `../Emberwild-Balance`。
+  - `tests/balance-published-source.browser.test.cjs`：正式版程式讀測試版資料的案例要求匯出與發布資料完全相同。執行時會補上衍生欄位並套用兩項既有的正規化，同一檔案對測試版已經允許；兩邊改用同一個判定（沒有被修改的值，刪除只限新手禮包第 2 到 5 項與冷卻下限標記）。
+  - `tests/companions-roster.test.cjs`：30 名夥伴的捲動判定只看名冊清單與夥伴頁。這兩層現在是 `overflow:visible`，由頁面的 `<main>` 捲動。判定改為三層其中之一可捲動，並確認最後一名夥伴能捲進畫面。
+- 平衡器倉庫的三個未通過項目：內嵌的遊戲檔案停在 v0.120（需要執行 `node scripts/sync-game.cjs`）；`tests/seconds-authoring.browser.cjs` 沒有讀取 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`；第三個是流程本身同時執行建置與產物驗證，已改為依序執行。
+
 ## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。
