@@ -1,9 +1,13 @@
-/* Loaded last. A balance update is refused as a whole while the team is exploring or fighting: every module that wraps
-   applyBalanceConfig sits inside this check, so none of them swaps to the new document when the update is turned down. */
+/* Loaded last. A balance update that is turned down (the team is exploring or fighting) must change nothing.
+   The refusal comes from deep inside the applyBalanceConfig chain, after the outer modules have already taken the new
+   document. When that happens the document that was running is offered again: the outer modules take it back and the
+   inner ones, which never changed, refuse it the same way. An invalid document still throws from its own validator. */
 (()=>{
  const base=applyBalanceConfig;
  applyBalanceConfig=function(input,options){
-  if(party&&globalThis.__EMBERWILD_TEAMS&&!globalThis.__EMBERWILD_TEAMS.safe())return false;
-  return base(input,options);
+  const unsafe=!!party&&!!globalThis.__EMBERWILD_TEAMS?.busy?.(),running=unsafe?exportableBalance():null;
+  const out=base(input,options);
+  if(out===false&&running)base(running,{persist:false});
+  return out;
  };
 })();
