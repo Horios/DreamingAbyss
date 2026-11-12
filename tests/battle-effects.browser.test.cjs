@@ -302,7 +302,7 @@ test('numbers stay bounded at high speed, readable within phone cards, obey mode
    await p.clock.runFor(1100);
    await p.evaluate(()=>{foes.forEach(e=>e.hp=e.maxhp=1e9);fxCapture(()=>foes.forEach((e,i)=>EmberwildBattleEffects.scope({mode:'damage',critical:i===2},()=>e.hp-=[1,37,123456789][i])));});
    await p.clock.runFor(320);
-   const centered=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const range=document.createRange();range.selectNodeContents(n);const r=range.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect();return {text:n.textContent,ratio:r.width/card.width,offset:r.x+r.width/2-card.x-card.width/2,weight:Number(getComputedStyle(n).fontWeight)};}));
+   const centered=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const range=document.createRange();range.selectNodeContents(n);const r=range.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect();return {text:n.textContent,ratio:r.width/card.width,offset:r.x+r.width/2-card.x-card.width/2,weight:Number(getComputedStyle(n).fontWeight),cardWidth:card.width,clientWidth:n.closest('.unit').clientWidth,offsetWidth:n.closest('.unit').offsetWidth};}));
    assert.equal(centered.length,3);
    for(const n of centered){assert(n.ratio>=.5&&n.ratio<=.8,JSON.stringify(n));assert(Math.abs(n.offset)<=1,JSON.stringify(n));assert(n.weight>=900);}
    await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});

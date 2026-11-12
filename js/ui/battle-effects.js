@@ -195,7 +195,8 @@
   element.style.fontSize='100px';
   const width=element.offsetWidth||100;
   const ratio=event.critical?.64:event.kind==='dot'?.52:.56;
-  const size=100*node.clientWidth*ratio/width;
+  // Include the card's reserved scrollbar gutter in its visible width.
+  const size=100*node.offsetWidth*ratio/width;
   element.style.fontSize=size+'px';
   // Keep large single digits inside short cards without narrowing their width.
   const height=size*.9,compression=Math.min(1,Math.max(1,layer.clientHeight-36)/height);
