@@ -191,6 +191,7 @@
     if(resistance)d=Math.max(minimumDamage,Math.round(d*(1-resistance)));
     const absorb=Math.min(Math.max(0,Number(e.shield)||0),d);e.shield=Math.max(0,(Number(e.shield)||0)-absorb);d-=absorb;
     const actual=Math.min(e.hp,d);e.hp=Math.max(0,e.hp-d);
+    globalThis.EmberwildBattleEffects?.result('resolved',e,h,{critical:!!crit});
     if(actual>0)recordCombatContribution(h,'damage',actual);
     const beforeLifesteal=h.hp;h.hp=Math.min(v.hp,h.hp+healingAmount(h,actual*v.lifesteal));
     const healed=Math.max(0,h.hp-beforeLifesteal);if(healed>0)recordCombatContribution(h,'healing',healed);

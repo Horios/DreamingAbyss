@@ -119,3 +119,14 @@
 .squad-field .unit>.battle-fx-health.battle-fx-buff>svg{top:2px;bottom:auto}
 .squad-field .unit>.battle-fx-health.battle-fx-debuff>svg{top:auto;bottom:2px}
 .squad-field .unit>.battle-fx-health.battle-fx-buff>b{top:2px;bottom:auto}
+
+/* Resolved combat values occupy the portrait column, above status glows. */
+.squad-field .unit>.battle-number-layer{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden;border-radius:inherit;contain:layout style}
+.battle-number{position:absolute;top:calc(16px + var(--number-lane)*6px);box-sizing:border-box;text-align:center;white-space:nowrap;font:800 17px/1.1 system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#ff796f;text-shadow:-1px -1px 0 #12131b,1px -1px 0 #12131b,-1px 1px 0 #12131b,1px 1px 0 #12131b,0 2px 3px #000;pointer-events:none;animation:battle-number-rise var(--number-time) ease-out both!important;will-change:transform,opacity}
+.battle-number[data-critical=true]{color:#ffaaa0;font-weight:900;--number-pop:1.22}
+.battle-number[data-kind=heal]{color:#87efad}.battle-number[data-kind=absorb],.battle-number[data-kind=shield]{color:#f2f5ff}.battle-number[data-kind=text]{color:#d5d9e0}
+.battle-number[data-detail=simple]{--number-pop:1;animation-name:battle-number-simple!important}
+@keyframes battle-number-rise{0%{opacity:0;transform:translateY(3px) scale(.9)}16%{opacity:1;transform:translateY(0) scale(var(--number-pop,1.06))}35%{opacity:1;transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(-14px) scale(1)}}
+@keyframes battle-number-simple{0%,70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-4px)}}
+@media(prefers-reduced-motion:reduce){.battle-number{animation-name:battle-number-simple!important}}
+.battle-number[data-caption]:not([data-caption=""])::before{content:attr(data-caption);position:absolute;bottom:100%;left:0;right:0;font-size:10px;line-height:1;font-weight:700}

@@ -5,7 +5,16 @@
  'use strict';
  const storageKey='emberwild-battle-effects',choices=['full','simple','off'];
  let preference='full',frame=null,pending=null,owner=null,encounter=null,sequence=0,staged=null,held=null;
- const timers=new Set();
+ const timers=new Set(),numberNodes=new Map();
+ const numberLimit=128,smallScreen=matchMedia('(max-width: 600px)');
+ const priority=e=>e.critical?4:e.kind==='heal'?3:['damage','absorb','shield','text'].includes(e.kind)?2:1;
+ // Bounded, ordered resolved values; particles may coalesce, numbers never merge.
+ function number(kind,target,amount,extra={}){
+  if(!frame||!target||frame.context.mode==='settlement')return;
+  const event={kind,target:String(target),amount,critical:!!frame.context.critical,periodic:!!frame.context.periodic,...extra};
+  if(frame.numbers.length>=numberLimit){let i=0;for(let n=1;n<frame.numbers.length;n++)if(priority(frame.numbers[n])<priority(frame.numbers[i]))i=n;if(priority(event)<priority(frame.numbers[i]))return;frame.numbers.splice(i,1);}
+  frame.numbers.push(event);
+ }
  function later(fn,ms){const timer=setTimeout(()=>{timers.delete(timer);fn();},ms);timers.add(timer);return timer;}
  const activeNodes=new Map(),markedNodes=new Set(),motion=matchMedia('(prefers-reduced-motion: reduce)');
  try{const saved=localStorage.getItem(storageKey);if(choices.includes(saved))preference=saved;}catch{}
@@ -48,13 +57,13 @@
   for(const u of units()){
    const before=frame.vitals.get(u),after={hp:u.hp,shield:shields(u)};frame.vitals.set(u,after);if(!before||ctx.mode==='settlement')continue;
    const target=id(u);if(!target)continue;
-   if(after.shield>before.shield)enqueue('shield',target);
+   if(after.shield>before.shield){enqueue('shield',target);number('shield',target,after.shield-before.shield);}
    if(after.shield<before.shield){
-    const hit=ctx.mode==='damage';enqueue(hit?'absorb':'dissolve',target);
+    const hit=ctx.mode==='damage';enqueue(hit?'absorb':'dissolve',target);if(hit)number('absorb',target,before.shield-after.shield);
     if(hit&&after.shield<=0)enqueue('break',target);
    }
-   if(after.hp<before.hp){enqueue(ctx.periodic?'dot':attackType(ctx),target);enqueue('hit',target);}
-   else if(after.hp>before.hp){const kind=ctx.mode==='potion'?'potion':ctx.mode==='damage'||ctx.effect==='drain'?'drain':ctx.mode==='regen'?'regen':'heal';enqueue(kind,target,kind==='regen'?{label:'+'+Math.max(1,Math.round(after.hp-before.hp))+' HP'}:{});}
+   if(after.hp<before.hp){number(ctx.periodic?'dot':'damage',target,before.hp-after.hp);enqueue(ctx.periodic?'dot':attackType(ctx),target);enqueue('hit',target);}
+   else if(after.hp>before.hp){number('heal',target,after.hp-before.hp,{critical:false});const kind=ctx.mode==='potion'?'potion':ctx.mode==='damage'||ctx.effect==='drain'?'drain':ctx.mode==='regen'?'regen':'heal';enqueue(kind,target,kind==='regen'?{label:'+'+Math.max(1,Math.round(after.hp-before.hp))+' HP'}:{});}
    // A shield-only attack has an impact on the shield, never a red HP hit.
 
   }
@@ -81,12 +90,24 @@
   pending=null;
   if(preference==='off'||!visible()){frame=null;return;}
   owner=party;encounter=foes;
-  frame={events:new Map(),initial:sample(),vitals:sample(),statuses:statuses(),context:{mode:'regen'},at:performance.now(),owner:party,encounter:foes};
+  frame={events:new Map(),numbers:[],initial:sample(),vitals:sample(),statuses:statuses(),context:{mode:'regen'},at:performance.now(),owner:party,encounter:foes};
  }
- function end(){if(!frame)return;checkpoint();if(frame.events.size)pending=frame;frame=null;}
- function result(type,target,source,details={}){if(frame)enqueue(type,id(target),{...details,source:source?id(source):null});}
+ function end(){if(!frame)return;checkpoint();if(frame.events.size||frame.numbers.length)pending=frame;frame=null;}
+ function result(type,target,source,details={}){
+  if(!frame)return;
+  if(type==='resolved'){
+   const before=frame.vitals.get(target);
+   // Called at the existing resolver's HP write, before lifesteal, retaliation or recovery procs.
+   const context=frame.context;frame.context={...context,critical:!!details.critical};checkpoint();frame.context=context;
+   if(before?.hp>0&&target.hp===before.hp&&shields(target)===before.shield){number('text',id(target),null,{label:'0',critical:false});enqueue('zero',id(target),{category:'shield'});}
+   return;
+  }
+  if(['evade','resist','miss','immune','block'].includes(type))number('text',id(target),null,{label:details.label||({evade:'閃避',resist:'抵抗',miss:'未命中',immune:'免疫',block:'格擋'}[type]),critical:false});
+  enqueue(type,id(target),{...details,source:source?id(source):null});
+ }
  function cleanNode(node){const entries=activeNodes.get(node);if(entries)for(const row of entries.values()){clearTimeout(row.timer);row.element.remove();}activeNodes.delete(node);}
- function clear(){frame=null;pending=null;staged=null;held=null;for(const t of timers)clearTimeout(t);timers.clear();for(const node of activeNodes.keys())cleanNode(node);for(const node of markedNodes){node.querySelector(':scope > .battle-fx-status')?.remove();delete node.dataset.fxShield;}markedNodes.clear();owner=null;encounter=null;}
+ function clearNumbers(node){const entries=numberNodes.get(node);if(entries)for(const row of entries.values())row.remove();numberNodes.delete(node);node.querySelector(':scope > .battle-number-layer')?.remove();}
+ function clear(){for(const node of numberNodes.keys())clearNumbers(node);frame=null;pending=null;staged=null;held=null;for(const t of timers)clearTimeout(t);timers.clear();for(const node of activeNodes.keys())cleanNode(node);for(const node of markedNodes){node.querySelector(':scope > .battle-fx-status')?.remove();delete node.dataset.fxShield;}markedNodes.clear();owner=null;encounter=null;}
  const palette={damage:{color:'#ff796f',rgb:'255,121,111'},buff:{color:'#f4d58b',rgb:'244,213,139'},shield:{color:'#f2f5ff',rgb:'242,245,255'},recovery:{color:'#87efad',rgb:'135,239,173'},debuff:{color:'#c495f0',rgb:'196,149,240'}};
  function eventCategory(type){
   if(['shield','absorb','break','dissolve','shield-impact','evade','resist'].includes(type))return 'shield';
@@ -148,9 +169,39 @@
   const row={element,timer:null,channel},remove=()=>{if(entries.get(eventKey)!==row)return;clearTimeout(row.timer);element.remove();entries.delete(eventKey);if(!entries.size)activeNodes.delete(node);};
   row.timer=setTimeout(remove,duration+80);entries.set(eventKey,row);element.addEventListener('animationend',e=>{if(e.target===element)remove();});
  }
+ // One number surface per combat individual, confined to the portrait area of its card.
+ function playNumber(node,event){
+  const simple=mode()==='simple',limit=smallScreen.matches||simple?32:64,perTarget=smallScreen.matches?(simple?3:5):(simple?4:8);
+  const all=[...numberNodes.values()].flatMap(rows=>[...rows.values()]),peers=[...(numberNodes.get(node)?.values()||[])];
+  for(const candidates of [peers.length>=perTarget?peers:[],all.length>=limit?all:[]])if(candidates.length){
+   const victim=candidates.reduce((a,b)=>priority(a.event)<=priority(b.event)?a:b);
+   if(priority(event)<priority(victim.event))return;victim.remove();
+  }
+  let entries=numberNodes.get(node);if(!entries){entries=new Map();numberNodes.set(node,entries);}
+  let layer=node.querySelector(':scope > .battle-number-layer');
+  if(!layer){layer=document.createElement('span');layer.className='battle-number-layer';layer.setAttribute('aria-hidden','true');node.append(layer);}
+  const key=++sequence,element=document.createElement('b'),lane=key%5;
+  element.className='battle-number';element.dataset.kind=event.kind;element.dataset.critical=String(event.critical);element.dataset.detail=simple?'simple':'full';element.dataset.target=event.target;
+  if(event.amount!==null)element.dataset.amount=String(event.amount);
+  const value=event.amount===null?'':event.amount.toLocaleString('en-US',{maximumFractionDigits:8});
+  element.textContent=event.label||(['heal','shield'].includes(event.kind)?'+'+value:value);
+  element.dataset.caption=event.kind==='absorb'?'吸收':event.kind==='shield'?'護盾':event.critical?'暴擊':'';
+  const duration=simple?600:900;
+  element.style.setProperty('--number-time',duration+'ms');element.style.setProperty('--number-lane',lane);
+  // Anchor to the visible portrait even when the player flips the card to cooldowns/statuses.
+  const portrait=node.querySelector('.battle-enemy-icon'),a=node.getBoundingClientRect(),b=portrait?.getBoundingClientRect();
+  const center=b?b.x-a.x+b.width/2:28;
+  element.style.left=Math.max(2,center-28)+'px';element.style.width=Math.min(72,Math.max(48,center*2-4))+'px';
+  layer.append(element);
+  const size=event.critical?21:event.kind==='dot'?13:17;
+  element.style.fontSize=Math.max(11,Math.min(size,(parseFloat(element.style.width)-2)/Math.max(1,element.textContent.length*.62)))+'px';
+  const row={event,timer:null,remove:()=>{if(!entries.has(key))return;clearTimeout(row.timer);element.remove();entries.delete(key);if(!entries.size){numberNodes.delete(node);layer.remove();}}};
+  entries.set(key,row);row.timer=setTimeout(row.remove,duration+80);element.addEventListener('animationend',e=>{if(e.target===element)row.remove();});
+ }
  function sync(s){
   if(preference==='off'||!visible()||owner&&owner!==party||staged&&staged.encounter!==foes&&!held){clear();return;}
   for(const node of activeNodes.keys())if(!node.isConnected)cleanNode(node);
+  for(const node of numberNodes.keys())if(!node.isConnected)clearNumbers(node);
   for(const node of markedNodes)if(!node.isConnected){node.querySelector(':scope > .battle-fx-status')?.remove();delete node.dataset.fxShield;markedNodes.delete(node);}
   const rows=[...s.allies,...s.units],byId=new Map(rows.map(row=>[String(row.id),row]));
   const nodes=new Map();document.querySelectorAll('#battleAllyIcons .unit [data-hero-id],#battleEnemyIcons .unit [data-enemy-id]').forEach(node=>nodes.set(node.dataset.heroId||node.dataset.enemyId,node));
@@ -191,7 +242,8 @@
   for(const event of events){event.eventId=batch.eventId;if(event.type==='cast')playEvent(event);}
   const impact=()=>{if(staged!==batch||!visible())return;batch.impacted=true;
    EmberwildBattleSummary.sync({animate:false});
-   for(const event of events)if(event.type!=='cast'&&byId.has(event.target))playEvent(event);
+   for(const event of events)if(!['cast','zero'].includes(event.type)&&byId.has(event.target))playEvent(event);
+   for(const event of batch.numbers){const node=healthNodes.get(event.target);if(node&&byId.has(event.target))playNumber(node,event);}
   };
   batch.commitImpact=impact;
   if(batch.delay)later(impact,batch.delay);else impact();
@@ -251,10 +303,10 @@
  // fresh pre-impact samples, or sync() treats its whole batch as a stale encounter and clears it.
  const spawnBase=spawnGroup;spawnGroup=function(...args){
   const out=spawnBase.apply(this,args);
-  if(frame&&!frame.events.size&&frame.encounter!==foes&&frame.owner===party){frame.encounter=foes;encounter=foes;frame.initial=sample();frame.vitals=sample();frame.statuses=statuses();}
+  if(frame&&!frame.events.size&&!frame.numbers.length&&frame.encounter!==foes&&frame.owner===party){frame.encounter=foes;encounter=foes;frame.initial=sample();frame.vitals=sample();frame.statuses=statuses();}
   return out;
  };
- globalThis.EmberwildBattleEffects={begin,end,scope,quiet,result,sync,clear,present,get holdingEncounter(){return !!held&&held.encounter!==foes&&performance.now()<held.until;},get capturing(){return !!frame;},get preference(){return preference;},get pendingEvents(){return pending?[...pending.events.values()].map(e=>({...e})):[];},get activeCount(){return [...activeNodes.values()].reduce((n,m)=>n+m.size,0);}};
+ globalThis.EmberwildBattleEffects={begin,end,scope,quiet,result,sync,clear,present,get holdingEncounter(){return !!held&&held.encounter!==foes&&performance.now()<held.until;},get capturing(){return !!frame;},get preference(){return preference;},get pendingEvents(){return pending?[...pending.events.values()].map(e=>({...e})):[];},get pendingNumbers(){return pending?pending.numbers.map(e=>({...e})):[];},get numberCount(){return [...numberNodes.values()].reduce((n,m)=>n+m.size,0);},get activeCount(){return [...activeNodes.values()].reduce((n,m)=>n+m.size,0);}};
  globalThis.setBattleEffects=function(value){if(!choices.includes(value))return false;preference=value;clear();try{localStorage.setItem(storageKey,value);}catch{toast('特效已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-battle-effects]').forEach(select=>select.value=value);EmberwildBattleSummary.sync({animate:false});return true;};
  globalThis.battleEffectsOptionsView=()=>'<section class="panel option-row"><div><h2>戰鬥特效</h2><p class="small">調整探索圖示與血條區塊動畫；保留目前行動者金框；減少動態效果時自動簡化。</p></div><select data-battle-effects aria-label="戰鬥特效" onchange="setBattleEffects(this.value)">'+choices.map((value,i)=>'<option value="'+value+'" '+(preference===value?'selected':'')+'>'+['完整','簡化','關閉'][i]+'</option>').join('')+'</select></section>';
  const modal=document.getElementById('modal');if(modal)new MutationObserver(()=>{if(modal.open)clear();}).observe(modal,{attributes:true,attributeFilter:['open']});

@@ -81,3 +81,47 @@ test('offline replay never opens effect frames and stores no visual events',asyn
  const r=game();r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`globalThis.fxFrames=0;const fxBegin=EmberwildBattleEffects.begin;EmberwildBattleEffects.begin=function(){fxFrames++;return fxBegin();};`);
  r.run('spawnGroup()');r.advance(120000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('fxFrames'),0);assert.equal(r.run('EmberwildBattleEffects.pendingEvents.length'),0);assert(r.run('party.offlineExploration.receipt.kills')>0);assert.deepEqual(r.errors,[]);
 });
+
+test('numbers preserve each settled hit, overkill, critical, AoE and shield values without coalescing',()=>{
+ const r=game();
+ capture(r,`globalThis.values=[];for(const e of foes)for(let i=0;i<3;i++)values.push({target:e.id,amount:resolveHit(e,50,state,'fire',i===1)});`);
+ let numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)')).filter(e=>['damage','dot'].includes(e.kind));
+ assert.deepEqual(numbers.map(({target,amount})=>({target,amount})),JSON.parse(r.run('JSON.stringify(values)')));
+ assert.deepEqual(numbers.map(e=>e.critical),[false,true,false,false,true,false,false,true,false]);
+ r.run('foes[1].shield=3;foes[1].hp=2');capture(r,`resolveHit(foes[1],500,state,'ice',true)`);
+ numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)')).filter(e=>e.target==='fx-1');
+ assert.deepEqual(numbers.map(e=>[e.kind,e.amount]),[['absorb',3],['damage',2]]);
+ r.run('foes[1].hp=100;foes[1].shield=10000');capture(r,`globalThis.shieldBefore=foes[1].shield;resolveHit(foes[1],50,state,'physical',false)`);
+ numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)')).filter(e=>e.target==='fx-1');
+ assert.deepEqual(numbers.map(e=>[e.kind,e.amount]),[['absorb',r.run('shieldBefore-foes[1].shield')]]);
+});
+test('numbers report capped healing, each DOT tick and authoritative miss/immune/zero results',()=>{
+ const r=game();r.run('state.hp=stats(state).hp-2');capture(r,`EmberwildBattleEffects.scope({mode:'skill'},()=>state.hp=Math.min(stats(state).hp,state.hp+500))`);
+ assert.equal(r.run(`EmberwildBattleEffects.pendingNumbers.find(e=>e.kind==='heal').amount`),2);
+ capture(r,`EmberwildBattleEffects.scope({mode:'skill'},()=>state.hp=stats(state).hp)`);assert.equal(r.run('EmberwildBattleEffects.pendingNumbers.length'),0);
+ capture(r,`for(let i=0;i<3;i++)EmberwildBattleEffects.scope({mode:'damage',periodic:true,critical:false},()=>foes[1].hp-=4)`);
+ assert.deepEqual(JSON.parse(r.run(`JSON.stringify(EmberwildBattleEffects.pendingNumbers.map(e=>[e.kind,e.amount,e.critical]))`)),[['dot',4,false],['dot',4,false],['dot',4,false]]);
+ r.run(`const oldEvasion=enemyBattleStats;enemyBattleStats=e=>({...oldEvasion(e),evasion:1});`);capture(r,`resolveHit(foes[1],50,state,'fire',true)`);
+ assert.deepEqual(JSON.parse(r.run(`JSON.stringify(EmberwildBattleEffects.pendingNumbers.map(e=>[e.kind,e.label]))`)),[['text','閃避']]);
+ r.run(`enemyBattleStats=oldEvasion;foes[1].kind='boss'`);capture(r,`__EMBERWILD_CONTROL_TEST_API.applyPolymorph(foes[1],500,{duration:3})`);
+ assert.equal(r.run('EmberwildBattleEffects.pendingNumbers[0].label'),'免疫');
+ r.run(`GAMEPLAY_SETTINGS.combat.damageFormula={...GAMEPLAY_SETTINGS.combat.damageFormula,minimumDamage:0};foes[1].def=1e9;foes[1].shield=0;`);capture(r,`resolveHit(foes[1],0,state,'physical',false)`);
+ assert.deepEqual(JSON.parse(r.run(`JSON.stringify(EmberwildBattleEffects.pendingNumbers.map(e=>[e.kind,e.label]))`)),[['text','0']]);
+ assert(!r.run(`EmberwildBattleEffects.pendingEvents.some(e=>e.type==='hit')`));
+});
+test('enemy basic and skill numbers carry actual crit before a same-target recovery proc',()=>{
+ const r=game();r.run(`const baseEnemy=enemyBattleStats,baseHero=battleStats;enemyBattleStats=e=>({...baseEnemy(e),crit:1,atk:10});battleStats=h=>({...baseHero(h),evasion:0});state.hp=stats(state).hp;globalThis.tokenBase=EmberwildTokenRuntime.afterDamage;EmberwildTokenRuntime.afterDamage=function(h){h.hp=Math.min(stats(h).hp,h.hp+2);};`);
+ capture(r,`performEnemyBasic(foes[0])`);
+ let numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)'));
+ assert(numbers.some(e=>e.kind==='damage'&&e.critical));assert(numbers.some(e=>e.kind==='heal'));
+ capture(r,`sharedEnemySkillDamage(foes[0],state,30,'physical',{name:'暴擊測試',meta:{baseCritRate:1}})`);
+ numbers=JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingNumbers)'));
+ assert(numbers.some(e=>e.kind==='damage'&&e.critical));assert(numbers.some(e=>e.kind==='heal'));
+});
+test('numeric capture is bounded, prioritizes crit/healing and is absent offscreen or offline',async()=>{
+ const r=game();capture(r,`for(let i=0;i<300;i++)EmberwildBattleEffects.scope({mode:'damage',periodic:true},()=>foes[1].hp-=1);resolveHit(foes[2],50,state,'physical',true);state.hp=1;EmberwildBattleEffects.scope({mode:'skill'},()=>state.hp+=5);`);
+ assert(r.run('EmberwildBattleEffects.pendingNumbers.length')<=128);assert(r.run(`EmberwildBattleEffects.pendingNumbers.some(e=>e.critical)`));assert(r.run(`EmberwildBattleEffects.pendingNumbers.some(e=>e.kind==='heal')`));
+ r.run('setBattleEffects("off")');capture(r,`resolveHit(foes[1],50,state,'physical',false)`);assert.equal(r.run('EmberwildBattleEffects.pendingNumbers.length'),0);
+ r.run('setBattleEffects("full");tab="options"');capture(r,`resolveHit(foes[1],50,state,'physical',false)`);assert.equal(r.run('EmberwildBattleEffects.pendingNumbers.length'),0);
+ r.run('tab="battle"');r.ctx.setTimeout=fn=>setImmediate(fn);r.advance(60000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildBattleEffects.pendingNumbers.length'),0);assert.deepEqual(r.errors,[]);
+});

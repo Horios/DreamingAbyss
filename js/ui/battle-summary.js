@@ -230,7 +230,7 @@
    // Stacked cards hold the portrait inside their first face; flat cards hold it directly.
    const slots=':scope > .battle-enemy-icon, :scope > .seconds-face-main > .battle-enemy-icon',portrait=old.querySelector(slots);
    if(portrait){const replaced=fresh.querySelector(slots);if(replaced)replaced.replaceWith(portrait);else fresh.prepend(portrait);}
-   for(const child of [...old.children])if(!child.matches('.battle-fx,.battle-fx-status'))child.remove();
+   for(const child of [...old.children])if(!child.matches('.battle-fx,.battle-fx-status,.battle-number-layer'))child.remove();
    old.append(...fresh.children);for(const a of [...fresh.attributes])old.setAttribute(a.name,a.value);old.className=fresh.className;old.style.cssText=fresh.style.cssText;fresh.replaceWith(old);
   }
   retainedField=document.querySelector('.squad-field')||retainedField;

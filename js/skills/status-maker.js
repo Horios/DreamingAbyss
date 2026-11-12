@@ -103,7 +103,7 @@ function statusBasisValue(kind,source,target){
   return 0;
 }
 function statusApplyShieldAwareDamage(target,amount,bypassShield=false){
-  amount=Math.max(0,Math.round(amount));if(amount<=0)return 0;
+  amount=Math.max(0,Math.round(amount));if(amount<=0){globalThis.EmberwildBattleEffects?.result('resolved',target,null,{critical:false});return 0;}
   const before=Math.max(0,Number(target.hp)||0);let hpDamage=amount;
   if(!bypassShield&&statusIsHero(target)){
     const absorb=Math.min(Math.max(0,Number(target.shield)||0),amount);target.shield=Math.max(0,(Number(target.shield)||0)-absorb);hpDamage=Math.max(0,amount-absorb);if(absorb>0&&typeof recordCombatContribution==='function')recordCombatContribution(target,'mitigation',absorb);
@@ -112,7 +112,7 @@ function statusApplyShieldAwareDamage(target,amount,bypassShield=false){
     if(p?.shield>0){const absorb=Math.min(p.shield,amount);p.shield=Math.max(0,p.shield-absorb);hpDamage=Math.max(0,amount-absorb);if(p.shield<=0){delete api.states[target.id].polymorph;note(combatEnemyName(target)+' 的變形護盾被持續效果打破，變形解除。');}}
     const absorb=Math.min(Math.max(0,Number(target.shield)||0),hpDamage);target.shield=Math.max(0,(Number(target.shield)||0)-absorb);hpDamage-=absorb;
   }
-  target.hp=Math.max(0,before-hpDamage);const dealt=Math.max(0,before-target.hp);if(statusIsHero(target)){globalThis.EmberwildTokenRuntime?.afterDamage(target,null,before,target.hp);if(typeof recordCombatContribution==='function')recordCombatContribution(target,'taken',amount-hpDamage+dealt);}return dealt;
+  target.hp=Math.max(0,before-hpDamage);globalThis.EmberwildBattleEffects?.result('resolved',target,null,{critical:false});const dealt=Math.max(0,before-target.hp);if(statusIsHero(target)){globalThis.EmberwildTokenRuntime?.afterDamage(target,null,before,target.hp);if(typeof recordCombatContribution==='function')recordCombatContribution(target,'taken',amount-hpDamage+dealt);}return dealt;
 }
 function statusDamageAmount(raw,source,target,fx){
   const formula=GAMEPLAY_SETTINGS?.combat?.damageFormula||{},attackCoefficient=Number.isFinite(formula.attackCoefficient)?formula.attackCoefficient:1,defenseCoefficient=Number.isFinite(formula.defenseCoefficient)?formula.defenseCoefficient:(GAMEPLAY_SETTINGS?.combat?.defenseEffectiveness??.55),minimumDamage=Math.max(0,Number.isFinite(formula.minimumDamage)?formula.minimumDamage:1);
@@ -455,7 +455,7 @@ const visualPeriodicBase=executeStatusPeriodic;
 executeStatusPeriodic=function(inst,fx,...args){
   const visual=globalThis.EmberwildBattleEffects;
   if(!visual?.capturing)return visualPeriodicBase(inst,fx,...args);
-  return visual.scope({mode:fx.kind==='heal'?'regen':'damage',periodic:true,element:fx.resolution==='elemental'?fx.element:null},()=>visualPeriodicBase(inst,fx,...args));
+  return visual.scope({mode:fx.kind==='heal'?'regen':'damage',periodic:true,critical:false,element:fx.resolution==='elemental'?fx.element:null},()=>visualPeriodicBase(inst,fx,...args));
 };
 const visualStatusDamageBase=statusApplyShieldAwareDamage;
 statusApplyShieldAwareDamage=function(...args){

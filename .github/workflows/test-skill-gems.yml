@@ -175,6 +175,15 @@ jobs:
           EMBERWILD_PACE_REALTIME: '1'
         run: node --test --test-concurrency=1 tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/shared-levels.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/text-overrides.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
 
+      - name: Upload battle feedback screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: battle-feedback-${{ github.sha }}
+          path: battle-feedback-review/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Capture baseline and current UI review
         if: contains(github.event.head_commit.message, '[ui-review]')
         env:
