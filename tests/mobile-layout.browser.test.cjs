@@ -118,8 +118,9 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   assert.equal(await p.locator('.title-screen').isVisible(),true);
   assert.equal(await p.locator('.mobile-journal-toggle').count(),0);
   await p.evaluate(()=>selectSaveSlot(1));
-  assert.equal(await p.locator('.start').isVisible(),true);
-  assert(await p.locator('.start').evaluate(e=>e.scrollWidth<=e.clientWidth));
+  // v0.125: character creation opens the prologue scene instead of the class cards.
+  assert.equal(await p.locator('.start').isVisible(),false);assert.equal(await p.locator('.prologue-scene').isVisible(),true);
+  assert(await p.locator('#prologue-layer').evaluate(e=>e.scrollWidth<=e.clientWidth));
   await p.evaluate(()=>{start(0);clearInterval(timer);closeModal();});await p.waitForTimeout(60);await p.evaluate(()=>closeModal());
   for(const id of ['mailbox','achievements','options']){
    // A catch-up started by the short wait above may still be running; only a settled dialog must carry a receipt.

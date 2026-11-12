@@ -102,6 +102,8 @@
     tallyPlayTime();wasVisible=document.visibilityState!=='hidden';
     if(!wasVisible&&!titleOpen&&state&&party)save();
   });
+  // The prologue takes over the character creation screen; it asks here whether that screen is the one showing.
+  globalThis.__EMBERWILD_TITLE={open:()=>titleOpen,creatingCharacter:()=>choosingCharacter&&!titleOpen&&!state};
   function showCharacterSelection(snapshot){
     pendingCreation=null;closeModal();titleOpen=false;choosingCharacter=true;approvedCreation=snapshot;
     lastPlayTick=Date.now();render();
@@ -209,7 +211,7 @@
     }
     try{
       if(slot===ACTIVE_SAVE_SLOT){newGame();globalThis.__EMBERWILD_BOOT_SAVE_RAW=null;}
-      else{localStorage.removeItem(saveKeyForSlot(slot));localStorage.removeItem(backupKeyForSlot(slot));localStorage.removeItem(verifiedKeyForSlot(slot));localStorage.removeItem(battleStatsKeyForSlot(slot));localStorage.removeItem(playTimeKey(slot));}
+      else{localStorage.removeItem(saveKeyForSlot(slot));localStorage.removeItem(environmentStorageKey('emberwild-prologue-draft-v1-slot-'+slot));localStorage.removeItem(backupKeyForSlot(slot));localStorage.removeItem(verifiedKeyForSlot(slot));localStorage.removeItem(battleStatsKeyForSlot(slot));localStorage.removeItem(playTimeKey(slot));}
     }catch(e){console.warn('刪除存檔失敗',e);toast('刪除失敗，請檢查瀏覽器儲存權限');return;}
     pendingDelete=null;closeModal();render();toast('欄位 '+slot+' 已刪除');
   };

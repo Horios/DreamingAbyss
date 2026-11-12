@@ -126,6 +126,21 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 
 
 
+## 序章：造物室（v0.125）
+
+新玩家建立角色時不再出現職業卡片，改為在造物室依序完成命名、選擇職業、技能安裝、單人訓練戰、臨時隊友、隊伍訓練戰、取得並穿戴新手裝備，最後降臨艾斯蘭。完整說明見 `docs/PROLOGUE.md`。
+
+- 劇本是劇情資料裡的一個任務（`story.quests` 中帶有 `prologue` 欄位的那一筆，模組檔為 `data/balance/systems/story.json`）。旁白、對話、選項、提示、場景名稱、章節標題與按鈕文字都在資料裡，每句話帶 `source`（`original` 開發者原文、`draft` 暫定續寫）。
+- 系統行為只認 `EmberwildStory.PROLOGUE_ACTIONS` 的六個固定識別碼（`nameHero`、`chooseClass`、`skillLesson`、`recruitHelper`、`equipLesson`、`enterWorld`）與兩場 `training` 任務關卡。`js/story/story-model.js` 的 `prologueIssues` 要求每個事件各出現一次並依序排列；刪掉或調動這些階段的資料會被遊戲與平衡器拒絕。
+- 進度：選職業之前存在 `emberwild-prologue-draft-v1-slot-N`（只有名字與階段）；之後是一般的任務紀錄 `party.story.quests.prologue`。沒有這筆紀錄的存檔（舊存檔、直接呼叫 `start(job)` 建立的角色）視為已完成序章，不會寫入任何新欄位。
+- 訓練戰使用既有的任務關卡與秒數戰鬥引擎。訓練對象在生成時就標記為已結算，獎勵鏈上的每一層都會略過：沒有經驗、金幣、掉落、擊殺數、成就或探索進度。序章進行中一般探索不開放。
+- 臨時隊友是存檔內的夥伴定義（`companionProfiles`，ID `900000001`），由型錄中的夥伴複製而來；不在招募名單、不用招募券，加入名冊後由玩家在隊伍頁上陣，降臨時與階段完成寫在同一次存檔內移除。
+- 新手裝備：序章建立的角色先不穿第五格的啟程護符，也不寄新手禮包。女神交付時把新手武器與啟程護符（加上 `starterPackItems` 的設定）用既有的信件領取流程一次放進背包，信箱留下一封已領取的「女神的贈禮」作為防重複的依據。直接呼叫 `start(job)` 的舊流程不變。
+- 修正兩個既有問題：`story-runtime.js` 的區域函式 `effects` 會被任務關卡生成時的 `effects=[]` 覆寫，之後完成任何任務階段都會失敗（改名為 `applyEffects`）；`importBalanceJSON` 在隊伍探索或戰鬥中會顯示已套用，現在回報未套用，劇情資料也維持原狀。
+- `tools/override-baseline.json`：`render` 多一層包裝（序章圖層），已檢視並更新基準。
+
+## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
+
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。
 
 ## 明確時間與資源
