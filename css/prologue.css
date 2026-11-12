@@ -1,0 +1,47 @@
+/* Prologue: text and light only, no image assets. */
+#prologue-layer[hidden]{display:none}
+#prologue-layer{position:fixed;inset:0;z-index:60;overflow:auto;background:radial-gradient(ellipse at 50% 28%,#232a3d 0%,#10131c 55%,#07080c 100%);color:#e8e6df}
+body.prologue-open{overflow:hidden}
+.prologue-scene{position:relative;min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:16px;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+.prologue-head{position:relative;background:none;border:0;box-shadow:none;padding:0;margin:auto 0;text-align:center;animation:prologue-rise 1.2s ease both}
+.prologue-head h1{margin:6px 0 0;font-size:clamp(22px,5vw,34px);letter-spacing:.18em;font-weight:500;color:#f4ecd4}
+.prologue-head .eyebrow{letter-spacing:.3em;color:#a9b4cf}
+.prologue-light{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.prologue-light::before{content:"";position:absolute;left:50%;top:26%;width:min(70vw,420px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,244,208,.34) 0%,rgba(190,205,255,.12) 38%,transparent 70%);animation:prologue-glow 5s ease-in-out infinite}
+.prologue-light i{position:absolute;top:26%;left:50%;width:7px;height:7px;border-radius:50%;background:#fff3c4;box-shadow:0 0 12px 4px rgba(255,236,170,.55);opacity:0}
+.prologue-scene[data-scene="1"] .prologue-light i{animation:prologue-gather 4.5s ease-in-out infinite}
+.prologue-light i:nth-child(1){--x:-38vw;--y:-14vh}
+.prologue-light i:nth-child(2){--x:36vw;--y:-6vh;animation-delay:1.4s!important}
+.prologue-light i:nth-child(3){--x:-6vw;--y:30vh;animation-delay:2.8s!important}
+.prologue-scene[data-scene="8"] .prologue-light::before{background:radial-gradient(circle,rgba(255,255,255,.5) 0%,rgba(200,225,255,.2) 40%,transparent 72%)}
+.prologue-box{position:relative;width:min(100%,680px);box-sizing:border-box;padding:16px 18px;border:1px solid rgba(214,196,140,.38);border-radius:10px;background:rgba(14,16,24,.86);animation:prologue-rise .45s ease both}
+.prologue-speaker{display:block;margin-bottom:6px;color:#f1d58b;letter-spacing:.08em}
+.prologue-player .prologue-speaker{color:#9fd0ff}
+.prologue-text,.prologue-narration,.prologue-hint{margin:0 0 12px;line-height:1.8;font-size:16px;overflow-wrap:anywhere}
+.prologue-narration{color:#c9cede;font-style:italic;text-align:center}
+.prologue-hint{color:#c9cede}
+.prologue-box .actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.prologue-box label{display:block;margin-bottom:6px;color:#c9cede}
+.prologue-box input{width:100%;box-sizing:border-box;margin-bottom:12px;font-size:16px}
+.prologue-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.prologue-option{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;padding:10px 12px;text-align:left;white-space:normal}
+.prologue-option span{font-size:13px;color:#c9cede;line-height:1.5}
+.prologue-option.selected{border-color:#f1d58b;box-shadow:0 0 0 1px #f1d58b inset}
+.prologue-helper{margin:0 0 12px;padding:10px 12px;border:1px dashed rgba(214,196,140,.38);border-radius:8px}
+.prologue-helper h3{margin:0 0 4px}
+.prologue-chapter{position:relative;width:min(100%,680px);margin:auto 0;text-align:center}
+.prologue-chapter p{animation:prologue-rise .9s ease both}
+.prologue-chapter-title{margin:28px 0;font-size:clamp(24px,6vw,40px);letter-spacing:.14em;font-weight:500;color:#f4ecd4;animation:prologue-rise 1.4s ease both}
+.prologue-back{position:absolute;top:max(12px,env(safe-area-inset-top));left:12px}
+.prologue-task{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin:0 0 12px;padding:12px 14px;border:1px solid rgba(214,196,140,.55);border-radius:10px;background:rgba(214,196,140,.08)}
+.prologue-task-done{border-color:rgba(120,220,140,.7);background:rgba(120,220,140,.09)}
+.prologue-task-text{flex:1 1 260px;min-width:0}
+.prologue-task-text p{margin:4px 0;overflow-wrap:anywhere}
+.prologue-task-text ol{margin:6px 0 0;padding-left:20px}
+.prologue-task .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.prologue-notice{color:#9fe0ad}
+@keyframes prologue-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes prologue-glow{0%,100%{opacity:.7;transform:translate(-50%,-50%) scale(.94)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+@keyframes prologue-gather{0%{opacity:0;transform:translate(var(--x),var(--y))}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%)}}
+@media (max-width:520px){.prologue-options{grid-template-columns:1fr}.prologue-box{padding:14px}.prologue-task{flex-direction:column}.prologue-task-text{flex:0 0 auto}}
+@media (prefers-reduced-motion:reduce){.prologue-scene *,.prologue-light::before{animation:none!important}}

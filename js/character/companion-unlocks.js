@@ -117,12 +117,12 @@
     if(row.kind==='item'&&row.key.startsWith('companion-ticket-'))return {type:'companionTicket',companionId:Number(row.key.slice(17)),quantity:row.quantity,name:row.name};
     return copy(row);
   }
-  globalThis.sendStarterPackMail=function(job,rows){
+  globalThis.sendStarterPackMail=function(job,rows,text={}){
     syncUnlocks();const mailbox=party.mailbox;
     if(mailbox.messages.some(m=>m.rewardKey.startsWith('starter-')))return false;
     const doc=exportableBalance(),attachments=rows.map(row=>row.type==='catalogue'?catalogueAttachment(row,job,doc):copy(row));
     const parts=Math.ceil(attachments.length/6);
-    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:CLASSES[job].name+'新手禮包'+(parts>1?`（${i+1}/${parts}）`:''),body:'歡迎來到夢淵！初始裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
+    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:(text.subject||CLASSES[job].name+'新手禮包')+(parts>1?`（${i+1}/${parts}）`:''),body:text.body||'歡迎來到夢淵！初始裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
     return true;
   };
   function claimMail(ids){
@@ -158,6 +158,7 @@
     render();toast('已領取 '+messages.length+' 封郵件的附件，道具已放入背包');return true;
   }
   globalThis.claimMailboxAttachments=id=>claimMail([id]);
+  globalThis.claimStarterPackMail=()=>{syncUnlocks();const ids=party.mailbox.messages.filter(m=>m.rewardKey.startsWith('starter-')&&!m.claimed).map(m=>m.id);return ids.length?claimMail(ids):party.mailbox.messages.some(m=>m.rewardKey.startsWith('starter-'));};
   globalThis.claimAllMailboxAttachments=function(){syncUnlocks();return claimMail(unclaimedMail().map(m=>m.id));};
   // v0.076: read everything, and delete only mail that is both read and claimed. Unread or unclaimed (NEW) mail stays.
   // Reward resends are guarded elsewhere (starter packs only on a new game, companion rewards by rewardCompanions).

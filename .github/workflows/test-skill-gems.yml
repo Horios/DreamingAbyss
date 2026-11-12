@@ -111,6 +111,10 @@ jobs:
           - group: ui-and-catalogue
             tests: >-
               tests/battle-summary.test.cjs tests/navigation-tree.test.cjs tests/utility-navigation.test.cjs tests/item-display-mode.test.cjs tests/inventory-icons.test.cjs tests/inventory-supplies.test.cjs tests/icon-canvas-tools.test.cjs tests/icon-color-palette.test.cjs tests/text-rarity-runtime.test.cjs tests/global-item-catalogue.test.cjs tests/balance-diff.test.cjs tests/balance-document.test.cjs
+          # v0.135: the prologue played through the real systems for all four classes, with reloads at every stage.
+          - group: prologue
+            tests: >-
+              tests/prologue.test.cjs
           - group: progression-and-teams
             tests: >-
               tests/skill-board.test.cjs tests/skill-induction.test.cjs tests/skill-system-combat.test.cjs tests/team-plan-management.test.cjs tests/companion-token-management.test.cjs tests/boss-class-crafting.test.cjs tests/equipment-socket-scroll.test.cjs tests/forge-quality-performance.test.cjs tests/starter-mail-items.test.cjs tests/wishing-lake.test.cjs tests/override-guard.test.cjs tests/character-page-layout.test.cjs tests/statistics-expedition.test.cjs
@@ -184,7 +188,7 @@ jobs:
       - name: Verify actual browser boot and mobile navigation
         env:
           EMBERWILD_PACE_REALTIME: '1'
-        run: node --test --test-concurrency=1 tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/shared-levels.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/text-overrides.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
+        run: node --test --test-concurrency=1 tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/shared-levels.test.cjs tests/prologue.browser.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/text-overrides.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
 
       - name: Capture baseline and current UI review
         if: contains(github.event.head_commit.message, '[ui-review]')

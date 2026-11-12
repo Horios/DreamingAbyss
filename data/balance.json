@@ -33292,6 +33292,852 @@
             ]
           }
         ]
+      },
+      {
+        "id": "prologue",
+        "name": "序章：造物室",
+        "type": "main",
+        "npc": "女神",
+        "description": "在女神的造物室完成啟程前的準備。",
+        "enabled": true,
+        "hidden": false,
+        "unlock": {
+          "mode": "all",
+          "conditions": []
+        },
+        "prerequisites": [],
+        "entry": "creation",
+        "stages": [
+          {
+            "id": "creation",
+            "name": "創造之儀",
+            "speaker": "女神",
+            "description": "女神在造物室創造了你。",
+            "dialogue": [
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "一間神祕的房間內，無源之光亮起。身材矮小、身披寬大長袍的女神走入房間。",
+                "source": "original"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "她將「知識、認知、天賦」等光點匯聚成光團，最終創造出主角。",
+                "source": "original"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "主角首次獲得意識，女神確認創造結果。",
+                "source": "original"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "……成功了？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "能聽見我說話嗎？",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "能。這裡是什麼地方？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "我的造物室。至於你，是我剛剛創造出來的生命。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "創造？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "我已經給了你理解事物、思考和交流所需要的能力。至於其他事情，就得靠你自己慢慢學習了。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "不過，在那之前……你還沒有名字呢。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "commission",
+            "branches": [],
+            "choices": [],
+            "guides": [],
+            "prologue": {
+              "scene": 1,
+              "action": "nameHero",
+              "hint": "為自己取一個名字。",
+              "steps": [],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "好，那以後就這樣稱呼你吧。",
+                  "source": "draft"
+                }
+              ]
+            }
+          },
+          {
+            "id": "commission",
+            "name": "女神的委託",
+            "speaker": "女神",
+            "description": "了解女神創造你的原因。",
+            "dialogue": [
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "所以，你為什麼要創造我？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "因為有個世界讓我很在意。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "那裡有一些我還沒弄明白的事情。我想親自去看看，但現在不太方便。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "所以你希望我代替你去？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "差不多。你可以探索那個世界，看看有什麼值得注意的事情，再把發現告訴我。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "有什麼特別需要調查的目標嗎？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "目前還沒有。畢竟我知道的也不多。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "你可以自己決定要去哪裡、做些什麼。我想知道的，是你真正看到的世界。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "calling",
+            "branches": [],
+            "choices": [],
+            "guides": [],
+            "prologue": {
+              "scene": 2,
+              "action": "",
+              "hint": "",
+              "steps": [],
+              "after": []
+            }
+          },
+          {
+            "id": "calling",
+            "name": "選擇力量",
+            "speaker": "女神",
+            "description": "選擇一種力量作為起點。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "在送你過去之前，還有幾件事情得準備。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "例如？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "至少得讓你有保護自己的能力。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "我在創造你的時候，讓你能夠適應不同種類的力量。不過，你現在最好先選一種熟悉。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "skills",
+            "branches": [],
+            "choices": [],
+            "guides": [],
+            "prologue": {
+              "scene": 3,
+              "action": "chooseClass",
+              "hint": "選擇一種力量作為起點。到了艾斯蘭之後，可以在隊伍編成自由轉職。",
+              "steps": [],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "好，那就先從這種力量開始。",
+                  "source": "draft"
+                },
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "記住，這只是你的起點。你能學會多少，還得看以後的經歷。",
+                  "source": "draft"
+                }
+              ],
+              "options": [
+                {
+                  "job": 0,
+                  "text": "戰士",
+                  "description": "使用武器進行近距離戰鬥"
+                },
+                {
+                  "job": 1,
+                  "text": "法師",
+                  "description": "運用魔力施展法術"
+                },
+                {
+                  "job": 2,
+                  "text": "弓手",
+                  "description": "使用遠距離武器攻擊"
+                },
+                {
+                  "job": 3,
+                  "text": "牧師",
+                  "description": "使用神聖力量攻擊、治療與輔助"
+                }
+              ]
+            }
+          },
+          {
+            "id": "skills",
+            "name": "技能安裝",
+            "speaker": "女神",
+            "description": "查看已掌握的技能，並安裝到技能槽。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "有了力量，還得知道怎麼使用。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "先看看你現在掌握了哪些技能。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "主動技能要放進技能槽才會在戰鬥中施放，施放後需要等待冷卻，有些還會消耗 MP。被動技能學會後就會持續生效。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "practice",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "skills"
+            ],
+            "prologue": {
+              "scene": 4,
+              "action": "skillLesson",
+              "hint": "在技能頁把一項已學會的主動技能安裝到主動技能槽。",
+              "steps": [
+                "點選空的主動技能槽",
+                "選擇一項已學會的技能",
+                "安裝完成後回到女神身邊"
+              ],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "戰鬥時，你會依照設定的方式使用技能。現在先記住最基本的配置就好。",
+                  "source": "draft"
+                }
+              ]
+            }
+          },
+          {
+            "id": "practice",
+            "name": "第一次戰鬥練習",
+            "speaker": "女神",
+            "description": "與女神做出來的訓練對象實際戰鬥。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "接下來，試試看實際戰鬥吧。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "在這裡？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "放心，這只是我臨時做出來的訓練對象。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "你可以用它確認自己能做到什麼。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "encounter",
+                  "key": "prologue/practice",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material"
+                }
+              ]
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "helper",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "battle"
+            ],
+            "prologue": {
+              "scene": 5,
+              "action": "",
+              "hint": "擊敗訓練對象。戰鬥會自動進行，留意普通攻擊、技能施放、HP 與 MP、行動條與技能冷卻。",
+              "steps": [
+                "開始訓練戰鬥",
+                "觀察普通攻擊與技能自動施放",
+                "擊敗訓練對象"
+              ],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "看來基本動作沒有問題。",
+                  "source": "draft"
+                },
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "不過，在真正的冒險中，你不一定得獨自戰鬥。",
+                  "source": "draft"
+                }
+              ]
+            },
+            "encounter": {
+              "enabled": true,
+              "name": "戰鬥練習",
+              "mapIndex": 0,
+              "repeatable": false,
+              "enemies": [
+                {
+                  "monsterId": "map0_mob0",
+                  "count": 2
+                }
+              ],
+              "training": true
+            }
+          },
+          {
+            "id": "helper",
+            "name": "臨時隊友",
+            "speaker": "女神",
+            "description": "接納女神創造的助手，並讓它上陣。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "在那個世界，你應該會遇到其他冒險者。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "如果有人願意與你同行，就能組成隊伍，互相協助。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "像是剛才那樣一起戰鬥？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "差不多。不過我先做個示範給你看。",
+                "source": "draft"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "女神抬起手，光點再次匯聚，在你身旁凝成一道人形。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "這是我暫時做出來的助手。它可以陪你完成接下來的練習。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "trial",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "roster",
+              "partnerRoster"
+            ],
+            "prologue": {
+              "scene": 6,
+              "action": "recruitHelper",
+              "hint": "接納助手後，到隊伍頁讓它上陣，並看看它的技能與定位。",
+              "steps": [
+                "查看助手的資訊並接納它",
+                "開啟隊伍頁",
+                "將助手加入出戰隊伍",
+                "查看助手的技能"
+              ],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "這樣你們就是一支隊伍了。",
+                  "source": "draft"
+                }
+              ]
+            }
+          },
+          {
+            "id": "trial",
+            "name": "隊伍試煉",
+            "speaker": "女神",
+            "description": "與助手一起完成一場訓練戰鬥。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "接下來試試兩個人一起戰鬥。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "不同的能力可以互相配合。記得觀察你的隊友在做什麼。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "encounter",
+                  "key": "prologue/trial",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material"
+                }
+              ]
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "gift",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "battle"
+            ],
+            "prologue": {
+              "scene": 7,
+              "action": "",
+              "hint": "與助手一起擊敗訓練對象，留意隊友的行動。",
+              "steps": [
+                "開始隊伍訓練戰鬥",
+                "觀察隊友的技能與行動",
+                "擊敗全部訓練對象"
+              ],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "很好。至少現在，我可以放心讓你出發了。",
+                  "source": "draft"
+                },
+                {
+                  "speaker": "主角",
+                  "kind": "player",
+                  "text": "這樣就準備好了？",
+                  "source": "draft"
+                },
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "還差最後一件事。",
+                  "source": "draft"
+                },
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "這些是我替你準備的裝備。到了那邊，應該會派上用場。",
+                  "source": "draft"
+                }
+              ]
+            },
+            "encounter": {
+              "enabled": true,
+              "name": "隊伍試煉",
+              "mapIndex": 0,
+              "repeatable": false,
+              "enemies": [
+                {
+                  "monsterId": "map0_mob0",
+                  "count": 3
+                }
+              ],
+              "training": true
+            }
+          },
+          {
+            "id": "gift",
+            "name": "女神的贈禮",
+            "speaker": "女神",
+            "description": "穿戴女神準備的武器與護符。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "裝備拿在手上可不代表已經能用了。記得先穿戴好。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "departure",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "equipment",
+              "worn"
+            ],
+            "prologue": {
+              "scene": 7,
+              "action": "equipLesson",
+              "hint": "到背包查看收到的武器與護符，再到裝備頁穿戴它們。",
+              "steps": [
+                "開啟背包查看新手武器",
+                "穿戴新手武器",
+                "查看護符並穿戴",
+                "回到女神身邊"
+              ],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "嗯，這樣就可以了。",
+                  "source": "draft"
+                }
+              ]
+            }
+          },
+          {
+            "id": "departure",
+            "name": "離開造物室",
+            "speaker": "女神",
+            "description": "穿過出口，前往艾斯蘭。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "接下來，就得靠你自己了。",
+                "source": "draft"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "完成任務的助手化為光點，靜靜散去。",
+                "source": "draft"
+              },
+              {
+                "speaker": "主角",
+                "kind": "player",
+                "text": "你不會一起過去嗎？",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "暫時不會。不過，我們還是有機會聯繫的。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "到了那裡之後，不用急著尋找什麼偉大的答案。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "先看看那個世界吧。也許你會發現連我都沒想到的事情。",
+                "source": "draft"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "造物室的出口開啟。",
+                "source": "draft"
+              },
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "那麼，祝你旅途順利。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": []
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "",
+            "branches": [],
+            "choices": [],
+            "guides": [],
+            "prologue": {
+              "scene": 8,
+              "action": "enterWorld",
+              "hint": "穿過出口。",
+              "steps": [],
+              "after": []
+            }
+          }
+        ],
+        "rewards": {
+          "gold": 0,
+          "ore": 0,
+          "items": []
+        },
+        "effects": [],
+        "nextQuests": [],
+        "prologue": {
+          "version": 1,
+          "scenes": [
+            {
+              "id": 1,
+              "name": "創造之儀",
+              "description": "造物室。女神創造主角，並為主角命名。"
+            },
+            {
+              "id": 2,
+              "name": "女神的委託",
+              "description": "女神說明創造主角的原因與旅程的方向。"
+            },
+            {
+              "id": 3,
+              "name": "選擇力量",
+              "description": "主角選擇一種力量作為起點。"
+            },
+            {
+              "id": 4,
+              "name": "技能安裝",
+              "description": "查看已掌握的技能並安裝到技能槽。"
+            },
+            {
+              "id": 5,
+              "name": "第一次戰鬥",
+              "description": "與訓練對象進行第一場戰鬥。"
+            },
+            {
+              "id": 6,
+              "name": "臨時隊友",
+              "description": "女神創造的助手加入隊伍。"
+            },
+            {
+              "id": 7,
+              "name": "隊伍試煉與裝備",
+              "description": "與助手完成隊伍訓練戰，並取得、穿戴新手裝備。"
+            },
+            {
+              "id": 8,
+              "name": "降臨艾斯蘭",
+              "description": "離開造物室，前往艾斯蘭。"
+            }
+          ],
+          "helper": {
+            "name": "造物助手",
+            "title": "女神暫時創造的助手",
+            "description": "只在造物室陪你練習的臨時隊友。離開造物室時會消失。",
+            "templates": [
+              13,
+              13,
+              13,
+              10
+            ]
+          },
+          "training": {
+            "name": "訓練對象"
+          },
+          "gift": {
+            "subject": "女神的贈禮",
+            "body": "女神在造物室交給你的武器與護符。"
+          },
+          "chapter": {
+            "title": "第一章：斷絕的商路",
+            "lines": [
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "光芒逐漸消散。",
+                "source": "draft"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "空氣、風聲與腳下的土地，第一次成為真實的感受。",
+                "source": "draft"
+              },
+              {
+                "speaker": "旁白",
+                "kind": "narrator",
+                "text": "在這個陌生的世界裡，一段新的旅程開始了。",
+                "source": "draft"
+              }
+            ]
+          },
+          "ui": {
+            "place": "造物室",
+            "continue": "繼續",
+            "nameLabel": "名字（最多 20 字）",
+            "namePlaceholder": "輸入名字",
+            "nameConfirm": "就用這個名字",
+            "nameRequired": "請先輸入名字",
+            "classConfirm": "選擇這種力量",
+            "toTask": "開始練習",
+            "returnToGoddess": "回到女神身邊",
+            "taskPending": "完成上面的步驟後，可以回到女神身邊。",
+            "startBattle": "開始訓練戰鬥",
+            "retryBattle": "再試一次",
+            "battleRunning": "訓練戰鬥進行中",
+            "helperAccept": "接納助手",
+            "helperJoined": "助手已加入名冊，請到隊伍頁讓它上陣。",
+            "giftReceived": "收到了武器與護符。",
+            "locked": "完成造物室的準備後才能使用這個功能。",
+            "enter": "穿過出口",
+            "begin": "開始旅程",
+            "backToTitle": "返回標題"
+          }
+        }
       }
     ],
     "gearRewards": [

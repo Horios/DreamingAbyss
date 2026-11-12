@@ -80,7 +80,8 @@ test('Editor and runtime share ratings, dynamic definitions, exclusive skills an
   });
   await t.test('Reload preserves exclusive relationships and fixed names while clearing invalid nonowner slots',async()=>{
    // In Preview only the JSON import keeps a design across reloads; applyBalanceConfig alone is session-only.
-   await game.page.evaluate(async()=>{const d=exportableBalance();if(!await importBalanceJSON({target:{files:[new File([JSON.stringify(d)],'balance.json',{type:'application/json'})],value:''}}))throw Error('balance import failed');save();});
+   // v0.135: an import while the team is exploring is refused and reported, so stop first.
+   await game.page.evaluate(async()=>{stopTeamExploration();const d=exportableBalance();if(!await importBalanceJSON({target:{files:[new File([JSON.stringify(d)],'balance.json',{type:'application/json'})],value:''}}))throw Error('balance import failed');save();});
    await game.page.reload();await game.page.evaluate(()=>{continueFromTitle();clearInterval(timer);closeModal();});
    const r=await game.page.evaluate(()=>{const i=__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(10)).active[0];return {name:partyMember(10).name,owner:coreSkillAvailableToHero(0,i,partyMember(10)),other:coreSkillAvailableToHero(0,i,partyMember(11)),meta:CLASSES[0].skills[i][6].partnerId,otherEquipped:partyMember(11).active.includes(i)};});
    assert.equal(r.name,'洛恩');assert(r.owner);assert.equal(r.other,false);assert.equal(r.meta,10);assert.equal(r.otherEquipped,false);

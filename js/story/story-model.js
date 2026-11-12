@@ -9,6 +9,43 @@
  const encounter=()=>({enabled:false,name:'任務關卡',mapIndex:0,repeatable:false,enemies:[]});
  const stage=(id='stage_1',name='新階段')=>({id,name,encounter:encounter(),speaker:'旁白',description:'',dialogue:[{speaker:'旁白',kind:'narrator',text:'請填寫劇情。'}],conditions:group(),rewards:{gold:0,ore:0,items:[]},effects:[],next:'',branches:[],choices:[],guides:[]});
  const quest=(id='quest_1',name='新任務',type='side',npc='')=>({id,name,type,npc,description:'',enabled:true,hidden:false,unlock:group(),prerequisites:[],entry:'stage_1',stages:[stage()],rewards:{gold:0,ore:0,items:[]},effects:[],nextQuests:[]});
+ /* Prologue: one quest flagged with `prologue`. Text is free data; system behaviour is bound to these fixed action ids only. */
+ const PROLOGUE_ACTIONS={nameHero:'角色命名',chooseClass:'選擇初始職業',skillLesson:'技能安裝教學',recruitHelper:'臨時隊友加入與上陣',equipLesson:'發放並穿戴新手裝備',enterWorld:'降臨並結束序章'};
+ const PROLOGUE_ORDER=Object.keys(PROLOGUE_ACTIONS),PROLOGUE_SOURCES={original:'開發者原文',draft:'暫定續寫'},PROLOGUE_SCENES=8;
+ const prologueQuest=d=>d?.quests?.find(q=>q&&q.prologue)||null;
+ function prologueIssues(q,ctx={}){
+  const out=[],add=m=>out.push('序章：'+m),p=q.prologue,text=(v,max=400)=>typeof v==='string'&&v.length<=max,line=x=>x&&['npc','player','narrator'].includes(x.kind)&&text(x.speaker,40)&&text(x.text,2000)&&(x.source===undefined||Object.hasOwn(PROLOGUE_SOURCES,x.source));
+  if(q.id!=='prologue'||q.type!=='main')add('任務 ID 必須是 prologue，類型為主線');
+  if(!p||p.version!==1||!Array.isArray(p.scenes)||p.scenes.length!==PROLOGUE_SCENES||p.scenes.some((s,i)=>!s||s.id!==i+1||!text(s.name,60)||!s.name.trim()||!text(s.description)))add('需要 '+PROLOGUE_SCENES+' 個場景（id 1～'+PROLOGUE_SCENES+'，含名稱與說明）');
+  if(!p||!p.helper||!text(p.helper.name,20)||!p.helper.name.trim()||!text(p.helper.title,40)||!text(p.helper.description)||!Array.isArray(p.helper.templates)||p.helper.templates.length!==4||p.helper.templates.some(id=>!Number.isInteger(id)))add('臨時隊友設定無效（名稱、說明與四個職業的範本夥伴）');
+  if(!p||!p.training||!text(p.training.name,20)||!p.training.name.trim())add('訓練對象名稱無效');
+  if(!p||!p.gift||!text(p.gift.subject,60)||!text(p.gift.body))add('贈禮說明無效');
+  if(!p||!p.chapter||!text(p.chapter.title,60)||!p.chapter.title.trim()||!Array.isArray(p.chapter.lines)||p.chapter.lines.some(x=>!line(x)))add('章節標題或轉場文字無效');
+  if(!p||!p.ui||typeof p.ui!=='object'||Object.values(p.ui).some(v=>!text(v,120)))add('介面文字無效');
+  const stages=Array.isArray(q.stages)?q.stages:[],byId=new Map(stages.map(s=>[s?.id,s])),chain=[];
+  for(let s=byId.get(q.entry),guard=0;s&&guard<200;s=byId.get(s.next),guard++){if(chain.includes(s))break;chain.push(s);}
+  if(chain.length!==stages.length)add('階段必須是單一路線，不可有無法抵達的階段');
+  const seen=[];
+  for(const s of stages){const x=s?.prologue,label='階段 '+s?.id+'：';
+   if(!x||!Number.isInteger(x.scene)||x.scene<1||x.scene>PROLOGUE_SCENES||!(x.action===''||Object.hasOwn(PROLOGUE_ACTIONS,x.action))||!text(x.hint)||!Array.isArray(x.steps)||x.steps.some(t=>!text(t,200))||!Array.isArray(x.after)||x.after.some(l=>!line(l))){add(label+'場景、系統事件、提示或後續對話無效');continue;}
+   if((s.dialogue||[]).some(l=>!line(l)))add(label+'對話來源標記無效');
+   if(s.choices?.length||s.branches?.length)add(label+'序章不使用任務選項或條件分歧');
+   if(x.action)seen.push(x.action);
+   if(x.action==='chooseClass'){const o=x.options;if(!Array.isArray(o)||o.length!==(ctx.classes?.length||4)||o.some((c,i)=>!c||c.job!==i||!text(c.text,40)||!c.text.trim()||!text(c.description,200)))add(label+'職業選項必須依序對應全部初始職業');}
+   if(s.encounter?.enabled&&(s.encounter.training!==true||s.encounter.repeatable))add(label+'序章戰鬥必須是不可重複的訓練戰（training）');
+  }
+  if(seen.join()!==PROLOGUE_ORDER.join())add('系統事件必須各出現一次並依序排列：'+PROLOGUE_ORDER.map(k=>PROLOGUE_ACTIONS[k]).join(' → ')+'（目前：'+(seen.map(k=>PROLOGUE_ACTIONS[k]).join(' → ')||'無')+'）');
+  else{
+   const at=a=>chain.findIndex(s=>s.prologue?.action===a),plain=s=>!s.conditions?.conditions?.length&&!s.encounter?.enabled&&!s.rewards?.gold&&!s.rewards?.ore&&!s.rewards?.items?.length&&!s.effects?.length;
+   if(chain.slice(0,at('chooseClass')+1).some(s=>!plain(s)))add('選擇職業之前的階段不可設定條件、戰鬥、獎勵或效果（角色尚未建立）');
+   if(at('enterWorld')!==chain.length-1)add('降臨事件必須是最後一個階段');
+   const fights=chain.filter(s=>s.encounter?.enabled),h=at('recruitHelper');
+   if(!fights.some(s=>chain.indexOf(s)>at('skillLesson')&&chain.indexOf(s)<h)||!fights.some(s=>chain.indexOf(s)>h&&chain.indexOf(s)<at('equipLesson')))add('需要一場單人訓練戰（技能教學之後）與一場隊伍訓練戰（臨時隊友加入之後）');
+   for(const s of fights)if(!s.conditions.conditions.some(c=>c.type==='encounter'&&c.key===q.id+'/'+s.id))add('階段 '+s.id+'：訓練戰階段需要以該場戰鬥通關作為條件');
+  }
+  if(q.rewards?.gold||q.rewards?.ore||q.rewards?.items?.length||q.nextQuests?.length||q.prerequisites?.length||q.unlock?.conditions?.length)add('序章任務本身不設定獎勵、前置或後續任務');
+  return out;
+ }
  function defaults(){return {version:1,quests:[]};}
  function issues(d,ctx={}){
   const errors=[],add=m=>errors.push('劇情：'+m),id=v=>typeof v==='string'&&/^[A-Za-z][A-Za-z0-9_-]{0,79}$/.test(v)&&!['constructor','prototype','__proto__'].includes(v),key=v=>typeof v==='string'&&v.length<160&&!['constructor','prototype','__proto__'].includes(v),num=n=>Number.isSafeInteger(n)&&n>=0&&n<=1e9;
@@ -59,10 +96,11 @@
    }
    acyclic(graph,label);const reachable=new Set();function reach(n){if(reachable.has(n))return;reachable.add(n);for(const v of graph.get(n)||[])reach(v);}reach(q.entry);for(const s of graph.keys())if(!reachable.has(s))add(label+'無法抵達階段 '+s);
   }
+  const pro=d.quests.filter(q=>q&&q.prologue);if(pro.length>1)add('只能有一個序章任務');for(const q of pro)if(qs.has(q.id))errors.push(...prologueIssues(q,ctx));
   // Prerequisites and explicit links both describe forward quest dependencies.
   for(const q of d.quests)for(const p of q?.prerequisites||[])if(edges.has(p))edges.get(p).push(q.id);
   acyclic(edges,'任務鏈');return [...new Set(errors)];
  }
  function validate(d,ctx){const e=issues(d,ctx);if(e.length)throw Error(e.join('\n'));return copy(d);}
- const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
+ const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate,PROLOGUE_ACTIONS,PROLOGUE_ORDER,PROLOGUE_SOURCES,PROLOGUE_SCENES,prologueQuest,prologueIssues};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

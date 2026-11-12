@@ -185,6 +185,34 @@
     toast(h.name+(party.enlisted.includes(id)?'已編入現役':'已加入名冊；現役夥伴已達上限'));return h;
   };
   globalThis.acquireCompanion=id=>recruitCompanion(id);
+  // Prologue helper: a per-save profile cloned from a catalogue plan. It is not in the recruitment pool, uses no ticket or
+  // unlock, joins the roster without entering the lineup (the player does that in the team page), and is removed when the prologue ends.
+  const PROLOGUE_HELPER_ID=900000001;
+  function addPrologueHelper(templateId,name){
+    if(!party)return null;const existing=partyMember(PROLOGUE_HELPER_ID);if(existing)return existing;
+    // The template can be deleted from the catalogue later; any other companion of a different class than the player then stands in.
+    const base=plans.find(p=>p.id===templateId)||plans.find(p=>p.availability!=='hidden'&&p.job!==playerHero().job)||plans[0];if(!base||typeof name!=='string'||!name.trim()||party.members.length>=513)return null;
+    ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureAccountQuests();ensureRoster(party);resetEncounter();
+    const plan={...copy(base),id:PROLOGUE_HELPER_ID,name:name.trim(),availability:'visible',unlockCondition:{type:'initial'}},h=initial(plan.job);
+    h.companionId=PROLOGUE_HELPER_ID;h.name=plan.name;h.lv=playerHero().lv;h.won=false;
+    h.bag=[];h.equipped=Array(5).fill(null);h.tokenId=null;h.gold=0;h.ore=0;h.dust=0;h.gems=[0,0,0];h.materials={};h.potions=0;h.consumables={};
+    party.members.push(h);party.companionProfiles[PROLOGUE_HELPER_ID]=plan;party.companionNames[PROLOGUE_HELPER_ID]=plan.name;applyPlan(h,{fullHealth:true});
+    ensureAccountResources();ensureSharedGear();ensureSharedItems();ensureAccountQuests();
+    if(!party.enlisted.includes(PROLOGUE_HELPER_ID))party.enlisted.push(PROLOGUE_HELPER_ID);
+    syncParty();return h;
+  }
+  function removePrologueHelper(){
+    const h=party&&partyMember(PROLOGUE_HELPER_ID);if(!h)return false;
+    resetEncounter();const playerKey=memberKey(party.members[0]);
+    party.active=party.active.filter(k=>k!==PROLOGUE_HELPER_ID);if(!party.active.length)party.active=[playerKey];
+    party.enlisted=party.enlisted.filter(k=>k!==PROLOGUE_HELPER_ID);if(!party.enlisted.includes(playerKey))party.enlisted.unshift(playerKey);
+    party.members=party.members.filter(x=>x!==h);delete party.companionProfiles[PROLOGUE_HELPER_ID];delete party.companionNames[PROLOGUE_HELPER_ID];
+    if(party.companionUnlocks?.unlocked)party.companionUnlocks.unlocked=party.companionUnlocks.unlocked.filter(id=>id!==PROLOGUE_HELPER_ID);
+    if(party.selected===PROLOGUE_HELPER_ID||!partyMember(party.selected)){party.selected=playerKey;state=party.members[0];}
+    for(const [page,key] of pageHeroSelection)if(key===PROLOGUE_HELPER_ID)pageHeroSelection.delete(page);
+    ensureRoster(party);syncParty();return true;
+  }
+  globalThis.__EMBERWILD_PROLOGUE_HELPER={id:PROLOGUE_HELPER_ID,add:addPrologueHelper,remove:removePrologueHelper,member:()=>party?partyMember(PROLOGUE_HELPER_ID)||null:null};
   function requestMemberReplacement(key){
     const incoming=partyMember(key);
     if(!party||!incoming||!isEnlisted(incoming)||party.active.includes(key)||party.active.length!==3)return;
