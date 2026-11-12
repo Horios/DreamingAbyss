@@ -193,8 +193,7 @@
   layer.append(element);
   // Measure the rendered text, so even a single digit spans at least half a card.
   element.style.fontSize='100px';
-  const range=document.createRange();range.selectNodeContents(element);
-  const width=range.getBoundingClientRect().width||100;
+  const width=element.offsetWidth||100;
   const ratio=event.critical?.64:event.kind==='dot'?.52:.56;
   const size=100*node.clientWidth*ratio/width;
   element.style.fontSize=size+'px';
