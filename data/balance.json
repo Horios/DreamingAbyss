@@ -46140,5 +46140,482 @@
         "questCompletions": "object"
       }
     }
+  },
+  "tutorials": {
+    "version": 1,
+    "modules": [
+      {
+        "id": "explore_basics",
+        "title": "探索",
+        "category": "battle",
+        "type": "guide",
+        "enabled": true,
+        "implemented": true,
+        "description": "選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。序幕的訓練戰之後，第一次進入荒野探索時開始。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "battle",
+          "notify": false,
+          "notifyText": ""
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueDone",
+              "key": "",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "intro",
+            "title": "探索介面",
+            "text": "這裡是荒野探索。上方選擇要前往的地圖，下方是隊伍與敵人的戰鬥卡片。",
+            "page": "battle",
+            "target": "battle.destination",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "map",
+            "title": "選擇探索地圖",
+            "text": "從清單選擇要探索的地圖。地圖名稱後面是建議等級，先從等級相近的地圖開始。",
+            "page": "battle",
+            "target": "battle.mapSelect",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "start",
+            "title": "開始探索",
+            "text": "按下「開始探索」，隊伍就會自動尋找怪物並開始戰鬥。",
+            "page": "battle",
+            "target": "battle.start",
+            "placement": "auto",
+            "advance": {
+              "type": "condition",
+              "condition": {
+                "type": "exploring",
+                "key": "",
+                "count": 1
+              }
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "auto",
+            "title": "自動戰鬥",
+            "text": "戰鬥會自動進行。普攻與已裝入的技能依冷卻與 MP 自動施放，卡片上的讀秒條是下一次行動的時間。打完一場後隊伍會先恢復，再自動尋找下一場戰鬥。",
+            "page": "battle",
+            "target": "battle.allies",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": true,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      },
+      {
+        "id": "equipment_basics",
+        "title": "裝備",
+        "category": "equipment",
+        "type": "guide",
+        "enabled": true,
+        "implemented": true,
+        "description": "在背包查看新裝備的資訊，並從背包進入穿戴頁面換上裝備。第一次取得一般裝備後提示。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "equipment",
+          "notify": true,
+          "notifyText": "取得了新的裝備。到「背包」看看裝備資訊與穿戴方式。"
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueDone",
+              "key": "",
+              "count": 1
+            },
+            {
+              "type": "gearAcquired",
+              "key": "",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "bag",
+            "title": "背包",
+            "text": "背包的「裝備」分類列出持有的裝備，可以用排序與篩選整理清單。",
+            "page": "equipment",
+            "target": "bag.categories",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "info",
+            "title": "查看裝備",
+            "text": "點選這件裝備，查看它的等級、數值與孔位。",
+            "page": "equipment",
+            "target": "bag.newGear",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "gearSelected"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "gearOwned",
+                  "key": "",
+                  "count": 1
+                }
+              ]
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "prologueLesson",
+                  "key": "equipLesson",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "id": "wear",
+            "title": "前往穿戴",
+            "text": "按「穿戴」會前往裝備頁，並比較穿上前後的數值。",
+            "page": "equipment",
+            "target": "bag.wearButton",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "wearOpened"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "gearOwned",
+                  "key": "",
+                  "count": 1
+                }
+              ]
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "prologueLesson",
+                  "key": "equipLesson",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "id": "equip",
+            "title": "完成穿戴",
+            "text": "選擇候選裝備並確認穿戴。數值比目前的差時可以不換，按「略過此步」繼續。",
+            "page": "worn",
+            "target": "worn.candidate",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "gearEquipped"
+            },
+            "optional": true,
+            "requires": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "gearOwned",
+                  "key": "",
+                  "count": 1
+                }
+              ]
+            },
+            "onReplay": "explain",
+            "skipIf": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "prologueLesson",
+                  "key": "equipLesson",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "id": "slots",
+            "title": "已穿戴欄位",
+            "text": "已穿戴的裝備顯示在這裡，可以卸下、強化、鑲嵌或查看詳情。",
+            "page": "worn",
+            "target": "worn.slots",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": true,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      },
+      {
+        "id": "skill_basics",
+        "title": "技能",
+        "category": "skills",
+        "type": "guide",
+        "enabled": true,
+        "implemented": true,
+        "description": "看懂技能頁的技能槽、技能圖鑑，以及戰鬥中技能的自動施放規則。第一次進入技能頁時開始。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "skills",
+          "notify": false,
+          "notifyText": ""
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueDone",
+              "key": "",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "slots",
+            "title": "技能槽",
+            "text": "技能頁分成主動、觸發與輔助三種技能槽。技能要裝進技能槽才會在戰鬥中使用。",
+            "page": "skills",
+            "target": "skills.activeSlots",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "catalog",
+            "title": "技能圖鑑",
+            "text": "「技能圖鑑」列出目前職業可以取得的技能、已取得的技能，以及取得的方式。",
+            "page": "skills",
+            "target": "skills.catalog",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "active",
+            "title": "主動技能",
+            "text": "點選主動槽可以選擇或替換技能。",
+            "page": "skills",
+            "target": "skills.firstActiveSlot",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "skillSlotOpened"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "learnedActiveSkills",
+                  "key": "",
+                  "count": 1
+                },
+                {
+                  "type": "skillSlots",
+                  "key": "active",
+                  "count": 1
+                }
+              ]
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "prologueLesson",
+                  "key": "skillLesson",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "id": "auto",
+            "title": "自動施放",
+            "text": "戰鬥中，主動槽的技能在冷卻結束且 MP 足夠時自動施放；有施放條件的技能要等條件成立。沒有可用的技能時角色會普攻。",
+            "page": "skills",
+            "target": "skills.activeSlots",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "others",
+            "title": "觸發與輔助",
+            "text": "觸發技能在普攻時依觸發率發動；輔助技能在戰鬥中同樣自動施放。各技能的效果以技能說明為準。",
+            "page": "skills",
+            "target": "skills.procSlots",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "skillSlots",
+                  "key": "proc",
+                  "count": 1
+                }
+              ]
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": true,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      }
+    ]
   }
 }

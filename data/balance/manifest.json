@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 9,
+  "dataRevision": 10,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "f7507d9992bab4703711dd684af437dfdeba578af08e6933bde30edac341d3d3",
-    "bytes": 1187351
+    "sha256": "9587509ea0f063c249c9ffa4cb2a324fab97d4b72deda87ca3b254ec27eab769",
+    "bytes": 1201364
   },
   "layout": {
     "": [
@@ -42,7 +42,8 @@
       "story",
       "navigation",
       "skillSystem",
-      "wishingLake"
+      "wishingLake",
+      "tutorials"
     ],
     "balanceSettings": [
       "progression",
@@ -509,6 +510,7 @@
         "drop-references",
         "wishing-lake",
         "life-skills",
+        "tutorials",
         "story",
         "inventory-catalogue"
       ]
@@ -629,6 +631,7 @@
       ],
       "validators": [
         "field-rules",
+        "tutorials",
         "story"
       ]
     },
@@ -690,6 +693,24 @@
       "validators": [
         "field-rules",
         "wishing-lake"
+      ]
+    },
+    {
+      "id": "systems/tutorials",
+      "title": "教學",
+      "file": "systems/tutorials.json",
+      "source": "tutorials",
+      "present": true,
+      "version": 1,
+      "sha256": "4a014b56edc74cfe77a826c5a5aac5cf57fedafe8660d10aa5058885dcd1fa8e",
+      "bytes": 13045,
+      "dependsOn": [
+        "items/items",
+        "systems/story"
+      ],
+      "validators": [
+        "field-rules",
+        "tutorials"
       ]
     }
   ]

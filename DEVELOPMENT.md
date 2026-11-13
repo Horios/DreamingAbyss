@@ -191,6 +191,20 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 - 裝備教學時，背包清單把女神給的武器與護符固定排在最上面（武器在前、護符在後），不受清單排序設定影響；只調整畫面上的順序，不改背包資料。
 - 聚光燈只在教學步驟進行時存在，每 150 毫秒重新判斷目標並逐格跟隨位置；離開教學、回到對話或序幕結束時移除。
 
+## 教學系統與教學回顧（v0.144）
+
+- 資料：平衡文件新增 `tutorials`（模組 `data/balance/systems/tutorials.json`，第 36 個模組）。規則與白名單在 `js/story/tutorial-model.js`（`EmberwildTutorial`），平衡器嵌入同一份檔案；遊戲與平衡器用同一個 `issues()` 驗證。`balance-document.js` 公布 `tutorialsVersion:1`，平衡器發布前檢查目標分支有這個能力。
+- 每個教學模組：`id`（永久不變）、`title`、`category`、`type`（`guide` 操作引導／`intro` 功能介紹／`tip` 簡短提示）、`enabled`、`implemented`、`description`、`trigger`（`pageEnter` 首次進入頁面／`unlock` 條件成立時提示／`manual` 只能從回顧開始，可先顯示通知）、`prerequisites`、`steps`、`completion`（`steps` 或 `condition`）、`replayable`、`skippable`、`interrupt`（`pause`／`end`）、`revision`、`reprompt`。
+- 步驟：`page`、`target`（語意目標 ID，例如 `battle.mapSelect`、`bag.wearButton`；`tutorial-runtime.js` 的對照表找到實際控制項，控制項加上 `data-tutorial-target="ID"` 會優先使用）、`placement`、`advance`（`next`、`click`、`event`、`condition`、`page`）、`optional`、`requires`（不成立時顯示原因並可略過）、`skipIf`（序幕已教過時略過，只在一般模式）、`onReplay`（`explain` 時重播只說明）。條件、事件與目標只能使用模型列出的類型，資料裡沒有任何可執行的程式字串。
+- 事件由遊戲原本的處理函式成功後回報：開始探索、在背包點選裝備、按「穿戴」、完成穿戴（實際穿戴位置有變化）、開啟技能槽、裝入技能、開啟技能圖鑑。
+- 執行：`js/story/tutorial-runtime.js`。序幕進行中不啟動。同一時間只有一個引導；同時符合時依清單順序。開著對話視窗或劇情視窗時不自動開始。離開步驟頁面時依設定暫停或結束。高亮框 `pointer-events:none`，點擊直接落在遊戲控制項上；目標在對話視窗內時改用外框，說明卡片移進視窗。找不到目標時顯示原因，可按下一步或結束。
+- 進度：`party.tutorials`（`records` 每個教學的 triggered／completed／skipped／notified／revision／step，`pages` 進過的頁面，`events` 事件次數）。存檔驗證拒絕格式錯誤的資料。舊存檔沒有這份資料時：依存檔已有的紀錄（探索擊殺、已穿戴的一般裝備、已裝入的技能）補上事件次數，條件都已成立的教學記為完成（`legacy:true`），不讓老玩家重做基礎教學。修訂版本提高不清除完成紀錄；只有 `reprompt:true` 時對完成舊版的玩家顯示一次「教學已更新」通知，不自動開始。
+- 「取得一般裝備」只計入開始追蹤之後新出現、帶有 `acquiredAt` 的裝備（掉落、商店、許願湖）；角色一開始的裝備、序幕的新手武器與任務裝備不算。
+- 教學回顧：設定 →「教學回顧」。列出已解鎖的教學（前置條件成立，或曾經觸發），可查看各步驟說明、重新執行。重播不清除或改寫完成紀錄、不發放任何東西、不跳過解鎖；穿戴步驟在重播時只說明。
+- 第一批教學：探索（選圖、開始探索、自動戰鬥說明，序幕結束後第一次進入荒野探索）、裝備（取得一般裝備後先通知，進入背包時開始；序幕已教過穿戴的玩家略過點選、穿戴兩步）、技能（技能槽、圖鑑、主動槽、自動施放、觸發與輔助；序幕已裝過技能的玩家略過開啟技能槽一步；沒有觸發槽或沒有可用主動技能時該步顯示原因）。夥伴、生活技能、煉金、許願湖、商店、圖鑑等系統可在平衡器登錄，`implemented:false` 的模組不會觸發，也不會出現在回顧。
+- 開發者測試：`__EMBERWILD_TUTORIAL.test(id,{step})` 不檢查前置條件、不寫入任何教學紀錄（也不記錄頁面造訪），`status()`／`module(id)` 回報目前步驟、目標定位、下一步條件、可執行條件、前置與完成條件。平衡器的開發者預覽本來就把存檔放在記憶體中，與玩家存檔分開。
+- 測試：`tests/tutorial-system.test.cjs`（headless，資料規則與執行行為）、`tests/tutorial.browser.test.cjs`（瀏覽器，高亮與點擊、手機寬度、回顧重播、對話視窗內的目標）。
+
 ## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。

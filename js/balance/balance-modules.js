@@ -43,7 +43,8 @@
   ['systems/story','任務與劇情','', 'story'],
   ['systems/shop','商店','', 'shopSettings'],
   ['systems/life-skills','生活技能','', 'lifeSkills'],
-  ['systems/wishing-lake','許願湖','', 'wishingLake']
+  ['systems/wishing-lake','許願湖','', 'wishingLake'],
+  ['systems/tutorials','教學','', 'tutorials']
  ];
  const MODULES=LAYOUT.map(([id,title,container,own])=>Object.freeze({id,title,container,file:id+'.json',
   key:typeof own==='string'&&own!=='*'?own:undefined,keys:Array.isArray(own)?Object.freeze(own.slice()):undefined,rest:own==='*'}));
@@ -66,6 +67,7 @@
   'items':{id:'id',label:'道具',keys:['id','name','type','element','shopEnabled','timing']},
   'inventoryIcons':{id:'id',label:'物品目錄',keys:['id']},
   'story.quests':{id:'id',label:'任務',keys:['id','enabled']},
+  'tutorials.modules':{id:'id',label:'教學',keys:['id','enabled','implemented']},
   'shopSettings.equipmentStages':{id:'id',label:'裝備商店階段',keys:['id']},
   'shopSettings.randomOffers.entries':{id:'id',label:'隨機商品',keys:['id']},
   'shopSettings.fixedOffers.entries':{id:'id',label:'固定商品',keys:['id']},
@@ -232,7 +234,7 @@
   'document-preflight':['meta/document'],'field-rules':['*'],'healing-potions':['items/items','world/drops'],'seconds-timing':['combat/rules','meta/balance-settings','world/monsters','systems/rewards','combat/skills','combat/statuses','items/items','characters/companion-settings','equipment/forms','meta/document'],
   'skill-system':['combat/skills','combat/skill-system'],'status-definitions':['combat/statuses'],'equipment-effects':['equipment/power-system'],'drop-references':['world/drops','items/items','world/monsters'],
   'class-unlocks':['characters/classes','systems/quests','world/maps'],'wishing-lake':['systems/wishing-lake','items/items','items/inventory-icons','characters/companions','equipment/settings','world/monsters','characters/progression','world/maps'],
-  'life-skills':['systems/life-skills','items/items'],'story':['systems/story','world/maps','world/monsters','items/items','systems/life-skills','combat/skills','equipment/forms'],
+  'life-skills':['systems/life-skills','items/items'],'tutorials':['systems/tutorials','systems/story','items/items'],'story':['systems/story','world/maps','world/monsters','items/items','systems/life-skills','combat/skills','equipment/forms'],
   'inventory-catalogue':['items/inventory-icons','items/items','systems/shop','systems/life-skills','characters/companion-settings','equipment/power-system','characters/companions','characters/classes','equipment/forms','characters/support-skills','items/starter-packs','interface/presentation','world/drops','systems/economy','equipment/settings','world/maps','world/monsters','characters/progression','systems/quests','combat/skill-settings']
  };
  // Direct dependencies: modules whose key data a module's validation reads. Derived from REFERENCES and VALIDATORS,
