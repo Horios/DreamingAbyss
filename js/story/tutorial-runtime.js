@@ -310,16 +310,22 @@
   buttons.push(`<button type="button" onclick="tutorialControl('close')">${session.mode==='normal'?'稍後再看':'結束'}</button>`);
   return `<div class="tutorial-card-head"><span>${M.CATEGORIES[m.category]&&M.CATEGORIES[m.category]!==m.title?esc2(M.CATEGORIES[m.category])+' · ':''}${esc2(m.title)}</span>${mode}<span class="tutorial-count">${i+1} / ${n}</span></div><h3>${esc2(step.title)}</h3><p>${esc2(step.text)}</p>${explainOnly?'<p class="tutorial-note">重播時只說明，不需要實際操作。</p>':''}${session.paused?`<p class="tutorial-warn">教學已暫停：${esc2(session.reason)}</p>`:unavail?`<p class="tutorial-warn">目前無法進行這一步：${esc2(unavail)}</p>`:wait?`<p class="tutorial-wait">${esc2(wait)}</p>`:''}${missing}<div class="tutorial-card-actions">${buttons.join('')}</div>`;
  }
+ // The card keeps clear of the page header and of a menu bar fixed to the bottom edge (phones), so their buttons stay usable.
+ function safeArea(H){
+  let top=8,bottom=H-8;const head=document.querySelector?.('body>header');const hr=head?.getBoundingClientRect?.();if(hr&&hr.bottom>0&&hr.bottom<H/2)top=Math.max(top,hr.bottom+8);
+  for(const el of document.elementsFromPoint?.(innerWidth/2,H-3)||[]){if(el.closest?.('#tutorial-card,#tutorial-notices,#tutorial-spotlight'))continue;let n=el;while(n&&n!==document.body&&getComputedStyle(n).position!=='fixed')n=n.parentElement;if(n&&n!==document.body){const r=n.getBoundingClientRect();if(r.top>H/2)bottom=Math.min(bottom,r.top-8);break;}}
+  return {top,bottom};
+ }
  function place(card,rect,placement){
-  const W=innerWidth,H=innerHeight,cw=card.offsetWidth,ch=card.offsetHeight,gap=12;let x,y;
-  if(!rect||placement==='center'||W<640){card.dataset.dock=!rect||placement==='center'?'center':'bottom';x=(W-cw)/2;y=!rect||placement==='center'?(H-ch)/2:(rect.top>H/2?12:H-ch-12);}
+  const W=innerWidth,H=innerHeight,cw=card.offsetWidth,ch=card.offsetHeight,gap=12,area=safeArea(H);let x,y;
+  if(!rect||placement==='center'||W<640){card.dataset.dock=!rect||placement==='center'?'center':'bottom';x=(W-cw)/2;y=!rect||placement==='center'?(H-ch)/2:(rect.top>(area.top+area.bottom)/2?area.top:area.bottom-ch);}
   else{
    delete card.dataset.dock;
    const room={bottom:H-rect.bottom,top:rect.top,right:W-rect.right,left:rect.left},side=placement==='auto'?(room.bottom>=ch+gap?'bottom':room.top>=ch+gap?'top':room.right>=cw+gap?'right':room.left>=cw+gap?'left':'bottom'):placement;
    if(side==='bottom'||side==='top'){x=rect.left+rect.width/2-cw/2;y=side==='bottom'?rect.bottom+gap:rect.top-ch-gap;}
    else{y=rect.top+rect.height/2-ch/2;x=side==='right'?rect.right+gap:rect.left-cw-gap;}
   }
-  card.style.left=Math.max(8,Math.min(W-cw-8,x))+'px';card.style.top=Math.max(8,Math.min(H-ch-8,y))+'px';
+  card.style.left=Math.max(8,Math.min(W-cw-8,x))+'px';card.style.top=Math.max(area.top,Math.min(area.bottom-ch,y))+'px';
  }
  let ringEl=null;
  function draw(){
