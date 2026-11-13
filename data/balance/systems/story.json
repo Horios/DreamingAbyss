@@ -764,7 +764,7 @@
     },
     {
       "id": "prologue",
-      "name": "序章：造物室",
+      "name": "序幕：造物",
       "type": "main",
       "npc": "女神",
       "description": "在女神的造物室完成啟程前的準備。",
@@ -779,68 +779,158 @@
       "stages": [
         {
           "id": "creation",
-          "name": "創造之儀",
+          "name": "造物",
           "speaker": "女神",
-          "description": "女神在造物室創造了你。",
+          "description": "在造物室醒來。",
           "dialogue": [
             {
               "speaker": "旁白",
               "kind": "narrator",
-              "text": "一間神祕的房間內，無源之光亮起。身材矮小、身披寬大長袍的女神走入房間。",
+              "text": "一間神祕的房間內，無源之光亮起。",
               "source": "original"
             },
             {
               "speaker": "旁白",
               "kind": "narrator",
-              "text": "她將「知識、認知、天賦」等光點匯聚成光團，最終創造出主角。",
+              "text": "咚咚，咚咚……",
               "source": "original"
             },
             {
               "speaker": "旁白",
               "kind": "narrator",
-              "text": "主角首次獲得意識，女神確認創造結果。",
+              "text": "最初聽到的，是腳步聲。",
               "source": "original"
             },
             {
-              "speaker": "女神",
-              "kind": "npc",
-              "text": "……成功了？",
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "一道矮小的身影披著寬大的長袍，走進了房間。",
               "source": "draft"
             },
             {
-              "speaker": "女神",
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "「知識」、「認知」、「天賦」……她伸出手，一顆顆光點在掌心上方匯聚成光團。",
+              "source": "draft"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "光團越來越亮，直到再也分不出彼此。",
+              "source": "draft"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "一片混沌中，你的意識逐漸清晰。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "睜開雙眼，一道柔和的光芒照亮了四周，眼前卻空無一人。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "似乎並不是。",
+              "source": "original"
+            },
+            {
+              "speaker": "少女",
               "kind": "npc",
-              "text": "能聽見我說話嗎？",
+              "text": "這裡！這裡！下面啦！",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "你的視線往下移動，一名矮小的少女正站在不遠處。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "滿頭銀髮垂落在房內水晶般的地面上，與純白的長袍相互輝映。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "她觀察著你，這時你才發現自己正飄在空中。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "少女揮了揮手，你不由自主地緩緩下降，雙腳落在地上。",
+              "source": "original"
+            },
+            {
+              "speaker": "少女",
+              "kind": "npc",
+              "text": "醒了嗎？看來創造得很順利呢。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "她似乎看出你還在發呆，便飄到空中，圍繞著你做起檢查。",
+              "source": "original"
+            },
+            {
+              "speaker": "旁白",
+              "kind": "narrator",
+              "text": "時而摸摸皮膚、拉拉頭髮、扯扯你身上穿著的衣服，最後還伸手拉開你的眼皮，仔細觀察瞳孔。",
+              "source": "original"
+            },
+            {
+              "speaker": "少女",
+              "kind": "npc",
+              "text": "嗯嗯，皮膚、頭髮、眼睛……全部都沒問題！",
+              "source": "draft"
+            },
+            {
+              "speaker": "少女",
+              "kind": "npc",
+              "text": "喂——聽得到我說話嗎？聽得到就回一聲嘛。",
               "source": "draft"
             },
             {
               "speaker": "主角",
               "kind": "player",
-              "text": "能。這裡是什麼地方？",
+              "text": "聽得到。這裡是什麼地方？你又是……？",
+              "source": "draft"
+            },
+            {
+              "speaker": "少女",
+              "kind": "npc",
+              "text": "這裡是我的造物室呀！至於我嘛……叫我女神就可以啦。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "我的造物室。至於你，是我剛剛創造出來的生命。",
+              "text": "然後你呢，是我剛剛才做出來的！",
               "source": "draft"
             },
             {
               "speaker": "主角",
               "kind": "player",
-              "text": "創造？",
+              "text": "做出來的？",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "我已經給了你理解事物、思考和交流所需要的能力。至於其他事情，就得靠你自己慢慢學習了。",
+              "text": "對呀！思考、說話、理解事情的能力，我都幫你裝好了。剩下的就要靠你自己慢慢學啦。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "不過，在那之前……你還沒有名字呢。",
+              "text": "啊，對了對了！你還沒有名字呢。",
               "source": "draft"
             }
           ],
@@ -867,7 +957,7 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "好，那以後就這樣稱呼你吧。",
+                "text": "好，就這麼決定啦！以後我就這樣叫你。",
                 "source": "draft"
               }
             ]
@@ -882,19 +972,19 @@
             {
               "speaker": "主角",
               "kind": "player",
-              "text": "所以，你為什麼要創造我？",
+              "text": "所以，你為什麼要做出我？",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "因為有個世界讓我很在意。",
+              "text": "因為有個世界，讓我在意得不得了！",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "那裡有一些我還沒弄明白的事情。我想親自去看看，但現在不太方便。",
+              "text": "那裡有好多我還搞不懂的事情。我是很想自己跑去看啦，可是現在不太方便。",
               "source": "draft"
             },
             {
@@ -906,25 +996,25 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "差不多。你可以探索那個世界，看看有什麼值得注意的事情，再把發現告訴我。",
+              "text": "答對了！你就到處走走、到處看看，發現什麼有趣的事情，再回來告訴我。",
               "source": "draft"
             },
             {
               "speaker": "主角",
               "kind": "player",
-              "text": "有什麼特別需要調查的目標嗎？",
+              "text": "有什麼特別要調查的目標嗎？",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "目前還沒有。畢竟我知道的也不多。",
+              "text": "沒有喔。老實說，我自己知道的也不多。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "你可以自己決定要去哪裡、做些什麼。我想知道的，是你真正看到的世界。",
+              "text": "要去哪裡、要做什麼，全都由你決定。我想知道的，是你親眼看到的世界。",
               "source": "draft"
             }
           ],
@@ -959,7 +1049,7 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "在送你過去之前，還有幾件事情得準備。",
+              "text": "不過在送你過去之前，還有幾件事要準備一下。",
               "source": "draft"
             },
             {
@@ -971,13 +1061,13 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "至少得讓你有保護自己的能力。",
+              "text": "總不能讓你空著手就出門吧？至少要有保護自己的能力才行。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "我在創造你的時候，讓你能夠適應不同種類的力量。不過，你現在最好先選一種熟悉。",
+              "text": "我做你的時候，讓你什麼力量都學得來。不過貪心可不行，先挑一種熟悉熟悉吧。",
               "source": "draft"
             }
           ],
@@ -1010,19 +1100,19 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "好，那就先從這種力量開始。",
+                "text": "好，就從這個開始！",
                 "source": "draft"
               },
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "記住，這只是你的起點。你能學會多少，還得看以後的經歷。",
+                "text": "別擔心，這只是起點而已。以後能學會多少，就看你自己的經歷啦。",
                 "source": "draft"
               },
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "這些是我替你準備的裝備。到了那邊，應該會派上用場。",
+                "text": "來來來，這些是我幫你準備的裝備。到了那邊一定用得上！",
                 "source": "draft"
               }
             ],
@@ -1059,7 +1149,7 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "裝備拿在手上可不代表已經能用了。記得先穿戴好。",
+              "text": "等等，拿在手上可不算數喔。要好好穿上去才行！",
               "source": "draft"
             }
           ],
@@ -1102,7 +1192,7 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "嗯，這樣就可以了。",
+                "text": "嗯嗯，這樣才像樣嘛。",
                 "source": "draft"
               }
             ]
@@ -1117,19 +1207,19 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "有了力量，還得知道怎麼使用。",
+              "text": "光有力量還不夠，得知道怎麼用才行。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "先看看你現在掌握了哪些技能。",
+              "text": "來，先看看你現在會些什麼。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "主動技能要放進技能槽才會在戰鬥中施放，施放後需要等待冷卻，有些還會消耗 MP。被動技能學會後就會持續生效。",
+              "text": "主動技能要放進技能槽，戰鬥的時候才會施放喔。放完要等冷卻，有些還會吃掉 MP。被動技能就輕鬆多了，學會之後一直有效。",
               "source": "draft"
             }
           ],
@@ -1162,7 +1252,7 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "戰鬥時，你會依照設定的方式使用技能。現在先記住最基本的配置就好。",
+                "text": "戰鬥的時候，你會照著設定好的方式用技能。現在先記住最基本的配置就好啦。",
                 "source": "draft"
               }
             ]
@@ -1177,7 +1267,7 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "接下來，試試看實際戰鬥吧。",
+              "text": "接下來，實際打打看吧！",
               "source": "draft"
             },
             {
@@ -1189,13 +1279,13 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "放心，這只是我臨時做出來的訓練對象。",
+              "text": "放心放心，那只是我隨手捏出來的訓練對象。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "你可以用它確認自己能做到什麼。",
+              "text": "盡量試，看看自己能做到什麼程度。",
               "source": "draft"
             }
           ],
@@ -1236,13 +1326,13 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "看來基本動作沒有問題。",
+                "text": "喔——動作挺俐落的嘛！",
                 "source": "draft"
               },
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "不過，在真正的冒險中，你不一定得獨自戰鬥。",
+                "text": "不過呀，真正的冒險可不一定只有你一個人。",
                 "source": "draft"
               }
             ]
@@ -1270,25 +1360,25 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "在那個世界，你應該會遇到其他冒險者。",
+              "text": "那個世界裡，應該還有其他冒險者。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "如果有人願意與你同行，就能組成隊伍，互相協助。",
+              "text": "要是有人願意跟你一起走，就能組成隊伍，互相幫忙喔。",
               "source": "draft"
             },
             {
               "speaker": "主角",
               "kind": "player",
-              "text": "像是剛才那樣一起戰鬥？",
+              "text": "像剛才那樣一起戰鬥？",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "差不多。不過我先做個示範給你看。",
+              "text": "差不多啦。我先示範給你看！",
               "source": "draft"
             },
             {
@@ -1300,7 +1390,7 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "這是我暫時做出來的助手。它可以陪你完成接下來的練習。",
+              "text": "這是我臨時做出來的小幫手。接下來的練習就讓它陪你。",
               "source": "draft"
             }
           ],
@@ -1335,7 +1425,7 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "這樣你們就是一支隊伍了。",
+                "text": "看，這樣你們就是一支隊伍啦。",
                 "source": "draft"
               }
             ]
@@ -1350,13 +1440,13 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "接下來試試兩個人一起戰鬥。",
+              "text": "這次換兩個人一起上！",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "不同的能力可以互相配合。記得觀察你的隊友在做什麼。",
+              "text": "不一樣的能力可以互相配合喔。記得偷看一下隊友在做什麼。",
               "source": "draft"
             }
           ],
@@ -1397,7 +1487,7 @@
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "很好。至少現在，我可以放心讓你出發了。",
+                "text": "很好很好！這樣我就能放心讓你出發了。",
                 "source": "draft"
               }
             ]
@@ -1425,7 +1515,7 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "接下來，就得靠你自己了。",
+              "text": "好啦，接下來就要靠你自己囉。",
               "source": "draft"
             },
             {
@@ -1443,19 +1533,19 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "暫時不會。不過，我們還是有機會聯繫的。",
+              "text": "暫時不行啦。不過別擔心，我們還有機會聯絡的。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "到了那裡之後，不用急著尋找什麼偉大的答案。",
+              "text": "到了那邊，不用急著找什麼了不起的答案喔。",
               "source": "draft"
             },
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "先看看那個世界吧。也許你會發現連我都沒想到的事情。",
+              "text": "先好好看看那個世界吧。說不定你會發現連我都沒想到的事情呢！",
               "source": "draft"
             },
             {
@@ -1467,7 +1557,7 @@
             {
               "speaker": "女神",
               "kind": "npc",
-              "text": "那麼，祝你旅途順利。",
+              "text": "那麼——一路順風！",
               "source": "draft"
             }
           ],
@@ -1506,8 +1596,8 @@
         "scenes": [
           {
             "id": 1,
-            "name": "創造之儀",
-            "description": "造物室。女神創造主角，並為主角命名。"
+            "name": "序幕　造物",
+            "description": "造物室。主角醒來，女神為主角命名。"
           },
           {
             "id": 2,
@@ -1547,7 +1637,7 @@
         ],
         "helper": {
           "name": "造物助手",
-          "title": "女神暫時創造的助手",
+          "title": "女神臨時做出來的小幫手",
           "description": "只在造物室陪你練習的臨時隊友。離開造物室時會消失。",
           "templates": [
             13,

@@ -7,7 +7,7 @@ test('editor controls edit, add, reorder and delete prologue lines; the game sho
   const page=editor.page;await openEditorSection(page,'prologue');
   // A built-in document from before the prologue has no such quest: the page says so and offers the default.
   if(await page.locator('#prologueSeed').count()){assert.match(await page.locator('#app').innerText(),/沒有序章任務/);await page.click('#prologueSeed');}
-  assert.equal(await page.locator('[data-pl-scene]').count(),8);assert.match(await page.locator('#app').innerText(),/開發者原文 3 句/);
+  assert.equal(await page.locator('[data-pl-scene]').count(),8);assert.match(await page.locator('#app').innerText(),/開發者原文 14 句/);
   const first=page.locator('[data-stage="creation"] .prologue-lines').first();
   await first.locator('.prologue-line textarea').first().fill('平衡器改寫的開場。');await first.locator('.prologue-line textarea').first().dispatchEvent('change');
   const before=await first.locator('.prologue-line').count();
@@ -31,7 +31,7 @@ test('editor controls edit, add, reorder and delete prologue lines; the game sho
   await page.click('.save-slot-select');await page.waitForSelector('.prologue-scene');
   assert.match(await page.locator('#prologue-layer').innerText(),/平衡器改寫的開場。/);
   const seen=[];for(let i=0;i<40&&await page.evaluate(()=>__EMBERWILD_PROLOGUE.phase())==='before';i++){seen.push(await page.locator('#prologue-layer .prologue-box p').first().innerText());await page.click('#prologue-layer .prologue-box .actions button.primary');}
-  assert.equal(seen[0],'平衡器改寫的開場。');assert.equal(seen.at(-2),'新增的最後一句。','the added line plays where the editor placed it');assert(!seen.includes('她將「知識、認知、天賦」等光點匯聚成光團，最終創造出主角。'),'the deleted line is gone');
+  assert.equal(seen[0],'平衡器改寫的開場。');assert.equal(seen.at(-2),'新增的最後一句。','the added line plays where the editor placed it');assert(!seen.includes('咚咚，咚咚……'),'the deleted line is gone');
   await page.fill('#prologue-name','艾拉');await page.click('#prologue-layer button:has-text("就用這個名字")');
   for(let i=0;i<40&&await page.evaluate(()=>__EMBERWILD_PROLOGUE.stage()+'/'+__EMBERWILD_PROLOGUE.phase())!=='calling/action';i++)await page.click('#prologue-layer .prologue-box .actions button.primary');
   assert.equal(await page.locator('.prologue-option b').first().innerText(),'劍士');assert.equal(await page.locator('#prologue-layer .prologue-hint').innerText(),'挑一種力量，之後還能轉職。');

@@ -29,8 +29,16 @@ test('published prologue: eight scenes, every system action once and in order, o
  assert.deepEqual([...new Set(q.stages.map(s=>s.prologue.scene))],[1,2,3,4,5,6,7,8]);
  const lines=q.stages.flatMap(s=>[...s.dialogue,...s.prologue.after]).concat(q.prologue.chapter.lines);assert(lines.every(l=>['original','draft'].includes(l.source)),'every line records its source');
  const original=q.stages[0].dialogue.filter(l=>l.source==='original').map(l=>l.text);
- assert.deepEqual(original,['一間神祕的房間內，無源之光亮起。身材矮小、身披寬大長袍的女神走入房間。','她將「知識、認知、天賦」等光點匯聚成光團，最終創造出主角。','主角首次獲得意識，女神確認創造結果。']);
- assert.equal(lines.filter(l=>l.source==='original').length,3,'only the developer text is marked original');
+ // The developer's prelude is woven into the opening with the outline of the creation rite: the lit room and footsteps,
+ // the robed figure gathering knowledge, cognition and talent into light, then the awakening and the inspection.
+ const opening=q.stages[0].dialogue.map(l=>l.text),at=t=>{const i=opening.indexOf(t);assert(i>=0,t);return i;};
+ assert.equal(opening[0],'一間神祕的房間內，無源之光亮起。');
+ const prelude=['咚咚，咚咚……','最初聽到的，是腳步聲。','一片混沌中，你的意識逐漸清晰。','睜開雙眼，一道柔和的光芒照亮了四周，眼前卻空無一人。','似乎並不是。','這裡！這裡！下面啦！','你的視線往下移動，一名矮小的少女正站在不遠處。','滿頭銀髮垂落在房內水晶般的地面上，與純白的長袍相互輝映。','她觀察著你，這時你才發現自己正飄在空中。','少女揮了揮手，你不由自主地緩緩下降，雙腳落在地上。','醒了嗎？看來創造得很順利呢。','她似乎看出你還在發呆，便飄到空中，圍繞著你做起檢查。','時而摸摸皮膚、拉拉頭髮、扯扯你身上穿著的衣服，最後還伸手拉開你的眼皮，仔細觀察瞳孔。'];
+ assert.deepEqual(prelude.map(at),[...prelude.map(at)].sort((a,b)=>a-b),'the prelude keeps its order');
+ for(const t of prelude)assert.equal(q.stages[0].dialogue[at(t)].source,'original',t);
+ const rite=opening.slice(at('最初聽到的，是腳步聲。')+1,at('一片混沌中，你的意識逐漸清晰。')).join('');
+ for(const word of ['長袍','知識','認知','天賦','光點','光團'])assert(rite.includes(word),'the creation rite sits between the footsteps and the awakening: '+word);
+ assert.deepEqual(original,['一間神祕的房間內，無源之光亮起。',...prelude]);assert.equal(lines.filter(l=>l.source==='original').length,14,'only the developer text is marked original');
  assert.equal(q.prologue.chapter.title,'第一章：斷絕的商路');
 });
 
@@ -149,7 +157,7 @@ test('characters made outside the prologue and existing saves never enter it',as
  r.run('playerHero().lv=12;playerHero().gold=4321;recruitCompanion(10);closeModal();save()');
  const facts=x=>x.json('{story:party.story,mailbox:party.mailbox,members:party.members.map(h=>[memberKey(h),h.lv,h.name,h.bag.map(g=>g.id),h.equipped,h.skillLoadout]),gold:playerHero().gold,active:party.active,enlisted:party.enlisted,unlocked:party.companionUnlocks.unlocked,tickets:party.achievements.tickets}'),packed=facts(r);
  const again=await r.resume();assert.equal(again.at().active,false);assert.equal(again.json('party.story.quests.prologue||null'),null,'no prologue record is written into an existing save');
- assert.deepEqual(facts(again),packed,'name, class, level, gear, skills, companions, quests and mail are unchanged');again.run('save()');assert.deepEqual(facts(await again.resume()),packed);assert.doesNotMatch(again.run('storyView()'),/序章：造物室/);assert.deepEqual(again.errors,[]);
+ assert.deepEqual(facts(again),packed,'name, class, level, gear, skills, companions, quests and mail are unchanged');again.run('save()');assert.deepEqual(facts(await again.resume()),packed);assert.doesNotMatch(again.run('storyView()'),/序幕：造物/);assert.deepEqual(again.errors,[]);
 });
 
 test('text edited in the balance document is what the game shows; a broken prologue is refused',()=>{
@@ -164,7 +172,7 @@ test('text edited in the balance document is what the game shows; a broken prolo
 test('a script changed under a running prologue keeps moving; an update that cannot be applied is reported',async()=>{
  const r=open();r.run('selectSaveSlot(1)');for(let i=0;i<6;i++)r.run('prologueNext()');
  r.run("globalThis.d=exportableBalance();globalThis.q=d.story.quests.find(q=>q.prologue);q.stages[0].dialogue=q.stages[0].dialogue.slice(0,2);q.stages[1].dialogue=[];applyBalanceConfig(d,{persist:false});render()");
- assert.match(r.run("$('prologue-layer').innerHTML"),/光點匯聚成光團/,'the cursor moves back inside the shortened scene');
+ assert.match(r.run("$('prologue-layer').innerHTML"),/咚咚，咚咚……/,'the cursor moves back inside the shortened scene');
  r.run('prologueNext()');assert.deepEqual([r.at().stage,r.at().phase],['creation','action']);
  r.run("$('prologue-name').value='露娜';prologueConfirmName();prologueNext()");assert.deepEqual([r.at().stage,r.at().phase],['commission','before']);
  assert.match(r.run("$('prologue-layer').innerHTML"),/prologueNext\(\)/,'a stage left without lines still offers a way forward');
