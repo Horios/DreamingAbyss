@@ -150,6 +150,8 @@ function validate({base='HEAD',full=false}={}){
  else{
   const prev=readAt(base);
   if(prev.missing){const r=validate({full:true});return {...r,note:'基準版本沒有模組清單，改為完整驗證'};}
+  // A module added after the base (new top-level setting): the base cannot be split the new way, so check everything.
+  if(prev.errors.some(e=>/manifest 缺少模組/.test(e))){const r=validate({full:true});return {...r,note:'基準版本之後新增了模組，改為完整驗證'};}
   const before=assembleSources(prev);t0=process.hrtime.bigint();
   const changed=M.MODULES.filter(m=>prev.texts[m.id]!==src.texts[m.id]).map(m=>m.id);
   const paths=[];for(const id of changed)for(const p of new Set(M.modulePaths(id,after).concat(M.modulePaths(id,before))))paths.push(...M.changes(M.get(before,p),M.get(after,p),p));

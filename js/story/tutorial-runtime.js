@@ -45,7 +45,10 @@
  function ensure(){if(!party)return null;if(!party.tutorials){if(creating)party.tutorials=fresh();else migrate();}return party.tutorials;}
  const rec=id=>{const t=ensure();return t?(t.records[id]??={triggered:false,completed:false,skipped:false,step:-1}):null;};
  const peek=id=>party?.tutorials?.records?.[id]||null;
- const persist=()=>{try{return save()!==false;}catch{return false;}};
+ // Tutorial progress is saved on its own tick, never inside the render or the game action that changed it: the action's
+ // own transaction and save stay exactly as they were (one save per action), and a rolled-back action keeps nothing.
+ let persistQueued=false;
+ const persist=()=>{if(persistQueued)return true;persistQueued=true;setTimeout(()=>{persistQueued=false;if(party&&state&&!globalThis.EmberwildOffline?.busy){try{save();}catch{}}else if(party)setTimeout(persist,1000);},0);return true;};
 
  // ---------- conditions ----------
  const hero=()=>party?.members?.[0]||null;

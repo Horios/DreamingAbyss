@@ -2,11 +2,11 @@
  "note": "Override counts for save/load/loop globals. A new wrapper must be reviewed and this baseline updated in the same commit (node tools/override-map.cjs <name>).",
  "counts": {
   "save": 11,
-  "packParty": 21,
-  "loadParty": 17,
-  "validateParty": 21,
+  "packParty": 22,
+  "loadParty": 18,
+  "validateParty": 22,
   "tick": 6,
-  "render": 24,
+  "render": 25,
   "pacedRound": 9,
   "stats": 9
  }

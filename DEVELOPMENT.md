@@ -191,6 +191,12 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 - 裝備教學時，背包清單把女神給的武器與護符固定排在最上面（武器在前、護符在後），不受清單排序設定影響；只調整畫面上的順序，不改背包資料。
 - 聚光燈只在教學步驟進行時存在，每 150 毫秒重新判斷目標並逐格跟隨位置；離開教學、回到對話或序幕結束時移除。
 
+## 教學系統 CI 修正（v0.145）
+
+- 教學進度改為在下一個事件循環才存檔（`setTimeout`），不在 render 或遊戲動作的交易中呼叫 `save()`。遊戲動作的存檔次數維持原樣（`starter-mail-items` 的「只存一次」），線上與離線重播的狀態也不再因額外存檔而分歧（`offline-exploration`）。離線結算進行中時延後一秒再試。
+- `tools/override-baseline.json`：新增教學系統對 `packParty`、`loadParty`、`validateParty`、`render` 的包裝，已逐一檢視後更新計數。
+- `balance-modules.cjs validate --base`：基準版本之後新增了模組（例如 v0.144 的 `systems/tutorials`）時，基準無法依新配置拆分，改為完整驗證，不再判定為錯誤。
+
 ## 教學系統與教學回顧（v0.144）
 
 - 資料：平衡文件新增 `tutorials`（模組 `data/balance/systems/tutorials.json`，第 36 個模組）。規則與白名單在 `js/story/tutorial-model.js`（`EmberwildTutorial`），平衡器嵌入同一份檔案；遊戲與平衡器用同一個 `issues()` 驗證。`balance-document.js` 公布 `tutorialsVersion:1`，平衡器發布前檢查目標分支有這個能力。
