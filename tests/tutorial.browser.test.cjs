@@ -16,7 +16,7 @@ for(const [label,width,height] of [['desktop',1280,800],['phone',390,780]])test(
  try{
   await page.setViewportSize({width,height});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
-  await page.evaluate(()=>start(0));await page.waitForSelector('#tutorial-card:not([hidden])');
+  await page.evaluate(()=>{start(0);party.tutorials.auto=true;render();});await page.waitForSelector('#tutorial-card:not([hidden])');
   assert.deepEqual(await active(page),{id:'explore_basics',step:'intro',target:'found',mode:'normal',paused:false});
   const first=await layout(page,'intro');if(label==='desktop')assert.equal(first.overlap,0,'the card sits beside its target');
   await page.click('#tutorial-card button:has-text("下一步")');await page.click('#tutorial-card button:has-text("下一步")');
@@ -49,7 +49,7 @@ test('a step inside a dialog marks its control with a ring and the card joins th
  try{
   await page.setViewportSize({width:1280,height:800});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
-  await page.evaluate(()=>start(0));await page.waitForSelector('#tutorial-card:not([hidden])');await page.click('#tutorial-card button:has-text("跳過教學")');
+  await page.evaluate(()=>{start(0);party.tutorials.auto=true;render();});await page.waitForSelector('#tutorial-card:not([hidden])');await page.click('#tutorial-card button:has-text("跳過教學")');
   await page.evaluate(()=>{const h=playerHero();const g=gear(1,0,1,h.job);addGear(g);render();});
   await page.waitForSelector('[data-tutorial-notice="equipment_basics"]');
   await page.click('[data-tutorial-notice="equipment_basics"] button:has-text("前往")');

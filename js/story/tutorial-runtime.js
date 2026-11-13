@@ -12,13 +12,16 @@
  let lastTab=null,lastStatus='';
 
  // ---------- progress record ----------
- function fresh(){const events={};for(const k of COUNTERS)events[k]=0;return {version:1,records:{},pages:{},events};}
+ // auto:false — no automatic notices or guides (characters made without the prologue); review and replay still work.
+ function fresh(auto=true){const events={};for(const k of COUNTERS)events[k]=0;return {version:1,auto,records:{},pages:{},events};}
  const recordKeys={triggered:'boolean',completed:'boolean',skipped:'boolean',notified:'boolean',revision:'number',step:'number',notifiedRevision:'number',legacy:'boolean'};
  function validateProgress(raw){
   if(raw===undefined)return undefined;
   const x=copy(raw),bad=m=>{throw Error('教學存檔格式無效：'+m);};
   if(!x||typeof x!=='object'||Array.isArray(x)||x.version!==1)bad('版本');
   for(const k of ['records','pages','events'])if(!x[k]||typeof x[k]!=='object'||Array.isArray(x[k]))bad(k);
+  if(x.auto!==undefined&&typeof x.auto!=='boolean')bad('auto');
+  for(const k of Object.keys(x))if(!['version','auto','records','pages','events'].includes(k))bad(k);
   for(const [id,r] of Object.entries(x.records)){
    if(['__proto__','constructor','prototype'].includes(id)||!r||typeof r!=='object'||Array.isArray(r))bad('紀錄 '+id);
    for(const [k,v] of Object.entries(r)){if(!Object.hasOwn(recordKeys,k)||typeof v!==recordKeys[k])bad('紀錄欄位 '+id+'.'+k);if(typeof v==='number'&&(!Number.isSafeInteger(v)||v<-1||v>9999))bad('紀錄數值 '+id+'.'+k);}
@@ -41,14 +44,17 @@
   for(const m of design.modules)if(m.enabled&&m.implemented&&met(m.prerequisites)&&evidenced(m))t.records[m.id]={triggered:true,completed:true,skipped:false,revision:m.revision,step:-1,legacy:true};
   return t;
  }
- let creating=false;
- function ensure(){if(!party)return null;if(!party.tutorials){if(creating)party.tutorials=fresh();else migrate();}return party.tutorials;}
+ let creating=false,viaPrologue=false;
+ function ensure(){if(!party)return null;if(!party.tutorials){if(creating)party.tutorials=fresh(viaPrologue);else migrate();}return party.tutorials;}
  const rec=id=>{const t=ensure();return t?(t.records[id]??={triggered:false,completed:false,skipped:false,step:-1}):null;};
  const peek=id=>party?.tutorials?.records?.[id]||null;
- // Tutorial progress is saved on its own tick, never inside the render or the game action that changed it: the action's
- // own transaction and save stay exactly as they were (one save per action), and a rolled-back action keeps nothing.
- let persistQueued=false;
- const persist=()=>{if(persistQueued)return true;persistQueued=true;setTimeout(()=>{persistQueued=false;if(party&&state&&!globalThis.EmberwildOffline?.busy){try{save();}catch{}}else if(party)setTimeout(persist,1000);},0);return true;};
+ // Tutorial progress is saved after the current task (a microtask), never inside the render or the game action that
+ // changed it: the action's own transaction and save stay exactly as they were, and a rolled-back action keeps nothing.
+ // No timer is used, so the offline settlement's own timer queue is untouched; while it is busy the save waits for the
+ // next tutorial check.
+ let persistQueued=false,persistPending=false;
+ function flush(){persistQueued=false;if(!party||!state)return;if(globalThis.EmberwildOffline?.busy){persistPending=true;return;}persistPending=false;try{save();}catch{}}
+ const persist=()=>{if(persistQueued)return true;persistQueued=true;(globalThis.queueMicrotask||(fn=>Promise.resolve().then(fn)))(flush);return true;};
 
  // ---------- conditions ----------
  const hero=()=>party?.members?.[0]||null;
@@ -240,7 +246,9 @@
  function evaluate(){
   if(!playing())return;
   const page=currentPage();let dirty=trackGear();
+  if(persistPending)dirty=true;
   if(page!==lastTab){if(notePage(page))dirty=true;onPageChange(page);lastTab=page;}
+  if(party.tutorials?.auto===false){if(dirty)persist();if(session){const c=current();if(c&&!session.paused)watch(c);}return;}
   for(const m of design.modules){
    if(!live(m)||!met(m.prerequisites))continue;
    const r=peek(m.id);
@@ -376,7 +384,11 @@
  const validatePartyBase=validateParty;validateParty=function(raw){const p=validatePartyBase(raw);const t=validateProgress(raw?.tutorials);if(t)p.tutorials=t;else delete p.tutorials;return p;};
  const packBase=packParty;packParty=function(){const out=packBase();if(party?.tutorials)out.tutorials=copy(party.tutorials);return out;};
  const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);session=null;known=null;snoozed.clear();notices.clear();lastTab=null;ensure();return out;};
- const startBase=start;start=function(...args){creating=true;let out;try{out=startBase(...args);}finally{creating=false;}session=null;notices.clear();lastTab=null;if(party&&!party.tutorials)party.tutorials=fresh();known=null;trackGear();return out;};
+ // Only a character made through the prologue gets automatic guides; one made by a direct start(job) (old flow, tests)
+ // is treated as already arrived, like the prologue does.
+ // The prologue creates its character through the starter pack's asPrologue(); that marks it.
+ const SP=globalThis.__EMBERWILD_STARTER_PACK;if(SP?.asPrologue){const base=SP.asPrologue;SP.asPrologue=function(action){viaPrologue=true;try{return base.call(this,action);}finally{viaPrologue=false;}};}
+ const startBase=start;start=function(...args){creating=true;let out;try{out=startBase(...args);}finally{creating=false;}session=null;notices.clear();lastTab=null;if(party&&!party.tutorials)party.tutorials=fresh(viaPrologue);viaPrologue=false;known=null;trackGear();return out;};
  const newGameBase=newGame;newGame=function(...args){session=null;notices.clear();snoozed.clear();return newGameBase(...args);};
 
  const baseRender=render;render=function(...args){const out=baseRender(...args);try{evaluate();draw();}catch(e){console.warn(e);}return out;};

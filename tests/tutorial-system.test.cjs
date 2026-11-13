@@ -2,7 +2,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),M=require('../js/story/tutorial-model.js');
 const D=require('../js/balance/balance-document.js');
-function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
+// start(0) makes a character without the prologue, which gets no automatic guides; these tests turn them on as the
+// prologue would.
+function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer);party.tutorials.auto=true');return r;}
 const active=r=>r.json('__EMBERWILD_TUTORIAL.status().active');
 const step=r=>active(r)?.stepId||null;
 const records=r=>r.json('party.tutorials.records');
@@ -155,4 +157,14 @@ test('nothing runs during the prologue',()=>{
  const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1)');
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'creation');r.run('__EMBERWILD_TUTORIAL.evaluate()');
  assert.equal(active(r),null);assert.equal(r.json('__EMBERWILD_TUTORIAL.start("explore_basics").ok'),false);assert.deepEqual(r.errors,[]);
+});
+
+test('a character made without the prologue gets no automatic guide, but can still open the review',()=>{
+ const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer);render();setTab("skills")');
+ assert.equal(r.json('party.tutorials.auto'),false);assert.equal(active(r),null);
+ assert.match(r.run('tutorialReviewView()'),/data-tutorial-review="explore_basics"/);
+ assert.equal(r.run('replayTutorial("skill_basics")'),true);assert.equal(active(r).mode,'replay');assert.deepEqual(r.errors,[]);
+ // The prologue creates its character through the starter pack's asPrologue(): that one gets automatic guides.
+ const p=loadRuntime(root);p.run('selectSaveSlot(1);__EMBERWILD_STARTER_PACK.asPrologue(()=>start(0));closeModal();clearInterval(timer)');
+ assert.equal(p.run('party.tutorials.auto'),true);
 });
