@@ -37,6 +37,12 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   assert.deepEqual(await page.evaluate(()=>[characterName(playerHero()),playerHero().job,party.mailbox.messages.length]),['艾拉',job,0]);
   assert.match(await page.locator('.prologue-speaker').first().innerText(),/女神/);
 
+  // The gear lesson comes first: the weapon and the charm are worn before the skill lesson and both fights.
+  await read(page,'gift/action');await banner(page);assert.deepEqual(await page.evaluate(()=>[playerHero().equipped[0],playerHero().bag.filter(g=>g.slot===0).length]),[null,1],'no weapon is worn yet and the gift is the only one');
+  // Wear the starter weapon and the charm with the inventory's own wear action.
+  for(const id of await page.evaluate(()=>playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id))){await page.evaluate(id=>heroMenuAction(playerHero().job,()=>{selectInventoryGear(id)}),id);await page.evaluate(id=>withHero(playerHero(),()=>equipGear(id)),id);}
+  await page.evaluate(()=>render());await back(page);
+  assert.equal(await page.evaluate(()=>!!playerHero().bag.find(g=>g.id===playerHero().equipped[0])?.starterPack),true);
   await read(page,'skills/action');await banner(page);assert.equal(await page.locator('#prologue-layer').isVisible(),false);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'the lesson banner does not widen the page');
   await page.click('main [onclick="openSkillSlot(\'active\',0)"]');await page.click('#modal button:has-text("裝入技能")');await back(page);
@@ -44,10 +50,6 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   await read(page,'helper/action');await fits(page,'helper');await page.click('#prologue-layer button:has-text("接納助手")');await banner(page);
   assert.equal(await page.evaluate(()=>tab),'roster');await page.click('main button:has-text("加入上陣")');await back(page);
   await read(page,'trial/action');await banner(page);await win(page);
-  await read(page,'gift/action');await banner(page);
-  // Wear the starter weapon and the charm with the inventory's own wear action.
-  for(const id of await page.evaluate(()=>playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id))){await page.evaluate(id=>heroMenuAction(playerHero().job,()=>{selectInventoryGear(id)}),id);await page.evaluate(id=>withHero(playerHero(),()=>equipGear(id)),id);}
-  await page.evaluate(()=>render());await back(page);
   await read(page,'departure/chapter');await fits(page,'departure');
   for(let i=0;i<4&&!(await page.locator('.prologue-chapter-title').count());i++)await page.click('#prologue-layer .prologue-chapter button.primary');
   assert.equal(await page.locator('.prologue-chapter-title').innerText(),'第一章：斷絕的商路');await fits(page,'chapter title');

@@ -10,7 +10,7 @@
  const stage=(id='stage_1',name='新階段')=>({id,name,encounter:encounter(),speaker:'旁白',description:'',dialogue:[{speaker:'旁白',kind:'narrator',text:'請填寫劇情。'}],conditions:group(),rewards:{gold:0,ore:0,items:[]},effects:[],next:'',branches:[],choices:[],guides:[]});
  const quest=(id='quest_1',name='新任務',type='side',npc='')=>({id,name,type,npc,description:'',enabled:true,hidden:false,unlock:group(),prerequisites:[],entry:'stage_1',stages:[stage()],rewards:{gold:0,ore:0,items:[]},effects:[],nextQuests:[]});
  /* Prologue: one quest flagged with `prologue`. Text is free data; system behaviour is bound to these fixed action ids only. */
- const PROLOGUE_ACTIONS={nameHero:'角色命名',chooseClass:'選擇初始職業',skillLesson:'技能安裝教學',recruitHelper:'臨時隊友加入與上陣',equipLesson:'發放並穿戴新手裝備',enterWorld:'降臨並結束序章'};
+ const PROLOGUE_ACTIONS={nameHero:'角色命名',chooseClass:'選擇初始職業',equipLesson:'發放並穿戴新手裝備',skillLesson:'技能安裝教學',recruitHelper:'臨時隊友加入與上陣',enterWorld:'降臨並結束序章'};
  const PROLOGUE_ORDER=Object.keys(PROLOGUE_ACTIONS),PROLOGUE_SOURCES={original:'開發者原文',draft:'暫定續寫'},PROLOGUE_SCENES=8;
  const prologueQuest=d=>d?.quests?.find(q=>q&&q.prologue)||null;
  function prologueIssues(q,ctx={}){
@@ -36,10 +36,12 @@
   if(seen.join()!==PROLOGUE_ORDER.join())add('系統事件必須各出現一次並依序排列：'+PROLOGUE_ORDER.map(k=>PROLOGUE_ACTIONS[k]).join(' → ')+'（目前：'+(seen.map(k=>PROLOGUE_ACTIONS[k]).join(' → ')||'無')+'）');
   else{
    const at=a=>chain.findIndex(s=>s.prologue?.action===a),plain=s=>!s.conditions?.conditions?.length&&!s.encounter?.enabled&&!s.rewards?.gold&&!s.rewards?.ore&&!s.rewards?.items?.length&&!s.effects?.length;
-   if(chain.slice(0,at('chooseClass')+1).some(s=>!plain(s)))add('選擇職業之前的階段不可設定條件、戰鬥、獎勵或效果（角色尚未建立）');
+   // The class stage completes right after the character is created, so it may hand over items; nothing else.
+   const pick=chain[at('chooseClass')];
+   if(chain.slice(0,at('chooseClass')).some(s=>!plain(s))||pick.conditions?.conditions?.length||pick.encounter?.enabled||pick.rewards?.gold||pick.rewards?.ore||pick.effects?.length)add('選擇職業之前的階段不可設定條件、戰鬥、獎勵或效果（角色尚未建立）；選擇職業的階段只能發放道具');
    if(at('enterWorld')!==chain.length-1)add('降臨事件必須是最後一個階段');
    const fights=chain.filter(s=>s.encounter?.enabled),h=at('recruitHelper');
-   if(!fights.some(s=>chain.indexOf(s)>at('skillLesson')&&chain.indexOf(s)<h)||!fights.some(s=>chain.indexOf(s)>h&&chain.indexOf(s)<at('equipLesson')))add('需要一場單人訓練戰（技能教學之後）與一場隊伍訓練戰（臨時隊友加入之後）');
+   if(!fights.some(s=>chain.indexOf(s)>at('skillLesson')&&chain.indexOf(s)<h)||!fights.some(s=>chain.indexOf(s)>h)||fights.some(s=>chain.indexOf(s)<at('equipLesson')))add('需要一場單人訓練戰（技能教學之後）與一場隊伍訓練戰（臨時隊友加入之後）；訓練戰都必須在裝備教學之後');
    // The gear lesson can only ask for story gear the stage before it has just handed over.
    const lesson=chain[at('equipLesson')],giver=chain[at('equipLesson')-1],given=new Set((giver?.rewards?.items||[]).filter(x=>x.type==='gear').map(x=>x.key));
    if(lesson.conditions.conditions.some(c=>c.type!=='gearWorn'||!given.has(c.key)))add('裝備教學階段只能要求穿戴前一個階段發放的任務裝備');

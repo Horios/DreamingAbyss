@@ -33182,10 +33182,16 @@
             "rewards": {
               "gold": 0,
               "ore": 0,
-              "items": []
+              "items": [
+                {
+                  "type": "gear",
+                  "key": "initiation_charm",
+                  "quantity": 1
+                }
+              ]
             },
             "effects": [],
-            "next": "skills",
+            "next": "gift",
             "branches": [],
             "choices": [],
             "guides": [],
@@ -33205,6 +33211,12 @@
                   "speaker": "女神",
                   "kind": "npc",
                   "text": "記住，這只是你的起點。你能學會多少，還得看以後的經歷。",
+                  "source": "draft"
+                },
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "這些是我替你準備的裝備。到了那邊，應該會派上用場。",
                   "source": "draft"
                 }
               ],
@@ -33228,6 +33240,64 @@
                   "job": 3,
                   "text": "牧師",
                   "description": "使用神聖力量攻擊、治療與輔助"
+                }
+              ]
+            }
+          },
+          {
+            "id": "gift",
+            "name": "女神的贈禮",
+            "speaker": "女神",
+            "description": "穿戴女神準備的武器與護符。",
+            "dialogue": [
+              {
+                "speaker": "女神",
+                "kind": "npc",
+                "text": "裝備拿在手上可不代表已經能用了。記得先穿戴好。",
+                "source": "draft"
+              }
+            ],
+            "conditions": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "gearWorn",
+                  "key": "initiation_charm",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material"
+                }
+              ]
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "skills",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "equipment",
+              "worn"
+            ],
+            "prologue": {
+              "scene": 4,
+              "action": "equipLesson",
+              "hint": "到背包查看收到的武器與護符，再到裝備頁穿戴它們。",
+              "steps": [
+                "開啟背包查看收到的武器",
+                "穿戴武器",
+                "查看護符並穿戴",
+                "回到女神身邊"
+              ],
+              "after": [
+                {
+                  "speaker": "女神",
+                  "kind": "npc",
+                  "text": "嗯，這樣就可以了。",
+                  "source": "draft"
                 }
               ]
             }
@@ -33274,7 +33344,7 @@
               "skills"
             ],
             "prologue": {
-              "scene": 4,
+              "scene": 5,
               "action": "skillLesson",
               "hint": "在技能頁把一項已學會的主動技能安裝到主動技能槽。",
               "steps": [
@@ -33348,7 +33418,7 @@
               "battle"
             ],
             "prologue": {
-              "scene": 5,
+              "scene": 6,
               "action": "",
               "hint": "擊敗訓練對象。戰鬥會自動進行，留意普通攻擊、技能施放、HP 與 MP、行動條與技能冷卻。",
               "steps": [
@@ -33446,7 +33516,7 @@
               "partnerRoster"
             ],
             "prologue": {
-              "scene": 6,
+              "scene": 7,
               "action": "recruitHelper",
               "hint": "接納助手後，到隊伍頁讓它上陣，並看看它的技能與定位。",
               "steps": [
@@ -33499,16 +33569,10 @@
             "rewards": {
               "gold": 0,
               "ore": 0,
-              "items": [
-                {
-                  "type": "gear",
-                  "key": "initiation_charm",
-                  "quantity": 1
-                }
-              ]
+              "items": []
             },
             "effects": [],
-            "next": "gift",
+            "next": "departure",
             "branches": [],
             "choices": [],
             "guides": [
@@ -33529,24 +33593,6 @@
                   "kind": "npc",
                   "text": "很好。至少現在，我可以放心讓你出發了。",
                   "source": "draft"
-                },
-                {
-                  "speaker": "主角",
-                  "kind": "player",
-                  "text": "這樣就準備好了？",
-                  "source": "draft"
-                },
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "還差最後一件事。",
-                  "source": "draft"
-                },
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "這些是我替你準備的裝備。到了那邊，應該會派上用場。",
-                  "source": "draft"
                 }
               ]
             },
@@ -33562,64 +33608,6 @@
                 }
               ],
               "training": true
-            }
-          },
-          {
-            "id": "gift",
-            "name": "女神的贈禮",
-            "speaker": "女神",
-            "description": "穿戴女神準備的武器與護符。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "裝備拿在手上可不代表已經能用了。記得先穿戴好。",
-                "source": "draft"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "gearWorn",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "departure",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment",
-              "worn"
-            ],
-            "prologue": {
-              "scene": 7,
-              "action": "equipLesson",
-              "hint": "到背包查看收到的武器與護符，再到裝備頁穿戴它們。",
-              "steps": [
-                "開啟背包查看新手武器",
-                "穿戴新手武器",
-                "查看護符並穿戴",
-                "回到女神身邊"
-              ],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "嗯，這樣就可以了。",
-                  "source": "draft"
-                }
-              ]
             }
           },
           {
@@ -33727,23 +33715,23 @@
             },
             {
               "id": 4,
+              "name": "女神的贈禮",
+              "description": "取得並穿戴女神準備的武器與護符。"
+            },
+            {
+              "id": 5,
               "name": "技能安裝",
               "description": "查看已掌握的技能並安裝到技能槽。"
             },
             {
-              "id": 5,
+              "id": 6,
               "name": "第一次戰鬥",
               "description": "與訓練對象進行第一場戰鬥。"
             },
             {
-              "id": 6,
-              "name": "臨時隊友",
-              "description": "女神創造的助手加入隊伍。"
-            },
-            {
               "id": 7,
-              "name": "隊伍試煉與裝備",
-              "description": "與助手完成隊伍訓練戰，並取得、穿戴新手裝備。"
+              "name": "臨時隊友與隊伍試煉",
+              "description": "女神創造的助手加入隊伍，並一起完成隊伍訓練戰。"
             },
             {
               "id": 8,
