@@ -6,7 +6,7 @@
   let current='general';
   globalThis.setOptionsTab=function(id){if(!tabs.some(([key])=>key===id))return false;current=id;render();return true;};
   const row=(title,text,action)=>`<section class="panel option-row"><div><h2>${title}</h2><p class="small">${text}</p></div>${action}</section>`;
-  function general(){return `${globalThis.uiThemeOptionsView?.()||''}${globalThis.itemDisplayOptionsView?.()||''}${globalThis.numberReminderOptionsView?.()||''}${globalThis.battleEffectsOptionsView?.()||''}`;}
+  function general(){return `${globalThis.uiThemeOptionsView?.()||''}${globalThis.itemDisplayOptionsView?.()||''}${globalThis.numberReminderOptionsView?.()||''}${globalThis.battleEffectsOptionsView?.()||''}${globalThis.storyTextOptionsView?.()||''}`;}
   function saves(){
     return row('儲存','立即儲存目前進度到這個存檔欄位。','<button onclick="save(true)">儲存</button>')
       +row('匯出存檔 JSON','下載目前進度的 JSON 備份檔。','<button onclick="exportSave()">匯出存檔 JSON</button>')

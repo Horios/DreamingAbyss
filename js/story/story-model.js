@@ -13,6 +13,8 @@
  const PROLOGUE_ACTIONS={nameHero:'角色命名',chooseClass:'選擇初始職業',equipLesson:'發放並穿戴新手裝備',skillLesson:'技能安裝教學',recruitHelper:'臨時隊友加入與上陣',enterWorld:'降臨並結束序章'};
  const PROLOGUE_ORDER=Object.keys(PROLOGUE_ACTIONS),PROLOGUE_SOURCES={original:'開發者原文',draft:'暫定續寫'},PROLOGUE_SCENES=8;
  const prologueQuest=d=>d?.quests?.find(q=>q&&q.prologue)||null;
+ // Whether a quest's dialogue may be skipped as a whole. The prologue never is; any quest can opt out with skippable:false.
+ const skippable=q=>!!q&&!q.prologue&&q.skippable!==false;
  function prologueIssues(q,ctx={}){
   const out=[],add=m=>out.push('序章：'+m),p=q.prologue,text=(v,max=400)=>typeof v==='string'&&v.length<=max,line=x=>x&&['npc','player','narrator'].includes(x.kind)&&text(x.speaker,40)&&text(x.text,2000)&&(x.source===undefined||Object.hasOwn(PROLOGUE_SOURCES,x.source));
   if(q.id!=='prologue'||q.type!=='main')add('任務 ID 必須是 prologue，類型為主線');
@@ -106,5 +108,5 @@
   acyclic(edges,'任務鏈');return [...new Set(errors)];
  }
  function validate(d,ctx){const e=issues(d,ctx);if(e.length)throw Error(e.join('\n'));return copy(d);}
- const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate,PROLOGUE_ACTIONS,PROLOGUE_ORDER,PROLOGUE_SOURCES,PROLOGUE_SCENES,prologueQuest,prologueIssues};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
+ const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate,PROLOGUE_ACTIONS,PROLOGUE_ORDER,PROLOGUE_SOURCES,PROLOGUE_SCENES,prologueQuest,prologueIssues,skippable};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

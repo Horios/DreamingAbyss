@@ -29,11 +29,11 @@ test('editor controls edit, add, reorder and delete prologue lines; the game sho
   const page=game.page;
   assert.equal(await page.evaluate(async d=>importBalanceJSON({target:{files:[new File([JSON.stringify(d)],'balance.json',{type:'application/json'})],value:''}}),doc),true,'the game accepts the editor export');
   await page.click('.save-slot-select');await page.waitForSelector('.prologue-scene');
-  assert.match(await page.locator('#prologue-layer').innerText(),/平衡器改寫的開場。/);
-  const seen=[];for(let i=0;i<40&&await page.evaluate(()=>__EMBERWILD_PROLOGUE.phase())==='before';i++){seen.push(await page.locator('#prologue-layer .prologue-box p').first().innerText());await page.click('#prologue-layer .prologue-box .actions button.primary');}
+  await page.evaluate(()=>storyWindowSpeed('instant'));assert.equal(await page.locator('#prologue-layer [data-story-text]').getAttribute('aria-label'),'平衡器改寫的開場。');
+  const seen=[];for(let i=0;i<80&&await page.evaluate(()=>__EMBERWILD_PROLOGUE.phase())==='before';i++){seen.push(await page.locator('#prologue-layer [data-story-text]').getAttribute('aria-label'));await page.click('#prologue-layer [data-story-continue]');}
   assert.equal(seen[0],'平衡器改寫的開場。');assert.equal(seen.at(-2),'新增的最後一句。','the added line plays where the editor placed it');assert(!seen.includes('咚咚，咚咚……'),'the deleted line is gone');
   await page.fill('#prologue-name','艾拉');await page.click('#prologue-layer button:has-text("就用這個名字")');
-  for(let i=0;i<40&&await page.evaluate(()=>__EMBERWILD_PROLOGUE.stage()+'/'+__EMBERWILD_PROLOGUE.phase())!=='calling/action';i++)await page.click('#prologue-layer .prologue-box .actions button.primary');
+  for(let i=0;i<40&&await page.evaluate(()=>__EMBERWILD_PROLOGUE.stage()+'/'+__EMBERWILD_PROLOGUE.phase())!=='calling/action';i++)await page.click('#prologue-layer [data-story-continue]');
   assert.equal(await page.locator('.prologue-option b').first().innerText(),'劍士');assert.equal(await page.locator('#prologue-layer .prologue-hint').innerText(),'挑一種力量，之後還能轉職。');
   // The choice still creates the real class: text changed, the system binding did not.
   await page.click('.prologue-option[data-job="0"]');await page.click('#prologue-layer button:has-text("選擇這種力量")');assert.deepEqual(await page.evaluate(()=>[playerHero().job,characterName(playerHero())]),[0,'艾拉']);

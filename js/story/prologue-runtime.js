@@ -7,7 +7,7 @@
  const quest=()=>S()?.prologueQuest()||null,P=()=>quest()?.prologue||null,ui=k=>P()?.ui?.[k]||'';
  const DRAFT_KEY=environmentStorageKey('emberwild-prologue-draft-v1-slot-'+ACTIVE_SAVE_SLOT);
  const TASK_ACTIONS=['skillLesson','recruitHelper','equipLesson'];
- let cursor=null,taskOpen=false,chosenJob=null,layerSignature='',bannerNotice='';
+ let cursor=null,taskOpen=false,chosenJob=null,bannerNotice='';
 
  function readDraft(){try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');if(d&&d.version===1&&typeof d.stage==='string'&&typeof d.name==='string')return {version:1,stage:d.stage,name:validCharacterName(d.name)};}catch{}return null;}
  function writeDraft(d){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(d));return true;}catch{toast('無法儲存進度，請檢查瀏覽器儲存權限');return false;}}
@@ -112,48 +112,55 @@
   cursor=null;taskOpen=false;baseSetTab('battle');
  };
 
- function sceneHTML(s){
-  const p=P(),scene=p.scenes[s.prologue.scene-1],a=s.prologue.action,lines=linesOf(s),line=lines[cursor.index];let body='';
+ // The scene as a view for the shared story window: one typed line at a time, or the interaction of the current step.
+ function sceneView(s){
+  const p=P(),scene=p.scenes[s.prologue.scene-1],a=s.prologue.action,lines=linesOf(s),line=lines[cursor.index];
+  const view={head:{eyebrow:ui('place'),title:scene.name},attrs:`data-scene="${s.prologue.scene}" data-stage="${esc(s.id)}" data-phase="${cursor.phase}"`,decor:'<div class="prologue-light" aria-hidden="true"><i></i><i></i><i></i></div>',
+   actions:state?'':`<button type="button" class="prologue-back" onclick="backToTitle()">${esc(ui('backToTitle'))}</button>`,continueLabel:ui('continue'),lineKey:cursor.phase+':'+cursor.index,
+   // The prologue cannot be skipped: it offers no skip handler, and the window refuses to skip a view without one.
+   skip:null,advance:null,line:null,body:'',before:''};
+  const box=inner=>`<div class="prologue-box">${inner}</div>`,hint=`<p class="prologue-hint">${esc(s.prologue.hint)}</p>`;
   if(cursor.phase==='chapter'){
    const last=cursor.index>=lines.length-1;
-   body=`<div class="prologue-chapter">${lines.slice(0,cursor.index+1).map(l=>`<p class="prologue-narration">${esc(l.text)}</p>`).join('')}${last?`<h2 class="prologue-chapter-title">${esc(p.chapter.title)}</h2><button class="primary" onclick="prologueEnter()">${esc(ui('begin'))}</button>`:`<button class="primary" onclick="prologueNext()">${esc(ui('continue'))}</button>`}</div>`;
+   view.before=`<div class="prologue-chapter">${lines.slice(0,cursor.index).map(l=>`<p class="prologue-narration">${esc(l.text)}</p>`).join('')}</div>`;
+   if(line)view.line={speaker:'',kind:'narrator',text:line.text};
+   if(last){view.body=`<div class="prologue-chapter"><h2 class="prologue-chapter-title">${esc(p.chapter.title)}</h2></div>`;view.actions+=`<button type="button" class="primary" onclick="prologueEnter()">${esc(ui('begin'))}</button>`;}
+   else view.advance='prologueNext';
   }else if(cursor.phase==='action'&&a==='nameHero'){
-   body=`<div class="prologue-box"><p class="prologue-hint">${esc(s.prologue.hint)}</p><label for="prologue-name">${esc(ui('nameLabel'))}</label><input id="prologue-name" type="text" maxlength="20" autocomplete="off" placeholder="${esc(ui('namePlaceholder'))}" value="${esc(readDraft()?.name||'')}" onkeydown="if(event.key==='Enter')prologueConfirmName()"><div class="actions"><button class="primary" onclick="prologueConfirmName()">${esc(ui('nameConfirm'))}</button></div></div>`;
+   view.body=box(`${hint}<label for="prologue-name">${esc(ui('nameLabel'))}</label><input id="prologue-name" type="text" maxlength="20" autocomplete="off" enterkeyhint="done" placeholder="${esc(ui('namePlaceholder'))}" value="${esc(readDraft()?.name||'')}" onkeydown="if(event.key==='Enter')prologueConfirmName()">`);
+   view.actions+=`<button type="button" class="primary" onclick="prologueConfirmName()">${esc(ui('nameConfirm'))}</button>`;view.focus='#prologue-name';
   }else if(cursor.phase==='action'&&a==='chooseClass'){
-   body=`<div class="prologue-box"><p class="prologue-hint">${esc(s.prologue.hint)}</p><div class="prologue-options" role="radiogroup">${s.prologue.options.map(o=>`<button type="button" role="radio" aria-checked="${chosenJob===o.job}" class="prologue-option${chosenJob===o.job?' selected':''}" data-job="${o.job}" onclick="prologuePickClass(${o.job})"><b>${esc(o.text)}</b><span>${esc(o.description)}</span></button>`).join('')}</div><div class="actions"><button class="primary" onclick="prologueConfirmClass()" ${CLASSES[chosenJob]?'':'disabled'}>${esc(ui('classConfirm'))}</button></div></div>`;
+   view.body=box(`${hint}<div class="prologue-options" role="radiogroup">${s.prologue.options.map(o=>`<button type="button" role="radio" aria-checked="${chosenJob===o.job}" class="prologue-option${chosenJob===o.job?' selected':''}" data-job="${o.job}" onclick="prologuePickClass(${o.job})"><b>${esc(o.text)}</b><span>${esc(o.description)}</span></button>`).join('')}</div>`);
+   view.actions+=`<button type="button" class="primary" onclick="prologueConfirmClass()" ${CLASSES[chosenJob]?'':'disabled'}>${esc(ui('classConfirm'))}</button>`;
   }else if(cursor.phase==='action'&&a==='recruitHelper'&&!HELPER().member()){
    const cfg=p.helper;
-   body=`<div class="prologue-box"><p class="prologue-hint">${esc(s.prologue.hint)}</p><article class="prologue-helper"><h3>${esc(cfg.name)}</h3><p class="small">${esc(cfg.title)}</p><p>${esc(cfg.description)}</p></article><div class="actions"><button class="primary" onclick="prologueAcceptHelper()">${esc(ui('helperAccept'))}</button></div></div>`;
+   view.body=box(`${hint}<article class="prologue-helper"><h3>${esc(cfg.name)}</h3><p class="small">${esc(cfg.title)}</p><p>${esc(cfg.description)}</p></article>`);
+   view.actions+=`<button type="button" class="primary" onclick="prologueAcceptHelper()">${esc(ui('helperAccept'))}</button>`;
   }else if(cursor.phase==='action'){
-   body=`<div class="prologue-box"><p class="prologue-hint">${esc(s.prologue.hint)}</p><div class="actions"><button class="primary" onclick="prologueOpenTask()">${esc(ui('toTask'))}</button></div></div>`;
-  }else if(!line){
-   // A stage whose lines were all removed still needs a way forward.
-   body=`<div class="prologue-box"><div class="actions"><button class="primary" onclick="prologueNext()">${esc(ui('continue'))}</button></div></div>`;
+   view.body=box(hint);view.actions+=`<button type="button" class="primary" onclick="prologueOpenTask()">${esc(ui('toTask'))}</button>`;
   }else{
-   const who=speaker(line);
-   body=`<div class="prologue-box prologue-${line.kind}" data-line="${cursor.phase}:${cursor.index}">${who?`<b class="prologue-speaker">${esc(who)}</b>`:''}<p class="${line.kind==='narrator'?'prologue-narration':'prologue-text'}">${esc(line.text)}</p><div class="actions"><button class="primary" onclick="prologueNext()">${esc(ui('continue'))}</button></div></div>`;
+   // A stage whose lines were all removed still needs a way forward.
+   if(line)view.line={speaker:speaker(line),kind:line.kind,text:line.text};
+   view.advance='prologueNext';
   }
-  return `<section class="prologue-scene" data-scene="${s.prologue.scene}" data-stage="${esc(s.id)}" data-phase="${cursor.phase}" aria-live="polite"><div class="prologue-light" aria-hidden="true"><i></i><i></i><i></i></div><div class="prologue-head"><span class="eyebrow">${esc(ui("place"))}</span><h1>${esc(scene.name)}</h1></div>${body}${state?'':`<button class="prologue-back" onclick="backToTitle()">${esc(ui('backToTitle'))}</button>`}</section>`;
+  view.signature=['prologue',s.id,cursor.phase,cursor.index,chosenJob,!!state,!!HELPER()?.member?.(),scene.name,view.line?.text||'',view.body.length,view.actions.length,view.continueLabel].join('|');
+  return view;
  }
  function bannerHTML(s){
   const done=satisfied(s),fight=!!s.encounter?.enabled,busy=fight&&!!party.questChallenge,lost=fight&&!done&&globalThis.expeditionChallengeResult?.key===encounterKey(s)&&globalThis.expeditionChallengeResult.success===false;
   return `<aside class="prologue-task ${done?'prologue-task-done':''}" data-stage="${esc(s.id)}" aria-live="polite"><div class="prologue-task-text"><b>${esc(s.name)}</b><p>${esc(s.prologue.hint)}</p>${s.prologue.steps.length?`<ol>${s.prologue.steps.map(t=>`<li>${esc(t)}</li>`).join('')}</ol>`:''}${bannerNotice?`<p class="prologue-notice">${esc(bannerNotice)}</p>`:''}</div><div class="actions">${s.guides.length>1?s.guides.map(g=>`<button onclick="setTab('${g}')" ${tab===g?'aria-current="page"':''}>${esc(M.GUIDES[g])}</button>`).join(''):''}${fight&&!done?busy?`<span class="tag">${esc(ui('battleRunning'))}</span>`:`<button class="primary" onclick="prologueStartBattle()">${esc(ui(lost?'retryBattle':'startBattle'))}</button>`:''}${done?`<button class="primary" onclick="prologueReturn()">${esc(ui('returnToGoddess'))}</button>`:fight?'':`<span class="small">${esc(ui('taskPending'))}</span>`}</div></aside>`;
  }
- function layer(){let el=document.getElementById('prologue-layer');if(!el){el=document.createElement('div');el.id='prologue-layer';el.hidden=true;document.body.appendChild(el);}return el;}
  function draw(){
-  const el=layer();
-  if(!active()){if(layerSignature!==''||!el.hidden){el.innerHTML='';el.hidden=true;layerSignature='';document.body.classList.remove('prologue-open');}cursor=null;return;}
+  const W=globalThis.EmberwildStoryWindow;
+  // Outside the prologue the same window shows ordinary quest dialogue, when one is being read.
+  if(!active()){cursor=null;W.render(S()?.dialogueView?.()||null);return;}
   const s=sync();if(!s)return;
   const app=document.getElementById('app'),start=app.querySelector('.start');if(start)start.hidden=true;
-  const task=inPrologue()&&cursor.phase==='action'&&taskOpen&&isTask(s);
-  if(task){
-   if(layerSignature!=='task'){el.innerHTML='';el.hidden=true;layerSignature='task';document.body.classList.remove('prologue-open');}
-   const host=app.querySelector('.layout>main')||app;if(!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',bannerHTML(s));
+  if(inPrologue()&&cursor.phase==='action'&&taskOpen&&isTask(s)){
+   W.render(null);const host=app.querySelector('.layout>main')||app;if(!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',bannerHTML(s));
    return;
   }
-  // Rebuild the scene only when it changes: the periodic game render must not reset the name field or restart the text fade.
-  const html=sceneHTML(s),signature=[s.id,cursor.phase,cursor.index,chosenJob,!!state,!!HELPER()?.member?.()].join('|')+html.length;
-  if(signature!==layerSignature){el.innerHTML=html;el.hidden=false;layerSignature=signature;document.body.classList.add('prologue-open');if(cursor.phase==='action'&&s.prologue.action==='nameHero')el.querySelector('#prologue-name')?.focus();}
+  W.render(sceneView(s));
  }
 
  const baseRender=render;render=function(...args){const out=baseRender(...args);draw();return out;};

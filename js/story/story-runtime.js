@@ -76,6 +76,28 @@
  globalThis.readStory=id=>{sync();const q=design.quests.find(q=>q.id===id),r=record(id);if(!q?.enabled||!r||r.done)return;if(!r.started){if(!transaction(()=>{r.started=true;}))return;}selected=id;dialogue={id,stage:r.current,index:0};render();};
  globalThis.nextStoryDialogue=()=>{if(dialogue){dialogue.index++;render();}};
  globalThis.endStoryDialogue=()=>{dialogue=null;render();};
+ // The dialogue being read, as a view for the shared story window (js/story/story-window.js).
+ function dialogueView(){
+  if(!dialogue||!party)return null;const q=design.quests.find(q=>q.id===dialogue.id),r=record(dialogue.id),s=q?.stages.find(s=>s.id===r?.current);
+  if(!q||!r||r.done||!s||dialogue.stage!==s.id)return null;
+  const line=s.dialogue[dialogue.index],ready=met(s.conditions,r),close=`<button type="button" onclick="endStoryDialogue()">結束對話</button>`;
+  const view={head:{eyebrow:q.name,title:s.name},attrs:`data-quest="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:close,line:null,body:'',advance:null,skip:null,lineKey:String(dialogue.index)};
+  if(line){view.line={speaker:line.kind==='player'?characterName(playerHero()):line.kind==='narrator'?'':line.speaker||s.speaker||q.npc,kind:line.kind,text:line.text};view.advance='nextStoryDialogue';if(M.skippable(q))view.skip='skipStoryDialogue';}
+  else if(ready)view.body=`<div class="prologue-box"><p class="prologue-hint">${esc(s.description||s.name)}</p><div class="story-window-choices">${s.choices.length?s.choices.filter(c=>met(c.conditions,r)).map(c=>`<button type="button" onclick="completeStoryStage('${q.id}','${c.id}','${s.id}')">${esc(c.text)}</button>`).join(''):`<button type="button" class="primary" onclick="completeStoryStage('${q.id}','','${s.id}')">完成階段／繼續劇情</button>`}</div></div>`;
+  else view.body='<div class="prologue-box"><p class="prologue-hint">完成任務目標後，可回來繼續。</p></div>';
+  view.signature=['story',q.id,s.id,dialogue.index,ready,view.line?.text||'',view.body.length].join('|');return view;
+ }
+ // Skip the rest of the lines. The outcome is the same as reading them: a stage that only needed reading is completed
+ // through the normal completion (rewards once, inside its transaction); a choice is left to the player; unmet objectives
+ // simply close the dialogue. A quest that cannot be skipped (the prologue, or skippable:false) is refused here too.
+ globalThis.skipStoryDialogue=function(){
+  if(!dialogue)return false;const q=design.quests.find(q=>q.id===dialogue.id),r=record(dialogue.id),s=q?.stages.find(s=>s.id===r?.current);
+  if(!q||!s||!M.skippable(q))return false;
+  dialogue.index=s.dialogue.length;
+  if(!met(s.conditions,r)){dialogue=null;render();return true;}
+  if(!s.choices.length)return completeStoryStage(q.id,'',s.id);
+  render();return true;
+ };
  function conditionLabel(c){const m=GAMEPLAY_SETTINGS.monsters.catalog.find(x=>x.id===c.key);let key=c.key;if(['region','visit','explore','boss'].includes(c.type))key=MAPS[Number(c.key)]?.name||c.key;if(c.type==='kill')key=m?.name||c.key;if(c.type==='quest')key=design.quests.find(q=>q.id===c.key)?.name||c.key;if(c.type==='recipe')key=__EMBERWILD_LIFE_SKILLS.design.recipes[c.key]?.name||c.key;if(c.itemType==='item'&&['stock','acquired','gatherItem'].includes(c.type))key=SHOP.find(x=>x.id===c.key)?.name||c.key;if(['gearWorn','gearSkillActive','gearSkillGem','gearBaseGem'].includes(c.type))key=design.gearRewards.find(g=>g.id===c.key)?.name||c.key;if(c.type==='skillSlotted')key=__EMBERWILD_SKILLS.byId(c.key)?.name||c.key;return M.TYPES[c.type]+(key?' · '+key:'');}
  function lessonEffects(s){const h=playerHero();return s.conditions.conditions.filter(c=>['gearSkillGem','gearBaseGem'].includes(c.type)).map(c=>{const g=wornReward(h,c.key),n=c.type==='gearSkillGem'?0:c.slot,id=g?.skillSockets?.gems[n];if(id==null)return '<p>鑲嵌前：此孔加成 0。</p>';const def=__EMBERWILD_SKILLS.system().gems.find(x=>x.kind===id%5),v=gemEffect(h,g,n,c.type==='gearSkillGem'?'skill':'base');return '<p>鑲嵌前：此孔加成 0 → 目前：'+(c.type==='gearSkillGem'?'技能 '+({effect:'效果',procChance:'觸發率',cooldown:'冷卻縮短機率',heal:'治療',shield:'護盾'}[def.skill.key]||def.skill.key)+' +'+Number((v*100).toFixed(2))+'%':({atk:'攻擊',hp:'生命',def:'防禦',speed:'速度',crit:'暴擊率'}[def.base.stat])+' +'+v*(def.base.unit==='ratio'?100:1)+(def.base.unit==='ratio'?'%':''))+'</p>';}).join('');}
  const objectives=(g,r)=>`<p class="small">${g.mode==='any'?'任一達成':'全部達成'}</p><ul class="story-objectives">${g.conditions.map(c=>`<li class="${progress(c,r)>=c.count?'story-met':''}"><span>${esc(conditionLabel(c))}${c.mode==='stage'?'（本階段起算）':''}</span><b>${progress(c,r)} / ${c.count}</b></li>`).join('')||'<li>閱讀劇情即可繼續</li>'}</ul>`;
@@ -156,6 +178,6 @@
  const stopBase=stopTeamExploration;stopTeamExploration=function(...args){if(party)party.questChallenge=null;return stopBase(...args);};
  const changeMapBase=chooseMap;chooseMap=function(...args){if(party)party.questChallenge=null;globalThis.expeditionChallengeResult=null;return changeMapBase(...args);};
 
- globalThis.__EMBERWILD_STORY={/* The basic tutorial gate for skills: the old intro quest, the prologue, or neither exists any more. */tutorialDone:()=>{if(record('goddess_intro')?.done)return true;const p=record(M.prologueQuest(design)?.id);return p?p.done:!design.quests.some(q=>q.id==='goddess_intro');},prologueRunning,prologueQuest:()=>M.prologueQuest(design),begin(id,stageId,completed=[]){const q=design.quests.find(q=>q.id===id);if(!q||record(id))return false;if(q.prologue)ensure().quests={};const r={current:'',started:true,done:false,completed:[...completed],baseline:{},choices:{}};ensure().quests[id]=r;enter(q,r,stageId);return true;},get design(){return copy(design);},isRewardForm:id=>design.gearRewards.some(g=>g.formId===id),protectedGear,value,progress,met,sync,record,transaction,stats,resetTracking,validateProgress};
+ globalThis.__EMBERWILD_STORY={dialogueView,/* The basic tutorial gate for skills: the old intro quest, the prologue, or neither exists any more. */tutorialDone:()=>{if(record('goddess_intro')?.done)return true;const p=record(M.prologueQuest(design)?.id);return p?p.done:!design.quests.some(q=>q.id==='goddess_intro');},prologueRunning,prologueQuest:()=>M.prologueQuest(design),begin(id,stageId,completed=[]){const q=design.quests.find(q=>q.id===id);if(!q||record(id))return false;if(q.prologue)ensure().quests={};const r={current:'',started:true,done:false,completed:[...completed],baseline:{},choices:{}};ensure().quests[id]=r;enter(q,r,stageId);return true;},get design(){return copy(design);},isRewardForm:id=>design.gearRewards.some(g=>g.formId===id),protectedGear,value,progress,met,sync,record,transaction,stats,resetTracking,validateProgress};
 })();
 

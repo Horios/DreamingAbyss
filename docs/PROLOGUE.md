@@ -20,6 +20,10 @@ v0.135 起，新存檔從造物室開始。這份文件說明資料格式、系�
 
 每個階段先播 `dialogue`，接著執行系統事件或等待條件，完成後播 `prologue.after`。
 
+## 呈現
+
+序幕顯示在共用的劇情浮動視窗（`js/story/story-window.js`）中，遊戲畫面保留在半透明遮罩後方。可以調整文字速度、顯示全部與加速，但不能跳過：序幕的任務帶有 `prologue` 欄位，`EmberwildStory.skippable()` 對它一律回傳 `false`。視窗的版面與文字演出見 `DEVELOPMENT.md` 的「劇情視窗」一節。
+
 ## 資料
 
 序章是 `story.quests` 裡 `id` 為 `prologue` 的任務，沿用一般任務的欄位，另外加上：

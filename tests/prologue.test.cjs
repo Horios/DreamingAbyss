@@ -175,7 +175,7 @@ test('a script changed under a running prologue keeps moving; an update that can
  assert.match(r.run("$('prologue-layer').innerHTML"),/咚咚，咚咚……/,'the cursor moves back inside the shortened scene');
  r.run('prologueNext()');assert.deepEqual([r.at().stage,r.at().phase],['creation','action']);
  r.run("$('prologue-name').value='露娜';prologueConfirmName();prologueNext()");assert.deepEqual([r.at().stage,r.at().phase],['commission','before']);
- assert.match(r.run("$('prologue-layer').innerHTML"),/prologueNext\(\)/,'a stage left without lines still offers a way forward');
+ assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-continue/,'a stage left without lines still offers a way forward');
  r.run('prologueNext()');assert.equal(r.at().stage,'calling');
  // Import while a fight is running: the game refuses the document and says so instead of reporting success.
  r.until('calling','action');r.run('prologuePickClass(0);prologueConfirmClass()');gear(r);r.until('skills','action');r.run('prologueOpenTask()');r.run(`chooseSkillSlot('active',0,${JSON.stringify(learnedActive(r)[0].id)})`);r.run('prologueReturn()');
