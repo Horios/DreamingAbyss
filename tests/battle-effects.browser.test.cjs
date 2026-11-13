@@ -298,13 +298,22 @@ test('numbers stay bounded at high speed, readable within phone cards, obey mode
    await p.setViewportSize({width,height:844});await p.evaluate(()=>{render();setBattleEffects('full');battleRate=1;fxCapture(()=>{for(const e of foes)for(let i=0;i<3;i++)resolveHit(e,20,state,'fire',i===1);sharedEnemySkillDamage(foes[0],state,5,'physical',{name:'測試',meta:{baseCritRate:0}});EmberwildBattleEffects.scope({mode:'skill'},()=>state.hp=Math.min(stats(state).hp,state.hp+2));});});
    await p.clock.runFor(320);require('node:fs').mkdirSync(path.join(root,'battle-feedback-review'),{recursive:true});await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
    const layout=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect(),s=getComputedStyle(n);return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,card:{left:card.left,right:card.right,top:card.top,bottom:card.bottom},font:parseFloat(s.fontSize),pointer:s.pointerEvents};}));
-   for(const n of layout){assert(n.left>=n.card.left-1&&n.right<=n.card.right+1,JSON.stringify(n));assert(n.top>=n.card.top-1&&n.bottom<=n.card.bottom+1);assert(n.font>=11);assert.equal(n.pointer,'none');}
+   for(const n of layout){assert(n.left>=n.card.left-1&&n.right<=n.card.right+1,JSON.stringify(n));assert(n.bottom<=n.card.bottom+1&&n.bottom>n.card.top,'the number is still over its card: '+JSON.stringify(n));assert(n.font>=11);assert.equal(n.pointer,'none');}
+   // v0.138: numbers start on the card, rise above it and fade out; the layer does not clip them.
+   assert.equal(await p.locator('.battle-number-layer').first().evaluate(n=>getComputedStyle(n).overflow),'visible');
+   // The test clock does not drive CSS animations, so sample each number's own animation at two points of its run.
+   const flight=at=>p.locator('.battle-number').evaluateAll((ns,at)=>ns.map(n=>{const a=n.getAnimations()[0];a.pause();a.currentTime=a.effect.getComputedTiming().duration*at;return {y:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,card:n.closest('.unit').getBoundingClientRect(),opacity:Number(getComputedStyle(n).opacity)};}),at);
+   const early=await flight(.12),late=await flight(.85);assert(early.length>0);assert.equal(late.length,early.length);
+   late.forEach((n,i)=>{assert(early[i].bottom>n.card.top&&early[i].opacity>.95,'it starts on the card, fully visible');assert(n.y<early[i].y-16,'it moves up: '+early[i].y+' -> '+n.y);assert(n.y<n.card.top,'it has left the top of the card');assert(n.opacity<.4,'it fades while rising');});
+   await p.locator('.battle-number').evaluateAll(ns=>ns.forEach(n=>n.getAnimations()[0].play()));
    await p.clock.runFor(1100);
    await p.evaluate(()=>{foes.forEach(e=>e.hp=e.maxhp=1e9);fxCapture(()=>foes.forEach((e,i)=>EmberwildBattleEffects.scope({mode:'damage',critical:i===2},()=>e.hp-=[1,37,123456789][i])));});
    await p.clock.runFor(320);
    const centered=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const range=document.createRange();range.selectNodeContents(n);const r=range.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect();return {text:n.textContent,ratio:r.width/card.width,offset:r.x+r.width/2-card.x-card.width/2,weight:Number(getComputedStyle(n).fontWeight),cardWidth:card.width,clientWidth:n.closest('.unit').clientWidth,offsetWidth:n.closest('.unit').offsetWidth};}));
    assert.equal(centered.length,3);
-   for(const n of centered){assert(n.ratio>=.5&&n.ratio<=.8,JSON.stringify(n));assert(Math.abs(n.offset)<=1,JSON.stringify(n));assert(n.weight>=900);}
+   // v0.138: ordinary numbers span about 39% of the card; the critical hit (the third) keeps its large size.
+   centered.forEach((n,i)=>{if(i===2)assert(n.ratio>=.5&&n.ratio<=.8,JSON.stringify(n));else assert(n.ratio>=.3&&n.ratio<=.48,JSON.stringify(n));});
+   for(const n of centered){assert(Math.abs(n.offset)<=1,JSON.stringify(n));assert(n.weight>=900);}
    await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
    await p.locator('#battleEnemyIcons .battle-enemy-icon').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.equal(await p.locator('.battle-number').count(),0);await p.locator('#modal button').last().click();
    await p.evaluate(()=>{battleRate=8;fxCapture(()=>{for(let i=0;i<300;i++)resolveHit(foes[i%3],1,state,'fire',i%30===0);});});

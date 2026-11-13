@@ -52,9 +52,9 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   for(let i=0;i<4&&!(await page.locator('.prologue-chapter-title').count());i++)await page.click('#prologue-layer .prologue-chapter button.primary');
   assert.equal(await page.locator('.prologue-chapter-title').innerText(),'第一章：斷絕的商路');await fits(page,'chapter title');
   await page.click('#prologue-layer button:has-text("開始旅程")');
-  assert.deepEqual(await page.evaluate(()=>({active:__EMBERWILD_PROLOGUE.active(),layer:document.getElementById('prologue-layer').hidden,members:party.members.length,map:party.map,tab,done:party.story.quests.prologue.done,bag:playerHero().bag.length,banner:!!document.querySelector('.prologue-task')})),{active:false,layer:true,members:1,map:0,tab:'battle',done:true,bag:6,banner:false});
+  assert.deepEqual(await page.evaluate(()=>({active:__EMBERWILD_PROLOGUE.active(),layer:document.getElementById('prologue-layer').hidden,members:party.members.length,map:party.map,tab,done:party.story.quests.prologue.done,bag:playerHero().bag.length,banner:!!document.querySelector('.prologue-task')})),{active:false,layer:true,members:1,map:0,tab:'battle',done:true,bag:5,banner:false});
   await page.reload();await page.waitForSelector('.title-screen');await page.click('.save-slot-select');await page.waitForSelector('.layout');
-  assert.deepEqual(await page.evaluate(()=>[__EMBERWILD_PROLOGUE.active(),characterName(playerHero()),playerHero().bag.length,party.members.length]),[false,'艾拉',6,1],'a finished prologue never replays and nothing is granted twice');
+  assert.deepEqual(await page.evaluate(()=>[__EMBERWILD_PROLOGUE.active(),characterName(playerHero()),playerHero().bag.length,party.members.length]),[false,'艾拉',5,1],'a finished prologue never replays and nothing is granted twice');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}
 });

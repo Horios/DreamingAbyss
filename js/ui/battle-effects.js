@@ -190,11 +190,13 @@
   element.dataset.caption=event.kind==='absorb'?'吸收':event.kind==='shield'?'護盾':'';
   const duration=simple?600:900;
   element.style.setProperty('--number-time',duration+'ms');element.style.setProperty('--number-lane',lane);
+  // The number leaves the card upwards: it travels most of the card's height from the centre before it is gone.
+  element.style.setProperty('--number-rise',Math.max(24,Math.round((node.offsetHeight||64)*.8))+'px');
   layer.append(element);
-  // Measure the rendered text, so even a single digit spans at least half a card.
+  // Measure the rendered text and size it against the card. Ordinary numbers are about 30% smaller than a critical hit, which keeps the large size.
   element.style.fontSize='100px';
   const width=element.offsetWidth||100;
-  const ratio=event.critical?.64:event.kind==='dot'?.52:.56;
+  const ratio=event.critical?.64:event.kind==='dot'?.36:.39;
   // Include the card's reserved scrollbar gutter in its visible width.
   const size=100*node.offsetWidth*ratio/width;
   element.style.fontSize=size+'px';

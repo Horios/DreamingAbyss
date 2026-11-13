@@ -51,7 +51,7 @@ test('removing or reordering a system stage is rejected; editing text is not',()
 for(const job of [0,1,2,3])test('class '+job+' plays all eight scenes with the real systems',async()=>{
  const r=open();create(r,job);
  let s=r.json('{name:playerHero().name,job:playerHero().job,active:playerHero().skillLoadout.active,worn:playerHero().equipped.map(x=>!!x),mail:party.mailbox.messages.length,quests:Object.keys(party.story.quests),draft:localStorage.getItem(__EMBERWILD_PROLOGUE.draftKey)}');
- assert.deepEqual(s,{name:'測試者',job,active:[null,null,null],worn:[true,true,true,true,false],mail:0,quests:['prologue'],draft:null},'name and class are the real character fields; no starter mail, no other quest yet');
+ assert.deepEqual(s,{name:'測試者',job,active:[null,null,null],worn:[false,true,true,true,false],mail:0,quests:['prologue'],draft:null},'name and class are the real character fields; no weapon or charm yet, no starter mail, no other quest');
  const before=economy(r);
 
  r.until('skills','action');r.run('prologueOpenTask()');assert.equal(r.run('tab'),'skills');
@@ -83,7 +83,7 @@ for(const job of [0,1,2,3])test('class '+job+' plays all eight scenes with the r
 
  r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.run('tab'),'equipment');
  const gift=()=>r.json('{bag:playerHero().bag.map(g=>g.name),starter:playerHero().bag.filter(g=>g.starterPack).length,charm:playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").map(g=>[g.skillId,g.skillSockets.count]),mail:party.mailbox.messages.length}');
- s=gift();assert.equal(s.bag.length,6);assert.equal(s.starter,1);assert.equal(s.bag.filter(n=>n.includes('啟程護符')).length,1,'one charm only');assert.deepEqual(s.charm,[['tutorial_echo',2]],'it is the story charm with its skill and two sockets');assert.equal(s.mail,0,'no mail and no receipt');
+ s=gift();assert.equal(s.bag.length,5);assert.equal(s.starter,1);assert.equal(r.json('playerHero().bag.filter(g=>g.slot===0).length'),1,'exactly one weapon: the starter weapon');assert.equal(s.bag.filter(n=>n.includes('啟程護符')).length,1,'one charm only');assert.deepEqual(s.charm,[['tutorial_echo',2]],'it is the story charm with its skill and two sockets');assert.equal(s.mail,0,'no mail and no receipt');
  r.run('prologueOpenTask();prologueOpenTask()');assert.deepEqual(gift(),s,'asking again does not hand out a second set');
  assert.equal(r.at().ok,false);
  for(const g of r.json('playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id)'))r.run(`withHero(playerHero(),()=>equipGear(${JSON.stringify(g)}))`);
@@ -95,10 +95,10 @@ for(const job of [0,1,2,3])test('class '+job+' plays all eight scenes with the r
  assert.equal(r.run("setTab('shop')")===false,false,'navigation opens after arrival');
  r.run("setTab('battle');running=true");assert.notEqual(r.run('spawnGroup()'),false,'ordinary exploration opens after arrival');r.run('stopTeamExploration()');
  // The later gear-skill quest does not hand out a second charm.
- assert.equal(r.run("completeStoryStage('skill_equipment_intro','','equipment_gift')"),true);assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);assert.equal(r.json('playerHero().bag.length'),6);
+ assert.equal(r.run("completeStoryStage('skill_equipment_intro','','equipment_gift')"),true);assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);assert.equal(r.json('playerHero().bag.length'),5);
  assert.deepEqual(r.errors,[]);
  const again=await r.resume();s=again.json('{active:__EMBERWILD_PROLOGUE.active(),bag:playerHero().bag.length,members:party.members.length,name:characterName(playerHero()),error:globalThis.__EMBERWILD_BOOT_SAVE_ERROR||null}');
- assert.deepEqual(s,{active:false,bag:6,members:1,name:'測試者',error:null});assert.deepEqual(again.errors,[]);
+ assert.deepEqual(s,{active:false,bag:5,members:1,name:'測試者',error:null});assert.deepEqual(again.errors,[]);
 });
 
 test('progress survives a reload at every stage; nothing is asked or granted twice',async()=>{
@@ -117,13 +117,13 @@ test('progress survives a reload at every stage; nothing is asked or granted twi
  r.until('helper','action');r.run('prologueOpenTask()');assert.equal(r.json('party.members.length'),2,'the helper is not created twice');r.run('toggleMember(__EMBERWILD_PROLOGUE_HELPER.id)');
  r=await r.resume();assert.deepEqual(r.at(),{stage:'helper',phase:'after',ok:true,active:true});
  r.until('trial','action');r.run('prologueOpenTask();prologueStartBattle()');assert.equal(r.fight().success,true);r.run('prologueReturn()');
- r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),6);
- r=await r.resume();assert.equal(r.at().stage,'gift');r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),6,'reloading does not grant the gear again');assert.equal(r.json('party.mailbox.messages.length'),0);
+ r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),5);
+ r=await r.resume();assert.equal(r.at().stage,'gift');r.until('gift','action');r.run('prologueOpenTask()');assert.equal(r.json('playerHero().bag.length'),5,'reloading does not grant the gear again');assert.equal(r.json('party.mailbox.messages.length'),0);
  for(const g of r.json('playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id)'))r.run(`withHero(playerHero(),()=>equipGear(${JSON.stringify(g)}))`);
  r=await r.resume();assert.deepEqual(r.at(),{stage:'gift',phase:'after',ok:true,active:true});
  r.until('departure','chapter');r=await r.resume();assert.equal(r.at().stage,'departure');assert.equal(r.json('party.members.length'),2);
  r.until('departure','chapter');for(let i=0;i<4;i++)r.run('prologueNext()');r.run('prologueEnter()');
- r=await r.resume();assert.equal(r.at().active,false);assert.equal(r.json('party.members.length'),1);assert.equal(r.json('playerHero().bag.length'),6);assert.deepEqual(r.errors,[]);
+ r=await r.resume();assert.equal(r.at().active,false);assert.equal(r.json('party.members.length'),1);assert.equal(r.json('playerHero().bag.length'),5);assert.deepEqual(r.errors,[]);
 });
 
 test('a lost training fight can be retried and is not counted',()=>{

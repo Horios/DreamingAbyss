@@ -423,8 +423,9 @@
     hero.equipped=[null,null,null,null,null];
     for(const [position,slot] of [0,1,2,3,3].entries()){
       const entry=defaultStarterEntry(job,slot,position);
-      // Prologue creation: the second accessory position stays empty; the goddess hands over the charm (the story reward) with the starter weapon.
-      if(options.prologue&&position===4)continue;
+      // Prologue creation: no weapon and no second accessory. The goddess hands over the starter weapon and the charm (the story
+      // reward) in the gear lesson, so the player never holds an old and a new weapon at the same time.
+      if(options.prologue&&(position===0||position===4))continue;
       const g=createStarterGear(job,position,{...entry,baseAttack:undefined});
       delete g.starterPack;g.affix=[];
       hero.bag.push(g);hero.equipped[position]=g.id;
