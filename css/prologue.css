@@ -53,6 +53,12 @@ body.story-window-open .story-dialogue{display:none}
 .prologue-task-text ol{margin:6px 0 0;padding-left:20px}
 .prologue-task .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .prologue-notice{color:#9fe0ad}
+/* Lesson spotlight: a frame placed over the next control; its huge shadow dims everything else. Clicks pass through. */
+#prologue-spotlight[hidden]{display:none}
+#prologue-spotlight{position:fixed;z-index:55;box-sizing:border-box;border:2px solid #f1d58b;border-radius:10px;box-shadow:0 0 0 9999px rgba(5,6,10,.58),0 0 18px 4px rgba(241,213,139,.55);pointer-events:none;transition:top .18s ease,left .18s ease,width .18s ease,height .18s ease}
+.prologue-spot-ring{outline:3px solid #f1d58b!important;outline-offset:3px;box-shadow:0 0 16px 4px rgba(241,213,139,.6)!important}
+.prologue-pinned{border-left:3px solid #f1d58b}
+@keyframes prologue-spot{0%,100%{border-color:#f1d58b}50%{border-color:#fff3c4}}
 @keyframes prologue-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes prologue-glow{0%,100%{opacity:.7;transform:translate(-50%,-55%) scale(.94)}50%{opacity:1;transform:translate(-50%,-55%) scale(1.06)}}
 @keyframes prologue-gather{0%{opacity:0;transform:translate(var(--x),var(--y))}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%)}}
@@ -60,4 +66,4 @@ body.story-window-open .story-dialogue{display:none}
 @media (max-width:780px){.story-window{width:92%;max-height:84%}.prologue-options{grid-template-columns:1fr}.story-window-body{padding:6px 14px 12px}.story-window-controls{padding:8px 10px}.story-window-speed span{display:none}.prologue-task{flex-direction:column}.prologue-task-text{flex:0 0 auto}}
 @media (max-height:520px){.story-window{max-height:92%}.story-window-head{padding:8px 14px 2px}.prologue-head h1{font-size:18px}.prologue-option{min-height:44px}}
 /* The site turns animations off by default (base.css); the story window opts back in, and only when motion is welcome. */
-@media (prefers-reduced-motion:no-preference){.story-window{animation:prologue-rise .35s ease both!important}.prologue-light::before{animation:prologue-glow 5s ease-in-out infinite!important}.prologue-scene[data-scene="1"] .prologue-light i{animation:prologue-gather 4.5s ease-in-out infinite!important}.story-char.on{animation:story-char-in .1s ease-out both!important}.story-char.on.now{animation:none!important}.prologue-chapter-title{animation:prologue-rise 1.2s ease both!important}}
+@media (prefers-reduced-motion:no-preference){.story-window{animation:prologue-rise .35s ease both!important}.prologue-light::before{animation:prologue-glow 5s ease-in-out infinite!important}.prologue-scene[data-scene="1"] .prologue-light i{animation:prologue-gather 4.5s ease-in-out infinite!important}.story-char.on{animation:story-char-in .1s ease-out both!important}.story-char.on.now{animation:none!important}#prologue-spotlight{animation:prologue-spot 1.4s ease-in-out infinite!important}.prologue-chapter-title{animation:prologue-rise 1.2s ease both!important}}

@@ -39,19 +39,35 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   assert.deepEqual(await page.evaluate(()=>[characterName(playerHero()),playerHero().job,party.mailbox.messages.length]),['艾拉',job,0]);
   assert.match(await page.locator('.prologue-speaker').first().innerText(),/女神/);
 
-  // The gear lesson comes first: the weapon and the charm are worn before the skill lesson and both fights.
-  await read(page,'gift/action');await banner(page);assert.deepEqual(await page.evaluate(()=>[playerHero().equipped[0],playerHero().bag.filter(g=>g.slot===0).length]),[null,1],'no weapon is worn yet and the gift is the only one');
-  // Wear the starter weapon and the charm with the inventory's own wear action.
-  for(const id of await page.evaluate(()=>playerHero().bag.filter(g=>g.starterPack||!playerHero().equipped.includes(g.id)).map(g=>g.id))){await page.evaluate(id=>heroMenuAction(playerHero().job,()=>{selectInventoryGear(id)}),id);await page.evaluate(id=>withHero(playerHero(),()=>equipGear(id)),id);}
-  await page.evaluate(()=>render());await back(page);
-  assert.equal(await page.evaluate(()=>!!playerHero().bag.find(g=>g.id===playerHero().equipped[0])?.starterPack),true);
+  // Every lesson is played by pressing only what the spotlight shows: the dimmed surround leaves one control lit.
+  const lit=()=>page.evaluate(()=>{const ring=document.querySelector('.prologue-spot-ring');if(ring)return {ring:true,label:ring.textContent.trim()};const o=document.getElementById('prologue-spotlight');if(!o||o.hidden)return null;const r=o.getBoundingClientRect(),el=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2),c=el?.closest('[onclick]')||el,shadow=getComputedStyle(o).boxShadow;return {ring:false,label:(c?.textContent||'').trim(),x:r.left+r.width/2,y:r.top+r.height/2,dims:/9999px/.test(shadow),through:getComputedStyle(o).pointerEvents==='none'};});
+  async function follow(stage){
+   const trail=[];
+   for(let i=0;i<20&&await at(page)===stage+'/action';i++){
+    await page.waitForTimeout(450);const t=await lit();
+    if(!t){assert.equal(await page.evaluate(()=>!!party.questChallenge),true,stage+': the only moment without a spotlight is a running fight ('+trail.join(' → ')+')');await page.waitForFunction(()=>!party.questChallenge,{},{timeout:120000});continue;}
+    if(!t.ring){assert(t.dims&&t.through,stage+': the spotlight dims the rest and lets the click through');}
+    trail.push(t.label.slice(0,12));
+    if(t.ring)await page.click('.prologue-spot-ring');else await page.mouse.click(t.x,t.y);
+   }
+   assert.notEqual(await at(page),stage+'/action',stage+' was completed by following the spotlight: '+trail.join(' → '));assert.match(trail.at(-1),/回到女神身邊/,stage+': the last lit control leads back to the goddess');
+   return trail;
+  }
+  // Gear lesson: the gift is listed first, weapon then charm, and both are worn before the skill lesson and the fights.
+  await read(page,'gift/action');await banner(page);
+  assert.deepEqual(await page.evaluate(()=>[playerHero().equipped[0],playerHero().bag.filter(g=>g.slot===0).length]),[null,1],'no weapon is worn yet and the gift is the only one');
+  assert.deepEqual(await page.evaluate(()=>{const h=playerHero(),rows=[...document.querySelectorAll('.inline-equipment-list .gear-management-row')].slice(0,2).map(r=>r.querySelector('[onclick*="selectInventoryGear"]').getAttribute('onclick').match(/'([^']+)'/)[1]);return rows.map(id=>{const g=h.bag.find(g=>g.id===id);return g.starterPack?'weapon':g.storyRewardKey?'charm':'other';});}),['weapon','charm'],'weapon and charm are pinned to the top in that order');
+  await follow('gift');
+  assert.equal(await page.evaluate(()=>!!playerHero().bag.find(g=>g.id===playerHero().equipped[0])?.starterPack&&playerHero().equipped[4]!==null),true);
   await read(page,'skills/action');await banner(page);assert.equal(await page.locator('#prologue-layer').isVisible(),false);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'the lesson banner does not widen the page');
-  await page.click('main [onclick="openSkillSlot(\'active\',0)"]');await page.click('#modal button:has-text("裝入技能")');await back(page);
-  await read(page,'practice/action');await banner(page);await win(page);
+  const skillTrail=await follow('skills');assert(skillTrail.some(x=>/裝入技能/.test(x)),'the skill dialog button is ringed: '+skillTrail.join(' → '));
+  assert.equal(await page.evaluate(()=>playerHero().skillLoadout.active[0]!==null),true);
+  await read(page,'practice/action');await banner(page);await follow('practice');
   await read(page,'helper/action');await fits(page,'helper');await page.click('#prologue-layer button:has-text("接納助手")');await banner(page);
-  assert.equal(await page.evaluate(()=>tab),'roster');await page.click('main button:has-text("加入上陣")');await back(page);
-  await read(page,'trial/action');await banner(page);await win(page);
+  assert.equal(await page.evaluate(()=>tab),'roster');await follow('helper');assert.equal(await page.evaluate(()=>party.active.length),2);
+  await read(page,'trial/action');await banner(page);await follow('trial');
+  assert.equal(await page.locator('#prologue-spotlight').isVisible(),false,'no spotlight outside the lessons');
   await read(page,'departure/chapter');await fits(page,'departure');
   for(let i=0;i<8&&!(await page.locator('.prologue-chapter-title').count());i++)await page.click('#prologue-layer [data-story-continue]');
   assert.equal(await page.locator('.prologue-chapter-title').innerText(),'第一章：斷絕的商路');await fits(page,'chapter title');

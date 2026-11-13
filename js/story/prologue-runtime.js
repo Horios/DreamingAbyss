@@ -150,17 +150,66 @@
   const done=satisfied(s),fight=!!s.encounter?.enabled,busy=fight&&!!party.questChallenge,lost=fight&&!done&&globalThis.expeditionChallengeResult?.key===encounterKey(s)&&globalThis.expeditionChallengeResult.success===false;
   return `<aside class="prologue-task ${done?'prologue-task-done':''}" data-stage="${esc(s.id)}" aria-live="polite"><div class="prologue-task-text"><b>${esc(s.name)}</b><p>${esc(s.prologue.hint)}</p>${s.prologue.steps.length?`<ol>${s.prologue.steps.map(t=>`<li>${esc(t)}</li>`).join('')}</ol>`:''}${bannerNotice?`<p class="prologue-notice">${esc(bannerNotice)}</p>`:''}</div><div class="actions">${s.guides.length>1?s.guides.map(g=>`<button onclick="setTab('${g}')" ${tab===g?'aria-current="page"':''}>${esc(M.GUIDES[g])}</button>`).join(''):''}${fight&&!done?busy?`<span class="tag">${esc(ui('battleRunning'))}</span>`:`<button class="primary" onclick="prologueStartBattle()">${esc(ui(lost?'retryBattle':'startBattle'))}</button>`:''}${done?`<button class="primary" onclick="prologueReturn()">${esc(ui('returnToGoddess'))}</button>`:fight?'':`<span class="small">${esc(ui('taskPending'))}</span>`}</div></aside>`;
  }
+ // Spotlight for the lessons: the rest of the screen is dimmed around the one control to press next. It only guides
+ // (clicks pass through); what the control does is the game's own handler.
+ const lessonGear=()=>{const h=playerHero();return [h.bag.find(g=>g.starterPack),h.bag.find(g=>g.storyRewardKey)].filter(Boolean);};
+ const wornIds=()=>new Set(playerHero().equipped.filter(Boolean));
+ // The gear lesson lists the gift first, weapon then charm, whatever the inventory's own sorting is.
+ function pinLessonGear(app){
+  const list=app.querySelector('.inline-equipment-list');if(!list)return;
+  for(const g of lessonGear().reverse()){const row=[...list.querySelectorAll('.gear-management-row')].find(r=>r.querySelector(`[onclick*="selectInventoryGear('${g.id}')"]`));if(row&&list.firstElementChild!==row)list.prepend(row);if(row)row.classList.add('prologue-pinned');}
+ }
+ function spotlightTarget(s){
+  const app=document.getElementById('app'),q=sel=>app.querySelector?.(sel)||null,modal=document.getElementById('modal'),a=s.prologue.action;
+  if(satisfied(s))return q('.prologue-task [onclick="prologueReturn()"]');
+  if(s.encounter?.enabled)return party.questChallenge?null:q('.prologue-task [onclick="prologueStartBattle()"]');
+  if(a==='skillLesson'){
+   if(modal?.open)return [...modal.querySelectorAll('[onclick^="chooseSkillSlot(\'active\',"]')].find(b=>!b.disabled&&!/null\)$/.test(b.getAttribute('onclick'))&&!b.closest('.skill-locked')&&/裝入/.test(b.textContent))||null;
+   return q('main [onclick="openSkillSlot(\'active\',0)"]')||q('.prologue-task [onclick="setTab(\'skills\')"]');
+  }
+  if(a==='recruitHelper')return q(`main [onclick="toggleMember(${HELPER().id})"]`)||q('.prologue-task [onclick="setTab(\'roster\')"]');
+  if(a==='equipLesson'){
+   const h=playerHero(),worn=wornIds(),g=lessonGear().find(g=>!worn.has(g.id));if(!g)return null;
+   const position=g.starterPack?0:Math.max(3,h.equipped.indexOf(null,3));
+   if(tab==='worn')return q(`[onclick^="previewEquip('${g.id}'"]`)||q(`[onclick="selectWornSlot(${h.job},${position})"]`);
+   return q(`[onclick*="openInventoryWear('${g.id}')"]`)||q(`[onclick*="selectInventoryGear('${g.id}')"]`)||q('.prologue-task [onclick="setTab(\'equipment\')"]');
+  }
+  return null;
+ }
+ let spotTimer=null,spotFrame=0,spotEl=null;
+ function spotlightOff(){clearInterval(spotTimer);spotTimer=null;if(spotFrame)cancelAnimationFrame(spotFrame);spotFrame=0;spotEl=null;const o=document.getElementById('prologue-spotlight');if(o)o.hidden=true;document.querySelectorAll?.('.prologue-spot-ring').forEach(n=>n.classList.remove('prologue-spot-ring'));}
+ function spotlightOn(){
+  if(spotTimer||typeof document.querySelectorAll!=='function'||!document.getElementById('app').querySelector)return;
+  let o=document.getElementById('prologue-spotlight');if(!o){o=document.createElement('div');o.id='prologue-spotlight';o.setAttribute('aria-hidden','true');o.hidden=true;document.body.appendChild(o);}
+  const pick=()=>{
+   const s=inPrologue()&&cursor?.phase==='action'&&taskOpen?currentStage():null;if(!s||!isTask(s))return spotlightOff();
+   const el=spotlightTarget(s);if(el===spotEl)return;
+   document.querySelectorAll('.prologue-spot-ring').forEach(n=>n.classList.remove('prologue-spot-ring'));spotEl=el;
+   // A control inside the modal dialog sits above every overlay: it gets a ring instead of the dimmed surround.
+   if(el?.closest('dialog')){el.classList.add('prologue-spot-ring');el.scrollIntoView?.({block:'nearest'});}
+   else if(el)el.scrollIntoView?.({block:'center',behavior:'smooth'});
+  };
+  const follow=()=>{
+   spotFrame=requestAnimationFrame(follow);const el=spotEl;
+   if(!el||!el.isConnected||el.closest('dialog')||document.getElementById('modal')?.open){o.hidden=true;if(el&&!el.isConnected)spotEl=null;return;}
+   const r=el.getBoundingClientRect();if(!r.width||!r.height){o.hidden=true;return;}
+   o.hidden=false;o.style.top=r.top-6+'px';o.style.left=r.left-6+'px';o.style.width=r.width+12+'px';o.style.height=r.height+12+'px';
+  };
+  pick();spotTimer=setInterval(pick,150);spotFrame=requestAnimationFrame(follow);
+ }
  function draw(){
   const W=globalThis.EmberwildStoryWindow;
   // Outside the prologue the same window shows ordinary quest dialogue, when one is being read.
-  if(!active()){cursor=null;W.render(S()?.dialogueView?.()||null);return;}
+  if(!active()){cursor=null;spotlightOff();W.render(S()?.dialogueView?.()||null);return;}
   const s=sync();if(!s)return;
   const app=document.getElementById('app'),start=app.querySelector('.start');if(start)start.hidden=true;
   if(inPrologue()&&cursor.phase==='action'&&taskOpen&&isTask(s)){
    W.render(null);const host=app.querySelector('.layout>main')||app;if(!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',bannerHTML(s));
+   if(s.prologue.action==='equipLesson'&&app.querySelector)pinLessonGear(app);
+   spotEl=null;if(spotTimer){/* the page was redrawn: re-pick at once */clearInterval(spotTimer);spotTimer=null;if(spotFrame)cancelAnimationFrame(spotFrame);spotFrame=0;}spotlightOn();
    return;
   }
-  W.render(sceneView(s));
+  spotlightOff();W.render(sceneView(s));
  }
 
  const baseRender=render;render=function(...args){const out=baseRender(...args);draw();return out;};
