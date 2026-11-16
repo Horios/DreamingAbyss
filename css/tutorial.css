@@ -1,0 +1,25 @@
+/* Tutorial guide (js/story/tutorial-runtime.js). The highlight never takes clicks; the card sits beside the target. */
+#tutorial-spotlight[hidden],#tutorial-card[hidden],#tutorial-notices[hidden]{display:none}
+#tutorial-spotlight{position:fixed;z-index:56;box-sizing:border-box;border:2px solid #f1d58b;border-radius:10px;box-shadow:0 0 0 9999px rgba(5,6,10,.5),0 0 16px 4px rgba(241,213,139,.5);pointer-events:none;transition:top .18s ease,left .18s ease,width .18s ease,height .18s ease}
+.tutorial-ring{outline:3px solid #f1d58b!important;outline-offset:3px;box-shadow:0 0 14px 4px rgba(241,213,139,.55)!important}
+#tutorial-card{position:fixed;z-index:58;box-sizing:border-box;width:min(360px,calc(100vw - 16px));max-height:min(70vh,520px);overflow:auto;padding:14px 16px;border:1px solid #a18457;border-radius:8px;background:linear-gradient(135deg,#26243c,#181e30);color:#eceaf4;box-shadow:0 12px 40px #000a;font-size:14px;line-height:1.7}
+#tutorial-card[data-type="tip"]{width:min(300px,calc(100vw - 16px))}
+#tutorial-card.tutorial-card-quiet{opacity:.25;pointer-events:none}
+#tutorial-card h3{margin:6px 0 4px;font-size:16px;color:#f0e1bf}
+#tutorial-card p{margin:4px 0;color:#d6d3e4}
+.tutorial-card-head{display:flex;gap:8px;align-items:center;font-size:12px;color:#c9b48a}
+.tutorial-count{margin-left:auto;color:#a6aac2}
+.tutorial-mode{padding:1px 6px;border:1px solid #8cd5bc;border-radius:3px;color:#8cd5bc;font-size:11px}
+#tutorial-card .tutorial-wait{font-size:13px;color:#8cd5bc}
+#tutorial-card .tutorial-warn{font-size:13px;color:#efb48a}
+#tutorial-card .tutorial-note{font-size:12px;color:#a6aac2}
+.tutorial-card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tutorial-card-actions button{font-size:13px;padding:6px 10px}
+#tutorial-notices{position:fixed;right:16px;bottom:16px;z-index:57;display:grid;gap:8px;width:min(320px,calc(100vw - 32px))}
+.tutorial-notice{padding:12px 14px;border:1px solid #a18457;border-left:3px solid #e0bd79;border-radius:8px;background:#1f2136;box-shadow:0 8px 24px #0008;font-size:13px}
+.tutorial-notice p{margin:4px 0;font-size:13px;line-height:1.6}
+.tutorial-review-steps{margin:8px 0 0;padding-left:20px;font-size:13px;line-height:1.8;color:var(--muted)}
+.tutorial-review .actions{margin-top:0}
+#tutorial-card[data-dock="bottom"]{width:calc(100vw - 16px)}
+@media(max-width:640px){#tutorial-notices{right:8px;left:8px;bottom:72px;width:auto}}
+@media (prefers-reduced-motion:reduce){#tutorial-spotlight{transition:none}}

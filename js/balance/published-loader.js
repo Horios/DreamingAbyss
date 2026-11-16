@@ -12,12 +12,26 @@
   const update=message=>{if(stopped)return;stage.textContent=message;progress.max=total||1;progress.value=initialized;count.textContent=total?'已下載 '+downloaded+'／'+total+' · 已初始化 '+initialized+'／'+total:'請稍候，原有存檔保留。';};
   const scriptFailure=event=>{if(activeScript&&event.filename===activeScript.src)scriptError=Error('遊戲模組執行失敗：'+(event.message||'未知錯誤'));};
   window.addEventListener('error',scriptFailure);
-  async function readJSON(url,label){
+  async function readJSON(url,label,withText=false,optional=false){
     const controller=new AbortController();controllers.add(controller);
     const timeout=setTimeout(()=>controller.abort(),remaining(30000));
-    try{const response=await fetch(url,{cache:'no-store',signal:controller.signal});if(!response.ok)throw Error(label+'無法取得（HTTP '+response.status+'）');return await response.json();}
+    try{const response=await fetch(url,{cache:'no-store',signal:controller.signal});if(optional&&response.status===404)return null;if(!response.ok)throw Error(label+'無法取得（HTTP '+response.status+'）');if(!withText)return await response.json();const text=await response.text();let value;try{value=JSON.parse(text);}catch{throw Error(label+'不是有效的 JSON');}return {text,value};}
     catch(error){if(controller.signal.aborted)throw Error(label+'載入逾時，請檢查連線後重試');throw error;}
     finally{clearTimeout(timeout);controllers.delete(controller);}
+  }
+  // Every module the manifest lists must be present in the integrated document, otherwise nothing starts.
+  async function verifyModules(published,manifest){
+    if(!manifest)return {state:'legacy',message:'此版本沒有模組清單，直接使用整合平衡資料'};
+    const M=globalThis.EmberwildBalanceModules;if(!M)throw Error('平衡模組程式未載入');
+    const problems=M.checkManifest(manifest);if(problems.length)throw Error('平衡模組清單無效：'+problems.join('；'));
+    const {modules}=M.split(published.value),missing=manifest.modules.filter(row=>row.present&&modules[row.id]===undefined);
+    if(missing.length)throw Error('平衡資料缺少必要模組：'+missing.map(row=>row.id+'（'+row.source+'）').join('、'));
+    let state='verified',message='整合平衡資料與模組清單一致（資料修訂 '+manifest.dataRevision+'）';
+    if(globalThis.crypto?.subtle){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(published.text)),hex=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+      // A legacy publisher writes only data/balance.json; the document itself is complete and validated below.
+      if(hex!==manifest.integrated.sha256){state='integrated-newer';message='整合平衡資料比模組清單新（舊版發布器只更新了 data/balance.json），來源模組待同步';console.warn(message);}}
+    else state='unverified-hash';
+    return {state,message,dataRevision:manifest.dataRevision,modules:manifest.modules.map(row=>({id:row.id,version:row.version}))};
   }
   function preload(url,index){
     const link=document.createElement('link');link.rel='preload';link.as='script';link.href=url;preloads.push(link);
@@ -44,12 +58,15 @@
   }
   try{
     const build=await readJSON('data/build.json?build='+Date.now(),'版本資訊'),runtimeVersion=build.commit==='development'?String(Date.now()):build.commit;
-    const published=await readJSON('data/balance.json?build='+runtimeVersion,'平衡資料');
-    if(published.schema!=='emberwild-balance-v1'||published.schemaVersion!==1)throw Error('不支援的平衡資料版本');
-    const issues=EmberwildBalanceDocument.inspect(published);if(issues.length)throw Error(issues.map(x=>x.field+'：'+x.reason).join('；'));
-    globalThis.__EMBERWILD_PUBLISHED_BALANCE=published;
-    const version=JSON.stringify(published);
-    globalThis.__EMBERWILD_BALANCE_SOURCE=published;
+    // data/balance.json is generated from data/balance/<module>.json; the manifest lists the modules and the
+    // integrated file's hash. A deployment without a manifest is a pre-module build and still loads.
+    const [published,manifest]=await Promise.all([readJSON('data/balance.json?build='+runtimeVersion,'平衡資料',true),readJSON('data/balance/manifest.json?build='+runtimeVersion,'平衡模組清單',false,true)]);
+    if(published.value.schema!=='emberwild-balance-v1'||published.value.schemaVersion!==1)throw Error('不支援的平衡資料版本');
+    globalThis.__EMBERWILD_BALANCE_MODULES=await verifyModules(published,manifest);
+    const issues=EmberwildBalanceDocument.inspect(published.value);if(issues.length)throw Error(issues.map(x=>x.field+'：'+x.reason).join('；'));
+    globalThis.__EMBERWILD_PUBLISHED_BALANCE=published.value;
+    const version=JSON.stringify(published.value);
+    globalThis.__EMBERWILD_BALANCE_SOURCE=published.value;
     // An explicit preview import survives reload only while the published base is unchanged.
     const preview=/(?:^|\/)preview(?:\/|$)/.test(location.pathname);
     const key=preview?'emberwild-preview-balance-test-v1':'emberwild-balance-test-v1';
@@ -134,7 +151,7 @@
     }
     const importBase=importBalanceJSON;
     importBalanceJSON=async ev=>{const result=await importBase(ev);if(result){globalThis.__EMBERWILD_BALANCE_SOURCE=exportableBalance();if(preview)localStorage.setItem(key+'-published-base',version);}return result;};
-    const resetBase=resetBalanceJSON;resetBalanceJSON=()=>{const result=resetBase();if(result!==false){globalThis.__EMBERWILD_BALANCE_SOURCE=published;localStorage.removeItem(key);localStorage.removeItem(key+'-published-base');toast('已恢復目前發布版本的平衡資料');}return result;};
+    const resetBase=resetBalanceJSON;resetBalanceJSON=()=>{const result=resetBase();if(result!==false){globalThis.__EMBERWILD_BALANCE_SOURCE=published.value;localStorage.removeItem(key);localStorage.removeItem(key+'-published-base');toast('已恢復目前發布版本的平衡資料');}return result;};
     globalThis.__EMBERWILD_BALANCE_READY=true;
     if(recoveredBackup)toast('主要存檔無法載入，已讀取上一份備份；原始資料保留');
     else if(recoveredVerified)toast('主要存檔與備份都無法載入，已讀取上次成功開機時的存檔；原始資料保留');

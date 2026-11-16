@@ -1,0 +1,2158 @@
+{
+  "schemaVersion": 3,
+  "randomOffers": {
+    "offerCount": 6,
+    "refreshBaseCost": 100,
+    "refreshCostStep": 50,
+    "entries": [
+      {
+        "id": "ore",
+        "enabled": true,
+        "type": "ore",
+        "key": "",
+        "name": "鍛鐵",
+        "unitPrice": 12,
+        "quantityMin": 8,
+        "quantityMax": 20,
+        "weight": 1,
+        "selection": "weighted",
+        "chance": 1,
+        "quantityScalesWithTier": true,
+        "priceScalesWithTier": false
+      },
+      {
+        "id": "dust",
+        "enabled": true,
+        "type": "dust",
+        "key": "",
+        "name": "粉塵",
+        "unitPrice": 25,
+        "quantityMin": 3,
+        "quantityMax": 8,
+        "weight": 1,
+        "selection": "weighted",
+        "chance": 1,
+        "quantityScalesWithTier": false,
+        "priceScalesWithTier": false
+      },
+      {
+        "id": "gem",
+        "enabled": true,
+        "type": "gem",
+        "key": "random",
+        "name": "技能寶石",
+        "unitPrice": 180,
+        "quantityMin": 1,
+        "quantityMax": 2,
+        "weight": 0.7,
+        "selection": "weighted",
+        "chance": 1,
+        "quantityScalesWithTier": false,
+        "priceScalesWithTier": false
+      },
+      {
+        "id": "region_material",
+        "enabled": true,
+        "type": "material",
+        "key": "region",
+        "name": "地區素材",
+        "unitPrice": 60,
+        "quantityMin": 3,
+        "quantityMax": 6,
+        "weight": 1.3,
+        "selection": "weighted",
+        "chance": 1,
+        "quantityScalesWithTier": false,
+        "priceScalesWithTier": true
+      },
+      {
+        "id": "exp_100_30m",
+        "enabled": true,
+        "type": "item",
+        "key": "exp_100_30m",
+        "name": "",
+        "unitPrice": null,
+        "quantityMin": 1,
+        "quantityMax": 1,
+        "weight": 0.35,
+        "selection": "weighted",
+        "chance": 1,
+        "quantityScalesWithTier": false,
+        "priceScalesWithTier": false
+      },
+      {
+        "id": "drop_50_30m",
+        "enabled": true,
+        "type": "item",
+        "key": "drop_50_30m",
+        "name": "",
+        "unitPrice": null,
+        "quantityMin": 1,
+        "quantityMax": 1,
+        "weight": 0.35,
+        "selection": "weighted",
+        "chance": 1,
+        "quantityScalesWithTier": false,
+        "priceScalesWithTier": false
+      },
+      {
+        "id": "power_tier_reroll",
+        "enabled": true,
+        "type": "item",
+        "key": "power_tier_reroll",
+        "name": "",
+        "unitPrice": 650,
+        "quantityMin": 1,
+        "quantityMax": 1,
+        "weight": 1,
+        "selection": "extra",
+        "chance": 0.06,
+        "quantityScalesWithTier": false,
+        "priceScalesWithTier": false
+      }
+    ]
+  },
+  "fixedOffers": {
+    "entries": [
+      {
+        "id": "imbue_fire",
+        "enabled": true,
+        "type": "item",
+        "key": "imbue_fire",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "ward_fire",
+        "enabled": false,
+        "type": "item",
+        "key": "ward_fire",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "elementTonic_fire",
+        "enabled": false,
+        "type": "item",
+        "key": "elementTonic_fire",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "imbue_ice",
+        "enabled": true,
+        "type": "item",
+        "key": "imbue_ice",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "ward_ice",
+        "enabled": false,
+        "type": "item",
+        "key": "ward_ice",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "elementTonic_ice",
+        "enabled": false,
+        "type": "item",
+        "key": "elementTonic_ice",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "imbue_wind",
+        "enabled": true,
+        "type": "item",
+        "key": "imbue_wind",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "ward_wind",
+        "enabled": false,
+        "type": "item",
+        "key": "ward_wind",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "elementTonic_wind",
+        "enabled": false,
+        "type": "item",
+        "key": "elementTonic_wind",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "imbue_light",
+        "enabled": true,
+        "type": "item",
+        "key": "imbue_light",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "ward_light",
+        "enabled": false,
+        "type": "item",
+        "key": "ward_light",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "elementTonic_light",
+        "enabled": false,
+        "type": "item",
+        "key": "elementTonic_light",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "imbue_shadow",
+        "enabled": true,
+        "type": "item",
+        "key": "imbue_shadow",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "ward_shadow",
+        "enabled": false,
+        "type": "item",
+        "key": "ward_shadow",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "elementTonic_shadow",
+        "enabled": false,
+        "type": "item",
+        "key": "elementTonic_shadow",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "heal_small",
+        "enabled": true,
+        "type": "item",
+        "key": "heal_small",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "heal_standard",
+        "enabled": true,
+        "type": "item",
+        "key": "heal_standard",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "heal_greater",
+        "enabled": true,
+        "type": "item",
+        "key": "heal_greater",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      },
+      {
+        "id": "heal_supreme",
+        "enabled": true,
+        "type": "item",
+        "key": "heal_supreme",
+        "name": "",
+        "unitPrice": null,
+        "quantity": 1
+      }
+    ]
+  },
+  "equipmentStages": [
+    {
+      "id": "equipment_lv1",
+      "name": "Lv.1 裝備",
+      "mapId": "map0",
+      "level": 1,
+      "powerTier": 5,
+      "initiallyUnlocked": true,
+      "unlockMapIds": [],
+      "order": 1,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 90,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 80,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 60,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    },
+    {
+      "id": "equipment_lv10",
+      "name": "Lv.10 裝備",
+      "mapId": "map1",
+      "level": 10,
+      "powerTier": 5,
+      "initiallyUnlocked": false,
+      "unlockMapIds": [
+        "map1",
+        "map14"
+      ],
+      "order": 10,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 2000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 1800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 2000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 1800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 2000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 1800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 3200,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 2800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 2000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 1800,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    },
+    {
+      "id": "equipment_lv20",
+      "name": "Lv.20 裝備",
+      "mapId": "map3",
+      "level": 20,
+      "powerTier": 5,
+      "initiallyUnlocked": false,
+      "unlockMapIds": [
+        "map3",
+        "map16"
+      ],
+      "order": 20,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 6000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 5000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 6000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 5000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 6000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 5000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 8000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 6000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 5000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    },
+    {
+      "id": "equipment_lv30",
+      "name": "Lv.30 裝備",
+      "mapId": "map5",
+      "level": 30,
+      "powerTier": 5,
+      "initiallyUnlocked": false,
+      "unlockMapIds": [
+        "map5",
+        "map18"
+      ],
+      "order": 30,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 10000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 10000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 10000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 10000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 9000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    },
+    {
+      "id": "equipment_lv40",
+      "name": "Lv.40 裝備",
+      "mapId": "map8",
+      "level": 40,
+      "powerTier": 5,
+      "initiallyUnlocked": false,
+      "unlockMapIds": [
+        "map8",
+        "map20"
+      ],
+      "order": 40,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 24000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 21000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 16000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 14000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    },
+    {
+      "id": "equipment_lv50",
+      "name": "Lv.50 裝備",
+      "mapId": "map10",
+      "level": 50,
+      "powerTier": 5,
+      "initiallyUnlocked": false,
+      "unlockMapIds": [
+        "map10",
+        "map22"
+      ],
+      "order": 50,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 22000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 20000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 22000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 20000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 22000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 20000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 34000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 22000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 20000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    },
+    {
+      "id": "equipment_lv60",
+      "name": "Lv.60 裝備",
+      "mapId": "map12",
+      "level": 60,
+      "powerTier": 5,
+      "initiallyUnlocked": false,
+      "unlockMapIds": [
+        "map12",
+        "map24"
+      ],
+      "order": 60,
+      "entries": [
+        {
+          "id": "job0-slot0-form0",
+          "formId": "job0-slot0-form0",
+          "job": 0,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form1",
+          "formId": "job0-slot0-form1",
+          "job": 0,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot0-form2",
+          "formId": "job0-slot0-form2",
+          "job": 0,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form0",
+          "formId": "job0-slot1-form0",
+          "job": 0,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot1-form1",
+          "formId": "job0-slot1-form1",
+          "job": 0,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot2-form0",
+          "formId": "job0-slot2-form0",
+          "job": 0,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job0-slot3-form0",
+          "formId": "job0-slot3-form0",
+          "job": 0,
+          "unitPrice": 27000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form0",
+          "formId": "job1-slot0-form0",
+          "job": 1,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form1",
+          "formId": "job1-slot0-form1",
+          "job": 1,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot0-form2",
+          "formId": "job1-slot0-form2",
+          "job": 1,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form0",
+          "formId": "job1-slot1-form0",
+          "job": 1,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot1-form1",
+          "formId": "job1-slot1-form1",
+          "job": 1,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot2-form0",
+          "formId": "job1-slot2-form0",
+          "job": 1,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job1-slot3-form0",
+          "formId": "job1-slot3-form0",
+          "job": 1,
+          "unitPrice": 27000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form0",
+          "formId": "job2-slot0-form0",
+          "job": 2,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form1",
+          "formId": "job2-slot0-form1",
+          "job": 2,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot0-form2",
+          "formId": "job2-slot0-form2",
+          "job": 2,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form0",
+          "formId": "job2-slot1-form0",
+          "job": 2,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot1-form1",
+          "formId": "job2-slot1-form1",
+          "job": 2,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot2-form0",
+          "formId": "job2-slot2-form0",
+          "job": 2,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job2-slot3-form0",
+          "formId": "job2-slot3-form0",
+          "job": 2,
+          "unitPrice": 27000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form0",
+          "formId": "job3-slot0-form0",
+          "job": 3,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form1",
+          "formId": "job3-slot0-form1",
+          "job": 3,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot0-form2",
+          "formId": "job3-slot0-form2",
+          "job": 3,
+          "unitPrice": 46000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form0",
+          "formId": "job3-slot1-form0",
+          "job": 3,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot1-form1",
+          "formId": "job3-slot1-form1",
+          "job": 3,
+          "unitPrice": 40000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot2-form0",
+          "formId": "job3-slot2-form0",
+          "job": 3,
+          "unitPrice": 30000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        },
+        {
+          "id": "job3-slot3-form0",
+          "formId": "job3-slot3-form0",
+          "job": 3,
+          "unitPrice": 27000,
+          "quantity": 1,
+          "canEnhance": true,
+          "canReroll": true
+        }
+      ]
+    }
+  ]
+}

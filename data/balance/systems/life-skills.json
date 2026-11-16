@@ -1,0 +1,84 @@
+{
+  "materialBuyPrices": {
+    "清水": 1,
+    "藥水瓶": 1
+  },
+  "gathering": [
+    {
+      "id": "herb",
+      "name": "紅色草",
+      "periodMs": 5000,
+      "chance": 1,
+      "quantity": 1,
+      "output": "紅色草",
+      "outputType": "material",
+      "bonusDrops": [
+        {
+          "output": "小蟲",
+          "outputType": "material",
+          "quantity": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "name": "藍色草",
+      "periodMs": 5000,
+      "chance": 1,
+      "quantity": 1,
+      "output": "藍色草",
+      "outputType": "material",
+      "id": "gather_1",
+      "bonusDrops": [
+        {
+          "output": "小蟲",
+          "outputType": "material",
+          "chance": 0.05,
+          "quantity": 1
+        }
+      ]
+    }
+  ],
+  "recipes": {
+    "alchemy": {
+      "name": "煉製簡易治療藥水",
+      "inputs": [
+        [
+          "清水",
+          1
+        ],
+        [
+          "藥水瓶",
+          1
+        ],
+        [
+          "紅色草",
+          1
+        ]
+      ],
+      "output": "heal_small",
+      "outputType": "item",
+      "periodMs": 5000,
+      "chance": 1,
+      "quantity": 1
+    },
+    "dust_to_iron": {
+      "name": "以太凝聚",
+      "periodMs": 5000,
+      "chance": 0.8,
+      "quantity": 1,
+      "output": "以太鍛鐵",
+      "outputType": "material",
+      "inputs": [
+        [
+          "粉塵",
+          10
+        ],
+        [
+          "鍛鐵",
+          1
+        ]
+      ]
+    }
+  }
+}

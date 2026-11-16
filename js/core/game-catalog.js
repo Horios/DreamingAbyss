@@ -11,7 +11,7 @@ const GEMS=Array.from({length:GEM_KINDS*3},(_,id)=>{
  const kind=id%GEM_KINDS,tier=Math.floor(id/GEM_KINDS),pct=Number((GEM_RATES[kind][tier]*100).toFixed(3));
  const desc=[
   '技能效果 +'+pct+'%（加算型增幅）',
-  '主動技能施放後 '+pct+'% 機率減少 1 回合冷卻（最低 1）',
+  '主動技能施放後 '+pct+'% 機率使該技能冷卻減少 3 秒',
   '普攻觸發技能發動率 +'+pct+' 個百分點',
   '技能成功發動後，使生命比例最低的存活隊友恢復施放者攻擊力 '+pct+'% 的生命',
   '技能成功發動後，使生命比例最低的存活隊友獲得施放者防禦力 '+pct+'% 的護盾（可與其他護盾累加）'

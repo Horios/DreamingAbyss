@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "enabled": true,
+  "unlock": {
+    "source": "mapClears",
+    "mapId": "map0"
+  },
+  "dailyLimit": 1,
+  "reset": {
+    "timezone": "Asia/Taipei",
+    "hour": 0
+  },
+  "allowEquipment": false,
+  "allowTokens": false,
+  "allowSpecial": false,
+  "typeWeights": {
+    "gold": 50,
+    "item": 30,
+    "equipment": 20
+  },
+  "gold": {
+    "min": 500,
+    "max": 20000,
+    "bands": [
+      {
+        "min": 500,
+        "max": 1999,
+        "weight": 50
+      },
+      {
+        "min": 2000,
+        "max": 4999,
+        "weight": 30
+      },
+      {
+        "min": 5000,
+        "max": 9999,
+        "weight": 15
+      },
+      {
+        "min": 10000,
+        "max": 20000,
+        "weight": 5
+      }
+    ]
+  },
+  "equipment": {
+    "progressSource": "mapClears",
+    "rangeSource": "regionTier",
+    "aheadChance": 0.1,
+    "aheadLevels": 5,
+    "qualitySource": "normalDrops",
+    "tierSource": "normalDrops"
+  },
+  "inputs": [
+    {
+      "id": "gel",
+      "kind": "material",
+      "key": "黏稠凝膠",
+      "enabled": true,
+      "quantityMode": "fixed",
+      "min": 50,
+      "max": 50,
+      "poolId": "daily",
+      "specialTrigger": ""
+    },
+    {
+      "id": "fang",
+      "kind": "material",
+      "key": "完整狼牙",
+      "enabled": true,
+      "quantityMode": "fixed",
+      "min": 50,
+      "max": 50,
+      "poolId": "daily",
+      "specialTrigger": ""
+    },
+    {
+      "id": "herb",
+      "kind": "material",
+      "key": "紅色草",
+      "enabled": true,
+      "quantityMode": "fixed",
+      "min": 20,
+      "max": 20,
+      "poolId": "daily",
+      "specialTrigger": ""
+    },
+    {
+      "id": "bug",
+      "kind": "material",
+      "key": "小蟲",
+      "enabled": true,
+      "quantityMode": "fixed",
+      "min": 10,
+      "max": 10,
+      "poolId": "daily",
+      "specialTrigger": ""
+    }
+  ],
+  "pools": [
+    {
+      "id": "daily",
+      "name": "每日湖泊回贈",
+      "rewards": [
+        {
+          "id": "gold",
+          "type": "gold",
+          "enabled": true,
+          "weight": 1,
+          "minMapId": "map0",
+          "allowAhead": false
+        },
+        {
+          "id": "heal",
+          "type": "item",
+          "kind": "item",
+          "key": "heal_small",
+          "min": 2,
+          "max": 5,
+          "enabled": true,
+          "weight": 50,
+          "minMapId": "map0",
+          "allowAhead": false
+        },
+        {
+          "id": "iron",
+          "type": "item",
+          "kind": "material",
+          "key": "鍛鐵",
+          "min": 5,
+          "max": 12,
+          "enabled": true,
+          "weight": 30,
+          "minMapId": "map0",
+          "allowAhead": false
+        },
+        {
+          "id": "herb",
+          "type": "item",
+          "kind": "material",
+          "key": "紅色草",
+          "min": 10,
+          "max": 20,
+          "enabled": true,
+          "weight": 20,
+          "minMapId": "map0",
+          "allowAhead": false
+        },
+        {
+          "id": "gear",
+          "type": "equipment",
+          "enabled": true,
+          "weight": 1,
+          "minMapId": "map0",
+          "allowAhead": true
+        }
+      ]
+    }
+  ],
+  "future": {
+    "fairyEvents": [],
+    "companionQuests": [],
+    "festivals": [],
+    "stateFields": {
+      "festivalClaims": "object",
+      "fairyEvents": "object",
+      "companionTriggers": "object",
+      "questCompletions": "object"
+    }
+  }
+}

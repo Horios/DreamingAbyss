@@ -1,0 +1,484 @@
+{
+  "equipmentSellPriceByQuality": [
+    2,
+    6,
+    18,
+    45
+  ],
+  "materialDefaultSellPrice": 1,
+  "potionSellPrice": 2,
+  "materialPrices": [
+    {
+      "key": "鍛鐵",
+      "sellPrice": 1
+    },
+    {
+      "key": "粉塵",
+      "sellPrice": 2
+    },
+    {
+      "key": "以太鍛鐵",
+      "sellPrice": 15
+    },
+    {
+      "key": "光輝碎塊",
+      "sellPrice": 20
+    },
+    {
+      "key": "升級卷軸",
+      "sellPrice": 25
+    },
+    {
+      "key": "紅色草",
+      "sellPrice": 0
+    },
+    {
+      "key": "小蟲",
+      "sellPrice": 0
+    },
+    {
+      "key": "藥水瓶",
+      "sellPrice": 0
+    },
+    {
+      "key": "清水",
+      "sellPrice": 0
+    },
+    {
+      "key": "黏稠凝膠",
+      "sellPrice": 1
+    },
+    {
+      "key": "完整狼牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "活性樹芯",
+      "sellPrice": 1
+    },
+    {
+      "key": "古木年輪",
+      "sellPrice": 2
+    },
+    {
+      "key": "薄翼膜",
+      "sellPrice": 1
+    },
+    {
+      "key": "堅硬石鱗",
+      "sellPrice": 1
+    },
+    {
+      "key": "魔偶齒輪",
+      "sellPrice": 1
+    },
+    {
+      "key": "礦脈之心",
+      "sellPrice": 2
+    },
+    {
+      "key": "劇毒腺體",
+      "sellPrice": 1
+    },
+    {
+      "key": "微光鱗粉",
+      "sellPrice": 1
+    },
+    {
+      "key": "怨念碎片",
+      "sellPrice": 1
+    },
+    {
+      "key": "女巫符印",
+      "sellPrice": 2
+    },
+    {
+      "key": "霜牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "冰晶翅片",
+      "sellPrice": 1
+    },
+    {
+      "key": "厚暖熊皮",
+      "sellPrice": 1
+    },
+    {
+      "key": "永凍結晶",
+      "sellPrice": 2
+    },
+    {
+      "key": "灼熱甲殼",
+      "sellPrice": 1
+    },
+    {
+      "key": "不熄火羽",
+      "sellPrice": 1
+    },
+    {
+      "key": "焦黑鋼片",
+      "sellPrice": 1
+    },
+    {
+      "key": "熔核",
+      "sellPrice": 2
+    },
+    {
+      "key": "虛空尖牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "星塵觸鬚",
+      "sellPrice": 1
+    },
+    {
+      "key": "隕鐵核心",
+      "sellPrice": 1
+    },
+    {
+      "key": "星隕稜鏡",
+      "sellPrice": 2
+    },
+    {
+      "key": "日蝕王冠",
+      "sellPrice": 2
+    },
+    {
+      "key": "覺醒黏稠凝膠",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒完整狼牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒活性樹芯",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒古木年輪",
+      "sellPrice": 2
+    },
+    {
+      "key": "覺醒薄翼膜",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒堅硬石鱗",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒魔偶齒輪",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒礦脈之心",
+      "sellPrice": 2
+    },
+    {
+      "key": "覺醒劇毒腺體",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒微光鱗粉",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒怨念碎片",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒女巫符印",
+      "sellPrice": 2
+    },
+    {
+      "key": "覺醒霜牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒冰晶翅片",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒厚暖熊皮",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒永凍結晶",
+      "sellPrice": 2
+    },
+    {
+      "key": "覺醒灼熱甲殼",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒不熄火羽",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒焦黑鋼片",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒熔核",
+      "sellPrice": 2
+    },
+    {
+      "key": "覺醒虛空尖牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒星塵觸鬚",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒隕鐵核心",
+      "sellPrice": 1
+    },
+    {
+      "key": "覺醒星隕稜鏡",
+      "sellPrice": 2
+    },
+    {
+      "key": "燼翼粉",
+      "sellPrice": 1
+    },
+    {
+      "key": "赤鬃毛皮",
+      "sellPrice": 1
+    },
+    {
+      "key": "焦根木髓",
+      "sellPrice": 1
+    },
+    {
+      "key": "炭殼碎片",
+      "sellPrice": 1
+    },
+    {
+      "key": "炎靈心木",
+      "sellPrice": 1
+    },
+    {
+      "key": "潮影翼膜",
+      "sellPrice": 1
+    },
+    {
+      "key": "寒潮腺體",
+      "sellPrice": 1
+    },
+    {
+      "key": "海霧結珠",
+      "sellPrice": 1
+    },
+    {
+      "key": "鹽晶塊",
+      "sellPrice": 1
+    },
+    {
+      "key": "深潮齒輪",
+      "sellPrice": 1
+    },
+    {
+      "key": "亡者殘響",
+      "sellPrice": 1
+    },
+    {
+      "key": "噬骨獠牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "墓火鱗片",
+      "sellPrice": 1
+    },
+    {
+      "key": "腐枝黑核",
+      "sellPrice": 2
+    },
+    {
+      "key": "巫后骨印",
+      "sellPrice": 2
+    },
+    {
+      "key": "雷牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "風暴晶羽",
+      "sellPrice": 1
+    },
+    {
+      "key": "雷殼銅片",
+      "sellPrice": 1
+    },
+    {
+      "key": "高地熊膽",
+      "sellPrice": 1
+    },
+    {
+      "key": "獸王雷角",
+      "sellPrice": 2
+    },
+    {
+      "key": "聖樹芽核",
+      "sellPrice": 2
+    },
+    {
+      "key": "晶光翼",
+      "sellPrice": 1
+    },
+    {
+      "key": "聖羽",
+      "sellPrice": 1
+    },
+    {
+      "key": "聖鎧殘片",
+      "sellPrice": 1
+    },
+    {
+      "key": "聖所徽核",
+      "sellPrice": 2
+    },
+    {
+      "key": "冥犬黑牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "幽影觸鬚",
+      "sellPrice": 1
+    },
+    {
+      "key": "黑曜脊核",
+      "sellPrice": 2
+    },
+    {
+      "key": "邊境魂塵",
+      "sellPrice": 1
+    },
+    {
+      "key": "冥視之瞳",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古燼翼粉",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古赤鬃毛皮",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古焦根木髓",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古炭殼碎片",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古炎靈心木",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古潮影翼膜",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古寒潮腺體",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古海霧結珠",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古鹽晶塊",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古深潮齒輪",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古亡者殘響",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古噬骨獠牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古墓火鱗片",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古腐枝黑核",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古巫后骨印",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古雷牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古風暴晶羽",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古雷殼銅片",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古高地熊膽",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古獸王雷角",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古聖樹芽核",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古晶光翼",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古聖羽",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古聖鎧殘片",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古聖所徽核",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古冥犬黑牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古幽影觸鬚",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古黑曜脊核",
+      "sellPrice": 2
+    },
+    {
+      "key": "上古邊境魂塵",
+      "sellPrice": 1
+    },
+    {
+      "key": "上古冥視之瞳",
+      "sellPrice": 2
+    }
+  ]
+}

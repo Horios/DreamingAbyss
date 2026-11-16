@@ -4,7 +4,7 @@ const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
 test('backpack sort, modal filters and guided wear work on desktop and mobile; battle portraits inspect allies and individual enemies',async()=>{
  const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
  try{
-  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;party.story.quests.goddess_intro.done=true;__EMBERWILD_STORY.sync();if(!completeStoryStage('skill_equipment_intro'))throw Error(JSON.stringify({quest:party.story.quests.skill_equipment_intro,toast:$('toast').textContent}));globalThis.charm=state.bag.find(g=>g.storyRewardKey==='initiation_charm');globalThis.filterGear=gear(1,1,0,0);filterGear.affix=[{type:4,rank:2,value:30,skill:0}];addGear(filterGear);setTab('equipment');selectInventoryGear(charm.id);});
+  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;__EMBERWILD_STORY.sync();if(!completeStoryStage('skill_equipment_intro'))throw Error(JSON.stringify({quest:party.story.quests.skill_equipment_intro,toast:$('toast').textContent}));globalThis.charm=state.bag.find(g=>g.storyRewardKey==='initiation_charm');globalThis.filterGear=gear(1,1,0,0);filterGear.affix=[{type:4,rank:2,value:30,skill:0}];addGear(filterGear);setTab('equipment');selectInventoryGear(charm.id);});
   await p.clock.resume();
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:900});

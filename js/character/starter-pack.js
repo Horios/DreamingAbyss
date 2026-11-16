@@ -416,22 +416,32 @@
     return g;
   }
 
-  function prepareStarterPack(hero,job){
+  function prepareStarterPack(hero,job,options={}){
     // Initial white gear is ordinary equipment, independent of the gift settings.
     const oldEquipped=new Set((hero.equipped||[]).filter(Boolean));
     hero.bag=(hero.bag||[]).filter(g=>!oldEquipped.has(g.id));
     hero.equipped=[null,null,null,null,null];
     for(const [position,slot] of [0,1,2,3,3].entries()){
       const entry=defaultStarterEntry(job,slot,position);
+      // Prologue creation: no weapon and no second accessory. The goddess hands over the starter weapon and the charm (the story
+      // reward) in the gear lesson, so the player never holds an old and a new weapon at the same time.
+      if(options.prologue&&(position===0||position===4))continue;
       const g=createStarterGear(job,position,{...entry,baseAttack:undefined});
       delete g.starterPack;g.affix=[];
       hero.bag.push(g);hero.equipped[position]=g.id;
     }
     hero.hp=stats(hero).hp;hero.shield=0;
+    if(options.prologue)return;
+    sendStarterPackMail(job,starterPackRows(job));
+  }
+  // The same contents the starter mail carries; the prologue delivers them directly as a quest gift.
+  function starterPackRows(job){
     const g=createStarterGear(job,0,starterPacks[job][0]);
     const names=new Map(EmberwildInventoryIcons.entries(exportableBalance()).map(r=>[r.id,r.name]));
-    sendStarterPackMail(job,[{type:'gear',gear:g,name:equipmentDisplayName(g),quantity:1},...starterPackItems[job].map(row=>({type:'catalogue',...clone(row),name:names.get(row.kind+':'+row.key)||row.key}))]);
+    return [{type:'gear',gear:g,name:equipmentDisplayName(g),quantity:1},...starterPackItems[job].map(row=>({type:'catalogue',...clone(row),name:names.get(row.kind+':'+row.key)||row.key}))];
   }
+  let prologueCreation=false;
+  globalThis.__EMBERWILD_STARTER_PACK={rows:starterPackRows,asPrologue(action){prologueCreation=true;try{return action();}finally{prologueCreation=false;}}};
 
   if(typeof requestHeroName==='function'){
     const starterRequestHeroNameBase=requestHeroName;
@@ -454,7 +464,7 @@
   start=function(job){
     const result=starterStartBase(job);
     if(state&&party&&party.members?.length===1&&state.job===job){
-      prepareStarterPack(state,job);
+      prepareStarterPack(state,job,{prologue:prologueCreation});
       save();
       render();
 

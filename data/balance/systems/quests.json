@@ -1,0 +1,467 @@
+{
+  "tutorial": {
+    "killRequirement": 3,
+    "skillLevelRequirement": 1,
+    "rewardGold": 100,
+    "rewardOre": 10,
+    "armorTier": 1,
+    "armorSlot": 1,
+    "armorQuality": 1
+  },
+  "side": [
+    {
+      "required": 5,
+      "gold": 300,
+      "ore": 20,
+      "gem": 1
+    },
+    {
+      "required": 2,
+      "gold": 800,
+      "ore": 55,
+      "gem": 1
+    },
+    {
+      "required": 3,
+      "gold": 2000,
+      "ore": 120,
+      "gem": 1
+    }
+  ],
+  "repeat": {
+    "required": 8,
+    "goldPerTier": 150,
+    "ore": 15,
+    "dust": 3,
+    "gem": 1
+  },
+  "board": {
+    "refreshMinutes": 20,
+    "refreshGoldPerTier": 150,
+    "taskBase": 8,
+    "taskRandomRange": 9,
+    "taskPerTier": 2,
+    "goldPerTier": 180,
+    "orePerTier": 8,
+    "gemReward": 2,
+    "legendaryGearChance": 0.2
+  },
+  "market": {
+    "refreshCost": 100,
+    "offerCount": 6,
+    "oreMin": 8,
+    "oreRandomRange": 13,
+    "dustMin": 3,
+    "dustRandomRange": 6,
+    "gemMin": 1,
+    "gemRandomRange": 2,
+    "materialMin": 3,
+    "materialRandomRange": 4,
+    "oreUnit": 12,
+    "dustUnit": 25,
+    "gemUnit": 180,
+    "materialUnitPerTier": 60
+  },
+  "potion": {
+    "healFraction": 0.45,
+    "buyCost": 75,
+    "buyQuantity": 5
+  },
+  "design": {
+    "version": 1,
+    "daily": {
+      "version": 2,
+      "enabled": true,
+      "entries": [
+        {
+          "id": "daily_hunt",
+          "title": "附近怪物討伐",
+          "description": "完成日常委託，協助營地補給。",
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 0,
+          "mapIndices": [],
+          "prerequisites": [],
+          "objectives": [
+            {
+              "type": "nearKill",
+              "key": "@nearLevel",
+              "quantity": 12,
+              "quantityMax": 20,
+              "perTier": 0,
+              "consume": false
+            }
+          ],
+          "rewards": {
+            "gold": 0,
+            "goldPerTier": 0,
+            "ore": 0,
+            "orePerTier": 0,
+            "dust": 0,
+            "xp": 0,
+            "randomGems": 0,
+            "gemCounts": [
+              0,
+              0,
+              0
+            ],
+            "materials": [],
+            "potions": [],
+            "items": [],
+            "gear": [],
+            "choice": "all",
+            "gearChance": 0.5
+          }
+        },
+        {
+          "id": "daily_salvage",
+          "title": "裝備回收作業",
+          "description": "開始任務後進行裝備作業，協助營地整備。",
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 0,
+          "mapIndices": [],
+          "prerequisites": [],
+          "objectives": [
+            {
+              "type": "salvage",
+              "key": "",
+              "quantity": 1,
+              "quantityMax": 1,
+              "perTier": 0,
+              "consume": false
+            }
+          ],
+          "rewards": {
+            "gold": 0,
+            "goldPerTier": 0,
+            "ore": 0,
+            "orePerTier": 0,
+            "dust": 0,
+            "xp": 0,
+            "randomGems": 0,
+            "gemCounts": [
+              0,
+              0,
+              0
+            ],
+            "materials": [],
+            "potions": [],
+            "items": [],
+            "gear": [],
+            "choice": "all",
+            "gearChance": 0.5
+          }
+        },
+        {
+          "id": "daily_enhance",
+          "title": "裝備強化作業",
+          "description": "開始任務後進行裝備作業，協助營地整備。",
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 0,
+          "mapIndices": [],
+          "prerequisites": [],
+          "objectives": [
+            {
+              "type": "enhance",
+              "key": "",
+              "quantity": 1,
+              "quantityMax": 2,
+              "perTier": 0,
+              "consume": false
+            }
+          ],
+          "rewards": {
+            "gold": 0,
+            "goldPerTier": 0,
+            "ore": 0,
+            "orePerTier": 0,
+            "dust": 0,
+            "xp": 0,
+            "randomGems": 0,
+            "gemCounts": [
+              0,
+              0,
+              0
+            ],
+            "materials": [],
+            "potions": [],
+            "items": [],
+            "gear": [],
+            "choice": "all",
+            "gearChance": 0.5
+          }
+        },
+        {
+          "id": "daily_explore",
+          "title": "探索物資募集",
+          "description": "完成日常委託，協助營地補給。",
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 0,
+          "mapIndices": [],
+          "prerequisites": [],
+          "objectives": [
+            {
+              "type": "material",
+              "key": "@currentMap",
+              "quantity": 6,
+              "quantityMax": 10,
+              "perTier": 0,
+              "consume": true
+            }
+          ],
+          "rewards": {
+            "gold": 0,
+            "goldPerTier": 0,
+            "ore": 0,
+            "orePerTier": 0,
+            "dust": 0,
+            "xp": 0,
+            "randomGems": 0,
+            "gemCounts": [
+              0,
+              0,
+              0
+            ],
+            "materials": [],
+            "potions": [],
+            "items": [],
+            "gear": [],
+            "choice": "all",
+            "gearChance": 0.5
+          }
+        },
+        {
+          "id": "daily_herb",
+          "title": "紅色草募集",
+          "description": "完成日常委託，協助營地補給。",
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 0,
+          "mapIndices": [],
+          "prerequisites": [],
+          "objectives": [
+            {
+              "type": "material",
+              "key": "紅色草",
+              "quantity": 8,
+              "quantityMax": 12,
+              "perTier": 0,
+              "consume": true
+            }
+          ],
+          "rewards": {
+            "gold": 0,
+            "goldPerTier": 0,
+            "ore": 0,
+            "orePerTier": 0,
+            "dust": 0,
+            "xp": 0,
+            "randomGems": 0,
+            "gemCounts": [
+              0,
+              0,
+              0
+            ],
+            "materials": [],
+            "potions": [],
+            "items": [],
+            "gear": [],
+            "choice": "all",
+            "gearChance": 0.5
+          }
+        },
+        {
+          "id": "daily_potion",
+          "title": "營地治療補給",
+          "description": "完成日常委託，協助營地補給。",
+          "enabled": true,
+          "weight": 1,
+          "minLevel": 1,
+          "maxLevel": 0,
+          "mapIndices": [],
+          "prerequisites": [],
+          "objectives": [
+            {
+              "type": "potion",
+              "key": "heal_small",
+              "quantity": 2,
+              "quantityMax": 3,
+              "perTier": 0,
+              "consume": true
+            }
+          ],
+          "rewards": {
+            "gold": 0,
+            "goldPerTier": 0,
+            "ore": 0,
+            "orePerTier": 0,
+            "dust": 0,
+            "xp": 0,
+            "randomGems": 0,
+            "gemCounts": [
+              0,
+              0,
+              0
+            ],
+            "materials": [],
+            "potions": [],
+            "items": [],
+            "gear": [],
+            "choice": "all",
+            "gearChance": 0.5
+          }
+        }
+      ],
+      "materialRewards": [
+        {
+          "key": "鍛鐵",
+          "min": 4,
+          "max": 8
+        },
+        {
+          "key": "粉塵",
+          "min": 3,
+          "max": 6
+        },
+        {
+          "key": "紅色草",
+          "min": 4,
+          "max": 8
+        }
+      ]
+    },
+    "side": [
+      {
+        "id": "wolves",
+        "title": "縫補獵人的披肩",
+        "description": "林間野狼的狼牙，是獵人交換皮革的憑證。",
+        "enabled": true,
+        "weight": 1,
+        "minLevel": 1,
+        "maxLevel": 0,
+        "mapIndices": [],
+        "prerequisites": [],
+        "objectives": [
+          {
+            "type": "material",
+            "key": "完整狼牙",
+            "quantity": 5,
+            "quantityMax": 5,
+            "perTier": 0,
+            "consume": true
+          }
+        ],
+        "rewards": {
+          "gold": 300,
+          "goldPerTier": 0,
+          "ore": 20,
+          "orePerTier": 0,
+          "dust": 0,
+          "xp": 0,
+          "randomGems": 1,
+          "gemCounts": [
+            0,
+            0,
+            0
+          ],
+          "materials": [],
+          "potions": [],
+          "items": [],
+          "gear": [],
+          "choice": "all",
+          "gearChance": 0.5
+        }
+      },
+      {
+        "id": "witch",
+        "title": "淨化沼澤",
+        "description": "採集女巫符印，協助營地研究暮色詛咒。",
+        "enabled": true,
+        "weight": 1,
+        "minLevel": 1,
+        "maxLevel": 0,
+        "mapIndices": [],
+        "prerequisites": [],
+        "objectives": [
+          {
+            "type": "material",
+            "key": "女巫符印",
+            "quantity": 2,
+            "quantityMax": 2,
+            "perTier": 0,
+            "consume": true
+          }
+        ],
+        "rewards": {
+          "gold": 800,
+          "goldPerTier": 0,
+          "ore": 55,
+          "orePerTier": 0,
+          "dust": 0,
+          "xp": 0,
+          "randomGems": 1,
+          "gemCounts": [
+            0,
+            0,
+            0
+          ],
+          "materials": [],
+          "potions": [],
+          "items": [],
+          "gear": [],
+          "choice": "all",
+          "gearChance": 0.5
+        }
+      },
+      {
+        "id": "stars",
+        "title": "鍛造師的最後一課",
+        "description": "取得星隕監視者的稜鏡，準備迎戰噬日者。",
+        "enabled": true,
+        "weight": 1,
+        "minLevel": 1,
+        "maxLevel": 0,
+        "mapIndices": [],
+        "prerequisites": [],
+        "objectives": [
+          {
+            "type": "material",
+            "key": "星隕稜鏡",
+            "quantity": 3,
+            "quantityMax": 3,
+            "perTier": 0,
+            "consume": true
+          }
+        ],
+        "rewards": {
+          "gold": 2000,
+          "goldPerTier": 0,
+          "ore": 120,
+          "orePerTier": 0,
+          "dust": 0,
+          "xp": 0,
+          "randomGems": 1,
+          "gemCounts": [
+            0,
+            0,
+            0
+          ],
+          "materials": [],
+          "potions": [],
+          "items": [],
+          "gear": [],
+          "choice": "all",
+          "gearChance": 0.5
+        }
+      }
+    ]
+  }
+}

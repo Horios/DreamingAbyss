@@ -126,7 +126,7 @@ body.seconds-cooldowns-hidden #app .seconds-charge-list,body.seconds-cooldowns-h
  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:minmax(0,1fr)!important;gap:5px!important}
  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{display:grid!important;grid-template-columns:44px minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:none!important;column-gap:8px!important;row-gap:3px!important;align-items:center!important;padding:6px 8px!important}
  #app .seconds-battlefield .seconds-unit>.battle-enemy-icon{grid-column:1!important;grid-row:1 / span 4!important;align-self:start;margin:0!important;width:42px!important;height:42px!important}
- #app .seconds-battlefield .seconds-unit>*:not(.battle-enemy-icon):not(.battle-fx):not(.battle-fx-status){grid-column:2 / -1!important}
+ #app .seconds-battlefield .seconds-unit>*:not(.battle-enemy-icon):not(.battle-fx):not(.battle-fx-status):not(.battle-number-layer){grid-column:2 / -1!important}
  #app .seconds-battlefield .seconds-unit .unit-title{flex-direction:row!important;align-items:baseline!important;gap:6px!important}
  #app .seconds-battlefield .seconds-unit .seconds-charge-list{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));column-gap:8px!important;row-gap:3px!important}
  #app .seconds-battlefield .seconds-unit .seconds-states{gap:4px!important}

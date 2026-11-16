@@ -1,0 +1,1645 @@
+{
+  "combat": {
+    "elementMultipliers": {
+      "neutral": 1,
+      "same": 0.8,
+      "strong": 1.3,
+      "weak": 0.85
+    },
+    "statCaps": {
+      "crit": 0.75,
+      "pierce": 30,
+      "evasion": 0.35,
+      "lifesteal": 0.2,
+      "defenseIgnore": 0.75
+    },
+    "minimumActiveCooldown": 1
+  },
+  "affixes": {
+    "qualityChance": {
+      "normal": 0.6,
+      "fine": 0.27,
+      "rare": 0.1,
+      "legendary": 0.03
+    },
+    "qualityMultiplier": {
+      "normal": 1,
+      "fine": 1.4,
+      "rare": 1.9,
+      "legendary": 2.6
+    },
+    "skillSpecialChance": 0.4,
+    "skillEffectShare": 0.72,
+    "extendedPoolChance": 0.55,
+    "procChancePerPointPercent": 6,
+    "baseValues": {
+      "attackPerTier": {
+        "min": 0,
+        "max": 1
+      },
+      "hpPerTier": {
+        "min": 1,
+        "max": 3
+      },
+      "defensePerTier": {
+        "min": 0,
+        "max": 1
+      },
+      "critPercent": {
+        "min": 2,
+        "max": 4,
+        "cap": 12
+      }
+    },
+    "skillEffectPercent": {
+      "normal": 0,
+      "fine": 18,
+      "rare": 30,
+      "legendary": 45
+    },
+    "cooldownReduction": {
+      "normal": 0,
+      "fine": 1,
+      "rare": 1,
+      "legendary": 2
+    },
+    "extendedValues": {
+      "critDamage": {
+        "normal": 4,
+        "fine": 8,
+        "rare": 12,
+        "legendary": 16
+      },
+      "pierce": {
+        "normal": 1,
+        "fine": 2,
+        "rare": 4,
+        "legendary": 6
+      },
+      "lifesteal": {
+        "normal": 1,
+        "fine": 2,
+        "rare": 3,
+        "legendary": 4
+      },
+      "evasion": {
+        "normal": 2,
+        "fine": 4,
+        "rare": 6,
+        "legendary": 8
+      },
+      "elementDamage": {
+        "normal": 5,
+        "fine": 10,
+        "rare": 15,
+        "legendary": 20
+      },
+      "raceDamage": {
+        "normal": 5,
+        "fine": 10,
+        "rare": 15,
+        "legendary": 20
+      },
+      "resist": {
+        "normal": 5,
+        "fine": 10,
+        "rare": 15,
+        "legendary": 20
+      },
+      "attackPercent": {
+        "normal": 0,
+        "fine": 0,
+        "rare": 2,
+        "legendary": 4
+      },
+      "allCooldownReduction": {
+        "normal": 0,
+        "fine": 0,
+        "rare": 1,
+        "legendary": 2
+      },
+      "dropRateBonus": {
+        "normal": 0,
+        "fine": 5,
+        "rare": 10,
+        "legendary": 20
+      },
+      "defenseIgnore": {
+        "normal": 0,
+        "fine": 4,
+        "rare": 8,
+        "legendary": 12
+      }
+    },
+    "rerollCost": {
+      "goldPerTier": 80,
+      "dustPerRoll": 10
+    },
+    "poolBySlotRank": [
+      [
+        [
+          {
+            "type": 0,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 11.25,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 2,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 11.25,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "type": 6,
+            "chance": 7.86,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 7,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 8,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 9,
+            "chance": 7.86,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 12,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 13,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 14,
+            "chance": 7.84,
+            "min": 5,
+            "max": 5
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 1,
+            "max": 4
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 3,
+            "max": 6
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 18,
+            "max": 18,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 6.27,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 7,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 8,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 9,
+            "chance": 6.27,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 12,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 13,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 14,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 17,
+            "chance": 6.27,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 18,
+            "chance": 8.78,
+            "min": 4,
+            "max": 4
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 2,
+            "max": 6
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 4,
+            "max": 8
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 30,
+            "max": 30,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 12,
+            "max": 12
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 3,
+            "max": 3
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 8,
+            "max": 8
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 3,
+            "max": 8
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 5,
+            "max": 10
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 45,
+            "max": 45,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 2,
+            "max": 2,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 16,
+            "max": 16
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 12,
+            "max": 12
+          }
+        ]
+      ],
+      [
+        [
+          {
+            "type": 0,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 11.25,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 2,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 11.25,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "type": 6,
+            "chance": 7.86,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 7,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 8,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 9,
+            "chance": 7.86,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 12,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 13,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 14,
+            "chance": 7.84,
+            "min": 5,
+            "max": 5
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 1,
+            "max": 4
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 3,
+            "max": 6
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 18,
+            "max": 18,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 6.27,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 7,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 8,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 9,
+            "chance": 6.27,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 12,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 13,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 14,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 17,
+            "chance": 6.27,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 18,
+            "chance": 8.78,
+            "min": 4,
+            "max": 4
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 2,
+            "max": 6
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 4,
+            "max": 8
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 30,
+            "max": 30,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 12,
+            "max": 12
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 3,
+            "max": 3
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 8,
+            "max": 8
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 3,
+            "max": 8
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 5,
+            "max": 10
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 45,
+            "max": 45,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 2,
+            "max": 2,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 16,
+            "max": 16
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 12,
+            "max": 12
+          }
+        ]
+      ],
+      [
+        [
+          {
+            "type": 0,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 11.25,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 2,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 11.25,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "type": 6,
+            "chance": 7.86,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 7,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 8,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 9,
+            "chance": 7.86,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 12,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 13,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 14,
+            "chance": 7.84,
+            "min": 5,
+            "max": 5
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 1,
+            "max": 4
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 3,
+            "max": 6
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 18,
+            "max": 18,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 6.27,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 7,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 8,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 9,
+            "chance": 6.27,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 12,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 13,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 14,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 17,
+            "chance": 6.27,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 18,
+            "chance": 8.78,
+            "min": 4,
+            "max": 4
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 2,
+            "max": 6
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 4,
+            "max": 8
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 30,
+            "max": 30,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 12,
+            "max": 12
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 3,
+            "max": 3
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 8,
+            "max": 8
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 3,
+            "max": 8
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 5,
+            "max": 10
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 45,
+            "max": 45,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 2,
+            "max": 2,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 16,
+            "max": 16
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 12,
+            "max": 12
+          }
+        ]
+      ],
+      [
+        [
+          {
+            "type": 0,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 11.25,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 2,
+            "chance": 11.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 11.25,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "type": 6,
+            "chance": 7.86,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 7,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 8,
+            "chance": 7.86,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 9,
+            "chance": 7.86,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 12,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 13,
+            "chance": 7.86,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 14,
+            "chance": 7.84,
+            "min": 5,
+            "max": 5
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 1,
+            "max": 4
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 3,
+            "max": 6
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 18,
+            "max": 18,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 6.27,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 7,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 8,
+            "chance": 6.27,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 9,
+            "chance": 6.27,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 12,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 13,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 14,
+            "chance": 6.27,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 17,
+            "chance": 6.27,
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": 18,
+            "chance": 8.78,
+            "min": 4,
+            "max": 4
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 2,
+            "max": 6
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 4,
+            "max": 8
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 30,
+            "max": 30,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 1,
+            "max": 1,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 12,
+            "max": 12
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 3,
+            "max": 3
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 15,
+            "max": 15
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 8,
+            "max": 8
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 1,
+            "chance": 6.16,
+            "min": 3,
+            "max": 8
+          },
+          {
+            "type": 2,
+            "chance": 6.16,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "type": 3,
+            "chance": 6.16,
+            "min": 5,
+            "max": 10
+          },
+          {
+            "type": 4,
+            "chance": 11.82,
+            "min": 45,
+            "max": 45,
+            "skill": -1
+          },
+          {
+            "type": 5,
+            "chance": 4.6,
+            "min": 2,
+            "max": 2,
+            "skill": -1
+          },
+          {
+            "type": 6,
+            "chance": 5.02,
+            "min": 16,
+            "max": 16
+          },
+          {
+            "type": 7,
+            "chance": 5.02,
+            "min": 6,
+            "max": 6
+          },
+          {
+            "type": 8,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 9,
+            "chance": 5.02,
+            "min": 8,
+            "max": 8
+          },
+          {
+            "type": 12,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 13,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 14,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 15,
+            "chance": 5.02,
+            "min": 4,
+            "max": 4
+          },
+          {
+            "type": 16,
+            "chance": 5.02,
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": 17,
+            "chance": 5.02,
+            "min": 20,
+            "max": 20
+          },
+          {
+            "type": 18,
+            "chance": 8.74,
+            "min": 12,
+            "max": 12
+          }
+        ]
+      ]
+    ]
+  }
+}

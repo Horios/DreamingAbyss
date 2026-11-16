@@ -1,0 +1,1317 @@
+[
+  {
+    "id": 10,
+    "job": 0,
+    "description": "專注劍術輸出；LV1 裂地斬、LV3 反擊之刃、LV8 攻擊強化。",
+    "core": [
+      7,
+      8
+    ],
+    "active": [
+      7
+    ],
+    "proc": [
+      8
+    ],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner10-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 16,
+      "def": 8,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.1,
+      "atk": 1.65,
+      "def": 1.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "洛恩",
+    "availability": "visible"
+  },
+  {
+    "id": 15,
+    "job": 0,
+    "description": "專注劍術輸出；LV1 裂地斬、LV3 反擊之刃、LV8 攻擊強化。",
+    "core": [
+      14,
+      15
+    ],
+    "active": [
+      14
+    ],
+    "proc": [
+      15
+    ],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner15-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 16,
+      "def": 8,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.1,
+      "atk": 1.65,
+      "def": 1.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "雷昂",
+    "statTemplateId": 10,
+    "availability": "hidden"
+  },
+  {
+    "id": 16,
+    "job": 0,
+    "description": "專注劍術輸出；LV1 裂地斬、LV3 反擊之刃、LV8 攻擊強化。",
+    "core": [
+      17,
+      18
+    ],
+    "active": [
+      17
+    ],
+    "proc": [
+      18
+    ],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner16-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 16,
+      "def": 8,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.1,
+      "atk": 1.65,
+      "def": 1.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "凱斯",
+    "statTemplateId": 10,
+    "availability": "hidden"
+  },
+  {
+    "id": 17,
+    "job": 0,
+    "description": "專注劍術輸出；LV1 裂地斬、LV3 反擊之刃、LV8 攻擊強化。",
+    "core": [
+      20,
+      21
+    ],
+    "active": [
+      20
+    ],
+    "proc": [
+      21
+    ],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner17-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 16,
+      "def": 8,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.1,
+      "atk": 1.65,
+      "def": 1.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "艾伯",
+    "statTemplateId": 10,
+    "availability": "hidden"
+  },
+  {
+    "id": 11,
+    "job": 0,
+    "description": "專注承受敵方攻勢；LV1 嘲諷、LV3 堅毅壁壘、LV8 防禦強化。",
+    "core": [
+      13,
+      11
+    ],
+    "active": [
+      13,
+      11
+    ],
+    "proc": [],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner11-passive1"
+    ],
+    "initialStats": {
+      "hp": 51,
+      "atk": 15,
+      "def": 9,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.5,
+      "atk": 1.4,
+      "def": 1.35,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "維恩",
+    "availability": "visible"
+  },
+  {
+    "id": 18,
+    "job": 0,
+    "description": "專注承受敵方攻勢；LV1 嘲諷、LV3 堅毅壁壘、LV8 防禦強化。",
+    "core": [
+      26,
+      24
+    ],
+    "active": [
+      26,
+      24
+    ],
+    "proc": [],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner18-passive1"
+    ],
+    "initialStats": {
+      "hp": 51,
+      "atk": 15,
+      "def": 9,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.5,
+      "atk": 1.4,
+      "def": 1.35,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "瑟琳",
+    "statTemplateId": 11,
+    "availability": "hidden"
+  },
+  {
+    "id": 19,
+    "job": 0,
+    "description": "專注承受敵方攻勢；LV1 嘲諷、LV3 堅毅壁壘、LV8 防禦強化。",
+    "core": [
+      30,
+      28
+    ],
+    "active": [
+      30,
+      28
+    ],
+    "proc": [],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner19-passive1"
+    ],
+    "initialStats": {
+      "hp": 51,
+      "atk": 15,
+      "def": 9,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.5,
+      "atk": 1.4,
+      "def": 1.35,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "賽德",
+    "statTemplateId": 11,
+    "availability": "hidden"
+  },
+  {
+    "id": 20,
+    "job": 0,
+    "description": "專注承受敵方攻勢；LV1 嘲諷、LV3 堅毅壁壘、LV8 防禦強化。",
+    "core": [
+      34,
+      32
+    ],
+    "active": [
+      34,
+      32
+    ],
+    "proc": [],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner20-passive1"
+    ],
+    "initialStats": {
+      "hp": 51,
+      "atk": 15,
+      "def": 9,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 102.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.5,
+      "atk": 1.4,
+      "def": 1.35,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "塔莉",
+    "statTemplateId": 11,
+    "availability": "hidden"
+  },
+  {
+    "id": 12,
+    "job": 1,
+    "description": "專注火焰法術輸出；LV1 火焰箭、LV3 餘燼爆發、LV8 攻擊強化。",
+    "core": [
+      9,
+      10
+    ],
+    "active": [
+      9
+    ],
+    "proc": [
+      10
+    ],
+    "support": [],
+    "weapon": "staff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner12-passive1"
+    ],
+    "initialStats": {
+      "hp": 36,
+      "atk": 18,
+      "def": 5,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 108.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 3.85,
+      "atk": 2.7,
+      "def": 0.18,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "伊瑟",
+    "availability": "visible"
+  },
+  {
+    "id": 21,
+    "job": 1,
+    "description": "專注火焰法術輸出；LV1 火焰箭、LV3 餘燼爆發、LV8 攻擊強化。",
+    "core": [
+      12,
+      13
+    ],
+    "active": [
+      12
+    ],
+    "proc": [
+      13
+    ],
+    "support": [],
+    "weapon": "staff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner21-passive1"
+    ],
+    "initialStats": {
+      "hp": 36,
+      "atk": 18,
+      "def": 5,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 108.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 3.85,
+      "atk": 2.7,
+      "def": 0.18,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "梅洛",
+    "statTemplateId": 12,
+    "availability": "hidden"
+  },
+  {
+    "id": 22,
+    "job": 1,
+    "description": "專注火焰法術輸出；LV1 火焰箭、LV3 餘燼爆發、LV8 攻擊強化。",
+    "core": [
+      15,
+      16
+    ],
+    "active": [
+      15
+    ],
+    "proc": [
+      16
+    ],
+    "support": [],
+    "weapon": "staff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner22-passive1"
+    ],
+    "initialStats": {
+      "hp": 36,
+      "atk": 18,
+      "def": 5,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 108.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 3.85,
+      "atk": 2.7,
+      "def": 0.18,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "席昂",
+    "statTemplateId": 12,
+    "availability": "hidden"
+  },
+  {
+    "id": 23,
+    "job": 1,
+    "description": "專注火焰法術輸出；LV1 火焰箭、LV3 餘燼爆發、LV8 攻擊強化。",
+    "core": [
+      18,
+      19
+    ],
+    "active": [
+      18
+    ],
+    "proc": [
+      19
+    ],
+    "support": [],
+    "weapon": "staff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner23-passive1"
+    ],
+    "initialStats": {
+      "hp": 36,
+      "atk": 18,
+      "def": 5,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 108.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 3.85,
+      "atk": 2.7,
+      "def": 0.18,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "菲娜",
+    "statTemplateId": 12,
+    "availability": "hidden"
+  },
+  {
+    "id": 13,
+    "job": 3,
+    "description": "專注隊伍治療；LV1 治癒禱言、LV3 生命泉源、LV8 治療強化。",
+    "core": [
+      8,
+      9
+    ],
+    "active": [
+      8
+    ],
+    "proc": [
+      9
+    ],
+    "support": [],
+    "weapon": "holyStaff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner13-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 15,
+      "def": 7,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 96.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 5.25,
+      "atk": 1.5,
+      "def": 0.25,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      },
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "艾琳",
+    "availability": "visible"
+  },
+  {
+    "id": 24,
+    "job": 3,
+    "description": "專注隊伍治療；LV1 治癒禱言、LV3 生命泉源、LV8 治療強化。",
+    "core": [
+      12,
+      13
+    ],
+    "active": [
+      12
+    ],
+    "proc": [
+      13
+    ],
+    "support": [],
+    "weapon": "holyStaff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner24-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 15,
+      "def": 7,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 96.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 5.25,
+      "atk": 1.5,
+      "def": 0.25,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      },
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "露薇",
+    "statTemplateId": 13,
+    "availability": "hidden"
+  },
+  {
+    "id": 25,
+    "job": 3,
+    "description": "專注隊伍治療；LV1 治癒禱言、LV3 生命泉源、LV8 治療強化。",
+    "core": [
+      16,
+      17
+    ],
+    "active": [
+      16
+    ],
+    "proc": [
+      17
+    ],
+    "support": [],
+    "weapon": "holyStaff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner25-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 15,
+      "def": 7,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 96.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 5.25,
+      "atk": 1.5,
+      "def": 0.25,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      },
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "諾雅",
+    "statTemplateId": 13,
+    "availability": "hidden"
+  },
+  {
+    "id": 26,
+    "job": 3,
+    "description": "專注隊伍治療；LV1 治癒禱言、LV3 生命泉源、LV8 治療強化。",
+    "core": [
+      20,
+      21
+    ],
+    "active": [
+      20
+    ],
+    "proc": [
+      21
+    ],
+    "support": [],
+    "weapon": "holyStaff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner26-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 15,
+      "def": 7,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "speed": 96.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 5.25,
+      "atk": 1.5,
+      "def": 0.25,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      },
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "米菈",
+    "statTemplateId": 13,
+    "availability": "hidden"
+  },
+  {
+    "id": 14,
+    "job": 2,
+    "description": "專注箭術輸出；LV1 穿透箭、LV3 連射、LV8 攻擊強化。",
+    "core": [
+      8,
+      9
+    ],
+    "active": [
+      8
+    ],
+    "proc": [
+      9
+    ],
+    "support": [],
+    "weapon": "bow",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner14-passive1"
+    ],
+    "initialStats": {
+      "hp": 40,
+      "atk": 17,
+      "def": 6,
+      "crit": 0.17,
+      "critDamage": 1.5,
+      "speed": 116.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 4.95,
+      "atk": 1.65,
+      "def": 0.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 1,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "希雅",
+    "availability": "visible"
+  },
+  {
+    "id": 27,
+    "job": 2,
+    "description": "專注箭術輸出；LV1 穿透箭、LV3 連射、LV8 攻擊強化。",
+    "core": [
+      11,
+      12
+    ],
+    "active": [
+      11
+    ],
+    "proc": [
+      12
+    ],
+    "support": [],
+    "weapon": "bow",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner27-passive1"
+    ],
+    "initialStats": {
+      "hp": 40,
+      "atk": 17,
+      "def": 6,
+      "crit": 0.17,
+      "critDamage": 1.5,
+      "speed": 116.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 4.95,
+      "atk": 1.65,
+      "def": 0.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 1,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "凜羽",
+    "statTemplateId": 14,
+    "availability": "hidden"
+  },
+  {
+    "id": 28,
+    "job": 2,
+    "description": "專注箭術輸出；LV1 穿透箭、LV3 連射、LV8 攻擊強化。",
+    "core": [
+      14,
+      15
+    ],
+    "active": [
+      14
+    ],
+    "proc": [
+      15
+    ],
+    "support": [],
+    "weapon": "bow",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner28-passive1"
+    ],
+    "initialStats": {
+      "hp": 40,
+      "atk": 17,
+      "def": 6,
+      "crit": 0.17,
+      "critDamage": 1.5,
+      "speed": 116.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 4.95,
+      "atk": 1.65,
+      "def": 0.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 1,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "緹亞",
+    "statTemplateId": 14,
+    "availability": "hidden"
+  },
+  {
+    "id": 29,
+    "job": 2,
+    "description": "專注箭術輸出；LV1 穿透箭、LV3 連射、LV8 攻擊強化。",
+    "core": [
+      17,
+      18
+    ],
+    "active": [
+      17
+    ],
+    "proc": [
+      18
+    ],
+    "support": [],
+    "weapon": "bow",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner29-passive1"
+    ],
+    "initialStats": {
+      "hp": 40,
+      "atk": 17,
+      "def": 6,
+      "crit": 0.17,
+      "critDamage": 1.5,
+      "speed": 116.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 4.95,
+      "atk": 1.65,
+      "def": 0.2,
+      "crit": 0,
+      "critDamage": 0,
+      "speed": 0.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 1,
+        "def": 1
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "菲爾",
+    "statTemplateId": 14,
+    "availability": "hidden"
+  }
+]

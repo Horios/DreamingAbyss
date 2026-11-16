@@ -47,6 +47,191 @@
 正式發布只處理已確認的遊戲差異。不要因為 `main` 與 `chatgpt-dev` 的 commit 數量或 ahead/behind 顯示不同，就直接整枝 merge 或覆蓋。
 發布前應先比較實際 `index.html` 內容，辨識哪些差異是已測試遊戲修改，哪些只是部署／文件歷史。
 
+## 平衡資料模組（v0.120）
+
+`data/balance/` 是平衡資料唯一的編輯來源，依資料種類分成 35 個模組（`world/monsters.json`、`combat/skills.json`、`systems/shop.json` 等）。`data/balance.json` 由模組自動產生，遊戲仍只讀這一份整合檔；請勿直接修改它。
+
+- `data/balance/manifest.json`：模組清單、對應的原始資料路徑、模組版本（內容改變才遞增）、內容 SHA-256、直接依賴、使用的驗證器、頂層鍵順序與整合檔雜湊。
+- 模組配置、拆分／整合、差異路徑、引用索引與依賴推導在 `js/balance/balance-modules.js`，遊戲、建置工具與平衡器共用同一份程式。
+- 拆分與整合互為反函數：相同來源永遠產生逐位元組相同的 `data/balance.json`（含鍵順序）。
+- 遊戲載入時讀取 manifest：缺少必要模組或清單無效時停止啟動並顯示原因，存檔不變；沒有 manifest 的舊版部署照常載入整合檔。整合檔雜湊與清單不符（舊版發布器只寫了整合檔）時只記錄警告，整合檔本身仍經完整驗證。
+
+常用指令：
+
+```bash
+node scripts/balance-modules.cjs build      # 修改模組後重建 manifest 與 data/balance.json
+node scripts/balance-modules.cjs check      # 模組、manifest、整合檔一致
+node scripts/balance-modules.cjs affected --base HEAD   # 改了哪些模組、哪些記錄與欄位、需要哪些測試
+node scripts/balance-modules.cjs validate --base HEAD   # 只驗證變更與引用它們的資料
+node scripts/balance-modules.cjs refs monster map0_mob0 # 哪些記錄引用此 ID
+node scripts/balance-modules.cjs resync     # 舊版發布器直接寫入整合檔後，把變更拆回模組
+```
+
+增量驗證：`EmberwildBalanceDocument.inspect(doc,{scope})` 的每個規則區塊宣告自己讀取的資料路徑。變更分為一般欄位（`value`）、被其他模組讀取的鍵欄位（`key`，如怪物 `id`、`mapIndex`、`kind`、`material`）與結構變更（新增、刪除、重排記錄）。一般欄位只檢查該筆記錄的欄位規則；鍵欄位與結構變更才執行讀取它的跨模組規則與引用檢查。沒有 scope 時與原本完全相同（完整檢查）。`tests/balance-modules.test.cjs` 以多種突變確認範圍化檢查找得到完整檢查找到的每個問題。
+
+CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產生的整合檔、版本號）時，只跑讀取變更模組的測試；鍵欄位或結構變更會加入依賴它的模組的測試。程式、測試、流程、manifest 結構改變，或無法判定範圍（例如整合檔與模組不一致）時執行完整閘門。`balance-modules` 工作每次都檢查一致性並做增量驗證。完整回歸仍由 Extended regression（每日與 `[extended-regression]`）負責。
+
+## 發布後的部署與生效驗證（v0.121）
+
+對應平衡器 `Horios/DreamingAbyss-BalanceEditor` issue #2 的排查。這一版只加入驗證工具與測試，沒有修改任何平衡數值、遊戲程式或畫面；`data/balance/**` 與 `data/balance.json` 的內容與 v0.120 相同。
+
+- `scripts/verify-deployment.cjs`：從網站讀回實際內容，確認 Pages 提供的就是指定的 commit。依序檢查 `data/build.json` 的分支、commit 與資料 blob（部署層）；`data/balance.json` 逐位元組等於該 commit 的 Git blob 且可解析；模組清單與來源相同、清單記錄的整合檔雜湊等於網站的整合檔；`index.html` 引用的每個程式與樣式檔（含快取參數）內容與來源相同（載入層）。前兩項在 CDN 更新前會重試，任何一項不符即失敗並標示層級。
+
+  ```bash
+  node scripts/verify-deployment.cjs --url https://horios.github.io/DreamingAbyss/preview/ --branch chatgpt-dev --commit <SHA> --source .
+  ```
+
+- `.github/workflows/deploy-preview.yml` 在 `deploy-pages` 之後執行上述檢查（正式版與測試版各一次）。部署工作完成不等於網站已更新；這一步未通過時該次部署視為失敗。部署固定從 `main` 的 workflow 執行，所以這一步要等此 workflow 檔案進入 `main` 後才會生效；在那之前可在本機執行上面的指令。
+- `tests/balance-effects.test.cjs`（每個 commit 都跑，包含平衡器發布的資料 commit）：修改文件後讀取玩家實際遇到的數字。難度與怪物倍率改變生成怪物的生命與攻擊；職業初始能力即時作用於現有角色、存檔重讀後與新建角色；道具價格、技能冷卻秒數（含小數）、介面標題跟著文件改變；還原文件後全部恢復；含有無效引用的文件整份拒絕，執行中的數值不變。
+- `tests/verify-deployment.test.cjs`：以本機 HTTP 伺服器模擬網站，確認其他 commit、其他資料 blob、過期的整合檔、過期的模組清單、其他版本的程式檔與不同的快取參數都會被判定為未通過，並確認重試行為。
+
+數值何時採用：上述測試確認職業能力、怪物、難度、道具價格、技能秒數與介面文字在載入新資料後立即作用於現有存檔（執行時直接讀取設定表）。已經生成並寫入存檔的內容（例如已掉落的裝備）屬於存檔資料，是否隨新資料改變不在這組測試範圍內，驗收發布時不應以舊角色身上既有的物品沒有變化判定發布失敗。
+
+## 各系統的生效測試與探索中拒絕套用（v0.122）
+
+延續 v0.121，仍然只新增測試與流程設定；沒有修改平衡數值、遊戲程式或畫面。
+
+- `tests/balance-effects-systems.test.cjs`（每個 commit 都跑）：
+  - 掉落：掉落規則的機率改變 `effectiveDropChance`，其他規則不變；機率 1、數量 3 時一次擊殺正好增加 3 個素材；停用的規則不再套用。
+  - 技能與成長：`timing.mpCost`、`growthPerLevel`、等級上限。
+  - 裝備：強化礦石消耗、售價、需求等級即時改變。基礎能力在裝備生成時寫入快照，改動後新生成的武器較強，既有武器不變。
+  - 經濟與委託：素材售價、商店刷新費用、生活素材購買價、委託板刷新費用。
+  - 地圖、生活技能、許願湖、劇情：地圖名稱與等級範圍、採集週期（週期減半、相同時間採集量加倍）、每日次數、階段獎勵。
+  - 夥伴與信物：夥伴初始能力對隊伍中既有夥伴與新招募的夥伴都即時生效；信物在建立時複製目錄內容，改動只影響之後建立的信物。
+  - 離線結算：相同存檔與種子下，怪物生命 5 倍時離線擊殺數減少，經驗獎勵 3 倍時離線經驗增加，完整模擬與加速模擬結果一致。
+- 數值何時採用（以上述測試為依據）：
+  - 載入新資料後立即作用於現有存檔：怪物、難度、職業與夥伴能力、技能秒數與 MP、掉落規則、價格與費用、強化消耗、需求等級、地圖、採集、許願湖、劇情獎勵、介面文字。
+  - 只影響之後生成的內容：裝備的基礎能力（`baseSnapshot`）、信物的效果（`snapshot`）。已經在背包裡的裝備與信物不會回溯修改。
+- 已知行為（未修改）：隊伍正在探索或遭遇中時，`applyBalanceConfig` 回傳 `false` 且不套用隊伍相關設定（`js/character/team-runtime.js`）。這個判斷位於包裝鏈的內層，在它之後載入的模組（秒數與 MP、劇情、許願湖、導覽、介面文字等）此時已經換成新文件，遊戲會處於新舊設定混合的狀態；核心的 `importBalanceJSON` 也沒有檢查回傳值，仍顯示「測試設定已套用」。正式的資料載入發生在啟動時、存檔載入之前，不受影響。平衡器的預覽橋接已改為檢查回傳值並把先前的文件放回去。遊戲內開發工具在探索中匯入的情況建議另開 issue 處理。
+- `test-skill-gems.yml` 的 `balance-modules` 工作加入上述測試，逾時由 10 分鐘改為 25 分鐘。
+
+## 測試版與平衡器的完整測試流程（v0.123）
+
+只新增流程與修正測試；沒有修改平衡數值、遊戲程式或畫面。
+
+- `scripts/full-test.cjs`（`npm run test:full`）：把遊戲與平衡器兩個倉庫的全部自動檢查放進同一個流程，包含 CI 排除的跨倉庫測試。階段、判定規則、報告與量測時間見 `docs/FULL_TEST_FLOW.md`。
+- 流程把「有平衡器卻被略過的測試案例」視為未通過，並以 `check-game-sync --strict` 要求平衡器記錄的遊戲 commit 等於受測的遊戲 commit。
+- 第一次完整執行（v0.122、平衡器 `a14f1b6`）246 個項目中 240 個通過。遊戲倉庫的三個未通過項目都是測試本身過時，已修正：
+  - `tests/story-system.test.cjs`：平衡器路徑寫成 `../balance-site`，設計器往返的案例一直被略過。改為 `EMBERWILD_BALANCE_ROOT` 或 `../Emberwild-Balance`。
+  - `tests/balance-published-source.browser.test.cjs`：正式版程式讀測試版資料的案例要求匯出與發布資料完全相同。執行時會補上衍生欄位並套用兩項既有的正規化，同一檔案對測試版已經允許；兩邊改用同一個判定（沒有被修改的值，刪除只限新手禮包第 2 到 5 項與冷卻下限標記）。
+  - `tests/companions-roster.test.cjs`：30 名夥伴的捲動判定只看名冊清單與夥伴頁。這兩層現在是 `overflow:visible`，由頁面的 `<main>` 捲動。判定改為三層其中之一可捲動，並確認最後一名夥伴能捲進畫面。
+- 平衡器倉庫的三個未通過項目：內嵌的遊戲檔案停在 v0.120（需要執行 `node scripts/sync-game.cjs`）；`tests/seconds-authoring.browser.cjs` 沒有讀取 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`；第三個是流程本身同時執行建置與產物驗證，已改為依序執行。
+
+## 疾風石說明改為秒數（v0.124）
+
+第二次完整執行（v0.123）245 個項目中 244 個通過。未通過的是 `tests/shop-options.test.cjs`：隨機商店抽到疾風石時，說明文字仍是「減少 1 回合冷卻（最低 1 回合）」，測試要求商品說明不使用回合。第一次執行沒有抽到疾風石，所以沒有出現。
+
+- 疾風石在秒制戰鬥的效果由 `combat.seconds.cooldownReduction.sources.onCast` 決定，目前是固定減少 3 秒。三階說明（`data/balance/items/inventory-icons.json`）與 `js/core/game-catalog.js` 的預設說明改為「機率使該技能冷卻減少 3 秒」。只改文字，沒有改動數值。
+- 之後調整 `onCast` 的秒數時，這三筆說明要一起改。
+
+
+
+## 序章：造物室（v0.135）
+
+新玩家建立角色時不再出現職業卡片，改為在造物室依序完成命名、選擇職業、技能安裝、單人訓練戰、臨時隊友、隊伍訓練戰、取得並穿戴新手裝備，最後降臨艾斯蘭。完整說明見 `docs/PROLOGUE.md`。
+
+- 劇本是劇情資料裡的一個任務（`story.quests` 中帶有 `prologue` 欄位的那一筆，模組檔為 `data/balance/systems/story.json`）。旁白、對話、選項、提示、場景名稱、章節標題與按鈕文字都在資料裡，每句話帶 `source`（`original` 開發者原文、`draft` 暫定續寫）。
+- 系統行為只認 `EmberwildStory.PROLOGUE_ACTIONS` 的六個固定識別碼（`nameHero`、`chooseClass`、`skillLesson`、`recruitHelper`、`equipLesson`、`enterWorld`）與兩場 `training` 任務關卡。`js/story/story-model.js` 的 `prologueIssues` 要求每個事件各出現一次並依序排列；刪掉或調動這些階段的資料會被遊戲與平衡器拒絕。
+- 進度：選職業之前存在 `emberwild-prologue-draft-v1-slot-N`（只有名字與階段）；之後是一般的任務紀錄 `party.story.quests.prologue`。沒有這筆紀錄的存檔（舊存檔、直接呼叫 `start(job)` 建立的角色）視為已完成序章，不會寫入任何新欄位。
+- 訓練戰使用既有的任務關卡與秒數戰鬥引擎。訓練對象在生成時就標記為已結算，獎勵鏈上的每一層都會略過：沒有經驗、金幣、掉落、擊殺數、成就或探索進度。序章進行中一般探索不開放。
+- 臨時隊友是存檔內的夥伴定義（`companionProfiles`，ID `900000001`），由型錄中的夥伴複製而來；不在招募名單、不用招募券，加入名冊後由玩家在隊伍頁上陣，降臨時與階段完成寫在同一次存檔內移除。
+- 新手裝備：序章建立的角色先不穿第五格的啟程護符，也不寄新手禮包。女神交付時把新手武器與啟程護符（加上 `starterPackItems` 的設定）用既有的信件領取流程一次放進背包，信箱留下一封已領取的「女神的贈禮」作為防重複的依據。直接呼叫 `start(job)` 的舊流程不變。
+- 修正兩個既有問題：`story-runtime.js` 的區域函式 `effects` 會被任務關卡生成時的 `effects=[]` 覆寫，之後完成任何任務階段都會失敗（改名為 `applyEffects`）；`importBalanceJSON` 在隊伍探索或戰鬥中會顯示已套用，現在回報未套用，劇情資料也維持原狀。
+- `tools/override-baseline.json`：`render` 多一層包裝（序章圖層），已檢視並更新基準。
+
+## 序章調整：護符合併、移除舊引導任務、整份拒絕套用（v0.136）
+
+- 啟程護符合併成一件：序章在隊伍試煉完成時發放任務裝備 `initiation_charm`（兩孔、附帶「追擊」）。主線「裝備技能與寶石入門」不再有前置任務，第一階段遇到已持有的護符不會再發。序章角色不再有另一件沒有技能的啟程護符。v0.135 的說明中「新手武器與啟程護符用信件領取流程交付、信箱留下收據」已不適用。
+- 新手武器改為直接放進背包（`grantStarterPackDirect`），與階段完成寫在同一次存檔；信箱不再留下「女神的贈禮」。
+- 移除任務「女神的指引」（`goddess_intro`）。原本以它完成作為條件的基礎技能解鎖，改為 `__EMBERWILD_STORY.tutorialDone()`：舊任務已完成、序章已完成，或資料中已沒有這個任務，三者之一即成立。舊存檔裡進行到一半的紀錄會留在存檔中但不再顯示。`tests/story-system.test.cjs` 以 `tests/fixtures/story-goddess-intro.json` 保留這個任務作為測試樣本。
+- 職業選項「弓手」改為「弓箭手」，與職業名稱一致。
+- `js/balance/apply-guard.js`（最後載入）：更新被拒絕（隊伍探索或戰鬥中，`applyBalanceConfig` 回傳 `false`）時，把原本執行中的文件再套用一次，讓已經換成新文件的外層模組換回來。結果是整份資料維持原狀；無效的文件仍由各自的驗證丟出錯誤。v0.122 記錄的「外層模組已先套用新文件」不再發生。（v0.137 起採用這個做法；v0.136 的提交是在最外層直接拒絕，會略過外層模組的驗證。）
+- v0.137：基礎技能的解鎖條件在序章進行中不成立，序章完成後才成立；沒有序章紀錄的角色在舊引導任務移除後直接成立。
+
+## 戰鬥跳字上升淡出、縮小；序章角色教學前不帶武器（v0.138）
+
+- 跳字從卡片中央出現後向上移動並淡出，移動距離約為卡片高度的八成（`--number-rise`），會超出卡片上緣；跳字圖層不再裁切（`overflow:visible`）。
+- 一般傷害、治療與持續傷害的字寬由卡片寬度的 56%／52% 改為 39%／36%，約縮小三成；爆擊維持 64%。
+- 序章建立的角色在裝備教學前沒有武器（也沒有第二格飾品）；女神交付的新手武器是唯一的一把。四個職業在沒有武器的情況下仍能通過兩場訓練戰（`tests/prologue.test.cjs`）。直接呼叫 `start(job)` 的角色不變。
+- 跳字的位移與透明度測試改為直接取樣動畫的時間點；測試用的假時鐘不會推進 CSS 動畫。
+
+## 序章：裝備教學移到訓練戰之前（v0.139）
+
+- 階段順序改為：命名 → 女神的委託 → 選擇職業 → 女神的贈禮（穿戴武器與護符）→ 技能安裝 → 單人訓練戰 → 臨時隊友 → 隊伍訓練戰 → 降臨。玩家穿好女神交付的武器才進訓練戰；在那之前身上沒有另一把武器。v0.138 讓角色空手打訓練戰的做法已取代。
+- 啟程護符改為選擇職業階段的獎勵，新手武器在同一次存檔交付。對話同步調整：交付裝備的那句移到選完職業之後，隊伍試煉結束後直接接離開造物室。
+- `prologueIssues`：系統事件順序改為 `nameHero`、`chooseClass`、`equipLesson`、`skillLesson`、`recruitHelper`、`enterWorld`；選擇職業的階段可以發放道具；訓練戰必須在裝備教學之後。
+- 場景名稱：4 女神的贈禮、5 技能安裝、6 第一次戰鬥、7 臨時隊友與隊伍試煉。
+
+## 序幕文字編入開場；女神台詞依其性格改寫（v0.140）
+
+- 場景一的開場把開發者的〈序幕　造物〉與「創造之儀」大綱編在一起：無源之光亮起的房間、腳步聲、披著長袍的身影匯聚「知識、認知、天賦」的光點、醒來、少女的檢查。逐字取自這兩份文字的 14 句標記 `original`，銜接用的旁白與之後的對話為 `draft`。
+- 女神之後的台詞全部依〈序幕　造物〉的性格改寫（活潑、好奇、愛動手）。她在自我介紹之前顯示為「少女」，之後顯示為「女神」。
+- 任務名稱改為「序幕：造物」，場景一名稱改為「序幕　造物」。只改資料，沒有改程式。
+
+## 劇情視窗：局部浮動視窗、逐字顯示與劇情控制（v0.142）
+
+- `js/story/story-window.js`（`EmberwildStoryWindow`）：序幕與一般任務對話共用的浮動視窗。它只負責呈現交給它的 view（標題、目前這一句、互動區、按鈕）與文字演出；「繼續」「跳過」做什麼由呼叫端以函式名稱指定。之後的主線、支線、NPC 對話與章節過場都走同一個容器。
+- 版面（`css/prologue.css`）：圖層定位在 `#app` 的範圍內，半透明遮罩只蓋遊戲內容區並攔下點擊；視窗寬 65%（上限 760px，手機 92%）、最高 80%（手機 84%），水平垂直置中，內容只在視窗內捲動，操作列固定在底部。點擊視窗外不會關閉。手機鍵盤出現時以 `visualViewport` 縮小圖層高度，輸入框與確認按鈕留在可視範圍。
+- 序幕：`prologue-runtime.js` 的 `sceneView()` 產生 view；流程、進度與存檔不變。教學步驟（技能、戰鬥、隊伍、裝備）仍是遊戲畫面上的橫幅。
+- 一般任務：`story-runtime.js` 的 `dialogueView()` 把正在閱讀的對話交給視窗；任務卡片裡原本的內嵌對話仍會產生（headless 測試與無樣式環境可讀），視窗開啟時以 CSS 隱藏，沒有新增另一套事件處理。
+- 文字演出：以 `Intl.Segmenter` 切成字素，整句一開始就排版完成（視窗大小不隨文字出現而改變），逐字加上 `on` 顯示並淡入約 100ms；句讀後略為停頓。整句文字同時放在 `aria-label`。長文字會跟著最新的字平滑捲動；讀者用滾輪、觸控或鍵盤捲開後暫停跟隨，捲回最新文字後恢復。
+- 控制：顯示全部（或點文字）只完成目前這一句；「繼續」在逐字顯示途中先完成這一句。文字速度四段（慢 60／標準 30／快 15 毫秒，或即時），存在 `localStorage` 的 `emberwild-story-text-speed`，設定頁「一般」也可調整。加速會即時顯示並在每句停留 0.8 到 4 秒後自動前進，遇到沒有「繼續」的畫面（命名、選職業、選項、教學步驟）自動停止。
+- 跳過：是否可跳過由資料決定，`EmberwildStory.skippable(quest)`：帶 `prologue` 的任務一律不可，其他任務可用 `skippable:false` 關閉。序幕的 view 沒有跳過處理函式，`storyWindowSkip()` 與 `skipStoryDialogue()` 都會拒絕，不只是隱藏按鈕。一般任務跳過前先確認；跳過後只需閱讀的階段經由原本的 `completeStoryStage` 完成一次（獎勵在同一個交易內），有選項的階段停在選項，目標未達成的階段只結束閱讀。
+- 全站的 `base.css` 預設關閉所有動畫；劇情視窗的動畫寫在 `prefers-reduced-motion:no-preference` 區塊內並加上 `!important` 才會生效。偏好減少動態時沒有淡入與進場動畫。
+
+## 序幕教學的聚光燈引導（v0.143）
+
+- 序幕中每個需要操作遊戲畫面的步驟，都有一個聚光燈框住「下一個要按的控制項」，其餘畫面變暗（`#prologue-spotlight`，以大範圍陰影形成暗部，`pointer-events:none`，點擊直接落在原本的控制項上）。彈出視窗內的控制項位於所有圖層之上，改用外框標示（`.prologue-spot-ring`）。
+- 各步驟的目標（`prologue-runtime.js` 的 `spotlightTarget`）：
+  - 裝備教學：背包中女神給的武器 → 「穿戴」→ 裝備頁的候選裝備；接著護符同樣流程。在裝備頁時先照對應欄位，再照候選裝備。
+  - 技能安裝：主動槽 1 → 技能視窗中的「裝入技能」。
+  - 訓練戰：「開始訓練戰鬥」；戰鬥進行中沒有聚光燈。
+  - 臨時隊友：隊伍頁的「加入上陣」。
+  - 任何步驟完成後：「回到女神身邊」。
+- 裝備教學時，背包清單把女神給的武器與護符固定排在最上面（武器在前、護符在後），不受清單排序設定影響；只調整畫面上的順序，不改背包資料。
+- 聚光燈只在教學步驟進行時存在，每 150 毫秒重新判斷目標並逐格跟隨位置；離開教學、回到對話或序幕結束時移除。
+
+## 完整回歸：較舊正式版對教學資料的相容判定（v0.149）
+
+- 完整回歸（`scripts/full-test.cjs`，game-data／game-headless／game-browser 共 180 項）中，`balance-published-source.browser` 以正式版 v0.118 載入測試版資料時，正式版接受文件但丟掉 `tutorials`。正式版沒有公布 `tutorialsVersion`，平衡器本來就拒絕把含教學的文件發布到這種分支，所以測試改為：只有在該執行期沒有公布 `tutorialsVersion` 時才允許 `tutorials` 缺少；目前版本的執行期仍要求所有已發布欄位都保留。只改測試。
+
+## 合併 claude/pensive-hawking-evwnd1 的卡片底色修正（v0.148）
+
+- 檢查所有遠端分支後，只有 `claude/pensive-hawking-evwnd1` 的 682a8f4 尚未進入 `chatgpt-dev`；`main`、`claude/zealous-rubin-k94r10` 的內容等於 v0.118，`claude/jolly-pasteur-1qrs1r` 的內容等於 v0.143，其餘分支只落後。
+- 682a8f4：戰鬥卡片重繪時改為複製原始 `style` 屬性（`style.cssText` 重新序列化可能丟掉 `--vs-card`，卡片退回灰藍色）；`--vs-card` 缺失時依 `seconds-job-N` 使用職業預設色。與目前版本衝突的一行保留了 v0.131 之後新增的 `.battle-number-layer` 例外。新增的職業預設色規則加上 `:root:not([data-ui-theme="paper"]) #app .seconds-battlefield` 範圍，維持紙張主題不受影響（`tests/visual-standard.test.cjs`）。
+
+## 教學卡片避開頁首與底部選單；瀏覽器 CI 時限（v0.147）
+
+- 手機寬度時教學卡片停靠的位置限制在頁首下緣與固定在底部的選單之間，不再蓋住頁首的信箱、成就、設定等按鈕（`mobile-layout` 在 CI 被卡片擋住點擊）。桌面版的卡片同樣不會超出這個範圍。
+- `Chromium boot and responsive navigation` 工作的時限由 25 分鐘改為 35 分鐘：v0.143 時這個工作已需約 24 分鐘，加入 `tests/tutorial.browser.test.cjs` 後超過原本的時限而被取消。
+
+## 只有經過序幕的角色自動觸發教學（v0.146）
+
+- `party.tutorials.auto`：序幕建立的角色為 `true`，自動顯示通知與開始引導。以 `start(job)` 直接建立的角色（舊流程、測試）為 `false`，比照序幕對這類角色「視為已抵達」的處理，不自動跳出教學；教學回顧與重播照常可用。舊存檔遷移時沒有這個欄位，視同 `true`（已完成的基礎教學依 v0.144 的規則記為完成）。
+- 教學進度改以 microtask 在目前工作結束後存檔，不使用計時器，離線結算的計時器佇列不受影響（`offline-checkpoints`）；離線結算進行中時等下一次教學檢查再存。
+- `css/tutorial.css` 移到 `prologue.css` 之後，`visual-standard.css` 維持最後一個樣式表（`visual-standard`）。
+- 瀏覽器回歸測試（`ui-layout` 等）會用 `start(0)` 建角色，不再被自動教學卡片擋住點擊或改變捲動位置。
+
+## 教學系統 CI 修正（v0.145）
+
+- 教學進度改為在下一個事件循環才存檔（`setTimeout`），不在 render 或遊戲動作的交易中呼叫 `save()`。遊戲動作的存檔次數維持原樣（`starter-mail-items` 的「只存一次」），線上與離線重播的狀態也不再因額外存檔而分歧（`offline-exploration`）。離線結算進行中時延後一秒再試。
+- `tools/override-baseline.json`：新增教學系統對 `packParty`、`loadParty`、`validateParty`、`render` 的包裝，已逐一檢視後更新計數。
+- `balance-modules.cjs validate --base`：基準版本之後新增了模組（例如 v0.144 的 `systems/tutorials`）時，基準無法依新配置拆分，改為完整驗證，不再判定為錯誤。
+
+## 教學系統與教學回顧（v0.144）
+
+- 資料：平衡文件新增 `tutorials`（模組 `data/balance/systems/tutorials.json`，第 36 個模組）。規則與白名單在 `js/story/tutorial-model.js`（`EmberwildTutorial`），平衡器嵌入同一份檔案；遊戲與平衡器用同一個 `issues()` 驗證。`balance-document.js` 公布 `tutorialsVersion:1`，平衡器發布前檢查目標分支有這個能力。
+- 每個教學模組：`id`（永久不變）、`title`、`category`、`type`（`guide` 操作引導／`intro` 功能介紹／`tip` 簡短提示）、`enabled`、`implemented`、`description`、`trigger`（`pageEnter` 首次進入頁面／`unlock` 條件成立時提示／`manual` 只能從回顧開始，可先顯示通知）、`prerequisites`、`steps`、`completion`（`steps` 或 `condition`）、`replayable`、`skippable`、`interrupt`（`pause`／`end`）、`revision`、`reprompt`。
+- 步驟：`page`、`target`（語意目標 ID，例如 `battle.mapSelect`、`bag.wearButton`；`tutorial-runtime.js` 的對照表找到實際控制項，控制項加上 `data-tutorial-target="ID"` 會優先使用）、`placement`、`advance`（`next`、`click`、`event`、`condition`、`page`）、`optional`、`requires`（不成立時顯示原因並可略過）、`skipIf`（序幕已教過時略過，只在一般模式）、`onReplay`（`explain` 時重播只說明）。條件、事件與目標只能使用模型列出的類型，資料裡沒有任何可執行的程式字串。
+- 事件由遊戲原本的處理函式成功後回報：開始探索、在背包點選裝備、按「穿戴」、完成穿戴（實際穿戴位置有變化）、開啟技能槽、裝入技能、開啟技能圖鑑。
+- 執行：`js/story/tutorial-runtime.js`。序幕進行中不啟動。同一時間只有一個引導；同時符合時依清單順序。開著對話視窗或劇情視窗時不自動開始。離開步驟頁面時依設定暫停或結束。高亮框 `pointer-events:none`，點擊直接落在遊戲控制項上；目標在對話視窗內時改用外框，說明卡片移進視窗。找不到目標時顯示原因，可按下一步或結束。
+- 進度：`party.tutorials`（`records` 每個教學的 triggered／completed／skipped／notified／revision／step，`pages` 進過的頁面，`events` 事件次數）。存檔驗證拒絕格式錯誤的資料。舊存檔沒有這份資料時：依存檔已有的紀錄（探索擊殺、已穿戴的一般裝備、已裝入的技能）補上事件次數，條件都已成立的教學記為完成（`legacy:true`），不讓老玩家重做基礎教學。修訂版本提高不清除完成紀錄；只有 `reprompt:true` 時對完成舊版的玩家顯示一次「教學已更新」通知，不自動開始。
+- 「取得一般裝備」只計入開始追蹤之後新出現、帶有 `acquiredAt` 的裝備（掉落、商店、許願湖）；角色一開始的裝備、序幕的新手武器與任務裝備不算。
+- 教學回顧：設定 →「教學回顧」。列出已解鎖的教學（前置條件成立，或曾經觸發），可查看各步驟說明、重新執行。重播不清除或改寫完成紀錄、不發放任何東西、不跳過解鎖；穿戴步驟在重播時只說明。
+- 第一批教學：探索（選圖、開始探索、自動戰鬥說明，序幕結束後第一次進入荒野探索）、裝備（取得一般裝備後先通知，進入背包時開始；序幕已教過穿戴的玩家略過點選、穿戴兩步）、技能（技能槽、圖鑑、主動槽、自動施放、觸發與輔助；序幕已裝過技能的玩家略過開啟技能槽一步；沒有觸發槽或沒有可用主動技能時該步顯示原因）。夥伴、生活技能、煉金、許願湖、商店、圖鑑等系統可在平衡器登錄，`implemented:false` 的模組不會觸發，也不會出現在回顧。
+- 開發者測試：`__EMBERWILD_TUTORIAL.test(id,{step})` 不檢查前置條件、不寫入任何教學紀錄（也不記錄頁面造訪），`status()`／`module(id)` 回報目前步驟、目標定位、下一步條件、可執行條件、前置與完成條件。平衡器的開發者預覽本來就把存檔放在記憶體中，與玩家存檔分開。
+- 測試：`tests/tutorial-system.test.cjs`（headless，資料規則與執行行為）、`tests/tutorial.browser.test.cjs`（瀏覽器，高亮與點擊、手機寬度、回顧重播、對話視窗內的目標）。
+
 ## 《龍息深淵》秒數戰鬥與資料契約（v0.019）
 
 `chatgpt-dev` 使用 `EmberwildSecondsCombat` 作為線上、背景與離線探索的共同驅動器。`seconds-timeline.js` 使用整數微秒排程；畫面更新不推進時間。掉落、傷害、職業／裝備來源與死亡事件沿用現有處理器。

@@ -1,0 +1,5451 @@
+{
+  "entries": [
+    {
+      "id": "map0_mob0_material_normal",
+      "name": "黏稠凝膠",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "map0_mob0_material_elite",
+      "name": "黏稠凝膠（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "map0_mob1_material_normal",
+      "name": "完整狼牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "map0_mob1_material_elite",
+      "name": "完整狼牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "map0_mob2_material_normal",
+      "name": "活性樹芯",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "map0_mob2_material_elite",
+      "name": "活性樹芯（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "map0_boss_material",
+      "name": "古木年輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss"
+      ]
+    },
+    {
+      "id": "map1_mob0_material_normal",
+      "name": "薄翼膜",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_mob0"
+      ]
+    },
+    {
+      "id": "map1_mob0_material_elite",
+      "name": "薄翼膜（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_mob0"
+      ]
+    },
+    {
+      "id": "map1_mob1_material_normal",
+      "name": "堅硬石鱗",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_mob1"
+      ]
+    },
+    {
+      "id": "map1_mob1_material_elite",
+      "name": "堅硬石鱗（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_mob1"
+      ]
+    },
+    {
+      "id": "map1_mob2_material_normal",
+      "name": "魔偶齒輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_mob2"
+      ]
+    },
+    {
+      "id": "map1_mob2_material_elite",
+      "name": "魔偶齒輪（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_mob2"
+      ]
+    },
+    {
+      "id": "map1_boss_material",
+      "name": "礦脈之心",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map1_boss"
+      ]
+    },
+    {
+      "id": "map2_mob0_material_normal",
+      "name": "劇毒腺體",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_mob0"
+      ]
+    },
+    {
+      "id": "map2_mob0_material_elite",
+      "name": "劇毒腺體（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_mob0"
+      ]
+    },
+    {
+      "id": "map2_mob1_material_normal",
+      "name": "微光鱗粉",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_mob1"
+      ]
+    },
+    {
+      "id": "map2_mob1_material_elite",
+      "name": "微光鱗粉（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_mob1"
+      ]
+    },
+    {
+      "id": "map2_mob2_material_normal",
+      "name": "怨念碎片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_mob2"
+      ]
+    },
+    {
+      "id": "map2_mob2_material_elite",
+      "name": "怨念碎片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_mob2"
+      ]
+    },
+    {
+      "id": "map2_boss_material",
+      "name": "女巫符印",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map2_boss"
+      ]
+    },
+    {
+      "id": "map3_mob0_material_normal",
+      "name": "霜牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_mob0"
+      ]
+    },
+    {
+      "id": "map3_mob0_material_elite",
+      "name": "霜牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_mob0"
+      ]
+    },
+    {
+      "id": "map3_mob1_material_normal",
+      "name": "冰晶翅片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_mob1"
+      ]
+    },
+    {
+      "id": "map3_mob1_material_elite",
+      "name": "冰晶翅片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_mob1"
+      ]
+    },
+    {
+      "id": "map3_mob2_material_normal",
+      "name": "厚暖熊皮",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_mob2"
+      ]
+    },
+    {
+      "id": "map3_mob2_material_elite",
+      "name": "厚暖熊皮（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_mob2"
+      ]
+    },
+    {
+      "id": "map3_boss_material",
+      "name": "永凍結晶",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map3_boss"
+      ]
+    },
+    {
+      "id": "map4_mob0_material_normal",
+      "name": "灼熱甲殼",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_mob0"
+      ]
+    },
+    {
+      "id": "map4_mob0_material_elite",
+      "name": "灼熱甲殼（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_mob0"
+      ]
+    },
+    {
+      "id": "map4_mob1_material_normal",
+      "name": "不熄火羽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_mob1"
+      ]
+    },
+    {
+      "id": "map4_mob1_material_elite",
+      "name": "不熄火羽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_mob1"
+      ]
+    },
+    {
+      "id": "map4_mob2_material_normal",
+      "name": "焦黑鋼片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_mob2"
+      ]
+    },
+    {
+      "id": "map4_mob2_material_elite",
+      "name": "焦黑鋼片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_mob2"
+      ]
+    },
+    {
+      "id": "map4_boss_material",
+      "name": "熔核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map4_boss"
+      ]
+    },
+    {
+      "id": "map5_mob0_material_normal",
+      "name": "虛空尖牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_mob0"
+      ]
+    },
+    {
+      "id": "map5_mob0_material_elite",
+      "name": "虛空尖牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_mob0"
+      ]
+    },
+    {
+      "id": "map5_mob1_material_normal",
+      "name": "星塵觸鬚",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_mob1"
+      ]
+    },
+    {
+      "id": "map5_mob1_material_elite",
+      "name": "星塵觸鬚（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_mob1"
+      ]
+    },
+    {
+      "id": "map5_mob2_material_normal",
+      "name": "隕鐵核心",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_mob2"
+      ]
+    },
+    {
+      "id": "map5_mob2_material_elite",
+      "name": "隕鐵核心（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_mob2"
+      ]
+    },
+    {
+      "id": "map5_boss_material",
+      "name": "星隕稜鏡",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map5_boss"
+      ]
+    },
+    {
+      "id": "map6_boss_material",
+      "name": "日蝕王冠",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map6_boss"
+      ]
+    },
+    {
+      "id": "map7_mob0_material_normal",
+      "name": "覺醒黏稠凝膠",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_mob0"
+      ]
+    },
+    {
+      "id": "map7_mob0_material_elite",
+      "name": "覺醒黏稠凝膠（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_mob0"
+      ]
+    },
+    {
+      "id": "map7_mob1_material_normal",
+      "name": "覺醒完整狼牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_mob1"
+      ]
+    },
+    {
+      "id": "map7_mob1_material_elite",
+      "name": "覺醒完整狼牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_mob1"
+      ]
+    },
+    {
+      "id": "map7_mob2_material_normal",
+      "name": "覺醒活性樹芯",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_mob2"
+      ]
+    },
+    {
+      "id": "map7_mob2_material_elite",
+      "name": "覺醒活性樹芯（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_mob2"
+      ]
+    },
+    {
+      "id": "map7_boss_material",
+      "name": "覺醒古木年輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map7_boss"
+      ]
+    },
+    {
+      "id": "map8_mob0_material_normal",
+      "name": "覺醒薄翼膜",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_mob0"
+      ]
+    },
+    {
+      "id": "map8_mob0_material_elite",
+      "name": "覺醒薄翼膜（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_mob0"
+      ]
+    },
+    {
+      "id": "map8_mob1_material_normal",
+      "name": "覺醒堅硬石鱗",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_mob1"
+      ]
+    },
+    {
+      "id": "map8_mob1_material_elite",
+      "name": "覺醒堅硬石鱗（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_mob1"
+      ]
+    },
+    {
+      "id": "map8_mob2_material_normal",
+      "name": "覺醒魔偶齒輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_mob2"
+      ]
+    },
+    {
+      "id": "map8_mob2_material_elite",
+      "name": "覺醒魔偶齒輪（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_mob2"
+      ]
+    },
+    {
+      "id": "map8_boss_material",
+      "name": "覺醒礦脈之心",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map8_boss"
+      ]
+    },
+    {
+      "id": "map9_mob0_material_normal",
+      "name": "覺醒劇毒腺體",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_mob0"
+      ]
+    },
+    {
+      "id": "map9_mob0_material_elite",
+      "name": "覺醒劇毒腺體（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_mob0"
+      ]
+    },
+    {
+      "id": "map9_mob1_material_normal",
+      "name": "覺醒微光鱗粉",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_mob1"
+      ]
+    },
+    {
+      "id": "map9_mob1_material_elite",
+      "name": "覺醒微光鱗粉（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_mob1"
+      ]
+    },
+    {
+      "id": "map9_mob2_material_normal",
+      "name": "覺醒怨念碎片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_mob2"
+      ]
+    },
+    {
+      "id": "map9_mob2_material_elite",
+      "name": "覺醒怨念碎片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_mob2"
+      ]
+    },
+    {
+      "id": "map9_boss_material",
+      "name": "覺醒女巫符印",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map9_boss"
+      ]
+    },
+    {
+      "id": "map10_mob0_material_normal",
+      "name": "覺醒霜牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_mob0"
+      ]
+    },
+    {
+      "id": "map10_mob0_material_elite",
+      "name": "覺醒霜牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_mob0"
+      ]
+    },
+    {
+      "id": "map10_mob1_material_normal",
+      "name": "覺醒冰晶翅片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_mob1"
+      ]
+    },
+    {
+      "id": "map10_mob1_material_elite",
+      "name": "覺醒冰晶翅片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_mob1"
+      ]
+    },
+    {
+      "id": "map10_mob2_material_normal",
+      "name": "覺醒厚暖熊皮",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_mob2"
+      ]
+    },
+    {
+      "id": "map10_mob2_material_elite",
+      "name": "覺醒厚暖熊皮（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_mob2"
+      ]
+    },
+    {
+      "id": "map10_boss_material",
+      "name": "覺醒永凍結晶",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map10_boss"
+      ]
+    },
+    {
+      "id": "map11_mob0_material_normal",
+      "name": "覺醒灼熱甲殼",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_mob0"
+      ]
+    },
+    {
+      "id": "map11_mob0_material_elite",
+      "name": "覺醒灼熱甲殼（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_mob0"
+      ]
+    },
+    {
+      "id": "map11_mob1_material_normal",
+      "name": "覺醒不熄火羽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_mob1"
+      ]
+    },
+    {
+      "id": "map11_mob1_material_elite",
+      "name": "覺醒不熄火羽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_mob1"
+      ]
+    },
+    {
+      "id": "map11_mob2_material_normal",
+      "name": "覺醒焦黑鋼片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_mob2"
+      ]
+    },
+    {
+      "id": "map11_mob2_material_elite",
+      "name": "覺醒焦黑鋼片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_mob2"
+      ]
+    },
+    {
+      "id": "map11_boss_material",
+      "name": "覺醒熔核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map11_boss"
+      ]
+    },
+    {
+      "id": "map12_mob0_material_normal",
+      "name": "覺醒虛空尖牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_mob0"
+      ]
+    },
+    {
+      "id": "map12_mob0_material_elite",
+      "name": "覺醒虛空尖牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_mob0"
+      ]
+    },
+    {
+      "id": "map12_mob1_material_normal",
+      "name": "覺醒星塵觸鬚",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_mob1"
+      ]
+    },
+    {
+      "id": "map12_mob1_material_elite",
+      "name": "覺醒星塵觸鬚（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_mob1"
+      ]
+    },
+    {
+      "id": "map12_mob2_material_normal",
+      "name": "覺醒隕鐵核心",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_mob2"
+      ]
+    },
+    {
+      "id": "map12_mob2_material_elite",
+      "name": "覺醒隕鐵核心（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_mob2"
+      ]
+    },
+    {
+      "id": "map12_boss_material",
+      "name": "覺醒星隕稜鏡",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map12_boss"
+      ]
+    },
+    {
+      "id": "map13_mob0_material_normal",
+      "name": "燼翼粉",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob0"
+      ]
+    },
+    {
+      "id": "map13_mob0_material_elite",
+      "name": "燼翼粉（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob0"
+      ]
+    },
+    {
+      "id": "map13_mob1_material_normal",
+      "name": "赤鬃毛皮",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob1"
+      ]
+    },
+    {
+      "id": "map13_mob1_material_elite",
+      "name": "赤鬃毛皮（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob1"
+      ]
+    },
+    {
+      "id": "map13_mob2_material_normal",
+      "name": "焦根木髓",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob2"
+      ]
+    },
+    {
+      "id": "map13_mob2_material_elite",
+      "name": "焦根木髓（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob2"
+      ]
+    },
+    {
+      "id": "map13_mob3_material_normal",
+      "name": "炭殼碎片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob3"
+      ]
+    },
+    {
+      "id": "map13_mob3_material_elite",
+      "name": "炭殼碎片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_mob3"
+      ]
+    },
+    {
+      "id": "map13_boss_material",
+      "name": "炎靈心木",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map13_boss"
+      ]
+    },
+    {
+      "id": "map14_mob0_material_normal",
+      "name": "潮影翼膜",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob0"
+      ]
+    },
+    {
+      "id": "map14_mob0_material_elite",
+      "name": "潮影翼膜（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob0"
+      ]
+    },
+    {
+      "id": "map14_mob1_material_normal",
+      "name": "寒潮腺體",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob1"
+      ]
+    },
+    {
+      "id": "map14_mob1_material_elite",
+      "name": "寒潮腺體（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob1"
+      ]
+    },
+    {
+      "id": "map14_mob2_material_normal",
+      "name": "海霧結珠",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob2"
+      ]
+    },
+    {
+      "id": "map14_mob2_material_elite",
+      "name": "海霧結珠（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob2"
+      ]
+    },
+    {
+      "id": "map14_mob3_material_normal",
+      "name": "鹽晶塊",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob3"
+      ]
+    },
+    {
+      "id": "map14_mob3_material_elite",
+      "name": "鹽晶塊（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_mob3"
+      ]
+    },
+    {
+      "id": "map14_boss_material",
+      "name": "深潮齒輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map14_boss"
+      ]
+    },
+    {
+      "id": "map15_mob0_material_normal",
+      "name": "亡者殘響",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob0"
+      ]
+    },
+    {
+      "id": "map15_mob0_material_elite",
+      "name": "亡者殘響（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob0"
+      ]
+    },
+    {
+      "id": "map15_mob1_material_normal",
+      "name": "噬骨獠牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob1"
+      ]
+    },
+    {
+      "id": "map15_mob1_material_elite",
+      "name": "噬骨獠牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob1"
+      ]
+    },
+    {
+      "id": "map15_mob2_material_normal",
+      "name": "墓火鱗片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob2"
+      ]
+    },
+    {
+      "id": "map15_mob2_material_elite",
+      "name": "墓火鱗片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob2"
+      ]
+    },
+    {
+      "id": "map15_mob3_material_normal",
+      "name": "腐枝黑核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob3"
+      ]
+    },
+    {
+      "id": "map15_mob3_material_elite",
+      "name": "腐枝黑核（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_mob3"
+      ]
+    },
+    {
+      "id": "map15_boss_material",
+      "name": "巫后骨印",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map15_boss"
+      ]
+    },
+    {
+      "id": "map16_mob0_material_normal",
+      "name": "雷牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob0"
+      ]
+    },
+    {
+      "id": "map16_mob0_material_elite",
+      "name": "雷牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob0"
+      ]
+    },
+    {
+      "id": "map16_mob1_material_normal",
+      "name": "風暴晶羽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob1"
+      ]
+    },
+    {
+      "id": "map16_mob1_material_elite",
+      "name": "風暴晶羽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob1"
+      ]
+    },
+    {
+      "id": "map16_mob2_material_normal",
+      "name": "雷殼銅片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob2"
+      ]
+    },
+    {
+      "id": "map16_mob2_material_elite",
+      "name": "雷殼銅片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob2"
+      ]
+    },
+    {
+      "id": "map16_mob3_material_normal",
+      "name": "高地熊膽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob3"
+      ]
+    },
+    {
+      "id": "map16_mob3_material_elite",
+      "name": "高地熊膽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_mob3"
+      ]
+    },
+    {
+      "id": "map16_boss_material",
+      "name": "獸王雷角",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map16_boss"
+      ]
+    },
+    {
+      "id": "map17_mob0_material_normal",
+      "name": "聖樹芽核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob0"
+      ]
+    },
+    {
+      "id": "map17_mob0_material_elite",
+      "name": "聖樹芽核（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob0"
+      ]
+    },
+    {
+      "id": "map17_mob1_material_normal",
+      "name": "晶光翼",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob1"
+      ]
+    },
+    {
+      "id": "map17_mob1_material_elite",
+      "name": "晶光翼（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob1"
+      ]
+    },
+    {
+      "id": "map17_mob2_material_normal",
+      "name": "聖羽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob2"
+      ]
+    },
+    {
+      "id": "map17_mob2_material_elite",
+      "name": "聖羽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob2"
+      ]
+    },
+    {
+      "id": "map17_mob3_material_normal",
+      "name": "聖鎧殘片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob3"
+      ]
+    },
+    {
+      "id": "map17_mob3_material_elite",
+      "name": "聖鎧殘片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_mob3"
+      ]
+    },
+    {
+      "id": "map17_boss_material",
+      "name": "聖所徽核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map17_boss"
+      ]
+    },
+    {
+      "id": "map18_mob0_material_normal",
+      "name": "冥犬黑牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob0"
+      ]
+    },
+    {
+      "id": "map18_mob0_material_elite",
+      "name": "冥犬黑牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob0"
+      ]
+    },
+    {
+      "id": "map18_mob1_material_normal",
+      "name": "幽影觸鬚",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob1"
+      ]
+    },
+    {
+      "id": "map18_mob1_material_elite",
+      "name": "幽影觸鬚（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob1"
+      ]
+    },
+    {
+      "id": "map18_mob2_material_normal",
+      "name": "黑曜脊核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob2"
+      ]
+    },
+    {
+      "id": "map18_mob2_material_elite",
+      "name": "黑曜脊核（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob2"
+      ]
+    },
+    {
+      "id": "map18_mob3_material_normal",
+      "name": "邊境魂塵",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob3"
+      ]
+    },
+    {
+      "id": "map18_mob3_material_elite",
+      "name": "邊境魂塵（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_mob3"
+      ]
+    },
+    {
+      "id": "map18_boss_material",
+      "name": "冥視之瞳",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map18_boss"
+      ]
+    },
+    {
+      "id": "map19_mob0_material_normal",
+      "name": "上古燼翼粉",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob0"
+      ]
+    },
+    {
+      "id": "map19_mob0_material_elite",
+      "name": "上古燼翼粉（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob0"
+      ]
+    },
+    {
+      "id": "map19_mob1_material_normal",
+      "name": "上古赤鬃毛皮",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob1"
+      ]
+    },
+    {
+      "id": "map19_mob1_material_elite",
+      "name": "上古赤鬃毛皮（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob1"
+      ]
+    },
+    {
+      "id": "map19_mob2_material_normal",
+      "name": "上古焦根木髓",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob2"
+      ]
+    },
+    {
+      "id": "map19_mob2_material_elite",
+      "name": "上古焦根木髓（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob2"
+      ]
+    },
+    {
+      "id": "map19_mob3_material_normal",
+      "name": "上古炭殼碎片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob3"
+      ]
+    },
+    {
+      "id": "map19_mob3_material_elite",
+      "name": "上古炭殼碎片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_mob3"
+      ]
+    },
+    {
+      "id": "map19_boss_material",
+      "name": "上古炎靈心木",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map19_boss"
+      ]
+    },
+    {
+      "id": "map20_mob0_material_normal",
+      "name": "上古潮影翼膜",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob0"
+      ]
+    },
+    {
+      "id": "map20_mob0_material_elite",
+      "name": "上古潮影翼膜（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob0"
+      ]
+    },
+    {
+      "id": "map20_mob1_material_normal",
+      "name": "上古寒潮腺體",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob1"
+      ]
+    },
+    {
+      "id": "map20_mob1_material_elite",
+      "name": "上古寒潮腺體（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob1"
+      ]
+    },
+    {
+      "id": "map20_mob2_material_normal",
+      "name": "上古海霧結珠",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob2"
+      ]
+    },
+    {
+      "id": "map20_mob2_material_elite",
+      "name": "上古海霧結珠（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob2"
+      ]
+    },
+    {
+      "id": "map20_mob3_material_normal",
+      "name": "上古鹽晶塊",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob3"
+      ]
+    },
+    {
+      "id": "map20_mob3_material_elite",
+      "name": "上古鹽晶塊（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_mob3"
+      ]
+    },
+    {
+      "id": "map20_boss_material",
+      "name": "上古深潮齒輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map20_boss"
+      ]
+    },
+    {
+      "id": "map21_mob0_material_normal",
+      "name": "上古亡者殘響",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob0"
+      ]
+    },
+    {
+      "id": "map21_mob0_material_elite",
+      "name": "上古亡者殘響（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob0"
+      ]
+    },
+    {
+      "id": "map21_mob1_material_normal",
+      "name": "上古噬骨獠牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob1"
+      ]
+    },
+    {
+      "id": "map21_mob1_material_elite",
+      "name": "上古噬骨獠牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob1"
+      ]
+    },
+    {
+      "id": "map21_mob2_material_normal",
+      "name": "上古墓火鱗片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob2"
+      ]
+    },
+    {
+      "id": "map21_mob2_material_elite",
+      "name": "上古墓火鱗片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob2"
+      ]
+    },
+    {
+      "id": "map21_mob3_material_normal",
+      "name": "上古腐枝黑核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob3"
+      ]
+    },
+    {
+      "id": "map21_mob3_material_elite",
+      "name": "上古腐枝黑核（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_mob3"
+      ]
+    },
+    {
+      "id": "map21_boss_material",
+      "name": "上古巫后骨印",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map21_boss"
+      ]
+    },
+    {
+      "id": "map22_mob0_material_normal",
+      "name": "上古雷牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob0"
+      ]
+    },
+    {
+      "id": "map22_mob0_material_elite",
+      "name": "上古雷牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob0"
+      ]
+    },
+    {
+      "id": "map22_mob1_material_normal",
+      "name": "上古風暴晶羽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob1"
+      ]
+    },
+    {
+      "id": "map22_mob1_material_elite",
+      "name": "上古風暴晶羽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob1"
+      ]
+    },
+    {
+      "id": "map22_mob2_material_normal",
+      "name": "上古雷殼銅片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob2"
+      ]
+    },
+    {
+      "id": "map22_mob2_material_elite",
+      "name": "上古雷殼銅片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob2"
+      ]
+    },
+    {
+      "id": "map22_mob3_material_normal",
+      "name": "上古高地熊膽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob3"
+      ]
+    },
+    {
+      "id": "map22_mob3_material_elite",
+      "name": "上古高地熊膽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_mob3"
+      ]
+    },
+    {
+      "id": "map22_boss_material",
+      "name": "上古獸王雷角",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map22_boss"
+      ]
+    },
+    {
+      "id": "map23_mob0_material_normal",
+      "name": "上古聖樹芽核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob0"
+      ]
+    },
+    {
+      "id": "map23_mob0_material_elite",
+      "name": "上古聖樹芽核（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob0"
+      ]
+    },
+    {
+      "id": "map23_mob1_material_normal",
+      "name": "上古晶光翼",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob1"
+      ]
+    },
+    {
+      "id": "map23_mob1_material_elite",
+      "name": "上古晶光翼（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob1"
+      ]
+    },
+    {
+      "id": "map23_mob2_material_normal",
+      "name": "上古聖羽",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob2"
+      ]
+    },
+    {
+      "id": "map23_mob2_material_elite",
+      "name": "上古聖羽（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob2"
+      ]
+    },
+    {
+      "id": "map23_mob3_material_normal",
+      "name": "上古聖鎧殘片",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob3"
+      ]
+    },
+    {
+      "id": "map23_mob3_material_elite",
+      "name": "上古聖鎧殘片（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_mob3"
+      ]
+    },
+    {
+      "id": "map23_boss_material",
+      "name": "上古聖所徽核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map23_boss"
+      ]
+    },
+    {
+      "id": "map24_mob0_material_normal",
+      "name": "上古冥犬黑牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob0"
+      ]
+    },
+    {
+      "id": "map24_mob0_material_elite",
+      "name": "上古冥犬黑牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob0"
+      ]
+    },
+    {
+      "id": "map24_mob1_material_normal",
+      "name": "上古幽影觸鬚",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob1"
+      ]
+    },
+    {
+      "id": "map24_mob1_material_elite",
+      "name": "上古幽影觸鬚（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob1"
+      ]
+    },
+    {
+      "id": "map24_mob2_material_normal",
+      "name": "上古黑曜脊核",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob2"
+      ]
+    },
+    {
+      "id": "map24_mob2_material_elite",
+      "name": "上古黑曜脊核（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob2"
+      ]
+    },
+    {
+      "id": "map24_mob3_material_normal",
+      "name": "上古邊境魂塵",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "map24_mob3_material_elite",
+      "name": "上古邊境魂塵（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "map24_boss_material",
+      "name": "上古冥視之瞳",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map24_boss"
+      ]
+    },
+    {
+      "id": "gear_normal",
+      "name": "一般裝備（普通怪）",
+      "enabled": true,
+      "type": "gear",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.002,
+        0.0027,
+        0.0034
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "gear_elite",
+      "name": "一般裝備（菁英）",
+      "enabled": true,
+      "type": "gear",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.006,
+        0.008,
+        0.01
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "gear_boss",
+      "name": "一般裝備（首領）",
+      "enabled": true,
+      "type": "gear",
+      "key": "",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.25,
+        0.3
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss",
+        "map1_boss",
+        "map2_boss",
+        "map3_boss",
+        "map4_boss",
+        "map5_boss",
+        "map7_boss",
+        "map8_boss",
+        "map9_boss",
+        "map10_boss",
+        "map11_boss",
+        "map12_boss",
+        "map13_boss",
+        "map14_boss",
+        "map15_boss",
+        "map16_boss",
+        "map17_boss",
+        "map18_boss",
+        "map19_boss",
+        "map20_boss",
+        "map21_boss",
+        "map22_boss",
+        "map23_boss",
+        "map24_boss",
+        "map6_boss"
+      ]
+    },
+    {
+      "id": "gear_legendary",
+      "name": "傳說詞條裝備",
+      "enabled": true,
+      "type": "gearLegendary",
+      "key": "",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.0006,
+        0.0016,
+        0.0032
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss",
+        "map1_boss",
+        "map2_boss",
+        "map3_boss",
+        "map4_boss",
+        "map5_boss",
+        "map6_boss",
+        "map7_boss",
+        "map8_boss",
+        "map9_boss",
+        "map10_boss",
+        "map11_boss",
+        "map12_boss",
+        "map13_boss",
+        "map14_boss",
+        "map15_boss",
+        "map16_boss",
+        "map17_boss",
+        "map18_boss",
+        "map19_boss",
+        "map20_boss",
+        "map21_boss",
+        "map22_boss",
+        "map23_boss",
+        "map24_boss"
+      ]
+    },
+    {
+      "id": "boss_gear",
+      "name": "BOSS 專屬裝備",
+      "enabled": true,
+      "type": "bossGear",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.06,
+        0.1,
+        0.15
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss",
+        "map1_boss",
+        "map2_boss",
+        "map3_boss",
+        "map4_boss",
+        "map5_boss",
+        "map7_boss",
+        "map8_boss",
+        "map9_boss",
+        "map10_boss",
+        "map11_boss",
+        "map12_boss",
+        "map13_boss",
+        "map14_boss",
+        "map15_boss",
+        "map16_boss",
+        "map17_boss",
+        "map18_boss",
+        "map19_boss",
+        "map20_boss",
+        "map21_boss",
+        "map22_boss",
+        "map23_boss",
+        "map24_boss"
+      ]
+    },
+    {
+      "id": "gem_normal",
+      "name": "隨機技能寶石（普通怪）",
+      "enabled": true,
+      "type": "gem",
+      "key": "random",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.03,
+        0.06,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "gem_elite",
+      "name": "隨機技能寶石（菁英）",
+      "enabled": true,
+      "type": "gem",
+      "key": "random",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.09,
+        0.17,
+        0.27
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "gem_boss",
+      "name": "隨機技能寶石（首領）",
+      "enabled": true,
+      "type": "gem",
+      "key": "random",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.27,
+        0.4,
+        0.55
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss",
+        "map1_boss",
+        "map2_boss",
+        "map3_boss",
+        "map4_boss",
+        "map5_boss",
+        "map7_boss",
+        "map8_boss",
+        "map9_boss",
+        "map10_boss",
+        "map11_boss",
+        "map12_boss",
+        "map13_boss",
+        "map14_boss",
+        "map15_boss",
+        "map16_boss",
+        "map17_boss",
+        "map18_boss",
+        "map19_boss",
+        "map20_boss",
+        "map21_boss",
+        "map22_boss",
+        "map23_boss",
+        "map24_boss",
+        "map6_boss"
+      ]
+    },
+    {
+      "id": "healing_heal_small",
+      "name": "簡易治療藥水",
+      "enabled": true,
+      "type": "item",
+      "key": "heal_small",
+      "kinds": [
+        "normal",
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ],
+      "minLevel": 1,
+      "maxLevel": 19,
+      "independent": true
+    },
+    {
+      "id": "healing_heal_standard",
+      "name": "治療藥水",
+      "enabled": true,
+      "type": "item",
+      "key": "heal_standard",
+      "kinds": [
+        "normal",
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ],
+      "minLevel": 20,
+      "maxLevel": 39,
+      "independent": true
+    },
+    {
+      "id": "healing_heal_greater",
+      "name": "強效治療藥水",
+      "enabled": true,
+      "type": "item",
+      "key": "heal_greater",
+      "kinds": [
+        "normal",
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ],
+      "minLevel": 40,
+      "maxLevel": 59,
+      "independent": true
+    },
+    {
+      "id": "healing_heal_supreme",
+      "name": "特級治療藥水",
+      "enabled": true,
+      "type": "item",
+      "key": "heal_supreme",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.005,
+        0.005,
+        0.005
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ],
+      "minLevel": 60,
+      "maxLevel": 0,
+      "independent": true
+    },
+    {
+      "id": "radiant_normal",
+      "name": "光輝碎塊（普通／菁英）",
+      "enabled": true,
+      "type": "material",
+      "key": "光輝碎塊",
+      "kinds": [
+        "normal",
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0004,
+        0.0004
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "radiant_boss",
+      "name": "光輝碎塊（首領）",
+      "enabled": true,
+      "type": "material",
+      "key": "光輝碎塊",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.008,
+        0.008,
+        0.008
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss",
+        "map1_boss",
+        "map2_boss",
+        "map3_boss",
+        "map4_boss",
+        "map5_boss",
+        "map7_boss",
+        "map8_boss",
+        "map9_boss",
+        "map10_boss",
+        "map11_boss",
+        "map12_boss",
+        "map13_boss",
+        "map14_boss",
+        "map15_boss",
+        "map16_boss",
+        "map17_boss",
+        "map18_boss",
+        "map19_boss",
+        "map20_boss",
+        "map21_boss",
+        "map22_boss",
+        "map23_boss",
+        "map24_boss",
+        "map6_boss"
+      ]
+    },
+    {
+      "id": "gear_legendary_normal",
+      "name": "傳說詞條裝備",
+      "enabled": true,
+      "type": "gearLegendary",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000006,
+        0.000012,
+        0.00002
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "gear_legendary_elite",
+      "name": "傳說詞條裝備",
+      "enabled": true,
+      "type": "gearLegendary",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.000008,
+        0.000018,
+        0.000036
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "cultivation_dust_normal",
+      "name": "粉塵",
+      "enabled": true,
+      "type": "dust",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.009,
+        0.013,
+        0.016
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    },
+    {
+      "id": "cultivation_dust_elite",
+      "name": "粉塵",
+      "enabled": true,
+      "type": "dust",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.07,
+        0.09,
+        0.11
+      ],
+      "quantityMin": 1,
+      "quantityMax": 2,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2",
+        "map1_mob0",
+        "map1_mob1",
+        "map1_mob2",
+        "map2_mob0",
+        "map2_mob1",
+        "map2_mob2",
+        "map3_mob0",
+        "map3_mob1",
+        "map3_mob2",
+        "map4_mob0",
+        "map4_mob1",
+        "map4_mob2",
+        "map5_mob0",
+        "map5_mob1",
+        "map5_mob2",
+        "map7_mob0",
+        "map7_mob1",
+        "map7_mob2",
+        "map8_mob0",
+        "map8_mob1",
+        "map8_mob2",
+        "map9_mob0",
+        "map9_mob1",
+        "map9_mob2",
+        "map10_mob0",
+        "map10_mob1",
+        "map10_mob2",
+        "map11_mob0",
+        "map11_mob1",
+        "map11_mob2",
+        "map12_mob0",
+        "map12_mob1",
+        "map12_mob2",
+        "map13_mob0",
+        "map13_mob1",
+        "map13_mob2",
+        "map13_mob3",
+        "map14_mob0",
+        "map14_mob1",
+        "map14_mob2",
+        "map14_mob3",
+        "map15_mob0",
+        "map15_mob1",
+        "map15_mob2",
+        "map15_mob3",
+        "map16_mob0",
+        "map16_mob1",
+        "map16_mob2",
+        "map16_mob3",
+        "map17_mob0",
+        "map17_mob1",
+        "map17_mob2",
+        "map17_mob3",
+        "map18_mob0",
+        "map18_mob1",
+        "map18_mob2",
+        "map18_mob3",
+        "map19_mob0",
+        "map19_mob1",
+        "map19_mob2",
+        "map19_mob3",
+        "map20_mob0",
+        "map20_mob1",
+        "map20_mob2",
+        "map20_mob3",
+        "map21_mob0",
+        "map21_mob1",
+        "map21_mob2",
+        "map21_mob3",
+        "map22_mob0",
+        "map22_mob1",
+        "map22_mob2",
+        "map22_mob3",
+        "map23_mob0",
+        "map23_mob1",
+        "map23_mob2",
+        "map23_mob3",
+        "map24_mob0",
+        "map24_mob1",
+        "map24_mob2",
+        "map24_mob3"
+      ]
+    }
+  ],
+  "levelGap": {
+    "enabled": true,
+    "freeLevels": 5,
+    "midGap": 10,
+    "midMultiplier": 0.5,
+    "highGap": 15,
+    "highMultiplier": 0.2,
+    "minimumMultiplier": 0.1
+  }
+}
