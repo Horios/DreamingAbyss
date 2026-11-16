@@ -124,7 +124,7 @@
   const fail=()=>{throw Error('信箱存檔無效');},vouchers=new Map();
   for(const m of raw.messages.filter(isVoucherMail)){
    const kind=mailKind(m),id=Number(MAIL.exec(m.rewardKey)[2]);
-   if(!Number.isSafeInteger(m.id)||m.id<1||m.id>raw.serial||id!==m.id||typeof m.subject!=='string'||!m.subject.trim()||m.subject.length>100||typeof m.body!=='string'||m.body.length>1000||!Number.isSafeInteger(m.at)||typeof m.read!=='boolean'||typeof m.claimed!=='boolean'||m.claimed&&!m.read||!Array.isArray(m.attachments)||m.attachments.length<1||m.attachments.length>6||kind==='ticket'&&m.attachments.length!==1)fail();
+   if(vouchers.has(m.id)||!Number.isSafeInteger(m.id)||m.id<1||m.id>raw.serial||id!==m.id||typeof m.subject!=='string'||!m.subject.trim()||m.subject.length>100||typeof m.body!=='string'||m.body.length>1000||!Number.isSafeInteger(m.at)||typeof m.read!=='boolean'||typeof m.claimed!=='boolean'||m.claimed&&!m.read||!Array.isArray(m.attachments)||m.attachments.length<1||m.attachments.length>6||kind==='ticket'&&m.attachments.length!==1)fail();
    const attachments=m.attachments.map(a=>attachmentOf(kind,a));if(attachments.some(a=>!a))fail();
    vouchers.set(m.id,{id:m.id,rewardKey:m.rewardKey,subject:m.subject,body:m.body,at:m.at,read:m.read,claimed:m.claimed,attachments});
   }

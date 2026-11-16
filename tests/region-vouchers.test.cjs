@@ -96,6 +96,7 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  const r=await ready(sampled());await offlineVouchers(r,2*3600000);r.run('acknowledgeOfflineExploration()');
  assert.doesNotThrow(()=>r.run('validateParty(JSON.parse(JSON.stringify(packParty())))'));
  assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-")).attachments[0].quantity=0;validateParty(d)}'),/信箱存檔無效/);
+ assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));const m=d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-"));d.mailbox.messages.push(JSON.parse(JSON.stringify(m)));validateParty(d)}'),/信箱存檔無效/,'duplicate voucher mail IDs must be rejected before rewards can be claimed');
  assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-")).attachments[0].voucher.enemies={};validateParty(d)}'),/信箱存檔無效/);
  assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));const m=d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-"));m.rewardKey="voucher-gold-"+m.id;validateParty(d)}'),/信箱存檔無效/,'ticket attachments cannot pose as gold mail');
  r.run('claimAllMailboxAttachments()');const id=r.run('party.regionVouchers.stacks[0].id'),snap=r.run('JSON.stringify({v:party.regionVouchers,m:party.mailbox,gold:state.gold,lv:state.lv,bag:state.bag.length})');
