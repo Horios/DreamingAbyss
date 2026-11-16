@@ -56,6 +56,11 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   assert.equal((await at(page)).stage,'plans');
   await choose(page,'先在村莊看看。');await read(page);await choose(page,'好，請多指教。');await read(page);await read(page);
   assert.equal(await at(page),null);assert.deepEqual(await page.evaluate(()=>party.members.map(memberKey)),[job,13]);
+  // The closing card, read through its buttons.
+  await page.waitForSelector('#prologue-layer [data-chapter-ending="chapter1"]');
+  for(let i=0;i<10&&!(await page.locator('#prologue-layer [data-chapter-end]').count());i++)await page.click('#prologue-layer [data-story-continue]');
+  assert.equal(await page.locator('#prologue-layer .prologue-chapter-title').innerText(),'第一章：初臨艾斯蘭　完');await fits(page,'closing card');
+  await page.click('#prologue-layer [data-chapter-end]');assert.equal(await page.evaluate(()=>__EMBERWILD_CHAPTER.ending()),null);
   // The shop and the commissions open with a short spotlight guide on the first visit.
   await page.evaluate(()=>render());
   assert.equal(await page.evaluate(()=>document.querySelector('[data-nav-group="shop"]').disabled),false);
@@ -70,6 +75,23 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   for(let i=0;i<3;i++)await page.click('#tutorial-card button:has-text("下一步"), #tutorial-card button:has-text("完成")');
   assert.equal(await page.evaluate(()=>party.tutorials.records.quest_basics?.completed),true);
   assert.equal(await page.evaluate(()=>document.querySelector('[data-nav-group="life"]').disabled),true,'life skills stay locked');
+  // v0.152: the closing card, then the gear lesson's spotlight on the real controls.
+  await page.evaluate(()=>{for(let i=0;i<10;i++)chapterEndNext();chapterEndClose();readStory('skill_equipment_intro');for(let i=0;i<10;i++)nextStoryDialogue();completeStoryStage('skill_equipment_intro','','equipment_gift');setTab('skills');});
+  const spot=async sel=>{await page.waitForFunction(sel=>{const o=document.getElementById('lesson-spotlight'),t=document.querySelector(sel);if(!o||o.hidden||!t)return false;const a=o.getBoundingClientRect(),b=t.getBoundingClientRect();return Math.abs(a.left+6-b.left)<3&&Math.abs(a.top+6-b.top)<3;},sel,{timeout:10000});};
+  await page.waitForSelector('.layout>main>.lesson-task');
+  // The skills page guide starts on the first visit; the lesson spotlight waits for it.
+  await page.waitForFunction(()=>__EMBERWILD_TUTORIAL.status().active?.id==='skill_basics');assert.equal(await page.locator('#lesson-spotlight').isVisible(),false);
+  await page.evaluate(()=>{for(let i=0;i<5&&__EMBERWILD_TUTORIAL.status().active;i++)tutorialControl('skip')||tutorialControl('close');});
+  const charm=await page.evaluate(()=>playerHero().bag.find(g=>g.storyRewardKey==='initiation_charm').id);
+  await spot(`[data-skill-equipment="${charm}"]`);await page.click(`[data-skill-equipment="${charm}"]`);
+  await spot(`[onclick="openSkillSlot('proc',0)"]`);await page.click(`[onclick="openSkillSlot('proc',0)"]`);
+  await page.waitForSelector('#modal .lesson-spot-ring');await page.click('#modal .lesson-spot-ring');
+  await page.evaluate(()=>closeModal());await spot('[data-lesson-report]');await page.click('[data-lesson-report]');
+  await page.evaluate(()=>{for(let i=0;i<10;i++)nextStoryDialogue();endStoryDialogue();setTab('worn');});
+  await spot(`[onclick="toggleWornEquipmentSockets('${charm}')"]`);await page.click(`[onclick="toggleWornEquipmentSockets('${charm}')"]`);
+  await spot(`[data-socket-equipment="${charm}"] [data-equipment-socket="0"]`);await page.click(`[data-socket-equipment="${charm}"] [data-equipment-socket="0"]`);
+  await spot(`[data-socket-equipment="${charm}"] [data-equipment-gem="0"]`);await page.click(`[data-socket-equipment="${charm}"] [data-equipment-gem="0"]`);
+  assert.equal(await page.evaluate(()=>__EMBERWILD_QUEST_LESSON.current().step),'report');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}
 });

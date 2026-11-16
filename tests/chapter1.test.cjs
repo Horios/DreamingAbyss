@@ -91,3 +91,65 @@ test('reading progress survives a reload; a lost ambush can be retried',async()=
 test('characters made outside the prologue and saves that finished it earlier are never gated',()=>{
  const r=open();r.run('selectSaveSlot(1);start(0)');assert.equal(r.run('__EMBERWILD_CHAPTER.gated()'),false);assert.notEqual(r.run("setTab('forge')"),false);assert.equal(r.at(),null);
 });
+
+// v0.152 -----------------------------------------------------------------------------------------------------------------
+// Finish chapter 1 quickly: exploration and the ambush are recorded as done, every choice takes the first reply.
+function finishChapter(r){
+ for(let i=0;i<120&&r.at();i++){const c=r.at(),q=r.json(`(()=>{const s=__EMBERWILD_STORY.design.quests.find(q=>q.id==='chapter1').stages.find(s=>s.id==='${c.stage}');return {choice:s.choices[0]?.id||'',explore:s.conditions.conditions.some(x=>x.type==='explore'),fight:!!s.encounter?.enabled,talk:s.chapter.action==='talk'};})()`);
+  if(!c.read){r.run('chapterNext()');continue;}
+  if(q.choice)r.run(`chapterChoose('${q.choice}')`);else if(q.explore){r.run("party.progressStats.explore['0']=(party.progressStats.explore['0']||0)+5;render()");}else if(q.fight){r.run("party.progressStats.encounters['chapter1/ambush_fight']=1;render()");}else if(q.talk)r.run('chapterAction()');else r.run('render()');}
+ assert.equal(r.at(),null,'chapter 1 finished');
+}
+const layer=r=>r.run("document.getElementById('prologue-layer').innerHTML");
+
+test('the chapter ends with a closing card shown once; the main list puts unfinished quests first and finished ones can be replayed',()=>{
+ const r=open();prologue(r);finishChapter(r);
+ assert.equal(r.run('__EMBERWILD_CHAPTER.ending()'),'chapter1');assert.match(layer(r),/data-chapter-ending="chapter1"/);
+ for(let i=0;i<10&&!layer(r).includes('data-chapter-end ');i++)r.run('chapterEndNext()');
+ assert.match(layer(r),/第一章：初臨艾斯蘭　完/);r.run('chapterEndClose()');
+ assert.equal(r.run('__EMBERWILD_CHAPTER.ending()'),null);assert.equal(r.json("party.story.flags['chapter_end:chapter1']"),true);
+ // Main list: the unfinished gear lesson first, finished quests stay listed below it.
+ r.run("openStory('','main')");const html=r.run('storyView()');
+ const at=t=>html.indexOf(t);assert(at('裝備技能與寶石入門')>=0&&at('第一章：初臨艾斯蘭')>at('裝備技能與寶石入門')&&at('序幕：造物')>at('裝備技能與寶石入門'),'unfinished first, finished below');
+ assert.match(html,/data-story-replay="prologue"/);assert.match(html,/data-story-replay="chapter1"/);
+ const gold=r.run('playerHero().gold'),record=r.json('party.story.quests.chapter1');
+ assert.equal(r.run("storyReplay('chapter1')"),true);assert.match(layer(r),/data-story-replay="chapter1"/);assert.match(layer(r),/你走入了發光的門扉。/);
+ const total=r.json('__EMBERWILD_CHAPTER.replaying()').total;assert(total>60,'every read stage and the chosen replies');
+ for(let i=0;i<total;i++)r.run('storyReplayNext()');assert.match(layer(r),/劇情到這裡結束/);r.run('storyReplayEnd()');
+ assert.equal(r.json('__EMBERWILD_CHAPTER.replaying()'),null);assert.equal(r.run('playerHero().gold'),gold,'a replay grants nothing');assert.deepEqual(r.json('party.story.quests.chapter1'),record,'and leaves the record as it was');
+ assert.equal(r.run("storyReplay('prologue')"),true);assert.match(layer(r),/一間神祕的房間內，無源之光亮起。/);r.run('storyReplayEnd()');
+ assert.deepEqual(r.errors,[]);
+});
+
+test('a save that finished the prologue before chapter 1 existed can start it from the main list, without the feature gate',()=>{
+ const r=open();prologue(r);
+ // What such a save looks like: the prologue is done, chapter 1 was never started.
+ r.run("delete party.story.quests.chapter1;delete party.story.flags.chapter1_start;delete party.story.flags.chapter_gate;for(const k of Object.keys(party.story.flags))if(k.startsWith('chapter_read:'))delete party.story.flags[k];save();render()");
+ assert.equal(r.at(),null);assert.equal(r.run('__EMBERWILD_CHAPTER.gated()'),false);assert.equal(r.run("__EMBERWILD_CHAPTER.offerable('chapter1')"),true);
+ r.run("openStory('','main')");assert.match(r.run('storyView()'),/data-chapter-begin="chapter1"/);
+ assert.equal(r.run("chapterBegin('chapter1')"),true);assert.deepEqual(r.at(),{quest:'chapter1',stage:'arrival',read:false,line:0});
+ assert.equal(r.run('__EMBERWILD_CHAPTER.gated()'),false,'pages these players already use stay open');assert.notEqual(r.run("setTab('forge')"),false);
+ assert.equal(r.run("chapterBegin('chapter1')"),false,'it starts once');assert.equal(r.run("__EMBERWILD_CHAPTER.offerable('chapter1')"),false);
+ assert.deepEqual(r.errors,[]);
+});
+
+test('the gear lesson guides the prologue charm: equipment skill, the proc slot, then both sockets, reporting from the banner',()=>{
+ const r=open();prologue(r);finishChapter(r);r.run('chapterEndClose()');
+ const L=()=>r.json('__EMBERWILD_QUEST_LESSON.current()');
+ assert.equal(L(),null,'nothing is guided before the player reads the quest');
+ r.run("readStory('skill_equipment_intro')");for(let i=0;i<10;i++)r.run('nextStoryDialogue()');
+ assert.equal(r.run("completeStoryStage('skill_equipment_intro','','equipment_gift')"),true);
+ assert.equal(r.json("playerHero().bag.filter(g=>g.storyRewardKey==='initiation_charm').length"),1,'the prologue charm is used, not a second one');
+ r.run("globalThis.charm=playerHero().bag.find(g=>g.storyRewardKey==='initiation_charm')");
+ assert.deepEqual(L(),{quest:'skill_equipment_intro',stage:'equip_skill',step:'gearSkillActive',page:'skills',text:'在技能頁的「裝備技能」選擇啟程護符。',slot:null},'the prologue already put the charm on');
+ r.run("setTab('skills')");assert.match(r.run('__EMBERWILD_QUEST_LESSON.banner()'),/data-lesson-step="gearSkillActive"/);
+ assert.equal(r.run('selectSkillEquipment(charm.id)'),true);assert.equal(L().step,'skillSlotted');assert.match(L().text,/觸發技能槽，裝入「追擊」/);
+ assert.equal(r.run("chooseSkillSlot('proc',0,'tutorial_echo')"),true);assert.equal(L().step,'report');
+ assert.equal(r.run('questLessonReport()'),true);assert.equal(r.json('party.story.quests.skill_equipment_intro.current'),'gem_skill');
+ assert.deepEqual([L().step,L().page,L().slot],['gearSkillGem','worn',null]);assert.equal(r.run('playerHero().gems[0]'),1);
+ assert.equal(r.run('socketEquipmentGem(charm.id,0,0)'),true);assert.equal(L().step,'report');r.run('questLessonReport()');
+ assert.deepEqual([L().step,L().slot],['gearBaseGem',1]);assert.equal(r.run('socketEquipmentGem(charm.id,1,0)'),true);r.run('questLessonReport()');
+ assert.equal(r.json('party.story.quests.skill_equipment_intro.done'),true);assert.equal(L(),null);
+ assert.equal(r.json(`playerHero().acquiredSkillIds.includes('job3-support0')`),true,'the support skill reward');
+ assert.deepEqual(r.errors,[]);
+});

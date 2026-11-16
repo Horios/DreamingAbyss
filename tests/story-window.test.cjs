@@ -10,9 +10,10 @@ test('skippable is decided by the quest data: never the prologue, and any quest 
 
 test('quest dialogue is a window view: one line at a time, then the stage actions; the inline copy stays for the quest card',()=>{
  const r=game();assert.equal(view(r),null);r.run("readStory('skill_equipment_intro')");
- let v=view(r);assert.equal(v.head.eyebrow,'裝備技能與寶石入門');assert.equal(v.line.speaker,'女神');assert.match(v.line.text,/啟程護符/);assert.equal(v.advance,'nextStoryDialogue');assert.equal(v.skip,'skipStoryDialogue');
+ let v=view(r);assert.equal(v.head.eyebrow,'裝備技能與寶石入門');assert.equal(v.line.kind,'narrator');assert.equal(v.line.speaker,'');assert.match(v.line.text,/啟程護符/);assert.equal(v.advance,'nextStoryDialogue');assert.equal(v.skip,'skipStoryDialogue');
  assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-skip/);assert.match(r.run("$('prologue-layer').innerHTML"),/class="story-window-mask"/);
- r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line,null);assert.equal(v.advance,null);assert.equal(v.skip,null);assert.match(v.body,/完成階段／繼續劇情/);
+ r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line.speaker,'女神','the goddess speaks after the opening narration');
+ for(let i=0;i<10&&view(r).line;i++)r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line,null);assert.equal(v.advance,null);assert.equal(v.skip,null);assert.match(v.body,/完成階段／繼續劇情/);
  r.run('endStoryDialogue()');assert.equal(view(r),null);assert.equal(r.run("$('prologue-layer').hidden"),true);assert.deepEqual(r.errors,[]);
 });
 

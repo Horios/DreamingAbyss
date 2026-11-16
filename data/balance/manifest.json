@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 15,
+  "dataRevision": 16,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "78c076909fa0c35ff58720aa57d981706a8c9f711f54557815e9654e6a7061bf",
-    "bytes": 1263743
+    "sha256": "ea0e6baec8555e72fca3b9f9a4e59056fffa653750a511164a1313ffacfd86e9",
+    "bytes": 1265804
   },
   "layout": {
     "": [
@@ -618,9 +618,9 @@
       "file": "systems/story.json",
       "source": "story",
       "present": true,
-      "version": 12,
-      "sha256": "8a250abec2399348903a85c82cd3d8dc45a885f8a2920d9887eb4ac8ab3280ec",
-      "bytes": 103796,
+      "version": 13,
+      "sha256": "e18015f301d014f3c29a6da843f685dd09413f1f6219a7eb62ac50852a4d166e",
+      "bytes": 105695,
       "dependsOn": [
         "combat/skills",
         "equipment/forms",
