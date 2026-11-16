@@ -70,3 +70,7 @@ body.story-window-open .story-dialogue{display:none}
 /* v0.150 chapter scenes: locked entries while the chapter gate is on, and the reply buttons in the story window. */
 .chapter-locked{opacity:.45;cursor:not-allowed}
 .chapter-choices button{text-align:left;white-space:normal}
+/* v0.152 quest lessons (js/story/quest-lesson-runtime.js): the same spotlight look as the prologue lessons. */
+#lesson-spotlight[hidden]{display:none}
+#lesson-spotlight{position:fixed;z-index:55;box-sizing:border-box;border:2px solid #f1d58b;border-radius:10px;box-shadow:0 0 0 9999px rgba(5,6,10,.58),0 0 18px 4px rgba(241,213,139,.55);pointer-events:none;transition:top .18s ease,left .18s ease,width .18s ease,height .18s ease}
+.lesson-spot-ring{outline:3px solid #f1d58b!important;outline-offset:3px;box-shadow:0 0 16px 4px rgba(241,213,139,.6)!important}

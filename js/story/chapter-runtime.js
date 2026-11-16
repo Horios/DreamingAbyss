@@ -75,7 +75,7 @@
  // The main-story page reads chapter quests through this window too.
  const baseRead=readStory;readStory=function(id){const c=current();if(c&&c.q.id===id){cursor=null;if(c.s.dialogue.length)party.story.flags[readKey(c.q,c.s)]=false;render();return;}return baseRead(id);};
 
- function view(){
+ function chapterView(){
   const c=current();if(!c)return null;const {q,s,r}=c,sc=scene(q,s);
   const head={eyebrow:sc.place||q.chapter.title,title:sc.name},base={head,attrs:`data-chapter="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:'',line:null,body:'',advance:null,skip:null,continueLabel:q.chapter.ui.continue||'繼續'};
   if(!linesRead(q,s)){
@@ -91,6 +91,56 @@
   }
   return null;
  }
+ // ---------- start for saves that finished the prologue before chapters existed ----------
+ const startFlag=q=>q.unlock.conditions.find(c=>c.type==='flag')?.key||'';
+ const prologueDone=()=>{const p=S().prologueQuest();return !!p&&!!S().record(p.id)?.done;};
+ function offerable(id){const q=party&&S().chapterQuests().find(x=>x.id===id);return !!q&&ready()&&prologueDone()&&!S().record(q.id)&&!!startFlag(q)&&!flags()[startFlag(q)];}
+ // Only the start flag: the feature gate stays off for these players, who already use every page.
+ globalThis.chapterBegin=function(id){
+  if(!offerable(id)||offlineBusy())return false;const q=S().chapterQuests().find(x=>x.id===id);
+  if(!S().transaction(()=>{party.story.flags[startFlag(q)]=true;S().sync();}))return false;
+  cursor=null;render();return !!S().record(id);
+ };
+
+ // ---------- replay of finished quests (read only: nothing is granted, no record changes) ----------
+ let replay=null;
+ function replayLines(q,r){
+  const out=[];
+  for(const id of r.completed){
+   const s=q.stages.find(x=>x.id===id);if(!s)continue;const scene=q.chapter?.scenes?.find(x=>x.id===s.chapter?.scene)?.name||q.prologue?.scenes?.[s.prologue?.scene-1]?.name||s.name;
+   for(const l of [...s.dialogue,...(s.prologue?.after||[])])out.push({...l,title:scene});
+   const pick=s.choices.find(c=>c.id===r.choices[s.id]);if(pick)out.push({kind:'player',speaker:'主角',text:pick.text.replace(/^「|」$/g,''),title:scene});
+  }
+  if(q.prologue?.chapter)for(const l of q.prologue.chapter.lines)out.push({...l,title:q.prologue.chapter.title});
+  return out;
+ }
+ const finished=id=>{const q=party&&S().design.quests.find(x=>x.id===id),r=q&&S().record(id);return q&&r?.done?{q,r}:null;};
+ globalThis.storyReplayable=id=>{const f=finished(id);return !!f&&replayLines(f.q,f.r).length>0;};
+ globalThis.storyReplay=function(id){const f=finished(id);if(!f||!ready())return false;const lines=replayLines(f.q,f.r);if(!lines.length)return false;replay={id,name:f.q.name,lines,index:0};render();return true;};
+ globalThis.storyReplayNext=function(){if(!replay)return;replay.index++;render();};
+ globalThis.storyReplayEnd=function(){replay=null;render();};
+ function replayView(){
+  if(!replay||!ready())return null;const close=`<button type="button" data-story-replay-end onclick="storyReplayEnd()">結束重看</button>`;
+  const l=replay.lines[replay.index],base={head:{eyebrow:'重看 · '+replay.name,title:l?.title||replay.name},attrs:`data-story-replay="${esc(replay.id)}"`,actions:close,skip:null,line:null,body:'',advance:null,continueLabel:'繼續'};
+  if(!l)return {...base,body:'<div class="prologue-box"><p class="prologue-hint">劇情到這裡結束。</p></div>',signature:'replay-end|'+replay.id};
+  return {...base,line:{speaker:speaker(l),kind:l.kind,text:playerText(l.text)},advance:'storyReplayNext',lineKey:'replay:'+replay.index,signature:['replay',replay.id,replay.index].join('|')};
+ }
+
+ // ---------- chapter ending: shown once, right after the last stage ----------
+ let ending=null;
+ const endKey=q=>'chapter_end:'+q.id;
+ function endingQuest(){if(!ready()||current())return null;return S().chapterQuests().find(q=>q.chapter.ending&&S().record(q.id)?.done&&!flags()[endKey(q)])||null;}
+ globalThis.chapterEndNext=function(){if(ending){ending.index++;render();}};
+ globalThis.chapterEndClose=function(){const q=endingQuest();ending=null;if(q)S().transaction(()=>{party.story.flags[endKey(q)]=true;});render();};
+ function endingView(){
+  const q=endingQuest();if(!q){ending=null;return null;}const e=q.chapter.ending;
+  if(!ending||ending.id!==q.id)ending={id:q.id,index:0};
+  const last=q.chapter.scenes.at(-1)||{name:q.chapter.title,place:''},l=e.lines[ending.index],base={head:{eyebrow:last.place||q.chapter.title,title:last.name},attrs:`data-chapter-ending="${esc(q.id)}"`,actions:'',skip:null,line:null,body:'',advance:null,continueLabel:q.chapter.ui.continue||'繼續'};
+  if(l)return {...base,line:{speaker:speaker(l),kind:l.kind,text:playerText(l.text)},advance:'chapterEndNext',lineKey:'end:'+ending.index,signature:['chapter-end',q.id,ending.index].join('|')};
+  return {...base,body:`<div class="prologue-chapter"><h2 class="prologue-chapter-title">${esc(e.title)}</h2></div>`,actions:`<button type="button" class="primary" data-chapter-end onclick="chapterEndClose()">${esc(e.button||'結束')}</button>`,signature:'chapter-end-title|'+q.id};
+ }
+ const view=()=>replayView()||chapterView()||endingView();
+
  // Wrapping the story's dialogue view lets the prologue's draw() (which already renders the window on every frame) show
  // the chapter without a second caller fighting over the same window.
  const baseView=S().dialogueView;S().dialogueView=()=>view()||baseView();
@@ -157,12 +207,13 @@
  const baseCat=setExplorationCategory;setExplorationCategory=function(cat){if(regionLocked()&&cat!=='explore'){toast(ui('locked'));return false;}return baseCat(cat);};
  // The old "go to the main story" strip is redundant while a chapter is being played.
  const baseTutorial=tutorial;tutorial=function(...args){return current()?'':baseTutorial(...args);};
- const baseNewGame=newGame;newGame=function(...args){cursor=null;return baseNewGame(...args);};
+ const baseNewGame=newGame;newGame=function(...args){cursor=null;replay=null;ending=null;return baseNewGame(...args);};
 
  globalThis.__EMBERWILD_CHAPTER={
   current:()=>{const c=current();return c?{quest:c.q.id,stage:c.s.id,read:linesRead(c.q,c.s),line:cursor?.stage===c.s.id?cursor.index:0}:null;},
   // The task banner as HTML (the headless tests have no layout to insert it into).
   banner:()=>{const c=current();return c&&linesRead(c.q,c.s)&&!c.s.choices.length&&isTask(c.s)?bannerHTML(c.q,c.s,c.r):'';},
+  offerable,offerText:id=>S().chapterQuests().find(x=>x.id===id)?.description||'',replaying:()=>replay?{quest:replay.id,index:replay.index,total:replay.lines.length}:null,ending:()=>endingQuest()?.id||null,
   gated,pageOpen,huntLocked,regionLocked
  };
 })();
