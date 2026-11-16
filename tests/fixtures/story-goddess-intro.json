@@ -158,14 +158,14 @@
   },
   {
    "id": "depart",
-   "name": "前往苔光林地",
+   "name": "前往無名密林",
    "speaker": "女神",
-   "description": "前往第一張地圖「苔光林地」。",
+   "description": "前往第一張地圖「無名密林」。",
    "dialogue": [
     {
      "kind": "npc",
      "speaker": "女神",
-     "text": "前往第一張地圖「苔光林地」。"
+     "text": "前往第一張地圖「無名密林」。"
     }
    ],
    "conditions": {
@@ -197,12 +197,12 @@
    "id": "battle",
    "name": "完成實際戰鬥",
    "speaker": "女神",
-   "description": "在苔光林地擊敗任意一隻怪物。",
+   "description": "在無名密林擊敗任意一隻怪物。",
    "dialogue": [
     {
      "kind": "npc",
      "speaker": "女神",
-     "text": "在苔光林地擊敗任意一隻怪物。"
+     "text": "在無名密林擊敗任意一隻怪物。"
     }
    ],
    "conditions": {

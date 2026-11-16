@@ -472,6 +472,212 @@
       "interrupt": "pause",
       "revision": 1,
       "reprompt": false
+    },
+    {
+      "id": "shop_basics",
+      "title": "商店",
+      "category": "shop",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "商店的分類、固定商品與限時商品。劇情開放商店後，第一次進入商店時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "shop",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          },
+          {
+            "type": "featureUnlocked",
+            "key": "page_shop",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "categories",
+          "title": "商品分類",
+          "text": "上方按鈕切換商品分類。",
+          "page": "shop",
+          "target": "shop.categories",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "fixed",
+          "title": "固定商品",
+          "text": "固定商品隨時可以購買。買到的道具放進背包的「道具」分類。",
+          "page": "shop",
+          "target": "shop.fixed",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "random",
+          "title": "限時商品",
+          "text": "這一區的商品會定期更換，也可以花金幣手動刷新。",
+          "page": "shop",
+          "target": "shop.random",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "quest_basics",
+      "title": "委託",
+      "category": "quests",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "每日委託的接取與交付。劇情開放委託後，第一次進入委託時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "quests",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          },
+          {
+            "type": "featureUnlocked",
+            "key": "page_quests",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "board",
+          "title": "每日委託",
+          "text": "每天會出現五項委託，最多可以完成四項。",
+          "page": "quests",
+          "target": "quests.board",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "start",
+          "title": "接取委託",
+          "text": "按「開始任務」接下委託。擊殺與強化等進度從接下之後開始計算。",
+          "page": "quests",
+          "target": "quests.start",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "claim",
+          "title": "交付",
+          "text": "達成目標後回到這裡交付，領取委託上的獎勵。",
+          "page": "quests",
+          "target": "quests.board",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
     }
   ]
 }

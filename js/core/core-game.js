@@ -552,7 +552,7 @@ function newGame() {
 }
 function start(job) {
   if(!Number.isInteger(job)||!CLASSES[job])return;
-  resetSession();state=initial(job);note('抵達苔光林地。點擊「開始自動探索」展開第一場戰鬥。');save();render();
+  resetSession();state=initial(job);note('抵達無名密林。點擊「開始自動探索」展開第一場戰鬥。');save();render();
 }
 function claimRepeat() {
   const mi=questRegion(),mat=MAPS[mi].mobs[0][2];
