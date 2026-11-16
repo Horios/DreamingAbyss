@@ -33,16 +33,14 @@
  function markRead(q,s){if(linesRead(q,s))return true;return S().transaction(()=>{party.story.flags[readKey(q,s)]=true;});}
  function complete(q,s,choice=''){
   if(offlineBusy())return false;
-  // Temporary allies leave once their fight is over; the record keeps no trace of them.
-  if(s.chapter.action==='allies')for(const a of q.chapter.allies)ALLY()?.remove(a.id);
   cursor=null;const ok=completeStoryStage(q.id,choice,s.id);
-  if(ok&&s.chapter.action==='recruit')recruit(q);
+  if(ok&&s.chapter.action==='recruit'&&partyMember(q.chapter.companion))toast(q.chapter.ui.companionJoined);
   return ok;
  }
  function recruit(q){
   const id=q.chapter.companion;if(!party||partyMember(id))return;
-  globalThis.recruitCompanion?.(id);
-  if(partyMember(id))toast(ui('companionJoined'));
+  globalThis.__EMBERWILD_RECRUIT_FOR_STORY?.(id);
+  if(!partyMember(id))throw Error('夥伴未能加入隊伍，請稍後再試');
  }
  // Fight allies join the lineup next to the player; the player stays first.
  function ensureAllies(q){
@@ -210,6 +208,8 @@
  const baseNewGame=newGame;newGame=function(...args){cursor=null;replay=null;ending=null;return baseNewGame(...args);};
 
  globalThis.__EMBERWILD_CHAPTER={
+  // Roster changes commit with the stage; a failed save restores both.
+  commitStage(q,s){if(s.chapter.action==='allies')for(const a of q.chapter.allies)ALLY()?.remove(a.id);if(s.chapter.action==='recruit')recruit(q);},
   current:()=>{const c=current();return c?{quest:c.q.id,stage:c.s.id,read:linesRead(c.q,c.s),line:cursor?.stage===c.s.id?cursor.index:0}:null;},
   // The task banner as HTML (the headless tests have no layout to insert it into).
   banner:()=>{const c=current();return c&&linesRead(c.q,c.s)&&!c.s.choices.length&&isTask(c.s)?bannerHTML(c.q,c.s,c.r):'';},

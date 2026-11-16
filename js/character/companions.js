@@ -167,7 +167,7 @@
   }
   const originalSyncParty=syncParty;
   syncParty=function(){originalSyncParty();syncCompanionLevels();};
-  window.recruitCompanion=function(id){
+  window.recruitCompanion=function(id,{persist=true}={}){
     const plan=plans.find(p=>p.id===id);if(!party||!plan||plan.availability==='hidden'||!globalThis.companionUnlocked?.(id)||partyMember(id)||party.members.length>=513)return;
     ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureAccountQuests();ensureRoster(party);
     const full=party.active.length>=3;
@@ -180,10 +180,15 @@
     party.members.push(h);party.companionProfiles[id]=copy(plan);applyPlan(h,{fullHealth:true});
     ensureAccountResources();ensureSharedGear();ensureSharedItems();ensureAccountQuests();
     if(party.enlisted.length<config.activeLimit){party.enlisted.push(id);if(party.active.length<3)party.active.push(id);}
-    syncParty();save();render();
-    if(full&&party.enlisted.includes(id))requestMemberReplacement(id);
-    toast(h.name+(party.enlisted.includes(id)?'已編入現役':'已加入名冊；現役夥伴已達上限'));return h;
+    syncParty();
+    if(persist){save();render();
+      if(full&&party.enlisted.includes(id))requestMemberReplacement(id);
+      toast(h.name+(party.enlisted.includes(id)?'已編入現役':'已加入名冊；現役夥伴已達上限'));}
+    return h;
   };
+  // Story stages own the save and rollback; do not persist a partial stage or render mid-transaction.
+  const recruitForStory=window.recruitCompanion;
+  globalThis.__EMBERWILD_RECRUIT_FOR_STORY=id=>recruitForStory(id,{persist:false});
   globalThis.acquireCompanion=id=>recruitCompanion(id);
   // Prologue helper: a per-save profile cloned from a catalogue plan. It is not in the recruitment pool, uses no ticket or
   // unlock, joins the roster without entering the lineup (the player does that in the team page), and is removed when the prologue ends.
