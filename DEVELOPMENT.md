@@ -191,6 +191,10 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 - 裝備教學時，背包清單把女神給的武器與護符固定排在最上面（武器在前、護符在後），不受清單排序設定影響；只調整畫面上的順序，不改背包資料。
 - 聚光燈只在教學步驟進行時存在，每 150 毫秒重新判斷目標並逐格跟隨位置；離開教學、回到對話或序幕結束時移除。
 
+## 完整回歸：較舊正式版對教學資料的相容判定（v0.149）
+
+- 完整回歸（`scripts/full-test.cjs`，game-data／game-headless／game-browser 共 180 項）中，`balance-published-source.browser` 以正式版 v0.118 載入測試版資料時，正式版接受文件但丟掉 `tutorials`。正式版沒有公布 `tutorialsVersion`，平衡器本來就拒絕把含教學的文件發布到這種分支，所以測試改為：只有在該執行期沒有公布 `tutorialsVersion` 時才允許 `tutorials` 缺少；目前版本的執行期仍要求所有已發布欄位都保留。只改測試。
+
 ## 合併 claude/pensive-hawking-evwnd1 的卡片底色修正（v0.148）
 
 - 檢查所有遠端分支後，只有 `claude/pensive-hawking-evwnd1` 的 682a8f4 尚未進入 `chatgpt-dev`；`main`、`claude/zealous-rubin-k94r10` 的內容等於 v0.118，`claude/jolly-pasteur-1qrs1r` 的內容等於 v0.143，其餘分支只落後。

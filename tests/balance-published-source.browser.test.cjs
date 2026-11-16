@@ -2,10 +2,13 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=process.cwd(),published=JSON.parse(fs.readFileSync('data/balance.json'));
 // A runtime that accepts the document keeps every published value. It may add derived fields; the only removals are the
 // two deliberate normalizations below. Applies to the current runtime and to an upgraded production checkout alike.
-function retainsPublished(exported){
+// A runtime older than a feature drops that feature's section; the publisher refuses to send it there (capability
+// check), so only sections the runtime does not advertise may be missing.
+function retainsPublished(exported,capabilities={}){
  const d=D.diff(published,exported);
  assert.equal(d.modified,0,JSON.stringify(d.rows.filter(r=>r.type==='修改').slice(0,3)));
- const allowed=r=>/^starterPacks\.\d+\.[1-4]$/.test(r.path)||r.path==='balanceSettings.meta.activeCooldownFloorVersion';
+ const unsupported=r=>r.path==='tutorials'&&!capabilities.tutorialsVersion;
+ const allowed=r=>/^starterPacks\.\d+\.[1-4]$/.test(r.path)||r.path==='balanceSettings.meta.activeCooldownFloorVersion'||unsupported(r);
  assert.deepEqual(d.rows.filter(r=>r.type==='刪除'&&!allowed(r)).map(r=>r.path),[]);
 }
 test('production ignores old browser balance and player-save design snapshots; preview overrides expire on a new published base',async()=>{
@@ -24,7 +27,7 @@ test('older production fails closed on expanded life data; upgraded runtime reta
   await r.page.waitForFunction(()=>/資料載入失敗/.test(document.getElementById('app')?.innerText||'')||window.emberwildBootComplete===true,{},{timeout:30000});
   const version=await r.page.evaluate(()=>/資料載入失敗/.test(document.getElementById('app').innerText)?0:EmberwildBalanceDocument.lifeProductsVersion||0);
   if(version<1){assert.match(await r.page.locator('#app').innerText(),/資料載入失敗.*lifeSkills/);assert.equal(await r.page.evaluate(()=>typeof exportableBalance),'undefined');}
-  else retainsPublished(await r.page.evaluate(()=>exportableBalance()));
+  else retainsPublished(await r.page.evaluate(()=>exportableBalance()),await r.page.evaluate(()=>({tutorialsVersion:EmberwildBalanceDocument.tutorialsVersion||0})));
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
  const updated=await openRuntime(root);try{
