@@ -33903,9 +33903,7 @@
             }
           ]
         },
-        "prerequisites": [
-          "prologue"
-        ],
+        "prerequisites": [],
         "entry": "arrival",
         "stages": [
           {
