@@ -102,7 +102,10 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  r.run('globalThis.__EMBERWILD_SAVE_OWNER=false');assert.equal(r.run(`EmberwildRegionVouchers.redeem([{id:'${id}',count:1}])`),false);r.run('globalThis.__EMBERWILD_SAVE_OWNER=true');
  r.run('globalThis.__save=save;save=()=>false');assert.equal(r.run(`EmberwildRegionVouchers.redeem([{id:'${id}',count:2}])`),false);r.run('save=__save');
  assert.equal(r.run('JSON.stringify({v:party.regionVouchers,m:party.mailbox,gold:state.gold,lv:state.lv,bag:state.bag.length})'),snap,'a failed save restores tickets and mailbox together');
- assert.equal(json(r,`EmberwildRegionVouchers.redeem([{id:'${id}',count:99}])`).tickets,4,'never more than held');assert.equal(json(r,'party.regionVouchers.stacks').length,0);
+ const requests=`[{id:'${id}',count:2},{id:'${id}',count:99}]`;
+ assert.equal(json(r,`EmberwildRegionVouchers.preview(${requests})`).tickets,4,'duplicate requests share the held stock');
+ assert.equal(json(r,'party.regionVouchers.stacks[0].count'),4,'preview does not consume tickets');
+ assert.equal(json(r,`EmberwildRegionVouchers.redeem(${requests})`).tickets,4,'duplicate requests never redeem more than held');assert.equal(json(r,'party.regionVouchers.stacks').length,0);
  assert.equal(r.run(`EmberwildRegionVouchers.redeem([{id:'${id}',count:1}])`),false,'a used ticket cannot be used again');
  // Claiming XP/gold mail twice grants once; a failed save keeps it in the mailbox.
  const g=mails(r,'gold')[0];r.run('globalThis.__save=save;save=()=>false');assert.equal(r.run(`claimMailboxAttachments(${g.id})`),false);r.run('save=__save');

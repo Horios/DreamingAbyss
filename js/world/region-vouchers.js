@@ -202,8 +202,11 @@
  // Per-ticket plan: the projected level is re-checked before every ticket, including XP still in the mailbox.
  function plan(requests){
   const l=ledger(),p=projectedHero(),out={tickets:0,full:0,overlevel:0,xp:0,gold:0,potionCost:0,items:{},gear:0,rows:[],levelBefore:p.lv,levelAfter:p.lv,rolls:[]};
+  const remaining=new Map(l.stacks.map(s=>[s.id,s.count]));
   for(const r of requests||[]){
-   const s=l.stacks.find(x=>x.id===r.id),n=Math.min(Number(r.count)||0,s?.count||0);if(!s||!Number.isSafeInteger(n)||n<1)continue;
+   const s=l.stacks.find(x=>x.id===r.id),n=Math.min(Number(r.count)||0,remaining.get(r.id)||0);if(!s||!Number.isSafeInteger(n)||n<1)continue;
+   // Repeated requests share the same stock limit before rewards are calculated.
+   remaining.set(s.id,remaining.get(s.id)-n);
    const row={id:s.id,name:s.mapName,levelMax:s.levelMax,count:n,full:0,overlevel:0,overGold:overlevelGold(s.map)};
    for(let i=0;i<n;i++){
     if(p.lv>s.levelMax){row.overlevel++;out.gold+=row.overGold;continue;}

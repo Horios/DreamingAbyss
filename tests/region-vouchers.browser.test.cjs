@@ -2,8 +2,10 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
 // The voucher offer and its confirmation are operated with real clicks while an offline replay is running.
 test('Chromium: offering vouchers pauses the replay so the confirmation stays still, then real clicks stop it and mail the tickets',async()=>{
- const g=await openRuntime(root),p=g.page;
+ // Install the clock before game scripts capture Date.now; keep timers running for real clicks.
+ const g=await openRuntime(root,'index.html',{}, {clockTime:new Date()}),p=g.page;
  try{
+  await p.clock.resume();
   await p.setViewportSize({width:1280,height:800});
   await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);startSelectedExploration();
    // A recorded 30-minute snapshot of the first map (statistics normally build it during online play).
