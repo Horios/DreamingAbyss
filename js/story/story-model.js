@@ -52,6 +52,35 @@
   if(q.rewards?.gold||q.rewards?.ore||q.rewards?.items?.length||q.nextQuests?.length||q.prerequisites?.length||q.unlock?.conditions?.length)add('序章任務本身不設定獎勵、前置或後續任務');
   return out;
  }
+ /* Chapters (v0.153): quests with a `chapter` field are played by the chapter runtime. Their numbers are ids the
+    runtime looks up (scenes, temporary allies, the companion template), so a text or empty value is refused here. */
+ const CHAPTER_ACTIONS=['','allies','talk','recruit'],CHAPTER_ALLY_IDS=[900000002,900000003,900000004];
+ function chapterIssues(q,ctx={}){
+  const out=[],add=m=>out.push(q.id+'：章節：'+m),c=q.chapter,int=v=>Number.isSafeInteger(v),text=(v,max=400)=>typeof v==='string'&&v.length<=max,line=x=>x&&['npc','player','narrator'].includes(x.kind)&&text(x.speaker,40)&&text(x.text,2000);
+  if(!c||typeof c!=='object'||Array.isArray(c))return [q.id+'：章節設定無效'];
+  if(c.version!==1)add('版本必須是 1');
+  if(!text(c.title,60)||!c.title.trim())add('章節標題無效');
+  if(c.gate!==undefined&&(!text(c.gate,80)||!c.gate))add('鎖定旗標無效');
+  const scenes=Array.isArray(c.scenes)?c.scenes:null;
+  if(!scenes||!scenes.length||scenes.some((x,i)=>!x||x.id!==i+1||!text(x.name,60)||!x.name.trim()||!text(x.place,60)))add('場景必須依序編號（1 起）並有名稱與地點');
+  if(!Array.isArray(c.openPages)||c.openPages.some(x=>!text(x,40)||!x))add('開放頁面清單無效');
+  const allies=Array.isArray(c.allies)?c.allies:null;
+  if(!allies||allies.length>CHAPTER_ALLY_IDS.length||allies.some(a=>!a||!CHAPTER_ALLY_IDS.includes(a.id)||!int(a.template)||a.template<0||!text(a.name,20)||!a.name.trim())||new Set((allies||[]).map(a=>a?.id)).size!==(allies||[]).length)add('臨時隊友必須使用保留 ID（'+CHAPTER_ALLY_IDS.join('、')+'）、整數範本與名稱');
+  if(c.companion!==undefined&&(!int(c.companion)||c.companion<0))add('加入的夥伴範本必須是整數');
+  if(Array.isArray(ctx.companions)){
+   const exists=id=>ctx.companions.some(a=>a?.id===id);
+   if(c.companion!==undefined&&int(c.companion)&&!exists(c.companion))add('加入的夥伴範本不存在');
+   for(const a of allies||[])if(a&&int(a.template)&&!exists(a.template))add('臨時隊友範本不存在：'+a.template);
+  }
+  if(!c.ui||typeof c.ui!=='object'||Object.values(c.ui).some(v=>!text(v,120)))add('介面文字無效');
+  if(c.ending!==undefined&&(!c.ending||!text(c.ending.title,60)||!text(c.ending.button,20)||!Array.isArray(c.ending.lines)||c.ending.lines.some(l=>!line(l))))add('結尾卡片無效');
+  for(const s of Array.isArray(q.stages)?q.stages:[]){const x=s?.chapter,label='階段 '+s?.id+'：';
+   if(!x||!int(x.scene)||!scenes?.some(y=>y?.id===x.scene)||!CHAPTER_ACTIONS.includes(x.action)||!text(x.hint)||x.actionLabel!==undefined&&!text(x.actionLabel,40))add(label+'場景、動作或提示無效');
+   else if(x.action==='recruit'&&!int(c.companion))add(label+'招募動作需要設定加入的夥伴');
+   else if(x.action==='allies'&&!allies?.length)add(label+'臨時隊友動作需要設定隊友');
+  }
+  return out;
+ }
  function defaults(){return {version:1,quests:[]};}
  function issues(d,ctx={}){
   const errors=[],add=m=>errors.push('劇情：'+m),id=v=>typeof v==='string'&&/^[A-Za-z][A-Za-z0-9_-]{0,79}$/.test(v)&&!['constructor','prototype','__proto__'].includes(v),key=v=>typeof v==='string'&&v.length<160&&!['constructor','prototype','__proto__'].includes(v),num=n=>Number.isSafeInteger(n)&&n>=0&&n<=1e9;
@@ -103,10 +132,11 @@
    acyclic(graph,label);const reachable=new Set();function reach(n){if(reachable.has(n))return;reachable.add(n);for(const v of graph.get(n)||[])reach(v);}reach(q.entry);for(const s of graph.keys())if(!reachable.has(s))add(label+'無法抵達階段 '+s);
   }
   const pro=d.quests.filter(q=>q&&q.prologue);if(pro.length>1)add('只能有一個序章任務');for(const q of pro)if(qs.has(q.id))errors.push(...prologueIssues(q,ctx));
+  for(const q of d.quests)if(q&&q.chapter!==undefined&&qs.has(q.id))errors.push(...chapterIssues(q,ctx).map(m=>'劇情：'+m));
   // Prerequisites and explicit links both describe forward quest dependencies.
   for(const q of d.quests)for(const p of q?.prerequisites||[])if(edges.has(p))edges.get(p).push(q.id);
   acyclic(edges,'任務鏈');return [...new Set(errors)];
  }
  function validate(d,ctx){const e=issues(d,ctx);if(e.length)throw Error(e.join('\n'));return copy(d);}
- const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate,PROLOGUE_ACTIONS,PROLOGUE_ORDER,PROLOGUE_SOURCES,PROLOGUE_SCENES,prologueQuest,prologueIssues,skippable};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
+ const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate,PROLOGUE_ACTIONS,PROLOGUE_ORDER,PROLOGUE_SOURCES,PROLOGUE_SCENES,prologueQuest,prologueIssues,chapterIssues,CHAPTER_ACTIONS,CHAPTER_ALLY_IDS,skippable};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

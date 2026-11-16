@@ -153,3 +153,24 @@ test('the gear lesson guides the prologue charm: equipment skill, the proc slot,
  assert.equal(r.json(`playerHero().acquiredSkillIds.includes('job3-support0')`),true,'the support skill reward');
  assert.deepEqual(r.errors,[]);
 });
+
+test('v0.153: the chapter numbers refuse text or an empty value',()=>{
+ const story=published.story;assert.deepEqual(M.issues(story),[]);
+ const broken=(f,pattern)=>{const x=M.copy(story);f(x.quests.find(q=>q.chapter));assert(M.issues(x).some(m=>pattern.test(m)),pattern);};
+ for(const v of ['1',null]){
+  broken(q=>q.stages[0].chapter.scene=v,/階段 arrival：場景/);broken(q=>q.chapter.version=v,/版本/);broken(q=>q.chapter.scenes[0].id=v,/場景必須依序/);
+  broken(q=>q.chapter.allies[0].id=v,/臨時隊友/);broken(q=>q.chapter.allies[0].template=v,/臨時隊友/);broken(q=>q.chapter.companion=v,/夥伴範本/);
+ }
+ broken(q=>q.stages[0].chapter.action='fly',/動作/);broken(q=>q.chapter.allies[0].id=5,/保留 ID/);
+});
+
+
+test('chapter companion and temporary ally references must exist in the same document',()=>{
+ const ctx={companions:published.companions};
+ assert.deepEqual(M.issues(published.story,ctx),[]);
+ for(const [field,edit] of [['加入的夥伴',q=>q.chapter.companion=999999],['臨時隊友',q=>q.chapter.allies[0].template=999999]]){
+  const story=M.copy(published.story);edit(story.quests.find(q=>q.chapter));
+  assert(M.issues(story,ctx).some(x=>x.includes(field)&&x.includes('不存在')));
+  assert.throws(()=>M.validate(story,ctx),/不存在/);
+ }
+});
