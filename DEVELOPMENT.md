@@ -191,6 +191,11 @@ CI：回歸閘門先由 `plan` 判定範圍。只改 `data/balance/**`（與產�
 - 裝備教學時，背包清單把女神給的武器與護符固定排在最上面（武器在前、護符在後），不受清單排序設定影響；只調整畫面上的順序，不改背包資料。
 - 聚光燈只在教學步驟進行時存在，每 150 毫秒重新判斷目標並逐格跟隨位置；離開教學、回到對話或序幕結束時移除。
 
+## 合併 claude/pensive-hawking-evwnd1 的卡片底色修正（v0.148）
+
+- 檢查所有遠端分支後，只有 `claude/pensive-hawking-evwnd1` 的 682a8f4 尚未進入 `chatgpt-dev`；`main`、`claude/zealous-rubin-k94r10` 的內容等於 v0.118，`claude/jolly-pasteur-1qrs1r` 的內容等於 v0.143，其餘分支只落後。
+- 682a8f4：戰鬥卡片重繪時改為複製原始 `style` 屬性（`style.cssText` 重新序列化可能丟掉 `--vs-card`，卡片退回灰藍色）；`--vs-card` 缺失時依 `seconds-job-N` 使用職業預設色。與目前版本衝突的一行保留了 v0.131 之後新增的 `.battle-number-layer` 例外。新增的職業預設色規則加上 `:root:not([data-ui-theme="paper"]) #app .seconds-battlefield` 範圍，維持紙張主題不受影響（`tests/visual-standard.test.cjs`）。
+
 ## 教學卡片避開頁首與底部選單；瀏覽器 CI 時限（v0.147）
 
 - 手機寬度時教學卡片停靠的位置限制在頁首下緣與固定在底部的選單之間，不再蓋住頁首的信箱、成就、設定等按鈕（`mobile-layout` 在 CI 被卡片擋住點擊）。桌面版的卡片同樣不會超出這個範圍。
