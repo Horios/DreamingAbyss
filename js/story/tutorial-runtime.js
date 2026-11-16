@@ -137,6 +137,11 @@
   'skills.procSlots':()=>$q('main [onclick^="openSkillSlot(\'proc\'"]')?.parentElement||null,
   'skills.supportSlots':()=>$q('main [onclick^="openSkillSlot(\'support\'"]')?.parentElement||null,
   'skills.slotChoice':()=>{const m=modal();return m?[...m.querySelectorAll('[onclick^="chooseSkillSlot("]')].find(b=>!b.disabled&&!/null\)$/.test(b.getAttribute('onclick')))||null:null;},
+  'shop.categories':()=>$q('main .shop-category-tabs'),
+  'shop.fixed':()=>$q('main .shop-fixed-section'),
+  'shop.random':()=>$q('main .shop-random-section'),
+  'quests.board':()=>$q('main .quest-design-card')?.parentElement||null,
+  'quests.start':()=>$q('main [onclick^="startDailyCommission("]')||$q('main [onclick^="claimBoard("]'),
   'header.options':()=>document.getElementById('utilityButton-options')
  };
  // A control marked data-tutorial-target="id" wins over the built-in lookup, so a redesigned screen can keep its target.

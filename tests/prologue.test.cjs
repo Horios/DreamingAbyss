@@ -39,7 +39,7 @@ test('published prologue: eight scenes, every system action once and in order, o
  const rite=opening.slice(at('最初聽到的，是腳步聲。')+1,at('一片混沌中，你的意識逐漸清晰。')).join('');
  for(const word of ['長袍','知識','認知','天賦','光點','光團'])assert(rite.includes(word),'the creation rite sits between the footsteps and the awakening: '+word);
  assert.deepEqual(original,['一間神祕的房間內，無源之光亮起。',...prelude]);assert.equal(lines.filter(l=>l.source==='original').length,14,'only the developer text is marked original');
- assert.equal(q.prologue.chapter.title,'第一章：斷絕的商路');
+ assert.equal(q.prologue.chapter.title,'第一章：初臨艾斯蘭');
 });
 
 test('removing or reordering a system stage is rejected; editing text is not',()=>{
@@ -106,8 +106,8 @@ for(const job of [0,1,2,3])test('class '+job+' plays all eight scenes with the r
 
  r.until('departure','chapter');for(let i=0;i<4;i++)r.run('prologueNext()');r.run('prologueEnter()');
  s=r.json('{active:__EMBERWILD_PROLOGUE.active(),done:party.story.quests.prologue.done,quests:Object.keys(party.story.quests),members:party.members.map(memberKey),lineup:party.active,enlisted:party.enlisted,profiles:Object.keys(party.companionProfiles),unlocked:party.companionUnlocks.unlocked.includes(__EMBERWILD_PROLOGUE_HELPER.id),map:party.map,tab,name:characterName(playerHero()),job:playerHero().job,loadout:playerHero().skillLoadout.active[0]}');
- assert.deepEqual(s,{active:false,done:true,quests:['prologue','two_regions','shop_rescue','skill_equipment_intro'],members:[job],lineup:[job],enlisted:[job],profiles:[],unlocked:false,map:0,tab:'battle',name:'測試者',job,loadout:skills[0].id});
- assert.equal(r.run("setTab('shop')")===false,false,'navigation opens after arrival');
+ assert.deepEqual(s,{active:false,done:true,quests:['prologue','two_regions','shop_rescue','skill_equipment_intro','chapter1'],members:[job],lineup:[job],enlisted:[job],profiles:[],unlocked:false,map:0,tab:'battle',name:'測試者',job,loadout:skills[0].id});
+ assert.equal(r.run("setTab('shop')"),false,'chapter 1 keeps the pages the prologue did not teach closed (tests/chapter1.test.cjs)');assert.notEqual(r.run("setTab('skills')"),false,'taught pages are open after arrival');
  r.run("setTab('battle');running=true");assert.notEqual(r.run('spawnGroup()'),false,'ordinary exploration opens after arrival');r.run('stopTeamExploration()');
  // The later gear-skill quest does not hand out a second charm.
  assert.equal(r.run("completeStoryStage('skill_equipment_intro','','equipment_gift')"),true);assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);assert.equal(r.json('playerHero().bag.length'),5);

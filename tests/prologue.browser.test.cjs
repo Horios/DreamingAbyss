@@ -70,9 +70,9 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   assert.equal(await page.locator('#prologue-spotlight').isVisible(),false,'no spotlight outside the lessons');
   await read(page,'departure/chapter');await fits(page,'departure');
   for(let i=0;i<8&&!(await page.locator('.prologue-chapter-title').count());i++)await page.click('#prologue-layer [data-story-continue]');
-  assert.equal(await page.locator('.prologue-chapter-title').innerText(),'第一章：斷絕的商路');await fits(page,'chapter title');
+  assert.equal(await page.locator('.prologue-chapter-title').innerText(),'第一章：初臨艾斯蘭');await fits(page,'chapter title');
   await page.click('#prologue-layer button:has-text("開始旅程")');
-  assert.deepEqual(await page.evaluate(()=>({active:__EMBERWILD_PROLOGUE.active(),layer:document.getElementById('prologue-layer').hidden,members:party.members.length,map:party.map,tab,done:party.story.quests.prologue.done,bag:playerHero().bag.length,banner:!!document.querySelector('.prologue-task')})),{active:false,layer:true,members:1,map:0,tab:'battle',done:true,bag:5,banner:false});
+  assert.deepEqual(await page.evaluate(()=>({active:__EMBERWILD_PROLOGUE.active(),layer:!!document.querySelector('#prologue-layer [data-chapter="chapter1"]'),members:party.members.length,map:party.map,tab,done:party.story.quests.prologue.done,bag:playerHero().bag.length,banner:!!document.querySelector('.prologue-task')})),{active:false,layer:true,members:1,map:0,tab:'battle',done:true,bag:5,banner:false},'chapter 1 opens in the story window right after the prologue');
   await page.reload();await page.waitForSelector('.title-screen');await page.click('.save-slot-select');await page.waitForSelector('.layout');
   assert.deepEqual(await page.evaluate(()=>[__EMBERWILD_PROLOGUE.active(),characterName(playerHero()),playerHero().bag.length,party.members.length]),[false,'艾拉',5,1],'a finished prologue never replays and nothing is granted twice');
   assert.deepEqual(game.errors,[]);

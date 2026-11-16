@@ -67,3 +67,6 @@ body.story-window-open .story-dialogue{display:none}
 @media (max-height:520px){.story-window{max-height:92%}.story-window-head{padding:8px 14px 2px}.prologue-head h1{font-size:18px}.prologue-option{min-height:44px}}
 /* The site turns animations off by default (base.css); the story window opts back in, and only when motion is welcome. */
 @media (prefers-reduced-motion:no-preference){.story-window{animation:prologue-rise .35s ease both!important}.prologue-light::before{animation:prologue-glow 5s ease-in-out infinite!important}.prologue-scene[data-scene="1"] .prologue-light i{animation:prologue-gather 4.5s ease-in-out infinite!important}.story-char.on{animation:story-char-in .1s ease-out both!important}.story-char.on.now{animation:none!important}#prologue-spotlight{animation:prologue-spot 1.4s ease-in-out infinite!important}.prologue-chapter-title{animation:prologue-rise 1.2s ease both!important}}
+/* v0.150 chapter scenes: locked entries while the chapter gate is on, and the reply buttons in the story window. */
+.chapter-locked{opacity:.45;cursor:not-allowed}
+.chapter-choices button{text-align:left;white-space:normal}

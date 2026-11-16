@@ -15,7 +15,7 @@ test('Chromium: offering vouchers pauses the replay so the confirmation stays st
   await p.waitForTimeout(800);
   assert.equal(await confirm.innerText(),first,'the confirmation text does not change while it is open');
   assert.equal(await p.evaluate(()=>party.offlineExploration.lastAt),cursor,'the replay pauses during the confirmation');
-  const shown=Number(first.match(/(\d+) 張「苔光林地」30 分鐘收益券/)?.[1]);assert(shown>=15&&shown<=16,'about 8 hours of tickets: '+shown);
+  const shown=Number(first.match(/(\d+) 張「無名密林」30 分鐘收益券/)?.[1]);assert(shown>=15&&shown<=16,'about 8 hours of tickets: '+shown);
   await confirm.getByRole('button',{name:'確認改領',exact:true}).click();
   // Read the result as soon as the job resolves: the test settled to a future time, so a later timer-driven sync would
   // see the real clock 8 hours behind the settled cursor and report invalid time.

@@ -58,6 +58,11 @@
   'skills.procSlots':{label:'觸發技能槽',page:'skills'},
   'skills.supportSlots':{label:'輔助技能槽',page:'skills'},
   'skills.slotChoice':{label:'技能槽視窗的「裝入技能」',page:'skills'},
+  'shop.categories':{label:'商店分類按鈕',page:'shop'},
+  'shop.fixed':{label:'商店固定商品',page:'shop'},
+  'shop.random':{label:'商店限時商品與刷新',page:'shop'},
+  'quests.board':{label:'每日委託清單',page:'quests'},
+  'quests.start':{label:'委託的「開始任務」',page:'quests'},
   'header.options':{label:'頁首「設定」',page:''}
  };
  const ID=/^[a-z][a-z0-9_]{1,47}$/,STEP_ID=/^[a-z][a-z0-9_]{0,31}$/;
@@ -90,6 +95,18 @@
    step('active','主動技能','點選主動槽可以選擇或替換技能。',{page:'skills',target:'skills.firstActiveSlot',advance:{type:'event',key:'skillSlotOpened'},requires:group([condition('learnedActiveSkills','',1),condition('skillSlots','active',1)]),skipIf:group([condition('prologueLesson','skillLesson')])}),
    step('auto','自動施放','戰鬥中，主動槽的技能在冷卻結束且 MP 足夠時自動施放；有施放條件的技能要等條件成立。沒有可用的技能時角色會普攻。',{page:'skills',target:'skills.activeSlots'}),
    step('others','觸發與輔助','觸發技能在普攻時依觸發率發動；輔助技能在戰鬥中同樣自動施放。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
+  ]}),
+  makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。劇情開放商店後，第一次進入商店時開始。',
+   trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone'),condition('featureUnlocked','page_shop')]),steps:[
+   step('categories','商品分類','上方按鈕切換商品分類。',{page:'shop',target:'shop.categories'}),
+   step('fixed','固定商品','固定商品隨時可以購買。買到的道具放進背包的「道具」分類。',{page:'shop',target:'shop.fixed'}),
+   step('random','限時商品','這一區的商品會定期更換，也可以花金幣手動刷新。',{page:'shop',target:'shop.random'})
+  ]}),
+  makeModule({id:'quest_basics',title:'委託',category:'quests',description:'每日委託的接取與交付。劇情開放委託後，第一次進入委託時開始。',
+   trigger:{type:'pageEnter',page:'quests'},prerequisites:group([condition('prologueDone'),condition('featureUnlocked','page_quests')]),steps:[
+   step('board','每日委託','每天會出現五項委託，最多可以完成四項。',{page:'quests',target:'quests.board'}),
+   step('start','接取委託','按「開始任務」接下委託。擊殺與強化等進度從接下之後開始計算。',{page:'quests',target:'quests.start'}),
+   step('claim','交付','達成目標後回到這裡交付，領取委託上的獎勵。',{page:'quests',target:'quests.board'})
   ]})
  ]};}
 
