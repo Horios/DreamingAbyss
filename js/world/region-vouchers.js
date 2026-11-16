@@ -141,7 +141,15 @@
  function claimOwnMail(ids){
   const messages=(party?.mailbox?.messages||[]).filter(m=>ids.includes(m.id)&&['ticket','gold'].includes(mailKind(m))&&!m.claimed);if(!messages.length)return null;
   if(globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
-  const h=party.members[0],before={vouchers:copy(ledger()),mailbox:copy(party.mailbox),lv:h.lv,xp:h.xp,xpFraction:h.xpFraction,hp:h.hp,gold:h.gold};
+  const h=party.members[0],progressKeys=['lv','xp','xpFraction','hp','won','advanced','skills','active','procSlots','supportLevels','supportSlots','skillLoadout','passiveEnabled','equipped','sockets','gems','stats','ap','sp'];
+  const before={vouchers:copy(ledger()),mailbox:copy(party.mailbox),gold:h.gold,build:copy(party.buildSystem),
+   members:party.members.map(member=>({member,progress:Object.fromEntries(progressKeys.filter(key=>Object.hasOwn(member,key)).map(key=>[key,copy(member[key])]))}))};
+  function restoreClaim(){
+   party.regionVouchers=before.vouchers;party.mailbox=before.mailbox;
+   for(const {member,progress} of before.members)for(const key of progressKeys){if(Object.hasOwn(progress,key))member[key]=copy(progress[key]);else delete member[key];}
+   if(before.build){party.buildSystem=before.build;h.mastery=globalThis.__EMBERWILD_TEAM_MASTERY?.(h)||h.mastery;}
+   h.gold=before.gold;
+  }
   const out={tickets:0,xp:0,gold:0};
   try{for(const m of messages){
    for(const a of m.attachments){
@@ -150,9 +158,9 @@
     else if(a.type==='voucherGold'){h.gold+=a.quantity;out.gold+=a.quantity;}
    }
    m.claimed=true;m.read=true;
-  }}catch(error){party.regionVouchers=before.vouchers;party.mailbox=before.mailbox;Object.assign(h,{lv:before.lv,xp:before.xp,xpFraction:before.xpFraction,hp:before.hp,gold:before.gold});toast(error.message);return false;}
+  }}catch(error){restoreClaim();toast(error.message);return false;}
   let saved=false;try{saved=save()===true;}catch{}
-  if(!saved){party.regionVouchers=before.vouchers;party.mailbox=before.mailbox;Object.assign(h,{lv:before.lv,xp:before.xp,xpFraction:before.xpFraction,hp:before.hp,gold:before.gold});toast('儲存失敗，附件保留在信箱');return false;}
+  if(!saved){restoreClaim();toast('儲存失敗，附件保留在信箱');return false;}
   return out;
  }
  const claimedText=o=>[o.tickets?o.tickets+' 張收益券已放入背包的道具欄':'',o.xp?'經驗 +'+o.xp.toLocaleString('zh-TW'):'',o.gold?'金幣 +'+o.gold.toLocaleString('zh-TW'):''].filter(Boolean).join('；');

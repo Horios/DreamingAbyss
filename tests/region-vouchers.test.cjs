@@ -135,3 +135,28 @@ test('ticket length and potion charging come from balance settings; invalid valu
  }
  assert.deepEqual(r.errors,[]);
 });
+
+test('failed voucher XP claims restore every companion and permanent skill unlock before retry',()=>{
+ const r=loadRuntime(root);r.ctx.seed=seed;
+ r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();
+  playerHero().lv=14;playerHero().xp=0;syncParty();
+  for(const id of [10,11,12,13,14]){closeModal();recruitCompanion(id);}closeModal();
+  const mailbox=party.mailbox,id=++mailbox.serial;
+  mailbox.messages.push({id,rewardKey:'voucher-gold-'+id,subject:'收益券測試',body:'',at:Date.now(),read:false,claimed:false,attachments:[{type:'voucherXp',name:'經驗值',quantity:need(14)},{type:'voucherGold',name:'金幣',quantity:10}]});
+  globalThis.__claimId=id;
+  globalThis.__claimState=()=>JSON.stringify({members:packParty().members,build:party.buildSystem,mailbox:party.mailbox,vouchers:party.regionVouchers});
+  save();`);
+ assert(r.run('party.members.length')>1,'the claim includes recruited companions');
+ const before=r.run('__claimState()');
+ for(const saveBody of ['return false','throw Error("quota")']){
+  r.ctx.saveBody=saveBody;r.run('globalThis.__claimSave=save;save=new Function(saveBody)');
+  try{assert.equal(r.run('claimMailboxAttachments(__claimId)'),false);}
+  finally{r.run('save=__claimSave');}
+  assert.equal(r.run('__claimState()'),before,'failed claims restore roster growth, builds, tickets and mail: '+saveBody);
+ }
+ assert.equal(r.run('claimMailboxAttachments(__claimId)'),true,'retry can claim the same retained mail');
+ assert(json(r,'party.members.every(h=>h.lv===15)'),'successful claim advances the whole roster');
+ assert.equal(r.run('claimMailboxAttachments(__claimId)'),false,'the successful retry cannot be claimed twice');
+ assert.doesNotThrow(()=>r.run('validateParty(JSON.parse(JSON.stringify(packParty())))'));
+ assert.deepEqual(r.errors,[]);
+});
