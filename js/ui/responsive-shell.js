@@ -151,6 +151,9 @@
   const sheetPage={gear:'equipment',token:'equipment',forge:'forge',worn:'worn'};
   const tabBase=setTab;setTab=function(...args){if(sheet&&sheet!=='mail'&&sheetPage[sheet]!==args[0])setSheet('');return tabBase(...args);};
   const closeBase=closeModal;closeModal=function(...args){if(sheet==='mail')setSheet('');return closeBase(...args);};
+  // Selecting an item (a tap, or a jump from another page that picks one) means its detail is wanted.
+  if(typeof selectInventoryGear==='function'){const gearBase=selectInventoryGear;selectInventoryGear=function(...args){if(phone.matches)setSheet('gear');return gearBase(...args);};}
+  if(typeof selectInventoryToken==='function'){const tokenBase=selectInventoryToken;selectInventoryToken=function(...args){if(phone.matches)setSheet('token');return tokenBase(...args);};}
   if(typeof openForge==='function'){const forgeBase=openForge;openForge=function(...args){const out=forgeBase(...args);if(phone.matches)setSheet('forge');return out;};}
   const modal=document.getElementById('modal');
   if(modal)new MutationObserver(()=>{if(sheet==='mail')syncSheet();}).observe(modal,{childList:true});

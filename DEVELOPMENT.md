@@ -827,3 +827,12 @@ headless 測試環境（Node `vm`）存取全域變數的成本與瀏覽器不�
 - `css/seconds-battle.css` 移除 8 個 700px 以下的舊戰鬥區塊（約 4.7KB）：逐一移除並以群怪戰鬥、三種卡片面、8 種寬度的截圖比對，畫面完全相同才保留移除；有 2 個區塊移除後畫面改變，保留。
 - `!important` 由 391 處降為 377 處。`mobile-layout.css` 的覆寫沒有併回各來源檔：它是單一大型區塊，與各頁規則交錯，沒有逐條比對就搬動的風險高於收益，留待日後逐頁處理。
 - 修正 v0.122：戰報收合按鈕在不開瀏覽器的測試環境（`tests/headless-runtime.cjs` 的模擬 DOM 沒有 `prepend`）會拋錯，使該環境的測試在載入時失敗；加上能力檢查。按鈕改為絕對定位，不佔戰報欄的版面流：它在每次戰報重繪後才加入，原本會把紀錄區往下擠 39px，使 `battle-journal-scroll` 的貼底檢查失敗。
+
+## v0.124 版面優化收尾：完整測試比對後的修正
+
+以 v0.123 執行完整測試（927 項），並把失敗的測試檔在 v0.118 上重跑比對：55 項在 v0.118 就失敗（都需要 `Horios/DreamingAbyss-BalanceEditor` 的檔案，本機沒有），另有 8 項是版面優化造成，本版處理：
+
+- 手機上以程式選取裝備或信物（例如從其他頁面跳到背包並選定某件）時，詳情面板沒有開啟，使用者看不到詳情與「穿戴」。現在 `selectInventoryGear`、`selectInventoryToken` 被呼叫就開啟對應面板（點擊也是走這兩個函式）。
+- 手機穿戴頁展開鑲嵌區時會蓋到下一列的部位：部位卡片的按鈕原本設為 100% 高度，鑲嵌區因此溢出卡片。改為卡片直向排列、按鈕自動伸展。
+- `tools/override-baseline.json`：`render` 的覆寫次數 23 → 24（`responsive-shell.js` 的外框同步）。
+- 測試前提更新：`companion-token-management`（1000px → 1100px）、`offline-exploration`（600px → 700px）的斷點斷言；`page-readability` 在手機先選「全部地區」再捲到最後一個 BOSS 配方。
