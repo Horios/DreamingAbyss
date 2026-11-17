@@ -121,7 +121,7 @@
   let journalCollapsed=false;try{journalCollapsed=localStorage.getItem(JOURNAL_KEY)==='1';}catch{}
   function syncJournalToggle(){
     document.body.classList.toggle('journal-collapsed',journalCollapsed);
-    const journal=document.getElementById('globalBattleJournal');if(!journal)return;
+    const journal=document.getElementById('globalBattleJournal');if(!journal||typeof journal.prepend!=='function')return;
     let button=journal.querySelector(':scope>.journal-collapse-toggle');
     if(!button){button=document.createElement('button');button.type='button';button.className='journal-collapse-toggle';button.onclick=()=>toggleJournalCollapsed();journal.prepend(button);}
     const label=journalCollapsed?'展開戰報':'收合 ›';

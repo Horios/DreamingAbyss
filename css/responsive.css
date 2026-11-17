@@ -265,6 +265,8 @@
   #app>.layout>main .inventory-master-pane{height:auto;max-height:calc(100dvh - 240px);overflow:hidden}
   #app>.layout>main .forge-workbench{grid-template-columns:minmax(250px,38%) minmax(0,1fr);grid-template-rows:auto;align-items:start}
   #app>.layout>main .forge-gear-pane{height:auto;max-height:calc(100dvh - 260px)}
+  #app>.layout>main .forge-layout{display:block}
+  #app>.layout>main .forge-preview,#app>.layout>main .forge-controls{max-height:none}
   #app .shop-product-grid,#app>.layout>main .cards,#app>.layout>main .shared-shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   #app .squad-field{grid-template-columns:none}
   #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:repeat(auto-fit,minmax(150px,190px))!important;gap:14px 12px!important}
@@ -279,9 +281,14 @@
 /* Desktop battle report column: 收合 leaves a narrow strip so the page gets the width. */
 .journal-collapse-toggle{display:none}
 @media(min-width:901px){
-  #globalBattleJournal>.journal-collapse-toggle{display:block;width:100%;min-height:28px;margin:0 0 6px;padding:2px 8px;font-size:var(--fs-xs);text-align:right;color:var(--muted);background:transparent;border:0;box-shadow:none}
+  /* The button is added after each report redraw, so it is placed outside the flow: the log's height never changes under it. */
+  #app>.layout>#globalBattleJournal{position:relative;padding-top:30px!important}
+  #globalBattleJournal>.journal-collapse-toggle{display:block;position:absolute;top:2px;right:6px;width:auto;min-height:26px;margin:0;padding:2px 8px;font-size:var(--fs-xs);color:var(--muted);background:transparent;border:0;box-shadow:none}
   body.journal-collapsed{--journal-width:44px}
   body.journal-collapsed #globalBattleJournal{padding:6px 4px!important;overflow:hidden}
   body.journal-collapsed #globalBattleJournal>:not(.journal-collapse-toggle){display:none!important}
-  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{height:100%;min-height:120px;padding:10px 0;text-align:center;writing-mode:vertical-rl;letter-spacing:.2em;color:var(--gold);border:1px solid var(--line);border-radius:8px}
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{inset:6px 4px;width:auto;height:auto;min-height:120px;padding:10px 0;text-align:center;writing-mode:vertical-rl;letter-spacing:.2em;color:var(--gold);border:1px solid var(--line);border-radius:8px}
 }
+
+/* Narrow desktop windows (901–1100px): the forge detail keeps its natural height. */
+@media(min-width:901px) and (max-width:1100px){#app>.layout>main .forge-layout{display:block;height:auto}#app>.layout>main .forge-preview,#app>.layout>main .forge-controls{max-height:none}}

@@ -69,14 +69,14 @@
 .item-hover-tooltip[hidden]{display:none}.item-hover-tooltip h3{margin:0 0 8px;font-size:14px}.item-hover-tooltip p{margin:6px 0}.item-hover-tooltip details{display:block}.item-hover-tooltip details>*{display:block!important}.item-hover-tooltip summary{display:none}.item-hover-tooltip::backdrop{background:transparent}
 #item-detail-dialog{width:min(580px,calc(100vw - 28px));max-height:85dvh;padding:20px;overflow:auto}#item-detail-dialog .actions{flex-wrap:wrap}#item-detail-dialog input{width:95px;max-width:100%}.item-detail-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.item-detail-art svg{width:44px;height:44px}.item-detail-top button{flex:none}
 
-@media(max-width:600px){
+@media(max-width:700px){
   .inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.life-materials,.account-gem-slots,.token-inventory-list,.worn-candidate-list,.shop-product-grid{gap:5px;padding:3px}
   .item-slot,.inventory-list-item.item-slot,.forge-gear-item.item-slot,.worn-candidate.item-slot,.token-inventory-row.item-slot,.mailbox-attachment.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px}
   .mailbox-attachments{max-width:none}
 }
 
 /* Mobile legacy list rules must not enlarge shared item slots. */
-@media(max-width:600px){#app .inventory-list-item.item-slot,#app .forge-gear-item.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px;align-items:center}}
+@media(max-width:700px){#app .inventory-list-item.item-slot,#app .forge-gear-item.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px;align-items:center}}
 
 /* Reference slots keep hover information without opening another dialog. */
 .item-slot:not(button){cursor:default}.shop-inline-controls{display:flex;flex-direction:column;gap:6px;min-width:0;margin-top:6px}.shop-inline-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.shop-inline-actions input{width:64px;min-width:0}.shop-inline-actions button{min-height:32px}
