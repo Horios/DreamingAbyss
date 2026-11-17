@@ -257,3 +257,32 @@ test('Desktop utility dialogs put 關閉 on the title row',async()=>{
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop remaining items: the report log starts at the top, quests are one row each, wide screens compare with the worn item',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ await p.evaluate(()=>{setTab('battle');render();});
+ const log=await p.evaluate(()=>{const s=document.querySelector('#liveLog .battle-log-stream'),first=s.querySelector('[data-event-type]');return {gap:first?first.getBoundingClientRect().top-s.getBoundingClientRect().top:-1,blanks:[...s.querySelectorAll('.battle-log-empty')].filter(e=>e.getBoundingClientRect().height).length};});
+ assert(log.gap>=0&&log.gap<=4&&log.blanks===0,'a short log starts at the top '+JSON.stringify(log));
+ await p.evaluate(()=>setTab('quests'));
+ const quests=await p.locator('.quest-design-card').evaluateAll(es=>es.map(e=>{const b=e.getBoundingClientRect();return {x:Math.round(b.left),w:Math.round(b.width),h:Math.round(b.height)};}));
+ assert(quests.length>=3&&new Set(quests.map(q=>q.x)).size===1&&quests.every(q=>q.h<=100),'one row per quest '+JSON.stringify(quests));
+ const placed=await p.locator('.quest-design-card').first().evaluate(e=>{const t=e.querySelector('h2').getBoundingClientRect(),o=e.querySelector('.quest-objectives').getBoundingClientRect(),b=e.querySelector('button').getBoundingClientRect();return o.left>t.left&&b.left>o.right;});
+ assert(placed,'title, objectives and button run left to right');
+ await p.evaluate(()=>setStoryCategory('side'));
+ assert(await p.locator('.quest-design-card').first().evaluate(e=>e.getBoundingClientRect().height<=110),'side quests use the same row');
+ await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
+ assert.equal(await p.locator('.inventory-compare-pane').count(),0,'no comparison column below 1600px');
+ await p.setViewportSize({width:1920,height:1080});await p.evaluate(()=>render());
+ const pane=p.locator('.inventory-compare-pane');assert.equal(await pane.isVisible(),true);
+ const cols=await p.evaluate(()=>['.inventory-master-pane','.inventory-detail-wrap','.inventory-compare-pane'].map(s=>{const b=document.querySelector(s).getBoundingClientRect();return {l:b.left,r:b.right,t:Math.round(b.top)};}));
+ assert(cols[0].r<=cols[1].l+1&&cols[1].r<=cols[2].l+1&&new Set(cols.map(c=>c.t)).size===1,'three columns side by side '+JSON.stringify(cols));
+ assert.match(await pane.innerText(),/與目前穿戴比較[\s\S]*能力/);
+ const before=await pane.getAttribute('data-key');
+ await p.locator('.gear-management-row').nth(2).locator('.inventory-list-item').click();await p.waitForFunction(()=>!isEmberwildUIInteracting());
+ assert.notEqual(await p.locator('.inventory-compare-pane').getAttribute('data-key'),before,'the comparison follows the selection');
+ const snapshot=await p.evaluate(()=>JSON.stringify(party.members[0].equipped));await p.evaluate(()=>render());
+ assert.equal(await p.evaluate(()=>JSON.stringify(party.members[0].equipped)),snapshot,'comparing changes nothing');
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

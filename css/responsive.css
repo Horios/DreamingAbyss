@@ -379,3 +379,44 @@
   #modal.utility-dialog>.heading,#modal.utility-dialog>section>h1:first-child,#modal.utility-dialog>.lake-panel>.eyebrow:first-child{padding-right:84px}
   #modal.utility-dialog>.heading{min-height:36px}
 }
+
+/* ── v0.130 Desktop remaining items ──────────────────────────────────────── */
+/* Battle report: the blank filler rows pushed a short log to the bottom of the column; without them the log starts at the
+   top. A long log still follows the newest row (auto-scroll is unchanged). Phones already hide the fillers. */
+@media(min-width:901px){#app .global-battle-journal .battle-log-empty{display:none}}
+
+/* Commissions and side quests: one row per quest instead of a card grid whose last row is often one or two cards.
+   Columns: state tag, NEW, title (description below them) | objectives | reward | buttons. */
+@media(min-width:901px){
+  #app>.layout>main .cards:has(>.quest-design-card){grid-template-columns:minmax(0,1fr);gap:8px}
+  #app .quest-design-card{display:grid;grid-template-columns:max-content max-content minmax(0,1.2fr) minmax(180px,1fr) minmax(110px,.7fr) max-content;grid-auto-rows:auto;align-items:center;column-gap:10px;row-gap:2px;padding:10px 14px}
+  #app .quest-design-card>*{margin:0}
+  #app .quest-design-card>.tag{grid-column:1;grid-row:1}
+  #app .quest-design-card>.quest-new{grid-column:2;grid-row:1}
+  #app .quest-design-card>h2{grid-column:3;grid-row:1;font-size:var(--fs-lg);line-height:1.4}
+  #app .quest-design-card>p:not(.gold){grid-column:1/4;grid-row:2;font-size:var(--fs-sm);color:var(--muted)}
+  #app .quest-design-card>.quest-objectives{grid-column:4;grid-row:1/3;margin:0;padding:0}
+  #app .quest-design-card>.gold{grid-column:5;grid-row:1/3;line-height:1.5}
+  #app .quest-design-card>button{grid-column:6;min-width:96px;margin:0}
+  #app .quest-design-card>button:only-of-type{grid-row:1/3}
+}
+/* Narrow desktop windows: objectives and reward move to a third line so the title keeps its width. */
+@media(min-width:901px) and (max-width:1100px){
+  #app .quest-design-card{grid-template-columns:max-content max-content minmax(0,1fr) max-content}
+  #app .quest-design-card>.quest-objectives{grid-column:1/4;grid-row:3}
+  #app .quest-design-card>.gold{grid-column:1/4;grid-row:4}
+  #app .quest-design-card>button{grid-column:4}
+  #app .quest-design-card>button:only-of-type{grid-row:1/5}
+}
+
+/* Wide screens: list, detail and a comparison with the worn item. */
+.inventory-compare-pane{display:none}
+@media(min-width:1600px){
+  #app>.layout>main .gear-management-panel .inventory-master-detail:has(>.inventory-compare-pane){grid-template-columns:minmax(300px,32%) minmax(0,1fr) minmax(260px,30%)}
+  #app .inventory-compare-pane{display:block;min-width:0;overflow:auto;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--inset,transparent)}
+  #app .inventory-compare-pane>h3{margin:0 0 8px;font-size:var(--fs-md)}
+  #app .inventory-compare-pane .inventory-compare-current{margin:0 0 10px;line-height:1.6}
+  #app .inventory-compare-pane .equip-delta-table{width:100%;margin:0 0 10px;font-size:var(--fs-sm);border-collapse:collapse}
+  #app .inventory-compare-pane .equip-delta-table th,#app .inventory-compare-pane .equip-delta-table td{padding:3px 4px;text-align:right;border-bottom:1px solid var(--line)}
+  #app .inventory-compare-pane .equip-delta-table th:first-child,#app .inventory-compare-pane .equip-delta-table td:first-child{text-align:left}
+}

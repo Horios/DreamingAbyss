@@ -161,7 +161,35 @@
       button.textContent=open?'收起':'材料';button.setAttribute('aria-expanded',String(open));
     }
   }
-  function syncPages(){syncJournalToggle();syncSheet(true);syncIntros();syncRecipes();syncTokenFilters();syncBossRegions();syncCreationTabs();}
+  // Wide screens (1600px and up): the equipment backpack gains a third column comparing the selected gear with what the
+  // protagonist wears in that slot. It reuses equipmentComparison()/equipmentAffixComparison(), which work on a copy.
+  const wide=matchMedia('(min-width:1600px)');
+  function compareHTML(g){
+    const h=party.members[0],who=esc(characterName(h)),wearer=gearWearer(g.id);
+    if(wearer)return `<p class="small">${esc(characterName(wearer))}目前穿戴這件裝備。</p>`;
+    if(!eligibleWearers(g).includes(h))return `<p class="small">${who}無法穿戴（職業、等級或部位不符）。</p>`;
+    const positions=gearEquipPositions(g);let target=positions.find(p=>!h.equipped[p]);if(target===undefined)target=positions[0];
+    const current=h.bag.find(x=>x.id===h.equipped[target]);
+    const fmt=(r,unit='')=>`<td>${r.before}${r.percent?'%':unit}</td><td>${r.after}${r.percent?'%':unit}</td><td class="${r.good?'delta-up':'delta-down'}">${r.delta>0?'+':''}${r.delta}${r.percent?' 百分點':unit}</td>`;
+    const rows=equipmentComparison(h,g,target).map(r=>`<tr><td>${esc(r.label)}</td>${fmt(r)}</tr>`).join('')||'<tr><td colspan="4">數值無變化</td></tr>';
+    const affix=current&&globalThis.equipmentAffixComparison?globalThis.equipmentAffixComparison(current,g).map(r=>`<tr><td>${esc(r.label)}</td>${fmt(r,r.unit||'')}</tr>`).join(''):'';
+    return `<p class="inventory-compare-current"><span class="small">${who} · ${esc(EQUIP_POSITION_NAMES[target]||'')} · 目前</span><br>${current?equipmentNameHTML(current):'<span class="small">（空欄位）</span>'}</p>`+
+      `<table class="equip-delta-table"><thead><tr><th>能力</th><th>目前</th><th>穿戴後</th><th>差異</th></tr></thead><tbody>${rows}</tbody></table>`+
+      (affix?`<table class="equip-delta-table equip-affix-delta-table"><thead><tr><th>詞條</th><th>目前</th><th>穿戴後</th><th>差異</th></tr></thead><tbody>${affix}</tbody></table>`:'');
+  }
+  function syncWideCompare(){
+    const grid=document.querySelector?.('#app .gear-management-panel .inventory-master-detail');
+    let pane=grid?.querySelector(':scope>.inventory-compare-pane');
+    const g=grid&&wide.matches&&typeof inventorySelectedGearId!=='undefined'?findGear(inventorySelectedGearId):null;
+    if(!g||EmberwildTokens.isToken(g)){pane?.remove();return;}
+    const h=party.members[0],key=[g.id,g.plus||0,h.lv,h.equipped.join(','),(g.affix||[]).length].join('|');
+    if(pane?.dataset.key===key)return;
+    if(!pane){pane=document.createElement('section');pane.className='inventory-compare-pane';pane.setAttribute('aria-label','與目前穿戴比較');grid.appendChild(pane);}
+    pane.dataset.key=key;
+    try{pane.innerHTML='<h3>與目前穿戴比較</h3>'+compareHTML(g);}catch(error){console.warn(error);pane.remove();}
+  }
+  wide.addEventListener('change',()=>syncWideCompare());
+  function syncPages(){syncJournalToggle();syncSheet(true);syncIntros();syncRecipes();syncWideCompare();syncTokenFilters();syncBossRegions();syncCreationTabs();}
   globalThis.toggleTokenFilters=function(){const open=document.body.classList.toggle('token-filters-open');const b=document.querySelector('.token-filter-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起篩選':'信物篩選';}return open;};
   globalThis.closeDetailSheet=function(){const was=sheet;setSheet('');return !!was;};
   globalThis.openDetailSheet=key=>{setSheet(key);return sheet===key;};
