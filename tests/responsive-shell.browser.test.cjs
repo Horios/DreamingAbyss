@@ -244,3 +244,16 @@ test('Desktop third pass: material lists fill the width, BOSS costs stay on one 
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop utility dialogs put 關閉 on the title row',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ for(const open of ["setTab('mailbox')","setTab('achievements')","setTab('options')","setTab('guide')","openAdventureConfig()"]){
+  await p.evaluate(()=>closeModal());await p.evaluate(open);
+  const b=await p.evaluate(()=>{const m=document.getElementById('modal'),close=m.querySelector('.utility-dialog-controls>button').getBoundingClientRect(),h=m.querySelector('h1'),range=document.createRange(),title=(range.selectNodeContents(h),range.getBoundingClientRect()),first=[...m.children].find(c=>!c.classList.contains('utility-dialog-controls')).getBoundingClientRect();return {overlap:close.top<title.bottom&&close.bottom>title.top-24,firstTop:first.top-m.getBoundingClientRect().top,clear:close.left>=title.right};});
+  assert(b.overlap&&b.firstTop<=24&&b.clear,open+' '+JSON.stringify(b));
+ }
+ await p.locator('#modal .utility-dialog-controls>button').click();assert.equal(await p.evaluate(()=>document.getElementById('modal').open),false);
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

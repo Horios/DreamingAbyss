@@ -371,3 +371,11 @@
   #app .token-management-panel>.gear-management-controls>.gear-basic-filters,#app .token-management-panel>.gear-management-controls>details{order:3;flex:1 1 100%}
   body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>.gear-basic-filters,body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>details{display:none}
 }
+
+/* Desktop utility dialogs: 關閉 floats at the top right on the title's row instead of taking a row of its own. */
+@media(min-width:701px){
+  #modal.utility-dialog>.utility-dialog-controls{position:sticky;top:0;z-index:5;height:0;margin:0;overflow:visible}
+  #modal.utility-dialog>.utility-dialog-controls>button{position:absolute;top:0;right:0}
+  #modal.utility-dialog>.heading,#modal.utility-dialog>section>h1:first-child,#modal.utility-dialog>.lake-panel>.eyebrow:first-child{padding-right:84px}
+  #modal.utility-dialog>.heading{min-height:36px}
+}
