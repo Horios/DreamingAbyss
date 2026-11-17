@@ -484,3 +484,14 @@
   #app>.start .cards>.card{display:flex;flex-direction:column}
   #app>.start .cards>.card>button.primary{margin-top:auto;align-self:flex-start}
 }
+/* Team roster: 移至後備 and 改名 sit side by side (the button column was fixed at 105px, so they stacked). */
+@media(min-width:901px){
+  #app .roster-row{grid-template-columns:minmax(0,1fr) auto}
+  #app .roster-row>.roster-member-actions{flex-wrap:nowrap;gap:6px;justify-content:flex-end}
+  #app .roster-row>.roster-member-actions>button{width:auto;white-space:nowrap;padding:6px 14px}
+}
+/* Partner roster: the two closed sections (夥伴能力, 夥伴技能) share a row; an opened one takes the full width. */
+@media(min-width:901px){
+  #app .companion-roster-details{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #app .companion-roster-details>details[open]{grid-column:1/-1}
+}

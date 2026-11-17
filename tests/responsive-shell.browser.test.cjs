@@ -356,3 +356,19 @@ test('Desktop: statistics charts sit side by side; character creation aligns the
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop rosters: member buttons sit side by side; closed partner sections share a row and an opened one takes the width',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ await p.evaluate(()=>{recruitCompanion(10);closeModal();setTab('roster');});
+ const buttons=await p.locator('.roster-player-row .roster-member-actions>button').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)));
+ assert(buttons.length===2&&buttons[0]===buttons[1],'移至後備 and 改名 share a line '+buttons);
+ await p.evaluate(()=>setTab('partnerRoster'));
+ const row=p.locator('.companion-roster-details').first();
+ const closed=await row.evaluate(e=>[...e.children].map(c=>Math.round(c.getBoundingClientRect().top)));assert.equal(closed[0],closed[1],'closed sections share a row');
+ await row.locator('.companion-roster-ability>summary').click();
+ const open=await row.evaluate(e=>{const [a,s]=e.children;return {full:Math.abs(a.getBoundingClientRect().width-e.getBoundingClientRect().width)<=1,below:s.getBoundingClientRect().top>=a.getBoundingClientRect().bottom-1};});
+ assert(open.full&&open.below,'an opened section takes the full width '+JSON.stringify(open));
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
