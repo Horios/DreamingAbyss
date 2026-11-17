@@ -343,3 +343,16 @@ test('Narrow desktop folds the report column by default until the player chooses
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop: statistics charts sit side by side; character creation aligns the four 選擇 buttons',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});
+ await p.evaluate(()=>selectSaveSlot(1));
+ const create=await p.evaluate(()=>{const b=[...document.querySelectorAll('#app>.start .cards>.card>button.primary')].map(e=>Math.round(e.getBoundingClientRect().top)),back=document.querySelector('#app>.start>.title-back').getBoundingClientRect(),eyebrow=document.querySelector('#app>.start>.eyebrow').getBoundingClientRect(),start=document.querySelector('#app>.start').getBoundingClientRect();return {buttons:new Set(b).size,count:b.length,backAbove:back.bottom<=eyebrow.top+1,backWidth:back.width,centred:Math.abs(start.left-(innerWidth-start.right))<=20};});
+ assert.equal(create.count,4);assert.equal(create.buttons,1,'選擇 buttons share a line');assert(create.backAbove&&create.backWidth<200&&create.centred,JSON.stringify(create));
+ await setup(p);await p.evaluate(()=>setTab('statistics'));
+ const charts=await p.locator('.statistics-combat-data .combat-chart-metric').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)));
+ assert(charts.length===3&&new Set(charts).size===1,'three charts share a row '+charts);
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

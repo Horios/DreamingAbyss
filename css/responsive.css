@@ -472,3 +472,15 @@
   #app #life-alchemy>.life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
   #app #life-alchemy>.life-recipe>p.small{margin:4px 0}
 }
+
+/* ── v0.134 Desktop: statistics charts, character creation ───────────────── */
+@media(min-width:901px){
+  /* 傷害／承傷／治療 sit side by side; each bar is about a third of the old width. */
+  #app .statistics-combat-data>.combat-chart{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 24px;align-items:start}
+  #app .statistics-combat-data .combat-chart-row{grid-template-columns:minmax(56px,auto) minmax(0,1fr) minmax(48px,auto)}
+  /* Character creation: the four class cards end with their 選擇 button on one line; 返回標題 is a normal button. */
+  #app>.start>.title-back{display:block;width:auto;margin:0 0 12px;padding:6px 18px}
+  #app>.start{margin-inline:auto}
+  #app>.start .cards>.card{display:flex;flex-direction:column}
+  #app>.start .cards>.card>button.primary{margin-top:auto;align-self:flex-start}
+}
