@@ -81,3 +81,78 @@
   #app>.layout>main .equipment-attribute-line b,#app>.layout>main .slot-label,#app>.layout>main .shop-refresh-meta span,#app>.layout>main .shop-product-stock b,
   #app>.layout>main .inventory-supply-status,#app>.layout>main .inventory-supply-status span,#app>.layout>main .gear-sort-controls button,#app>.layout>main .mastery-bar-head>*{font-size:var(--fs-xs)}
 }
+
+/* ── v0.120 Exploration page ─────────────────────────────────────────────── */
+/* The long rules text is folded on every screen size. */
+#app .seconds-field-help{display:block;margin-top:4px}
+#app .seconds-field-help>summary{display:inline-flex;align-items:center;min-height:0;cursor:pointer;color:var(--muted);font-size:var(--fs-xs)}
+#app .seconds-field-help>small{display:block;margin-top:4px;color:var(--muted);line-height:1.6}
+#app .seconds-battlefield .seconds-side-head{height:auto;min-height:0}
+
+@media(max-width:700px){
+  /* One row: 一般／任務／BOSS and the map list. */
+  #app .seconds-destination-bar{flex-wrap:nowrap;gap:6px;margin:0}
+  #app .seconds-destination-bar .destination-suffix{display:none}
+  #app .seconds-destination-bar .seconds-destination-types{gap:4px}
+  #app .seconds-destination-bar .seconds-destination-types>button{min-height:44px;padding:4px 10px;font-size:var(--fs-sm)}
+  #app .seconds-destination-bar>select{flex:1 1 0;min-width:0;max-width:none;margin-left:0;min-height:44px}
+
+  /* Auto potion settings stay reachable from 冒險配置 → 自動藥水. */
+  #app>.layout>main:has(.seconds-battle-header)>.heal-auto-panel{display:none!important}
+
+  /* Title, level and gold on one line; the mastery bars below. */
+  #app .seconds-battle-header{padding:8px 10px!important;gap:4px}
+  #app .seconds-battle-header>.seconds-battle-title{flex:1 1 100%;flex-wrap:nowrap;gap:2px 10px;align-items:flex-start}
+  #app .seconds-battle-title>h2{flex:0 0 auto;max-width:40%}
+  #app .seconds-battle-title h2{font-size:var(--fs-lg)}
+  #app .seconds-battle-xp{flex:1 1 0;min-width:0;flex-wrap:wrap;gap:4px 8px;padding-top:2px}
+  #app .seconds-battle-xp>progress{flex:1 1 60px}
+  #app .seconds-battle-xp>.mastery-bar-row{order:5;flex:1 1 100%}
+
+  /* 暫停／重置／切換／冒險配置 stay above the bottom navigation. .layout is the containing block (container-type:size). */
+  #app>.layout>main:has(.seconds-battle-header){padding-bottom:calc(24px + 58px)}
+  #app .seconds-battle-header .seconds-toolbar-actions{position:fixed;z-index:20;left:0;right:0;bottom:calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));display:flex!important;flex-wrap:nowrap!important;justify-content:stretch;gap:6px;width:auto;margin:0;padding:6px max(8px,env(safe-area-inset-right)) 6px max(8px,env(safe-area-inset-left));background:var(--chrome,#181e22);border-top:1px solid var(--line)}
+  #app .seconds-battle-header .seconds-toolbar-actions>button{flex:1 1 0;min-width:0;min-height:44px!important;padding:4px 6px!important;font-size:var(--fs-xs)!important;gap:4px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #app .seconds-battle-header .seconds-toolbar-actions>button svg{width:16px!important;height:16px!important;flex-shrink:0}
+
+  /* Page order: sub-pages, title, hint, destination, battlefield. */
+  #app>.layout>main:has(.seconds-battlefield)>.game-subtabs{order:-9}
+  #app>.layout>main:has(.seconds-battlefield)>.seconds-battle-header{order:-8}
+  #app>.layout>main:has(.seconds-battlefield)>.tutorial{order:-7}
+  #app>.layout>main:has(.seconds-battlefield)>.seconds-destination-bar{order:-6}
+  #app .seconds-battlefield .seconds-enemies{min-height:0}
+  #app .seconds-battlefield .unit-numbers{min-height:0!important}
+  /* Battlefield: enemies and allies are rows of up to three upright cards, so both sides fit one screen. */
+  #app .text-battle-layout>.party-combat{padding:8px}
+  #app .party-combat:has(.seconds-battlefield),.text-battle-layout .party-combat:has(.seconds-battlefield){min-height:0!important}
+  #app .party-combat .squad-field.seconds-battlefield{min-height:0!important;gap:6px!important;padding:6px 8px!important}
+  #app .seconds-battlefield>.seconds-divider{display:none}
+  #app .seconds-battlefield .seconds-side{gap:6px}
+  #app .seconds-battlefield .seconds-unit .battle-enemy-icon{width:38px!important;height:38px!important;min-height:38px!important}
+  #app .seconds-battlefield .seconds-unit .enemy-icon-art svg{width:32px!important;height:32px!important}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;justify-content:center!important;align-items:stretch;gap:12px 10px!important;padding:0 6px 6px 0}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack{flex:0 0 calc((100% - 22px)/3)!important;width:calc((100% - 22px)/3)!important;max-width:none!important;padding:6px!important;gap:4px!important}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main{display:flex!important;flex-direction:column;align-items:stretch;gap:3px}
+  #app .seconds-battlefield .seconds-unit.seconds-stack>.seconds-face-main>.battle-enemy-icon{align-self:center;order:-1}
+  #app .seconds-battlefield .seconds-unit .unit-title{flex-direction:column!important;align-items:center!important;gap:0!important;text-align:center}
+  #app .seconds-battlefield .seconds-unit .unit-title b{font-size:var(--fs-sm)!important}
+  #app .seconds-battlefield .seconds-unit .unit-numbers{flex-direction:column;align-items:center!important;justify-content:flex-start!important;gap:0;text-align:center!important}
+  #app .seconds-battlefield .seconds-unit .unit-numbers,#app .seconds-battlefield .seconds-unit .unit-title>span,#app .seconds-battlefield .seconds-unit .seconds-mp>small,#app .seconds-battlefield .seconds-charge-name,#app .seconds-battlefield .seconds-charge-time,#app .seconds-battlefield .seconds-state,#app .seconds-state-empty,#app .seconds-battlefield .seconds-face-title>span{font-size:var(--fs-xs)!important}
+  #app .seconds-battlefield .seconds-unit .seconds-mp>small{text-align:center}
+  #app .seconds-battlefield .seconds-unit .seconds-charge-list{grid-template-columns:minmax(0,1fr)}
+  #app .seconds-field-foot{flex-wrap:nowrap;margin-top:0}
+  #app .seconds-face-switch>button{min-height:44px;padding:2px 14px;font-size:var(--fs-sm)}
+}
+
+/* Desktop screens up to 860px high (1366×768 laptops): both sides of the battlefield are visible without scrolling. */
+@media(min-width:901px) and (max-height:860px){
+  #app>.layout>main:has(.seconds-battlefield){gap:8px;padding-top:10px}
+  #app>.layout>main:has(.seconds-battlefield)>.heal-auto-panel{order:5}
+  #app>.layout>main:has(.seconds-battlefield)>.text-battle-layout{order:4}
+  #app .party-combat .squad-field.seconds-battlefield{gap:6px!important;padding:6px 10px!important}
+  #app .seconds-battlefield>.seconds-divider{display:none}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{padding:8px 10px!important;gap:4px!important}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face{gap:4px}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{gap:12px 16px!important;padding:0 8px 8px 0}
+}
+@media(max-width:360px){#app .seconds-battle-header .seconds-toolbar-actions>button svg{display:none}}
