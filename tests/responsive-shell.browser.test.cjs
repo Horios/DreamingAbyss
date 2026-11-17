@@ -286,3 +286,19 @@ test('Desktop remaining items: the report log starts at the top, quests are one 
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop fourth pass: five enemies share one row at 1366px; shop products are one compact row with 購買 on the right',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ await p.evaluate(()=>{dismissStoryHint();setTab('battle');foes=Array.from({length:5},()=>makeEnemy(0,playerHero(),()=>.5));render();});
+ const field=await p.evaluate(()=>{const cards=[...document.querySelectorAll('#battleEnemyIcons>.seconds-unit')];return {n:cards.length,rows:new Set(cards.map(e=>Math.round(e.getBoundingClientRect().top))).size,w:Math.min(...cards.map(e=>e.getBoundingClientRect().width)),ally:Math.max(...[...document.querySelectorAll('#battleAllyIcons>.seconds-unit')].map(e=>e.getBoundingClientRect().bottom)),main:document.querySelector('.layout>main').getBoundingClientRect().bottom};});
+ assert.equal(field.n,5);assert.equal(field.rows,1,'one enemy row '+JSON.stringify(field));assert(field.w>=140,'enemy cards stay readable');assert(field.ally<=field.main,'the party stays on screen');
+ await p.evaluate(()=>setTab('shop'));
+ for(const index of [0,2]){
+  await p.locator('.shop-category-tabs>button').nth(index).click();
+  const row=await p.locator('.shop-product-row').first().evaluate(e=>{const slot=e.querySelector('.item-slot').getBoundingClientRect(),buy=[...e.querySelectorAll('button')].pop().getBoundingClientRect();return {h:e.getBoundingClientRect().height,beside:buy.left>=slot.right-1&&buy.top<slot.bottom+30};});
+  assert(row.h<=90&&row.beside,'shop row '+index+' '+JSON.stringify(row));
+ }
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
