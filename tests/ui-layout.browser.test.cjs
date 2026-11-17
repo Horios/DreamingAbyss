@@ -10,7 +10,7 @@ async function setup(p){
 function showPage(id){if(id.startsWith('inventory:')){setTab('equipment');setInventoryCategory(id.split(':')[1]);}else if(id.startsWith('story:'))setStoryCategory(id.split(':')[1]);else{if(id==='equipment')setInventoryCategory('equipment');setTab(id);}}
 function bounds(){
  const m=document.querySelector('main'),nav=document.querySelector('.layout>aside'),s=getComputedStyle(m);
- return {overflow:m.scrollWidth-m.clientWidth,padding:parseFloat(s.paddingLeft),expected:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-padding')),bottom:m.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,headings:[...m.querySelectorAll('.heading')].filter(e=>e.getBoundingClientRect().height).map(e=>({height:e.clientHeight,scroll:e.scrollHeight})),scroll:s.overflowY};
+ return {overflow:m.scrollWidth-m.clientWidth,padding:parseFloat(s.paddingLeft),expected:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-padding')),bottom:m.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().height>nav.getBoundingClientRect().width?(m.getBoundingClientRect().left>=nav.getBoundingClientRect().right-1?innerHeight:-1):nav.getBoundingClientRect().top,headings:[...m.querySelectorAll('.heading')].filter(e=>e.getBoundingClientRect().height).map(e=>({height:e.clientHeight,scroll:e.scrollHeight})),scroll:s.overflowY};
 }
 test('Shared layout: every page fits seven viewports in all three themes, with reachable page bottoms',async()=>{
  const r=await openRuntime(root),p=r.page;
@@ -51,7 +51,7 @@ test('Long reading content and expanded rosters use the page scroll; inventory s
   await p.waitForFunction(()=>!isEmberwildUIInteracting());
   assert(Math.abs(await list.evaluate(e=>e.scrollTop)-before)<=1,'selecting gear keeps the list position at '+width+' (before '+before+', after '+await list.evaluate(e=>e.scrollTop)+')');
   const panes=await p.locator('.inventory-master-detail').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.inventory-master-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
-  if(width<=900)assert.equal(panes.stack,'flex');else assert(panes.detail>=panes.list);
+  if(width<=700)assert.equal(panes.stack,'flex');else assert(panes.detail>=panes.list);
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}

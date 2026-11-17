@@ -18,12 +18,15 @@ async function start(page){
 async function fits(page,label){
  const b=await page.evaluate(()=>{
   const m=document.querySelector('.layout>main'),layout=document.querySelector('#app>.layout'),nav=document.querySelector('.layout>aside'),journal=document.querySelector('#globalBattleJournal');
-  return {hidden:getComputedStyle(journal).display==='none',dialog:journal.classList.contains('mobile-report-open'),inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,height:innerHeight};
+  return {hidden:getComputedStyle(journal).display==='none',dialog:journal.classList.contains('mobile-report-open'),inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,navRight:nav.getBoundingClientRect().right,mainLeft:m.getBoundingClientRect().left,rail:nav.getBoundingClientRect().height>nav.getBoundingClientRect().width,height:innerHeight};
  });
  assert(b.layoutWidth<=b.viewport+1,label+' layout width '+JSON.stringify(b));
  assert(b.mainScroll<=b.mainWidth+1,label+' horizontal overflow '+JSON.stringify(b));
  assert(b.mainHeight>=90,label+' readable main height '+JSON.stringify(b));
  // v0.087: on phones the journal is not part of the page; it only opens as the full-screen 戰況 dialog.
+ // v0.122: tablets and phones held sideways use a navigation rail on the left; phones keep the bottom bar.
+ if(b.rail){assert(b.mainLeft>=b.navRight-1,label+' main area starts right of the rail '+JSON.stringify(b));assert(b.mainBottom<=b.height+1,label+' main area fits the screen');assert.equal(b.viewport<=700&&b.height>480,false,label+' upright phones keep the bottom bar');return;}
+ assert(b.viewport<=700,label+' only phones use the bottom bar');
  if(b.hidden||b.dialog)assert(b.mainBottom<=b.navTop+1,label+' main area ends above the navigation');
  else if(b.inline)assert(b.mainBottom<=b.navTop+1,label+' inline journal stays in the scrollable main area');
  else{assert(b.mainBottom<=b.journalTop+1,label+' journal overlaps content');assert(b.journalBottom<=b.navTop+1,label+' nav overlaps journal');}
@@ -155,7 +158,7 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   assert.equal(await p.evaluate(()=>EmberwildNavigation.design.groups.find(g=>g.id==='missions').pages.some(x=>x.id==='wishingLake')),true,'the wishing lake is a missions page');
   assert(await p.evaluate(()=>{const u=document.getElementById('utilityNavigation').getBoundingClientRect(),a=document.querySelector('.layout>aside').getBoundingClientRect();return u.bottom<=a.top&&u.top<100&&u.right>=innerWidth-40;}),'utility buttons stay at the top right');
   const rects=await p.evaluate(()=>['aside','main','#globalBattleJournal'].map(s=>{const r=document.querySelector('.layout').querySelector(s).getBoundingClientRect();return {x:r.x,right:r.right,y:r.y,bottom:r.bottom};}));
-  assert(rects[0].y>=rects[1].bottom-1&&rects[0].y>=rects[2].bottom-1,'desktop menu sits below the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
+  assert(rects[0].right<=rects[1].x+1&&rects[0].bottom-rects[0].y>rects[0].right-rects[0].x,'desktop menu is a rail left of the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
   await p.evaluate(()=>returnToTitle());assert.equal(await p.locator('.mobile-more-toggle').count(),0);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

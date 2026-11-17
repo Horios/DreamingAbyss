@@ -153,7 +153,6 @@
   #app>.title-screen{padding:16px;display:block}#app .title-screen-card{margin:auto;padding:20px 14px}
   #app>.start{padding:16px;margin:0;height:100%;overflow:auto}#app .start .cards{grid-template-columns:minmax(0,1fr)}
 }
-@media(min-width:601px) and (max-width:900px){#app .squad-field{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* v0.087: the phone battle journal is removed from the page; the header 戰況 button opens it full screen with log, battle status and loot. */
 .mobile-report-button,.mobile-report-head{display:none}
 @media(max-width:900px){

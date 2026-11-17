@@ -142,3 +142,42 @@ test('Phone BOSS crafting shows one region at a time; character creation shows o
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Navigation rail on desktop, tablet and sideways phones; the report column folds; wide screens draw larger without overflow',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ const shell=()=>p.evaluate(()=>{const box=s=>document.querySelector(s).getBoundingClientRect(),a=box('.layout>aside'),m=box('.layout>main'),h=box('body>header');
+  return {aside:{x:a.x,y:a.y,w:a.width,h:a.height,bottom:a.bottom,right:a.right},main:{x:m.x,right:m.right,bottom:m.bottom,h:m.height},header:h.bottom,items:[...document.querySelectorAll('.layout>aside nav .game-menu-item')].filter(e=>e.getBoundingClientRect().height>0).map(e=>({id:e.dataset.navGroup,y:Math.round(e.getBoundingClientRect().y),h:e.getBoundingClientRect().height})),more:!!document.querySelector('.mobile-more-toggle')&&document.querySelector('.mobile-more-toggle').getBoundingClientRect().height>0,innerWidth,innerHeight,doc:document.documentElement.scrollWidth};});
+ const order=await p.evaluate(()=>EmberwildNavigation.design.groups.map(g=>g.id));
+ for(const [width,height,rail] of [[1366,768,72],[768,1024,64],[844,390,64],[667,375,64]]){
+  await p.setViewportSize({width,height});await p.evaluate(()=>{setTab('character');render();});
+  const s=await shell(),label=width+'x'+height;
+  assert.equal(Math.round(s.aside.w),rail,label+' rail width');assert(s.aside.h>s.aside.w&&s.aside.x===0,label+' rail on the left');
+  assert(s.main.x>=s.aside.right-1,label+' content starts right of the rail');assert(Math.abs(s.main.bottom-s.innerHeight)<=1,label+' content uses the full height '+JSON.stringify(s.main));
+  assert.deepEqual(s.items.sort((a,b)=>a.y-b.y).map(i=>i.id),order,label+' every category is listed in the configured order');
+  assert.equal(s.more,false,label+' no More menu');assert(s.doc<=s.innerWidth,label+' no horizontal overflow');
+  if(width<=900)assert(s.items.every(i=>i.h>=44),label+' rail targets');
+  await p.locator('.layout>aside nav [data-nav-group="shop"]').click();await p.waitForFunction(()=>tab==='shop');
+ }
+ await p.setViewportSize({width:390,height:844});await p.evaluate(()=>render());
+ const phone=await shell();assert(phone.aside.w>phone.aside.h&&Math.abs(phone.aside.bottom-844)<=1,'upright phones keep the bottom bar');assert.equal(phone.more,true);
+ // Report column
+ await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>{setTab('equipment');render();});
+ const before=await p.evaluate(()=>({main:document.querySelector('.layout>main').getBoundingClientRect().width,journal:document.querySelector('#globalBattleJournal').getBoundingClientRect().width}));
+ assert(before.journal<=321,'report column is at most 320px '+before.journal);
+ await p.locator('.journal-collapse-toggle').click();
+ const folded=await p.evaluate(()=>({main:document.querySelector('.layout>main').getBoundingClientRect().width,journal:document.querySelector('#globalBattleJournal').getBoundingClientRect().width,log:!!document.querySelector('#liveLog')?.getBoundingClientRect().width}));
+ assert(folded.journal<=45&&folded.main>before.main+200&&!folded.log,'folded report '+JSON.stringify(folded));
+ await p.evaluate(()=>{refreshGlobalJournal();render();});assert.equal(await p.locator('.journal-collapse-toggle').innerText(),'展開戰報','the strip survives redraws');
+ await p.reload();await p.evaluate(()=>{selectSaveSlot(1);});await p.waitForFunction(()=>!!state&&!!document.querySelector('.journal-collapse-toggle'));
+ assert.equal(await p.evaluate(()=>document.body.classList.contains('journal-collapsed')),true,'the choice is kept for this browser');
+ await p.locator('.journal-collapse-toggle').click();assert.equal(await p.locator('#liveLog').isVisible(),true);
+ // Wide screens
+ await p.setViewportSize({width:1920,height:1080});await p.evaluate(()=>{closeModal();setTab('equipment');render();});
+ const wide=await p.evaluate(()=>{const b=s=>document.querySelector(s).getBoundingClientRect();return {zoom:getComputedStyle(document.documentElement).zoom,font:b('.layout>main h1').height,layoutBottom:b('.layout').bottom,journalRight:b('#globalBattleJournal').right,doc:[document.documentElement.scrollWidth,document.documentElement.scrollHeight]};});
+ assert.equal(wide.zoom,'1.15');assert(wide.layoutBottom<=1081&&wide.journalRight<=1921,'the zoomed layout fits the screen '+JSON.stringify(wide));
+ await p.evaluate(()=>setTab('options'));
+ const dialog=await p.locator('#modal').boundingBox();assert(Math.abs(dialog.x+dialog.width/2-960)<=2&&dialog.y>=0&&dialog.y+dialog.height<=1080,'dialogs stay centred and on screen '+JSON.stringify(dialog));
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

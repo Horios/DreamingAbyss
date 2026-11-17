@@ -116,7 +116,21 @@
     cards.forEach((card,index)=>{card.hidden=index!==creationClass;});
   }
   globalThis.setCreationClass=function(index){creationClass=Math.max(0,Number(index)||0);syncCreationTabs();document.querySelector('#app>.start')?.scrollTo?.(0,0);return creationClass;};
-  function syncPages(){syncSheet(true);syncTokenFilters();syncBossRegions();syncCreationTabs();}
+  // Desktop: the battle report column folds to a strip; the choice is kept for this browser.
+  const JOURNAL_KEY='dreamingAbyss.journalCollapsed';
+  let journalCollapsed=false;try{journalCollapsed=localStorage.getItem(JOURNAL_KEY)==='1';}catch{}
+  function syncJournalToggle(){
+    document.body.classList.toggle('journal-collapsed',journalCollapsed);
+    const journal=document.getElementById('globalBattleJournal');if(!journal)return;
+    let button=journal.querySelector(':scope>.journal-collapse-toggle');
+    if(!button){button=document.createElement('button');button.type='button';button.className='journal-collapse-toggle';button.onclick=()=>toggleJournalCollapsed();journal.prepend(button);}
+    const label=journalCollapsed?'展開戰報':'收合 ›';
+    if(button.textContent!==label)button.textContent=label;
+    button.setAttribute('aria-expanded',String(!journalCollapsed));button.setAttribute('aria-label',journalCollapsed?'展開戰報欄':'收合戰報欄');
+  }
+  globalThis.toggleJournalCollapsed=function(value){journalCollapsed=value===undefined?!journalCollapsed:!!value;try{localStorage.setItem(JOURNAL_KEY,journalCollapsed?'1':'0');}catch{}syncJournalToggle();return journalCollapsed;};
+  if(typeof refreshGlobalJournal==='function'){const journalBase=refreshGlobalJournal;refreshGlobalJournal=function(...args){const out=journalBase(...args);syncJournalToggle();return out;};}
+  function syncPages(){syncJournalToggle();syncSheet(true);syncTokenFilters();syncBossRegions();syncCreationTabs();}
   globalThis.toggleTokenFilters=function(){const open=document.body.classList.toggle('token-filters-open');const b=document.querySelector('.token-filter-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起篩選':'信物篩選';}return open;};
   globalThis.closeDetailSheet=function(){const was=sheet;setSheet('');return !!was;};
   globalThis.openDetailSheet=key=>{setSheet(key);return sheet===key;};
