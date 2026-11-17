@@ -109,7 +109,7 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  // Desktop: both panes, no sheet
  await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
  assert.equal(await p.locator('.inventory-detail-wrap').isVisible(),true);assert.equal(await p.locator('.gear-management-row .gear-lock').first().isVisible(),true);
- assert.equal(await p.locator('.sheet-head:visible').count(),0);assert.equal(await p.locator('.token-filter-toggle:visible').count(),0);
+ assert.equal(await p.locator('.sheet-head:visible').count(),0);
  await p.locator('.gear-management-row').nth(1).locator('.inventory-list-item').click();await idle();assert.equal(await p.evaluate(()=>currentDetailSheet()),'');
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
@@ -221,6 +221,26 @@ test('Desktop second pass: worn slots are one row each with the page buttons on 
  await p.locator('.worn-slot-choice').first().click();await p.waitForFunction(()=>!isEmberwildUIInteracting());assert.equal(await p.locator('.worn-candidate-pane').isVisible(),true);
  await p.evaluate(()=>setTab('skills'));
  const panels=await p.locator('.skill-system-page>section.panel').evaluateAll(es=>es.slice(1,3).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(panels[0],panels[1],'trigger and support panels share a row');
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
+
+test('Desktop third pass: material lists fill the width, BOSS costs stay on one line, token filters fold',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ await p.evaluate(()=>{setTab('equipment');setInventoryCategory('materials');});
+ const mat=await p.locator('.account-sell-list').last().evaluate(e=>{const items=[...e.children].filter(c=>!c.classList.contains('empty')).map(c=>c.getBoundingClientRect());return {cols:new Set(items.map(b=>Math.round(b.top))).size<items.length,width:items[0]?.width||0,list:e.getBoundingClientRect().width};});
+ assert(mat.cols&&mat.width>=220,'materials share rows and fill their column '+JSON.stringify(mat));
+ await p.evaluate(()=>setTab('gather'));
+ const stock=await p.locator('.life-materials>*').evaluateAll(es=>es.slice(0,3).map(e=>({top:Math.round(e.getBoundingClientRect().top),w:e.getBoundingClientRect().width})));
+ assert(stock[0].top===stock[1].top&&stock[0].w>=220,'stock '+JSON.stringify(stock));
+ await p.evaluate(()=>setTab('bossCraft'));
+ const cost=await p.locator('.boss-recipe .recipe-cost').first().evaluate(e=>{const [a,b]=e.children;return {held:a.getBoundingClientRect().height,gold:b.getBoundingClientRect().height};});
+ assert(cost.held<=60&&cost.gold<=30,'cost lines '+JSON.stringify(cost));
+ await p.evaluate(()=>{setTab('equipment');setInventoryCategory('tokens');});
+ assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),false);assert.equal(await p.locator('.token-management-panel .gear-sort-controls').isVisible(),true);
+ await p.locator('.token-filter-toggle').click();assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),true);
+ await p.locator('.token-filter-toggle').click();
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });

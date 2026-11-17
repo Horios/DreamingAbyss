@@ -348,3 +348,26 @@
   #app .skill-system-page>*{grid-column:1/-1}
   #app .skill-system-page>section.panel:nth-of-type(2),#app .skill-system-page>section.panel:nth-of-type(3){grid-column:auto;align-self:stretch}
 }
+
+/* ── v0.127 Desktop third pass ───────────────────────────────────────────── */
+@media(min-width:901px){
+  /* Material and stock lists fill the width instead of one narrow column. */
+  #app>.layout>main .account-sell-list,#app .life-materials{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));justify-items:stretch;gap:8px;align-items:start}
+  #app>.layout>main .account-sell-list>.empty{grid-column:1/-1;justify-self:start}
+  #app>.layout>main .account-sell-list>*,#app .life-materials>*{width:auto;max-width:none;min-width:0;margin:0}
+  #app>.layout>main .account-sell-list .item-slot,#app .life-materials .item-slot{width:100%;max-width:none;min-width:0}
+  /* BOSS recipe cost: the ingredient takes the row; 持有 and the gold cost stay on one line each. */
+  #app .boss-reading-page .recipe-cost{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px}
+  #app .boss-reading-page .recipe-cost>span:first-child{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap}
+  #app .boss-reading-page .recipe-cost>span:first-child>.item-slot{flex:1 1 auto;width:auto;min-width:0}
+  #app .boss-reading-page .recipe-cost>span:last-child{white-space:nowrap}
+}
+
+/* Desktop token backpack: filters fold behind 信物篩選 like the equipment page's filter button; sorting stays visible. */
+@media(min-width:701px){
+  #app .token-management-panel>.gear-management-controls{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px}
+  #app .token-management-panel>.gear-management-controls>.token-filter-toggle{display:block;order:2;width:auto;min-width:96px;margin:0}
+  #app .token-management-panel>.gear-management-controls>.gear-sort-controls{order:1;flex:1 1 auto;margin:0}
+  #app .token-management-panel>.gear-management-controls>.gear-basic-filters,#app .token-management-panel>.gear-management-controls>details{order:3;flex:1 1 100%}
+  body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>.gear-basic-filters,body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>details{display:none}
+}
