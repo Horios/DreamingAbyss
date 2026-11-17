@@ -68,7 +68,9 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
    assert.equal(await p.locator('aside nav>button:visible').count(),5);
   }
   // The adventure guide lives in the header beside Save on phones too.
-  await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  // v0.119: the adventure guide sits in the header's ⋯ menu on phones.
+  await p.locator('#utilityMoreButton').click();await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  assert.equal(await p.locator('.mobile-more-toggle').innerText().then(t=>t.trim()),'更多','the More label does not change with the page');
   await p.locator('.mobile-more-toggle').click();
   await p.evaluate(()=>render());
   assert.equal(await p.locator('.mobile-more-pages').isVisible(),true);
@@ -129,6 +131,8 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
     assert(overlay.receipt,'offline dialog must have a completed reward receipt: '+JSON.stringify(overlay));
     assert.equal(await p.evaluate(()=>acknowledgeOfflineExploration()),true);
    }
+   // v0.119: 成就 and 設定 are in the header's ⋯ menu on phones; 信箱 stays in the header.
+   if(!await p.locator('#utilityButton-'+id).isVisible())await p.locator('#utilityMoreButton').click();
    await p.locator('#utilityButton-'+id).click();
    const b=await p.locator('#modal').boundingBox();assert(b.x>=0&&b.x+b.width<=320&&b.height<=640,id+' fits');
    await p.getByRole('button',{name:'關閉彈窗',exact:true}).click();

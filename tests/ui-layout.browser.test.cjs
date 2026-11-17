@@ -85,8 +85,13 @@ test('Deployed preview badge leaves utility buttons reachable at every viewport'
   const covered=await p.locator('#utilityNavigation>button').evaluateAll(es=>{const a=document.getElementById('preview-build-banner').getBoundingClientRect();return es.filter(e=>{const b=e.getBoundingClientRect();return b.width&&b.height&&b.left<a.right&&b.right>a.left&&b.top<a.bottom&&b.bottom>a.top;}).map(e=>e.textContent);});
   assert.deepEqual(covered,[],width+' badge covers utility buttons');
   const b=await p.evaluate(bounds);assert(b.overflow<=1);assert(b.bottom<=b.navTop+1);
+  // v0.119: at phone widths the guide and save buttons sit in the header's ⋯ menu.
+  const folded=width<=900;
+  if(folded){assert.equal(await p.locator('#utilityButton-guide').isVisible(),false,width+' guide is folded');await p.locator('#utilityMoreButton').click();}
   await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  if(folded){assert.equal(await p.locator('#utilityMoreMenu').isVisible(),false,width+' the menu closes after a choice');await p.locator('#utilityMoreButton').click();}
   await p.locator('#utilityButton-save').click();
+  if(folded){const header=await p.locator('body>header').evaluate(e=>e.getBoundingClientRect().height);assert(header<=49,width+' one-row header '+header);}
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
