@@ -178,7 +178,8 @@
     if(sheet!=='mail')setSheet('');
   },true);
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&sheet&&sheet!=='mail')setSheet('');});
-  phone.addEventListener('change',()=>{setSheet('');syncPages();});
+  // Only leaving phone width closes a sheet; the change event can arrive after a sheet was just opened at the new width.
+  phone.addEventListener('change',()=>{if(!phone.matches)setSheet('');syncPages();});
   const sheetPage={gear:'equipment',token:'equipment',forge:'forge',worn:'worn'};
   const tabBase=setTab;setTab=function(...args){if(sheet&&sheet!=='mail'&&sheetPage[sheet]!==args[0])setSheet('');return tabBase(...args);};
   const closeBase=closeModal;closeModal=function(...args){if(sheet==='mail')setSheet('');return closeBase(...args);};
