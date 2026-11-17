@@ -184,17 +184,18 @@ test('Mobile: expedition settings, readable touch controls and skill details are
    await p.waitForFunction(()=>party.difficulty===1&&!isEmberwildUIInteracting());
    await p.evaluate(()=>render());
    assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),true);
-   for(const button of ['.heal-auto-settings-button']){
-    assert(await p.locator(button).evaluate(e=>e.getBoundingClientRect().height>=40),button+' touch height');
+   // v0.120: phones reach the auto-potion settings from this dialog; the bar under the toolbar is desktop-only.
+   if(viewport.width<=700)assert.equal(await p.locator('.heal-auto-panel').isVisible(),false,'no auto-potion bar on phones');
+   for(const button of ['#modal button[onclick="openHealingSettings()"]']){
+    assert(await p.locator(button).evaluate(e=>e.getBoundingClientRect().height>=44),button+' touch height');
    }
    // v0.081: the 生效效果 panel is gone; badge details show on hover instead.
    assert.equal(await p.locator('.battle-effects-bar').count(),0,'no 生效效果 panel');
    await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
   }
   await p.setViewportSize({width:390,height:844});
-  // The auto-potion bar stays on the battle page; close the settings dialog to reach it.
-  await p.getByRole('button',{name:'關閉',exact:true}).click();
-  await p.locator('.heal-auto-settings-button').click();
+  // v0.120: on phones the auto-potion settings open from 冒險配置 → 自動藥水.
+  await p.locator('#modal button[onclick="openHealingSettings()"]').click();
   assert.equal(await p.locator('#modal').isVisible(),true);
   const healing=await p.locator('#modal').boundingBox();assert(healing.x>=0&&healing.x+healing.width<=390);
   await p.evaluate(()=>closeModal());

@@ -128,8 +128,6 @@
   #app .party-combat .squad-field.seconds-battlefield{min-height:0!important;gap:6px!important;padding:6px 8px!important}
   #app .seconds-battlefield>.seconds-divider{display:none}
   #app .seconds-battlefield .seconds-side{gap:6px}
-  #app .seconds-battlefield .seconds-unit .battle-enemy-icon{width:38px!important;height:38px!important;min-height:38px!important}
-  #app .seconds-battlefield .seconds-unit .enemy-icon-art svg{width:32px!important;height:32px!important}
   #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;justify-content:center!important;align-items:stretch;gap:12px 10px!important;padding:0 6px 6px 0}
   #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack{flex:0 0 calc((100% - 22px)/3)!important;width:calc((100% - 22px)/3)!important;max-width:none!important;padding:6px!important;gap:4px!important}
   #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main{display:flex!important;flex-direction:column;align-items:stretch;gap:3px}
@@ -146,7 +144,7 @@
 
 /* Desktop screens up to 860px high (1366×768 laptops): both sides of the battlefield are visible without scrolling. */
 @media(min-width:901px) and (max-height:860px){
-  #app>.layout>main:has(.seconds-battlefield){gap:8px;padding-top:10px}
+  #app>.layout>main:has(.seconds-battlefield){gap:12px;padding-top:10px}
   #app>.layout>main:has(.seconds-battlefield)>.heal-auto-panel{order:5}
   #app>.layout>main:has(.seconds-battlefield)>.text-battle-layout{order:4}
   #app .party-combat .squad-field.seconds-battlefield{gap:6px!important;padding:6px 10px!important}
@@ -156,3 +154,84 @@
   #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{gap:12px 16px!important;padding:0 8px 8px 0}
 }
 @media(max-width:360px){#app .seconds-battle-header .seconds-toolbar-actions>button svg{display:none}}
+
+/* ── v0.121 Phone detail sheets, folded filters, full-screen dialogs ──────── */
+.sheet-head,.token-filter-toggle{display:none}
+@media(max-width:700px){
+  /* Lists use the page scroll; no small scrolling pane inside the page. */
+  #app>.layout>main .inventory-master-pane{height:auto;max-height:none}
+  #app>.layout>main .inventory-list-scroll,#app>.layout>main .forge-gear-list{height:auto;max-height:none;overflow:visible}
+  #app>.layout>main .forge-gear-pane{height:auto;max-height:none}
+  /* The lock moves into the detail sheet; a locked row says so in its text. */
+  #app .gear-management-row>.gear-lock{display:none}
+  #app .gear-management-row:has(>.gear-lock[aria-pressed="true"]) .gear-management-meta::after{content:" · 已鎖定";color:var(--gold)}
+  #app .gear-management-row>.gear-management-item,#app .gear-management-row .inventory-list-item{width:100%;max-width:none}
+
+  /* Detail panes wait for a tap, then rise from the bottom navigation. */
+  #app .inventory-detail-wrap,#app .token-inventory-detail,#app .forge-detail-pane,#app .worn-candidate-pane{display:none!important}
+  body[data-sheet="gear"] #app .inventory-detail-wrap,body[data-sheet="token"] #app .token-inventory-detail,body[data-sheet="forge"] #app .forge-detail-pane,body[data-sheet="worn"] #app .worn-candidate-pane{display:block!important;position:fixed;z-index:25;left:0;right:0;top:auto;bottom:calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));width:auto;height:auto!important;min-height:0!important;max-height:min(74%,620px)!important;margin:0;padding:0 14px 14px!important;overflow:auto!important;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 0 0 100vmax #000a}
+  .sheet-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:52px;margin:0 -14px 10px;padding:4px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .sheet-head>b{font-size:var(--fs-lg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sheet-head>.sheet-close{flex:0 0 auto;min-width:64px}
+  /* The sheet's main actions stay at its bottom edge. */
+  body[data-sheet="gear"] #app .inventory-detail-wrap .inventory-detail-actions{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px!important;position:sticky;bottom:-14px;z-index:2;margin:10px -14px -14px;padding:8px 14px 14px;background:var(--panel);border-top:1px solid var(--line)}
+  body[data-sheet="gear"] #app .inventory-detail-actions>button{min-height:44px;font-size:var(--fs-sm)!important}
+  #app .worn-candidate-pane>.sheet-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px}
+  #app .worn-candidate-pane>.sheet-actions>button{width:100%!important;min-height:44px;font-size:var(--fs-sm)!important;white-space:nowrap;overflow:visible;padding:6px 8px!important}
+
+  /* Worn equipment: two slots per row; a slot's actions are in its sheet. */
+  #app .worn-loadout-grid>div:first-child{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #app .worn-loadout-grid .worn-slot{margin:0;min-width:0}
+  #app .worn-loadout-grid .worn-slot>.actions{display:none!important}
+  #app .worn-loadout-grid .worn-slot>.worn-slot-choice{width:100%;height:100%;min-height:76px}
+  #app .worn-loadout-grid .worn-slot .item-slot{width:100%;max-width:none;min-width:0}
+  #app .worn-loadout-grid .worn-slot:has(>:not(.worn-slot-choice):not(.actions)){grid-column:1/-1}
+
+  /* Token filters open on request. */
+  #app .token-management-panel>.gear-management-controls>.token-filter-toggle{display:block;width:100%}
+  body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>.gear-basic-filters,body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>details{display:none}
+
+  /* Utility dialogs fill the screen; 關閉 stays at the top right, on the title's row. */
+  #modal.utility-dialog{width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border:0;border-radius:0}
+  #modal.utility-dialog>.utility-dialog-controls{position:sticky;top:0;z-index:5;height:0;margin:0;overflow:visible}
+  #modal.utility-dialog>.utility-dialog-controls>button{position:absolute;top:0;right:0;min-width:64px}
+  #modal.utility-dialog>.heading{min-height:44px;padding-right:76px;align-items:center}
+  #modal.utility-dialog>.heading>.tag{font-size:var(--fs-xs)}
+
+  /* Mailbox: the list first; a message opens as its own layer with 返回. */
+  #modal .mailbox-layout{display:block}
+  #modal .mailbox-list{max-height:none;overflow:visible}
+  #modal .mailbox-detail{display:none}
+  body[data-sheet="mail"] #modal .mailbox-detail{display:block}
+  body[data-sheet="mail"] #modal .mailbox-list,body[data-sheet="mail"] #modal .mailbox-layout~*,body[data-sheet="mail"] #modal .panel>.row:has(.mailbox-actions){display:none}
+  #modal .mailbox-detail>.sheet-head{margin:0 0 10px;padding:0 0 6px;position:static;min-height:44px}
+  #modal .panel>.row:has(.mailbox-actions){flex-wrap:wrap}
+  #modal .mailbox-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+  #modal .mailbox-actions>button{width:100%;min-width:0;padding:6px 4px;font-size:var(--fs-xs);white-space:normal}
+
+  /* BOSS crafting: one region at a time (chosen above the list) and shorter recipe cards. */
+  #app .boss-region-filter{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:var(--fs-sm)}
+  #app .boss-region-filter>select{flex:1 1 0;min-width:0}
+  #app .boss-reading-page .boss-recipes{gap:10px}
+  #app .boss-reading-page .boss-recipe{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:10px 12px}
+  #app .boss-reading-page .boss-recipe[hidden]{display:none}
+  #app .boss-reading-page .boss-recipe>.tag{grid-column:2;grid-row:1;margin:0;justify-self:end}
+  #app .boss-reading-page .boss-recipe>.item-slot{grid-column:1;grid-row:1;margin:0;width:100%;max-width:none}
+  #app .boss-reading-page .boss-recipe>p.small{grid-column:1/-1;margin:0}
+  #app .boss-reading-page .boss-recipe>.recipe-cost{grid-column:1/-1;margin:0;gap:6px 10px;align-items:center}
+  #app .boss-reading-page .boss-recipe>button{grid-column:1/-1}
+
+  /* Alchemy recipes: ingredients sit two to a row. */
+  #app .life-recipe .recipe-item-line{gap:6px;margin:8px 0}
+  #app .life-recipe .recipe-item-line>.recipe-input,#app .life-recipe .recipe-item-line>.item-slot{flex:1 1 calc(50% - 20px);min-width:120px}
+  #app .life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
+
+  /* Title screen: 刪除 shares the slot's row. Character creation: one class at a time, picked from tabs. */
+  #app .save-slot{grid-template-columns:minmax(0,1fr) auto;align-items:stretch}
+  #app .save-slot-delete{align-self:stretch;min-height:44px;padding:6px 10px}
+  #app .creation-class-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0}
+  #app .creation-class-tabs>button{min-height:44px;padding:4px 2px;font-size:var(--fs-sm)}
+  #app .creation-class-tabs>button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+  #app>.start .cards>.card[hidden]{display:none}
+}
+.boss-region-filter,.creation-class-tabs{display:none}
