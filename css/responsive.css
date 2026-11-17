@@ -327,3 +327,24 @@
   #app .life-materials>.life-stock-row .item-slot{width:100%;max-width:none;min-width:0}
   #app>.layout>main .intro-clamp:not(.intro-open)>p.small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 }
+
+/* ── v0.126 Desktop second pass ──────────────────────────────────────────── */
+@media(min-width:901px){
+  /* Worn equipment: the help and skill-link buttons share the sub-page row instead of two rows of their own. */
+  /* main stays the shared flex column; the two buttons are placed at the right end of the sub-page row. */
+  #app>.layout>main:has(>.worn-reading-page){position:relative}
+  #app>.layout>main:has(>.worn-reading-page)>.game-subtabs{padding-right:180px}
+  #app>.layout>main:has(>.worn-reading-page)>.inventory-wear-toolbar{position:absolute;top:var(--page-padding);right:var(--page-padding);width:44px;height:36px;margin:0;display:flex;align-items:center;justify-content:center}
+  #app>.layout>main:has(>.worn-reading-page)>.inventory-wear-skill-link{position:absolute;top:var(--page-padding);right:calc(var(--page-padding) + 52px);margin:0}
+  #app>.layout>main:has(>.worn-reading-page)>.inventory-wear-skill-link>button{min-height:36px}
+  /* A slot is one row: the item on the left, its four actions in a 2×2 block on the right. */
+  #app .worn-loadout-grid .worn-slot{display:grid;grid-template-columns:minmax(0,1fr) 172px;align-items:center;gap:6px 10px}
+  #app .worn-loadout-grid .worn-slot>*{grid-column:1/-1}
+  #app .worn-loadout-grid .worn-slot>.worn-slot-choice{grid-column:1}
+  #app .worn-loadout-grid .worn-slot>.actions{grid-column:2;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:0!important;width:172px}
+  #app .worn-loadout-grid .worn-slot>.actions>button{width:100%!important;min-width:0;padding:4px 2px;white-space:nowrap}
+  /* Skills: the single trigger and support slots sit side by side. */
+  #app .skill-system-page{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  #app .skill-system-page>*{grid-column:1/-1}
+  #app .skill-system-page>section.panel:nth-of-type(2),#app .skill-system-page>section.panel:nth-of-type(3){grid-column:auto;align-self:stretch}
+}

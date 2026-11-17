@@ -210,3 +210,17 @@ test('Phone second pass: two-column stats, compact empty skill slots, one-row qu
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop second pass: worn slots are one row each with the page buttons on the sub-page row; trigger and support skills sit side by side',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ await p.evaluate(()=>setTab('worn'));
+ const worn=await p.evaluate(()=>{const b=s=>document.querySelector(s).getBoundingClientRect(),tabs=b('.layout>main>.game-subtabs'),link=b('.inventory-wear-skill-link'),help=b('.inventory-wear-toolbar'),slots=[...document.querySelectorAll('.worn-loadout-grid .worn-slot')].map(e=>{const c=e.querySelector('.worn-slot-choice').getBoundingClientRect(),a=e.querySelector('.actions')?.getBoundingClientRect();return {h:e.getBoundingClientRect().height,beside:!a||a.left>=c.right-1&&a.top<c.bottom,choice:c.width};});return {row:Math.abs(tabs.top-link.top)<20&&Math.abs(tabs.top-help.top)<20,slots,last:Math.max(...[...document.querySelectorAll('.worn-loadout-grid .worn-slot')].map(e=>e.getBoundingClientRect().top)),main:b('.layout>main').bottom};});
+ assert(worn.row,'help and skill link share the sub-page row');assert(worn.slots.every(s=>s.beside&&s.h<=130&&s.choice>=200),'slot rows '+JSON.stringify(worn.slots));
+ assert(worn.last<worn.main,'the fifth slot starts on the first screen');
+ await p.locator('.worn-slot-choice').first().click();await p.waitForFunction(()=>!isEmberwildUIInteracting());assert.equal(await p.locator('.worn-candidate-pane').isVisible(),true);
+ await p.evaluate(()=>setTab('skills'));
+ const panels=await p.locator('.skill-system-page>section.panel').evaluateAll(es=>es.slice(1,3).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(panels[0],panels[1],'trigger and support panels share a row');
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
