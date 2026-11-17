@@ -35,6 +35,8 @@ test('shared summary stays visible on desktop pages and in the phone 戰況 dial
   await p.evaluate(()=>{for(let i=0;i<65;i++)note('紀錄 '+i+' '+'.'.repeat(80),'playerDamage');globalThis.originalRows=$('liveLog').querySelectorAll('[data-event-type]').length;});
   for(const size of [{width:1440,height:900},{width:1024,height:768},{width:390,height:844},{width:320,height:568},{width:844,height:390}]){
    await p.setViewportSize(size);await p.evaluate(()=>render());
+   // v0.133: narrow desktop windows (901–1100px) fold the report column by default; the summary is read after opening it.
+   if(size.width>900&&size.width<=1100){assert.equal(await p.evaluate(()=>document.body.classList.contains('journal-collapsed')),true,'narrow desktop folds the report by default');await p.evaluate(()=>toggleJournalCollapsed(false));}
    assert(await p.locator('#journalEnemyIcons .battle-enemy-icon').evaluateAll(nodes=>nodes.every(n=>{const box=n.getBoundingClientRect(),svg=n.querySelector('svg').getBoundingClientRect();return svg.left>=box.left&&svg.right<=box.right&&svg.top>=box.top&&svg.bottom<=box.bottom;})),'journal SVGs fit their compact icons');
    for(const tab of ['equipment','forge','skills','lifeSkills','gather','alchemy','story','battle']){
     await p.evaluate(id=>setTab(id),tab);

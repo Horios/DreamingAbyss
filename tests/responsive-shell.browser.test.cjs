@@ -83,6 +83,8 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  await p.locator('.token-filter-toggle').click();
  // Worn slots
  await p.evaluate(()=>setTab('worn'));
+ // The filter click above can defer the next redraw (interaction guard); wait for the worn page itself.
+ await p.waitForFunction(()=>!isEmberwildUIInteracting()&&document.querySelectorAll('.worn-loadout-grid .worn-slot').length>=5);
  const slots=await p.locator('.worn-loadout-grid .worn-slot').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)));
  assert(new Set(slots).size<slots.length,'slots share rows');
  assert.equal(await p.locator('.worn-candidate-pane').isVisible(),false);
@@ -306,13 +308,38 @@ test('Desktop fourth pass: five enemies share one row at 1366px; shop products a
 test('Narrow desktop (1024px): three allies share one row and five narrow enemy cards keep HP and shield readable',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:1024,height:768});await setup(p);
- await p.evaluate(()=>{dismissStoryHint();setTab('battle');foes=Array.from({length:5},()=>makeEnemy(0,playerHero(),()=>.5));render();});
+ // v0.133 folds the report column at 1024px by default; open it so the enemy cards are at their narrowest.
+ await p.evaluate(()=>{toggleJournalCollapsed(false);dismissStoryHint();setTab('battle');foes=Array.from({length:5},()=>makeEnemy(0,playerHero(),()=>.5));render();});
  const b=await p.evaluate(()=>{const rows=s=>new Set([...document.querySelectorAll(s)].map(e=>Math.round(e.getBoundingClientRect().top))).size;
   const nums=[...document.querySelectorAll('#battleEnemyIcons .unit-numbers')].map(e=>({over:e.scrollHeight-e.clientHeight,lines:[...e.children].map(c=>Math.round(c.getBoundingClientRect().top))}));
   return {allyRows:rows('#battleAllyIcons>.seconds-unit'),enemyRows:rows('#battleEnemyIcons>.seconds-unit'),nums,ally:Math.max(...[...document.querySelectorAll('#battleAllyIcons>.seconds-unit')].map(e=>e.getBoundingClientRect().bottom)),main:document.querySelector('.layout>main').getBoundingClientRect().bottom};});
  assert.equal(b.allyRows,1);assert.equal(b.enemyRows,1);
  assert(b.nums.every(n=>n.over<=1&&n.lines.length===2&&n.lines[0]!==n.lines[1]),'HP and shield wrap without overlap '+JSON.stringify(b.nums[0]));
  assert(b.ally<=b.main+1,'the party stays on screen');
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
+
+test('Narrow desktop folds the report column by default until the player chooses; backpack list widens; alchemy recipes use two columns',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1024,height:768});await setup(p);
+ await p.evaluate(()=>{try{localStorage.removeItem('dreamingAbyss.journalCollapsed');}catch{}});await p.reload();await p.evaluate(()=>selectSaveSlot(1));await p.waitForFunction(()=>!!state&&!!document.querySelector('.journal-collapse-toggle'));
+ const folded=()=>p.evaluate(()=>document.body.classList.contains('journal-collapsed'));
+ assert.equal(await folded(),true,'1024px folds by default');
+ const strip=await p.locator('.journal-collapse-toggle').evaluate(e=>{const chars=[...e.textContent].length,b=e.getBoundingClientRect();const range=document.createRange();range.selectNodeContents(e);const rects=[...range.getClientRects()];return {text:e.textContent,width:b.width,tall:range.getBoundingClientRect().height>range.getBoundingClientRect().width,chars};});
+ assert.equal(strip.text,'展開戰報');assert(strip.tall&&strip.width<=45,'the strip reads top to bottom '+JSON.stringify(strip));
+ await p.setViewportSize({width:1366,height:768});await p.waitForFunction(()=>!document.body.classList.contains('journal-collapsed'));
+ await p.setViewportSize({width:1024,height:768});await p.waitForFunction(()=>document.body.classList.contains('journal-collapsed'));
+ await p.locator('.journal-collapse-toggle').click();assert.equal(await folded(),false,'the player opens it');
+ await p.setViewportSize({width:1366,height:768});await p.setViewportSize({width:1024,height:768});await p.evaluate(()=>render());
+ assert.equal(await folded(),false,'the player choice wins over the width default');
+ await p.locator('.journal-collapse-toggle').click();
+ await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
+ const list=await p.evaluate(()=>{const m=document.querySelector('.inventory-master-pane').getBoundingClientRect(),g=document.querySelector('.inventory-master-detail').getBoundingClientRect(),name=document.querySelector('.gear-management-row .item-slot-name');return {share:m.width/g.width,oneLine:name.getBoundingClientRect().height<=26};});
+ assert(list.share>=0.45&&list.oneLine,'backpack list '+JSON.stringify(list));
+ await p.evaluate(()=>setTab('alchemy'));
+ const recipes=await p.locator('#life-alchemy>.life-recipe').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));
+ assert.equal(recipes[0],recipes[1],'two recipes share a row');
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });

@@ -287,7 +287,7 @@
   body.journal-collapsed{--journal-width:44px}
   body.journal-collapsed #globalBattleJournal{padding:6px 4px!important;overflow:hidden}
   body.journal-collapsed #globalBattleJournal>:not(.journal-collapse-toggle){display:none!important}
-  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{inset:6px 4px;width:auto;height:auto;min-height:120px;padding:10px 0;text-align:center;writing-mode:vertical-rl;letter-spacing:.2em;color:var(--gold);border:1px solid var(--line);border-radius:8px}
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{inset:6px 4px;width:auto;height:auto;min-height:120px;padding:10px 0;text-align:center;display:flex!important;align-items:center;justify-content:center;white-space:normal;word-break:break-all;color:var(--gold);border:1px solid var(--line);border-radius:8px}
 }
 
 /* Narrow desktop windows (901–1100px): the forge detail keeps its natural height. */
@@ -448,4 +448,27 @@
   #app .shop-product-row:not(:has(>.shop-product-visual))>.shop-inline-controls>.small{grid-column:1;grid-row:2;margin:0}
   #app .shop-product-row:not(:has(>.shop-product-visual)) .shop-inline-actions{grid-column:2;grid-row:1/3;display:flex;align-items:center;gap:6px;margin:0}
   #app .shop-product-row:not(:has(>.shop-product-visual)) .shop-inline-actions>input{width:64px}
+}
+
+/* ── v0.133 Desktop: narrow windows, alchemy ─────────────────────────────── */
+@media(min-width:901px){
+  /* The folded report strip reads clearly. */
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{font-size:var(--fs-sm);font-weight:700;line-height:1.5;padding:10px calc(50% - .5em)!important}
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle:hover{background:color-mix(in srgb,var(--gold) 12%,transparent)}
+}
+/* Narrow desktop windows: the backpack list takes about half the width so item names stay on one line. */
+@media(min-width:901px) and (max-width:1100px){
+  #app>.layout>main .gear-management-panel .inventory-master-detail{grid-template-columns:minmax(0,50%) minmax(0,1fr)}
+  #app>.layout>main .gear-management-row .inventory-list-item{width:100%;max-width:none}
+}
+
+/* Alchemy on desktop: recipes sit two to a row (the page was one recipe per row, about 2900px tall at 1366). */
+@media(min-width:901px){
+  #app #life-alchemy{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;align-items:start}
+  #app #life-alchemy>*{grid-column:1/-1;margin:0}
+  #app #life-alchemy>.life-recipe{grid-column:auto;height:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+  #app #life-alchemy>.life-recipe .recipe-item-line{gap:6px;margin:8px 0}
+  #app #life-alchemy>.life-recipe .recipe-item-line>.recipe-input,#app #life-alchemy>.life-recipe .recipe-item-line>.item-slot{flex:1 1 calc(50% - 24px);min-width:150px}
+  #app #life-alchemy>.life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
+  #app #life-alchemy>.life-recipe>p.small{margin:4px 0}
 }

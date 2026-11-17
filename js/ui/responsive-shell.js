@@ -118,7 +118,13 @@
   globalThis.setCreationClass=function(index){creationClass=Math.max(0,Number(index)||0);syncCreationTabs();document.querySelector('#app>.start')?.scrollTo?.(0,0);return creationClass;};
   // Desktop: the battle report column folds to a strip; the choice is kept for this browser.
   const JOURNAL_KEY='dreamingAbyss.journalCollapsed';
-  let journalCollapsed=false;try{journalCollapsed=localStorage.getItem(JOURNAL_KEY)==='1';}catch{}
+  // No stored choice: the column folds by default on narrow desktop windows (901–1100px) and stays open on wider ones.
+  // Once the player folds or opens it, that choice is kept for every width.
+  const narrowDesk=matchMedia('(min-width:901px) and (max-width:1100px)');
+  let journalChoice=null;try{const v=localStorage.getItem(JOURNAL_KEY);if(v==='1'||v==='0')journalChoice=v==='1';}catch{}
+  const journalIsCollapsed=()=>journalChoice??narrowDesk.matches;
+  let journalCollapsed=journalIsCollapsed();
+  narrowDesk.addEventListener('change',()=>{journalCollapsed=journalIsCollapsed();syncJournalToggle();});
   function syncJournalToggle(){
     document.body.classList.toggle('journal-collapsed',journalCollapsed);
     const journal=document.getElementById('globalBattleJournal');if(!journal||typeof journal.prepend!=='function')return;
@@ -128,7 +134,7 @@
     if(button.textContent!==label)button.textContent=label;
     button.setAttribute('aria-expanded',String(!journalCollapsed));button.setAttribute('aria-label',journalCollapsed?'展開戰報欄':'收合戰報欄');
   }
-  globalThis.toggleJournalCollapsed=function(value){journalCollapsed=value===undefined?!journalCollapsed:!!value;try{localStorage.setItem(JOURNAL_KEY,journalCollapsed?'1':'0');}catch{}syncJournalToggle();return journalCollapsed;};
+  globalThis.toggleJournalCollapsed=function(value){journalCollapsed=value===undefined?!journalCollapsed:!!value;journalChoice=journalCollapsed;try{localStorage.setItem(JOURNAL_KEY,journalCollapsed?'1':'0');}catch{}syncJournalToggle();return journalCollapsed;};
   if(typeof refreshGlobalJournal==='function'){const journalBase=refreshGlobalJournal;refreshGlobalJournal=function(...args){const out=journalBase(...args);syncJournalToggle();return out;};}
   // Phones: long explanations are clamped to two lines, and alchemy recipes fold to one row. Both remember what was opened
   // for this visit (by text, so a redraw keeps it).
