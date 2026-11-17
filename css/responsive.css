@@ -292,3 +292,38 @@
 
 /* Narrow desktop windows (901–1100px): the forge detail keeps its natural height. */
 @media(min-width:901px) and (max-width:1100px){#app>.layout>main .forge-layout{display:block;height:auto}#app>.layout>main .forge-preview,#app>.layout>main .forge-controls{max-height:none}}
+
+/* ── v0.125 Second pass on phone pages ───────────────────────────────────── */
+.intro-clamp-toggle,.life-recipe-toggle{display:none}
+@media(max-width:700px){
+  /* Character stats: two per row. */
+  #app>.layout>main .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #app>.layout>main .stat-grid>span{min-width:0}
+  /* Skill slots: an empty slot is one compact row; a filled slot keeps its description. */
+  #app .skill-system-slots{gap:8px}
+  #app .skill-system-slot{min-height:0;padding:8px 12px}
+  #app .skill-system-slot:has(>b:only-of-type):not(:has(.skill-slot-name)){display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
+  /* Quest filter: four choices on one row. */
+  #app>.layout>main .quest-filter{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:0!important}
+  #app>.layout>main .quest-filter>button{width:100%!important;padding:6px 2px!important;font-size:var(--fs-xs)!important;white-space:nowrap}
+  /* Team roster: a member's buttons sit to the right of the name. */
+  #app>.layout>main .roster-row{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:10px 0}
+  #app>.layout>main .roster-row>.roster-member-actions{justify-content:flex-end;flex-wrap:nowrap;gap:6px}
+  #app>.layout>main .roster-row>.roster-member-actions>button{padding:6px 10px!important;white-space:nowrap}
+  /* Long explanations show two lines until tapped. */
+  #app>.layout>main .intro-clamp:not(.intro-open)>p:first-of-type,#app>.layout>main p.intro-clamp:not(.intro-open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+  #app>.layout>main .intro-clamp:not(.intro-open)>p:not(:first-of-type){display:none}
+  #app>.layout>main .intro-clamp-toggle{display:inline-flex;align-items:center;min-height:44px;margin:2px 0 0;padding:2px 8px;font-size:var(--fs-xs);color:var(--gold);background:transparent;border:0;box-shadow:none}
+  /* Alchemy recipes: a row with the name and 開始 until opened. */
+  #app .life-recipe{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 8px}
+  #app .life-recipe>*{grid-column:1/-1;margin-top:0;margin-bottom:0}
+  #app .life-recipe>.life-action-title{grid-column:1;cursor:pointer}
+  #app .life-recipe>.life-recipe-toggle{display:inline-flex;grid-column:2;grid-row:1;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:4px 10px;font-size:var(--fs-xs)}
+  #app .life-recipe>button:not(.life-recipe-toggle){grid-column:3;grid-row:1;white-space:nowrap}
+  #app .life-recipe.recipe-folded>.recipe-item-line,#app .life-recipe.recipe-folded>p{display:none}
+  /* Material stock: two per row. */
+  #app .life-materials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #app .life-materials>.life-stock-row{justify-self:stretch;width:auto;max-width:none;min-width:0;margin:0;padding:6px}
+  #app .life-materials>.life-stock-row .item-slot{width:100%;max-width:none;min-width:0}
+  #app>.layout>main .intro-clamp:not(.intro-open)>p.small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+}

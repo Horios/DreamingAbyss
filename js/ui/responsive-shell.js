@@ -130,7 +130,38 @@
   }
   globalThis.toggleJournalCollapsed=function(value){journalCollapsed=value===undefined?!journalCollapsed:!!value;try{localStorage.setItem(JOURNAL_KEY,journalCollapsed?'1':'0');}catch{}syncJournalToggle();return journalCollapsed;};
   if(typeof refreshGlobalJournal==='function'){const journalBase=refreshGlobalJournal;refreshGlobalJournal=function(...args){const out=journalBase(...args);syncJournalToggle();return out;};}
-  function syncPages(){syncJournalToggle();syncSheet(true);syncTokenFilters();syncBossRegions();syncCreationTabs();}
+  // Phones: long explanations are clamped to two lines, and alchemy recipes fold to one row. Both remember what was opened
+  // for this visit (by text, so a redraw keeps it).
+  const INTROS='#app>.layout>main .life-rules,#app>.layout>main .companion-management-page>.roster-page>p,#app>.layout>main .partner-roster-intro,#app>.layout>main>section.panel:has(+.cards),#app>.layout>main .statistics-note';
+  const openIntros=new Set(),openRecipes=new Set();
+  const keyOf=el=>(el.textContent||'').trim().slice(0,40);
+  function syncIntros(){
+    if(!phone.matches||!document.querySelectorAll)return;
+    for(const el of document.querySelectorAll(INTROS)){
+      if(el.classList.contains('intro-clamp'))continue;
+      const text=(el.textContent||'').trim();if(text.length<60)continue;
+      const key=keyOf(el),open=openIntros.has(key);
+      el.classList.add('intro-clamp');el.classList.toggle('intro-open',open);el.dataset.introKey=key;
+      const button=document.createElement('button');button.type='button';button.className='intro-clamp-toggle';button.textContent=open?'收起說明':'展開說明';button.setAttribute('aria-expanded',String(open));
+      button.onclick=()=>{const now=!el.classList.contains('intro-open');el.classList.toggle('intro-open',now);if(now)openIntros.add(key);else openIntros.delete(key);button.textContent=now?'收起說明':'展開說明';button.setAttribute('aria-expanded',String(now));};
+      el.after(button);
+    }
+  }
+  function syncRecipes(){
+    if(!document.querySelectorAll)return;
+    for(const card of document.querySelectorAll('#app .life-recipe')){
+      const title=card.querySelector(':scope>.life-action-title');if(!title)continue;
+      let button=card.querySelector(':scope>.life-recipe-toggle');
+      if(!phone.matches){button?.remove();card.classList.remove('recipe-folded');continue;}
+      const key=keyOf(title),open=openRecipes.has(key);
+      card.classList.toggle('recipe-folded',!open);
+      if(!button){button=document.createElement('button');button.type='button';button.className='life-recipe-toggle';title.after(button);
+        const flip=()=>{const now=card.classList.contains('recipe-folded');card.classList.toggle('recipe-folded',!now);if(now)openRecipes.add(key);else openRecipes.delete(key);button.textContent=now?'收起':'材料';button.setAttribute('aria-expanded',String(now));};
+        button.onclick=flip;title.onclick=flip;}
+      button.textContent=open?'收起':'材料';button.setAttribute('aria-expanded',String(open));
+    }
+  }
+  function syncPages(){syncJournalToggle();syncSheet(true);syncIntros();syncRecipes();syncTokenFilters();syncBossRegions();syncCreationTabs();}
   globalThis.toggleTokenFilters=function(){const open=document.body.classList.toggle('token-filters-open');const b=document.querySelector('.token-filter-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起篩選':'信物篩選';}return open;};
   globalThis.closeDetailSheet=function(){const was=sheet;setSheet('');return !!was;};
   globalThis.openDetailSheet=key=>{setSheet(key);return sheet===key;};

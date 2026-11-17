@@ -181,3 +181,32 @@ test('Navigation rail on desktop, tablet and sideways phones; the report column 
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Phone second pass: two-column stats, compact empty skill slots, one-row quest filter, folded explanations and alchemy recipes',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:390,height:844});await setup(p);
+ await p.evaluate(()=>setTab('character'));
+ const stats=await p.locator('.stat-grid>span').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(stats[0],stats[1],'two stats share a row');
+ await p.evaluate(()=>setTab('skills'));
+ const slots=await p.locator('.skill-system-slot').evaluateAll(es=>es.map(e=>({h:e.getBoundingClientRect().height,filled:!!e.querySelector('.skill-slot-name')})));
+ assert(slots.some(s=>!s.filled)&&slots.filter(s=>!s.filled).every(s=>s.h>=44&&s.h<=60),'empty slots are one row '+JSON.stringify(slots));
+ await p.evaluate(()=>setStoryCategory('side'));
+ assert.equal(new Set(await p.locator('.quest-filter>button').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)))).size,1,'quest filter is one row');
+ await p.evaluate(()=>setTab('roster'));
+ const row=await p.locator('.roster-row').nth(1).evaluate(e=>{const a=e.querySelector('.roster-member-actions').getBoundingClientRect(),n=e.querySelector('.member-identity').getBoundingClientRect();return a.left>=n.left+60&&a.top<n.bottom+30;});assert(row,'member actions sit beside the name');
+ await p.evaluate(()=>setTab('alchemy'));
+ const intro=p.locator('.life-rules.intro-clamp');assert.equal(await intro.count(),1);
+ const before=await intro.evaluate(e=>e.getBoundingClientRect().height);
+ await p.locator('.intro-clamp-toggle').first().click();const opened=await intro.evaluate(e=>e.getBoundingClientRect().height);assert(opened>before,'explanation opens');
+ await p.evaluate(()=>render());assert.equal(await p.locator('.life-rules').evaluate(e=>e.classList.contains('intro-open')),true,'it stays open through a redraw');
+ const recipe=p.locator('.life-recipe').first();
+ assert.equal(await recipe.locator('.recipe-item-line').isVisible(),false);assert(await recipe.evaluate(e=>e.getBoundingClientRect().height)<=96,'folded recipe is one row');
+ assert.equal(await recipe.locator('button:not(.life-recipe-toggle)').isVisible(),true,'開始 stays reachable while folded');
+ await recipe.locator('.life-recipe-toggle').click();assert.equal(await recipe.locator('.recipe-item-line').isVisible(),true);
+ await p.evaluate(()=>render());assert.equal(await p.locator('.life-recipe').first().locator('.recipe-item-line').isVisible(),true,'an opened recipe survives a redraw');
+ const stock=await p.locator('.life-materials>.life-stock-row').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(stock[0],stock[1],'stock is two per row');
+ await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>render());
+ assert.equal(await p.locator('.life-recipe-toggle').count(),0);assert.equal(await p.locator('.life-recipe').first().locator('.recipe-item-line').isVisible(),true);assert.equal(await p.locator('.intro-clamp-toggle:visible').count(),0);
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
