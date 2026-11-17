@@ -302,3 +302,17 @@ test('Desktop fourth pass: five enemies share one row at 1366px; shop products a
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Narrow desktop (1024px): three allies share one row and five narrow enemy cards keep HP and shield readable',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1024,height:768});await setup(p);
+ await p.evaluate(()=>{dismissStoryHint();setTab('battle');foes=Array.from({length:5},()=>makeEnemy(0,playerHero(),()=>.5));render();});
+ const b=await p.evaluate(()=>{const rows=s=>new Set([...document.querySelectorAll(s)].map(e=>Math.round(e.getBoundingClientRect().top))).size;
+  const nums=[...document.querySelectorAll('#battleEnemyIcons .unit-numbers')].map(e=>({over:e.scrollHeight-e.clientHeight,lines:[...e.children].map(c=>Math.round(c.getBoundingClientRect().top))}));
+  return {allyRows:rows('#battleAllyIcons>.seconds-unit'),enemyRows:rows('#battleEnemyIcons>.seconds-unit'),nums,ally:Math.max(...[...document.querySelectorAll('#battleAllyIcons>.seconds-unit')].map(e=>e.getBoundingClientRect().bottom)),main:document.querySelector('.layout>main').getBoundingClientRect().bottom};});
+ assert.equal(b.allyRows,1);assert.equal(b.enemyRows,1);
+ assert(b.nums.every(n=>n.over<=1&&n.lines.length===2&&n.lines[0]!==n.lines[1]),'HP and shield wrap without overlap '+JSON.stringify(b.nums[0]));
+ assert(b.ally<=b.main+1,'the party stays on screen');
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

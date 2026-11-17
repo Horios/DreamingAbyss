@@ -425,7 +425,11 @@
 @media(min-width:901px){
   /* A group of five enemies stays on one row at 1366px (cards could not shrink below 176px, so the fifth wrapped and pushed
      the party below the screen). */
-  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,200px);justify-content:center!important;column-gap:12px!important}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,200px);justify-content:center!important;column-gap:12px!important}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit{min-width:0}
+  /* Narrow cards wrap HP and shield onto two lines; an old 15px cap made the lines overlap. */
+  #app .seconds-battlefield .seconds-unit .unit-numbers{max-height:none;height:auto;flex-basis:auto}
+  #app .seconds-battlefield .seconds-unit .seconds-face>*{flex-shrink:0}
   #app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{min-width:0}
   #app .seconds-battlefield #battleEnemyIcons .unit-title{min-width:0}
   /* Shop products: item and price on the left, stock and 購買 on the right, one compact row per product. */
