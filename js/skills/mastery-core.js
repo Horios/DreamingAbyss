@@ -94,8 +94,8 @@ const CLASS_MASTERY_BONUS_DEFAULTS=[{hp:3,atk:0,def:.5,crit:0},{hp:1,atk:.6,def:
 
 function ensureMasterySettings(settings){
   if(!settings||typeof settings!=='object')return settings;
-  settings.progression??={};settings.progression.starting??={};settings.progression.levelRewards??={};
-  delete settings.progression.starting.skillPoints;delete settings.progression.levelRewards.skillPoints;
+  settings.progression??={};settings.progression.starting??={};delete settings.progression.levelRewards;
+  delete settings.progression.starting.skillPoints;
   if(settings.quests?.tutorial)settings.quests.tutorial.skillLevelRequirement=1;
   settings.skills??={};settings.skills.mastery??={};
   for(const [k,v] of Object.entries(MASTERY_DEFAULTS))if(!Number.isFinite(Number(settings.skills.mastery[k])))settings.skills.mastery[k]=v;

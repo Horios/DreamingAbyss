@@ -18,7 +18,7 @@
   }
   function normalizeDocument(input){
     const d=copy(input);d.teamSettings=settings(d.teamSettings);d.balanceSettings??={};d.balanceSettings.meta??={};
-    const p=d.balanceSettings.progression??={};p.starting??={};p.levelRewards??={};delete p.starting.skillPoints;delete p.levelRewards.skillPoints;delete p.starting.abilityPoints;delete p.levelRewards.abilityPoints;delete p.statsPerPoint;d.balanceSettings.meta.teamBuildVersion=VERSION;
+    const p=d.balanceSettings.progression??={};p.starting??={};delete p.levelRewards;delete p.starting.skillPoints;delete p.starting.abilityPoints;delete p.statsPerPoint;d.balanceSettings.meta.teamBuildVersion=VERSION;
     for(const cls of d.classes||[])for(const sk of cls.skills||[]){delete sk.learnCost;Object.assign(sk,rules(sk));}
     for(const list of d.supportSkills||[])for(const sk of list){delete sk.learnCost;Object.assign(sk,rules(sk));}
     return d;
