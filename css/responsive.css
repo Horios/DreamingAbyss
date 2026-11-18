@@ -273,10 +273,8 @@
   #app .inventory-category-tabs,#app .player-skill-class-tabs,#app .boss-class-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 
-/* ── Wide screens (1600px and up): the whole interface is drawn larger instead of leaving 10–12px text on a big monitor. */
-/* Viewport units are not divided by zoom, so the page height is. */
-@media(min-width:1600px){html{--ui-zoom:1.15;zoom:var(--ui-zoom)}#app{height:calc(100dvh / var(--ui-zoom) - 48px)}.utility-dialog{max-height:calc(85dvh / var(--ui-zoom))}dialog#modal{inset:auto;margin:0;left:calc(50vw / var(--ui-zoom));top:calc(50dvh / var(--ui-zoom));translate:-50% -50%;max-height:calc(92dvh / var(--ui-zoom))}}
-@media(min-width:2300px){html{--ui-zoom:1.35}}
+/* v0.160: the wide-screen page zoom (v0.122) was removed. Tooltips, the tutorial and lesson spotlights and the item
+   hover card are placed from viewport coordinates, and a zoomed page shifted all of them away from their targets. */
 
 /* Desktop battle report column: 收合 leaves a narrow strip so the page gets the width. */
 .journal-collapse-toggle{display:none}
@@ -523,3 +521,6 @@
 }
 /* Tablets: HP and shield on a battle card keep a gap (they ran together as "47 / 47護盾 0"). */
 @media(min-width:701px) and (max-width:900px){#app .seconds-battlefield .seconds-unit .unit-numbers{justify-content:space-between!important;gap:2px 10px}}
+
+/* v0.160: a battle card's title row (name and LV · 等級) no longer becomes a tiny scrolling area beside the level tag. */
+#app .seconds-battlefield .seconds-unit .unit-title{height:auto!important;max-height:none!important;overflow:visible!important}

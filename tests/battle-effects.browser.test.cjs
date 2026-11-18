@@ -309,10 +309,11 @@ test('numbers stay bounded at high speed, readable within phone cards, obey mode
    await p.clock.runFor(1100);
    await p.evaluate(()=>{foes.forEach(e=>e.hp=e.maxhp=1e9);fxCapture(()=>foes.forEach((e,i)=>EmberwildBattleEffects.scope({mode:'damage',critical:i===2},()=>e.hp-=[1,37,123456789][i])));});
    await p.clock.runFor(320);
-   const centered=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const range=document.createRange();range.selectNodeContents(n);const r=range.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect();return {text:n.textContent,ratio:r.width/card.width,offset:r.x+r.width/2-card.x-card.width/2,weight:Number(getComputedStyle(n).fontWeight),cardWidth:card.width,clientWidth:n.closest('.unit').clientWidth,offsetWidth:n.closest('.unit').offsetWidth};}));
+   const centered=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const range=document.createRange();range.selectNodeContents(n);const r=range.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect();return {text:n.textContent,font:parseFloat(n.style.fontSize),ratio:r.width/card.width,offset:r.x+r.width/2-card.x-card.width/2,weight:Number(getComputedStyle(n).fontWeight),cardWidth:card.width,clientWidth:n.closest('.unit').clientWidth,offsetWidth:n.closest('.unit').offsetWidth};}));
    assert.equal(centered.length,3);
    // v0.138: ordinary numbers span about 39% of the card; the critical hit (the third) keeps its large size.
-   centered.forEach((n,i)=>{if(i===2)assert(n.ratio>=.5&&n.ratio<=.8,JSON.stringify(n));else assert(n.ratio>=.3&&n.ratio<=.48,JSON.stringify(n));});
+   // v0.160: on wide cards the size is capped by Settings → 傷害數字大小 (default 中: ordinary 22px, critical 30px), so only the upper bounds of the card share remain.
+   centered.forEach((n,i)=>{assert(n.font<=(i===2?30:22)+.01,JSON.stringify(n));if(i===2)assert(n.ratio<=.8,JSON.stringify(n));else assert(n.ratio<=.48,JSON.stringify(n));});
    for(const n of centered){assert(Math.abs(n.offset)<=1,JSON.stringify(n));assert(n.weight>=900);}
    await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
    await p.locator('#battleEnemyIcons .battle-enemy-icon').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.equal(await p.locator('.battle-number').count(),0);await p.locator('#modal button').last().click();
@@ -324,5 +325,31 @@ test('numbers stay bounded at high speed, readable within phone cards, obey mode
   await p.evaluate(()=>{battleRate=1;setBattleEffects('simple');fxCapture(()=>resolveHit(foes[1],20,state,'physical',false));});assert.equal(await p.locator('.battle-number').getAttribute('data-detail'),'simple');
   await p.emulateMedia({reducedMotion:'reduce'});await p.evaluate(()=>{setBattleEffects('full');fxCapture(()=>resolveHit(foes[1],20,state,'physical',false));});assert.equal(await p.locator('.battle-number').getAttribute('data-detail'),'simple');
   await p.evaluate(()=>{setBattleEffects('off');fxCapture(()=>resolveHit(foes[1],20,state,'physical',false));});assert.equal(await p.locator('.battle-number').count(),0);assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});
+
+test('damage number size follows Settings (大／中／小), persists in this browser and keeps critical hits larger',async()=>{
+ const g=await setup(),p=g.page;try{
+  await p.setViewportSize({width:1440,height:900});
+  assert.equal(await p.evaluate(()=>battleNumberSize()),'medium','中 is the default');
+  const sizes={};
+  for(const size of ['large','medium','small']){
+   assert.equal(await p.evaluate(v=>setBattleNumberSize(v),size),true);
+   await p.evaluate(()=>{render();setBattleEffects('full');battleRate=1;foes.forEach(e=>e.hp=e.maxhp=1e9);fxCapture(()=>foes.forEach((e,i)=>EmberwildBattleEffects.scope({mode:'damage',critical:i===2},()=>e.hp-=[37,37,37][i])));});
+   await p.clock.runFor(200);
+   sizes[size]=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>({font:parseFloat(n.style.fontSize),critical:n.dataset.critical==='true'})));
+   await p.clock.runFor(1200);
+  }
+  const top=list=>({normal:Math.max(...list.filter(n=>!n.critical).map(n=>n.font)),critical:Math.max(...list.filter(n=>n.critical).map(n=>n.font))});
+  const l=top(sizes.large),m=top(sizes.medium),s=top(sizes.small);
+  assert(l.normal>m.normal&&m.normal>s.normal,'大 > 中 > 小 '+JSON.stringify({l,m,s}));
+  assert(l.normal<=28.01&&m.normal<=22.01&&s.normal<=16.01&&s.normal>=11,'ordinary caps '+JSON.stringify({l,m,s}));
+  for(const x of [l,m,s])assert(x.critical>x.normal,'critical hits stay larger');
+  await p.evaluate(()=>setTab('options'));
+  assert.equal(await p.locator('#modal [data-battle-number-size]').inputValue(),'small');
+  await p.locator('#modal [data-battle-number-size]').selectOption('large');assert.equal(await p.evaluate(()=>battleNumberSize()),'large');
+  await p.evaluate(()=>closeModal());await p.reload();
+  assert.equal(await p.evaluate(()=>battleNumberSize()),'large','the choice is kept for this browser');
+  assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

@@ -143,7 +143,7 @@ test('Phone BOSS crafting shows one region at a time; shop rows are one line eac
  }finally{await r.browser.close();}
 });
 
-test('Navigation rail on desktop, tablet and sideways phones; the report column folds; wide screens draw larger without overflow',async()=>{
+test('Navigation rail on desktop, tablet and sideways phones; the report column folds; wide screens fit without zoom and hover cards sit beside their item',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:1366,height:768});await setup(p);
  const shell=()=>p.evaluate(()=>{const box=s=>document.querySelector(s).getBoundingClientRect(),a=box('.layout>aside'),m=box('.layout>main'),h=box('body>header');
@@ -175,7 +175,12 @@ test('Navigation rail on desktop, tablet and sideways phones; the report column 
  // Wide screens
  await p.setViewportSize({width:1920,height:1080});await p.evaluate(()=>{closeModal();setTab('equipment');render();});
  const wide=await p.evaluate(()=>{const b=s=>document.querySelector(s).getBoundingClientRect();return {zoom:getComputedStyle(document.documentElement).zoom,font:b('.layout>main h1').height,layoutBottom:b('.layout').bottom,journalRight:b('#globalBattleJournal').right,doc:[document.documentElement.scrollWidth,document.documentElement.scrollHeight]};});
- assert.equal(wide.zoom,'1.15');assert(wide.layoutBottom<=1081&&wide.journalRight<=1921,'the zoomed layout fits the screen '+JSON.stringify(wide));
+ // v0.160: no page zoom (it shifted tooltips and spotlights placed from viewport coordinates).
+ assert.equal(wide.zoom,'1');assert(wide.layoutBottom<=1081&&wide.journalRight<=1921,'the layout fits the screen '+JSON.stringify(wide));
+ const slot=p.locator('.gear-management-row .inventory-list-item').nth(1);await slot.hover();await p.waitForSelector('#item-hover-tooltip:not([hidden])');
+ const tip=await p.evaluate(()=>{const t=document.getElementById('item-hover-tooltip').getBoundingClientRect(),s=document.querySelectorAll('.gear-management-row .inventory-list-item')[1].getBoundingClientRect();return {gap:t.left>=s.right?t.left-s.right:s.left-t.right,dy:Math.abs(t.top-s.top)};});
+ assert(tip.gap>=0&&tip.gap<=16&&tip.dy<=4,'the hover card sits right beside the item '+JSON.stringify(tip));
+ await p.mouse.move(2,2);
  await p.evaluate(()=>setTab('options'));
  const dialog=await p.locator('#modal').boundingBox();assert(Math.abs(dialog.x+dialog.width/2-960)<=2&&dialog.y>=0&&dialog.y+dialog.height<=1080,'dialogs stay centred and on screen '+JSON.stringify(dialog));
  assert.deepEqual(r.errors,[]);

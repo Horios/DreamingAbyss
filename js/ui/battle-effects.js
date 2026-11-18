@@ -18,6 +18,9 @@
  function later(fn,ms){const timer=setTimeout(()=>{timers.delete(timer);fn();},ms);timers.add(timer);return timer;}
  const activeNodes=new Map(),markedNodes=new Set(),motion=matchMedia('(prefers-reduced-motion: reduce)');
  try{const saved=localStorage.getItem(storageKey);if(choices.includes(saved))preference=saved;}catch{}
+ // v0.160: damage number size, kept for this browser like the effects mode. [ordinary, critical] maximum font size in px.
+ const NUMBER_SIZES={large:[28,38],medium:[22,30],small:[16,22]},numberSizeKey=storageKey+'.numberSize';let numberSize='medium';
+ try{const saved=localStorage.getItem(numberSizeKey);if(Object.hasOwn(NUMBER_SIZES,saved))numberSize=saved;}catch{}
  const id=u=>u?.job!==undefined?heroKey(u):u?.id;
  const visible=()=>!!party&&tab==='battle'&&!document.hidden&&!$('modal')?.open&&!globalThis.isEmberwildTitleOpen?.()&&!globalThis.EmberwildOffline?.busy&&!party.offlineExploration?.receipt;
  const mode=()=>preference==='full'&&(motion.matches||battleRate>2)?'simple':preference;
@@ -198,7 +201,8 @@
   const width=element.offsetWidth||100;
   const ratio=event.critical?.64:event.kind==='dot'?.36:.39;
   // Include the card's reserved scrollbar gutter in its visible width.
-  const size=100*node.offsetWidth*ratio/width;
+  // v0.160: capped by the player's number size (Settings → 傷害數字大小), so wide desktop cards do not draw numbers several times the card text.
+  const cap=NUMBER_SIZES[numberSize]||NUMBER_SIZES.medium,size=Math.min(event.critical?cap[1]:cap[0],100*node.offsetWidth*ratio/width);
   element.style.fontSize=size+'px';
   // Keep large single digits inside short cards without narrowing their width.
   const height=size*.9,compression=Math.min(1,Math.max(1,layer.clientHeight-36)/height);
@@ -317,10 +321,14 @@
  };
  globalThis.EmberwildBattleEffects={begin,end,scope,quiet,result,sync,clear,present,get holdingEncounter(){return !!held&&held.encounter!==foes&&performance.now()<held.until;},get capturing(){return !!frame;},get preference(){return preference;},get pendingEvents(){return pending?[...pending.events.values()].map(e=>({...e})):[];},get pendingNumbers(){return pending?pending.numbers.map(e=>({...e})):[];},get numberCount(){return [...numberNodes.values()].reduce((n,m)=>n+m.size,0);},get activeCount(){return [...activeNodes.values()].reduce((n,m)=>n+m.size,0);}};
  globalThis.setBattleEffects=function(value){if(!choices.includes(value))return false;preference=value;clear();try{localStorage.setItem(storageKey,value);}catch{toast('特效已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-battle-effects]').forEach(select=>select.value=value);EmberwildBattleSummary.sync({animate:false});return true;};
- globalThis.battleEffectsOptionsView=()=>'<section class="panel option-row"><div><h2>戰鬥特效</h2><p class="small">調整探索圖示與血條區塊動畫；保留目前行動者金框；減少動態效果時自動簡化。</p></div><select data-battle-effects aria-label="戰鬥特效" onchange="setBattleEffects(this.value)">'+choices.map((value,i)=>'<option value="'+value+'" '+(preference===value?'selected':'')+'>'+['完整','簡化','關閉'][i]+'</option>').join('')+'</select></section>';
+ globalThis.setBattleNumberSize=function(value){if(!Object.hasOwn(NUMBER_SIZES,value))return false;numberSize=value;try{localStorage.setItem(numberSizeKey,value);}catch{toast('數字大小已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-battle-number-size]').forEach(select=>select.value=value);return true;};
+ globalThis.battleNumberSize=()=>numberSize;
+ const numberSizeOptionsView=()=>'<section class="panel option-row"><div><h2>傷害數字大小</h2><p class="small">戰鬥卡片上跳出的傷害與治療數字；暴擊會比一般數字大一些。</p></div><select data-battle-number-size aria-label="傷害數字大小" onchange="setBattleNumberSize(this.value)">'+[['large','大'],['medium','中'],['small','小']].map(([value,label])=>'<option value="'+value+'" '+(numberSize===value?'selected':'')+'>'+label+'</option>').join('')+'</select></section>';
+ globalThis.battleEffectsOptionsView=()=>'<section class="panel option-row"><div><h2>戰鬥特效</h2><p class="small">調整探索圖示與血條區塊動畫；保留目前行動者金框；減少動態效果時自動簡化。</p></div><select data-battle-effects aria-label="戰鬥特效" onchange="setBattleEffects(this.value)">'+choices.map((value,i)=>'<option value="'+value+'" '+(preference===value?'selected':'')+'>'+['完整','簡化','關閉'][i]+'</option>').join('')+'</select></section>'+numberSizeOptionsView();
  const modal=document.getElementById('modal');if(modal)new MutationObserver(()=>{if(modal.open)clear();}).observe(modal,{attributes:true,attributeFilter:['open']});
  addEventListener('visibilitychange',clear);addEventListener('pagehide',clear);
  addEventListener('storage',e=>{if(e.key===storageKey||e.key===null){preference=choices.includes(e.newValue)?e.newValue:'full';clear();}});
+ addEventListener('storage',e=>{if(e.key===numberSizeKey||e.key===null)numberSize=Object.hasOwn(NUMBER_SIZES,e.newValue)?e.newValue:'medium';});
  // Navigation and paused exploration already render through this existing entry point.
  const renderBase=render;render=function(...args){if(!visible()||!running&&!frame&&!pending&&!held)clear();return renderBase.apply(this,args);};
 })();
