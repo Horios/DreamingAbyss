@@ -495,3 +495,22 @@
   #app .companion-roster-details{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   #app .companion-roster-details>details[open]{grid-column:1/-1}
 }
+
+/* ── v0.136 Desktop: story header, item page ─────────────────────────────── */
+@media(min-width:901px){
+  /* Story cards: NEW! follows the title; the state tag stays at the right (space-between put NEW! in the middle). */
+  #app .story-card>.row:first-child{justify-content:flex-start;gap:10px}
+  #app .story-card>.row:first-child>.tag{margin-left:auto}
+  /* Long action labels keep one line instead of the shared 112px width. */
+  #app>.layout>main .actions>button[onclick^="craftGem"]{width:auto!important;min-width:112px;white-space:nowrap;padding-inline:14px}
+  /* A panel holding only a one-line hint reads as plain text under the heading. */
+  #app>.layout>main>section.panel:has(>.inventory-item-controls:only-child){padding:0 2px;border:0;background:none;box-shadow:none}
+}
+@media(min-width:901px){
+  /* Worn slots: the equipped item fills its slot box. */
+  #app .worn-loadout-grid .worn-slot>.worn-slot-choice .item-slot{width:100%;max-width:none}
+}
+/* Wide screens: battle cards may grow to 240px. */
+@media(min-width:1600px){
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-auto-columns:minmax(0,240px)}
+}

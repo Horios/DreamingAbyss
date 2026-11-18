@@ -372,3 +372,22 @@ test('Desktop rosters: member buttons sit side by side; closed partner sections 
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+
+test('Desktop: story NEW! follows the title; long action labels keep one line; worn items fill their slot; wide battle cards grow',async()=>{
+ const r=await openRuntime(root),p=r.page;
+ try{await p.setViewportSize({width:1366,height:768});await setup(p);
+ await p.evaluate(()=>setStoryCategory('main'));
+ const story=await p.locator('.story-card>.row:first-child').first().evaluate(e=>{const h=e.querySelector('h2').getBoundingClientRect(),n=e.querySelector('.quest-new')?.getBoundingClientRect(),t=e.querySelector('.tag').getBoundingClientRect();return {gap:n?n.left-h.right:0,tagRight:Math.abs(t.right-e.getBoundingClientRect().right)};});
+ assert(story.gap>=0&&story.gap<=16&&story.tagRight<=2,'NEW! next to the title, tag at the right '+JSON.stringify(story));
+ await p.evaluate(()=>{setTab('equipment');setInventoryCategory('items');});
+ const gem=await p.locator('button[onclick^="craftGem"]').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);return new Set([...range.getClientRects()].filter(x=>x.width>2).map(x=>Math.round(x.top))).size;});
+ assert.equal(gem,1,'合成隨機寶石 stays on one line');
+ await p.evaluate(()=>setTab('worn'));
+ const fill=await p.locator('.worn-slot-choice').first().evaluate(e=>{const c=e.getBoundingClientRect(),s=e.querySelector('.item-slot').getBoundingClientRect();return c.right-s.right;});
+ assert(fill<=24,'the item fills its slot box '+fill);
+ await p.setViewportSize({width:1920,height:1080});await p.evaluate(()=>{dismissStoryHint();setTab('battle');render();});
+ const w=await p.locator('#battleAllyIcons>.seconds-unit').first().evaluate(e=>e.getBoundingClientRect().width);
+ assert(w>210,'wide battle cards grow '+w);
+ assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
