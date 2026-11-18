@@ -37,7 +37,9 @@
   }
   // A scrollable row of sub-pages keeps the current one in view; the page itself does not move.
   let lastTabKey='';
+  // Desktop sub-pages wrap instead of scrolling, so reading their widths there only forces an extra layout per redraw.
   function scrollSubtabs(){
+    if(!compact.matches){lastTabKey='';return;}
     const row=document.querySelector('#app>.layout>main>.game-subtabs'),active=row?.querySelector('button.active');
     if(!row||!active){lastTabKey='';return;}
     const key=active.dataset.subpage||'';
