@@ -1216,7 +1216,7 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - 移除：角色等級、角色經驗、經驗曲線、升級事件、擊殺／離線／收益券／每日委託的經驗、等級差經驗懲罰、等級差掉落衰減、怪物對高等級差的增傷、依角色等級限制怪物等級範圍、依等級成長的屬性、裝備穿戴等級限制、升級卷軸。
 - 屬性：職業固定基礎值（`classes[].initialStats`）＋裝備＋職業精通加成（`skills.mastery.classBonus`，每級加成、受精通上限限制、只算目前職業）。
 - 職業精通：沿用 `buildSystem.permanent.classes[職業].xp`，上限 `skills.mastery.maxLevel`，達上限不再累積。技能門檻由角色等級 L 換算為精通 L−1（`skillSystem.masteryGateVersion=1`，`classRules` 改存 `masteryLevel`）。二轉改為職業精通 Lv`progression.advance.masteryLevel`（預設 15）。
-- 技能樹：`classRules` 節點可設 `prerequisites`（同職業節點）與 `position`；驗證循環、無效引用、一轉以二轉為前置。達到精通與前置後自動解鎖，不消耗點數；解鎖不等於裝備，仍需放入技能槽。技能頁頂端新增「職業精通／技能樹」面板。
+- 技能樹：`classRules` 節點可設 `prerequisites`（同職業節點）與 `position`；驗證循環、無效引用、一轉以二轉為前置。達到精通與前置後自動解鎖，不消耗點數；解鎖不等於裝備，仍需放入技能槽。技能頁的技能槽下方新增「職業精通／技能樹」面板：節點標示需求精通，使用中／已解鎖／未解鎖以框線區分，二轉節點以分隔線標出。戰鬥卡片的主角與夥伴改顯示精通等級，側欄遠征目標不再顯示等級。
 - 夥伴：各自累積精通（`companionMastery.xp`），技能、被動、二轉看自身精通。
 - 地圖：擊敗前一張地圖首領即開放下一張；通關後地圖需先突破關卡。顯示推薦裝等（`maps.catalog[].recommendedGearLevel`，預設地圖等級上限）與目前裝等（五個裝備位平均），不作限制。
 - 限時「經驗」加成改為「精通經驗」加成。
