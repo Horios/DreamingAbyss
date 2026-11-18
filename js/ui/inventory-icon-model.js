@@ -12,7 +12,8 @@
   }
   function entries(doc){
     const out=[],seen=new Set(),add=(kind,key,name,item)=>{key=String(key);const id=kind+':'+key;if(!key||seen.has(id))return;seen.add(id);out.push({id,kind,key,name:name||key,fallback:fallback(kind,key,item)});};
-    for(const [job,slots] of (doc.equipmentForms||[]).entries())for(const [slot,forms] of slots.entries())for(const [index,form] of forms.entries()){add('equipment','form:'+job+':'+slot+':'+index,form.name,{...form,slot});Object.assign(out.at(-1),{job,slot,index,weaponType:form.weaponType});}
+    const exclusive=new Set([...(doc.skillSystem?.equipment?.formRules||[]).filter(r=>r.dropOnly).map(r=>r.formId),...(doc.story?.gearRewards||[]).map(r=>r.formId)]);
+    for(const [job,slots] of (doc.equipmentForms||[]).entries())for(const [slot,forms] of slots.entries())for(const [index,form] of forms.entries()){add('equipment','form:'+job+':'+slot+':'+index,form.name,{...form,slot});Object.assign(out.at(-1),{job,slot,index,weaponType:form.weaponType,...(exclusive.has(form.id)?{exclusive:true}:{})});}
     for(const [region,map] of (doc.balanceSettings?.maps?.catalog||[]).entries())if(map.mapType!=='final'&&region!==6)for(const [job,cls] of (doc.classes||[]).entries()){const slot=[0,1,2,0,1,3][Math.max(0,Math.min(5,map.family??0))];add('equipment','boss:'+region+':'+job,map.name+' BOSS・'+cls.name+'・'+['武器','護甲','副手','飾品'][slot],{slot});Object.assign(out.at(-1),{job,slot,region});}
     for(const [job,cls] of (doc.classes||[]).entries())for(const [index,sk]of (cls.skills||[]).entries())add('skill','core:'+job+':'+index,sk.name);
     for(const [job,list]of (doc.supportSkills||[]).entries())for(const [index,sk]of list.entries())add('skill','support:'+job+':'+index,sk.name);
@@ -57,7 +58,7 @@
       if(['material','item','ore','dust','token','equipment'].includes(r.type))source(['ore','dust'].includes(r.type)?'material':r.type,r.type==='ore'?'鍛鐵':r.type==='dust'?'粉塵':r.key,'monster',label,'balanceSettings:drops');
       if(r.type==='gem')for(let i=0;i<3;i++)if(r.key==='random'||String(i)===r.key)source('gem',i,'monster',label,'balanceSettings:drops');
       if(r.type==='potion'){const item=(doc.items||[]).find(x=>x.id==='heal_standard')||(doc.items||[]).find(x=>x.type==='healPotion');if(item)source('item',item.id,'monster',label,'balanceSettings:drops');}
-      if(['gear','gearLegendary','bossGear'].includes(r.type))for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined)source('equipment',row.key,'monster',label,'balanceSettings:drops');
+      if(['gear','gearLegendary','bossGear'].includes(r.type))for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined&&!row.exclusive)source('equipment',row.key,'monster',label,'balanceSettings:drops');
     }
     if(doc.companionTokens?.drop?.enabled!==false)for(const t of doc.companionTokens?.catalog||[])if(t.drop?.enabled!==false)source('token',t.id,'monster','信物掉落設定','companionTokens');
     for(const row of out)row.categoryPath=(doc.inventoryIcons||[]).find(x=>x.kind===row.kind&&String(x.key)===row.key)?.categoryPath||categoryPath(doc,row);
@@ -148,10 +149,14 @@
       const grant=(kind,key,label,extra={})=>add(kind,key,'monster',label,'balanceSettings:drops',path,{...rule,...extra},active);
       if(r.type==='sourceMaterial')for(const m of targets){if(m.kind==='boss')for(let mode=0;mode<3;mode++)grant('material',(mode?'【'+modes[mode]+'】':'')+m.material,m.name+' · '+modes[mode],{region:m.mapIndex,difficulty:mode,monsterId:m.id});else grant('material',m.material,m.name,{region:m.mapIndex,monsterId:m.id});}
       else if(r.type==='material'&&r.key==='升級卷軸')grant('item','level_scroll',r.name||r.key);
-      else if(['material','item','ore','dust','token','equipment'].includes(r.type))grant(['ore','dust'].includes(r.type)?'material':r.type,r.type==='ore'?'鍛鐵':r.type==='dust'?'粉塵':r.key,r.name||r.key);
+      else if(r.type==='equipment')for(const m of targets)for(const kind of r.kinds||[m.kind]){
+        if(kind!==m.kind&&!(kind==='elite'&&m.kind==='normal'&&m.eliteEnabled!==false))continue;
+        grant('equipment',r.key,m.name+' · '+({normal:'普通怪',elite:'菁英怪',boss:'首領',final:'終局首領'}[kind]||kind),{region:m.mapIndex,monsterId:m.id});
+      }
+      else if(['material','item','ore','dust','token'].includes(r.type))grant(['ore','dust'].includes(r.type)?'material':r.type,r.type==='ore'?'鍛鐵':r.type==='dust'?'粉塵':r.key,r.name||r.key);
       else if(r.type==='gem')for(let g=0;g<3;g++)if(r.key==='random'||String(g)===r.key)grant('gem',g,r.name);
       else if(r.type==='potion'){const item=doc.items?.find(x=>x.id==='heal_standard')||doc.items?.find(x=>x.type==='healPotion');if(item)grant('item',item.id,r.name);}
-      else if(['gear','gearLegendary','bossGear'].includes(r.type))for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined)grant('equipment',row.key,r.name);
+      else if(['gear','gearLegendary','bossGear'].includes(r.type))for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined&&!row.exclusive)grant('equipment',row.key,r.name);
     }
     for(const row of out){
       if(row.kind==='equipment'&&row.region!==undefined){
@@ -160,7 +165,7 @@
         row.craftModes=[];for(let mode=0;mode<3;mode++){const m=monsters.find(x=>x.mapIndex===row.region&&x.kind==='boss');if(!m)continue;const material=(mode?'【'+modes[mode]+'】':'')+m.material,quantity=doc.balanceSettings?.equipment?.boss?.craftMaterialCount??5,price=Math.round(tier*(doc.balanceSettings?.equipment?.boss?.craftGoldPerTier??250)*(mode+1));row.craftModes.push({mode,material,quantity,price});add('equipment',row.key,'craft',map.name+' · '+modes[mode]+' BOSS 製作','equipmentPower','equipmentPowerSystem.bossAffixes.'+row.profileIndex,{quantity:1,price,difficulty:mode},map.bossEnabled!==false);use('material',material,'craft',row.name+'（'+modes[mode]+'）','balanceSettings:equipment','balanceSettings.equipment.boss',{quantity,price,region:row.region});}
       }
       if(row.kind==='token'){row.slot=4;const index=doc.companionTokens?.catalog?.findIndex(x=>x.id===row.key),t=doc.companionTokens?.catalog?.[index];add('token',row.key,'monster','信物掉落','companionTokens','companionTokens.catalog.'+index+'.drop',{chanceByDifficulty:doc.companionTokens?.drop?.chanceByDifficulty,refId:row.key},doc.companionTokens?.drop?.enabled!==false&&t?.drop?.enabled!==false);row.jobs=t?.job===undefined||t.job==='all'?(doc.classes||[]).map((_,i)=>i):[Number(t.job)];use('token',row.key,'equip','夥伴穿戴','companionTokens','companionTokens.catalog.'+index);}
-      if(row.kind==='gem'){add('gem',row.key,'craft','粉塵合成隨機寶石','balanceSettings:skills','balanceSettings.skills.gems',{quantity:1});use('gem',row.key,'socket','技能鑲嵌／卸除','balanceSettings:skills','balanceSettings.skills.gems');}
+      if(row.kind==='gem'){add('gem',row.key,'craft','粉塵合成隨機寶石','balanceSettings:skills','balanceSettings.skills.gems',{quantity:1});use('gem',row.key,'socket','裝備鑲嵌／卸除','balanceSettings:skills','balanceSettings.skills.gems');}
       if(row.kind==='item'){const item=doc.items?.find(x=>x.id===row.key);if(item){row.elements=item.element?[item.element]:[];row.storage=item.type==='healPotion'?'共用治療藥水庫':'共用消耗品庫';use('item',row.key,'consume',item.type==='healPotion'?'自動喝水':'使用消耗品',item.type==='healPotion'?'potions':item.type==='gearTierReroll'?'equipmentPower':'items','items.'+doc.items.indexOf(item),{quantity:1});}else if(row.key==='level_scroll'){row.storage='共用材料庫（升級卷軸）';use('item',row.key,'consume','全隊共用等級＋1','balanceSettings:progression','balanceSettings.progression');}else if(row.key.startsWith('companion-ticket-')){const p=doc.companions?.find(x=>'companion-ticket-'+x.id===row.key);row.storage='夥伴招募券庫';if(p){if(p.unlockCondition?.type==='achievement'){add('item',row.key,'quest','夥伴解鎖成就','companionUnlocks','companions.'+doc.companions.indexOf(p)+'.unlockCondition');add('item',row.key,'mail','成就信箱附件','companionUnlocks','companions.'+doc.companions.indexOf(p)+'.unlockCondition');}else add('item',row.key,'shop','指定夥伴招募券','companionUnlocks','companions.'+doc.companions.indexOf(p)+'.unlockCondition',{price:p.unlockCondition?.price});use('item',row.key,'consume','解鎖 '+p.name+'／重複券轉換','companionUnlocks','companions.'+doc.companions.indexOf(p)+'.unlockCondition');}}}
       if(row.kind==='equipment'&&row.index!==undefined){const form=doc.equipmentForms?.[row.job]?.[row.slot]?.[row.index];row.jobs=form?.wearableJobs||[row.job];row.elements=(form?.fixedEffects||[]).filter(e=>e.key==='basicElement').map(e=>e.value);use('equipment',row.key,'equip','主角穿戴','equipment','equipmentForms.'+row.job+'.'+row.slot+'.'+row.index);if(row.name==='穿甲槍'&&row.weaponType==='sword'||row.name==='淨化槌'&&row.weaponType==='holyStaff')row.warnings.push('名稱與有效武器類型不同；分類沿用現有武器規則。');}
     }
@@ -174,6 +179,16 @@
     const rewards=(r,label,path)=>{if(!r)return;for(const [kind,key,n]of [['material','鍛鐵',r.ore],['material','粉塵',r.dust],...((r.materials||[]).map(x=>['material',x.key,x.quantity])),...((r.items||[]).map(x=>['item',x.key,x.quantity])),...((r.potions||[]).map(x=>['item',x.key,x.quantity])),...((r.gemCounts||[]).map((n,i)=>['gem',String(i),n]))])if(n>0)add(kind,key,'quest',label,path.includes('.daily.')?'dailyQuests':'sideQuests',path,{quantity:n});if(r.randomGems>0)for(let g=0;g<5;g++)add('gem',g,'quest',label,path.includes('.daily.')?'dailyQuests':'sideQuests',path,{quantity:r.randomGems});};
     for(const [kind,quests]of [['daily',doc.balanceSettings?.quests?.design?.daily?.entries||[]],['side',doc.balanceSettings?.quests?.design?.side||[]]])for(const [i,q]of quests.entries()){
       const path='balanceSettings.quests.design.'+(kind==='daily'?'daily.entries.':'side.')+i;rewards(q.rewards,q.title,path+'.rewards');for(const o of q.objectives||[])if(o.type==='material'){const keys=o.key==='@currentMap'?monsters.filter(m=>m.kind==='normal').map(m=>m.material):[o.key];for(const key of keys)use('material',key,'quest',q.title,path.includes('.daily.')?'dailyQuests':'sideQuests',path,{quantity:o.quantity,quantityMax:o.quantityMax,refId:q.id});}
+    }
+    const storyGear=new Map((doc.story?.gearRewards||[]).map(g=>[g.id,g.formId]));
+    for(const [i,q] of (doc.story?.quests||[]).entries()){
+      const grant=(rewards,path)=>{for(const item of rewards?.items||[]){
+        if(item.type!=='gear')continue;
+        const formId=storyGear.get(item.key),row=out.find(r=>r.kind==='equipment'&&r.exclusive&&doc.equipmentForms[r.job]?.[r.slot]?.[r.index]?.id===formId);
+        if(row)add('equipment',row.key,'quest',q.name,'story','story.quests.'+i+path,{quantity:item.quantity,refId:q.id},q.enabled!==false);
+      }};
+      grant(q.rewards,'.rewards');
+      for(const [j,stage] of q.stages.entries())grant(stage.rewards,'.stages.'+j+'.rewards');
     }
     // Track existing scripted repeated commissions and tier-up materials explicitly.
     for(const m of monsters.filter(x=>x.kind==='normal'))use('material',m.material,'quest','區域委託／募集候選','balanceSettings:quests','balanceSettings.quests.board',{region:m.mapIndex});
