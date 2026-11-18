@@ -163,7 +163,7 @@ test('characters made outside the prologue and existing saves never enter it',as
 test('text edited in the balance document is what the game shows; a broken prologue is refused',()=>{
  const r=open();r.run('selectSaveSlot(1)');assert.match(r.run("$('prologue-layer').innerHTML"),/無源之光亮起/);
  r.run("globalThis.d=exportableBalance();globalThis.q=d.story.quests.find(q=>q.prologue);q.stages[0].dialogue[0].text='改寫後的開場旁白。';q.prologue.scenes[0].name='造物之初';q.prologue.ui.continue='往下';applyBalanceConfig(d,{persist:false});render()");
- const html=r.run("$('prologue-layer').innerHTML");assert.match(html,/改寫後的開場旁白。/);assert.match(html,/造物之初/);assert.match(html,/>往下</);assert.doesNotMatch(html,/無源之光亮起/);
+ const html=r.run("$('prologue-layer').innerHTML");assert.match(html,/改寫後的開場旁白。/);assert.match(html,/造物之初/);assert.doesNotMatch(html,/data-story-continue/,'plain dialogue advances without a continue button');assert.doesNotMatch(html,/無源之光亮起/);
  assert.throws(()=>r.run("globalThis.bad=exportableBalance();bad.story.quests.find(q=>q.prologue).stages.splice(3,1);applyBalanceConfig(bad,{persist:false})"),/序章/);
  assert.match(r.run("render();$('prologue-layer').innerHTML"),/改寫後的開場旁白。/,'the rejected document did not replace the running one');
  assert.deepEqual(M.issues(r.json('exportableBalance().story'),{}).filter(x=>x.startsWith('序章')),[],'the export round-trips');

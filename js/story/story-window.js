@@ -80,7 +80,7 @@
   // Rebuild only when the view changes: the game's periodic render must not restart the text or clear what was typed.
   if(next.signature===signature){view=next;return;}
   const key=next.sceneKey||next.head?.eyebrow+'|'+next.head?.title;
-  const lineIdentity=v=>[v.sceneKey,v.attrs,v.lineKey,v.line?.text].join('|');
+  const lineIdentity=v=>[v.sceneKey,v.attrs,v.lineKey].join('|');
   const sameScene=sceneKey===key,oldBox=scroller(),scrollTop=oldBox?.scrollTop||0;
   if(!sameScene){history=[];lastLineKey='';follow=true;}
   else if(view?.line&&lastLineKey!==lineIdentity(view)&&(!next.line||lineIdentity(next)!==lineIdentity(view))){history.push({...view.line});lastLineKey=lineIdentity(view);}

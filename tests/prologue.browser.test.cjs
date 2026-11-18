@@ -37,7 +37,7 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   assert.equal(await page.locator('#prologue-layer button:has-text("選擇這種力量")').isDisabled(),true);
   await page.click('.prologue-option[data-job="'+job+'"]');await page.click('#prologue-layer button:has-text("選擇這種力量")');
   assert.deepEqual(await page.evaluate(()=>[characterName(playerHero()),playerHero().job,party.mailbox.messages.length]),['艾拉',job,0]);
-  assert.match(await page.locator('.prologue-speaker').first().innerText(),/女神/);
+  assert.match(await page.locator('.prologue-speaker').last().innerText(),/女神/);
 
   // Every lesson is played by pressing only what the spotlight shows: the dimmed surround leaves one control lit.
   const lit=()=>page.evaluate(()=>{const ring=document.querySelector('.prologue-spot-ring');if(ring)return {ring:true,label:ring.textContent.trim()};const o=document.getElementById('prologue-spotlight');if(!o||o.hidden)return null;const r=o.getBoundingClientRect(),el=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2),c=el?.closest('[onclick]')||el,shadow=getComputedStyle(o).boxShadow;return {ring:false,label:(c?.textContent||'').trim(),x:r.left+r.width/2,y:r.top+r.height/2,dims:/9999px/.test(shadow),through:getComputedStyle(o).pointerEvents==='none'};});
