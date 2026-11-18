@@ -11,13 +11,13 @@ const changed=['js/combat/offline-exploration.js','js/balance/balance-runtime.js
 function instrumentBaseline(code){return code.replace('globalThis.EmberwildOffline={',`globalThis.__BASE_PROFILE=null;${Object.entries({event:'fullMs',captureResources:'inventoryMs',collect:'inventoryMs',commit:'saveMs',rewardGroupKill:'dropMs'}).map(([name,key])=>`{const base=${name};${name}=function(...args){const t=performance.now();try{return base(...args);}finally{if(globalThis.__BASE_PROFILE)__BASE_PROFILE.${key}+=performance.now()-t;}};}`).join('')}globalThis.EmberwildOffline={get metrics(){return globalThis.__BASE_PROFILE;},`);}
 function runtime(ref){const sources=new Map(ref?changed.map(f=>[f,execFileSync('git',['show',ref+':'+f],{cwd:root,encoding:'utf8'})]):[]);const r=loadRuntime(root,'index.html',{},undefined,{transformSource:(name,code)=>sources.has(name)?name==='js/combat/offline-exploration.js'?instrumentBaseline(sources.get(name)):sources.get(name):code});r.ctx.performance.now=performance.now.bind(performance);r.ctx.setTimeout=fn=>setImmediate(fn);r.run('selectSaveSlot(1);start(0);closeModal();save()');return r;}
 const setups={
- low:`state.lv=1;`,
- medium:`state.lv=20;`,
- high:`state.lv=59;state.won=true;party.cleared=true;`,
- potions:`state.lv=8;party.map=1;state.equipped=state.equipped.map(()=>null);state.autoPotion=true;state.autoPotionId='heal_small';state.autoPotionThresholdPct=90;state.healingPotions={heal_small:2};`,
- boss:`state.lv=30;party.map=6;`,
- boosts:`state.lv=59;state.won=true;party.cleared=true;for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}for(const b of party.timedBoosts)b.remainingMs=4*3600000;`,
- inventory:`state.lv=59;state.won=true;party.cleared=true;const token=createCompanionToken(EmberwildTokens.normalize().catalog[0].id),source=state.bag[0];for(let i=0;i<1500;i++)state.bag.push({...structuredClone(i%2?token:source),id:'existing-'+i});`
+ low:`setClassMasteryLevel(0);`,
+ medium:`setClassMasteryLevel(19);`,
+ high:`setClassMasteryLevel(58);state.won=true;party.cleared=true;`,
+ potions:`setClassMasteryLevel(7);state.kills[MAPS[0].boss[2]]=1;party.map=1;state.equipped=state.equipped.map(()=>null);state.autoPotion=true;state.autoPotionId='heal_small';state.autoPotionThresholdPct=90;state.healingPotions={heal_small:2};`,
+ boss:`setClassMasteryLevel(29);for(let i=0;i<6;i++)state.kills[MAPS[i].boss[2]]=1;party.map=6;`,
+ boosts:`setClassMasteryLevel(58);state.won=true;party.cleared=true;for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}for(const b of party.timedBoosts)b.remainingMs=4*3600000;`,
+ inventory:`setClassMasteryLevel(58);state.won=true;party.cleared=true;const token=createCompanionToken(EmberwildTokens.normalize().catalog[0].id),source=state.bag[0];for(let i=0;i<1500;i++)state.bag.push({...structuredClone(i%2?token:source),id:'existing-'+i});`
 };
 function reset(r,save){r.advance(save.offlineExploration.lastAt-r.now);r.ctx.fixture=structuredClone(save);r.run('loadParty(fixture)');}
 function fixture(r,base,name){reset(r,base);r.run(`rngState=987654;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};GAMEPLAY_SETTINGS.equipment.bagCapacity=10000;${setups[name]}syncParty();refillParty();setExplorationCategory('${name==='boss'?'boss':'normal'}');selectExplorationMap(party.map);/* v0.077: a region without any earnings snapshot converts after averageMinutes; these fixtures measure full replay, so the region gets a stored snapshot (no enemies, so no vouchers are offered). */{const key=party.map+':'+(party.difficulty||0);party.idleStatistics=EmberwildIdleStatistics.normalize({version:1,regions:{[key]:{first:0,last:0,total:{},snapshot:{id:'fixture',source:'online',config:'fixture',at:0,levelMin:1,levelMax:1,boosts:[],ms:EmberwildIdleStatistics.RULES.sampleMs}}},progress:{}});}startSelectedExploration();save();`);return json(r,'packParty()');}

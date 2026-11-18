@@ -124,7 +124,7 @@ test('legacy three-kind gems refund from shared skill instances once and survive
 test('actual equipped and configured casts heal the lowest-HP ally and add guard shield exactly once',()=>{
  const r=game(0);
  const out=json(r,`(()=>{
-  const h=playerHero();h.lv=20;syncParty();recruitCompanion(10);closeModal();party.active=[memberKey(h),10];
+  const h=playerHero();recruitCompanion(10);closeModal();setPartyClassMasteryLevel(19);party.active=[memberKey(h),10];
   const ally=partyMember(10),g=gear(1,3,0,h.job),results=[];
   Object.assign(g,{id:'cast-gem-item',skillId:'class0-initial0',skillSockets:{version:1,count:3,gems:[null,null,null],firstMode:'skill'}});state.bag.push(g);equipSharedGear(g.id,memberKey(h),3);
   const target=()=>{foes=[{id:'gem-target',name:'假想敵',monsterId:'map0_mob0',kind:'normal',hp:999999,maxhp:999999,shield:0,atk:1,def:0,element:'physical',race:'beast',lv:1,turn:0,crit:0,evasion:0}];enemy=foes[0];};

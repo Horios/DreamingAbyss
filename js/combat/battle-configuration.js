@@ -77,7 +77,7 @@
  pacedRound=function(...args){const iterator=roundBase(...args);return {next:v=>combat(()=>iterator.next(v)),return:v=>combat(()=>iterator.return(v)),throw:e=>combat(()=>iterator.throw(e)),[Symbol.iterator](){return this;}};};
  // Saving and progression always see the latest permanent configuration, even
  // when a reward or a checkpoint is produced inside an encounter step.
- for(const name of ['save','packParty','awardXP','render']){
+ for(const name of ['save','packParty','render']){
   const fn=globalThis[name];globalThis[name]=function(...args){if(name==='save'&&__EMBERWILD_TEAMS.savingSuppressed())return true;return editable(()=>fn(...args));};
  }
 })();

@@ -6,7 +6,7 @@ test('Chromium: roster has no retired skill toggles; unlock levels, designer vis
  try{
   await page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();for(const id of [10,11,13]){recruitCompanion(id);closeModal();}setTab('partnerRoster');});
   // Skill system v1 retired the per-skill switches: the roster shows no toggles and every unlocked skill stays in use.
-  await page.evaluate(()=>{playerHero().lv=8;syncParty();render();});
+  await page.evaluate(()=>{setClassMasteryLevel(7,playerHero());syncParty();render();});
   assert.equal(await page.locator('[data-companion-toggle]').count(),0);
   assert.equal(await page.evaluate(()=>setCompanionSkillEnabled(10,'core',__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(10)).core[0],false)),false);
   assert.deepEqual(await page.evaluate(()=>partyMember(10).disabledCompanionSkills||{core:[],support:[],passive:[]}),{core:[],support:[],passive:[]});

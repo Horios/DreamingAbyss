@@ -27,8 +27,11 @@
     if(p.growthSteps!==undefined&&(!Array.isArray(p.growthSteps)||p.growthSteps.length>12||p.growthSteps.some(s=>!s||!Number.isInteger(s.every)||s.every<1||s.every>60||['hp','atk','def'].some(k=>!Number.isInteger(s[k])||s[k]<0))))throw Error('夥伴階梯成長無效：'+p.id);
     const {points:_legacyPoints,...clean}=copy(p);return {...clean,rating:p.rating??'D'};
   }
+  // Rating budget only. Since v0.161 a companion's growthPerLevel/growthSteps do not change its stats in play (no
+  // character levels); the editor's rating limits still read them as a design budget until that UI is retired.
+  function budgetStats(def,level){const n=Math.max(0,Math.floor(level)-1),i=def.initialStats||{},g=def.growthPerLevel||{},out={};for(const k of ['hp','atk','def']){const stair=(def.growthSteps||[]).reduce((sum,st)=>sum+Math.floor(n/st.every)*(st[k]||0),0);out[k]=Math.max(k==='def'?0:1,Math.round(Number(i[k]||0)+n*Number(g[k]||0)+stair));}return out;}
   function totals(plan,classes,settings,weights){
-    const def=definition(plan,classes,settings),base={...def.initialStats,...Progression.naturalStats(def,1)},last=Progression.naturalStats(def,60),growth={...def.growthPerLevel},levels=59;
+    const def=definition(plan,classes,settings),base={...def.initialStats,...budgetStats(def,1)},last=budgetStats(def,60),growth={...def.growthPerLevel},levels=59;
     for(const key of ['hp','atk','def'])growth[key]=(last[key]-base[key])/levels;
     
     const sum=v=>statKeys.reduce((n,k)=>n+(v[k]||0)*(weights[k]||0),0);

@@ -154,7 +154,7 @@ test('characters made outside the prologue and existing saves never enter it',as
  const r=open();r.run('selectSaveSlot(1);start(2);closeModal();');
  let s=r.json('{active:__EMBERWILD_PROLOGUE.active(),record:party.story.quests.prologue||null,mail:party.mailbox.messages.map(m=>m.rewardKey),worn:playerHero().equipped.map(x=>!!x),slot:playerHero().skillLoadout.active[0]!==null,quests:Object.keys(party.story.quests)}');
  assert.deepEqual(s,{active:false,record:null,mail:['starter-2-1'],worn:[true,true,true,true,true],slot:true,quests:['two_regions','shop_rescue','skill_equipment_intro']},'direct creation keeps the previous kit and starter mail');
- r.run('playerHero().lv=12;playerHero().gold=4321;recruitCompanion(10);closeModal();save()');
+ r.run('setClassMasteryLevel(11,playerHero());playerHero().gold=4321;recruitCompanion(10);closeModal();save()');
  const facts=x=>x.json('{story:party.story,mailbox:party.mailbox,members:party.members.map(h=>[memberKey(h),h.lv,h.name,h.bag.map(g=>g.id),h.equipped,h.skillLoadout]),gold:playerHero().gold,active:party.active,enlisted:party.enlisted,unlocked:party.companionUnlocks.unlocked,tickets:party.achievements.tickets}'),packed=facts(r);
  const again=await r.resume();assert.equal(again.at().active,false);assert.equal(again.json('party.story.quests.prologue||null'),null,'no prologue record is written into an existing save');
  assert.deepEqual(facts(again),packed,'name, class, level, gear, skills, companions, quests and mail are unchanged');again.run('save()');assert.deepEqual(facts(await again.resume()),packed);assert.doesNotMatch(again.run('storyView()'),/序幕：造物/);assert.deepEqual(again.errors,[]);

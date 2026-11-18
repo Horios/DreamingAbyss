@@ -5,7 +5,7 @@ const OPEN_PLANS={'emberwild-team-plan-panel-open':'1'};
 test('Chromium: create blank plans, choose classes, learn, copy, rename, safety gate and exact reload through actual UI',async t=>{
  const game=await openRuntime(root,'index.html',OPEN_PLANS),p=game.page,warnings=[];p.setDefaultTimeout(10000);p.on('dialog',async d=>{warnings.push(d.message());await d.accept(d.type()==='prompt'?'法術編成':undefined);});
  try{
-  await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);playerHero().lv=5;syncParty();save();setTab('roster');});await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
+  await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);setClassMasteryLevel(4,playerHero());syncParty();save();setTab('roster');});await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
   await t.test('new plan has no class, stat allocations, equipment or companions',async()=>{
    await p.getByRole('button',{name:'新增空白隊伍',exact:true}).click();await p.locator('.team-plan-card').nth(1).locator('summary').click();await p.locator('.team-plan-card').nth(1).getByRole('button',{name:'切換',exact:true}).click();
    const a=await p.evaluate(()=>({plan:__EMBERWILD_TEAMS.plan(),hasAP:Object.hasOwn(playerHero(),'ap'),hasSp:Object.hasOwn(playerHero(),'sp')}));assert.equal(a.plan.job,null);assert.deepEqual(a.plan.skills,[]);assert.equal(a.plan.stats,undefined);assert(a.plan.equipped.every(x=>x===null));assert.deepEqual(a.plan.companions,[]);assert.equal(a.hasAP,false);assert.equal(a.hasSp,false);

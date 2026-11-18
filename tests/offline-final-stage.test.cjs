@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 function challenge(){
  const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`selectSaveSlot(1);start(0);closeModal();playerHero().lv=GS('progression.levelCaps.beforeClear',30);syncParty();refillParty();setExplorationCategory('boss');selectExplorationMap(worldProgressionGateIndex());startSelectedExploration();for(const e of foes){e.hp=1;e.atk=1;}save();`);
+ r.run(`selectSaveSlot(1);start(0);closeModal();for(let i=0;i<6;i++)playerHero().kills[MAPS[i].boss[2]]=1;syncParty();refillParty();setExplorationCategory('boss');selectExplorationMap(worldProgressionGateIndex());startSelectedExploration();for(const e of foes){e.hp=1;e.atk=1;}save();`);
  assert.equal(r.run('party.map'),r.run('worldProgressionGateIndex()'));assert(r.run("foes.some(e=>e.kind==='final')"));return r;
 }
 async function settle(r){r.advance(55000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false,r.elements.get('offline-settlement').innerHTML);}

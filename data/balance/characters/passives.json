@@ -11,7 +11,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 10
   },
   {
@@ -26,7 +26,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 11
   },
   {
@@ -41,7 +41,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 12
   },
   {
@@ -56,7 +56,7 @@
         "value": 15
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 13
   },
   {
@@ -71,7 +71,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 14
   },
   {
@@ -86,7 +86,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 15
   },
   {
@@ -101,7 +101,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 16
   },
   {
@@ -116,7 +116,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 17
   },
   {
@@ -131,7 +131,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 18
   },
   {
@@ -146,7 +146,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 19
   },
   {
@@ -161,7 +161,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 20
   },
   {
@@ -176,7 +176,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 21
   },
   {
@@ -191,7 +191,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 22
   },
   {
@@ -206,7 +206,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 23
   },
   {
@@ -221,7 +221,7 @@
         "value": 15
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 24
   },
   {
@@ -236,7 +236,7 @@
         "value": 15
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 25
   },
   {
@@ -251,7 +251,7 @@
         "value": 15
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 26
   },
   {
@@ -266,7 +266,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 27
   },
   {
@@ -281,7 +281,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 28
   },
   {
@@ -296,7 +296,7 @@
         "value": 10
       }
     ],
-    "requiredLevel": 8,
+    "requiredLevel": 7,
     "partnerId": 29
   },
   {
@@ -305,7 +305,7 @@
     "description": "普攻或技能擊殺後，以 80% 攻擊追擊目前生命最低敵人；擊殺可連續追擊，最多 3 次。常駐生效、不占槽。",
     "usageScope": "character",
     "partnerId": null,
-    "requiredLevel": 3,
+    "requiredLevel": 2,
     "requiresAdvanced": false,
     "requiredMastery": null,
     "requiredMasteryLevel": 0,
@@ -346,7 +346,7 @@
     "description": "敵人死亡事件群組使自身所有技能冷卻縮減；縮減秒數與獨立內部冷卻依秒數設定換算。常駐生效、不占槽。",
     "usageScope": "character",
     "partnerId": null,
-    "requiredLevel": 3,
+    "requiredLevel": 2,
     "requiresAdvanced": false,
     "requiredMastery": null,
     "requiredMasteryLevel": 0,

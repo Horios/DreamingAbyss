@@ -7,7 +7,7 @@ function buildSnapshot(){
 }
 
 async function startParty(page){
- await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();playerHero().lv=5;syncParty();save();});
+ await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();setClassMasteryLevel(4,playerHero());syncParty();save();});
  await page.waitForTimeout(50);await page.evaluate(()=>closeModal());
 }
 

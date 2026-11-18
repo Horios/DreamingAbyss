@@ -71,7 +71,7 @@
    case 'pageVisited':return Number(!!t?.pages?.[c.key]);
    case 'featureUnlocked':return Number(!!party.story?.unlocks?.[c.key]);
    case 'questDone':return Number(!!party.story?.quests?.[c.key]?.done);
-   case 'level':return h.lv||0;
+   case 'classMastery':return classMasteryLevel(h);
    case 'companions':return Math.max(0,party.members.length-1);
    case 'gearOwned':return allGear().filter(normalGear).length;
    case 'itemAcquired':return STORY()?.value?.({type:'acquired',key:c.key,itemType:c.itemType})||0;

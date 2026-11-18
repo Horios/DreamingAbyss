@@ -20,7 +20,7 @@ test('Real kills count their own region and category once; staged achievements s
  kill(r,'elite');assert.equal(r.run('party.achievements.completed.includes("region-0-elite-50")'),true);r.run('rewardGroupKill(last)');assert.equal(r.run('party.achievements.eliteKills[0]'),50);assert.equal(r.run('party.achievements.bossKills[0]'),49);
  kill(r,'boss');assert.equal(r.run('party.achievements.completed.includes("region-0-boss-50")'),true);
  r.run('party.achievements.eliteKills[0]=999');kill(r,'elite');assert.equal(r.run('party.achievements.completed.includes("region-0-elite-1000")'),true);assert.equal(r.run('party.achievements.completed.filter(id=>id.startsWith("region-0-elite-")).length'),20);
- r.run('party.achievements.bossKills[6]=49;playerHero().lv=30;syncParty()');kill(r,'final',6);assert.equal(r.run('party.achievements.completed.includes("region-6-boss-50")'),true);assert.deepEqual(r.errors,[]);
+ r.run('party.achievements.bossKills[6]=49;setClassMasteryLevel(29,playerHero());syncParty()');kill(r,'final',6);assert.equal(r.run('party.achievements.completed.includes("region-6-boss-50")'),true);assert.deepEqual(r.errors,[]);
 });
 test('Achievement awards a named ticket once, not immediate unlock; actual inventory use unlocks and later stages do not award again',()=>{
  const r=game();bind(r,15,['region-0-elite-50','region-0-elite-100']);r.run('party.achievements.eliteKills[0]=49');kill(r,'elite');
@@ -32,7 +32,7 @@ test('Achievement awards a named ticket once, not immediate unlock; actual inven
  const reload=loadRuntime(root,'index.html',Object.fromEntries(r.values));assert.equal(reload.run('party.achievements.eliteKills[0]'),100);assert.equal(reload.run('companionTicketCount(15)'),0);assert.equal(reload.run('partyMember(15).name'),'雷昂');assert.deepEqual(reload.errors,[]);
 });
 test('Region completion and retroactive linking issue tickets; hidden companions wait, owned companions keep their unlocks',()=>{
- const r=game();bind(r,15,['region-2-open']);assert.equal(r.run('companionTicketCount(15)'),0);r.run('playerHero().lv=20;syncParty();save();claimAllMailboxAttachments()');assert.equal(r.run('companionTicketCount(15)'),1);assert.equal(r.run('companionUnlocked(15)'),false);
+ const r=game();bind(r,15,['region-2-open']);assert.equal(r.run('companionTicketCount(15)'),0);r.run('for(let i=0;i<6;i++)playerHero().kills[MAPS[i].boss[2]]=1;syncParty();save();claimAllMailboxAttachments()');assert.equal(r.run('companionTicketCount(15)'),1);assert.equal(r.run('companionUnlocked(15)'),false);
  bind(r,16,['region-0-open']);assert.equal(r.run('companionTicketCount(16)'),1);
  r.run("{const d=exportableBalance(),p=d.companions.find(p=>p.id===17);p.unlockCondition={type:'achievement',achievementIds:['region-0-open']};applyBalanceConfig(d)}");assert.equal(r.run('companionTicketCount(17)'),0);
  r.run("{const d=exportableBalance();d.companions.find(p=>p.id===17).availability='visible';applyBalanceConfig(d);claimAllMailboxAttachments()}");assert.equal(r.run('companionTicketCount(17)'),1);

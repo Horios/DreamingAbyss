@@ -111,7 +111,7 @@ test('skill guide follows the character: steps that cannot be done say why and c
  // A step whose requirement the character does not meet is unavailable, with the reason.
  r.run('closeModal()');edit(r,t=>{t.modules[2].steps[4].requires=M.group([M.condition('level','',99)]);});
  assert.equal(step(r),'auto','editing the data keeps the running step');assert.equal(r.run('tutorialControl("next")'),true);
- assert.equal(step(r),'others');assert.match(active(r).unavailable,/主角等級達到（目前 1／需要 99）/);assert.equal(r.run('tutorialControl("skipStep")'),true);
+ assert.equal(step(r),'others');assert.match(active(r).unavailable,/主角職業精通等級達到（目前 0／需要 98）/);assert.equal(r.run('tutorialControl("skipStep")'),true);
  assert.equal(active(r),null);assert.equal(records(r).skill_basics.completed,false,'an unavailable step that was passed does not count as done');
  assert.deepEqual(r.errors,[]);
 });

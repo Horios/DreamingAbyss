@@ -1,13 +1,13 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
 const ids=['warrior-cleave-chain','mage-mana-cycle','archer-arrow-rain','priest-holy-prison'];
-test('new priests preview holy prison before LV3, learn it on level-up and retain the configured skill after cold reload',()=>{
+test('new priests preview holy prison before class mastery 2, learn it on reaching it and retain the configured skill after cold reload',()=>{
  const root=path.resolve(__dirname,'..'),r=loadRuntime(root);
  r.run('selectSaveSlot(1);start(3);closeModal();openSkillSlot("active",0)');
  assert(r.run('$("modal").innerHTML.includes(\'data-skill-id="priest-holy-prison"\')'));
  assert.equal(r.run('configureSkill("active",0,"priest-holy-prison")'),false);
- r.run('closeModal();awardXP(need(1));awardXP(need(2));save()');
- assert.equal(r.run('state.lv'),3);
+ r.run('closeModal();setClassMasteryLevel(2);save()');
+ assert.equal(r.run('classMasteryLevel(state)'),2);
  assert.equal(r.run('configureSkill("active",0,"priest-holy-prison")'),true);
  const cold=loadRuntime(root,'index.html',Object.fromEntries(r.values));
  assert.equal(cold.run('state.skillLoadout.active[0]'),'priest-holy-prison');
@@ -31,11 +31,11 @@ test('legacy priest cold boot grants holy prison once, shows it in the picker an
  assert.deepEqual(JSON.parse(r.run('JSON.stringify(state.bag.map(g=>g.id))')),raw.members[0].bag.map(g=>g.id));
  assert.equal(JSON.stringify(raw),original);assert.deepEqual(r.errors,[]);
 });
-function game(job){const r=loadRuntime(path.resolve(__dirname,'..'));r.run(`selectSaveSlot(1);start(${job});closeModal();state.lv=3;save();Math.random=()=>.99;
+function game(job){const r=loadRuntime(path.resolve(__dirname,'..'));r.run(`selectSaveSlot(1);start(${job});closeModal();setClassMasteryLevel(2);save();Math.random=()=>.99;
 globalThis.targets=(hp=1000,n=4)=>{foes=Array.from({length:n},(_,i)=>({id:'test-'+i,name:'同名敵人',kind:'normal',monsterId:'map0_mob0',hp,maxhp:hp,atk:1,def:0,lv:1,shield:0,element:'physical',race:'beast',turn:0}));enemy=foes[0];};targets();`);return r;}
 function cast(r,id){return r.run(`castPartySkill(state,__EMBERWILD_SKILLS.byId('${id}').adapter.index,{...battleStats(state),atk:100})`);}
 test('all four skills unlock at level three, keep originals and slot counts; passives cannot be slotted',()=>{
- for(let job=0;job<4;job++){const r=game(job);assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('${ids[job]}'))`),true);r.run('state.lv=2');assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('${ids[job]}'))`),false);r.run('state.lv=3;save()');assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('class${job}-initial1'))`),true);assert.equal(r.run('state.active.length'),3);assert.equal(r.run('state.procSlots.length'),1);if(job<2)assert.equal(r.run(`configureSkill('active',0,'${ids[job]}')`),false);assert.deepEqual(r.errors,[]);}
+ for(let job=0;job<4;job++){const r=game(job);assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('${ids[job]}'))`),true);r.run('setClassMasteryLevel(1)');assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('${ids[job]}'))`),false);r.run('setClassMasteryLevel(2);save()');assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('class${job}-initial1'))`),true);assert.equal(r.run('state.active.length'),3);assert.equal(r.run('state.procSlots.length'),1);if(job<2)assert.equal(r.run(`configureSkill('active',0,'${ids[job]}')`),false);assert.deepEqual(r.errors,[]);}
 });
 test('warrior follows current lowest HP, stops on survival, caps at three and one chain per original action',()=>{
  const r=game(0);r.run('targets(1,7);EmberwildCombatEvents.action(state,()=>{resolveHit(foes[0],100,state,"physical",false);resolveHit(foes[1],100,state,"physical",false)})');assert.equal(r.run('foes.filter(e=>e.hp<=0).length'),5);
@@ -79,9 +79,9 @@ test('event status battle expiry and dispel do not explode or retain stale marks
 });
 test('all four clearing builds produce identical foreground and offline combat with the same random sequence',async()=>{
  for(let job=0;job<4;job++){
-  function build(){const r=loadRuntime(path.resolve(__dirname,'..'));r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`globalThis.rng=314159;Math.random=()=>{rng=(Math.imul(rng,1664525)+1013904223)>>>0;return rng/4294967296;};selectSaveSlot(1);start(${job});closeModal();state.lv=3;save();`);if(job>=2)r.run(`configureSkill('active',0,'${ids[job]}')`);r.run('startSelectedExploration();nextActionAt=Date.now()+50;save()');return r;}
+  function build(){const r=loadRuntime(path.resolve(__dirname,'..'));r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`globalThis.rng=314159;Math.random=()=>{rng=(Math.imul(rng,1664525)+1013904223)>>>0;return rng/4294967296;};selectSaveSlot(1);start(${job});closeModal();setClassMasteryLevel(2);save();`);if(job>=2)r.run(`configureSkill('active',0,'${ids[job]}')`);r.run('startSelectedExploration();nextActionAt=Date.now()+50;save()');return r;}
   const a=build(),b=build();for(let n=0;n<1200;n++){a.advance(50);a.run('tick()');}b.advance(60000);await b.run('EmberwildOffline.settle()');
-  const read=r=>JSON.parse(r.run(`JSON.stringify({rng,lv:state.lv,xp:state.xp,gold:state.gold,hp:state.hp,kills:state.totalKills,materials:state.materials,consumables:state.consumables,foes:foes.map(e=>({id:e.id,hp:e.hp,shield:e.shield,death:e.__eventDeathHandled})),partyClock,round,actorCooldowns,supportCooldowns,passives:state.eventPassiveCooldowns,statuses:EmberwildStatusCombatState.pack()})`));
+  const read=r=>JSON.parse(r.run(`JSON.stringify({rng,mastery:classMasteryXp(state),gold:state.gold,hp:state.hp,kills:state.totalKills,materials:state.materials,consumables:state.consumables,foes:foes.map(e=>({id:e.id,hp:e.hp,shield:e.shield,death:e.__eventDeathHandled})),partyClock,round,actorCooldowns,supportCooldowns,passives:state.eventPassiveCooldowns,statuses:EmberwildStatusCombatState.pack()})`));
   assert.deepEqual(read(b),read(a),'job '+job);assert.equal(b.run('EmberwildOffline.failed'),false);assert.deepEqual(a.errors,[]);assert.deepEqual(b.errors,[]);
  }
 });

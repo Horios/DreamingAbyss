@@ -22,7 +22,7 @@ test('Player skills show canonical slots with SVG icons; the catalog sorts learn
 test('Learning by level and equipping refresh the slot view while keeping real team state',()=>{
  const r=game();assert.equal(r.run("__EMBERWILD_SKILLS.learned(playerHero(),__EMBERWILD_SKILLS.byId('class0-initial1'))"),false);
  r.run("openSkillSlot('active',1)");assert.match(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)" disabled/);
- r.run("closeModal();playerHero().lv=3;save();openSkillSlot('active',1)");assert.match(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)"(?! disabled)/);
+ r.run("closeModal();setClassMasteryLevel(2,playerHero());save();openSkillSlot('active',1)");assert.match(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)"(?! disabled)/);
  assert.equal(r.run("chooseSkillSlot('active',1,'class0-initial1')"),true);assert.equal(r.run("$('modal').open"),false);
  assert.deepEqual(JSON.parse(r.run('JSON.stringify(playerHero().skillLoadout.active)')),['class0-initial0','class0-initial1',null]);
  assert.deepEqual(JSON.parse(r.run('JSON.stringify(__EMBERWILD_TEAMS.plan().skillLoadout.active)')),['class0-initial0','class0-initial1',null]);
@@ -36,7 +36,7 @@ test('Learning by level and equipping refresh the slot view while keeping real t
 test('Locked slot choices have no equip action and switching plans redraws that plan loadout',()=>{
  const r=game(),before=r.run('JSON.stringify(party.buildSystem)');
  r.run("openSkillSlot('active',1)");assert.equal(r.run("chooseSkillSlot('active',1,'class0-initial2')"),false);assert.equal(r.run('JSON.stringify(party.buildSystem)'),before);
- r.run("closeModal();playerHero().lv=3;save();chooseSkillSlot('active',1,'class0-initial1');copyTeamPlan();switchTeamPlan('team-2')");
+ r.run("closeModal();setClassMasteryLevel(2,playerHero());save();chooseSkillSlot('active',1,'class0-initial1');copyTeamPlan();switchTeamPlan('team-2')");
  assert.equal(r.run('__EMBERWILD_TEAMS.plan().id'),'team-2');
  assert.deepEqual(JSON.parse(r.run('JSON.stringify(playerHero().skillLoadout.active)')),['class0-initial0','class0-initial1',null]);
  assert.match(slot(r,'active:1'),new RegExp(r.run("__EMBERWILD_SKILLS.byId('class0-initial1').name")));assert.deepEqual(r.errors,[]);
@@ -47,7 +47,7 @@ test('Redraws replace the skills scroll region but restore its position through 
  const app=document.getElementById('app');let appHTML=app.innerHTML;
  Object.defineProperty(app,'innerHTML',{get:()=>appHTML,set:value=>{appHTML=value;skillScroll={scrollTop:0,scrollLeft:0};}});
  document.querySelectorAll=selector=>selector.split(',').includes('.layout>main')?[skillScroll]:[];
- render();playerHero().lv=3;save();skillScroll.scrollTop=186;skillScroll.scrollLeft=7;
+ render();setClassMasteryLevel(2,playerHero());save();skillScroll.scrollTop=186;skillScroll.scrollLeft=7;
  `);
  for(const action of ["chooseSkillSlot('active',1,'class0-initial1')","chooseSkillSlot('active',1,null)","configureSkill('active',2,'class0-initial1')",'render()']){
   r.run(`heroMenuAction(memberKey(playerHero()),()=>{${action}})`);assert.equal(r.run('skillScroll.scrollTop'),186,action);assert.equal(r.run('skillScroll.scrollLeft'),7,action);

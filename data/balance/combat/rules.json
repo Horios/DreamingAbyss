@@ -7,7 +7,6 @@
     "weaken": 0.7,
     "resistance": 0.75
   },
-  "levelGapDamagePerLevel": 0.12,
   "finalBoss": {
     "enrageAfterTurn": 45,
     "enrageMultiplier": 4,

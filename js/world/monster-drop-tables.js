@@ -67,23 +67,7 @@ makeBaseEnemy=function(map=state.map,h=state,rng=Math.random){const e=dropTableM
 
 function heroDropRateBonus(h){return equipment(h).flatMap(g=>g.affix||[]).filter(a=>a.type===17).reduce((n,a)=>n+(Number(a.value)||0),0)/100;}
 function partyDropRateBonus(){const hs=party?heroes():(state?[state]:[]);return hs.reduce((n,h)=>n+heroDropRateBonus(h),0);}
-function equipmentLevelGapDropFactor(rule,e){
-  if(!['gear','gearLegendary','equipment','bossGear'].includes(rule?.type))return 1;
-  const cfg=GAMEPLAY_SETTINGS.equipment?.dropLevelGap;if(!cfg?.enabled)return 1;
-  const level=party?.members?.[0]?.lv??state?.lv??e?.lv??1,mapIndex=e?.region??party?.map??0;
-  const enemyLevel=e?.lv??MAPS[mapIndex]?.max??level;
-  return EmberwildProgression.xpLevelGapFactor(GAMEPLAY_SETTINGS,level,enemyLevel);
-}
-function generalDropLevelGapFactor(rule,e){
-  if(!['normal','elite'].includes(e?.kind)||e?.bossChallenge||!['sourceMaterial','material','ore','dust','gem','potion','item','token'].includes(rule?.type))return 1;
-  const c=GAMEPLAY_SETTINGS.drops?.levelGap;if(!c?.enabled)return 1;
-  const level=party?.members?.[0]?.lv??state?.lv??e?.lv??1,gap=Math.max(0,level-(e.lv??level));
-  if(gap<=c.freeLevels)return 1;
-  if(gap<=c.midGap)return 1-(1-c.midMultiplier)*(gap-c.freeLevels)/(c.midGap-c.freeLevels);
-  if(gap<=c.highGap)return c.midMultiplier-(c.midMultiplier-c.highMultiplier)*(gap-c.midGap)/(c.highGap-c.midGap);
-  return Math.max(0,c.minimumMultiplier);
-}
-function effectiveDropChance(rule,e,bonus=partyDropRateBonus()){const mode=Math.max(0,Math.min(2,Number(e?.difficulty)||0)),base=Math.max(0,Math.min(1,Number(rule?.chanceByDifficulty?.[mode])||0));return Math.min(1,base*equipmentLevelGapDropFactor(rule,e)*generalDropLevelGapFactor(rule,e)*(1+Math.max(0,Number(bonus)||0)));}
+function effectiveDropChance(rule,e,bonus=partyDropRateBonus()){const mode=Math.max(0,Math.min(2,Number(e?.difficulty)||0)),base=Math.max(0,Math.min(1,Number(rule?.chanceByDifficulty?.[mode])||0));return Math.min(1,base*(1+Math.max(0,Number(bonus)||0)));}
 function configuredDropRules(e){const id=e.monsterId||resolveMonsterCatalogId(e);return (GAMEPLAY_SETTINGS.drops?.entries||[]).filter(r=>r.enabled!==false&&r.sources.includes(id)&&r.kinds.includes(e.kind)&&(r.minLevel===undefined||e.lv>=r.minLevel)&&(!r.maxLevel||e.lv<=r.maxLevel));}
 function configuredDropDescription(row,kind,mapIndex){
   const e={monsterId:row.id,kind,lv:row.lv??row.minLevel??MAPS[mapIndex]?.min??1,region:mapIndex,difficulty:party?.difficulty??state?.difficulty??0},bonus=partyDropRateBonus();
@@ -134,7 +118,7 @@ function rollConfiguredDrops(e,rng=Math.random){
 // first-BOSS ether claim, which is not a repeatable idle reward.
 function rollEnemyItemLoot(e,{voucher=false}={}){
   const mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards;
-  const oreFactor=generalDropLevelGapFactor({type:'ore'},e);if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
+  const oreFactor=1;if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
   rollConfiguredDrops(e);
   const firstBossClaim=(e.kind==='boss'||e.kind==='final')&&!(party?.etherBossClaims||[]).includes((e.region??party?.map)+':'+(e.difficulty||0));
   if(!voucher||!firstBossClaim)awardEther(e);
@@ -144,11 +128,11 @@ globalThis.rollEnemyItemLoot=rollEnemyItemLoot;
 victory=function(){
   let e=enemy;if(!e)return;lastDefeatedEnemy={...e};let mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards,mult=[r.kindMultiplier.normal,r.kindMultiplier.elite,r.kindMultiplier.boss][kindIndex],firstClear=e.kind==='final'&&!state.won;
   state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);
-  const playerLevel=party?.members?.[0]?.lv??state?.lv,gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel),xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,playerLevel);state.gold+=gold;
+  const gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode);state.gold+=gold;
   rollEnemyItemLoot(e);
   if(e.kind==='final'){state.won=true;state.modeClears[mode]++;state.materials['日蝕王冠']=Math.max(1,state.materials['日蝕王冠']||0);running=false;}
-  awardXP(xp);state.hp=Math.min(stats().hp,state.hp+stats().hp*r.postVictoryHeal);state.shield=0;note(`擊敗 ${e.name}（${d.name}）· ${gold} 金幣`);enemy=null;
-  if(e.kind==='final'){$('modal').innerHTML=`<h1>${firstClear?'等級界限已突破':'再次戰勝噬日者'}</h1><p>${d.name}模式通關。${firstClear?'等級上限提升。':'可繼續探索或挑戰更高難度。'}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}save();
+  state.hp=Math.min(stats().hp,state.hp+stats().hp*r.postVictoryHeal);state.shield=0;note(`擊敗 ${e.name}（${d.name}）· ${gold} 金幣`);enemy=null;
+  if(e.kind==='final'){$('modal').innerHTML=`<h1>${firstClear?'噬日者已擊敗':'再次戰勝噬日者'}</h1><p>${d.name}模式通關。${firstClear?'通關後區域已開放。':'可繼續探索或挑戰更高難度。'}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}save();
 };solo.victory=victory;
 
 // New affix: increased item-drop chance.

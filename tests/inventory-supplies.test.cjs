@@ -1,24 +1,11 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function game(level=14){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(0);closeModal();playerHero().lv=${level};playerHero().xp=0;syncParty();for(const id of [10,11,12,13,14]){recruitCompanion(id);closeModal();}setPartnerEnlisted(14,false);save();state.materials['升級卷軸']=1;`);return r;}
+function game(level=14){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(0);closeModal();setClassMasteryLevel(${level}-1,playerHero());for(const id of [10,11,12,13,14]){recruitCompanion(id);closeModal();}setPartnerEnlisted(14,false);save();state.materials['升級卷軸']=1;`);return r;}
 function snapshot(r){return json(r,'({members:packParty().members,build:party.buildSystem,scrolls:materialCount("升級卷軸")})');}
-test('A scroll grants one shared level even with EXP bonuses and no target; normal EXP still receives the bonus',()=>{
- const r=game();r.run(`party.timedBoosts=[{itemId:'exp_test',name:'測試經驗券',boostType:'exp',bonusPercent:200,durationMinutes:30,expiresAt:Date.now()+1800000}];selectHero(10);`);
- assert.equal(r.run("useInventoryItem('level_scroll')"),true);assert.deepEqual(json(r,'party.members.map(h=>[h.lv,h.xp])'),Array(6).fill([15,0]));assert.equal(r.run('materialCount("升級卷軸")'),0);assert.equal(r.run('isPartnerEnlisted(partyMember(14))'),false);
- assert.doesNotMatch(r.run('accountMaterialsView()'),/升級卷軸|useLevelScroll/);assert.doesNotMatch(r.run('accountItemsView()'),/data-inventory-item="level_scroll"/);
- r.run('awardXP(10)');assert.equal(r.run('playerHero().xp'),30);assert.deepEqual(r.errors,[]);
-});
-test('Paused live foes and level caps prevent scroll consumption; real write failure restores progression and permanent unlocks',()=>{
- const r=game();const before=snapshot(r);r.run("foes=[{hp:1}];running=false;roundIterator=null;");assert.equal(r.run('useLevelScroll()'),false);assert.deepEqual(snapshot(r),before);r.run('foes=[]');
- r.run('globalThis.__failedStorageWrite=localStorage.setItem;localStorage.setItem=()=>{throw Error("test storage full")};');assert.equal(r.run('useLevelScroll()'),false);r.run('localStorage.setItem=__failedStorageWrite');assert.deepEqual(snapshot(r),before);assert.equal(r.run('save()'),true);
- r.run('playerHero().lv=levelCap(playerHero());syncParty();');assert.equal(r.run('useLevelScroll()'),false);assert.equal(r.run('materialCount("升級卷軸")'),1);
-});
-test('Scroll sales use existing stock and configured price, refund failed writes, and survive save/import without migrating stock',()=>{
- const r=game();r.run('state.materials["升級卷軸"]=3;globalThis.__beforeGold=state.gold;globalThis.__scrollPrice=materialSellPrice("升級卷軸");');r.run('sellInventoryItem("level_scroll",2)');assert.equal(r.run('materialCount("升級卷軸")'),1);assert.equal(r.run('state.gold'),r.run('__beforeGold+2*__scrollPrice'));
- const before=snapshot(r),gold=r.run('state.gold');r.run('globalThis.__beforeSave=save;save=()=>false;sellInventoryItem("level_scroll",1);save=__beforeSave;');assert.deepEqual(snapshot(r),before);assert.equal(r.run('state.gold'),gold);
- r.run('save();loadParty(JSON.parse(localStorage.getItem(KEY)));');assert.equal(r.run('materialCount("升級卷軸")'),1);assert.equal(r.run('state.consumables.level_scroll||0'),0);// The item list is compact (name × count); the sale price lives in the detail popup and in materialSellPrice.
- assert.match(r.run('accountItemsView()'),/data-inventory-item="level_scroll"[\s\S]*?×1/);assert.equal(r.run('materialSellPrice("升級卷軸")'),r.run('__scrollPrice'));assert.deepEqual(r.errors,[]);
+// v0.161: level scrolls no longer level anyone; stock left in a save is refunded at its sell price once (level-removal.test.cjs).
+test('Level scrolls cannot be used and are not listed as items',()=>{
+ const r=game();assert.equal(r.run("useInventoryItem('level_scroll')"),false);assert.doesNotMatch(r.run('accountItemsView()'),/data-inventory-item="level_scroll"/);assert.equal(r.run('typeof useLevelScroll'),'undefined');assert.deepEqual(r.errors,[]);
 });
 test('Material regions track active drop rules, cross-region sources, boss difficulties and unknown inventory',()=>{
  const r=game();r.run(`{

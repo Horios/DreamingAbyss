@@ -17,7 +17,7 @@ test('Splitting copies unconfigured skills too, remaps references and rejects ca
  const large=json(r,'exportableBalance()');delete large.companionNameVersion;const first=large.companions.find(p=>p.id===10);delete first.name;first.names=Array.from({length:30},(_,i)=>'容量測試'+i);const before=structuredClone(large);assert.throws(()=>Skills.migrate(large),/最多 64/);assert.deepEqual(large,before);
 });
 test('Designer names import, recruit deterministically and keep sibling stats, skill ownership and unlock levels independent',()=>{
- const e=loadRuntime(editorRoot,'balance-editor.html'),r=game();e.run("data.companions.find(p=>p.id===15).availability='visible';");r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);playerHero().lv=10;syncParty();recruitCompanion(10);recruitCompanion(15);closeModal();');
+ const e=loadRuntime(editorRoot,'balance-editor.html'),r=game();e.run("data.companions.find(p=>p.id===15).availability='visible';");r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);setClassMasteryLevel(9,playerHero());syncParty();recruitCompanion(10);recruitCompanion(15);closeModal();');
  assert.deepEqual(json(r,'[partyMember(10).name,partyMember(15).name]'),['洛恩','雷昂']);
  const definitions=json(r,'exportableBalance().companions'),first=definitions.find(p=>p.id===10),other=definitions.find(p=>p.id===15);assert.deepEqual(first.initialStats,other.initialStats);assert.deepEqual(first.growthPerLevel,other.growthPerLevel);
  // Skill system v1: edit the canonical definition that classes[0].skills is projected from.

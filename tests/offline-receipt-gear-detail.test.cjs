@@ -6,6 +6,8 @@ const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirnam
 
 test('offline receipt gear detail shows tier, level, total stats and attribute sources like the backpack',async()=>{
  const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);
+ /* v0.161 fixed-base heroes kill fewer foes in 3 hours; raise the ordinary gear rate so the receipt surely holds gear */
+ r.ctx.seed=structuredClone(seed);for(const e of r.ctx.seed.balanceSettings.drops.entries)if(e.id==='gear_normal')e.chanceByDifficulty=[.02,.02,.02];
  r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=97531;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
  // Long enough for ordinary drops to include equipment; offline settlement builds the receipt.
  r.advance(3*60*60*1000);await r.run('EmberwildOffline.settle(undefined,true)');
@@ -23,16 +25,16 @@ test('offline receipt gear detail shows tier, level, total stats and attribute s
    assert.match(html,/token-job-tag/,'token job tag');
    assert.ok(html.includes(r.run(`companionTokenAbilityText(party.offlineExploration.receipt.gear[${i}])`)),'token ability text');
   }else{
-   assert.match(html,/ · LV \d+/,'wearable jobs and required level');
+   assert.match(html,/ · 裝等 \d+/,'wearable jobs and gear level');
    assert.match(html,/class="equipment-total-summary"><span class="equipment-summary-values"><span>[^<]+ \+\d/,'total stat values');
   }
   assert.match(html,/詳細數值來源/,'attribute sources stay available');
   assert.doesNotMatch(html,/^<h2>[\s\S]*?<\/h2><div class="offline-gear-detail"><h3>/,'the name is not repeated as a second heading');
-  if(g.skillSockets!==undefined||g.equipmentSkill||g.skillId)skills.push(/<h3>裝備技能<\/h3>/.test(html));
+  if(g.equipmentSkill||g.skillId)skills.push(/<h3>裝備技能<\/h3>/.test(html));
   assert.equal(html,html.replace(/undefined|NaN/g,''),'no missing values');
   kinds.add(r.run(`EmberwildTokens.isToken(party.offlineExploration.receipt.gear[${i}])?'token':'gear'`));
  }
  assert(kinds.has('gear'),'covered ordinary equipment: '+[...kinds]);
- assert(skills.some(Boolean),'an equipment skill (ability) is shown for gear that has one');
+ assert(skills.every(Boolean),'an equipment skill (ability) is shown for gear that has one');
  assert.deepEqual(r.errors,[]);
 });

@@ -131,3 +131,5 @@
 #app .seconds-battle-xp .mastery-bar-row .mastery-bar-body{flex:1;width:auto}
 #app .seconds-battle-xp .mastery-bar-row .mastery-bar-value{display:none}
 @media(max-width:700px){#app .seconds-battle-xp .mastery-bar-row .mastery-bar.compact{flex:1 1 calc(50% - 4px)}}
+/* v0.161: the title now reads "名稱 · 職業精通 Lv.N"; let it shrink with an ellipsis on narrow phones. */
+#app .seconds-battle-xp>b{min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}

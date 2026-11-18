@@ -48,7 +48,7 @@
       if(raw===null)continue;
       try{
         const data=JSON.parse(raw),members=data?.version===3?data.members:[1,2].includes(data?.version)?[data]:null;
-        if(Array.isArray(members)&&members.length>=1&&members.length<=65&&members.every(h=>Number.isInteger(h?.job)&&CLASSES[h.job]&&Number.isInteger(h.lv)&&h.lv>=1))return {members,playTimeMs:Math.max(Number.isSafeInteger(data.playTimeMs)?data.playTimeMs:0,cachedPlayTime(slot))};
+        if(Array.isArray(members)&&members.length>=1&&members.length<=65&&members.every(h=>Number.isInteger(h?.job)&&CLASSES[h.job]))return {members,playTimeMs:Math.max(Number.isSafeInteger(data.playTimeMs)?data.playTimeMs:0,cachedPlayTime(slot))};
       }catch{}
     }
     return null;
@@ -59,7 +59,7 @@
   }
   function slotRow(slot){
     const snapshot=slotSnapshot(slot),info=slotInfo(snapshot,slot),occupied=snapshot&&hasSave(snapshot);
-    const members=info?.members?.map(h=>esc((typeof h.name==='string'&&h.name.trim()?h.name.trim():CLASSES[h.job].name).slice(0,20))+' LV'+h.lv).join('、');
+    const members=info?.members?.map(h=>esc((typeof h.name==='string'&&h.name.trim()?h.name.trim():CLASSES[h.job].name).slice(0,20))+' · '+CLASSES[h.job].name).join('、');
     const details=!snapshot?'無法檢查本地存檔':!occupied?'空欄位 · 點選建立角色':info?`隊伍等級：${members}<br>遊玩總時間：${playTimeText(info.playTimeMs)}`:'存檔資料無法判讀 · 點選查看備份方式';
     return `<div class="save-slot"><button class="save-slot-select" onclick="selectSaveSlot(${slot})" ${snapshot?'':'disabled'}><strong>存檔欄位 ${slot}</strong><span>${details}</span></button><button class="danger save-slot-delete" onclick="requestDeleteSlot(${slot})" ${occupied?'':'disabled'} aria-label="刪除存檔欄位 ${slot}">刪除存檔</button></div>`;
   }

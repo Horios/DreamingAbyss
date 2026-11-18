@@ -21,7 +21,7 @@
  function region(d,clears){return maps(d).map((m,i)=>({...m,index:i})).filter(m=>clears?.[m.id]===true).sort((a,b)=>b.max-a.max||b.min-a.min||a.index-b.index)[0]||null;}
  function range(d,m){
   if(!m)throw Error('尚無通關地區');
-  const e=d.balanceSettings.equipment,p=d.balanceSettings.progression,cap=Math.max(p.levelCaps.beforeClear,p.levelCaps.afterClear);
+  const e=d.balanceSettings.equipment,cap=Math.max(1,Math.floor(Number(e.maxLevel)||60));
   // Ordinary drops use regionTier and have one required level per region.
   const tier=m.index===6?6:Math.ceil(m.min/5);
   const level=Math.min(cap,Math.max(1,Math.round(e.requiredLevel.base+(tier-1)*e.requiredLevel.perTier)));

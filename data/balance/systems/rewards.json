@@ -30,15 +30,6 @@
       "zeroGap": 10
     }
   },
-  "xp": {
-    "base": 18,
-    "perLevel": 9,
-    "kindMultiplier": {
-      "normal": 1,
-      "elite": 2.2,
-      "boss": 10
-    }
-  },
   "ore": {
     "normalKindMultiplier": 0.25,
     "eliteBossKindMultiplier": 0.6,

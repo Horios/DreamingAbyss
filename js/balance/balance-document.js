@@ -131,7 +131,7 @@
   if(d.balanceSettings?.meta?.combatTimingVersion&&root.EmberwildSecondsSchema){try{root.EmberwildSecondsSchema.validateImport(d);}catch(e){add('balanceSettings.combat.seconds',e.message);}}
   });
   run('skillSystem',()=>{
-  if(d.skillSystem&&root.EmberwildSkillSystem){try{root.EmberwildSkillSystem.validate(d.skillSystem);}catch(e){add('skillSystem',e.message);}}
+  if(d.skillSystem&&root.EmberwildSkillSystem){try{const sys=JSON.parse(JSON.stringify(d.skillSystem));root.EmberwildSkillSystem.validate(root.EmberwildSkillSystem.migrateMasteryGates?root.EmberwildSkillSystem.migrateMasteryGates(sys):sys);}catch(e){add('skillSystem',e.message);}}
   });
   // Detect destructive sanitization using the existing final status normalizer.
   // Its allowed enums are maintained by the status module, including late extensions.
