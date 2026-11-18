@@ -238,7 +238,7 @@ test('an absence longer than 24 hours gives the same rewards as 24 hours and doe
  long.advance(60000);await long.run('EmberwildOffline.settle()');assert.equal(long.run('party.offlineExploration.lastAt'),long.now);
 });
 test('one ownership lock is acquired before module execution; phone/desktop receipt uses the existing SVG/detail components',()=>{
- const loader=fs.readFileSync(path.join(root,'js/balance/published-loader.js'),'utf8'),ui=fs.readFileSync(path.join(root,'js/combat/offline-exploration.js'),'utf8'),css=fs.readFileSync(path.join(root,'css/offline-exploration.css'),'utf8');assert(loader.indexOf('await new Promise((resolve,reject)=>{\n      navigator.locks.request')<loader.indexOf('const urls=Array.from'));assert.match(loader,/preview\?'preview':'production'/);assert.match(ui,/gearSlotHTML/);assert.match(ui,/equipmentAttributeDetailsHTML/);assert.match(css,/@media\(max-width:600px\)/);assert.match(css,/max-height:94dvh/);
+ const loader=fs.readFileSync(path.join(root,'js/balance/published-loader.js'),'utf8'),ui=fs.readFileSync(path.join(root,'js/combat/offline-exploration.js'),'utf8'),css=fs.readFileSync(path.join(root,'css/offline-exploration.css'),'utf8');assert(loader.indexOf('await new Promise((resolve,reject)=>{\n      navigator.locks.request')<loader.indexOf('const urls=Array.from'));assert.match(loader,/preview\?'preview':'production'/);assert.match(ui,/gearSlotHTML/);assert.match(ui,/equipmentAttributeDetailsHTML/);assert.match(css,/@media\(max-width:700px\)/);assert.match(css,/max-height:94dvh/);
 });
 
 test('background timers and visibility restoration advance combat without creating offline rewards',async()=>{

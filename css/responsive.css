@@ -1,0 +1,525 @@
+/* Responsive layout (v0.119). Shared size steps and the screen-size rules that replace per-file phone overrides.
+   Loaded right before visual-standard.css, which stays the last stylesheet. */
+:root{--fs-xs:12px;--fs-sm:13px;--fs-md:14px;--fs-lg:16px;--fs-xl:18px;--fs-2xl:22px;--control-height:36px;--shell-header-height:48px}
+
+/* The exploration hint is one row on every screen size. */
+#app>.layout>main>.tutorial.story-hint{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:8px;height:auto;min-height:0;max-height:none;margin:0;padding:4px 6px 4px 10px;overflow:visible}
+.tutorial.story-hint>p{flex:1 1 auto;min-width:0;margin:0;font-size:var(--fs-xs);line-height:1.4}
+.tutorial.story-hint>button{flex:0 0 auto;width:auto;min-height:32px;padding:4px 10px;font-size:var(--fs-xs)}
+.tutorial.story-hint>.story-hint-close{width:32px;padding:0;font-size:18px;line-height:1;background:transparent;border-color:transparent;box-shadow:none}
+
+.utility-more-button,.utility-more-menu{display:none}
+/* A status toast never takes a tap meant for the control under it. */
+#toast{pointer-events:none}
+
+@media(max-width:900px){
+  :root{--control-height:44px}
+
+  /* Header: brand, 戰況, 信箱, ⋯ in one 48px row. */
+  body>header{min-height:calc(var(--shell-header-height) + env(safe-area-inset-top,0px))}
+  header #utilityNavigation{display:flex;flex:0 0 auto;flex-wrap:nowrap;align-items:center;width:auto;margin-left:auto}
+  header #utilityNavigation[hidden]{display:none}
+  #utilityNavigation>.utility-icon-button{flex:0 0 auto;height:44px}
+  body.in-game header .brand small{display:none}
+  #utilityNavigation>.utility-icon-button>.utility-label{display:none}
+  #utilityNavigation>.utility-icon-button>svg{width:22px;height:22px}
+  #utilityNavigation>.mobile-report-button{max-width:46vw;padding:0 10px!important;font-size:var(--fs-sm);overflow:hidden;text-overflow:ellipsis}
+  #utilityNavigation>.utility-more-button{display:inline-flex}
+  /* A reminder inside the folded menu shows as a dot on ⋯. */
+  #utilityNavigation:has(.utility-more-menu .number-badge:not([hidden]))>.utility-more-button::after{content:"";position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:#c92c38}
+  .utility-more-menu{position:fixed;z-index:60;top:calc(var(--shell-header-height) + env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right));flex-direction:column;gap:4px;min-width:176px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 14px 34px #0009}
+  .utility-more-menu.open{display:flex}
+  .utility-more-menu>.utility-icon-button{justify-content:flex-start;gap:10px;width:100%;height:auto;min-height:44px;padding:8px 12px;font-size:var(--fs-md)}
+  .utility-more-menu>.utility-icon-button>.utility-label{font-size:var(--fs-md)}
+  .utility-more-menu>.utility-icon-button>.number-badge{position:static;margin-left:auto}
+
+  /* Page heading: title and its tag share one row; the English label is left out. */
+  #app>.layout>main .heading{flex-wrap:nowrap;align-items:center}
+  #app>.layout>main .heading .eyebrow,#modal .heading .eyebrow{display:none}
+  #app>.layout>main .heading h1{margin:0;line-height:1.3}
+  #app>.layout>main .heading>.tag{flex:0 1 auto;font-size:var(--fs-xs)}
+
+  /* Bottom navigation: icon above its label. */
+  #app>.layout>aside nav>button .game-nav-label{flex-direction:column;gap:2px;font-size:var(--fs-xs);line-height:1.2}
+  #app>.layout>aside nav>button.game-menu-item,#app>.layout>aside nav>.mobile-more-toggle{flex-direction:column!important;padding:4px 2px!important;border:0;border-radius:0;background:transparent}
+  #app>.layout>aside nav>button.active{border-top:3px solid var(--gold)}
+  #app>.layout>aside nav>.mobile-more-toggle{color:inherit}
+  /* The label is redrawn while the menu toggles; clicks always land on the button itself. */
+  #app>.layout>aside nav>.mobile-more-toggle>*{pointer-events:none}
+  #app>.layout>aside nav .mobile-more-pages .game-menu-item{flex-direction:row!important}
+  #app>.layout>aside nav .mobile-more-pages .game-nav-label{flex-direction:row;gap:6px;font-size:var(--fs-sm)}
+
+  /* Sub-pages: up to four share the width; more than that scroll sideways with a faded edge. */
+  #app>.layout>main>.game-subtabs{flex-wrap:nowrap;overflow-x:auto;gap:6px;margin:0;scrollbar-width:none}
+  #app>.layout>main>.game-subtabs::-webkit-scrollbar{display:none}
+  #app>.layout>main>.game-subtabs>button{flex:0 0 auto;min-height:44px;padding:6px 12px;font-size:var(--fs-sm)}
+  #app>.layout>main>.game-subtabs:not(:has(>button:nth-of-type(5)))>button{flex:1 1 0;justify-content:center;min-width:0}
+  #app>.layout>main>.game-subtabs:has(>button:nth-of-type(5)){padding-right:28px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
+
+  /* Shop: one product per row — item on the left, price under it, the buy button on the right. */
+  #app .shop-product-grid{grid-template-columns:minmax(0,1fr);gap:8px}
+  #app .shop-product-row{height:auto;min-height:0;padding:8px 10px}
+  #app .shop-product-visual{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;justify-content:stretch;align-items:center;gap:2px 10px}
+  #app .shop-product-visual>.item-slot{grid-column:1;grid-row:1;width:100%}
+  #app .shop-product-visual>.shop-inline-controls,#app .shop-product-visual .shop-inline-actions{display:contents}
+  #app .shop-product-visual>.shop-inline-controls>.small{grid-column:1;grid-row:2;margin:0;font-size:var(--fs-xs)}
+  #app .shop-product-visual .shop-inline-actions>*{grid-column:2;grid-row:1/3;align-self:center}
+  #app .shop-product-visual .shop-inline-actions>button{min-width:64px;min-height:44px}
+  #app .shop-product-visual>.shop-product-stock{grid-column:1;grid-row:2;justify-self:end;font-size:var(--fs-xs);white-space:nowrap}
+  #app .shop-product-visual>.shop-product-stock>br{display:none}
+
+  /* Controls people tap are at least 44px high. */
+  #app>.layout>main button,#app>.layout>main select,#app>.layout>main input:not([type=checkbox]):not([type=radio]),#modal button,#modal select{min-height:var(--control-height)}
+  #app>.layout>main summary{min-height:var(--control-height);display:flex;align-items:center;gap:6px}
+  #app>.layout>main summary::before{content:"▸";flex:0 0 auto}
+  #app>.layout>main details[open]>summary::before{content:"▾"}
+  #app>.layout>main summary::-webkit-details-marker{display:none}
+
+  /* Text is at least 12px; only count badges and tier chips stay smaller. */
+  #app>.layout>main .small,#app>.layout>main small,#app>.layout>main label,#app>.layout>main .tag,#app>.layout>main .member-tag,#app>.layout>main .skill-type-tag,
+  #app>.layout>main .player-exp-text,#app>.layout>main .item-slot-count,#app>.layout>main .gear-management-meta,#app>.layout>main .gear-management-meta span,
+  #app>.layout>main .equipment-attribute-line b,#app>.layout>main .slot-label,#app>.layout>main .shop-refresh-meta span,#app>.layout>main .shop-product-stock b,
+  #app>.layout>main .inventory-supply-status,#app>.layout>main .inventory-supply-status span,#app>.layout>main .gear-sort-controls button,#app>.layout>main .mastery-bar-head>*{font-size:var(--fs-xs)}
+}
+
+/* ── v0.120 Exploration page ─────────────────────────────────────────────── */
+/* The long rules text is folded on every screen size. */
+#app .seconds-field-help{display:block;margin-top:4px}
+#app .seconds-field-help>summary{display:inline-flex;align-items:center;min-height:0;cursor:pointer;color:var(--muted);font-size:var(--fs-xs)}
+#app .seconds-field-help>small{display:block;margin-top:4px;color:var(--muted);line-height:1.6}
+#app .seconds-battlefield .seconds-side-head{height:auto;min-height:0}
+
+@media(max-width:700px){
+  /* One row: 一般／任務／BOSS and the map list. */
+  #app .seconds-destination-bar{flex-wrap:nowrap;gap:6px;margin:0}
+  #app .seconds-destination-bar .destination-suffix{display:none}
+  #app .seconds-destination-bar .seconds-destination-types{gap:4px}
+  #app .seconds-destination-bar .seconds-destination-types>button{min-height:44px;padding:4px 10px;font-size:var(--fs-sm)}
+  #app .seconds-destination-bar>select{flex:1 1 0;min-width:0;max-width:none;margin-left:0;min-height:44px}
+
+  /* Auto potion settings stay reachable from 冒險配置 → 自動藥水. */
+  #app>.layout>main:has(.seconds-battle-header)>.heal-auto-panel{display:none!important}
+
+  /* Title, level and gold on one line; the mastery bars below. */
+  #app .seconds-battle-header{padding:8px 10px!important;gap:4px}
+  #app .seconds-battle-header>.seconds-battle-title{flex:1 1 100%;flex-wrap:nowrap;gap:2px 10px;align-items:flex-start}
+  #app .seconds-battle-title>h2{flex:0 0 auto;max-width:40%}
+  #app .seconds-battle-title h2{font-size:var(--fs-lg)}
+  #app .seconds-battle-xp{flex:1 1 0;min-width:0;flex-wrap:wrap;gap:4px 8px;padding-top:2px}
+  #app .seconds-battle-xp>progress{flex:1 1 60px}
+  #app .seconds-battle-xp>.mastery-bar-row{order:5;flex:1 1 100%}
+
+  /* 暫停／重置／切換／冒險配置 stay above the bottom navigation. .layout is the containing block (container-type:size). */
+  #app>.layout>main:has(.seconds-battle-header){padding-bottom:calc(24px + 58px)}
+  #app .seconds-battle-header .seconds-toolbar-actions{position:fixed;z-index:20;left:0;right:0;bottom:calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));display:flex!important;flex-wrap:nowrap!important;justify-content:stretch;gap:6px;width:auto;margin:0;padding:6px max(8px,env(safe-area-inset-right)) 6px max(8px,env(safe-area-inset-left));background:var(--chrome,#181e22);border-top:1px solid var(--line)}
+  #app .seconds-battle-header .seconds-toolbar-actions>button{flex:1 1 0;min-width:0;min-height:44px!important;padding:4px 6px!important;font-size:var(--fs-xs)!important;gap:4px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #app .seconds-battle-header .seconds-toolbar-actions>button svg{width:16px!important;height:16px!important;flex-shrink:0}
+
+  /* Page order: sub-pages, title, hint, destination, battlefield. */
+  #app>.layout>main:has(.seconds-battlefield)>.game-subtabs{order:-9}
+  #app>.layout>main:has(.seconds-battlefield)>.seconds-battle-header{order:-8}
+  #app>.layout>main:has(.seconds-battlefield)>.tutorial{order:-7}
+  #app>.layout>main:has(.seconds-battlefield)>.seconds-destination-bar{order:-6}
+  #app .seconds-battlefield .seconds-enemies{min-height:0}
+  #app .seconds-battlefield .unit-numbers{min-height:0!important}
+  /* Battlefield: enemies and allies are rows of up to three upright cards, so both sides fit one screen. */
+  #app .text-battle-layout>.party-combat{padding:8px}
+  #app .party-combat:has(.seconds-battlefield),.text-battle-layout .party-combat:has(.seconds-battlefield){min-height:0!important}
+  #app .party-combat .squad-field.seconds-battlefield{min-height:0!important;gap:6px!important;padding:6px 8px!important}
+  #app .seconds-battlefield>.seconds-divider{display:none}
+  #app .seconds-battlefield .seconds-side{gap:6px}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;justify-content:center!important;align-items:stretch;gap:12px 10px!important;padding:0 6px 6px 0}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack{flex:0 0 calc((100% - 22px)/3)!important;width:calc((100% - 22px)/3)!important;max-width:none!important;padding:6px!important;gap:4px!important}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face-main{display:flex!important;flex-direction:column;align-items:stretch;gap:3px}
+  #app .seconds-battlefield .seconds-unit.seconds-stack>.seconds-face-main>.battle-enemy-icon{align-self:center;order:-1}
+  #app .seconds-battlefield .seconds-unit .unit-title{flex-direction:column!important;align-items:center!important;gap:0!important;text-align:center}
+  #app .seconds-battlefield .seconds-unit .unit-title b{font-size:var(--fs-sm)!important}
+  #app .seconds-battlefield .seconds-unit .unit-numbers{flex-direction:column;align-items:center!important;justify-content:flex-start!important;gap:0;text-align:center!important}
+  #app .seconds-battlefield .seconds-unit .unit-numbers,#app .seconds-battlefield .seconds-unit .unit-title>span,#app .seconds-battlefield .seconds-unit .seconds-mp>small,#app .seconds-battlefield .seconds-charge-name,#app .seconds-battlefield .seconds-charge-time,#app .seconds-battlefield .seconds-state,#app .seconds-state-empty,#app .seconds-battlefield .seconds-face-title>span{font-size:var(--fs-xs)!important}
+  #app .seconds-battlefield .seconds-unit .seconds-mp>small{text-align:center}
+  #app .seconds-battlefield .seconds-unit .seconds-charge-list{grid-template-columns:minmax(0,1fr)}
+  #app .seconds-field-foot{flex-wrap:nowrap;margin-top:0}
+  #app .seconds-face-switch>button{min-height:44px;padding:2px 14px;font-size:var(--fs-sm)}
+}
+
+/* Desktop screens up to 860px high (1366×768 laptops): both sides of the battlefield are visible without scrolling. */
+@media(min-width:901px) and (max-height:860px){
+  #app>.layout>main:has(.seconds-battlefield){gap:12px;padding-top:10px}
+  #app>.layout>main:has(.seconds-battlefield)>.heal-auto-panel{order:5}
+  #app>.layout>main:has(.seconds-battlefield)>.text-battle-layout{order:4}
+  #app .party-combat .squad-field.seconds-battlefield{gap:6px!important;padding:6px 10px!important}
+  #app .seconds-battlefield>.seconds-divider{display:none}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{padding:8px 10px!important;gap:4px!important}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit.seconds-stack>.seconds-face,#app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit.seconds-stack>.seconds-face{gap:4px}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{gap:12px 16px!important;padding:0 8px 8px 0}
+}
+@media(max-width:360px){#app .seconds-battle-header .seconds-toolbar-actions>button svg{display:none}}
+
+/* ── v0.121 Phone detail sheets, folded filters, full-screen dialogs ──────── */
+.sheet-head,.token-filter-toggle{display:none}
+@media(max-width:700px){
+  /* Lists use the page scroll; no small scrolling pane inside the page. */
+  #app>.layout>main .inventory-master-pane{height:auto;max-height:none}
+  #app>.layout>main .inventory-list-scroll,#app>.layout>main .forge-gear-list{height:auto;max-height:none;overflow:visible}
+  #app>.layout>main .forge-gear-pane{height:auto;max-height:none}
+  /* The lock moves into the detail sheet; a locked row says so in its text. */
+  #app .gear-management-row>.gear-lock{display:none}
+  #app .gear-management-row:has(>.gear-lock[aria-pressed="true"]) .gear-management-meta::after{content:" · 已鎖定";color:var(--gold)}
+  #app .gear-management-row>.gear-management-item,#app .gear-management-row .inventory-list-item{width:100%;max-width:none}
+
+  /* Detail panes wait for a tap, then rise from the bottom navigation. */
+  #app .inventory-detail-wrap,#app .token-inventory-detail,#app .forge-detail-pane,#app .worn-candidate-pane{display:none!important}
+  body[data-sheet="gear"] #app .inventory-detail-wrap,body[data-sheet="token"] #app .token-inventory-detail,body[data-sheet="forge"] #app .forge-detail-pane,body[data-sheet="worn"] #app .worn-candidate-pane{display:block!important;position:fixed;z-index:25;left:0;right:0;top:auto;bottom:calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));width:auto;height:auto!important;min-height:0!important;max-height:min(74%,620px)!important;margin:0;padding:0 14px 14px!important;overflow:auto!important;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 0 0 100vmax #000a}
+  .sheet-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:52px;margin:0 -14px 10px;padding:4px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .sheet-head>b{font-size:var(--fs-lg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sheet-head>.sheet-close{flex:0 0 auto;min-width:64px}
+  /* The sheet's main actions stay at its bottom edge. */
+  body[data-sheet="gear"] #app .inventory-detail-wrap .inventory-detail-actions{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px!important;position:sticky;bottom:-14px;z-index:2;margin:10px -14px -14px;padding:8px 14px 14px;background:var(--panel);border-top:1px solid var(--line)}
+  body[data-sheet="gear"] #app .inventory-detail-actions>button{min-height:44px;font-size:var(--fs-sm)!important}
+  #app .worn-candidate-pane>.sheet-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px}
+  #app .worn-candidate-pane>.sheet-actions>button{width:100%!important;min-height:44px;font-size:var(--fs-sm)!important;white-space:nowrap;overflow:visible;padding:6px 8px!important}
+
+  /* Worn equipment: two slots per row; a slot's actions are in its sheet. */
+  #app .worn-loadout-grid>div:first-child{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #app .worn-loadout-grid .worn-slot{display:flex;flex-direction:column;margin:0;min-width:0}
+  #app .worn-loadout-grid .worn-slot>.actions{display:none!important}
+  #app .worn-loadout-grid .worn-slot>.worn-slot-choice{flex:1 0 auto;width:100%;height:auto;min-height:76px}
+  #app .worn-loadout-grid .worn-slot .item-slot{width:100%;max-width:none;min-width:0}
+  #app .worn-loadout-grid .worn-slot:has(>:not(.worn-slot-choice):not(.actions)){grid-column:1/-1}
+
+  /* Token filters open on request. */
+  #app .token-management-panel>.gear-management-controls>.token-filter-toggle{display:block;width:100%}
+  body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>.gear-basic-filters,body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>details{display:none}
+
+  /* Utility dialogs fill the screen; 關閉 stays at the top right, on the title's row. */
+  #modal.utility-dialog{width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border:0;border-radius:0}
+  #modal.utility-dialog>.utility-dialog-controls{position:sticky;top:0;z-index:5;height:0;margin:0;overflow:visible}
+  #modal.utility-dialog>.utility-dialog-controls>button{position:absolute;top:0;right:0;min-width:64px}
+  #modal.utility-dialog>.heading{min-height:44px;padding-right:76px;align-items:center}
+  #modal.utility-dialog>.heading>.tag{font-size:var(--fs-xs)}
+
+  /* Mailbox: the list first; a message opens as its own layer with 返回. */
+  #modal .mailbox-layout{display:block}
+  #modal .mailbox-list{max-height:none;overflow:visible}
+  #modal .mailbox-detail{display:none}
+  body[data-sheet="mail"] #modal .mailbox-detail{display:block}
+  body[data-sheet="mail"] #modal .mailbox-list,body[data-sheet="mail"] #modal .mailbox-layout~*,body[data-sheet="mail"] #modal .panel>.row:has(.mailbox-actions){display:none}
+  #modal .mailbox-detail>.sheet-head{margin:0 0 10px;padding:0 0 6px;position:static;min-height:44px}
+  #modal .panel>.row:has(.mailbox-actions){flex-wrap:wrap}
+  #modal .mailbox-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+  #modal .mailbox-actions>button{width:100%;min-width:0;padding:6px 4px;font-size:var(--fs-xs);white-space:normal}
+
+  /* BOSS crafting: one region at a time (chosen above the list) and shorter recipe cards. */
+  #app .boss-region-filter{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:var(--fs-sm)}
+  #app .boss-region-filter>select{flex:1 1 0;min-width:0}
+  #app .boss-reading-page .boss-recipes{gap:10px}
+  #app .boss-reading-page .boss-recipe{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:10px 12px}
+  #app .boss-reading-page .boss-recipe[hidden]{display:none}
+  #app .boss-reading-page .boss-recipe>.tag{grid-column:2;grid-row:1;margin:0;justify-self:end}
+  #app .boss-reading-page .boss-recipe>.item-slot{grid-column:1;grid-row:1;margin:0;width:100%;max-width:none}
+  #app .boss-reading-page .boss-recipe>p.small{grid-column:1/-1;margin:0}
+  #app .boss-reading-page .boss-recipe>.recipe-cost{grid-column:1/-1;margin:0;gap:6px 10px;align-items:center}
+  #app .boss-reading-page .boss-recipe>button{grid-column:1/-1}
+
+  /* Alchemy recipes: ingredients sit two to a row. */
+  #app .life-recipe .recipe-item-line{gap:6px;margin:8px 0}
+  #app .life-recipe .recipe-item-line>.recipe-input,#app .life-recipe .recipe-item-line>.item-slot{flex:1 1 calc(50% - 20px);min-width:120px}
+  #app .life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
+
+  /* Title screen: 刪除 shares the slot's row. Character creation: one class at a time, picked from tabs. */
+  #app .save-slot{grid-template-columns:minmax(0,1fr) auto;align-items:stretch}
+  #app .save-slot-delete{align-self:stretch;min-height:44px;padding:6px 10px}
+  #app .creation-class-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0}
+  #app .creation-class-tabs>button{min-height:44px;padding:4px 2px;font-size:var(--fs-sm)}
+  #app .creation-class-tabs>button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+  #app>.start .cards>.card[hidden]{display:none}
+}
+.boss-region-filter,.creation-class-tabs{display:none}
+
+/* ── v0.122 Navigation rail ──────────────────────────────────────────────── */
+/* Desktop rail rules live in top-menu.css. Tablets (701–900px wide) and phones held sideways use the same rail in place
+   of the bottom bar: every category is listed, so there is no 更多 menu, and the page gets the full height. */
+:root{--rail-width:72px}
+@media(min-width:701px) and (max-width:900px),(max-width:900px) and (orientation:landscape) and (max-height:480px){
+  :root{--rail-width:64px;--mobile-nav-height:0px}
+  #app>.layout{padding-bottom:0;padding-left:calc(var(--rail-width) + env(safe-area-inset-left,0px))}
+  /* v0.158: the rail starts under the header, inside the game area, so overlays that mask the game area (the story window) also cover it. */
+  #app>.layout>aside{inset:auto auto 0 0;top:calc(var(--shell-header-height) + env(safe-area-inset-top,0px));width:calc(var(--rail-width) + env(safe-area-inset-left,0px));height:auto;padding:6px 4px var(--mobile-safe-bottom) calc(4px + env(safe-area-inset-left,0px));border-top:0;border-right:1px solid var(--line);overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
+  #app>.layout>aside::-webkit-scrollbar{display:none}
+  #app>.layout>aside nav{display:flex;flex-direction:column;gap:2px;height:auto}
+  #app>.layout>aside nav .mobile-more-pages{display:contents}
+  #app>.layout>aside nav button[data-page]{order:var(--page-order)!important}
+  /* The rail runs the full height; the header starts to its right. */
+  #app>.layout>aside nav>.mobile-more-toggle{display:none}
+  #app>.layout>aside nav button.game-menu-item,#app>.layout>aside nav .mobile-more-pages button.game-menu-item{flex:0 0 auto;flex-direction:column!important;width:100%!important;height:auto;min-height:50px;padding:4px 2px!important;border:0;border-radius:8px;background:transparent;font-size:var(--fs-xs)}
+  #app>.layout>aside nav .mobile-more-pages .game-nav-label{flex-direction:column;gap:2px;font-size:var(--fs-xs)}
+  #app>.layout>aside nav button.game-menu-item.active{border-top:0;background:#293631;color:var(--gold)}
+  #app>.layout>aside nav button .number-badge,#app>.layout>aside nav button .quest-new{position:absolute;top:2px;right:2px}
+  /* Fixed phone parts start to the right of the rail. */
+  #app .seconds-battle-header .seconds-toolbar-actions,body[data-sheet] #app .inventory-detail-wrap,body[data-sheet] #app .token-inventory-detail,body[data-sheet] #app .forge-detail-pane,body[data-sheet] #app .worn-candidate-pane{left:calc(var(--rail-width) + env(safe-area-inset-left,0px))}
+}
+
+/* Tablets (701–900px): lists and their details sit side by side again; cards use two columns. */
+@media(min-width:701px) and (max-width:900px){
+  #app>.layout>main .inventory-master-detail{display:grid;grid-template-columns:minmax(310px,46%) minmax(0,1fr);grid-template-rows:none;align-items:start;gap:12px}
+  #app>.layout>main .inventory-master-pane{height:auto;max-height:calc(100dvh - 240px);overflow:hidden}
+  #app>.layout>main .forge-workbench{grid-template-columns:minmax(250px,38%) minmax(0,1fr);grid-template-rows:auto;align-items:start}
+  #app>.layout>main .forge-gear-pane{height:auto;max-height:calc(100dvh - 260px)}
+  #app>.layout>main .forge-layout{display:block}
+  #app>.layout>main .forge-preview,#app>.layout>main .forge-controls{max-height:none}
+  #app .shop-product-grid,#app>.layout>main .cards,#app>.layout>main .shared-shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #app .squad-field{grid-template-columns:none}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:repeat(auto-fit,minmax(150px,190px))!important;gap:14px 12px!important}
+  #app .inventory-category-tabs,#app .player-skill-class-tabs,#app .boss-class-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+/* ── Wide screens (1600px and up): the whole interface is drawn larger instead of leaving 10–12px text on a big monitor. */
+/* Viewport units are not divided by zoom, so the page height is. */
+@media(min-width:1600px){html{--ui-zoom:1.15;zoom:var(--ui-zoom)}#app{height:calc(100dvh / var(--ui-zoom) - 48px)}.utility-dialog{max-height:calc(85dvh / var(--ui-zoom))}dialog#modal{inset:auto;margin:0;left:calc(50vw / var(--ui-zoom));top:calc(50dvh / var(--ui-zoom));translate:-50% -50%;max-height:calc(92dvh / var(--ui-zoom))}}
+@media(min-width:2300px){html{--ui-zoom:1.35}}
+
+/* Desktop battle report column: 收合 leaves a narrow strip so the page gets the width. */
+.journal-collapse-toggle{display:none}
+@media(min-width:901px){
+  /* The button is added after each report redraw, so it is placed outside the flow: the log's height never changes under it. */
+  #app>.layout>#globalBattleJournal{position:relative;padding-top:30px!important}
+  #globalBattleJournal>.journal-collapse-toggle{display:block;position:absolute;top:2px;right:6px;width:auto;min-height:26px;margin:0;padding:2px 8px;font-size:var(--fs-xs);color:var(--muted);background:transparent;border:0;box-shadow:none}
+  body.journal-collapsed{--journal-width:44px}
+  body.journal-collapsed #globalBattleJournal{padding:6px 4px!important;overflow:hidden}
+  body.journal-collapsed #globalBattleJournal>:not(.journal-collapse-toggle){display:none!important}
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{inset:6px 4px;width:auto;height:auto;min-height:120px;padding:10px 0;text-align:center;display:flex!important;align-items:center;justify-content:center;white-space:normal;word-break:break-all;color:var(--gold);border:1px solid var(--line);border-radius:8px}
+}
+
+/* Narrow desktop windows (901–1100px): the forge detail keeps its natural height. */
+@media(min-width:901px) and (max-width:1100px){#app>.layout>main .forge-layout{display:block;height:auto}#app>.layout>main .forge-preview,#app>.layout>main .forge-controls{max-height:none}}
+
+/* ── v0.125 Second pass on phone pages ───────────────────────────────────── */
+.intro-clamp-toggle,.life-recipe-toggle{display:none}
+@media(max-width:700px){
+  /* Character stats: two per row. */
+  #app>.layout>main .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #app>.layout>main .stat-grid>span{min-width:0}
+  /* Skill slots: an empty slot is one compact row; a filled slot keeps its description. */
+  #app .skill-system-slots{gap:8px}
+  #app .skill-system-slot{min-height:0;padding:8px 12px}
+  #app .skill-system-slot:has(>b:only-of-type):not(:has(.skill-slot-name)){display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
+  /* Quest filter: four choices on one row. */
+  #app>.layout>main .quest-filter{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:0!important}
+  #app>.layout>main .quest-filter>button{width:100%!important;padding:6px 2px!important;font-size:var(--fs-xs)!important;white-space:nowrap}
+  /* Team roster: a member's buttons sit to the right of the name. */
+  #app>.layout>main .roster-row{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:10px 0}
+  #app>.layout>main .roster-row>.roster-member-actions{justify-content:flex-end;flex-wrap:nowrap;gap:6px}
+  #app>.layout>main .roster-row>.roster-member-actions>button{padding:6px 10px!important;white-space:nowrap}
+  /* Long explanations show two lines until tapped. */
+  #app>.layout>main .intro-clamp:not(.intro-open)>p:first-of-type,#app>.layout>main p.intro-clamp:not(.intro-open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+  #app>.layout>main .intro-clamp:not(.intro-open)>p:not(:first-of-type){display:none}
+  #app>.layout>main .intro-clamp-toggle{display:inline-flex;align-items:center;min-height:44px;margin:2px 0 0;padding:2px 8px;font-size:var(--fs-xs);color:var(--gold);background:transparent;border:0;box-shadow:none}
+  /* Alchemy recipes: a row with the name and 開始 until opened. */
+  #app .life-recipe{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 8px}
+  #app .life-recipe>*{grid-column:1/-1;margin-top:0;margin-bottom:0}
+  #app .life-recipe>.life-action-title{grid-column:1;cursor:pointer}
+  #app .life-recipe>.life-recipe-toggle{display:inline-flex;grid-column:2;grid-row:1;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:4px 10px;font-size:var(--fs-xs)}
+  #app .life-recipe>button:not(.life-recipe-toggle){grid-column:3;grid-row:1;white-space:nowrap}
+  #app .life-recipe.recipe-folded>.recipe-item-line,#app .life-recipe.recipe-folded>p{display:none}
+  /* Material stock: two per row. */
+  #app .life-materials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #app .life-materials>.life-stock-row{justify-self:stretch;width:auto;max-width:none;min-width:0;margin:0;padding:6px}
+  #app .life-materials>.life-stock-row .item-slot{width:100%;max-width:none;min-width:0}
+  #app>.layout>main .intro-clamp:not(.intro-open)>p.small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+}
+
+/* ── v0.126 Desktop second pass ──────────────────────────────────────────── */
+@media(min-width:901px){
+  /* Worn equipment: the help and skill-link buttons share the sub-page row instead of two rows of their own. */
+  /* main stays the shared flex column; the two buttons are placed at the right end of the sub-page row. */
+  #app>.layout>main:has(>.worn-reading-page){position:relative}
+  #app>.layout>main:has(>.worn-reading-page)>.game-subtabs{padding-right:180px}
+  #app>.layout>main:has(>.worn-reading-page)>.inventory-wear-toolbar{position:absolute;top:var(--page-padding);right:var(--page-padding);width:44px;height:36px;margin:0;display:flex;align-items:center;justify-content:center}
+  #app>.layout>main:has(>.worn-reading-page)>.inventory-wear-skill-link{position:absolute;top:var(--page-padding);right:calc(var(--page-padding) + 52px);margin:0}
+  #app>.layout>main:has(>.worn-reading-page)>.inventory-wear-skill-link>button{min-height:36px}
+  /* A slot is one row: the item on the left, its four actions in a 2×2 block on the right. */
+  #app .worn-loadout-grid .worn-slot{display:grid;grid-template-columns:minmax(0,1fr) 172px;align-items:center;gap:6px 10px}
+  #app .worn-loadout-grid .worn-slot>*{grid-column:1/-1}
+  #app .worn-loadout-grid .worn-slot>.worn-slot-choice{grid-column:1}
+  #app .worn-loadout-grid .worn-slot>.actions{grid-column:2;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:0!important;width:172px}
+  #app .worn-loadout-grid .worn-slot>.actions>button{width:100%!important;min-width:0;padding:4px 2px;white-space:nowrap}
+  /* Skills: the single trigger and support slots sit side by side. */
+  #app .skill-system-page{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  #app .skill-system-page>*{grid-column:1/-1}
+  #app .skill-system-page>section.panel:nth-of-type(2),#app .skill-system-page>section.panel:nth-of-type(3){grid-column:auto;align-self:stretch}
+}
+
+/* ── v0.127 Desktop third pass ───────────────────────────────────────────── */
+@media(min-width:901px){
+  /* Material and stock lists fill the width instead of one narrow column. */
+  #app>.layout>main .account-sell-list,#app .life-materials{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));justify-items:stretch;gap:8px;align-items:start}
+  #app>.layout>main .account-sell-list>.empty{grid-column:1/-1;justify-self:start}
+  #app>.layout>main .account-sell-list>*,#app .life-materials>*{width:auto;max-width:none;min-width:0;margin:0}
+  #app>.layout>main .account-sell-list .item-slot,#app .life-materials .item-slot{width:100%;max-width:none;min-width:0}
+  /* BOSS recipe cost: the ingredient takes the row; 持有 and the gold cost stay on one line each. */
+  #app .boss-reading-page .recipe-cost{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px}
+  #app .boss-reading-page .recipe-cost>span:first-child{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap}
+  #app .boss-reading-page .recipe-cost>span:first-child>.item-slot{flex:1 1 auto;width:auto;min-width:0}
+  #app .boss-reading-page .recipe-cost>span:last-child{white-space:nowrap}
+}
+
+/* Desktop token backpack: filters fold behind 信物篩選 like the equipment page's filter button; sorting stays visible. */
+@media(min-width:701px){
+  #app .token-management-panel>.gear-management-controls{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px}
+  #app .token-management-panel>.gear-management-controls>.token-filter-toggle{display:block;order:2;width:auto;min-width:96px;margin:0}
+  #app .token-management-panel>.gear-management-controls>.gear-sort-controls{order:1;flex:1 1 auto;margin:0}
+  #app .token-management-panel>.gear-management-controls>.gear-basic-filters,#app .token-management-panel>.gear-management-controls>details{order:3;flex:1 1 100%}
+  body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>.gear-basic-filters,body:not(.token-filters-open) #app .token-management-panel>.gear-management-controls>details{display:none}
+}
+
+/* Desktop utility dialogs: 關閉 floats at the top right on the title's row instead of taking a row of its own. */
+@media(min-width:701px){
+  #modal.utility-dialog>.utility-dialog-controls{position:sticky;top:0;z-index:5;height:0;margin:0;overflow:visible}
+  #modal.utility-dialog>.utility-dialog-controls>button{position:absolute;top:0;right:0}
+  #modal.utility-dialog>.heading,#modal.utility-dialog>section>h1:first-child,#modal.utility-dialog>.lake-panel>.eyebrow:first-child{padding-right:84px}
+  #modal.utility-dialog>.heading{min-height:36px}
+}
+
+/* ── v0.130 Desktop remaining items ──────────────────────────────────────── */
+/* Battle report: the blank filler rows pushed a short log to the bottom of the column; without them the log starts at the
+   top. A long log still follows the newest row (auto-scroll is unchanged). Phones already hide the fillers. */
+@media(min-width:901px){#app .global-battle-journal .battle-log-empty{display:none}}
+
+/* Commissions and side quests: one row per quest instead of a card grid whose last row is often one or two cards.
+   Columns: state tag, NEW, title (description below them) | objectives | reward | buttons. */
+@media(min-width:901px){
+  #app>.layout>main .cards:has(>.quest-design-card){grid-template-columns:minmax(0,1fr);gap:8px}
+  #app .quest-design-card{display:grid;grid-template-columns:max-content max-content minmax(0,1.2fr) minmax(180px,1fr) minmax(110px,.7fr) max-content;grid-auto-rows:auto;align-items:center;column-gap:10px;row-gap:2px;padding:10px 14px}
+  #app .quest-design-card>*{margin:0}
+  #app .quest-design-card>.tag{grid-column:1;grid-row:1}
+  #app .quest-design-card>.quest-new{grid-column:2;grid-row:1}
+  #app .quest-design-card>h2{grid-column:3;grid-row:1;font-size:var(--fs-lg);line-height:1.4}
+  #app .quest-design-card>p:not(.gold){grid-column:1/4;grid-row:2;font-size:var(--fs-sm);color:var(--muted)}
+  #app .quest-design-card>.quest-objectives{grid-column:4;grid-row:1/3;margin:0;padding:0}
+  #app .quest-design-card>.gold{grid-column:5;grid-row:1/3;line-height:1.5}
+  #app .quest-design-card>button{grid-column:6;min-width:96px;margin:0}
+  #app .quest-design-card>button:only-of-type{grid-row:1/3}
+}
+/* Narrow desktop windows: objectives and reward move to a third line so the title keeps its width. */
+@media(min-width:901px) and (max-width:1100px){
+  #app .quest-design-card{grid-template-columns:max-content max-content minmax(0,1fr) max-content}
+  #app .quest-design-card>.quest-objectives{grid-column:1/4;grid-row:3}
+  #app .quest-design-card>.gold{grid-column:1/4;grid-row:4}
+  #app .quest-design-card>button{grid-column:4}
+  #app .quest-design-card>button:only-of-type{grid-row:1/5}
+}
+
+/* Wide screens: list, detail and a comparison with the worn item. */
+.inventory-compare-pane{display:none}
+@media(min-width:1600px){
+  #app>.layout>main .gear-management-panel .inventory-master-detail:has(>.inventory-compare-pane){grid-template-columns:minmax(300px,32%) minmax(0,1fr) minmax(260px,30%)}
+  #app .inventory-compare-pane{display:block;min-width:0;overflow:auto;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--inset,transparent)}
+  #app .inventory-compare-pane>h3{margin:0 0 8px;font-size:var(--fs-md)}
+  #app .inventory-compare-pane .inventory-compare-current{margin:0 0 10px;line-height:1.6}
+  #app .inventory-compare-pane .equip-delta-table{width:100%;margin:0 0 10px;font-size:var(--fs-sm);border-collapse:collapse}
+  #app .inventory-compare-pane .equip-delta-table th,#app .inventory-compare-pane .equip-delta-table td{padding:3px 4px;text-align:right;border-bottom:1px solid var(--line)}
+  #app .inventory-compare-pane .equip-delta-table th:first-child,#app .inventory-compare-pane .equip-delta-table td:first-child{text-align:left}
+}
+
+/* ── v0.131 Desktop fourth pass ──────────────────────────────────────────── */
+@media(min-width:901px){
+  /* A group of five enemies stays on one row at 1366px (cards could not shrink below 176px, so the fifth wrapped and pushed
+     the party below the screen). */
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,200px);justify-content:center!important;column-gap:12px!important}
+  #app .seconds-battlefield #battleAllyIcons>.unit.seconds-unit{min-width:0}
+  /* Narrow cards wrap HP and shield onto two lines; an old 15px cap made the lines overlap. */
+  #app .seconds-battlefield .seconds-unit .unit-numbers{max-height:none;height:auto;flex-basis:auto}
+  #app .seconds-battlefield .seconds-unit .seconds-face>*{flex-shrink:0}
+  #app .seconds-battlefield #battleEnemyIcons>.unit.seconds-unit{min-width:0}
+  #app .seconds-battlefield #battleEnemyIcons .unit-title{min-width:0}
+  /* Shop products: item and price on the left, stock and 購買 on the right, one compact row per product. */
+  #app .shop-product-row{height:auto;min-height:0;padding:8px 10px}
+  #app .shop-product-visual{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;justify-content:stretch;align-items:center;gap:2px 12px}
+  #app .shop-product-visual>.item-slot{grid-column:1;grid-row:1;width:100%;max-width:none}
+  #app .shop-product-visual>.shop-inline-controls,#app .shop-product-visual .shop-inline-actions{display:contents}
+  #app .shop-product-visual>.shop-inline-controls>.small{grid-column:1;grid-row:2;margin:0}
+  #app .shop-product-visual>.shop-product-stock{grid-column:2;grid-row:1/3;align-self:center;text-align:center;white-space:nowrap}
+  #app .shop-product-visual .shop-inline-actions>*{grid-column:3;grid-row:1/3;align-self:center}
+  #app .shop-product-visual .shop-inline-actions>button{min-width:64px}
+  /* Equipment shop rows (no visual wrapper, with a quantity box): quantity and 購買 sit to the right of the item. */
+  #app .shop-product-row:not(:has(>.shop-product-visual)){display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 12px}
+  #app .shop-product-row:not(:has(>.shop-product-visual))>.item-slot{grid-column:1;grid-row:1;width:100%;max-width:none}
+  #app .shop-product-row:not(:has(>.shop-product-visual))>.shop-inline-controls{display:contents}
+  #app .shop-product-row:not(:has(>.shop-product-visual))>.shop-inline-controls>.small{grid-column:1;grid-row:2;margin:0}
+  #app .shop-product-row:not(:has(>.shop-product-visual)) .shop-inline-actions{grid-column:2;grid-row:1/3;display:flex;align-items:center;gap:6px;margin:0}
+  #app .shop-product-row:not(:has(>.shop-product-visual)) .shop-inline-actions>input{width:64px}
+}
+
+/* ── v0.133 Desktop: narrow windows, alchemy ─────────────────────────────── */
+@media(min-width:901px){
+  /* The folded report strip reads clearly. */
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{font-size:var(--fs-sm);font-weight:700;line-height:1.5;padding:10px calc(50% - .5em)!important}
+  body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle:hover{background:color-mix(in srgb,var(--gold) 12%,transparent)}
+}
+/* Narrow desktop windows: the backpack list takes about half the width so item names stay on one line. */
+@media(min-width:901px) and (max-width:1100px){
+  #app>.layout>main .gear-management-panel .inventory-master-detail{grid-template-columns:minmax(0,50%) minmax(0,1fr)}
+  #app>.layout>main .gear-management-row .inventory-list-item{width:100%;max-width:none}
+}
+
+/* Alchemy on desktop: recipes sit two to a row (the page was one recipe per row, about 2900px tall at 1366). */
+@media(min-width:901px){
+  #app #life-alchemy{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;align-items:start}
+  #app #life-alchemy>*{grid-column:1/-1;margin:0}
+  #app #life-alchemy>.life-recipe{grid-column:auto;height:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+  #app #life-alchemy>.life-recipe .recipe-item-line{gap:6px;margin:8px 0}
+  #app #life-alchemy>.life-recipe .recipe-item-line>.recipe-input,#app #life-alchemy>.life-recipe .recipe-item-line>.item-slot{flex:1 1 calc(50% - 24px);min-width:150px}
+  #app #life-alchemy>.life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
+  #app #life-alchemy>.life-recipe>p.small{margin:4px 0}
+}
+
+/* ── v0.134 Desktop: statistics charts, character creation ───────────────── */
+@media(min-width:901px){
+  /* 傷害／承傷／治療 sit side by side; each bar is about a third of the old width. */
+  #app .statistics-combat-data>.combat-chart{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 24px;align-items:start}
+  #app .statistics-combat-data .combat-chart-row{grid-template-columns:minmax(56px,auto) minmax(0,1fr) minmax(48px,auto)}
+  /* Character creation: the four class cards end with their 選擇 button on one line; 返回標題 is a normal button. */
+  #app>.start>.title-back{display:block;width:auto;margin:0 0 12px;padding:6px 18px}
+  #app>.start{margin-inline:auto}
+  #app>.start .cards>.card{display:flex;flex-direction:column}
+  #app>.start .cards>.card>button.primary{margin-top:auto;align-self:flex-start}
+}
+/* Team roster: 移至後備 and 改名 sit side by side (the button column was fixed at 105px, so they stacked). */
+@media(min-width:901px){
+  #app .roster-row{grid-template-columns:minmax(0,1fr) auto}
+  #app .roster-row>.roster-member-actions{flex-wrap:nowrap;gap:6px;justify-content:flex-end}
+  #app .roster-row>.roster-member-actions>button{width:auto;white-space:nowrap;padding:6px 14px}
+}
+/* Partner roster: the two closed sections (夥伴能力, 夥伴技能) share a row; an opened one takes the full width. */
+@media(min-width:901px){
+  #app .companion-roster-details{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #app .companion-roster-details>details[open]{grid-column:1/-1}
+}
+
+/* ── v0.136 Desktop: story header, item page ─────────────────────────────── */
+@media(min-width:901px){
+  /* Story cards: NEW! follows the title; the state tag stays at the right (space-between put NEW! in the middle). */
+  #app .story-card>.row:first-child{justify-content:flex-start;gap:10px}
+  #app .story-card>.row:first-child>.tag{margin-left:auto}
+  /* Long action labels keep one line instead of the shared 112px width. */
+  #app>.layout>main .actions>button[onclick^="craftGem"]{width:auto!important;min-width:112px;white-space:nowrap;padding-inline:14px}
+  /* A panel holding only a one-line hint reads as plain text under the heading. */
+  #app>.layout>main>section.panel:has(>.inventory-item-controls:only-child){padding:0 2px;border:0;background:none;box-shadow:none}
+}
+@media(min-width:901px){
+  /* Worn slots: the equipped item fills its slot box. */
+  #app .worn-loadout-grid .worn-slot>.worn-slot-choice .item-slot{width:100%;max-width:none}
+}
+/* Wide screens: battle cards may grow to 240px. */
+@media(min-width:1600px){
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies,#app .seconds-battlefield #battleAllyIcons.seconds-allies{grid-auto-columns:minmax(0,240px)}
+}
+
+/* v0.158: while a quest lesson runs, phone worn slots keep their buttons on the page so the lesson spotlight can point at
+   them (the lesson only spotlights a visible control). */
+@media(max-width:700px){
+  body:has(#app .layout>main>.lesson-task) #app .worn-loadout-grid .worn-slot>.actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:6px 0 0}
+  body:has(#app .layout>main>.lesson-task) #app .worn-loadout-grid .worn-slot>.actions>button{width:100%!important;min-width:0;padding:4px 2px!important;font-size:var(--fs-xs)!important;white-space:nowrap}
+}
+/* Tablets: HP and shield on a battle card keep a gap (they ran together as "47 / 47護盾 0"). */
+@media(min-width:701px) and (max-width:900px){#app .seconds-battlefield .seconds-unit .unit-numbers{justify-content:space-between!important;gap:2px 10px}}

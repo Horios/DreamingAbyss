@@ -56,5 +56,5 @@ test('token chance tracks ordinary equipment for normal/elite/boss in all diffic
 test('token backpack uses three columns and selects persistent details without opening an item dialog',()=>{
  const r=inventory();r.run(`globalThis.a=fixture('detail-a','berserk'),b=fixture('detail-b','guardian');selectInventoryToken(b.id);`);const html=r.run('equipmentView()');
  assert.match(html,/token-inventory-layout/);assert.match(html,/aria-label="信物詳細說明"/);assert.match(html,/token-inventory-detail[^]*?守護信物/);assert.match(html,/onclick="selectInventoryToken\('detail-b'\)"/);assert.doesNotMatch(html,/openItemSlotDetails/);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);
- const fs=require('node:fs'),css=fs.readFileSync(path.join(root,'css/companion-tokens.css'),'utf8');assert.match(css,/\.token-management-panel \.token-inventory-list\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);assert.match(css,/@media\(max-width:1000px\)/);assert.deepEqual(r.errors,[]);
+ const fs=require('node:fs'),css=fs.readFileSync(path.join(root,'css/companion-tokens.css'),'utf8');assert.match(css,/\.token-management-panel \.token-inventory-list\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);assert.match(css,/@media\(max-width:1100px\)/);assert.deepEqual(r.errors,[]);
 });

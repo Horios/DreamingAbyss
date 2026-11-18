@@ -22,5 +22,5 @@
 .equipment-summary-affix{display:block;overflow-wrap:anywhere}
 .equipment-summary-affix>b{margin-right:6px;font-weight:400;color:var(--muted)}
 .inventory-detail-pane{min-width:0;overflow-wrap:anywhere}
-@media(max-width:620px){.inventory-detail-heading{flex-wrap:wrap;gap:6px}.inventory-detail-heading>div{min-width:0}}
-@media(max-width:780px){.equipment-identity-line{grid-template-columns:1fr}.forge-power-reroll{padding:10px}}
+@media(max-width:700px){.inventory-detail-heading{flex-wrap:wrap;gap:6px}.inventory-detail-heading>div{min-width:0}}
+@media(max-width:700px){.equipment-identity-line{grid-template-columns:1fr}.forge-power-reroll{padding:10px}}

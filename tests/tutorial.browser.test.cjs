@@ -31,6 +31,8 @@ for(const [label,width,height] of [['desktop',1280,800],['phone',390,780]])test(
   assert.equal(await page.evaluate(()=>party.tutorials.records.explore_basics.completed),true);
   // Review: Settings → 教學回顧 lists unlocked guides and replays one without touching the record.
   await page.evaluate(()=>stopTeamExploration());
+  // v0.158 (UI merge): on phones 設定 sits in the header's ⋯ menu.
+  if(!await page.locator('#utilityButton-options').isVisible())await page.click('#utilityMoreButton');
   await page.click('#utilityButton-options');await page.click('[data-options-tab="tutorials"]');
   const rows=await page.locator('[data-tutorial-review]').evaluateAll(n=>n.map(x=>x.dataset.tutorialReview));
   assert.deepEqual(rows,['explore_basics','skill_basics'],'the gear guide is not listed before any gear was found');

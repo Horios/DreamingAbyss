@@ -6,7 +6,7 @@
 .skill-state{font-size:11px;font-weight:700}.skill-state.learned{color:#9bd3a4}.skill-state.locked{color:#d9a0a0}
 .mastery-dev-tools{margin-top:14px}.mastery-dev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:9px}.mastery-dev-box{border:1px solid var(--line);border-radius:6px;padding:9px;background:#111819}.mastery-dev-box input,.mastery-dev-box select{max-width:150px}
 .mastery-gain-list{display:flex;gap:6px;flex-wrap:wrap}.mastery-gain-list .tag{white-space:normal}
-@media(max-width:720px){.mastery-summary{grid-template-columns:1fr 1fr}.mastery-dev-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.mastery-summary{grid-template-columns:1fr 1fr}.mastery-dev-grid{grid-template-columns:1fr}}
 
 
 .skill-turn-tabs{margin-bottom:12px}
@@ -49,7 +49,7 @@
 .skill-selected-heading h2{margin:0 0 4px}
 .skill-selected-controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .skill-selected-controls label{display:flex;gap:6px;align-items:center}
-@media(max-width:720px){
+@media(max-width:700px){
   .skill-level-row{grid-template-columns:50px minmax(0,1fr);padding:7px}
   .skill-level-label strong{font-size:18px}
   .skill-icon-tile{width:48px;height:48px;min-width:48px}
@@ -63,7 +63,7 @@
 .skill-tree-pane,.skill-detail-pane{min-width:0}
 .skill-tree-pane .skill-level-board{margin-top:0}
 .skill-detail-pane .skill-selected-panel{margin-top:0}
-@media(max-width:980px){.skill-layout-split{grid-template-columns:1fr}.skill-detail-pane .skill-selected-panel{margin-top:0}}
+@media(max-width:1100px){.skill-layout-split{grid-template-columns:1fr}.skill-detail-pane .skill-selected-panel{margin-top:0}}
 
 
 .mastery-icon-summary{display:flex;grid-template-columns:none;gap:10px;flex-wrap:wrap;align-items:flex-start;margin:10px 0 4px}
@@ -78,7 +78,7 @@
 .mastery-icon-tooltip span{margin-top:3px;font-size:11px;color:var(--muted);line-height:1.35}
 .mastery-icon-item:hover .mastery-icon-tooltip,.mastery-icon-item:focus-visible .mastery-icon-tooltip{opacity:1;visibility:visible;transform:translateY(0)}
 .mastery-icon-item:last-child .mastery-icon-tooltip{left:auto;right:0}
-@media(max-width:720px){
+@media(max-width:700px){
   .mastery-icon-summary{gap:8px}
   .mastery-icon-item{min-width:82px}
   .mastery-icon-box{width:48px;height:48px}
@@ -99,7 +99,7 @@
 .skill-loadout-slot>strong{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .skill-loadout-slot>button{padding:2px 5px;font-size:10px}
 .skill-turn-tabs{margin-top:6px}
-@media(max-width:860px){.skill-loadout-panel{grid-template-columns:1fr}.skill-loadout-slots{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.skill-loadout-panel{grid-template-columns:1fr}.skill-loadout-slots{grid-template-columns:1fr 1fr}}
 /* v0.083 mastery bars: icon + fill bar in the mastery color */
 .mastery-bar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 .mastery-bar{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid color-mix(in srgb,var(--mastery-color) 45%,var(--line));border-radius:8px;background:linear-gradient(135deg,color-mix(in srgb,var(--mastery-color) 12%,transparent),transparent 70%)}

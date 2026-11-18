@@ -10,7 +10,7 @@ test('Appearance switches in Options without restarting combat or mutating saves
     await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
     await p.waitForTimeout(60);await p.evaluate(()=>{closeModal();toggleBattle();clearInterval(timer);});
     assert.equal(await p.evaluate(()=>running),true);
-    await p.locator('#utilityButton-options').click();
+    if(await p.locator('#utilityMoreButton').isVisible())await p.locator('#utilityMoreButton').click();await p.locator('#utilityButton-options').click();
     assert.equal(await p.locator('.theme-choice').count(),3);
     const colors=new Set();
     for(const id of ['forest','paper','ember']){
@@ -68,7 +68,7 @@ test('Appearance switches in Options without restarting combat or mutating saves
     assert.equal(await p.locator('html').getAttribute('data-ui-theme'),'paper');
     assert.equal(await p.locator('.title-screen').isVisible(),true);
     await p.evaluate(()=>selectSaveSlot(1));
-    await p.locator('#utilityButton-options').click();
+    if(await p.locator('#utilityMoreButton').isVisible())await p.locator('#utilityMoreButton').click();await p.locator('#utilityButton-options').click();
     assert.equal(await p.locator('[data-theme-choice="paper"]').getAttribute('aria-pressed'),'true');
     assert.deepEqual(g.errors,[]);
   }finally{await g.browser.close();}
@@ -80,7 +80,7 @@ test('Unknown saved appearance falls back safely; storage changes update an open
     assert.equal(await p.locator('html').getAttribute('data-ui-theme'),'ember');
     await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();});
     await p.waitForTimeout(60);await p.evaluate(()=>closeModal());
-    await p.locator('#utilityButton-options').click();
+    if(await p.locator('#utilityMoreButton').isVisible())await p.locator('#utilityMoreButton').click();await p.locator('#utilityButton-options').click();
     assert.equal(await (await p.evaluate(()=>setOptionsTab('other')),p).locator('#options-test-json-import').count(),0,'balance JSON import lives in the developer mode');await p.evaluate(()=>setOptionsTab('general'));
     const [second]=await Promise.all([p.waitForEvent('popup'),p.evaluate(()=>{window.open('about:blank');})]);
     // A second same-origin document exercises the native cross-tab storage event.

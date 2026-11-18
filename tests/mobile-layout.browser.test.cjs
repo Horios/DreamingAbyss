@@ -18,12 +18,15 @@ async function start(page){
 async function fits(page,label){
  const b=await page.evaluate(()=>{
   const m=document.querySelector('.layout>main'),layout=document.querySelector('#app>.layout'),nav=document.querySelector('.layout>aside'),journal=document.querySelector('#globalBattleJournal');
-  return {hidden:getComputedStyle(journal).display==='none',dialog:journal.classList.contains('mobile-report-open'),inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,height:innerHeight};
+  return {hidden:getComputedStyle(journal).display==='none',dialog:journal.classList.contains('mobile-report-open'),inline:journal.classList.contains('mobile-inline-battle-journal'),viewport:innerWidth,layoutWidth:layout.getBoundingClientRect().width,mainWidth:m.clientWidth,mainScroll:m.scrollWidth,mainHeight:m.clientHeight,mainBottom:m.getBoundingClientRect().bottom,journalTop:journal.getBoundingClientRect().top,journalBottom:journal.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,navBottom:nav.getBoundingClientRect().bottom,navRight:nav.getBoundingClientRect().right,mainLeft:m.getBoundingClientRect().left,rail:nav.getBoundingClientRect().height>nav.getBoundingClientRect().width,height:innerHeight};
  });
  assert(b.layoutWidth<=b.viewport+1,label+' layout width '+JSON.stringify(b));
  assert(b.mainScroll<=b.mainWidth+1,label+' horizontal overflow '+JSON.stringify(b));
  assert(b.mainHeight>=90,label+' readable main height '+JSON.stringify(b));
  // v0.087: on phones the journal is not part of the page; it only opens as the full-screen 戰況 dialog.
+ // v0.122: tablets and phones held sideways use a navigation rail on the left; phones keep the bottom bar.
+ if(b.rail){assert(b.mainLeft>=b.navRight-1,label+' main area starts right of the rail '+JSON.stringify(b));assert(b.mainBottom<=b.height+1,label+' main area fits the screen');assert.equal(b.viewport<=700&&b.height>480,false,label+' upright phones keep the bottom bar');return;}
+ assert(b.viewport<=700,label+' only phones use the bottom bar');
  if(b.hidden||b.dialog)assert(b.mainBottom<=b.navTop+1,label+' main area ends above the navigation');
  else if(b.inline)assert(b.mainBottom<=b.navTop+1,label+' inline journal stays in the scrollable main area');
  else{assert(b.mainBottom<=b.journalTop+1,label+' journal overlaps content');assert(b.journalBottom<=b.navTop+1,label+' nav overlaps journal');}
@@ -68,7 +71,9 @@ test('Mobile: all existing navigation works through shortcuts and the More menu 
    assert.equal(await p.locator('aside nav>button:visible').count(),5);
   }
   // The adventure guide lives in the header beside Save on phones too.
-  await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  // v0.119: the adventure guide sits in the header's ⋯ menu on phones.
+  await p.locator('#utilityMoreButton').click();await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  assert.equal(await p.locator('.mobile-more-toggle').innerText().then(t=>t.trim()),'更多','the More label does not change with the page');
   await p.locator('.mobile-more-toggle').click();
   await p.evaluate(()=>render());
   assert.equal(await p.locator('.mobile-more-pages').isVisible(),true);
@@ -130,6 +135,8 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
     assert(overlay.receipt,'offline dialog must have a completed reward receipt: '+JSON.stringify(overlay));
     assert.equal(await p.evaluate(()=>acknowledgeOfflineExploration()),true);
    }
+   // v0.119: 成就 and 設定 are in the header's ⋯ menu on phones; 信箱 stays in the header.
+   if(!await p.locator('#utilityButton-'+id).isVisible())await p.locator('#utilityMoreButton').click();
    await p.locator('#utilityButton-'+id).click();
    const b=await p.locator('#modal').boundingBox();assert(b.x>=0&&b.x+b.width<=320&&b.height<=640,id+' fits');
    await p.getByRole('button',{name:'關閉彈窗',exact:true}).click();
@@ -152,7 +159,7 @@ test('Responsive: title, creation, utility dialogs and desktop layout stay usabl
   assert.equal(await p.evaluate(()=>EmberwildNavigation.design.groups.find(g=>g.id==='missions').pages.some(x=>x.id==='wishingLake')),true,'the wishing lake is a missions page');
   assert(await p.evaluate(()=>{const u=document.getElementById('utilityNavigation').getBoundingClientRect(),a=document.querySelector('.layout>aside').getBoundingClientRect();return u.bottom<=a.top&&u.top<100&&u.right>=innerWidth-40;}),'utility buttons stay at the top right');
   const rects=await p.evaluate(()=>['aside','main','#globalBattleJournal'].map(s=>{const r=document.querySelector('.layout').querySelector(s).getBoundingClientRect();return {x:r.x,right:r.right,y:r.y,bottom:r.bottom};}));
-  assert(rects[0].y>=rects[1].bottom-1&&rects[0].y>=rects[2].bottom-1,'desktop menu sits below the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
+  assert(rects[0].right<=rects[1].x+1&&rects[0].bottom-rects[0].y>rects[0].right-rects[0].x,'desktop menu is a rail left of the content');assert(rects[1].right<=rects[2].x,'content and journal stay side by side');
   await p.evaluate(()=>returnToTitle());assert.equal(await p.locator('.mobile-more-toggle').count(),0);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
@@ -181,17 +188,18 @@ test('Mobile: expedition settings, readable touch controls and skill details are
    await p.waitForFunction(()=>party.difficulty===1&&!isEmberwildUIInteracting());
    await p.evaluate(()=>render());
    assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),true);
-   for(const button of ['.heal-auto-settings-button']){
-    assert(await p.locator(button).evaluate(e=>e.getBoundingClientRect().height>=40),button+' touch height');
+   // v0.120: phones reach the auto-potion settings from this dialog; the bar under the toolbar is desktop-only.
+   if(viewport.width<=700)assert.equal(await p.locator('.heal-auto-panel').isVisible(),false,'no auto-potion bar on phones');
+   for(const button of ['#modal button[onclick="openHealingSettings()"]']){
+    assert(await p.locator(button).evaluate(e=>e.getBoundingClientRect().height>=44),button+' touch height');
    }
    // v0.081: the 生效效果 panel is gone; badge details show on hover instead.
    assert.equal(await p.locator('.battle-effects-bar').count(),0,'no 生效效果 panel');
    await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
   }
   await p.setViewportSize({width:390,height:844});
-  // The auto-potion bar stays on the battle page; close the settings dialog to reach it.
-  await p.getByRole('button',{name:'關閉',exact:true}).click();
-  await p.locator('.heal-auto-settings-button').click();
+  // v0.120: on phones the auto-potion settings open from 冒險配置 → 自動藥水.
+  await p.locator('#modal button[onclick="openHealingSettings()"]').click();
   assert.equal(await p.locator('#modal').isVisible(),true);
   const healing=await p.locator('#modal').boundingBox();assert(healing.x>=0&&healing.x+healing.width<=390);
   await p.evaluate(()=>closeModal());

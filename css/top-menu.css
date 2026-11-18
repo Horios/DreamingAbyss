@@ -1,20 +1,26 @@
 /* v0.024 top game menu: the navigation groups render as one row of category
    buttons above the content; multi-page categories show tabs inside main. */
 @media(min-width:901px){
- /* v0.062: the game menu is the bottom row; mailbox, settings, save and guide stay at the top right. */
- #app>.layout{grid-template-columns:minmax(0,1fr) clamp(260px,24vw,360px)!important;grid-template-rows:minmax(0,1fr) auto!important}
- #app>.layout>aside{grid-column:1/-1!important;grid-row:2!important;height:auto!important;min-height:0!important;overflow:visible!important;padding:7px 14px!important;border-right:0!important;border-bottom:0!important;border-top:1px solid var(--line)!important;background:var(--chrome)}
+ /* v0.122: the game menu is a rail on the left (it was the bottom row since v0.062); mailbox, settings, save and guide stay at the top right. */
+ #app>.layout{grid-template-columns:var(--rail-width,72px) minmax(0,1fr) var(--journal-width,clamp(260px,22vw,320px))!important;grid-template-rows:minmax(0,1fr)!important}
+ #app>.layout>aside{grid-column:1!important;grid-row:1!important;width:auto!important;height:100%!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;padding:8px 6px!important;border-right:1px solid var(--line)!important;border-bottom:0!important;border-top:0!important;background:var(--chrome);scrollbar-width:thin}
  #app>.layout>aside>:not(nav){display:none!important}
  header>#utilityNavigation{width:auto!important;margin-left:auto!important}
- #app>.layout>main{grid-column:1!important;grid-row:1!important}
- #app>.layout>#globalBattleJournal{grid-column:2!important;grid-row:1!important}
- #app>.layout>aside nav{display:flex!important;flex-wrap:nowrap;overflow-x:auto;overflow-y:visible;align-items:center;gap:6px;margin:0!important;height:auto!important;padding-top:6px;scrollbar-width:thin}
+ #app>.layout>main{grid-column:2!important;grid-row:1!important}
+ #app>.layout>#globalBattleJournal{grid-column:3!important;grid-row:1!important}
+ #app>.layout>aside nav{display:flex!important;flex-direction:column;flex-wrap:nowrap;overflow:visible;align-items:stretch;gap:4px;margin:0!important;height:auto!important;padding:0}
 }
 #app>.layout>aside nav .game-menu-item{position:relative;display:inline-flex!important;align-items:center;gap:6px;width:auto!important;min-height:36px;padding:6px 12px!important;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:13px;white-space:nowrap;overflow:visible}
 #app>.layout>aside nav .game-menu-item.active{border-color:var(--gold);color:var(--gold)}
 #app>.layout>aside nav .game-menu-item .game-nav-label{display:inline-flex;align-items:center;gap:6px}
 #app>.layout>aside nav .game-menu-item .number-badge,#app>.layout>aside nav .game-menu-item .quest-new{position:absolute;top:-6px;right:-6px}
 .game-menu-title{font-size:12px;color:var(--muted);margin-right:4px}
+@media(min-width:901px){
+ #app>.layout>aside nav .game-menu-item{flex-direction:column;justify-content:center;gap:3px;width:100%!important;min-height:54px;padding:6px 2px!important;font-size:12px;white-space:normal}
+ #app>.layout>aside nav .game-menu-item .game-nav-label{flex-direction:column;gap:3px;line-height:1.2}
+ #app>.layout>aside nav .game-menu-item .number-badge,#app>.layout>aside nav .game-menu-item .quest-new{top:2px;right:2px}
+ .game-menu-title{display:none}
+}
 .game-subtabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .game-subtabs>button{position:relative;display:inline-flex;align-items:center;gap:6px;width:auto;min-height:34px;padding:5px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:13px}
 .game-subtabs>button .game-nav-label{display:inline-flex;align-items:center;gap:6px}

@@ -36,7 +36,7 @@
     if(nav){
       nav.classList.toggle('mobile-menu-open',menuOpen);
       const more=nav.querySelector('.mobile-more-toggle');
-      if(more){more.setAttribute('aria-expanded',String(menuOpen));more.textContent=menuOpen?'收起':primary.some(id=>id===tab||groupOf(id)&&groupOf(id)===groupOf(tab))?'更多':'更多 · '+(nav.querySelector('.mobile-more-pages .active span')?.textContent||nav.querySelector('.mobile-more-pages .active')?.textContent||'');more.classList.toggle('active',!primary.includes(tab));}
+      if(more){more.setAttribute('aria-expanded',String(menuOpen));const label=menuOpen?'收起':'更多';if(more.dataset.label!==label){more.dataset.label=label;more.innerHTML='<span class="game-nav-label">'+(globalThis.__EMBERWILD_SKILL_ICONS?.svgFor('lucide:'+(menuOpen?'chevron-down':'ellipsis'),[],{size:18})||'')+label+'</span>';}more.classList.toggle('active',!primary.some(id=>id===tab||groupOf(id)&&groupOf(id)===groupOf(tab)));}
       for(const b of nav.querySelectorAll('[data-page]')){
         if(b.dataset.page===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
       }
