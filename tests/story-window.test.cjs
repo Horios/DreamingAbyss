@@ -13,7 +13,7 @@ test('quest dialogue is a window view: one line at a time, then the stage action
  let v=view(r);assert.equal(v.head.eyebrow,'裝備技能與寶石入門');assert.equal(v.line.kind,'narrator');assert.equal(v.line.speaker,'');assert.match(v.line.text,/啟程護符/);assert.equal(v.advance,'nextStoryDialogue');assert.equal(v.skip,'skipStoryDialogue');
  assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-skip/);assert.match(r.run("$('prologue-layer').innerHTML"),/class="story-window-mask"/);
  r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line.speaker,'女神','the goddess speaks after the opening narration');
- for(let i=0;i<10&&view(r).line;i++)r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line,null);assert.equal(v.advance,null);assert.equal(v.skip,null);assert.match(v.body,/完成階段／繼續劇情/);
+ for(let i=0;i<10&&view(r).line;i++)r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line,null);assert.equal(v.advance,'completeStoryDialogue');assert.equal(v.autoAdvance,true);assert.equal(v.skip,null);assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-history/);
  r.run('endStoryDialogue()');assert.equal(view(r),null);assert.equal(r.run("$('prologue-layer').hidden"),true);assert.deepEqual(r.errors,[]);
 });
 
@@ -46,4 +46,13 @@ test('text speed is a saved setting with four values',()=>{
  assert.equal(r.run("storyWindowSpeed('warp')"),false);assert.equal(r.run("storyWindowSpeed('fast')"),true);assert.equal(r.values.get('emberwild-story-text-speed'),'fast');
  const again=loadRuntime(root,'index.html',Object.fromEntries(r.values));assert.equal(again.run('EmberwildStoryWindow.speed'),'fast');assert.match(again.run('storyTextOptionsView()'),/value="fast" selected/);
  assert.match(r.run('optionsView()'),/劇情文字速度/);
+});
+
+test('continuing an ordinary scene preserves its dialogue and grants its reward once',()=>{
+ const r=game();r.run("readStory('skill_equipment_intro');for(let i=0;i<12;i++)nextStoryDialogue()");
+ assert.equal(r.run('completeStoryDialogue()'),true);
+ assert.equal(view(r).attrs.includes('data-stage="equip_skill"'),true);
+ assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);
+ assert.equal(r.run('completeStoryDialogue()'),false,'the next objective still requires the player');
+ assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);
 });

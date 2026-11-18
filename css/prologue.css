@@ -74,3 +74,10 @@ body.story-window-open .story-dialogue{display:none}
 #lesson-spotlight[hidden]{display:none}
 #lesson-spotlight{position:fixed;z-index:55;box-sizing:border-box;border:2px solid #f1d58b;border-radius:10px;box-shadow:0 0 0 9999px rgba(5,6,10,.58),0 0 18px 4px rgba(241,213,139,.55);pointer-events:none;transition:top .18s ease,left .18s ease,width .18s ease,height .18s ease}
 .lesson-spot-ring{outline:3px solid #f1d58b!important;outline-offset:3px;box-shadow:0 0 16px 4px rgba(241,213,139,.6)!important}
+
+/* Keep reading controls in the scene header on desktop and mobile. */
+.story-window-head{padding-right:124px;padding-left:18px;min-height:48px}
+.story-window-head .story-window-speed{position:absolute;right:12px;top:12px;gap:4px}
+.story-window-head .story-window-speed select{min-height:36px;max-width:76px}
+.story-window-head .story-window-speed svg{flex-shrink:0}
+[data-story-history] p{white-space:pre-wrap}

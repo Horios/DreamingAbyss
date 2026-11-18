@@ -115,14 +115,14 @@
  // The scene as a view for the shared story window: one typed line at a time, or the interaction of the current step.
  function sceneView(s){
   const p=P(),scene=p.scenes[s.prologue.scene-1],a=s.prologue.action,lines=linesOf(s),line=lines[cursor.index];
-  const view={head:{eyebrow:ui('place'),title:scene.name},attrs:`data-scene="${s.prologue.scene}" data-stage="${esc(s.id)}" data-phase="${cursor.phase}"`,decor:'<div class="prologue-light" aria-hidden="true"><i></i><i></i><i></i></div>',
+  const view={sceneKey:'prologue',head:{eyebrow:ui('place'),title:scene.name},attrs:`data-scene="${s.prologue.scene}" data-stage="${esc(s.id)}" data-phase="${cursor.phase}"`,decor:'<div class="prologue-light" aria-hidden="true"><i></i><i></i><i></i></div>',
    actions:state?'':`<button type="button" class="prologue-back" onclick="backToTitle()">${esc(ui('backToTitle'))}</button>`,continueLabel:ui('continue'),lineKey:cursor.phase+':'+cursor.index,
    // The prologue cannot be skipped: it offers no skip handler, and the window refuses to skip a view without one.
    skip:null,advance:null,line:null,body:'',before:''};
   const box=inner=>`<div class="prologue-box">${inner}</div>`,hint=`<p class="prologue-hint">${esc(s.prologue.hint)}</p>`;
   if(cursor.phase==='chapter'){
    const last=cursor.index>=lines.length-1;
-   view.before=`<div class="prologue-chapter">${lines.slice(0,cursor.index).map(l=>`<p class="prologue-narration">${esc(l.text)}</p>`).join('')}</div>`;
+   view.before='';
    if(line)view.line={speaker:'',kind:'narrator',text:line.text};
    if(last){view.body=`<div class="prologue-chapter"><h2 class="prologue-chapter-title">${esc(p.chapter.title)}</h2></div>`;view.actions+=`<button type="button" class="primary" onclick="prologueEnter()">${esc(ui('begin'))}</button>`;}
    else view.advance='prologueNext';
@@ -143,6 +143,7 @@
    if(line)view.line={speaker:speaker(line),kind:line.kind,text:line.text};
    view.advance='prologueNext';
   }
+  if(line&&cursor.index===lines.length-1&&cursor.phase==='before'&&isTask(s)&&a!=='recruitHelper'){view.autoAdvance=false;view.continueLabel=ui('toTask')||'前往任務';}
   view.signature=['prologue',s.id,cursor.phase,cursor.index,chosenJob,!!state,!!HELPER()?.member?.(),scene.name,view.line?.text||'',view.body.length,view.actions.length,view.continueLabel].join('|');
   return view;
  }

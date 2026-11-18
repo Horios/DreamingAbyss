@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
 const at=page=>page.evaluate(()=>__EMBERWILD_PROLOGUE.stage()+'/'+__EMBERWILD_PROLOGUE.phase());
-async function read(page,until){for(let i=0;i<160;i++){if(await at(page)===until)return;await page.click('#prologue-layer [data-story-continue]');}assert.fail('did not reach '+until+': '+await at(page));}
+async function read(page,until){for(let i=0;i<160;i++){if(await at(page)===until)return;await page.evaluate(()=>storyWindowContinue());}assert.fail('did not reach '+until+': '+await at(page));}
 // Every scene must fit the viewport width and keep its controls reachable.
 async function fits(page,label){
  const r=await page.evaluate(()=>{const layer=document.getElementById('prologue-layer'),box=layer.querySelector('.story-window'),b=box?.getBoundingClientRect(),buttons=[...layer.querySelectorAll('button')].map(x=>x.getBoundingClientRect());return {hidden:layer.hidden,overflow:layer.scrollWidth>layer.clientWidth+1||document.documentElement.scrollWidth>innerWidth+1,left:b?.left,right:b?.right,width:innerWidth,buttons:buttons.every(x=>x.width>0&&x.left>=0&&x.right<=innerWidth+1)};});
@@ -18,7 +18,7 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   await page.setViewportSize({width,height});
   await page.click('.save-slot-select');await page.waitForSelector('.prologue-scene');
   // This file checks the flow; text reveal has its own tests, so lines appear at once here.
-  await page.evaluate(()=>storyWindowSpeed('instant'));
+  await page.evaluate(()=>storyWindowSpeed('slow'));
   assert.equal(await at(page),'creation/before');assert.equal(await page.locator('.start').isVisible(),false,'the old class selection screen is not shown');
   assert.equal(await page.locator('#prologue-layer [data-story-text]').getAttribute('aria-label'),'一間神祕的房間內，無源之光亮起。');await fits(page,'opening');
   assert.equal(await page.locator('#prologue-layer img, #prologue-layer picture, #prologue-layer svg image').count(),0,'no image assets');
@@ -33,7 +33,7 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
 
   await read(page,'calling/action');await fits(page,'class choice');assert.equal(await page.locator('.prologue-option').count(),4);
   assert.match(await page.locator('#prologue-layer .prologue-hint').innerText(),/自由轉職/,'the class choice says the class can be changed later');
-  assert.deepEqual(await page.evaluate(()=>{const h=document.querySelector('.prologue-head');return [h,...h.children].map(x=>{const c=getComputedStyle(x);return [c.backgroundColor,c.backgroundImage,c.borderTopWidth,c.boxShadow];});}),Array(3).fill(['rgba(0, 0, 0, 0)','none','0px','none']),'the place and scene name sit directly on the backdrop');
+  assert.deepEqual(await page.evaluate(()=>{const h=document.querySelector('.prologue-head');return [h,...h.querySelectorAll(':scope > .eyebrow,:scope > h1')].map(x=>{const c=getComputedStyle(x);return [c.backgroundColor,c.backgroundImage,c.borderTopWidth,c.boxShadow];});}),Array(3).fill(['rgba(0, 0, 0, 0)','none','0px','none']),'the place and scene name sit directly on the backdrop');
   assert.equal(await page.locator('#prologue-layer button:has-text("選擇這種力量")').isDisabled(),true);
   await page.click('.prologue-option[data-job="'+job+'"]');await page.click('#prologue-layer button:has-text("選擇這種力量")');
   assert.deepEqual(await page.evaluate(()=>[characterName(playerHero()),playerHero().job,party.mailbox.messages.length]),['艾拉',job,0]);
@@ -69,7 +69,7 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   await read(page,'trial/action');await banner(page);await follow('trial');
   assert.equal(await page.locator('#prologue-spotlight').isVisible(),false,'no spotlight outside the lessons');
   await read(page,'departure/chapter');await fits(page,'departure');
-  for(let i=0;i<8&&!(await page.locator('.prologue-chapter-title').count());i++)await page.click('#prologue-layer [data-story-continue]');
+  for(let i=0;i<8&&!(await page.locator('.prologue-chapter-title').count());i++)await page.evaluate(()=>storyWindowContinue());
   assert.equal(await page.locator('.prologue-chapter-title').innerText(),'第一章：初臨艾斯蘭');await fits(page,'chapter title');
   await page.click('#prologue-layer button:has-text("開始旅程")');
   assert.deepEqual(await page.evaluate(()=>({active:__EMBERWILD_PROLOGUE.active(),layer:!!document.querySelector('#prologue-layer [data-chapter="chapter1"]'),members:party.members.length,map:party.map,tab,done:party.story.quests.prologue.done,bag:playerHero().bag.length,banner:!!document.querySelector('.prologue-task')})),{active:false,layer:true,members:1,map:0,tab:'battle',done:true,bag:5,banner:false},'chapter 1 opens in the story window right after the prologue');

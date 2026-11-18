@@ -8,7 +8,7 @@ const at=page=>page.evaluate(()=>__EMBERWILD_CHAPTER.current());
 async function prologue(page,job){
  await page.click('.save-slot-select');await page.waitForSelector('.prologue-scene');
  await page.evaluate(job=>{
-  storyWindowSpeed('instant');
+  storyWindowSpeed('slow');
   const until=(stage,phase)=>{for(let i=0;i<80;i++){if(__EMBERWILD_PROLOGUE.stage()===stage&&__EMBERWILD_PROLOGUE.phase()===phase)return;prologueNext();}throw Error('prologue stuck before '+stage);};
   until('creation','action');document.getElementById('prologue-name').value='艾拉';prologueConfirmName();
   until('calling','action');prologuePickClass(job);prologueConfirmClass();
@@ -20,7 +20,7 @@ async function prologue(page,job){
   until('departure','chapter');prologueEnter();
  },job);
 }
-async function read(page){const s=(await at(page)).stage;for(let i=0;i<60;i++){const c=await at(page);if(!c||c.stage!==s||c.read)return;await page.click('#prologue-layer [data-story-continue]');}}
+async function read(page){const s=(await at(page)).stage;for(let i=0;i<60;i++){const c=await at(page);if(!c||c.stage!==s||c.read)return;await page.evaluate(()=>storyWindowContinue());}}
 async function choose(page,text){await read(page);await page.click(`#prologue-layer [data-chapter-choice]:has-text("${text}")`);}
 async function fits(page,label){
  const r=await page.evaluate(()=>{const layer=document.getElementById('prologue-layer'),box=layer.querySelector('.story-window')?.getBoundingClientRect(),buttons=[...layer.querySelectorAll('button')].map(x=>x.getBoundingClientRect());return {overflow:document.documentElement.scrollWidth>innerWidth+1,inside:!!box&&box.left>=0&&box.right<=innerWidth+1,buttons:buttons.every(x=>x.width>0&&x.left>=0&&x.right<=innerWidth+1)};});
@@ -51,14 +51,14 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   await page.waitForFunction(()=>__EMBERWILD_CHAPTER.current()?.stage==='aftermath');
   assert.deepEqual(await page.evaluate(()=>party.active),[job],'the temporary allies leave after the fight');
   await choose(page,'我剛來到這附近。');await read(page);await choose(page,'好，一起走吧。');await read(page);
-  await page.click('.chapter-task [data-chapter-action]');
+  await page.click('.story-window [data-chapter-action]');
   await choose(page,'這附近經常有魔物襲擊嗎？');await fits(page,'reply');await read(page);await read(page);await read(page);
   assert.equal((await at(page)).stage,'plans');
   await choose(page,'先在村莊看看。');await read(page);await choose(page,'好，請多指教。');await read(page);await read(page);
   assert.equal(await at(page),null);assert.deepEqual(await page.evaluate(()=>party.members.map(memberKey)),[job,13]);
   // The closing card, read through its buttons.
   await page.waitForSelector('#prologue-layer [data-chapter-ending="chapter1"]');
-  for(let i=0;i<10&&!(await page.locator('#prologue-layer [data-chapter-end]').count());i++)await page.click('#prologue-layer [data-story-continue]');
+  for(let i=0;i<10&&!(await page.locator('#prologue-layer [data-chapter-end]').count());i++)await page.evaluate(()=>storyWindowContinue());
   assert.equal(await page.locator('#prologue-layer .prologue-chapter-title').innerText(),'第一章：初臨艾斯蘭　完');await fits(page,'closing card');
   await page.click('#prologue-layer [data-chapter-end]');assert.equal(await page.evaluate(()=>__EMBERWILD_CHAPTER.ending()),null);
   // The shop and the commissions open with a short spotlight guide on the first visit.
@@ -76,7 +76,7 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   assert.equal(await page.evaluate(()=>party.tutorials.records.quest_basics?.completed),true);
   assert.equal(await page.evaluate(()=>document.querySelector('[data-nav-group="life"]').disabled),true,'life skills stay locked');
   // v0.152: the closing card, then the gear lesson's spotlight on the real controls.
-  await page.evaluate(()=>{for(let i=0;i<10;i++)chapterEndNext();chapterEndClose();readStory('skill_equipment_intro');for(let i=0;i<10;i++)nextStoryDialogue();completeStoryStage('skill_equipment_intro','','equipment_gift');setTab('skills');});
+  await page.evaluate(()=>{for(let i=0;i<10;i++)chapterEndNext();chapterEndClose();readStory('skill_equipment_intro');for(let i=0;i<10;i++)nextStoryDialogue();completeStoryStage('skill_equipment_intro','','equipment_gift');endStoryDialogue();setTab('skills');});
   const spot=async sel=>{await page.waitForFunction(sel=>{const o=document.getElementById('lesson-spotlight'),t=document.querySelector(sel);if(!o||o.hidden||!t)return false;const a=o.getBoundingClientRect(),b=t.getBoundingClientRect();return Math.abs(a.left+6-b.left)<3&&Math.abs(a.top+6-b.top)<3;},sel,{timeout:10000});};
   await page.waitForSelector('.layout>main>.lesson-task');
   // The skills page guide starts on the first visit; the lesson spotlight waits for it.

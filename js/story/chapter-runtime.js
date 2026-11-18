@@ -75,18 +75,18 @@
 
  function chapterView(){
   const c=current();if(!c)return null;const {q,s,r}=c,sc=scene(q,s);
-  const head={eyebrow:sc.place||q.chapter.title,title:sc.name},base={head,attrs:`data-chapter="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:'',line:null,body:'',advance:null,skip:null,continueLabel:q.chapter.ui.continue||'繼續'};
+  const head={eyebrow:sc.place||q.chapter.title,title:sc.name},base={sceneKey:'chapter:'+q.id,head,attrs:`data-chapter="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:'',line:null,body:'',advance:null,skip:null,continueLabel:q.chapter.ui.continue||'繼續'};
   if(!linesRead(q,s)){
    if(!cursor||cursor.stage!==s.id)cursor={stage:s.id,index:0};
    cursor.index=Math.min(cursor.index,s.dialogue.length-1);
    const l=s.dialogue[cursor.index];
-   return {...base,line:{speaker:speaker(l),kind:l.kind,text:playerText(l.text)},advance:'chapterNext',lineKey:s.id+':'+cursor.index,signature:['chapter',q.id,s.id,cursor.index,l.text].join('|')};
+   return {...base,line:{speaker:speaker(l),kind:l.kind,text:playerText(l.text)},advance:'chapterNext',autoAdvance:!(cursor.index===s.dialogue.length-1&&isTask(s)&&!(s.chapter.action==='talk'&&S().met(s.conditions,r))&&!s.choices.length),continueLabel:isTask(s)?'前往任務':base.continueLabel,lineKey:s.id+':'+cursor.index,signature:['chapter',q.id,s.id,cursor.index,l.text].join('|')};
   }
   if(s.choices.length){
-   const l=s.dialogue.at(-1),last=l?`<div class="prologue-box prologue-${esc(l.kind)}">${speaker(l)?`<b class="prologue-speaker">${esc(speaker(l))}</b>`:''}<p class="${l.kind==='narrator'?'prologue-narration':'prologue-text'}">${esc(playerText(l.text))}</p></div>`:'';
    const options=s.choices.filter(x=>S().met(x.conditions,r)).map(x=>`<button type="button" data-chapter-choice="${esc(x.id)}" onclick="chapterChoose('${esc(x.id)}')">${esc(playerText(x.text))}</button>`).join('');
-   return {...base,body:last+`<div class="story-window-choices chapter-choices" role="group" aria-label="選擇回應">${options}</div>`,signature:['chapter-choice',q.id,s.id,options.length].join('|')};
+   return {...base,history:s.dialogue.map(l=>({speaker:speaker(l),kind:l.kind,text:playerText(l.text)})),body:`<div class="story-window-choices chapter-choices" role="group" aria-label="選擇回應">${options}</div>`,signature:['chapter-choice',q.id,s.id,options.length].join('|')};
   }
+  if(s.chapter.action==='talk'&&S().met(s.conditions,r))return {...base,body:`<div class="story-window-choices"><button type="button" class="primary" data-chapter-action onclick="chapterAction()">${esc(s.chapter.actionLabel||ui('resume'))}</button></div>`,signature:'chapter-talk|'+q.id+'|'+s.id};
   return null;
  }
  // ---------- start for saves that finished the prologue before chapters existed ----------
@@ -119,7 +119,7 @@
  globalThis.storyReplayEnd=function(){replay=null;render();};
  function replayView(){
   if(!replay||!ready())return null;const close=`<button type="button" data-story-replay-end onclick="storyReplayEnd()">結束重看</button>`;
-  const l=replay.lines[replay.index],base={head:{eyebrow:'重看 · '+replay.name,title:l?.title||replay.name},attrs:`data-story-replay="${esc(replay.id)}"`,actions:close,skip:null,line:null,body:'',advance:null,continueLabel:'繼續'};
+  const l=replay.lines[replay.index],base={sceneKey:'replay:'+replay.id,head:{eyebrow:'重看 · '+replay.name,title:l?.title||replay.name},attrs:`data-story-replay="${esc(replay.id)}"`,actions:close,skip:null,line:null,body:'',advance:null,continueLabel:'繼續'};
   if(!l)return {...base,body:'<div class="prologue-box"><p class="prologue-hint">劇情到這裡結束。</p></div>',signature:'replay-end|'+replay.id};
   return {...base,line:{speaker:speaker(l),kind:l.kind,text:playerText(l.text)},advance:'storyReplayNext',lineKey:'replay:'+replay.index,signature:['replay',replay.id,replay.index].join('|')};
  }
@@ -133,7 +133,7 @@
  function endingView(){
   const q=endingQuest();if(!q){ending=null;return null;}const e=q.chapter.ending;
   if(!ending||ending.id!==q.id)ending={id:q.id,index:0};
-  const last=q.chapter.scenes.at(-1)||{name:q.chapter.title,place:''},l=e.lines[ending.index],base={head:{eyebrow:last.place||q.chapter.title,title:last.name},attrs:`data-chapter-ending="${esc(q.id)}"`,actions:'',skip:null,line:null,body:'',advance:null,continueLabel:q.chapter.ui.continue||'繼續'};
+  const last=q.chapter.scenes.at(-1)||{name:q.chapter.title,place:''},l=e.lines[ending.index],base={sceneKey:'chapter:'+q.id,head:{eyebrow:last.place||q.chapter.title,title:last.name},attrs:`data-chapter-ending="${esc(q.id)}"`,actions:'',skip:null,line:null,body:'',advance:null,continueLabel:q.chapter.ui.continue||'繼續'};
   if(l)return {...base,line:{speaker:speaker(l),kind:l.kind,text:playerText(l.text)},advance:'chapterEndNext',lineKey:'end:'+ending.index,signature:['chapter-end',q.id,ending.index].join('|')};
   return {...base,body:`<div class="prologue-chapter"><h2 class="prologue-chapter-title">${esc(e.title)}</h2></div>`,actions:`<button type="button" class="primary" data-chapter-end onclick="chapterEndClose()">${esc(e.button||'結束')}</button>`,signature:'chapter-end-title|'+q.id};
  }
