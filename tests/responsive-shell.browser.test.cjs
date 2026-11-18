@@ -333,6 +333,8 @@ test('Narrow desktop folds the report column by default until the player chooses
  assert.equal(await folded(),false,'the player choice wins over the width default');
  await p.locator('.journal-collapse-toggle').click();
  await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
+ // The strip click can defer the redraw (interaction guard); wait for the backpack list.
+ await p.waitForFunction(()=>!isEmberwildUIInteracting()&&!!document.querySelector('.inventory-master-pane .gear-management-row'));
  const list=await p.evaluate(()=>{const m=document.querySelector('.inventory-master-pane').getBoundingClientRect(),g=document.querySelector('.inventory-master-detail').getBoundingClientRect(),name=document.querySelector('.gear-management-row .item-slot-name');return {share:m.width/g.width,oneLine:name.getBoundingClientRect().height<=26};});
  assert(list.share>=0.45&&list.oneLine,'backpack list '+JSON.stringify(list));
  await p.evaluate(()=>setTab('alchemy'));

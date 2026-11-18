@@ -325,7 +325,7 @@
   #app .life-materials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   #app .life-materials>.life-stock-row{justify-self:stretch;width:auto;max-width:none;min-width:0;margin:0;padding:6px}
   #app .life-materials>.life-stock-row .item-slot{width:100%;max-width:none;min-width:0}
-  #app>.layout>main .intro-clamp:not(.intro-open)>p.small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+  #app>.layout>main .intro-clamp:not(.intro-open)>p.small:first-of-type{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 }
 
 /* ── v0.126 Desktop second pass ──────────────────────────────────────────── */
