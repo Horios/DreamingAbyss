@@ -9,13 +9,14 @@
  const config=()=>source.balanceSettings.combat.seconds;
  const unit=id=>party?.members.find(h=>heroKey(h)===id)||foes.find(e=>e.id===id);
  const skill=id=>S.byId(id)||source.skillSystem.definitions.find(s=>s.id===id);
+ const adapter=(h,s)=>s?EmberwildSkillSystem.adapterFor(s,h.job):null;
  const timing=s=>s?.timing||source.skillSystem.definitions.find(x=>x.id===s?.id)?.timing;
  const statusList=()=>EmberwildStatusCombatState.seconds.instances(),statusDefs=()=>EmberwildStatusCombatState.seconds.definitions();
  const actorInterval=h=>config().classes.find(x=>x.job===h.job).baseIntervalSeconds;
  // v0.075: each cooldown reduction source has its own percent or fixed-seconds rule (combat.seconds.cooldownReduction).
  const cdr=()=>config().cooldownReduction||Schema.defaultCooldownReduction();
  function cdrPoints(h,s){
-  const core=s?.adapter?.kind==='core',i=s?.adapter?.index,fixed=globalThis.equipmentIdentityEffectNumber;
+  const a=adapter(h,s),core=a?.kind==='core',i=a?.index,fixed=globalThis.equipmentIdentityEffectNumber;
   return {affixAll:equipment(h).filter(g=>g.job===h.job||g.slot===1).flatMap(g=>g.affix||[]).filter(a=>a.type===16).reduce((n,a)=>n+(Number(a.value)||0),0),
    affixSkill:core?bonusFor(i,5,h):0,fixedAll:Math.max(0,Math.round(fixed?.(h,'allCooldownReduction')||0)),fixedSkill:core?Math.max(0,Math.round(fixed?.(h,'skillCooldownReduction',i)||0)):0};
  }
@@ -26,8 +27,6 @@
   return {maxMp:Math.max(1,(h.mana?.maxMp??c.maxMp)+extras.reduce((n,x)=>n+(Number(x.maxMp)||0),0)),regen:Math.max(0,(h.mana?.regenPerSecond??c.regenPerSecond)+extras.reduce((n,x)=>n+(Number(x.regenPerSecond)||0),0)),cost:Math.max(0,(h.mana?.costMultiplier??c.costMultiplier)-extras.reduce((n,x)=>n+(Number(x.costReduction)||0),0))};
  }
  function skillCooldownSeconds(h,s){return reducedCooldown(h,s);}
- // A gem or equipment skill may cut this cast's cooldown; the cut joins the same percent/fixed rule and floor.
- function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance;}
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
   const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i))].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
@@ -43,11 +42,11 @@
  function canUse(view,s){
   const x=unit(view.id),d=skill(s.id);if(!x||x.hp<=0||!d)return false;
   const hero=Object.hasOwn(x,'job'),t=timing(d),effect=d.effect||d.kind;
-  if(phase==='recovery'&&!foes.some(e=>e.hp>0)){if(!recoveryHealer(x)||!['heal','regen'].includes(effect)||!belowRecoveryTarget())return false;return !!S.learned(x,d)&&!__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length;}
+  if(phase==='recovery'&&!foes.some(e=>e.hp>0)){if(!recoveryHealer(x)||!['heal','regen'].includes(effect)||!belowRecoveryTarget())return false;return !!S.learned(x,d)&&!__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,adapter(x,d).index,true).length;}
   if((t.minTargets||1)>(hero?foes:living()).filter(e=>e.hp>0).length)return false;
   if(t.requiredTargetStatusId&&!statusList().some(s=>s.statusId===t.requiredTargetStatusId&&unit(s.targetKey)?.hp>0&&(hero?foes:living()).some(x=>key(x)===s.targetKey)))return false;
   if(!hero){const c=EmberwildControlState.states[x.id];if(c?.rage||!living().length)return false;if(effect==='revive')return foes.some(e=>e.hp<=0);if(t.condition==='injured')return foes.some(e=>e.hp>0&&e.hp/e.maxhp<config().healThreshold);if(t.condition==='missingEffect'&&effect==='shield')return x.shield<x.atk*(d.power||0);return true;}
-  if(!S.learned(x,d)||__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length)return false;
+  if(!S.learned(x,d)||__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,adapter(x,d).index,true).length)return false;
   if(['revive'].includes(effect))return heroes().some(h=>h.hp<=0);
   if(['heal','regen'].includes(effect)&&t.condition==='injured')return living().some(h=>h.hp/stats(h).hp<config().healThreshold);
   if(t.condition==='missingEffect'){
@@ -87,7 +86,7 @@
    {const m=mana(x);if(a.definition.maxMp!==m.maxMp)engine.setMaxMp(key(x),m.maxMp);engine.setMpRegen(key(x),m.regen*(phase==='recovery'&&Object.hasOwn(x,'job')?config().recovery.mpRegenMultiplier:1)*Math.max(0,1+effectTotal(key(x),'mpRegen')));engine.setMpCostMultiplier(key(x),Math.max(0,m.cost-effectTotal(key(x),'mpCostReduction')));}
    const speed=Object.hasOwn(x,'job')?battleStats(x).speed:combatSpeed(x);if(speed!==a.speed)engine.setSpeed(key(x),speed);
    x.mp=engine.mana(a,engine.now); // same value as engine.actor(id).mp without copying the actor view
-   if(Object.hasOwn(x,'job'))for(const s of a.definition.skills){const d=skill(s.id);(d.type==='support'?supportCooldowns:actorCooldowns)[memberKey(x)+'-'+d.adapter.index]=Math.max(0,(a.ready[s.id]-engine.now)/1e6);}
+   if(Object.hasOwn(x,'job'))for(const s of a.definition.skills){const d=skill(s.id);(d.type==='support'?supportCooldowns:actorCooldowns)[memberKey(x)+'-'+adapter(x,d).index]=Math.max(0,(a.ready[s.id]-engine.now)/1e6);}
   }
  }
  function addTimer(id,actorId,duration,interval,payload,control=false,priority=0){
@@ -180,13 +179,12 @@
   const d=skill(s.id),before=new Set(effects),t=timing(d);currentTiming=t;
   let ok;
   try{
-   if(Object.hasOwn(x,'job'))ok=d.type==='support'?castSupport(x,d.adapter.index):castPartySkill(x,d.adapter.index,battleStats(x));
+   if(Object.hasOwn(x,'job'))ok=d.type==='support'?castSupport(x,adapter(x,d).index):castPartySkill(x,adapter(x,d).index,battleStats(x));
    else{const shared=sharedSkillById(d.id),old=x.atk,c=EmberwildControlState.states[x.id];x.atk*=1-(c?.fear?.damageReduction||0);try{ok=EmberwildCombatEvents.action(x,()=>castEnemySharedSkill(x,shared));}finally{x.atk=old;}EmberwildCombatEvents.endTurn(x,ok!==false);}
   }finally{currentTiming=null;}
   if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now;engine.deferSkill(key(x),s.id,config().minimumActionIntervalSeconds);return false;}
   scheduleEffects(before,t,d);scheduleControls(t);
   if(Object.hasOwn(x,'job')){
-   const a=engine.find(key(x));if(cooldownReductionOnCast(x,d.id))a.ready[s.id]=Math.min(a.ready[s.id],engine.now+Math.round(reducedCooldown(x,d,{onCast:1})*1e6));
    EmberwildCombatEvents.endTurn(x,true);
   }
   return true;
@@ -317,7 +315,7 @@
   for(const c of Object.values(EmberwildControlState.states))for(const row of Object.values(c))delete row.secondsUntil;
   for(const inst of statusList()){const left=inst.definition.permanent?null:Math.max(.000001,(inst.expiresClock===Number.MAX_SAFE_INTEGER?inst.remainingTurns:inst.expiresClock-before)*config().durationReferenceSeconds);inst.appliedClock=0;delete inst.seconds;scheduleStatus(inst,left);}
   scheduleEffects(new Set(),null,null);scheduleControls();
-  for(const h of heroes()){const a=engine.find(key(h));for(const s of a.definition.skills){const d=skill(s.id),old=(d.type==='support'?oldSupports:oldCds)[memberKey(h)+'-'+d.adapter.index]||0;a.ready[s.id]=Math.round(old*actorInterval(h)*1e6);}}
+  for(const h of heroes()){const a=engine.find(key(h));for(const s of a.definition.skills){const d=skill(s.id),old=(d.type==='support'?oldSupports:oldCds)[memberKey(h)+'-'+adapter(h,d).index]||0;a.ready[s.id]=Math.round(old*actorInterval(h)*1e6);}}
   const enemyCds=EmberwildEnemyCombatState.pack();for(const e of foes){const a=engine.find(key(e)),base=source.balanceSettings.monsters.catalog.find(m=>m.id===e.monsterId)?.timing.baseIntervalSeconds??config().actionReferenceSeconds;for(const s of a.definition.skills)a.ready[s.id]=Math.round((enemyCds[e.id]?.[s.id]||0)*base*1e6);}
   const c=party.offlineExploration;if(c){c.version=3;c.combat=null;}
  }
@@ -335,8 +333,6 @@
  skillManaCost=function(i,h=state){return timing(S.byPosition(h.job,'core',i))?.mpCost||0;};
  skillCooldown=function(i,h=state){const s=S.byPosition(h.job,'core',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
  supportSkillCooldown=function(h,i){const s=S.byPosition(h.job,'support',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
- gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'&&cooldownReductionOnCast(h,s.id)?reducedCooldown(h,s,{onCast:1}):cd;};
- __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return s&&cooldownReductionOnCast(h,s.id)?reducedCooldown(h,s,{onCast:1}):supportSkillCooldown(h,i);};
  const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
  const MAX_FOES=5;
  const oldSpawn=spawnGroup;spawnGroup=function(...args){

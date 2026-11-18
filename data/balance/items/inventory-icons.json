@@ -1605,7 +1605,7 @@
     "kind": "gem",
     "key": "0",
     "iconType": "auto",
-    "description": "技能效果 +2%（加算型增幅）",
+    "description": "攻擊 +2",
     "color": "#EF5D5D",
     "displayName": "赤焰石・1階"
   },
@@ -1613,7 +1613,7 @@
     "kind": "gem",
     "key": "1",
     "iconType": "auto",
-    "description": "主動技能成功施放後，5% 機率使該技能冷卻減少 3 秒",
+    "description": "速度 +1",
     "color": "#49B976",
     "displayName": "疾風石・1階"
   },
@@ -1621,7 +1621,7 @@
     "kind": "gem",
     "key": "2",
     "iconType": "auto",
-    "description": "普攻觸發技能觸發率 +1 個百分點",
+    "description": "暴擊率 +1%",
     "color": "#AE83EC",
     "displayName": "靈巧石・1階"
   },
@@ -1977,7 +1977,7 @@
     "kind": "gem",
     "key": "3",
     "iconType": "auto",
-    "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 3% 的生命",
+    "description": "生命 +10",
     "color": "#E8EDF7",
     "displayName": "生息石・1階"
   },
@@ -1985,7 +1985,7 @@
     "kind": "gem",
     "key": "4",
     "iconType": "auto",
-    "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 1% 的護盾，能與其他護盾累加",
+    "description": "防禦 +1",
     "color": "#64AAF0",
     "displayName": "守護石・1階"
   },
@@ -1993,7 +1993,7 @@
     "kind": "gem",
     "key": "5",
     "iconType": "auto",
-    "description": "技能效果 +4%（加算型增幅）",
+    "description": "攻擊 +4",
     "color": "#EF5D5D",
     "displayName": "赤焰石・2階"
   },
@@ -2001,7 +2001,7 @@
     "kind": "gem",
     "key": "6",
     "iconType": "auto",
-    "description": "主動技能成功施放後，10% 機率使該技能冷卻減少 3 秒",
+    "description": "速度 +2",
     "color": "#49B976",
     "displayName": "疾風石・2階"
   },
@@ -2009,7 +2009,7 @@
     "kind": "gem",
     "key": "7",
     "iconType": "auto",
-    "description": "普攻觸發技能觸發率 +2 個百分點",
+    "description": "暴擊率 +2%",
     "color": "#AE83EC",
     "displayName": "靈巧石・2階"
   },
@@ -2017,7 +2017,7 @@
     "kind": "gem",
     "key": "8",
     "iconType": "auto",
-    "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 6% 的生命",
+    "description": "生命 +20",
     "color": "#E8EDF7",
     "displayName": "生息石・2階"
   },
@@ -2025,7 +2025,7 @@
     "kind": "gem",
     "key": "9",
     "iconType": "auto",
-    "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 2% 的護盾，能與其他護盾累加",
+    "description": "防禦 +2",
     "color": "#64AAF0",
     "displayName": "守護石・2階"
   },
@@ -2033,7 +2033,7 @@
     "kind": "gem",
     "key": "10",
     "iconType": "auto",
-    "description": "技能效果 +6%（加算型增幅）",
+    "description": "攻擊 +6",
     "color": "#EF5D5D",
     "displayName": "赤焰石・3階"
   },
@@ -2041,7 +2041,7 @@
     "kind": "gem",
     "key": "11",
     "iconType": "auto",
-    "description": "主動技能成功施放後，15% 機率使該技能冷卻減少 3 秒",
+    "description": "速度 +3",
     "color": "#49B976",
     "displayName": "疾風石・3階"
   },
@@ -2049,7 +2049,7 @@
     "kind": "gem",
     "key": "12",
     "iconType": "auto",
-    "description": "普攻觸發技能觸發率 +3 個百分點",
+    "description": "暴擊率 +3%",
     "color": "#AE83EC",
     "displayName": "靈巧石・3階"
   },
@@ -2057,7 +2057,7 @@
     "kind": "gem",
     "key": "13",
     "iconType": "auto",
-    "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 9% 的生命",
+    "description": "生命 +30",
     "color": "#E8EDF7",
     "displayName": "生息石・3階"
   },
@@ -2065,7 +2065,7 @@
     "kind": "gem",
     "key": "14",
     "iconType": "auto",
-    "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 3% 的護盾，能與其他護盾累加",
+    "description": "防禦 +3",
     "color": "#64AAF0",
     "displayName": "守護石・3階"
   }

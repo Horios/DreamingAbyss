@@ -5437,6 +5437,126 @@
         "map24_mob2",
         "map24_mob3"
       ]
+    },
+    {
+      "id": "gel-armor-normal",
+      "name": "凝膠護甲",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:1:0",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0005,
+        0.0006
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "gel-armor-elite",
+      "name": "凝膠護甲",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:1:0",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0012,
+        0.0015,
+        0.0018
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "wolf-fang-pendant-normal",
+      "name": "狼牙墜飾",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:3:1",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0005,
+        0.0006
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "wolf-fang-pendant-elite",
+      "name": "狼牙墜飾",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:3:1",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0012,
+        0.0015,
+        0.0018
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "living-core-talisman-normal",
+      "name": "活芯護符",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:2:0",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0005,
+        0.0006
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "living-core-talisman-elite",
+      "name": "活芯護符",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:2:0",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0012,
+        0.0015,
+        0.0018
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
     }
   ],
   "levelGap": {

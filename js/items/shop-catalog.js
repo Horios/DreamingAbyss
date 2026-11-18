@@ -9,7 +9,7 @@
   const DEFAULT_RANDOM={offerCount:6,refreshBaseCost:100,refreshCostStep:50,entries:[
     {id:'ore',enabled:true,type:'ore',key:'',name:'鍛鐵',description:'',quantityMin:8,quantityMax:20,unitPrice:12,weight:1,quantityScalesWithTier:true,priceScalesWithTier:false},
     {id:'dust',enabled:true,type:'dust',key:'',name:'粉塵',description:'',quantityMin:3,quantityMax:8,unitPrice:25,weight:1,quantityScalesWithTier:false,priceScalesWithTier:false},
-    {id:'gem',enabled:true,type:'gem',key:'random',name:'技能寶石',description:'',quantityMin:1,quantityMax:2,unitPrice:180,weight:.7,quantityScalesWithTier:false,priceScalesWithTier:false},
+    {id:'gem',enabled:true,type:'gem',key:'random',name:'屬性寶石',description:'',quantityMin:1,quantityMax:2,unitPrice:180,weight:.7,quantityScalesWithTier:false,priceScalesWithTier:false},
     {id:'region_material',enabled:true,type:'material',key:'region',name:'地區素材',description:'',quantityMin:3,quantityMax:6,unitPrice:60,weight:1.3,quantityScalesWithTier:false,priceScalesWithTier:true},
     ...EmberwildTimedBoosts.DEFAULT_RULES.map(copy)
   ]};
@@ -24,7 +24,7 @@
       unitPrice:field(src,'unitPrice',type==='item'?null:1)
     };
     if(LEGACY_DESCRIPTIONS.has(out.description))out.description=DEFAULT_RANDOM.entries.find(x=>x.type===type)?.description||'';
-    if(out.name==='隨機技能寶石')out.name='技能寶石';
+    if(['技能寶石','隨機技能寶石'].includes(out.name))out.name='屬性寶石';
     if(random)Object.assign(out,{
       quantityMin:field(src,'quantityMin',1),quantityMax:field(src,'quantityMax',1),
       weight:field(src,'weight',1),selection:field(src,'selection','weighted'),chance:field(src,'chance',1),

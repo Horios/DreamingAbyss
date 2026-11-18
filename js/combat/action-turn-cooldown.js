@@ -73,13 +73,13 @@ pacedRound=function*(){
    const u=p.unit;
    while(u.index<u.support.length){
     const i=u.support[u.index++],key=memberKey(h)+'-'+i;
-    if(runCombatEventAction(h,()=>{const ok=castSupport(h,i);if(ok!==false)supportCooldowns[key]=globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.supportCooldownOnCast(h,i)??supportSkillCooldown(h,i);return ok;})!==false){recordAction(heroKey(h),characterName(h),'輔助');yield;if(!living().length||!foes.some(e=>e.hp>0))break;}
+    if(runCombatEventAction(h,()=>{const ok=castSupport(h,i);if(ok!==false)supportCooldowns[key]=supportSkillCooldown(h,i);return ok;})!==false){recordAction(heroKey(h),characterName(h),'輔助');yield;if(!living().length||!foes.some(e=>e.hp>0))break;}
    }
    if(!living().length||!foes.some(e=>e.hp>0))break;
    let actionTaken=false;
    for(const i of u.active){
     if(!foes.some(e=>e.hp>0))break;
-    if(runCombatEventAction(h,()=>{const ok=castPartySkill(h,i,battleStats(h));if(ok!==false)actorCooldowns[memberKey(h)+'-'+i]=Math.max(0,Math.round(gemCooldownOnCast(i,h)));return ok;})!==false){recordAction(heroKey(h),characterName(h),'技能');actionTaken=true;break;}
+    if(runCombatEventAction(h,()=>{const ok=castPartySkill(h,i,battleStats(h));if(ok!==false)actorCooldowns[memberKey(h)+'-'+i]=Math.max(0,Math.round(skillCooldown(i,h)));return ok;})!==false){recordAction(heroKey(h),characterName(h),'技能');actionTaken=true;break;}
    }
    p.index++;p.unit=null;
    if(actionTaken){globalThis.EmberwildCombatEvents?.endTurn(h);yield;continue;}

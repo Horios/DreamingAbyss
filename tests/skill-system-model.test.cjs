@@ -6,7 +6,7 @@ test('canonical IDs project all legacy skills without changing their positions a
  assert.deepEqual(M.normalizeDocument(d),d);
 });
 test('dangling skill references, duplicate IDs, invalid slots and socket probabilities are rejected',()=>{
- const d=M.normalizeDocument(legacy);for(const mutate of [s=>s.definitions.push(s.definitions[0]),s=>s.classRules[0].initial[0].skillId='missing',s=>s.classRules[0].slots.first.proc=3,s=>s.equipment.pool[0].skillId='missing',s=>s.equipment.socketBands[0].weights=[1,1,0,0]]){const s=M.copy(d.skillSystem);mutate(s);assert.throws(()=>M.validate(s));}
+ const d=M.normalizeDocument(legacy);for(const mutate of [s=>s.definitions.push(s.definitions[0]),s=>s.classRules[0].initial[0].skillId='missing',s=>s.classRules[0].slots.first.proc=3,s=>s.equipment.formRules.push({formId:'missing',skillId:'missing'}),s=>s.equipment.pool=[],s=>s.gems[0].skill={},s=>s.equipment.socketBands[0].weights=[1,1,0,0]]){const s=M.copy(d.skillSystem);mutate(s);assert.throws(()=>M.validate(s));}
 });
 test('shared team gem instances refund once, companion gems refund and gear migration never rerolls',()=>{
  const s=M.normalizeDocument(legacy).skillSystem,d={version:3,members:[{gems:Array(15).fill(0),skills:[1],sockets:[0],bag:[{id:'old',plus:5,affix:[{type:4,skill:2,value:3}]}]},{gems:Array(15).fill(0),skills:[1],sockets:[2],bag:[]}],buildSystem:{permanent:{gemInstances:{'gem-1':0}},plans:[{sockets:['gem-1']},{sockets:['gem-1']}]}};

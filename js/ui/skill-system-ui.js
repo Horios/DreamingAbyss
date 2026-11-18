@@ -1,7 +1,7 @@
 /* One loadout view and one equipment socket editor use the canonical catalog. */
 (()=>{
  'use strict';
- const S=__EMBERWILD_SKILLS,E=__EMBERWILD_EQUIPMENT_SKILLS;
+ const S=__EMBERWILD_SKILLS;
  const labels={active:'主動',proc:'觸發',support:'輔助',passive:'被動'},sources={class:'職業',advanced:'二轉',quest:'任務',equipment:'裝備',companion:'夥伴'};
  function detail(sk,h=state){
   if(globalThis.EmberwildSecondsUI)return EmberwildSecondsUI.detail(sk,h);
@@ -23,7 +23,6 @@
     else {const ids=src.questIds||sk.unlockConditions?.quests||['tutorial'];if(!ids.length||ids.every(id=>id==='tutorial'||story?.quests.some(q=>q.id===id&&q.enabled!==false)))out.push('完成'+(ids.length?ids.map(id=>id==='tutorial'?'新手教學':story.quests.find(q=>q.id===id)?.name||id).join('、'):'新手教學'));}
    }
    if(src.type!=='equipment')continue;
-   for(const pool of system.equipment.pool)if(pool.skillId===sk.id&&pool.jobs.includes(h.job)&&pool.weight>0&&pool.slots.length){out.push('裝備附帶');}
    ITEM_FORMS.forEach((slots,j)=>slots.forEach((forms,slot)=>forms.forEach((f,i)=>{const id=f.id||`job${j}-slot${slot}-form${i}`,fixed=system.equipment.formRules?.find(r=>r.formId===id)?.skillId||f.skillId;if(fixed===sk.id&&(j===h.job||f.wearableJobs?.includes(h.job)))out.push('裝備附帶');} )));
    for(const g of story?.gearRewards||[])if(g.skillId===sk.id&&(story.quests||[]).some(q=>q.enabled!==false&&questItems(q).some(x=>x.type==='gear'&&x.key===g.id&&(x.job===undefined||x.job===h.job))))out.push('裝備附帶');
   }
@@ -75,9 +74,8 @@
  // Equipment skills belong to classes: a skill rolled for another class shows its class limit and cannot be enabled.
  const skillJobsText=sk=>(sk?.jobs||[]).map(j=>CLASSES[j]?.name||'').filter(Boolean).join('／');
  const usableBy=(sk,h)=>!!sk&&(sk.jobs||[]).includes(h?.job);
- function equipmentPicker(h){const worn=equipment(h).filter(g=>g.skillId&&S.byId(g.skillId)?.jobs.includes(h.job)),locked=equipment(h).filter(g=>g&&!EmberwildTokens.isToken(g)&&g.skillId&&S.byId(g.skillId)&&!usableBy(S.byId(g.skillId),h));return `<section class="panel equipment-skill-picker"><h2>裝備技能</h2><div class="skill-equipment-list"><button type="button" aria-pressed="${!h.activeSkillEquipmentId}" onclick="selectSkillEquipment(null)">不啟用裝備技能</button>${worn.map(g=>{const sk=S.byId(g.skillId),chosen=g.id===h.activeSkillEquipmentId,slotted=Object.values(h.skillLoadout).some(a=>a.includes(sk.id));return `<button type="button" data-skill-equipment="${esc(g.id)}" aria-pressed="${chosen}" onclick="selectSkillEquipment('${esc(g.id)}')"><b>${equipmentNameHTML(g)}</b><span class="equipment-skill-name">${esc(sk.name)} · ${labels[sk.type]}${chosen?' · '+(slotted?'已配置':'待配置'):''}</span><small class="equipment-skill-effect">${esc(sk.description||detail(sk,h))}</small></button>`;}).join('')}${locked.map(g=>{const sk=S.byId(g.skillId);return `<button type="button" class="equipment-skill-locked" data-skill-equipment-locked="${esc(g.id)}" disabled><b>${equipmentNameHTML(g)}</b><span class="equipment-skill-name">${esc(sk.name)} · ${labels[sk.type]}（限${esc(skillJobsText(sk))}）</span><small class="equipment-skill-effect">目前職業無法啟用此裝備技能。</small></button>`;}).join('')}</div></section>`;}
  skillsView=function(){
-  const h=party.members[0];if(__EMBERWILD_TEAMS.plan()?.job===null)return heading('SKILLS / 技能','尚未選擇職業')+`<section class="panel"><button onclick="setTab('roster')">前往隊伍編成</button></section>`;return withHero(h,()=>{S.refreshHero(h);return heading('SKILLS / 技能','目前技能配置',`<span class="tag">${esc(characterName(h))} · ${h.advanced?'二轉':'一轉'}</span>`)+`<div class="skill-system-page"><div class="actions"><button type="button" onclick="openSkillCatalog()">技能圖鑑</button></div>${['active','proc','support'].map(type=>`<section class="panel"><h2>${labels[type]}技能</h2><div class="skill-system-slots">${h.skillLoadout[type].map((id,n)=>{const sk=S.byId(id);return `<button type="button" class="skill-system-slot skill-kind-${type}" data-skill-slot="${type}:${n}" onclick="openSkillSlot('${type}',${n})"><span class="small">${labels[type]}槽 ${n+1}</span>${sk?`<span class="skill-slot-name">${icon(sk)}<b>${esc(sk.name)}</b></span><span>${esc(sk.description||detail(sk,h))}</span>`:'<b>選擇技能</b>'}</button>`;}).join('')}</div></section>`).join('')}${equipmentPicker(h)}${passives(h)}</div>`;});
+  const h=party.members[0];if(__EMBERWILD_TEAMS.plan()?.job===null)return heading('SKILLS / 技能','尚未選擇職業')+`<section class="panel"><button onclick="setTab('roster')">前往隊伍編成</button></section>`;return withHero(h,()=>{S.refreshHero(h);return heading('SKILLS / 技能','目前技能配置',`<span class="tag">${esc(characterName(h))} · ${h.advanced?'二轉':'一轉'}</span>`)+`<div class="skill-system-page"><div class="actions"><button type="button" onclick="openSkillCatalog()">技能圖鑑</button></div>${['active','proc','support'].map(type=>`<section class="panel"><h2>${labels[type]}技能</h2><div class="skill-system-slots">${h.skillLoadout[type].map((id,n)=>{const sk=S.byId(id);return `<button type="button" class="skill-system-slot skill-kind-${type}" data-skill-slot="${type}:${n}" onclick="openSkillSlot('${type}',${n})"><span class="small">${labels[type]}槽 ${n+1}</span>${sk?`<span class="skill-slot-name">${icon(sk)}<b>${esc(sk.name)}</b></span><span>${esc(sk.description||detail(sk,h))}</span>`:'<b>選擇技能</b>'}</button>`;}).join('')}</div></section>`).join('')}${passives(h)}</div>`;});
  };
  // v0.083: two-pane slot dialog. Left: every slot (active / proc / support) to switch between; right: the skills for the
  // selected slot's type, with a toggle that shows or hides skills not yet learned (shown by default).
@@ -94,7 +92,10 @@
  globalThis.chooseSkillSlot=function(t,n,id){const h=party.members[0];return withHero(h,()=>{if(!configureSkill(t,n,id))return false;closeModal();return true;});};
  $('modal').addEventListener('close',()=>$('modal').classList.remove('skill-system-dialog','skill-slot-dialog','skill-catalog-dialog'));
  const statNames={atk:'攻擊',hp:'生命',def:'防禦',speed:'速度',crit:'暴擊'};
- function gemText(h,g,id,n){const def=S.system().gems.find(x=>x.kind===id%5),tier=Math.floor(id/5),base=E.mode(h||{},{...g,skillSockets:{...g.skillSockets,gems:g.skillSockets.gems.map((value,index)=>index===n?id:value)}},n)==='base';if(base){const b=def.base,value=b.values[tier];return statNames[b.stat]+' +'+(b.unit==='ratio'?Math.round(value*10000)/100+'%':value);}return ({effect:'技能效果',cooldown:'冷卻縮短機率',procChance:'觸發率',heal:'額外治療',shield:'額外護盾'})[def.skill.key]+' +'+Math.round(def.skill.values[tier]*10000)/100+'%';}
+ function gemText(id){
+  const {stat,unit,values}=S.system().gems.find(x=>x.kind===id%5).base,value=values[Math.floor(id/5)];
+  return statNames[stat]+' +'+(unit==='ratio'?Math.round(value*10000)/100+'%':value);
+ }
  let socketSelection=null;
  globalThis.selectEquipmentSocket=function(id,n){
   const g=findGear(id);if(!g?.skillSockets||!Number.isInteger(n)||n<0||n>=g.skillSockets.count)return false;
@@ -102,23 +103,22 @@
  };
  function socketIcon(id){return id===null?'<span aria-hidden="true">＋</span>':inventoryGemIcon(id);}
  function sockets(g){
-  if(!g||EmberwildTokens.isToken(g))return '';const sk=S.byId(g.skillId),h=party.members[0],active=!!sk&&h.activeSkillEquipmentId===g.id,x=g.skillSockets;
+  if(!g||EmberwildTokens.isToken(g))return '';const sk=S.byId(g.skillId),h=party.members[0],x=g.skillSockets;
   if(!x)return '';
   if(socketSelection?.id!==g.id)socketSelection=null;
-  const selected=socketSelection&&socketSelection.n<x.count?socketSelection.n:-1,id=selected<0?null:x.gems[selected],canSwitch=active&&x.count>0;
+  const selected=socketSelection&&socketSelection.n<x.count?socketSelection.n:-1,id=selected<0?null:x.gems[selected];
   const owned=GEMS.map((gem,type)=>({gem,type})).filter(({type})=>h.gems[type]>0);
-  const slots=x.gems.map((gem,n)=>`<button type="button" class="equipment-socket-slot ${gem===null?'empty':''}" data-equipment-socket="${n}" aria-label="第 ${n+1} 孔：${gem===null?'空孔':esc(GEMS[gem].name)}" aria-pressed="${selected===n}" title="${gem===null?'空孔':esc(GEMS[gem].name)+' · '+esc(gemText(h,g,gem,n))}" onclick="selectEquipmentSocket('${esc(g.id)}',${n})">${socketIcon(gem)}<small>第 ${n+1} 孔</small></button>`).join('');
-  const choices=selected>=0?`<div class="equipment-socket-choices" aria-label="第 ${selected+1} 孔寶石"><p class="small">第 ${selected+1} 孔 · ${id===null?'空孔':esc(GEMS[id].name)+' · '+esc(gemText(h,g,id,selected))}</p><div class="equipment-gem-grid">${owned.map(({gem,type})=>{const incompatible=selected===0&&sk&&x.firstMode==='skill'&&!E.compatible(type,sk,selected);return `<button type="button" class="equipment-gem-choice" data-equipment-gem="${type}" aria-label="鑲嵌${esc(gem.name)}" aria-pressed="${id===type}" title="${esc(gemText(h,g,type,selected))}${incompatible?' · 不適用於此裝備技能':''}" onclick="socketEquipmentGem('${esc(g.id)}',${selected},${type})" ${(incompatible||id===type)?'disabled':''}>${socketIcon(type)}<span>${esc(gem.name)}</span><small>×${h.gems[type]}</small></button>`;}).join('')||'<p class="small">目前沒有可鑲嵌的已持有寶石。</p>'}</div><button type="button" class="equipment-gem-remove" onclick="socketEquipmentGem('${esc(g.id)}',${selected},-1)" ${id===null?'disabled':''}>免費拆除第 ${selected+1} 孔寶石</button></div>`:'';
-  const mode=x.count?`<div class="equipment-socket-mode"><label>第一孔效果<select aria-label="第一孔效果模式" onchange="setEquipmentGemMode('${esc(g.id)}',this.value)" ${canSwitch?'':'disabled'}><option value="base" ${!canSwitch||x.firstMode==='base'?'selected':''}>基礎數值</option><option value="skill" ${canSwitch&&x.firstMode==='skill'?'selected':''} ${canSwitch?'':'disabled'}>技能加成</option></select></label>${!sk?'<small>無附帶技能，僅提供基礎數值。</small>':!usableBy(sk,h)?`<small>此裝備技能限${esc(skillJobsText(sk))}，目前職業無法啟用；第一孔只採用基礎數值。</small>`:!active?'<small>裝備技能啟用後可切換；目前採用基礎數值。</small>':''}</div>`:'';
-  return `<section class="equipment-socket-editor" data-socket-equipment="${esc(g.id)}">${sk?'':'<h3>裝備技能</h3><p class="small">無附帶技能</p>'}${globalThis.__EMBERWILD_STORY?.protectedGear(g)?'<p class="small">教學進行中，完成後可出售或分解此裝備。</p>':''}<h3>鑲嵌孔 ${x.gems.filter(id=>id!==null).length}／${x.count}</h3><div class="equipment-socket-list">${slots||'<p class="small">此裝備沒有鑲嵌孔。</p>'}</div>${mode}${choices}<p class="small">點選孔位後選擇寶石。只有第一孔可切換技能／基礎數值；第二、第三孔固定加基礎數值。拆除與替換免費；出售或分解時，寶石會退回庫存。</p></section>`;
+  const slots=x.gems.map((gem,n)=>`<button type="button" class="equipment-socket-slot ${gem===null?'empty':''}" data-equipment-socket="${n}" aria-label="第 ${n+1} 孔：${gem===null?'空孔':esc(GEMS[gem].name)}" aria-pressed="${selected===n}" title="${gem===null?'空孔':esc(GEMS[gem].name)+' · '+esc(gemText(gem))}" onclick="selectEquipmentSocket('${esc(g.id)}',${n})">${socketIcon(gem)}<small>第 ${n+1} 孔</small></button>`).join('');
+  const choices=selected>=0?`<div class="equipment-socket-choices" aria-label="第 ${selected+1} 孔寶石"><p class="small">第 ${selected+1} 孔 · ${id===null?'空孔':esc(GEMS[id].name)+' · '+esc(gemText(id))}</p><div class="equipment-gem-grid">${owned.map(({gem,type})=>{return `<button type="button" class="equipment-gem-choice" data-equipment-gem="${type}" aria-label="鑲嵌${esc(gem.name)}" aria-pressed="${id===type}" title="${esc(gemText(type))}" onclick="socketEquipmentGem('${esc(g.id)}',${selected},${type})" ${id===type?'disabled':''}>${socketIcon(type)}<span>${esc(gem.name)}</span><small>×${h.gems[type]}</small></button>`;}).join('')||'<p class="small">目前沒有可鑲嵌的已持有寶石。</p>'}</div><button type="button" class="equipment-gem-remove" onclick="socketEquipmentGem('${esc(g.id)}',${selected},-1)" ${id===null?'disabled':''}>免費拆除第 ${selected+1} 孔寶石</button></div>`:'';
+  return `<section class="equipment-socket-editor" data-socket-equipment="${esc(g.id)}">${sk?'':'<h3>裝備技能</h3><p class="small">無附帶技能</p>'}${globalThis.__EMBERWILD_STORY?.protectedGear(g)?'<p class="small">教學進行中，完成後可出售或分解此裝備。</p>':''}<h3>鑲嵌孔 ${x.gems.filter(id=>id!==null).length}／${x.count}</h3><div class="equipment-socket-list">${slots||'<p class="small">此裝備沒有鑲嵌孔。</p>'}</div>${choices}<p class="small">點選孔位後選擇寶石。寶石提供屬性加成。拆除與替換免費；出售或分解時，寶石會退回庫存。</p></section>`;
  }
 
  const attributeBase=globalThis.equipmentAttributeDetailsHTML;
  globalThis.equipmentAttributeDetailsHTML=function(g,...args){
   const html=attributeBase(g,...args),sk=!EmberwildTokens.isToken(g)&&S.byId(g?.skillId);
   if(!sk)return html;
-  const h=party.members[0],active=h.activeSkillEquipmentId===g.id;
-  return html+`<section class="equipment-skill-description"><h3>裝備技能${active?' · 已啟用':''}</h3><b class="equipment-skill-name">${esc(sk.name)} · ${labels[sk.type]}${usableBy(sk,h)?'':`（限${esc(skillJobsText(sk))}）`}</b>${usableBy(sk,h)?'':`<p class="small equipment-skill-limit">目前職業（${esc(CLASSES[h.job]?.name||'')}）無法啟用此裝備技能。</p>`}<p class="equipment-skill-effect">${esc(sk.description||detail(sk,h))}</p></section>`;
+  const h=party.members[0],active=S.worn(h).some(item=>item.id===g.id)&&S.learned(h,sk);
+  return html+`<section class="equipment-skill-description"><h3>裝備技能${active?' · 可配置':''}</h3><b class="equipment-skill-name">${esc(sk.name)} · ${labels[sk.type]}${usableBy(sk,h)?'':`（限${esc(skillJobsText(sk))}）`}</b>${usableBy(sk,h)?'':`<p class="small equipment-skill-limit">目前職業（${esc(CLASSES[h.job]?.name||'')}）無法啟用此裝備技能。</p>`}<p class="equipment-skill-effect">${esc(sk.description||detail(sk,h))}</p></section>`;
  };
  let wornSocketTarget=null;
  globalThis.toggleWornEquipmentSockets=function(id){
@@ -139,7 +139,12 @@
  const resetSocketSession=resetSession;
  resetSession=function(){wornSocketTarget=null;socketSelection=null;return resetSocketSession();};
  const detailBase=inventoryGearDetail;inventoryGearDetail=function(g){return detailBase(g);};
- const slotBase=gearSlotHTML;gearSlotHTML=function(g,options){const html=slotBase(g,options);if(!g?.skillSockets)return html;const text=(g.skillId?'技能 · ':'')+g.skillSockets.gems.filter(x=>x!==null).length+'/'+g.skillSockets.count+' 孔';return html.replace(/(<\/button>)$/,`<small class="equipment-socket-badge">${esc(text)}</small>$1`);};
+ const slotBase=gearSlotHTML;gearSlotHTML=function(g,options){
+  const html=slotBase(g,options),gems=g?.skillSockets?.gems;if(!gems?.length)return html;
+  const label=gems.map((id,i)=>'第 '+(i+1)+' 孔：'+(GEMS[id]?.name||'空孔')).join('、');
+  const icons=gems.map(id=>`<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="${esc(GEMS[id]?.color||'none')}" stroke="currentColor"/></svg>`).join('');
+  return html.replace(/(<\/button>)$/,`<span class="equipment-socket-badge" role="img" aria-label="${esc(label)}" title="${esc(label)}">${icons}</span>$1`);
+ };
  // v0.076: newly learned skills are not equipped automatically. The skills tab shows NEW until the player has seen them,
  // and the skills page offers to equip each one. Seen skills are remembered per hero (seenSkillIds); on the first
  // check every skill already learned counts as seen, so existing saves start without a flood of NEW marks.

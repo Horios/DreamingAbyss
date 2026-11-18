@@ -9,7 +9,7 @@
  const hero=x=>!!x&&Object.hasOwn(x,'job');
  const title=x=>hero(x)?characterName(x):combatEnemyName(x);
  function view(x){try{return C.timeline?.actor(id(x));}catch{return null;}}
- function icon(s,x){return s?__EMBERWILD_MASTERY_UI.skillIcon(x.job??s.adapter.job??s.jobs?.[0]??0,s.adapter.kind,s.adapter.index):__EMBERWILD_SKILL_ICONS.svgFor('lucide:swords',[],{size:22});}
+ function icon(s,x){const a=s&&EmberwildSkillSystem.adapterFor(s,x.job);return a?__EMBERWILD_MASTERY_UI.skillIcon(a.job,a.kind,a.index):__EMBERWILD_SKILL_ICONS.svgFor('lucide:swords',[],{size:22});}
  // Full redraws between scheduler events must use the same presentation time as sync(), or bars jump back for a frame.
  function viewElapsed(){const e=C.timeline;if(!e||!party)return 0;try{return Math.max(0,viewTime()-e.now/1e6);}catch{return 0;}}
  function charge(x,s=null){
@@ -159,8 +159,8 @@
   const sources=(s.sources||[]).map(r=>({class:'職業',quest:'任務',equipment:'裝備',companion:'夥伴',starter:'初始'})[r.type]||r.type).filter((v,i,a)=>a.indexOf(v)===i).join('／'),live=view(h)?.skills.find(x=>x.id===s.id),multiplier=view(h)?C.timeline.find(id(h)).mpCostMultiplier:C.resourceProfile(h).cost,mp=d.mpCost*multiplier;
   if(s.type==='passive'){const e=s.eventPassive,base=e?.event==='kill'?`擊殺後以 ${fmt(e.power*100)}% 攻擊追擊生命最低的敵人；最多追加 ${e.maxAttacks} 次，每次原始行動最多一條追擊鏈。`:e?.event==='enemyDeath'?`敵人死亡時，自身主動與輔助冷卻縮減 ${C.cooldownReductionText('enemyDeath',e.reduction).replace('−','')}；內部冷卻 ${fmt(e.cooldown*C.config().actionReferenceSeconds)} 秒。`:s.description||s.name;return `${base} · 常駐被動，不占行動${sources?' · 來源：'+sources:''}`;}
   if(h&&!hero(h)){const shared=sharedSkillById(s.id),chance=shared?.meta?.procBaseChance??GS('skills.proc.baseChance',.22);return `${s.description||s.name} · ${s.type==='proc'?'普攻觸發率 '+fmt(chance*100)+'%，不占行動':'主動技能，獨立冷卻'} · 倍率 ${fmt((s.power||0)*100)}% · 最多 ${s.maxTargets||1} 個目標 · ${cooldownText(s,live?.cooldownSeconds??d.cooldownSeconds)} · MP ${fmt(mp)}${d.castSeconds?' · 施法 '+fmt(d.castSeconds)+' 秒':''} · 來源：怪物技能配置`;}
-  const cd=live?.cooldownSeconds??(s.type==='support'?supportSkillCooldown(h,s.adapter.index):s.type==='proc'?d.cooldownSeconds:skillCooldown(s.adapter.index,h)),status=s.statusId?C.source.statusDefinitions.find(x=>x.id===s.statusId):null;
-  let description=s.adapter.kind==='support'?baseSupportDetail(h?.job??s.adapter.job,s.adapter.index,h):s.adapter.kind==='core'?baseCoreDetail(h?.job??s.adapter.job,s.adapter.index,h):s.description||s.name;
+  const a=EmberwildSkillSystem.adapterFor(s,h?.job),cd=live?.cooldownSeconds??(s.type==='support'?supportSkillCooldown(h,a.index):s.type==='proc'?d.cooldownSeconds:skillCooldown(a.index,h)),status=s.statusId?C.source.statusDefinitions.find(x=>x.id===s.statusId):null;
+  let description=a.kind==='support'?baseSupportDetail(h?.job??a.job,a.index,h):a.kind==='core'?baseCoreDetail(h?.job??a.job,a.index,h):s.description||s.name;
   description=String(description).replace(/\s*·\s*冷卻 \d+(?:\.\d+)?(?: 個自身| 戰鬥)? 回合/g,'').replace(/持續 \d+(?:\.\d+)?(?: 戰鬥)? 回合/g,'持續 '+(status?.timing.durationSeconds===null?'永久':fmt(status?.timing.durationSeconds??d.durationSeconds)+' 秒')).replace(/每(?:個自身)?回合/g,'每 '+fmt(status?.timing.triggerIntervalSeconds??d.tickIntervalSeconds)+' 秒').replace(/下回合行動提前/g,'下次行動提前').replace(/回合/g,'秒');
   return `${description}${sources?' · 來源：'+sources:''} · ${s.type==='proc'?'觸發技能，不占行動':'主動技能，獨立冷卻'} · ${s.type==='proc'?(cd?'觸發冷卻 '+fmt(cd)+' 秒（每場重置為就緒）':'觸發冷卻 無'):cooldownText(s,cd)} · MP ${fmt(mp)}${d.castSeconds?' · 施法 '+fmt(d.castSeconds)+' 秒':''}${status?.timing.durationSeconds===null?' · 永久':''}`;
  }

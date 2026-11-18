@@ -31,47 +31,6 @@ test('five identities, three tiers, color mappings and reduced first-tier drop t
  assert.deepEqual(r.errors,[]);
 });
 
-test('canonical player skills use first equipment socket for compatible three-tier gem effects only',()=>{
- for(let job=0;job<4;job++){
-  const r=game(job);
-  const rows=json(r,`(()=>{
-   const h=playerHero(),S=__EMBERWILD_SKILLS,E=__EMBERWILD_EQUIPMENT_SKILLS;
-   h.lv=60;h.advanced=true;h.mastery=Object.fromEntries(Object.keys(h.mastery).map(k=>[k,100000]));
-   const g=gear(1,3,0,h.job);Object.assign(g,{id:'gem-matrix',formJob:h.job,form:0,affix:[],prefixId:'',suffixId:'',skillSockets:{version:1,count:3,gems:[null,null,null],firstMode:'skill'}});state.bag.push(g);h.equipped[3]=g.id;
-   const rows=[],originalRandom=Math.random;
-   try{for(const sk of S.system().definitions.filter(sk=>sk.jobs.includes(h.job)&&sk.partnerId==null&&sk.type!=='passive'&&sk.adapter.kind==='core')){
-    const i=EmberwildSkillSystem.adapterFor(sk,h.job).index;
-    g.skillId=sk.id;h.activeSkillEquipmentId=g.id;g.skillSockets.gems=[null,null,null];E.refresh(h);
-    const base=skillPower(i,h),baseline=procChance(i,h),baseCooldown=skillCooldown(i,h),power=[],procs=[],rates=[];
-    const socket=id=>{g.skillSockets.gems[0]=id;E.refresh(h);};
-    for(const id of [0,5,10]){socket(id);power.push(skillPower(i,h));rates.push(gemRate(h,i,0));}
-    for(const id of [2,7,12]){socket(id);procs.push(procChance(i,h));}
-    socket(11);Math.random=()=>0;const cdOn=gemCooldownOnCast(i,h);Math.random=()=>.999;const cdOff=gemCooldownOnCast(i,h);
-    socket(3);h.hp=1;const beforeHeal=h.hp;applyGemAfterSkill(h,i,{atk:1000});const lifeHeal=h.hp-beforeHeal;
-    socket(4);h.hp=1;h.shield=20;applyGemAfterSkill(h,i,battleStats(h));const shieldAdded=h.shield-20;
-    socket(0);const enabled=gemRate(h,i,0);g.skillSockets.gems=[null,0,10];E.refresh(h);const otherSockets=gemRate(h,i,0),secondMode=E.mode(h,g,1),thirdMode=E.mode(h,g,2);
-    g.skillSockets.gems=[0,null,null];h.activeSkillEquipmentId=null;E.refresh(h);const inactive=gemRate(h,i,0);
-    h.activeSkillEquipmentId=g.id;g.skillSockets.firstMode='base';E.refresh(h);const baseMode=gemRate(h,i,0);g.skillSockets.firstMode='skill';
-    rows.push({id:sk.id,isActive:sk.type==='active',isProc:sk.type==='proc',compatible:[0,1,2,3,4].map(id=>gemCompatible(id,h.job,i)),base,power,rates,baseline,procs,baseCooldown,cdOn,cdOff,lifeHeal,shieldAdded,enabled,otherSockets,secondMode,thirdMode,inactive,baseMode});
-   }}finally{Math.random=originalRandom;}return rows;
-  })()`);
-  assert(rows.length>0,'no canonical player core skills for class '+job);
-  for(const x of rows){
-   assert.deepEqual(x.compatible,[true,x.isActive,x.isProc,true,true],x.id+' compatibility');
-   assert.deepEqual(x.rates,[.02,.04,.06],x.id+' red tiers');
-   if(x.base>0)assert(x.power[0]>x.base&&x.power[1]>x.power[0]&&x.power[2]>x.power[1],x.id+' red power');
-   if(x.isProc)assert(x.procs[0]>x.baseline&&x.procs[1]>x.procs[0]&&x.procs[2]>x.procs[1],x.id+' proc tiers');
-   else assert.deepEqual(x.procs,[x.baseline,x.baseline,x.baseline],x.id+' active immune to proc gem');
-   assert.equal(x.cdOff,x.baseCooldown,x.id+' failed wind roll');
-   // v0.075: the wind gem's on-cast cut follows its own cooldown reduction rule (percent or fixed) with the diminishing floor.
-   assert.equal(x.cdOn,x.isActive?r.run(`EmberwildSecondsSchema.applyCooldownReduction(${x.baseCooldown},{onCast:1},EmberwildSecondsCombat.config().cooldownReduction,EmberwildSecondsCombat.config().minimumActionIntervalSeconds)`):x.baseCooldown,x.id+' wind roll');
-   assert.equal(x.lifeHeal,30,x.id+' life gem applies once');assert(x.shieldAdded>0,x.id+' guard gem stacks');
-   assert.equal(x.enabled,.02);assert.equal(x.otherSockets,0);assert.equal(x.secondMode,'base');assert.equal(x.thirdMode,'base');assert.equal(x.inactive,0);assert.equal(x.baseMode,0);
-  }
-  assert.deepEqual(r.errors,[]);
- }
-});
-
 test('alchemy spends five tier-one gems and ten tier-two gems in the existing five-second work lane',async()=>{
  const r=game(0);
  // Resolve the offline manager's asynchronous persistence in this headless clock.
@@ -121,62 +80,11 @@ test('legacy three-kind gems refund from shared skill instances once and survive
  assert(out.sockets.every(id=>id===null));assert.deepEqual(out.instances,{});assert.deepEqual(out.rawStock,[4,8,12]);assert.deepEqual(out.rawInstances,{'old-red':0,'old-green':1,'old-resonance':2});assert.deepEqual(r.errors,[]);
 });
 
-test('actual equipped and configured casts heal the lowest-HP ally and add guard shield exactly once',()=>{
- const r=game(0);
- const out=json(r,`(()=>{
-  const h=playerHero();h.lv=20;syncParty();recruitCompanion(10);closeModal();party.active=[memberKey(h),10];
-  const ally=partyMember(10),g=gear(1,3,0,h.job),results=[];
-  Object.assign(g,{id:'cast-gem-item',skillId:'class0-initial0',skillSockets:{version:1,count:3,gems:[null,null,null],firstMode:'skill'}});state.bag.push(g);equipSharedGear(g.id,memberKey(h),3);
-  const target=()=>{foes=[{id:'gem-target',name:'假想敵',monsterId:'map0_mob0',kind:'normal',hp:999999,maxhp:999999,shield:0,atk:1,def:0,element:'physical',race:'beast',lv:1,turn:0,crit:0,evasion:0}];enemy=foes[0];};
-  h.gems[3]=h.gems[4]=1;
-  for(const id of ['class0-initial0','class0-initial2']){
-  foes=[];enemy=null;g.skillId=id;const selected=selectSkillEquipment(g.id),configured=configureSkill('active',0,id),i=h.active[0];h.hp=stats(h).hp;ally.hp=1;
-  const lifeSocket=socketEquipmentGem(g.id,0,3);target();const before=ally.hp,v=battleStats(h),wantHeal=Math.min(stats(ally).hp-before,Math.max(1,Math.round(v.atk*.03))),lifeCast=castPartySkill(h,i,v),recovered=ally.hp-before;
-  foes=[];enemy=null;const guardSocket=socketEquipmentGem(g.id,0,4);target();ally.hp=1;ally.shield=55;h.shield=0;const wantShield=Math.max(1,Math.round(stats(h).def*.01)),guardCast=castPartySkill(h,i,battleStats(h)),shieldAdded=ally.shield-55;
-  const bad=castPartySkill(h,0,battleStats(h)),afterFailed=ally.shield;
-  results.push({id,selected,configured,lifeSocket,guardSocket,lifeCast,guardCast,wantHeal,recovered,wantShield,shieldAdded,casterShield:h.shield,bad,afterFailed});
-  }return results;
- })()`);
- assert.equal(out.length,2);
- for(const row of out){for(const key of ['selected','configured','lifeSocket','guardSocket','lifeCast','guardCast'])assert.equal(row[key],true,row.id+' '+key);
- assert(row.wantHeal>0);assert.equal(row.recovered,row.wantHeal,row.id+' heals once');assert.equal(row.shieldAdded,row.wantShield,row.id+' shields once');assert.equal(row.casterShield,0);assert.equal(row.bad,false);assert.equal(row.afterFailed,55+row.wantShield);}
- assert.deepEqual(r.errors,[]);
-});
-
-test('socket icon editor keeps mode below the row and rejects skillless mode changes at the operation boundary',()=>{
- const r=game(0);
- const out=json(r,`(()=>{
-  const h=playerHero(),g=findGear(h.equipped[0]);delete g.skillId;
-  g.skillSockets={version:1,count:3,gems:[null,0,null],firstMode:'skill'};
-  h.activeSkillEquipmentId=g.id;
-  const invalid=setEquipmentGemMode(g.id,'skill'),noSkill=__EMBERWILD_SKILL_SYSTEM_UI.sockets(g);
-  g.skillId='class0-initial0';h.gems=Array(15).fill(0);h.gems[0]=2;h.gems[12]=1;
-  const unopened=__EMBERWILD_SKILL_SYSTEM_UI.sockets(g);selectEquipmentSocket(g.id,0);
-  const active=__EMBERWILD_SKILL_SYSTEM_UI.sockets(g);
-  selectEquipmentSocket(g.id,2);const selected=__EMBERWILD_SKILL_SYSTEM_UI.sockets(g);
-  return {invalid,noSkill,unopened,active,selected,invalidSlot:selectEquipmentSocket(g.id,3)};
- })()`);
- assert.equal(out.invalid,false);assert.equal(out.invalidSlot,false);
- assert.match(out.noSkill,/無附帶技能，僅提供基礎數值/);
- assert.match(out.noSkill,/<select aria-label="第一孔效果模式"[^>]*disabled/);
- assert.match(out.noSkill,/<option value="skill"[^>]*disabled/);
- assert.equal((out.active.match(/data-equipment-socket=/g)||[]).length,3);
- assert.doesNotMatch(out.unopened,/equipment-socket-choices|data-equipment-gem=/);
- assert.equal((out.active.match(/data-equipment-gem=/g)||[]).length,2);
- assert.doesNotMatch(out.active,/data-equipment-gem="(?:1|14)"/);
- assert(out.active.indexOf('equipment-socket-list')<out.active.indexOf('equipment-socket-mode'));
- assert.match(out.active,/data-equipment-gem="0"[^>]*title="技能效果 \+2%/,'empty first socket previews the intended skill bonus');
- assert.match(out.selected,/aria-label="第 3 孔寶石"/);
- assert.match(out.selected,/data-equipment-gem="0"[^>]*title="攻擊 \+2/);
- assert.match(out.selected,/<svg/);
- assert.deepEqual(r.errors,[]);
-});
-
 test('socket picker opens on click, lists only owned stock and removes depleted choices without selecting another gem',()=>{
  const r=game(0);
  const out=json(r,`(()=>{
   const h=playerHero(),g=findGear(h.equipped[0]),other=findGear(h.equipped[1]);delete g.skillId;
-  g.skillSockets={version:1,count:2,gems:[0,null],firstMode:'base'};h.gems=Array(15).fill(0);
+  g.skillSockets={version:1,count:2,gems:[0,null]};h.gems=Array(15).fill(0);
   const before=__EMBERWILD_SKILL_SYSTEM_UI.sockets(g);
   selectEquipmentSocket(g.id,1);const empty=__EMBERWILD_SKILL_SYSTEM_UI.sockets(g);
   const denied=socketEquipmentGem(g.id,1,0),afterDenied=[...g.skillSockets.gems];
@@ -193,4 +101,18 @@ test('socket picker opens on click, lists only owned stock and removes depleted 
  assert.equal(out.inserted,true);assert.doesNotMatch(out.depleted,/data-equipment-gem=/);assert.match(out.depleted,/第 2 孔 · 赤焰石/);
  assert.equal(out.removed,true);assert.equal(out.stock,1);assert.match(out.refunded,/data-equipment-gem="5"/);
  assert.doesNotMatch(out.returned,/equipment-socket-choices/);assert.deepEqual(r.errors,[]);
+});
+
+test('inventory badge renders only real sockets, with filled colors and accessible names',()=>{
+ const r=game(0),rows=json(r,`Array.from({length:4},(_,count)=>{
+  const g=gear(1,3,0,state.job),gems=Array(count).fill(null);
+  if(count>=2)gems[1]=0;
+  g.skillSockets={version:1,count,gems};
+  return gearSlotHTML(g,{context:'inventory'});
+ })`);
+ for(let n=0;n<=3;n++){
+  const badge=rows[n].split('class="equipment-socket-badge"')[1]||'';
+  assert.equal((badge.match(/<circle/g)||[]).length,n);
+  if(n>=2){assert.match(badge,/第 2 孔：赤焰石/);assert.match(badge,/fill="#ec5555"/);}
+ }
 });

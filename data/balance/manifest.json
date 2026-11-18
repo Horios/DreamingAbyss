@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 16,
+  "dataRevision": 21,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "ea0e6baec8555e72fca3b9f9a4e59056fffa653750a511164a1313ffacfd86e9",
-    "bytes": 1265804
+    "sha256": "5c8dd68f4b169e92375a2207b1fab4a4648481387440b0b88785c7ad91da40f5",
+    "bytes": 1280033
   },
   "layout": {
     "": [
@@ -64,8 +64,7 @@
       "definitions",
       "classRules",
       "equipment",
-      "gems",
-      "gemSlotRuleVersion"
+      "gems"
     ]
   },
   "compatibility": {
@@ -212,9 +211,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 1,
-      "sha256": "350c8d309314293c81c78543e7a0610a56a1dcd2b41191216a77fbc4ad1423e6",
-      "bytes": 106708,
+      "version": 2,
+      "sha256": "8d570e874a96fa7e57d9b4a42a4a7b724c73c809d366963029d98c7f8a1f9ec8",
+      "bytes": 108996,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -246,9 +245,9 @@
       "file": "combat/rules.json",
       "source": "balanceSettings.combat",
       "present": true,
-      "version": 1,
-      "sha256": "f0c58ac00f66f11d42e9c02ee649eddf3fd7461c288a38f5349b0a6bd99abe14",
-      "bytes": 3034,
+      "version": 2,
+      "sha256": "9c07ec54274e4d4981388fee5368081d3a5c3f863cf33f3dbf58d42001d02db9",
+      "bytes": 2956,
       "dependsOn": [
         "characters/companion-settings",
         "combat/skills",
@@ -286,9 +285,9 @@
       "file": "combat/skills.json",
       "source": "skillSystem.definitions",
       "present": true,
-      "version": 1,
-      "sha256": "fbc2964adfac9558bf3415e704e2e23b8d3a950bd53794e102aabf65fa3de8e2",
-      "bytes": 241742,
+      "version": 3,
+      "sha256": "8b5df5144c1aa6c516c044c5b2c230fefb7c9a4f0cce1769bfe3d99926f2788b",
+      "bytes": 246243,
       "dependsOn": [
         "characters/classes",
         "characters/companions",
@@ -307,9 +306,9 @@
       "file": "combat/skill-system.json",
       "source": "skillSystem.*",
       "present": true,
-      "version": 1,
-      "sha256": "6c8f67ae7a64aac8675f297b25f76a8569aef68b5179ed8cca67e3149003c726",
-      "bytes": 15480,
+      "version": 3,
+      "sha256": "62d51b604c0a27844db9920e1b31f91ac13241ded38ff8652b766be79bc9fe8a",
+      "bytes": 5974,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -338,9 +337,9 @@
       "file": "characters/classes.json",
       "source": "classes",
       "present": true,
-      "version": 1,
-      "sha256": "f235c5ccda594d8b25f73bd7810e4af741cd30e3be59403822808819122f146e",
-      "bytes": 127283,
+      "version": 3,
+      "sha256": "9b434358818e964438dd384cbf0327a69b7a39043589784c717bb79943db7509",
+      "bytes": 145591,
       "dependsOn": [
         "systems/quests",
         "world/maps"
@@ -357,7 +356,7 @@
       "file": "characters/support-skills.json",
       "source": "supportSkills",
       "present": true,
-      "version": 1,
+      "version": 3,
       "sha256": "a05eff3a33401ba53e307d0c9d98df50844fe4f105b35ab2d08d1f43c0450e54",
       "bytes": 39631,
       "dependsOn": [],
@@ -404,7 +403,7 @@
       "file": "characters/passives.json",
       "source": "passiveDefinitions",
       "present": true,
-      "version": 1,
+      "version": 3,
       "sha256": "4986b908f2442b457c4bbac1983ac32e9e96902ea9be2024761f9ed8e546ad95",
       "bytes": 8709,
       "dependsOn": [],
@@ -434,9 +433,9 @@
       "file": "equipment/forms.json",
       "source": "equipmentForms",
       "present": true,
-      "version": 1,
-      "sha256": "c7b9968c500adc6b7e9d865c12034f8b829a3be34ddbc5a3d3a3af26c082a3a5",
-      "bytes": 10209,
+      "version": 2,
+      "sha256": "4aeb263006ed833f5a16a970fad91ad4e7a6415a791f2f49023eea7e05876e52",
+      "bytes": 11072,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -521,9 +520,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 2,
-      "sha256": "aad0e601f3c2090e350cf92eeb92b16a8c3e1d620c4e21244448bdc024ba633c",
-      "bytes": 46559,
+      "version": 3,
+      "sha256": "866d19942b76ec501f2519a20b85fdfc3b0f0b6b80ad33c545eb9c014dcd2372",
+      "bytes": 45561,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",
@@ -618,9 +617,9 @@
       "file": "systems/story.json",
       "source": "story",
       "present": true,
-      "version": 13,
-      "sha256": "e18015f301d014f3c29a6da843f685dd09413f1f6219a7eb62ac50852a4d166e",
-      "bytes": 105695,
+      "version": 14,
+      "sha256": "20acf6cc3cc880301c0e4bccb57174a8116b1575eea2100565c8e45697aaece0",
+      "bytes": 103228,
       "dependsOn": [
         "combat/skills",
         "equipment/forms",
@@ -641,8 +640,8 @@
       "file": "systems/shop.json",
       "source": "shopSettings",
       "present": true,
-      "version": 1,
-      "sha256": "17f0b0bde1c2d5c092507368deb81ca1461355470fad101174dd836ebe15961b",
+      "version": 2,
+      "sha256": "a0f1005ac78707097fc9a09bbd7e41aa058cd594c65c2386b18151175a0338cf",
       "bytes": 53467,
       "dependsOn": [
         "items/items",

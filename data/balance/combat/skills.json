@@ -42,11 +42,7 @@
       "index": 0,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 12,
       "mpCost": 9.29516,
@@ -165,11 +161,7 @@
       "index": 2,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -226,11 +218,7 @@
       "index": 3,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -415,11 +403,7 @@
       "index": 6,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 21,
       "mpCost": 12,
@@ -2296,11 +2280,7 @@
       "index": 1,
       "kind": "support"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 45,
       "mpCost": 8,
@@ -3123,11 +3103,7 @@
       "index": 0,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 12,
       "mpCost": 9.95992,
@@ -3248,11 +3224,7 @@
       "index": 2,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -3310,11 +3282,7 @@
       "index": 3,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -3501,11 +3469,7 @@
       "index": 6,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 24,
       "mpCost": 12,
@@ -3569,11 +3533,7 @@
       "index": 7,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 21,
       "mpCost": 16,
@@ -3637,11 +3597,7 @@
       "index": 8,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 18,
       "mpCost": 12,
@@ -4509,11 +4465,7 @@
       "index": 1,
       "kind": "support"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 45,
       "mpCost": 8,
@@ -5087,11 +5039,7 @@
       "index": 0,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 12,
       "mpCost": 9.633276,
@@ -5210,11 +5158,7 @@
       "index": 2,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -5271,11 +5215,7 @@
       "index": 3,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -5460,11 +5400,7 @@
       "index": 6,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 21,
       "mpCost": 12,
@@ -5528,11 +5464,7 @@
       "index": 7,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 24,
       "mpCost": 12,
@@ -6388,11 +6320,7 @@
       "index": 1,
       "kind": "support"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 48,
       "mpCost": 8,
@@ -6967,11 +6895,7 @@
       "index": 0,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 12,
       "mpCost": 9.465728,
@@ -7092,11 +7016,7 @@
       "index": 2,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -7154,11 +7074,7 @@
       "index": 3,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,
@@ -7345,11 +7261,7 @@
       "index": 6,
       "kind": "core"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 21,
       "mpCost": 12,
@@ -8469,11 +8381,7 @@
       "index": 1,
       "kind": "support"
     },
-    "sources": [
-      {
-        "type": "equipment"
-      }
-    ],
+    "sources": [],
     "timing": {
       "cooldownSeconds": 45,
       "mpCost": 8,
@@ -11041,5 +10949,280 @@
       "condition": "always",
       "initialCooldownSeconds": 2.5
     }
+  },
+  {
+    "id": "gel-guard",
+    "name": "凝膠緩衝",
+    "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 39,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 1,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "shield",
+    "systemEffect": "guard",
+    "power": 0.15,
+    "cooldown": 6,
+    "duration": 3,
+    "target": "self",
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 5,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 6,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    },
+    "adapters": [
+      {
+        "job": 0,
+        "index": 39,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 25,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 25,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 28,
+        "kind": "core"
+      }
+    ]
+  },
+  {
+    "id": "wolf-double-bite",
+    "name": "狼牙連咬",
+    "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 40,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 1,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 2,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target",
+      "hitCount"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 0.65,
+    "cooldown": 3,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 5,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    },
+    "adapters": [
+      {
+        "job": 0,
+        "index": 40,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 26,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 26,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 29,
+        "kind": "core"
+      }
+    ]
+  },
+  {
+    "id": "living-core-renewal",
+    "name": "樹芯癒合",
+    "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 41,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 1,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "light",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "heal",
+    "systemEffect": "regen",
+    "power": 0.02,
+    "cooldown": 8,
+    "duration": 4,
+    "target": "allies",
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 6,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 12,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    },
+    "adapters": [
+      {
+        "job": 0,
+        "index": 41,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 27,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 27,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 30,
+        "kind": "core"
+      }
+    ]
   }
 ]

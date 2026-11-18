@@ -63,21 +63,15 @@ test('equipment skill source and skill slot remain clickable during an active en
   await p.evaluate(async()=>{
    selectSaveSlot(1);start(1);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);
    playerHero().lv=25;playerHero().mastery.fire=100000;recruitCompanion(10);closeModal();
-   const g=gear(3,0,0,1);g.id='encounter-skill-test';g.skillId='job1-core2';g.skillSockets={version:1,count:1,gems:[null],firstMode:'base'};
+   const g=gear(3,0,0,1);g.id='encounter-skill-test';__EMBERWILD_SKILLS.byId('job1-core2').sources=[{type:'equipment'}];g.skillId='job1-core2';g.skillSockets={version:1,count:1,gems:[null]};
    addGear(g);equipSharedGear(g.id,memberKey(playerHero()),0);startSelectedExploration();selectHero(10);setTab('skills');
   });
   assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.pending()),true);
-  const source=p.locator('[data-skill-equipment="encounter-skill-test"]');
-  assert(await source.isVisible());assert.equal(await source.isDisabled(),false);
-  await source.click();
-  assert.equal(await p.evaluate(()=>playerHero().activeSkillEquipmentId),'encounter-skill-test');
-  assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>playerHero().activeSkillEquipmentId)),null);
   const slot=p.locator('[data-skill-slot="proc:0"]');assert.equal(await slot.isDisabled(),false);await slot.click();
   await p.locator('[data-skill-id="job1-core2"]').getByRole('button',{name:'裝入技能',exact:true}).click();
   assert.equal(await p.evaluate(()=>playerHero().skillLoadout.proc[0]),'job1-core2');
   assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>playerHero().skillLoadout.proc[0])),null);
   await p.evaluate(()=>{spawnGroup();running=false;});
-  assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>playerHero().activeSkillEquipmentId)),'encounter-skill-test');
   assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>playerHero().skillLoadout.proc[0])),'job1-core2');
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}

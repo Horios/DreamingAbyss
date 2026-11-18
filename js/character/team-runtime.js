@@ -24,7 +24,7 @@
   globalThis.__EMBERWILD_TEAM_MASTERY=masteryView;
   globalThis.__EMBERWILD_TEAM_GAIN=(h,n)=>{if(h!==player()||!build()||plan()?.job===null)return;const c=build().permanent.classes[h.job];if(c?.activated)c.xp+=n;refreshUnlocks();};
   function snapshot(p){
-    const h=player();p.skills=copy(h.skills);p.supportLevels=copy(h.supportLevels);p.active=copy(h.active);p.procSlots=copy(h.procSlots);p.supportSlots=copy(h.supportSlots);p.equipped=copy(h.equipped);if(h.skillLoadout)p.skillLoadout=copy(h.skillLoadout);p.activeSkillEquipmentId=h.activeSkillEquipmentId??null;p.passiveEnabled=copy(h.passiveEnabled||{});
+    const h=player();p.skills=copy(h.skills);p.supportLevels=copy(h.supportLevels);p.active=copy(h.active);p.procSlots=copy(h.procSlots);p.supportSlots=copy(h.supportSlots);p.equipped=copy(h.equipped);if(h.skillLoadout)p.skillLoadout=copy(h.skillLoadout);p.passiveEnabled=copy(h.passiveEnabled||{});
     p.playerActive=party.active.includes(memberKey(h));p.companions=party.active.filter(k=>k!==memberKey(h));p.enlisted=(party.enlisted||party.members.map(memberKey)).filter(k=>k!==memberKey(h));
     p.tokens=Object.fromEntries(party.members.slice(1).map(h=>[memberKey(h),h.tokenId??null]));
     p.sockets??=Array(h.skills.length).fill(null);
@@ -53,7 +53,7 @@
     for(const field of ['skills','supportLevels','active','procSlots','supportSlots','equipped'])h[field]=copy(p[field]);
     if(p.job===null){h.skills=Array(CLASSES[0].skills.length).fill(0);h.supportLevels=SUPPORT[0].map(()=>0);}
     h.sockets=p.job===null?h.skills.map(()=>null):p.sockets.map(id=>id===null?null:build().permanent.gemInstances[id]);
-    h.skillLoadout=p.skillLoadout?copy(p.skillLoadout):undefined;h.activeSkillEquipmentId=p.activeSkillEquipmentId??null;h.passiveEnabled=copy(p.passiveEnabled||{});globalThis.__EMBERWILD_SKILLS?.refreshHero(h);h.mastery=masteryView(h);party.active=[...(p.playerActive?[memberKey(h)]:[]),...p.companions];party.enlisted=[memberKey(h),...p.enlisted];party.selected=memberKey(h);state=h;
+    h.skillLoadout=p.skillLoadout?copy(p.skillLoadout):undefined;h.passiveEnabled=copy(p.passiveEnabled||{});globalThis.__EMBERWILD_SKILLS?.refreshHero(h);h.mastery=masteryView(h);party.active=[...(p.playerActive?[memberKey(h)]:[]),...p.companions];party.enlisted=[memberKey(h),...p.enlisted];party.selected=memberKey(h);state=h;
     for(const x of party.members.slice(1)){const key=memberKey(x),id=p.tokens[key]??null;x.tokenId=id&&EmberwildTokens.canEquip(findGear(id),x)?id:null;p.tokens[key]=x.tokenId;}
     pageHeroSelection.clear();forgeSelection=null;pendingAffix=null;
     for(const x of party.members){x.hp=Math.min(hp.get(memberKey(x))??0,stats(x).hp);if(x.hp<=0)x.hp=0;}
@@ -199,7 +199,7 @@
   const balanceBase=applyBalanceConfig;
   // Re-enter the final adapters without staging a build or committing another save.
   function restoreRules(doc){const previous=resettingBalance;resettingBalance=true;try{applyBalanceConfig(doc,{persist:false});}finally{resettingBalance=previous;}}
-  function rollbackDocument(){const doc=exportableBalance();return globalThis.EmberwildInventoryIcons?.migrateDescriptions?.(doc,{hydrate:true})||doc;}
+  function rollbackDocument(){const S=globalThis.__EMBERWILD_SKILLS,doc=S?S.exportBeforeApply(exportableBalance):exportableBalance();return globalThis.EmberwildInventoryIcons?.migrateDescriptions?.(doc,{hydrate:true})||doc;}
   applyBalanceConfig=function(input,{persist=true}={}){
     if(party&&!safe())return false;
     const d=validateBalanceConfig(input);

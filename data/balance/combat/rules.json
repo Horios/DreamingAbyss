@@ -141,10 +141,6 @@
           "mode": "flat",
           "value": 3
         },
-        "onCast": {
-          "mode": "flat",
-          "value": 3
-        },
         "enemyDeath": {
           "mode": "flat",
           "value": 3

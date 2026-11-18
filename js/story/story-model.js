@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const copy=x=>JSON.parse(JSON.stringify(x));
- const TYPES={gearWorn:'穿戴指定裝備',gearSkillActive:'啟用指定裝備技能',skillSlotted:'配置技能至合法槽位',gearSkillGem:'第一孔技能加成生效',gearBaseGem:'指定孔基礎能力生效',encounter:'任務關卡通關',companions:'招募夥伴數',party:'上陣人數',region:'解鎖地區',visit:'到達地區',explore:'地區擊殺進度',kill:'指定怪物擊殺',kills:'任意怪物擊殺',boss:'指定地區 BOSS',bosses:'任意 BOSS',stock:'持有道具',acquired:'累積取得道具',gatherItem:'採集指定素材',gather:'採集次數',recipe:'完成指定配方',alchemy:'煉金次數',enhance:'強化次數',enhanceLevel:'裝備最高強化',level:'主角等級',quest:'完成任務',stage:'完成階段',flag:'任務 Flag',unlock:'永久解鎖'};
+ const TYPES={gearWorn:'穿戴指定裝備',skillSlotted:'配置技能至合法槽位',gearBaseGem:'指定孔基礎能力生效',encounter:'任務關卡通關',companions:'招募夥伴數',party:'上陣人數',region:'解鎖地區',visit:'到達地區',explore:'地區擊殺進度',kill:'指定怪物擊殺',kills:'任意怪物擊殺',boss:'指定地區 BOSS',bosses:'任意 BOSS',stock:'持有道具',acquired:'累積取得道具',gatherItem:'採集指定素材',gather:'採集次數',recipe:'完成指定配方',alchemy:'煉金次數',enhance:'強化次數',enhanceLevel:'裝備最高強化',level:'主角等級',quest:'完成任務',stage:'完成階段',flag:'任務 Flag',unlock:'永久解鎖'};
  const GUIDES={battle:'前往探索',partnerRoster:'前往夥伴',roster:'前往隊伍',equipment:'前往背包',worn:'前往裝備',forge:'前往強化',gather:'前往採集',alchemy:'前往煉金',shop:'前往商店',skills:'前往技能'};
  const condition=(type='kills',key='',count=1,mode='lifetime')=>({type,key,count,mode,itemType:'material'});
  const group=conditions=>({mode:'all',conditions:conditions||[]});
@@ -89,7 +89,7 @@
   const qs=new Map();for(const q of d.quests){if(!q||!id(q.id)||qs.has(q.id)){add('任務 ID 無效或重複');continue;}qs.set(q.id,q);}
   function conditions(g,label){if(!g||!['all','any'].includes(g.mode)||!Array.isArray(g.conditions)){add(label+'條件群組無效');return;}
    for(const c of g.conditions){if(!c||!Object.hasOwn(TYPES,c.type)||!key(c.key)||!num(c.count)||c.count<1||!['lifetime','stage'].includes(c.mode)||!['material','item'].includes(c.itemType)){add(label+'條件無效');continue;}
-    if(['gearWorn','gearSkillActive','gearSkillGem','gearBaseGem'].includes(c.type)&&(!gear.has(c.key)||c.mode!=='lifetime'||c.count!==1||c.type==='gearBaseGem'&&(!num(c.slot)||c.slot>2)))add(label+'裝備條件引用或孔位無效');
+    if(['gearWorn','gearBaseGem'].includes(c.type)&&(!gear.has(c.key)||c.mode!=='lifetime'||c.count!==1||c.type==='gearBaseGem'&&(!num(c.slot)||c.slot>2)))add(label+'裝備條件引用或孔位無效');
     if(c.type==='skillSlotted'&&(c.mode!=='lifetime'||c.count!==1||ctx.skills&&!ctx.skills.some(s=>s.id===c.key)))add(label+'配置技能引用無效');
     if(['region','visit','explore','boss'].includes(c.type)&&(!/^\d+$/.test(c.key)||ctx.maps&& !ctx.maps[Number(c.key)]))add(label+'不存在的地區 '+c.key);
     if(c.type==='kill'&&ctx.monsters&&!ctx.monsters.some(m=>m.id===c.key))add(label+'不存在的怪物 '+c.key);

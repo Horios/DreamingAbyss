@@ -541,8 +541,42 @@
   ],
   [
     [],
-    [],
-    [],
+    [
+      {
+        "id": "gel-armor",
+        "name": "凝膠護甲",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearDefPct",
+            "value": 15
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "living-core-talisman",
+        "name": "活芯護符",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 5
+          }
+        ]
+      }
+    ],
     [
       {
         "id": "job4-slot3-form0",
@@ -557,6 +591,22 @@
           {
             "key": "flatHp",
             "value": 5
+          }
+        ]
+      },
+      {
+        "id": "wolf-fang-pendant",
+        "name": "狼牙墜飾",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 2
           }
         ]
       }

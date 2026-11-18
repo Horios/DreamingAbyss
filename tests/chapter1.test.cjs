@@ -133,7 +133,7 @@ test('a save that finished the prologue before chapter 1 existed can start it fr
  assert.deepEqual(r.errors,[]);
 });
 
-test('the gear lesson guides the prologue charm: equipment skill, the proc slot, then both sockets, reporting from the banner',()=>{
+test('the gear lesson guides the prologue charm: the proc slot then one socket, reporting from the banner',()=>{
  const r=open();prologue(r);finishChapter(r);r.run('chapterEndClose()');
  const L=()=>r.json('__EMBERWILD_QUEST_LESSON.current()');
  assert.equal(L(),null,'nothing is guided before the player reads the quest');
@@ -141,14 +141,13 @@ test('the gear lesson guides the prologue charm: equipment skill, the proc slot,
  assert.equal(r.run("completeStoryStage('skill_equipment_intro','','equipment_gift')"),true);
  assert.equal(r.json("playerHero().bag.filter(g=>g.storyRewardKey==='initiation_charm').length"),1,'the prologue charm is used, not a second one');
  r.run("globalThis.charm=playerHero().bag.find(g=>g.storyRewardKey==='initiation_charm')");
- assert.deepEqual(L(),{quest:'skill_equipment_intro',stage:'equip_skill',step:'gearSkillActive',page:'skills',text:'在技能頁的「裝備技能」選擇啟程護符。',slot:null},'the prologue already put the charm on');
- r.run("setTab('skills')");assert.match(r.run('__EMBERWILD_QUEST_LESSON.banner()'),/data-lesson-step="gearSkillActive"/);
- assert.equal(r.run('selectSkillEquipment(charm.id)'),true);assert.equal(L().step,'skillSlotted');assert.match(L().text,/觸發技能槽，裝入「追擊」/);
+ assert.deepEqual(L(),{quest:'skill_equipment_intro',stage:'equip_skill',step:'skillSlotted',page:'skills',text:'點選觸發技能槽，裝入「追擊」。',slot:null},'the prologue already put the charm on');
+ r.run("setTab('skills')");assert.match(r.run('__EMBERWILD_QUEST_LESSON.banner()'),/data-lesson-step="skillSlotted"/);
+assert.equal(L().step,'skillSlotted');assert.match(L().text,/觸發技能槽，裝入「追擊」/);
  assert.equal(r.run("chooseSkillSlot('proc',0,'tutorial_echo')"),true);assert.equal(L().step,'report');
- assert.equal(r.run('questLessonReport()'),true);assert.equal(r.json('party.story.quests.skill_equipment_intro.current'),'gem_skill');
- assert.deepEqual([L().step,L().page,L().slot],['gearSkillGem','worn',null]);assert.equal(r.run('playerHero().gems[0]'),1);
+ assert.equal(r.run('questLessonReport()'),true);assert.equal(r.json('party.story.quests.skill_equipment_intro.current'),'gem_base');
+ assert.deepEqual([L().step,L().page,L().slot],['gearBaseGem','worn',0]);assert.equal(r.run('playerHero().gems[0]'),1);
  assert.equal(r.run('socketEquipmentGem(charm.id,0,0)'),true);assert.equal(L().step,'report');r.run('questLessonReport()');
- assert.deepEqual([L().step,L().slot],['gearBaseGem',1]);assert.equal(r.run('socketEquipmentGem(charm.id,1,0)'),true);r.run('questLessonReport()');
  assert.equal(r.json('party.story.quests.skill_equipment_intro.done'),true);assert.equal(L(),null);
  assert.equal(r.json(`playerHero().acquiredSkillIds.includes('job3-support0')`),true,'the support skill reward');
  assert.deepEqual(r.errors,[]);

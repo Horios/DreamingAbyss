@@ -40,31 +40,7 @@ function gemCompatible(id,job,skill){
  const sk=CLASSES[job]?.skills?.[skill];if(!sk||!Number.isInteger(id)||id<0||id>=GEMS.length)return false;
  return id%GEM_KINDS===0?Number(sk[4])>0:id%GEM_KINDS===1?sk[1]==='active':id%GEM_KINDS===2?sk[1]==='proc':['active','proc'].includes(sk[1]);
 }
-function gemRate(h,i,kind){
- const id=h?.sockets?.[i];return Number.isInteger(id)&&id%GEM_KINDS===kind&&gemCompatible(id,h.job,i)?GEM_RATES[kind][Math.floor(id/GEM_KINDS)]:0;
-}
-function gemCooldownOnCast(i,h){
- const chance=gemRate(h,i,1),floor=GAME_BALANCE.combat.minimumActiveCooldown;
- return Math.max(floor,skillCooldown(i,h)-(chance>0&&Math.random()<chance?1:0));
-}
-function applyGemAfterSkill(h,i,v){
- const healingRate=gemRate(h,i,3),shieldRate=gemRate(h,i,4);
- if(!healingRate&&!shieldRate)return;
- const candidates=[...living()].filter(ally=>ally.hp>0);
- if(!candidates.length)return;
- const ally=candidates.sort((a,b)=>a.hp/Math.max(1,stats(a).hp)-b.hp/Math.max(1,stats(b).hp))[0];
- if(healingRate){
-  const before=ally.hp,amount=Math.max(1,Math.round((v?.atk??battleStats(h).atk)*healingRate));
-  ally.hp=Math.min(stats(ally).hp,ally.hp+amount);
-  const recovered=Math.max(0,ally.hp-before);
-  if(recovered){globalThis.recordCombatContribution?.(h,'healing',recovered);note(GEMS[h.sockets[i]].name+' → '+characterName(ally)+' 回復 '+recovered+' 生命');}
- }
- if(shieldRate){
-  const amount=Math.max(1,Math.round(Math.max(0,stats(h).def)*shieldRate));
-  ally.shield=Math.max(0,Number(ally.shield)||0)+amount;
-  note(GEMS[h.sockets[i]].name+' → '+characterName(ally)+' 護盾 +'+amount);
- }
-}
+
 
 
 // Preview has a separate copy so the older production client cannot discard
@@ -254,9 +230,9 @@ function rollAffixes(g){const cfg=GAME_BALANCE.affixes;return [0,1].map(()=>{con
 function affixLabel(a,g){let sk=CLASSES[g.job??state.job].skills[a.skill??0];return a.type<4?`${AFFIX[a.type]} +${a.value}${a.type===3?'%':''}`:a.type===4?`${sk[0]} 效果 +${a.value}%`:`${sk[0]} ${sk[1]==='active'?`冷卻 ${globalThis.EmberwildSecondsCombat?.cooldownReductionText?.('affixSkill',a.value)??'−'+a.value+' 回合'}`:`觸發率 +${a.value*GAME_BALANCE.affixes.procChancePerPointPercent}%`}`;}
 function affixHTML(a,g){return `<span class="affix effect-quality-${a.rank??0}">[${AFFIX_RANK[a.rank??0]}] ${affixLabel(a,g)}</span>`;}
 function bonusFor(i,type,s=state){return equipment(s).filter(g=>g.job===s.job).flatMap(g=>g.affix).filter(a=>a.type===type&&a.skill===i).reduce((n,a)=>n+a.value,0);}
-function skillPower(i,s=state){const sk=CLASSES[s.job].skills[i],perLevel=Number.isFinite(sk?.[6]?.powerPerLevel)?sk[6].powerPerLevel:GS('skills.core.effectPerExtraLevel',.4);return (sk[4]+Math.max(0,(Number(s.skills[i])||0)-1)*perLevel)*(1+gemRate(s,i,0)+bonusFor(i,4,s)/100);};
+function skillPower(i,s=state){const sk=CLASSES[s.job].skills[i],perLevel=Number.isFinite(sk?.[6]?.powerPerLevel)?sk[6].powerPerLevel:GS('skills.core.effectPerExtraLevel',.4);return (sk[4]+Math.max(0,(Number(s.skills[i])||0)-1)*perLevel)*(1+bonusFor(i,4,s)/100);};
 function skillCooldown(i,s=state){return Math.max(GAME_BALANCE.combat.minimumActiveCooldown,CLASSES[s.job].skills[i][3]-bonusFor(i,5,s));};
-function procChance(i,s=state){return Math.min(GAME_BALANCE.combat.statCaps.crit,.22+s.skills[i]*.025+gemRate(s,i,2)+bonusFor(i,5,s)*(GAME_BALANCE.affixes.procChancePerPointPercent/100));};
+function procChance(i,s=state){return Math.min(GAME_BALANCE.combat.statCaps.crit,.22+s.skills[i]*.025+bonusFor(i,5,s)*(GAME_BALANCE.affixes.procChancePerPointPercent/100));};
 function learn(i){let sk=CLASSES[state.job].skills[i],cap=skillCap();if(state.skills[i]>=cap)return toast(`目前技能上限 ${cap} 級；角色每 ${GS('skills.core.capLevelsPerStep',3)} 級提高 1 級上限，最高 ${RULES.skillMax} 級`);if(state.lv<sk[2]||(i>=4&&!state.advanced))return;state.skills[i]++;save();render();};
 
 note=function(t){originalNote(t);currentEvents.push(t);};
@@ -326,7 +302,7 @@ function craftBoss(mi){if(mi===6||!canVisit(mi))return;let mode=state.difficulty
 function makeEnemy(mi=state.map,s=state,rng=Math.random){let e=makeBaseEnemy(mi,s,rng),mode=s.difficulty||0,d=MODES[mode];if(e.lv>30&&e.kind!=='final'){let progress=e.lv-30;e.hp=Math.round(e.hp*(2+progress*.1));e.maxhp=e.hp;e.atk=Math.round(e.atk*(2+progress*.06));e.def=Math.round(e.def*1.6);}e.hp=Math.round(e.hp*d.hp);e.maxhp=e.hp;e.atk=Math.round(e.atk*d.atk);e.def=Math.round(e.def*d.def);e.difficulty=mode;e.region=mi;return e;};
 
 
-const progressionBattleView=battleView;battleView=function(){let d=MODES[state.difficulty||0];return modePicker()+progressionBattleView().replace('專屬素材：普通怪 65%、菁英與首領 100%。一般裝備 22% 起、技能寶石 4% 起；地圖 BOSS 專屬裝備 25%，或以 5 份素材保底製作。',`目前模式：普通怪素材 ${Math.round((GAMEPLAY_SETTINGS.difficulty.materialChance[state.difficulty||0]??0)*100)}%、裝備 ${Math.round(d.equip[0]*100)}%、寶石 ${Math.round(d.gem[0]*100)}%。菁英與首領素材必掉，地圖 BOSS 專屬裝備 ${d.boss*100}%；${Math.round(GS('equipment.boss.craftMaterialCount',5))} 份對應難度素材可保底製作。`);};
+const progressionBattleView=battleView;battleView=function(){let d=MODES[state.difficulty||0];return modePicker()+progressionBattleView().replace('專屬素材：普通怪 65%、菁英與首領 100%。一般裝備 22% 起、屬性寶石 4% 起；地圖 BOSS 專屬裝備 25%，或以 5 份素材保底製作。',`目前模式：普通怪素材 ${Math.round((GAMEPLAY_SETTINGS.difficulty.materialChance[state.difficulty||0]??0)*100)}%、裝備 ${Math.round(d.equip[0]*100)}%、寶石 ${Math.round(d.gem[0]*100)}%。菁英與首領素材必掉，地圖 BOSS 專屬裝備 ${d.boss*100}%；${Math.round(GS('equipment.boss.craftMaterialCount',5))} 份對應難度素材可保底製作。`);};
 
 function awardXP(amount){
  if(state.lv>=levelCap()||!Number.isFinite(amount)||amount<=0)return;
@@ -703,7 +679,7 @@ function slotSupport(i,slot){if(![0,1].includes(slot)||i!==null&&(!Number.isInte
 function spawnGroup(){const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],n=3+rand(4);foes=[];effects=[];actorCooldowns={};supportCooldowns={};for(const h of heroes())h.shield=0;for(let i=0;i<n;i++){const mi=party.map===6&&i>0?5:party.map;const e=makeEnemy(mi,weak);e.id='foe-'+uid();e.rewarded=false;foes.push(e);}enemy=foes[0];round=0;note('遭遇 '+foes.length+' 隻敵人。');}
 toggleBattle=function(){if(!living().length)return toast('請先戰後恢復');running=!running;if(running&&!foes.length)spawnGroup();render();};
 function hitFoe(e,amount,crit){const def=e.def*(1-Math.min(.75,effectTotal(e.id,'fracture')));let d=Math.max(1,Math.round(amount-def*.65));if(crit)d=Math.round(d*1.5);d=Math.round(d*(1+effectTotal(e.id,'vulnerable')));const actual=Math.min(e.hp,d);e.hp=Math.max(0,e.hp-d);return actual;}
-function castPartySkill(h,i,v){const sk=CLASSES[h.job].skills[i],power=v.atk*skillPower(i,h)*(1+effectTotal(heroKey(h),'power'));if(sk[5]==='heal'){const ally=[...living()].sort((a,b)=>a.hp/solo.stats(a).hp-b.hp/solo.stats(b).hp)[0];ally.hp=Math.min(solo.stats(ally).hp,ally.hp+Math.round(power));note(sk[0]+' → '+CLASSES[ally.job].name);}else if(sk[5]==='shield'){const shieldResult=applyPureShield(h,power);note(pureShieldCastLog(h,sk[0],shieldResult));}else{const e=foes.find(e=>e.hp>0);if(!e)return;const d=hitFoe(e,power,Math.random()<v.crit);if(sk[5]==='drain')h.hp=Math.min(v.hp,h.hp+d);note(characterName(h)+'・'+sk[0]+' → '+e.name+' '+d+' 傷害');}applyGemAfterSkill(h,i,v);}
+function castPartySkill(h,i,v){const sk=CLASSES[h.job].skills[i],power=v.atk*skillPower(i,h)*(1+effectTotal(heroKey(h),'power'));if(sk[5]==='heal'){const ally=[...living()].sort((a,b)=>a.hp/solo.stats(a).hp-b.hp/solo.stats(b).hp)[0];ally.hp=Math.min(solo.stats(ally).hp,ally.hp+Math.round(power));note(sk[0]+' → '+CLASSES[ally.job].name);}else if(sk[5]==='shield'){const shieldResult=applyPureShield(h,power);note(pureShieldCastLog(h,sk[0],shieldResult));}else{const e=foes.find(e=>e.hp>0);if(!e)return;const d=hitFoe(e,power,Math.random()<v.crit);if(sk[5]==='drain')h.hp=Math.min(v.hp,h.hp+d);note(characterName(h)+'・'+sk[0]+' → '+e.name+' '+d+' 傷害');}}
 function rewardGroupKill(e){if(e.rewarded)return;e.rewarded=true;const members=heroes(),receiver=members[rand(members.length)],isFinal=e.kind==='final',xp=EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,party.members[0].lv),hp=receiver.hp,shield=receiver.shield;
  // Existing loot rules run exactly once per enemy. XP and kill credit are shared.
  const oldAward=awardXP;awardXP=()=>{};enemy=e;partyBusy=true;
@@ -841,7 +817,10 @@ function normalizeEquipmentFormsArray(forms){
 }
 normalizeEquipmentFormsArray(ITEM_FORMS);
 function equipmentFormGroup(g){const group=Number.isInteger(g?.formJob)?g.formJob:Number(g?.job);return Number.isInteger(group)&&group>=0&&group<ITEM_FORMS.length?group:Number(g?.job)||0;}
-function rollEquipmentForm(job,slot){const candidates=[];for(const group of [job,GLOBAL_EQUIPMENT_FORM_GROUP])for(let index=0;index<(ITEM_FORMS[group]?.[slot]?.length||0);index++)if(!globalThis.__EMBERWILD_STORY?.isRewardForm(ITEM_FORMS[group][slot][index].id))candidates.push({group,index});return candidates.length?candidates[rand(candidates.length)]:{group:job,index:0};}
+function rollEquipmentForm(job,slot){const candidates=[];for(const group of [job,GLOBAL_EQUIPMENT_FORM_GROUP])for(let index=0;index<(ITEM_FORMS[group]?.[slot]?.length||0);index++){
+ const id=ITEM_FORMS[group][slot][index].id;
+ if(!globalThis.__EMBERWILD_STORY?.isRewardForm(id)&&!globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.dropOnlyForm(id))candidates.push({group,index});
+ }return candidates.length?candidates[rand(candidates.length)]:{group:job,index:0};}
 function gearEquipPositions(g){return g?.slot===3?[3,4]:Number.isInteger(g?.slot)&&g.slot>=0&&g.slot<=2?[g.slot]:[];}
 function bossEquipmentSlot(family){return [0,1,2,0,1,3][Math.max(0,Math.min(5,Number(family)||0))]??0;}
 function normalizeEquipmentFormWearability(){
@@ -1360,7 +1339,7 @@ let inventoryCategory='equipment',massSalvageIds=null;
 function setInventoryCategory(category){if(category==='gems')category='items';if(!['equipment','materials','items'].includes(category))return;inventoryCategory=category;render();}
 function inventoryTabs(){return `<div class="actions inventory-category-tabs">${[['equipment','裝備'],['materials','材料'],['items','道具']].map(([id,name])=>`<button class="${inventoryCategory===id?'primary':''}" onclick="setInventoryCategory('${id}')">${name}</button>`).join('')}<button onclick="showTestCodes()">兌換碼</button></div>`;}
 function accountMaterialsView(){const entries=[['鍛鐵',state.ore],['粉塵',state.dust],['以太鍛鐵',state.materials['以太鍛鐵']||0],...Object.entries(state.materials).filter(([k,n])=>k!=='以太鍛鐵'&&n>0)];return heading('MATERIALS / 帳號共用','材料庫存')+`<section class="panel account-material-list">${entries.map(([name,n])=>`<div class="row"><b>${esc(name)}</b><span>× ${n.toLocaleString()}</span></div>`).join('')}<p class="small">升級卷軸：每個升1級；目前上限30級，通關後60級。請先結束當前遭遇。</p><div class="actions"><button onclick="useLevelScroll()" ${!(state.materials['升級卷軸']>0)||playerHero().lv>=levelCap(playerHero())?'disabled':''}>主角升級 · LV${playerHero().lv}</button></div></section>`;}
-function accountGemsView(){return heading('GEMS / 帳號共用','技能寶石')+`<section class="panel account-gem-list"><div class="account-gem-slots">${GEMS.map((g,i)=>({g,i})).filter(({i})=>state.gems[i]>0).map(({g,i})=>`<div data-inventory-gem="${i}">${itemSlotHTML('gem',String(i),{count:state.gems[i],context:'inventory'})}</div>`).join('')}</div><div class="actions"><button onclick="craftGem()" ${state.dust<GS('skills.gems.craftDust',12)?'disabled':''}>合成隨機寶石 · ${Math.round(GS('skills.gems.craftDust',12))} 粉塵</button><button onclick="setTab('skills')">前往技能鑲嵌</button></div></section>`;}
+function accountGemsView(){return heading('GEMS / 帳號共用','屬性寶石')+`<section class="panel account-gem-list"><div class="account-gem-slots">${GEMS.map((g,i)=>({g,i})).filter(({i})=>state.gems[i]>0).map(({g,i})=>`<div data-inventory-gem="${i}">${itemSlotHTML('gem',String(i),{count:state.gems[i],context:'inventory'})}</div>`).join('')}</div><div class="actions"><button onclick="craftGem()" ${state.dust<GS('skills.gems.craftDust',12)?'disabled':''}>合成隨機寶石 · ${Math.round(GS('skills.gems.craftDust',12))} 粉塵</button><button onclick="setTab('skills')">前往技能鑲嵌</button></div></section>`;}
 
 const categoriesEquipmentView=equipmentView;equipmentView=function(){return inventoryTabs()+(inventoryCategory==='materials'?accountMaterialsView():inventoryCategory==='gems'?accountGemsView():categoriesEquipmentView());};
 function toggleGearLock(id){const g=findGear(id);if(!g)return;g.locked=!g.locked;if(!save()){g.locked=!g.locked;return;}render();toast(g.locked?'已鎖定 '+equipmentDisplayName(g):'已解除鎖定 '+equipmentDisplayName(g));}

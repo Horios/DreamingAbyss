@@ -32,9 +32,8 @@
       definitions.push(sk);classRules[job].initial.push({skillId:id,level:sk.requiredLevel});
     }
     for(const sk of definitions)if(sk.sources.some(s=>s.type==='advanced'))classRules[sk.jobs[0]].advanced.push({skillId:sk.id,level:Math.max(15,sk.requiredLevel??sk.level??1)});
-    const equipmentPool=definitions.filter(sk=>sk.sources.some(s=>s.type==='equipment')).map(sk=>({skillId:sk.id,jobs:sk.jobs,slots:[0,1,2,3],minLevel:1,maxLevel:999,weight:1,maps:[],monsters:[],bosses:[],allowShop:true,allowCraft:true}));
-    const gems=[['atk','flat','effect',[.02,.04,.06]],['speed','flat','cooldown',[.05,.1,.15]],['crit','ratio','procChance',[.01,.02,.03]],['hp','flat','heal',[.03,.06,.09]],['def','flat','shield',[.01,.02,.03]]].map(([stat,unit,key,values],kind)=>({kind,base:{stat,unit,values:kind===0?[2,4,6]:kind===1?[1,2,3]:kind===2?[.01,.02,.03]:kind===3?[10,20,30]:[1,2,3]},skill:{key,values,types:kind===1?['active','support']:kind===2?['proc']:['active','proc','support'],effects:[],slots:[0]},cap:1}));
-    return addClearingSkills({version:VERSION,gemSlotRuleVersion:2,definitions,classRules,equipment:{chanceByDifficulty:[.15,.15,.15],formRules:[],pool:equipmentPool,socketBands:[{minLevel:1,maxLevel:10,weights:[.7,.3,0,0]},{minLevel:11,maxLevel:20,weights:[.35,.5,.15,0]},{minLevel:21,maxLevel:999,weights:[.1,.35,.35,.2]}],sourceRules:[{source:'starter',weights:[1,0,0,0]},{source:'boss',weights:[0,.3,.4,.3]}]},gems},d);
+    const gems=[['atk','flat',[2,4,6]],['speed','flat',[1,2,3]],['crit','ratio',[.01,.02,.03]],['hp','flat',[10,20,30]],['def','flat',[1,2,3]]].map(([stat,unit,values],kind)=>({kind,base:{stat,unit,values}}));
+    return addClearingSkills({version:VERSION,definitions,classRules,equipment:{formRules:[],socketBands:[{minLevel:1,maxLevel:10,weights:[.7,.3,0,0]},{minLevel:11,maxLevel:20,weights:[.35,.5,.15,0]},{minLevel:21,maxLevel:999,weights:[.1,.35,.35,.2]}],sourceRules:[{source:'starter',weights:[1,0,0,0]},{source:'boss',weights:[0,.3,.4,.3]}]},gems},d);
   }
   function clearingStatus(){return {"id":"holy-prison-mark","name":"神聖光牢","tags":[],"polarity":"debuff","dispellable":true,"duration":99,"permanent":true,"durationClock":"target","stackable":true,"uses":1,"removeOnTrigger":true,"modifiers":[],"control":null,"periodic":[],"triggers":[{"event":"targetTurnEnd","effect":"damage","power":0.5,"target":"enemies","element":"light","allowDeathChain":true,"chainMultiplier":1},{"event":"targetDeath","effect":"damage","power":0.3,"target":"enemies","element":"light","allowDeathChain":true,"chainMultiplier":1}]};}
   function addClearingSkills(s,d){
@@ -76,25 +75,28 @@
       for(const k of ['initial','advanced']){if(!Array.isArray(rule[k]))fail('職業技能清單無效');for(const row of rule[k])if(!ids.has(row.skillId)||!ids.get(row.skillId).jobs.includes(rule.job)||!integer(row.level,1,999))fail('職業引用不存在或等級無效：'+row.skillId);}
       for(const stage of ['first','advanced'])for(const type of ['active','proc','support'])if(!integer(rule.slots?.[stage]?.[type],0,type==='active'?3:2))fail('職業槽位超出上限');
     }
-    const e=s.equipment;if(!e||!Array.isArray(e.pool)||!Array.isArray(e.chanceByDifficulty)||e.chanceByDifficulty.length!==3||e.chanceByDifficulty.some(x=>!finite(x,0,1)))fail('裝備技能機率無效');
-    if(e.formRules!==undefined&&(!Array.isArray(e.formRules)||e.formRules.some(r=>!safe(r.formId)||r.skillId&&!ids.has(r.skillId)||r.skillChance!==undefined&&!finite(r.skillChance,0,1)||r.allowSkill!==undefined&&typeof r.allowSkill!=='boolean')))fail('固定裝備技能設定無效');
-    for(const row of e.pool){const sk=ids.get(row.skillId);if(!sk||!sk.sources.some(x=>x.type==='equipment')||!Array.isArray(row.jobs)||row.jobs.some(x=>!integer(x,0,3))||!Array.isArray(row.slots)||row.slots.some(x=>!integer(x,0,3))||!integer(row.minLevel,1,999)||!integer(row.maxLevel,row.minLevel,999)||!finite(row.weight,0)||!['maps','monsters','bosses'].every(k=>Array.isArray(row[k]))||typeof row.allowShop!=='boolean'||typeof row.allowCraft!=='boolean')fail('裝備技能池引用或限制無效：'+row.skillId);}
+    const e=s.equipment;if(!e||Object.hasOwn(e,'pool')||Object.hasOwn(e,'chanceByDifficulty'))fail('裝備技能只能來自指定裝備');
+    if(e.formRules!==undefined&&(!Array.isArray(e.formRules)||e.formRules.some(r=>!safe(r.formId)||r.dropOnly!==undefined&&typeof r.dropOnly!=='boolean'||r.dropOnly&&!r.skillId||r.skillId&&!ids.get(r.skillId)?.sources.some(x=>x.type==='equipment'))))fail('固定裝備技能設定無效');
     if(!Array.isArray(e.socketBands)||!e.socketBands.length||!Array.isArray(e.sourceRules))fail('鑲嵌孔分布無效');
     const weights=row=>Array.isArray(row.weights)&&row.weights.length===4&&row.weights.every(v=>finite(v,0,1))&&Math.abs(row.weights.reduce((a,v)=>a+v,0)-1)<1e-8;
     let end=0;for(const row of e.socketBands){if(!integer(row.minLevel,1,999)||row.minLevel!==end+1||!integer(row.maxLevel,row.minLevel,999)||!weights(row))fail('孔數等級區間必須連續且機率總和為 1');end=row.maxLevel;}if(end!==999)fail('孔數分布需涵蓋 LV1～999');
     for(const row of e.sourceRules)if(!['starter','boss','drop','shop','craft','legacy'].includes(row.source)||!weights(row))fail('來源孔數機率無效');
     if(!Array.isArray(s.gems)||s.gems.length!==5||new Set(s.gems.map(g=>g.kind)).size!==5)fail('寶石定義無效');
-    for(const g of s.gems)if(!integer(g.kind,0,4)||!['atk','hp','def','speed','crit'].includes(g.base?.stat)||!['flat','ratio'].includes(g.base?.unit)||!['effect','cooldown','procChance','heal','shield'].includes(g.skill?.key)||![g.base.values,g.skill.values].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>finite(v,0,1e6)))||!Array.isArray(g.skill.types)||g.skill.types.some(x=>!types.includes(x))||!Array.isArray(g.skill.effects)||!Array.isArray(g.skill.slots)||g.skill.slots.some(x=>x!==0)||!finite(g.cap,0,1e6))fail('寶石效果、相容性或階級無效');
+    for(const g of s.gems)if(!integer(g.kind,0,4)||!['atk','hp','def','speed','crit'].includes(g.base?.stat)||!['flat','ratio'].includes(g.base?.unit)||!Array.isArray(g.base.values)||g.base.values.length!==3||g.base.values.some(v=>!finite(v,0,1e6))||Object.hasOwn(g,'skill')||Object.hasOwn(g,'cap'))fail('屬性寶石數值或階級無效');
     for(const sk of s.definitions)for(const target of sk.induction?.targets||[])if(target.kind==='skill'&&!ids.has(target.skillId))fail('誘發技能引用不存在：'+target.skillId);
     return s;
   }
   function project(d){
-    const raw=d.skillSystem;if(raw.gemSlotRuleVersion!==2){raw.gems.forEach(g=>g.skill.slots=g.skill.slots.filter(n=>n===0));raw.gemSlotRuleVersion=2;}
-    const s=validate(raw);
-    const maps=d.balanceSettings?.maps?.catalog,monsters=d.balanceSettings?.monsters?.catalog,forms=new Set();
+    const s=validate(d.skillSystem);
+    const forms=new Set();
     for(const [job,slots] of (d.equipmentForms||[]).entries())for(const [slot,rows] of slots.entries())for(const [i,row] of rows.entries())forms.add(row.id||`job${job}-slot${slot}-form${i}`);
-    for(const row of s.equipment.pool)if(maps&&row.maps.some(i=>!integer(i,0,maps.length-1))||monsters&&row.monsters.some(id=>!monsters.some(m=>m.id===id))||maps&&row.bosses.some(i=>!integer(i,0,maps.length-1)))throw Error('技能系統：裝備技能池來源引用不存在：'+row.skillId);
-    for(const row of s.equipment.formRules||[])if(forms.size&&!forms.has(row.formId))throw Error('技能系統：固定裝備引用不存在：'+row.formId);
+    const rules=s.equipment.formRules||[];
+    if(new Set(rules.map(r=>r.formId)).size!==rules.length)throw Error('技能系統：固定裝備設定重複');
+    for(const row of rules){
+      if(forms.size&&!forms.has(row.formId))throw Error('技能系統：固定裝備引用不存在：'+row.formId);
+      if(!row.dropOnly)continue;
+      if(d.shopSettings?.equipmentStages?.some(stage=>stage.entries.some(e=>e.formId===row.formId))||(d.starterPacks||[]).some(pack=>pack.some(e=>e.formId===row.formId))||d.story?.gearRewards?.some(g=>g.formId===row.formId))throw Error('技能系統：怪物限定裝備不能作為其他獎勵或商品：'+row.formId);
+    }
     for(const sk of s.definitions){
       for(const adapter of adapters(sk)){
       const {adapters:unused,adapter:primary,type,jobs,sources,disabled,...row}=copy(sk),{job,index,kind}=adapter;
@@ -116,10 +118,10 @@
     if(g.skillSockets===undefined){
       const level=g.equipmentLevel||1,rows=system?.equipment,rule=rows?.sourceRules.find(x=>x.source===source&&(x.boss===undefined||x.boss===g.boss))||rows?.socketBands.find(x=>level>=x.minLevel&&level<=x.maxLevel),weights=rule?.weights||[1,0,0,0];
       let n=0;if(!legacy){let r=random();while(n<3&&r>=weights[n])r-=weights[n++];}
-      g.skillSockets={version:VERSION,count:n,gems:Array(n).fill(null),firstMode:'skill'};
+      g.skillSockets={version:VERSION,count:n,gems:Array(n).fill(null)};
     }
     const x=g.skillSockets;
-    if(x.version!==VERSION||!integer(x.count,0,3)||!Array.isArray(x.gems)||x.gems.length!==x.count||x.gems.some(id=>id!==null&&!integer(id,0,14))||!['skill','base'].includes(x.firstMode))throw Error('裝備寶石孔資料無效：'+g.id);
+    if(x.version!==VERSION||!integer(x.count,0,3)||!Array.isArray(x.gems)||x.gems.length!==x.count||x.gems.some(id=>id!==null&&!integer(id,0,14)))throw Error('裝備寶石孔資料無效：'+g.id);
     if(g.skillId!==undefined&&g.skillId!==null&&(typeof g.skillId!=='string'||system&&!system.definitions.some(s=>s.id===g.skillId)))throw Error('裝備技能不存在：'+g.skillId);
     return g;
   }

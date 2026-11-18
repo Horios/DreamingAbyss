@@ -88,7 +88,7 @@ test('cooldown reduction applies percent then fixed, diminishes below the thresh
  assert.equal(S.applyCooldownReduction(12,{fixedAll:10},c,.3),2,'never below 2 s');
  assert.equal(S.applyCooldownReduction(1.5,{fixedAll:2},c,.3),1.5,'a shorter own cooldown is kept');
  assert.equal(S.applyCooldownReduction(21,{},c,.3),21);
- const bad=structuredClone(doc);bad.balanceSettings.combat.seconds.cooldownReduction.sources.onCast.mode='turns';assert.throws(()=>S.validate(bad));
+ const bad=structuredClone(doc);bad.balanceSettings.combat.seconds.cooldownReduction.sources.enemyDeath.mode='turns';assert.throws(()=>S.validate(bad));
 });
 
 test('runtime cooldowns, the on-cast cut and enemy-death reductions follow the configured rules',()=>{

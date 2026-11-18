@@ -3454,6 +3454,164 @@
           "target": "enemy",
           "commonEffectKeys": [],
           "requiredWeaponType": null
+        },
+        {
+          "id": "gel-guard-job0",
+          "name": "凝膠緩衝",
+          "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "shield",
+          "systemEffect": "guard",
+          "power": 0.15,
+          "cooldown": 6,
+          "duration": 3,
+          "target": "self",
+          "timing": {
+            "cooldownSeconds": 21,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 1,
+            "durationSeconds": 6,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "missingEffect",
+            "initialCooldownSeconds": 0
+          }
+        },
+        {
+          "id": "wolf-double-bite-job0",
+          "name": "狼牙連咬",
+          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 2,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target",
+            "hitCount"
+          ],
+          "targetLimit": true,
+          "effect": "damage",
+          "power": 0.65,
+          "cooldown": 3,
+          "target": "enemy",
+          "timing": {
+            "cooldownSeconds": 12,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 2,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 3
+          }
+        },
+        {
+          "id": "living-core-renewal-job0",
+          "name": "樹芯癒合",
+          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "light",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "heal",
+          "systemEffect": "regen",
+          "power": 0.02,
+          "cooldown": 8,
+          "duration": 4,
+          "target": "allies",
+          "timing": {
+            "cooldownSeconds": 24,
+            "mpCost": 6,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 0,
+            "durationSeconds": 12,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "injured",
+            "initialCooldownSeconds": 2
+          }
         }
       ],
       "initialStats": {
@@ -4454,6 +4612,164 @@
           "target": "enemy",
           "commonEffectKeys": [],
           "requiredWeaponType": null
+        },
+        {
+          "id": "gel-guard-job1",
+          "name": "凝膠緩衝",
+          "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "shield",
+          "systemEffect": "guard",
+          "power": 0.15,
+          "cooldown": 6,
+          "duration": 3,
+          "target": "self",
+          "timing": {
+            "cooldownSeconds": 21,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 1,
+            "durationSeconds": 6,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "missingEffect",
+            "initialCooldownSeconds": 0
+          }
+        },
+        {
+          "id": "wolf-double-bite-job1",
+          "name": "狼牙連咬",
+          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 2,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target",
+            "hitCount"
+          ],
+          "targetLimit": true,
+          "effect": "damage",
+          "power": 0.65,
+          "cooldown": 3,
+          "target": "enemy",
+          "timing": {
+            "cooldownSeconds": 12,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 2,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 3
+          }
+        },
+        {
+          "id": "living-core-renewal-job1",
+          "name": "樹芯癒合",
+          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "light",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "heal",
+          "systemEffect": "regen",
+          "power": 0.02,
+          "cooldown": 8,
+          "duration": 4,
+          "target": "allies",
+          "timing": {
+            "cooldownSeconds": 24,
+            "mpCost": 6,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 0,
+            "durationSeconds": 12,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "injured",
+            "initialCooldownSeconds": 2
+          }
         }
       ],
       "initialStats": {
@@ -5434,6 +5750,164 @@
           ],
           "targetLimit": false,
           "weaponTypes": []
+        },
+        {
+          "id": "gel-guard-job2",
+          "name": "凝膠緩衝",
+          "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "shield",
+          "systemEffect": "guard",
+          "power": 0.15,
+          "cooldown": 6,
+          "duration": 3,
+          "target": "self",
+          "timing": {
+            "cooldownSeconds": 21,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 1,
+            "durationSeconds": 6,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "missingEffect",
+            "initialCooldownSeconds": 0
+          }
+        },
+        {
+          "id": "wolf-double-bite-job2",
+          "name": "狼牙連咬",
+          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 2,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target",
+            "hitCount"
+          ],
+          "targetLimit": true,
+          "effect": "damage",
+          "power": 0.65,
+          "cooldown": 3,
+          "target": "enemy",
+          "timing": {
+            "cooldownSeconds": 12,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 2,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 3
+          }
+        },
+        {
+          "id": "living-core-renewal-job2",
+          "name": "樹芯癒合",
+          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "light",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "heal",
+          "systemEffect": "regen",
+          "power": 0.02,
+          "cooldown": 8,
+          "duration": 4,
+          "target": "allies",
+          "timing": {
+            "cooldownSeconds": 24,
+            "mpCost": 6,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 0,
+            "durationSeconds": 12,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "injured",
+            "initialCooldownSeconds": 2
+          }
         }
       ],
       "initialStats": {
@@ -6543,6 +7017,164 @@
           "statusTarget": "enemies",
           "statusMaxTargets": 3,
           "weaponTypes": []
+        },
+        {
+          "id": "gel-guard-job3",
+          "name": "凝膠緩衝",
+          "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "shield",
+          "systemEffect": "guard",
+          "power": 0.15,
+          "cooldown": 6,
+          "duration": 3,
+          "target": "self",
+          "timing": {
+            "cooldownSeconds": 21,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 1,
+            "durationSeconds": 6,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "missingEffect",
+            "initialCooldownSeconds": 0
+          }
+        },
+        {
+          "id": "wolf-double-bite-job3",
+          "name": "狼牙連咬",
+          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 1,
+          "hitCount": 2,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target",
+            "hitCount"
+          ],
+          "targetLimit": true,
+          "effect": "damage",
+          "power": 0.65,
+          "cooldown": 3,
+          "target": "enemy",
+          "timing": {
+            "cooldownSeconds": 12,
+            "mpCost": 5,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 2,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 3
+          }
+        },
+        {
+          "id": "living-core-renewal-job3",
+          "name": "樹芯癒合",
+          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": null,
+          "requiredLevel": 1,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "light",
+          "maxTargets": 1,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "heal",
+          "systemEffect": "regen",
+          "power": 0.02,
+          "cooldown": 8,
+          "duration": 4,
+          "target": "allies",
+          "timing": {
+            "cooldownSeconds": 24,
+            "mpCost": 6,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 0,
+            "durationSeconds": 12,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "injured",
+            "initialCooldownSeconds": 2
+          }
         }
       ],
       "initialStats": {
@@ -8643,8 +9275,42 @@
     ],
     [
       [],
-      [],
-      [],
+      [
+        {
+          "id": "gel-armor",
+          "name": "凝膠護甲",
+          "wearableJobs": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fixedEffects": [
+            {
+              "key": "gearDefPct",
+              "value": 15
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "id": "living-core-talisman",
+          "name": "活芯護符",
+          "wearableJobs": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fixedEffects": [
+            {
+              "key": "flatHp",
+              "value": 5
+            }
+          ]
+        }
+      ],
       [
         {
           "id": "job4-slot3-form0",
@@ -8659,6 +9325,22 @@
             {
               "key": "flatHp",
               "value": 5
+            }
+          ]
+        },
+        {
+          "id": "wolf-fang-pendant",
+          "name": "狼牙墜飾",
+          "wearableJobs": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fixedEffects": [
+            {
+              "key": "attackPct",
+              "value": 2
             }
           ]
         }
@@ -16671,10 +17353,6 @@
               "mode": "flat",
               "value": 3
             },
-            "onCast": {
-              "mode": "flat",
-              "value": 3
-            },
             "enemyDeath": {
               "mode": "flat",
               "value": 3
@@ -23156,6 +23834,126 @@
             "map24_mob2",
             "map24_mob3"
           ]
+        },
+        {
+          "id": "gel-armor-normal",
+          "name": "凝膠護甲",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:1:0",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.0004,
+            0.0005,
+            0.0006
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob0"
+          ]
+        },
+        {
+          "id": "gel-armor-elite",
+          "name": "凝膠護甲",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:1:0",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.0012,
+            0.0015,
+            0.0018
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob0"
+          ]
+        },
+        {
+          "id": "wolf-fang-pendant-normal",
+          "name": "狼牙墜飾",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:3:1",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.0004,
+            0.0005,
+            0.0006
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob1"
+          ]
+        },
+        {
+          "id": "wolf-fang-pendant-elite",
+          "name": "狼牙墜飾",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:3:1",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.0012,
+            0.0015,
+            0.0018
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob1"
+          ]
+        },
+        {
+          "id": "living-core-talisman-normal",
+          "name": "活芯護符",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:2:0",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.0004,
+            0.0005,
+            0.0006
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob2"
+          ]
+        },
+        {
+          "id": "living-core-talisman-elite",
+          "name": "活芯護符",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:2:0",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.0012,
+            0.0015,
+            0.0018
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob2"
+          ]
         }
       ],
       "levelGap": {
@@ -27373,7 +28171,7 @@
           "enabled": true,
           "type": "gem",
           "key": "random",
-          "name": "技能寶石",
+          "name": "屬性寶石",
           "unitPrice": 180,
           "quantityMin": 1,
           "quantityMax": 2,
@@ -31710,7 +32508,7 @@
       "kind": "gem",
       "key": "0",
       "iconType": "auto",
-      "description": "技能效果 +2%（加算型增幅）",
+      "description": "攻擊 +2",
       "color": "#EF5D5D",
       "displayName": "赤焰石・1階"
     },
@@ -31718,7 +32516,7 @@
       "kind": "gem",
       "key": "1",
       "iconType": "auto",
-      "description": "主動技能成功施放後，5% 機率使該技能冷卻減少 3 秒",
+      "description": "速度 +1",
       "color": "#49B976",
       "displayName": "疾風石・1階"
     },
@@ -31726,7 +32524,7 @@
       "kind": "gem",
       "key": "2",
       "iconType": "auto",
-      "description": "普攻觸發技能觸發率 +1 個百分點",
+      "description": "暴擊率 +1%",
       "color": "#AE83EC",
       "displayName": "靈巧石・1階"
     },
@@ -32082,7 +32880,7 @@
       "kind": "gem",
       "key": "3",
       "iconType": "auto",
-      "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 3% 的生命",
+      "description": "生命 +10",
       "color": "#E8EDF7",
       "displayName": "生息石・1階"
     },
@@ -32090,7 +32888,7 @@
       "kind": "gem",
       "key": "4",
       "iconType": "auto",
-      "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 1% 的護盾，能與其他護盾累加",
+      "description": "防禦 +1",
       "color": "#64AAF0",
       "displayName": "守護石・1階"
     },
@@ -32098,7 +32896,7 @@
       "kind": "gem",
       "key": "5",
       "iconType": "auto",
-      "description": "技能效果 +4%（加算型增幅）",
+      "description": "攻擊 +4",
       "color": "#EF5D5D",
       "displayName": "赤焰石・2階"
     },
@@ -32106,7 +32904,7 @@
       "kind": "gem",
       "key": "6",
       "iconType": "auto",
-      "description": "主動技能成功施放後，10% 機率使該技能冷卻減少 3 秒",
+      "description": "速度 +2",
       "color": "#49B976",
       "displayName": "疾風石・2階"
     },
@@ -32114,7 +32912,7 @@
       "kind": "gem",
       "key": "7",
       "iconType": "auto",
-      "description": "普攻觸發技能觸發率 +2 個百分點",
+      "description": "暴擊率 +2%",
       "color": "#AE83EC",
       "displayName": "靈巧石・2階"
     },
@@ -32122,7 +32920,7 @@
       "kind": "gem",
       "key": "8",
       "iconType": "auto",
-      "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 6% 的生命",
+      "description": "生命 +20",
       "color": "#E8EDF7",
       "displayName": "生息石・2階"
     },
@@ -32130,7 +32928,7 @@
       "kind": "gem",
       "key": "9",
       "iconType": "auto",
-      "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 2% 的護盾，能與其他護盾累加",
+      "description": "防禦 +2",
       "color": "#64AAF0",
       "displayName": "守護石・2階"
     },
@@ -32138,7 +32936,7 @@
       "kind": "gem",
       "key": "10",
       "iconType": "auto",
-      "description": "技能效果 +6%（加算型增幅）",
+      "description": "攻擊 +6",
       "color": "#EF5D5D",
       "displayName": "赤焰石・3階"
     },
@@ -32146,7 +32944,7 @@
       "kind": "gem",
       "key": "11",
       "iconType": "auto",
-      "description": "主動技能成功施放後，15% 機率使該技能冷卻減少 3 秒",
+      "description": "速度 +3",
       "color": "#49B976",
       "displayName": "疾風石・3階"
     },
@@ -32154,7 +32952,7 @@
       "kind": "gem",
       "key": "12",
       "iconType": "auto",
-      "description": "普攻觸發技能觸發率 +3 個百分點",
+      "description": "暴擊率 +3%",
       "color": "#AE83EC",
       "displayName": "靈巧石・3階"
     },
@@ -32162,7 +32960,7 @@
       "kind": "gem",
       "key": "13",
       "iconType": "auto",
-      "description": "技能成功發動後，恢復生命比例最低的存活隊友相當於施放者攻擊力 9% 的生命",
+      "description": "生命 +30",
       "color": "#E8EDF7",
       "displayName": "生息石・3階"
     },
@@ -32170,7 +32968,7 @@
       "kind": "gem",
       "key": "14",
       "iconType": "auto",
-      "description": "技能成功發動後，生命比例最低的存活隊友獲得相當於施放者防禦力 3% 的護盾，能與其他護盾累加",
+      "description": "防禦 +3",
       "color": "#64AAF0",
       "displayName": "守護石・3階"
     }
@@ -32754,7 +33552,7 @@
           "gearKey": "initiation_charm",
           "afterStage": "equipment_gift",
           "gemKey": "0",
-          "gemQuantity": 2
+          "gemQuantity": 1
         },
         "stages": [
           {
@@ -32816,17 +33614,17 @@
             "id": "equip_skill",
             "name": "啟用裝備技能",
             "speaker": "女神",
-            "description": "穿上啟程護符，在技能頁的「裝備技能」選擇啟程護符，再把「追擊」裝進觸發技能槽。",
+            "description": "穿上啟程護符，在技能頁把護符附帶的「追擊」裝進觸發技能槽。",
             "dialogue": [
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "先到技能頁，在「裝備技能」選擇啟程護符。"
+                "text": "穿上啟程護符後，「追擊」會出現在技能清單。"
               },
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "選好之後點觸發技能槽，把「追擊」裝進去。"
+                "text": "到技能頁點選觸發技能槽，把「追擊」裝進去。"
               },
               {
                 "speaker": "女神",
@@ -32845,90 +33643,8 @@
                   "itemType": "material"
                 },
                 {
-                  "type": "gearSkillActive",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
                   "type": "skillSlotted",
                   "key": "tutorial_echo",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": [
-                {
-                  "type": "gem",
-                  "key": "0",
-                  "quantity": 1
-                }
-              ]
-            },
-            "effects": [],
-            "next": "gem_skill",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment",
-              "skills"
-            ]
-          },
-          {
-            "id": "gem_skill",
-            "name": "鑲嵌第一孔",
-            "speaker": "女神",
-            "description": "到「裝備與信物」按啟程護符的「鑲嵌」，選第一孔，放入赤焰石。第一孔保持技能加成模式。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "赤焰石收到了嗎？"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "到裝備頁按護符的「鑲嵌」，把它放進第一孔。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "第一孔的寶石會加強護符的技能。做完再送你一顆。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "gearWorn",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "gearSkillActive",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "skillSlotted",
-                  "key": "tutorial_echo",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "gearSkillGem",
-                  "key": "initiation_charm",
                   "count": 1,
                   "mode": "lifetime",
                   "itemType": "material"
@@ -32957,19 +33673,19 @@
           },
           {
             "id": "gem_base",
-            "name": "鑲嵌第二孔",
+            "name": "鑲嵌寶石",
             "speaker": "女神",
-            "description": "把第二顆赤焰石放進啟程護符的第二孔。第二孔固定提升基礎能力，赤焰石增加攻擊力。完成後到技能頁配置新的職業輔助技能。",
+            "description": "在「裝備與信物」開啟啟程護符的鑲嵌介面，點選第一孔，再選擇赤焰石。鑲嵌後會增加攻擊力。",
             "dialogue": [
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "這次放進第二孔。"
+                "text": "點開啟程護符的「鑲嵌」，選第一孔放入赤焰石。"
               },
               {
                 "speaker": "女神",
                 "kind": "npc",
-                "text": "第二孔的寶石會直接提升你的能力。"
+                "text": "赤焰石鑲進去後，你的攻擊力就會提高。"
               },
               {
                 "speaker": "女神",
@@ -32986,7 +33702,7 @@
                   "count": 1,
                   "mode": "lifetime",
                   "itemType": "material",
-                  "slot": 1
+                  "slot": 0
                 }
               ]
             },
@@ -36048,11 +36764,7 @@
           "index": 0,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 12,
           "mpCost": 9.29516,
@@ -36171,11 +36883,7 @@
           "index": 2,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -36232,11 +36940,7 @@
           "index": 3,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -36421,11 +37125,7 @@
           "index": 6,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 21,
           "mpCost": 12,
@@ -38302,11 +39002,7 @@
           "index": 1,
           "kind": "support"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 45,
           "mpCost": 8,
@@ -39129,11 +39825,7 @@
           "index": 0,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 12,
           "mpCost": 9.95992,
@@ -39254,11 +39946,7 @@
           "index": 2,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -39316,11 +40004,7 @@
           "index": 3,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -39507,11 +40191,7 @@
           "index": 6,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 24,
           "mpCost": 12,
@@ -39575,11 +40255,7 @@
           "index": 7,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 21,
           "mpCost": 16,
@@ -39643,11 +40319,7 @@
           "index": 8,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 18,
           "mpCost": 12,
@@ -40515,11 +41187,7 @@
           "index": 1,
           "kind": "support"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 45,
           "mpCost": 8,
@@ -41093,11 +41761,7 @@
           "index": 0,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 12,
           "mpCost": 9.633276,
@@ -41216,11 +41880,7 @@
           "index": 2,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -41277,11 +41937,7 @@
           "index": 3,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -41466,11 +42122,7 @@
           "index": 6,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 21,
           "mpCost": 12,
@@ -41534,11 +42186,7 @@
           "index": 7,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 24,
           "mpCost": 12,
@@ -42394,11 +43042,7 @@
           "index": 1,
           "kind": "support"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 48,
           "mpCost": 8,
@@ -42973,11 +43617,7 @@
           "index": 0,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 12,
           "mpCost": 9.465728,
@@ -43098,11 +43738,7 @@
           "index": 2,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -43160,11 +43796,7 @@
           "index": 3,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 0,
           "mpCost": 0,
@@ -43351,11 +43983,7 @@
           "index": 6,
           "kind": "core"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 21,
           "mpCost": 12,
@@ -44475,11 +45103,7 @@
           "index": 1,
           "kind": "support"
         },
-        "sources": [
-          {
-            "type": "equipment"
-          }
-        ],
+        "sources": [],
         "timing": {
           "cooldownSeconds": 45,
           "mpCost": 8,
@@ -47047,6 +47671,281 @@
           "condition": "always",
           "initialCooldownSeconds": 2.5
         }
+      },
+      {
+        "id": "gel-guard",
+        "name": "凝膠緩衝",
+        "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+        "type": "active",
+        "activation": "active",
+        "jobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "adapter": {
+          "job": 0,
+          "index": 39,
+          "kind": "core"
+        },
+        "sources": [
+          {
+            "type": "equipment"
+          }
+        ],
+        "usageScope": "character",
+        "partnerId": null,
+        "requiredLevel": 1,
+        "requiresAdvanced": false,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "mastery": null,
+        "weaponTypes": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "iconType": "auto",
+        "powerPerLevel": 0,
+        "element": "physical",
+        "maxTargets": 1,
+        "hitCount": 1,
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "commonEffectKeys": [
+          "target"
+        ],
+        "targetLimit": true,
+        "effect": "shield",
+        "systemEffect": "guard",
+        "power": 0.15,
+        "cooldown": 6,
+        "duration": 3,
+        "target": "self",
+        "timing": {
+          "cooldownSeconds": 21,
+          "mpCost": 5,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 1,
+          "durationSeconds": 6,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "missingEffect",
+          "initialCooldownSeconds": 0
+        },
+        "adapters": [
+          {
+            "job": 0,
+            "index": 39,
+            "kind": "core"
+          },
+          {
+            "job": 1,
+            "index": 25,
+            "kind": "core"
+          },
+          {
+            "job": 2,
+            "index": 25,
+            "kind": "core"
+          },
+          {
+            "job": 3,
+            "index": 28,
+            "kind": "core"
+          }
+        ]
+      },
+      {
+        "id": "wolf-double-bite",
+        "name": "狼牙連咬",
+        "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+        "type": "active",
+        "activation": "active",
+        "jobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "adapter": {
+          "job": 0,
+          "index": 40,
+          "kind": "core"
+        },
+        "sources": [
+          {
+            "type": "equipment"
+          }
+        ],
+        "usageScope": "character",
+        "partnerId": null,
+        "requiredLevel": 1,
+        "requiresAdvanced": false,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "mastery": null,
+        "weaponTypes": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "iconType": "auto",
+        "powerPerLevel": 0,
+        "element": "physical",
+        "maxTargets": 1,
+        "hitCount": 2,
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "commonEffectKeys": [
+          "target",
+          "hitCount"
+        ],
+        "targetLimit": true,
+        "effect": "damage",
+        "power": 0.65,
+        "cooldown": 3,
+        "target": "enemy",
+        "timing": {
+          "cooldownSeconds": 12,
+          "mpCost": 5,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 2,
+          "durationSeconds": 0,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "always",
+          "initialCooldownSeconds": 3
+        },
+        "adapters": [
+          {
+            "job": 0,
+            "index": 40,
+            "kind": "core"
+          },
+          {
+            "job": 1,
+            "index": 26,
+            "kind": "core"
+          },
+          {
+            "job": 2,
+            "index": 26,
+            "kind": "core"
+          },
+          {
+            "job": 3,
+            "index": 29,
+            "kind": "core"
+          }
+        ]
+      },
+      {
+        "id": "living-core-renewal",
+        "name": "樹芯癒合",
+        "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+        "type": "active",
+        "activation": "active",
+        "jobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "adapter": {
+          "job": 0,
+          "index": 41,
+          "kind": "core"
+        },
+        "sources": [
+          {
+            "type": "equipment"
+          }
+        ],
+        "usageScope": "character",
+        "partnerId": null,
+        "requiredLevel": 1,
+        "requiresAdvanced": false,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "mastery": null,
+        "weaponTypes": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "iconType": "auto",
+        "powerPerLevel": 0,
+        "element": "light",
+        "maxTargets": 1,
+        "hitCount": 1,
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "commonEffectKeys": [
+          "target"
+        ],
+        "targetLimit": true,
+        "effect": "heal",
+        "systemEffect": "regen",
+        "power": 0.02,
+        "cooldown": 8,
+        "duration": 4,
+        "target": "allies",
+        "timing": {
+          "cooldownSeconds": 24,
+          "mpCost": 6,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 0,
+          "durationSeconds": 12,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "injured",
+          "initialCooldownSeconds": 2
+        },
+        "adapters": [
+          {
+            "job": 0,
+            "index": 41,
+            "kind": "core"
+          },
+          {
+            "job": 1,
+            "index": 27,
+            "kind": "core"
+          },
+          {
+            "job": 2,
+            "index": 27,
+            "kind": "core"
+          },
+          {
+            "job": 3,
+            "index": 30,
+            "kind": "core"
+          }
+        ]
       }
     ],
     "classRules": [
@@ -47248,472 +48147,21 @@
       }
     ],
     "equipment": {
-      "chanceByDifficulty": [
-        0.15,
-        0.15,
-        0.15
-      ],
-      "formRules": [],
-      "pool": [
+      "formRules": [
         {
-          "skillId": "job0-core0",
-          "jobs": [
-            0
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
+          "formId": "gel-armor",
+          "skillId": "gel-guard",
+          "dropOnly": true
         },
         {
-          "skillId": "job0-core2",
-          "jobs": [
-            0
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
+          "formId": "wolf-fang-pendant",
+          "skillId": "wolf-double-bite",
+          "dropOnly": true
         },
         {
-          "skillId": "job0-core3",
-          "jobs": [
-            0
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job0-core6",
-          "jobs": [
-            0
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job0-support1",
-          "jobs": [
-            0
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-core0",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-core2",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-core3",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-core6",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-core7",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-core8",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job1-support1",
-          "jobs": [
-            1
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job2-core0",
-          "jobs": [
-            2
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job2-core2",
-          "jobs": [
-            2
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job2-core3",
-          "jobs": [
-            2
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job2-core6",
-          "jobs": [
-            2
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job2-core7",
-          "jobs": [
-            2
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job2-support1",
-          "jobs": [
-            2
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job3-core0",
-          "jobs": [
-            3
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job3-core2",
-          "jobs": [
-            3
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job3-core3",
-          "jobs": [
-            3
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job3-core6",
-          "jobs": [
-            3
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
-        },
-        {
-          "skillId": "job3-support1",
-          "jobs": [
-            3
-          ],
-          "slots": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "minLevel": 1,
-          "maxLevel": 999,
-          "weight": 1,
-          "maps": [],
-          "monsters": [],
-          "bosses": [],
-          "allowShop": true,
-          "allowCraft": true
+          "formId": "living-core-talisman",
+          "skillId": "living-core-renewal",
+          "dropOnly": true
         }
       ],
       "socketBands": [
@@ -47780,25 +48228,7 @@
             4,
             6
           ]
-        },
-        "skill": {
-          "key": "effect",
-          "values": [
-            0.02,
-            0.04,
-            0.06
-          ],
-          "types": [
-            "active",
-            "proc",
-            "support"
-          ],
-          "effects": [],
-          "slots": [
-            0
-          ]
-        },
-        "cap": 1
+        }
       },
       {
         "kind": 1,
@@ -47810,24 +48240,7 @@
             2,
             3
           ]
-        },
-        "skill": {
-          "key": "cooldown",
-          "values": [
-            0.05,
-            0.1,
-            0.15
-          ],
-          "types": [
-            "active",
-            "support"
-          ],
-          "effects": [],
-          "slots": [
-            0
-          ]
-        },
-        "cap": 1
+        }
       },
       {
         "kind": 2,
@@ -47839,23 +48252,7 @@
             0.02,
             0.03
           ]
-        },
-        "skill": {
-          "key": "procChance",
-          "values": [
-            0.01,
-            0.02,
-            0.03
-          ],
-          "types": [
-            "proc"
-          ],
-          "effects": [],
-          "slots": [
-            0
-          ]
-        },
-        "cap": 1
+        }
       },
       {
         "kind": 3,
@@ -47867,25 +48264,7 @@
             20,
             30
           ]
-        },
-        "skill": {
-          "key": "heal",
-          "values": [
-            0.03,
-            0.06,
-            0.09
-          ],
-          "types": [
-            "active",
-            "proc",
-            "support"
-          ],
-          "effects": [],
-          "slots": [
-            0
-          ]
-        },
-        "cap": 1
+        }
       },
       {
         "kind": 4,
@@ -47897,28 +48276,9 @@
             2,
             3
           ]
-        },
-        "skill": {
-          "key": "shield",
-          "values": [
-            0.01,
-            0.02,
-            0.03
-          ],
-          "types": [
-            "active",
-            "proc",
-            "support"
-          ],
-          "effects": [],
-          "slots": [
-            0
-          ]
-        },
-        "cap": 1
+        }
       }
-    ],
-    "gemSlotRuleVersion": 2
+    ]
   },
   "wishingLake": {
     "version": 1,

@@ -82,10 +82,10 @@
     return SHOP_SETTINGS.randomOffers.entries.some(matches);
   }
   function offerItem(offer){return offer.kind==='item'?SHOP.find(x=>x.id===offer.key):null;}
-  function rawOfferName(offer){return offer.kind==='ore'?'鍛鐵':offer.kind==='dust'?'粉塵':offer.kind==='gem'?(GEMS[Number(offer.key)]?.name||'技能寶石'):offerItem(offer)?.name||offer.key;}
+  function rawOfferName(offer){return offer.kind==='ore'?'鍛鐵':offer.kind==='dust'?'粉塵':offer.kind==='gem'?(GEMS[Number(offer.key)]?.name||'屬性寶石'):offerItem(offer)?.name||offer.key;}
   function offerName(offer,rule){
     const raw=rawOfferName(offer);if(!rule?.name)return raw;
-    if(offer.kind==='gem'&&['技能寶石','隨機技能寶石'].includes(rule.name)||offer.kind==='material'&&rule.name==='地區素材')return raw;
+    if(offer.kind==='gem'&&rule.name==='屬性寶石'||offer.kind==='material'&&rule.name==='地區素材')return raw;
     if(offer.kind==='gem'&&rule.key==='random'||offer.kind==='material'&&rule.key==='region')return rule.name+' · '+raw;
     return rule.name;
   }

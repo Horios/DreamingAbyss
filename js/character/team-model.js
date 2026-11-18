@@ -25,7 +25,7 @@
   }
   function budget(){return {};}
   const key=(job,kind,i)=>`${job}:${kind}:${i}`;
-  function blank(id,name,job=null,coreCount=0,supportCount=0){return {id,name,job,playerActive:true,skills:Array(coreCount).fill(0),supportLevels:Array(supportCount).fill(0),active:[null,null],procSlots:[null,null],supportSlots:[null,null],equipped:Array(5).fill(null),sockets:Array(coreCount).fill(null),companions:[],enlisted:[],tokens:{},skillLoadout:null,activeSkillEquipmentId:null,passiveEnabled:{}};}
+  function blank(id,name,job=null,coreCount=0,supportCount=0){return {id,name,job,playerActive:true,skills:Array(coreCount).fill(0),supportLevels:Array(supportCount).fill(0),active:[null,null],procSlots:[null,null],supportSlots:[null,null],equipped:Array(5).fill(null),sockets:Array(coreCount).fill(null),companions:[],enlisted:[],tokens:{},skillLoadout:null,passiveEnabled:{}};}
   function spent(){return 0;}
   function references(build,id){return build.plans.filter(p=>p.equipped.includes(id)||Object.values(p.tokens).includes(id)).map(p=>({id:p.id,name:p.name}));}
   function clearReferences(build,ids){const set=new Set(ids);for(const p of build.plans){p.equipped=p.equipped.map(id=>set.has(id)?null:id);for(const k of Object.keys(p.tokens))if(set.has(p.tokens[k]))p.tokens[k]=null;}}
@@ -72,7 +72,7 @@
       if(p.job===null&&(p.skills.some(Boolean)||p.equipped.some(Boolean)||p.companions.length||p.enlisted.length||Object.values(p.tokens).some(Boolean)))fail('空白隊伍含有配置');
     }
     if(!ids.has(b.activeId)||Number(b.plans.reduce((n,p)=>Math.max(n,Number(p.id.slice(5))),0))>=b.serial)fail('目前隊伍或序號無效');
-    const fields=[...Object.keys(blank('team-1','隊伍')),'skillLoadout','activeSkillEquipmentId'];
+    const fields=[...Object.keys(blank('team-1','隊伍')),'skillLoadout'];
     b.plans=b.plans.map(p=>Object.fromEntries(fields.filter(k=>p[k]!==undefined).map(k=>[k,p[k]])));
     return b;
   }

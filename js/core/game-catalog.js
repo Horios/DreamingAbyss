@@ -5,17 +5,10 @@ const MAPS=[{name:'無名密林',min:1,max:5,icon:'',color:'#34483a',mobs:[['苔
 // Each gem ID identifies one of five independent effects at one of three tiers.
 const GEM_NAMES=['赤焰石','疾風石','靈巧石','生息石','守護石'];
 const GEM_COLORS=['#ec5555','#51b878','#a57be4','#e9eef7','#559ff0'];
-const GEM_RATES=[[.02,.04,.06],[.05,.10,.15],[.01,.02,.03],[.03,.06,.09],[.01,.02,.03]];
 const GEM_KINDS=GEM_NAMES.length;
 const GEMS=Array.from({length:GEM_KINDS*3},(_,id)=>{
- const kind=id%GEM_KINDS,tier=Math.floor(id/GEM_KINDS),pct=Number((GEM_RATES[kind][tier]*100).toFixed(3));
- const desc=[
-  '技能效果 +'+pct+'%（加算型增幅）',
-  '主動技能施放後 '+pct+'% 機率使該技能冷卻減少 3 秒',
-  '普攻觸發技能發動率 +'+pct+' 個百分點',
-  '技能成功發動後，使生命比例最低的存活隊友恢復施放者攻擊力 '+pct+'% 的生命',
-  '技能成功發動後，使生命比例最低的存活隊友獲得施放者防禦力 '+pct+'% 的護盾（可與其他護盾累加）'
- ][kind];
+ const kind=id%GEM_KINDS,tier=Math.floor(id/GEM_KINDS);
+ const desc=['攻擊 +'+2*(tier+1),'速度 +'+(tier+1),'暴擊率 +'+(tier+1)+'%','生命 +'+10*(tier+1),'防禦 +'+(tier+1)][kind];
  return {name:GEM_NAMES[kind]+'・'+(tier+1)+'階',desc,icon:'',color:GEM_COLORS[kind],kind,tier:tier+1};
 });
 
