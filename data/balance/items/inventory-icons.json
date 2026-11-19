@@ -199,6 +199,24 @@
   },
   {
     "kind": "equipment",
+    "key": "form:4:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:3:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
     "key": "boss:0:0",
     "iconType": "auto",
     "description": ""
@@ -2071,19 +2089,13 @@
   },
   {
     "kind": "equipment",
-    "key": "form:4:1:0",
+    "key": "form:4:0:0",
     "iconType": "auto",
     "description": ""
   },
   {
     "kind": "equipment",
-    "key": "form:4:2:0",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:4:3:1",
+    "key": "form:4:3:2",
     "iconType": "auto",
     "description": ""
   }

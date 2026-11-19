@@ -540,7 +540,25 @@
     ]
   ],
   [
-    [],
+    [
+      {
+        "id": "vine-staff",
+        "name": "纏藤法杖",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "weaponType": "staff",
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          }
+        ]
+      }
+    ],
     [
       {
         "id": "gel-armor",
@@ -596,7 +614,7 @@
       },
       {
         "id": "wolf-fang-pendant",
-        "name": "狼牙墜飾",
+        "name": "狼牙綴飾",
         "wearableJobs": [
           0,
           1,
@@ -607,6 +625,22 @@
           {
             "key": "attackPct",
             "value": 2
+          }
+        ]
+      },
+      {
+        "id": "gel-charm",
+        "name": "凝膠護符",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 5
           }
         ]
       }

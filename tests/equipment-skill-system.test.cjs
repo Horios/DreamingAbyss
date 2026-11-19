@@ -65,12 +65,11 @@ test('ordinary drops stay attribute-only and explicit drops resolve fixed skills
  r.run('save();loadParty(packParty())');
  assert.deepEqual(json(r,exclusive+'.skillSockets'),before);
 });
-test('the three forest monsters grant complete exclusive gear and a mage casts all three shared skills',()=>{
+test('v0.172: the three forest monsters drop 凝膠護符／狼牙綴飾／纏藤法杖 at the old rates; a mage uses the passive and both actives',()=>{
  const r=loadRuntime(path.resolve(__dirname,'..'));
  const result=json(r,`(()=>{
   selectSaveSlot(1);start(1);closeModal();
-  const ids=['gel-guard','wolf-double-bite','living-core-renewal'];
-  const wanted=[];
+  const ids=['gel-recovery','wolf-double-bite','living-core-renewal'],slots=[4,3,0],wanted=[],names=[];
   for(const [i,id] of ids.entries()){
    const foe={region:0,lv:1,difficulty:0,kind:'normal',monsterId:'map0_mob'+i,mat:['黏稠凝膠','完整狼牙','活性樹芯'][i]};
    const rules=configuredDropRules(foe).filter(r=>r.type==='equipment');
@@ -81,26 +80,30 @@ test('the three forest monsters grant complete exclusive gear and a mage casts a
    grantConfiguredDrop(rules[0],foe,()=>.99);
    const item=state.bag.find(g=>g.skillId===id);
    if(!item||gearWearableJobs(item).length!==4)throw Error('Exclusive equipment missing or class-locked: '+id);
-   equipSharedGear(item.id,memberKey(state),item.slot);if(!state.equipped.includes(item.id))throw Error('Could not wear '+id);
-   if(!configureSkill('active',i,id))throw Error('Could not configure '+id);
+   names.push([itemForm(item).name,item.slot]);
+   equipSharedGear(item.id,memberKey(state),slots[i]);if(!state.equipped.includes(item.id))throw Error('Could not wear '+id);
   }
+  if(!configureSkill('active',1,'wolf-double-bite')||!configureSkill('active',2,'living-core-renewal'))throw Error('Could not configure the actives');
   const casts=[],before=castPartySkill;
   castPartySkill=function(h,i,...args){
    const ok=before(h,i,...args);if(ok!==false)casts.push(__EMBERWILD_SKILLS.byPosition(h.job,'core',i).id);return ok;
   };
-  startSelectedExploration();state.hp=Math.round(stats(state).hp*.5);
+  startSelectedExploration();
   for(const e of foes){e.hp=e.maxhp=100000;e.atk=0;}
-  globalThis.forestCasts=casts;
-  return {ids:state.skillLoadout.active,wanted};
+  globalThis.forestCasts=casts;globalThis.baseSpeed=battleStats(state).speed;
+  return {names,wanted,passive:__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('gel-recovery')),regen:__EMBERWILD_GEAR_REGEN_RATE(state),active:state.skillLoadout.active};
  })()`);
- assert.deepEqual(result.ids,['gel-guard','wolf-double-bite','living-core-renewal']);
+ assert.deepEqual(result.names,[['凝膠護符',3],['狼牙綴飾',3],['纏藤法杖',0]],'two accessories and a weapon');
  for(const [normal,elite] of result.wanted){
   assert.deepEqual(normal,[.0004,.0005,.0006]);
   assert.deepEqual(elite,[.0012,.0015,.0018]);
  }
- for(let i=0;i<160;i++){r.advance(50);r.run('tick()');}
- assert.deepEqual(json(r,'[...new Set(forestCasts)].sort()'),[...result.ids].sort());
+ assert.equal(result.passive,true);assert.equal(result.regen,1,'凝膠復原 restores 1 HP per second');
+ for(let i=0;i<120;i++){r.advance(50);r.run('tick()');}
+ assert.deepEqual(json(r,'[...new Set(forestCasts)].filter(id=>["living-core-renewal","wolf-double-bite"].includes(id)).sort()'),['living-core-renewal','wolf-double-bite']);
+ const haste=json(r,'({speed:battleStats(state).speed,base:baseSpeed,until:effects.find(e=>e.kind==="skillHaste")?.until-partyClock})');
+ assert(Math.abs(haste.speed-haste.base/0.85)<1e-9,'野狼怒吼 shortens the basic attack interval by 15%');assert(haste.until>0&&haste.until<=10);
  r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');
- assert.deepEqual(json(r,'state.skillLoadout.active'),result.ids);
+ assert.deepEqual(json(r,'state.skillLoadout.active'),result.active);
  assert.deepEqual(r.errors,[]);
 });

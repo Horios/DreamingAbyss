@@ -276,7 +276,10 @@ function skillWeaponAllowed(h,meta){
 }
 function coreMissingRequirements(h,i,forUse=false){
   const sk=CLASSES[h.job]?.skills?.[i];if(!sk)return ['技能不存在'];
-  const meta=runtimeCoreMeta(h.job,i),reasons=[];if(typeof skillAllowedForPartner==='function'&&!skillAllowedForPartner(h,meta))reasons.push(meta?.partnerId==null?'主角專屬':'指定夥伴專屬');
+  const meta=runtimeCoreMeta(h.job,i),reasons=[];
+  // v0.172: a skill extracted onto the companion's worn token is usable by that companion (no protagonist/partner restriction).
+  const tokenSkill=isCompanionHero(h)&&globalThis.__EMBERWILD_TOKEN_SKILL?.(h),viaToken=!!tokenSkill&&globalThis.__EMBERWILD_SKILLS?.byPosition?.(h.job,'core',i)?.id===tokenSkill;
+  if(!viaToken&&typeof skillAllowedForPartner==='function'&&!skillAllowedForPartner(h,meta))reasons.push(meta?.partnerId==null?'主角專屬':'指定夥伴專屬');
   if(forUse&&globalThis.companionSkillDisabled?.(h,'core',i))reasons.push('技能已禁用');
   if((isCompanionHero(h)||!forUse)&&!masteryRequirementMet(h,sk[2]))reasons.push(`職業精通 Lv${sk[2]}`);
   const req=meta.requiredMastery,reqLv=Math.max(0,Math.floor(Number(meta.requiredMasteryLevel)||0));

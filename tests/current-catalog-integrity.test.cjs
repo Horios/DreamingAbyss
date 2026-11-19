@@ -24,7 +24,7 @@ test('published materials and daily tasks do not retain retired recipes or unobt
 test('passive definitions represent assigned live skills with matching stable adapter indices',()=>{
  const passives=new Map(d.passiveDefinitions.map((x,i)=>[x.id,i]));
  assert.equal(passives.size,d.passiveDefinitions.length,'duplicate passive');
- const assigned=new Set([...d.companions.flatMap(x=>x.passives||[]),...d.skillSystem.classRules.flatMap(r=>[...r.initial,...r.advanced].map(s=>s.skillId).filter(id=>d.skillSystem.definitions.some(s=>s.id===id&&s.type==='passive')))]);
+ const assigned=new Set([...d.companions.flatMap(x=>x.passives||[]),...d.skillSystem.classRules.flatMap(r=>[...r.initial,...r.advanced].map(s=>s.skillId).filter(id=>d.skillSystem.definitions.some(s=>s.id===id&&s.type==='passive'))),...(d.skillSystem.equipment?.formRules||[]).map(r=>r.skillId).filter(id=>d.skillSystem.definitions.some(s=>s.id===id&&s.type==='passive'&&!s.disabled))]);
  for(const id of assigned)assert(passives.has(id),'companion refers to missing passive: '+id);
  for(const id of passives.keys())assert(assigned.has(id),'unassigned retired passive remained: '+id);
  const definitions=d.skillSystem.definitions.filter(x=>x.type==='passive');

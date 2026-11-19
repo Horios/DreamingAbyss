@@ -5440,10 +5440,10 @@
     },
     {
       "id": "gel-armor-normal",
-      "name": "凝膠護甲",
+      "name": "凝膠護符",
       "enabled": true,
       "type": "equipment",
-      "key": "form:4:1:0",
+      "key": "form:4:3:2",
       "kinds": [
         "normal"
       ],
@@ -5460,10 +5460,10 @@
     },
     {
       "id": "gel-armor-elite",
-      "name": "凝膠護甲",
+      "name": "凝膠護符",
       "enabled": true,
       "type": "equipment",
-      "key": "form:4:1:0",
+      "key": "form:4:3:2",
       "kinds": [
         "elite"
       ],
@@ -5480,7 +5480,7 @@
     },
     {
       "id": "wolf-fang-pendant-normal",
-      "name": "狼牙墜飾",
+      "name": "狼牙綴飾",
       "enabled": true,
       "type": "equipment",
       "key": "form:4:3:1",
@@ -5500,7 +5500,7 @@
     },
     {
       "id": "wolf-fang-pendant-elite",
-      "name": "狼牙墜飾",
+      "name": "狼牙綴飾",
       "enabled": true,
       "type": "equipment",
       "key": "form:4:3:1",
@@ -5520,10 +5520,10 @@
     },
     {
       "id": "living-core-talisman-normal",
-      "name": "活芯護符",
+      "name": "纏藤法杖",
       "enabled": true,
       "type": "equipment",
-      "key": "form:4:2:0",
+      "key": "form:4:0:0",
       "kinds": [
         "normal"
       ],
@@ -5540,10 +5540,10 @@
     },
     {
       "id": "living-core-talisman-elite",
-      "name": "活芯護符",
+      "name": "纏藤法杖",
       "enabled": true,
       "type": "equipment",
-      "key": "form:4:2:0",
+      "key": "form:4:0:0",
       "kinds": [
         "elite"
       ],

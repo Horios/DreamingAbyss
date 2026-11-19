@@ -202,7 +202,17 @@
     "formRules": [
       {
         "formId": "gel-armor",
-        "skillId": "gel-guard",
+        "skillId": "gel-recovery",
+        "dropOnly": true
+      },
+      {
+        "formId": "living-core-talisman",
+        "skillId": "living-core-renewal",
+        "dropOnly": true
+      },
+      {
+        "formId": "gel-charm",
+        "skillId": "gel-recovery",
         "dropOnly": true
       },
       {
@@ -211,7 +221,7 @@
         "dropOnly": true
       },
       {
-        "formId": "living-core-talisman",
+        "formId": "vine-staff",
         "skillId": "living-core-renewal",
         "dropOnly": true
       }

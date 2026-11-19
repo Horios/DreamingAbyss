@@ -22,6 +22,8 @@
   const battle=globalThis.EmberwildBattleConfiguration;if(battle?.active&&battle.has(h))return battle.learned(h,sk?.id);
   if(!sk||sk.disabled||!sk.jobs.includes(h.job)||sk.partnerId!=null&&sk.partnerId!==h.companionId)return false;
   if(legacyMember(h))return false;
+  // v0.172: a skill extracted onto a companion's worn token is usable by that companion, whatever its class.
+  if(companion(h)&&sk.sources.some(s=>s.type==='equipment')&&globalThis.__EMBERWILD_TOKEN_SKILL?.(h)===sk.id)return true;
   const level=sk.requiredLevel??sk.level??0;if(!masteryRequirementMet(h,level))return false;
   if(companion(h)){const p=globalThis.__EMBERWILD_COMPANION_TEST_API?.companionPlan(h);return sk.partnerId===h.companionId&&(sk.type==='passive'?p?.passives?.includes(sk.id):(sk.adapter.kind==='core'?p?.core:p?.support)?.includes(sk.adapter.index));}
   const key=`${h.job}:${M.adapterFor(sk,h.job).kind}:${M.adapterFor(sk,h.job).index}`,permanent=restoringBuild?.permanent||T()?.build()?.permanent,unlocked=permanent?.unlocks?.[key];

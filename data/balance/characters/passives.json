@@ -380,5 +380,19 @@
       "cooldown": 2
     },
     "weaponTypes": []
+  },
+  {
+    "id": "gel-recovery",
+    "name": "凝膠復原",
+    "description": "穿戴或由信物賦予時常駐生效：每秒恢復 1 點生命，戰鬥內外都生效。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "regenPerSecond",
+        "value": 1
+      }
+    ],
+    "requiredLevel": 0
   }
 ]

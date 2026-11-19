@@ -3510,8 +3510,8 @@
         },
         {
           "id": "wolf-double-bite-job0",
-          "name": "狼牙連咬",
-          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "name": "野狼怒吼",
+          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -3533,37 +3533,38 @@
           "powerPerLevel": 0,
           "element": "physical",
           "maxTargets": 1,
-          "hitCount": 2,
+          "hitCount": 1,
           "baseCritRate": 0,
           "baseCritDamage": 1.5,
           "defensePenetration": 0,
           "defenseIgnore": 0,
           "commonEffectKeys": [
-            "target",
-            "hitCount"
+            "target"
           ],
           "targetLimit": true,
-          "effect": "damage",
-          "power": 0.65,
-          "cooldown": 3,
-          "target": "enemy",
+          "effect": "shield",
+          "power": 0.15,
+          "cooldown": 30,
+          "target": "self",
           "timing": {
-            "cooldownSeconds": 12,
+            "cooldownSeconds": 30,
             "mpCost": 5,
             "castSeconds": 0,
             "actionCostSeconds": 0,
             "priority": 2,
-            "durationSeconds": 0,
+            "durationSeconds": 10,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
             "condition": "always",
             "initialCooldownSeconds": 3
-          }
+          },
+          "systemEffect": "haste",
+          "duration": 10
         },
         {
           "id": "living-core-renewal-job0",
-          "name": "樹芯癒合",
-          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "name": "藤蔓纏繞",
+          "description": "開場 1 秒後施放：隨機綑綁一名敵人，使其普通攻擊重新蓄力（重置到完整間隔一次）。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -3583,7 +3584,7 @@
           },
           "iconType": "auto",
           "powerPerLevel": 0,
-          "element": "light",
+          "element": "physical",
           "maxTargets": 1,
           "hitCount": 1,
           "baseCritRate": 0,
@@ -3594,23 +3595,23 @@
             "target"
           ],
           "targetLimit": true,
-          "effect": "heal",
-          "systemEffect": "regen",
-          "power": 0.02,
-          "cooldown": 8,
-          "duration": 4,
-          "target": "allies",
+          "effect": "damage",
+          "systemEffect": "bind",
+          "power": 0,
+          "cooldown": 10,
+          "duration": 1,
+          "target": "enemy",
           "timing": {
-            "cooldownSeconds": 24,
-            "mpCost": 6,
+            "cooldownSeconds": 10,
+            "mpCost": 10,
             "castSeconds": 0,
             "actionCostSeconds": 0,
-            "priority": 0,
-            "durationSeconds": 12,
+            "priority": 2,
+            "durationSeconds": 0,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
-            "condition": "injured",
-            "initialCooldownSeconds": 2
+            "condition": "always",
+            "initialCooldownSeconds": 1
           }
         }
       ],
@@ -4653,8 +4654,8 @@
         },
         {
           "id": "wolf-double-bite-job1",
-          "name": "狼牙連咬",
-          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "name": "野狼怒吼",
+          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -4676,37 +4677,38 @@
           "powerPerLevel": 0,
           "element": "physical",
           "maxTargets": 1,
-          "hitCount": 2,
+          "hitCount": 1,
           "baseCritRate": 0,
           "baseCritDamage": 1.5,
           "defensePenetration": 0,
           "defenseIgnore": 0,
           "commonEffectKeys": [
-            "target",
-            "hitCount"
+            "target"
           ],
           "targetLimit": true,
-          "effect": "damage",
-          "power": 0.65,
-          "cooldown": 3,
-          "target": "enemy",
+          "effect": "shield",
+          "power": 0.15,
+          "cooldown": 30,
+          "target": "self",
           "timing": {
-            "cooldownSeconds": 12,
+            "cooldownSeconds": 30,
             "mpCost": 5,
             "castSeconds": 0,
             "actionCostSeconds": 0,
             "priority": 2,
-            "durationSeconds": 0,
+            "durationSeconds": 10,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
             "condition": "always",
             "initialCooldownSeconds": 3
-          }
+          },
+          "systemEffect": "haste",
+          "duration": 10
         },
         {
           "id": "living-core-renewal-job1",
-          "name": "樹芯癒合",
-          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "name": "藤蔓纏繞",
+          "description": "開場 1 秒後施放：隨機綑綁一名敵人，使其普通攻擊重新蓄力（重置到完整間隔一次）。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -4726,7 +4728,7 @@
           },
           "iconType": "auto",
           "powerPerLevel": 0,
-          "element": "light",
+          "element": "physical",
           "maxTargets": 1,
           "hitCount": 1,
           "baseCritRate": 0,
@@ -4737,23 +4739,23 @@
             "target"
           ],
           "targetLimit": true,
-          "effect": "heal",
-          "systemEffect": "regen",
-          "power": 0.02,
-          "cooldown": 8,
-          "duration": 4,
-          "target": "allies",
+          "effect": "damage",
+          "systemEffect": "bind",
+          "power": 0,
+          "cooldown": 10,
+          "duration": 1,
+          "target": "enemy",
           "timing": {
-            "cooldownSeconds": 24,
-            "mpCost": 6,
+            "cooldownSeconds": 10,
+            "mpCost": 10,
             "castSeconds": 0,
             "actionCostSeconds": 0,
-            "priority": 0,
-            "durationSeconds": 12,
+            "priority": 2,
+            "durationSeconds": 0,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
-            "condition": "injured",
-            "initialCooldownSeconds": 2
+            "condition": "always",
+            "initialCooldownSeconds": 1
           }
         }
       ],
@@ -5776,8 +5778,8 @@
         },
         {
           "id": "wolf-double-bite-job2",
-          "name": "狼牙連咬",
-          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "name": "野狼怒吼",
+          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -5799,37 +5801,38 @@
           "powerPerLevel": 0,
           "element": "physical",
           "maxTargets": 1,
-          "hitCount": 2,
+          "hitCount": 1,
           "baseCritRate": 0,
           "baseCritDamage": 1.5,
           "defensePenetration": 0,
           "defenseIgnore": 0,
           "commonEffectKeys": [
-            "target",
-            "hitCount"
+            "target"
           ],
           "targetLimit": true,
-          "effect": "damage",
-          "power": 0.65,
-          "cooldown": 3,
-          "target": "enemy",
+          "effect": "shield",
+          "power": 0.15,
+          "cooldown": 30,
+          "target": "self",
           "timing": {
-            "cooldownSeconds": 12,
+            "cooldownSeconds": 30,
             "mpCost": 5,
             "castSeconds": 0,
             "actionCostSeconds": 0,
             "priority": 2,
-            "durationSeconds": 0,
+            "durationSeconds": 10,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
             "condition": "always",
             "initialCooldownSeconds": 3
-          }
+          },
+          "systemEffect": "haste",
+          "duration": 10
         },
         {
           "id": "living-core-renewal-job2",
-          "name": "樹芯癒合",
-          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "name": "藤蔓纏繞",
+          "description": "開場 1 秒後施放：隨機綑綁一名敵人，使其普通攻擊重新蓄力（重置到完整間隔一次）。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -5849,7 +5852,7 @@
           },
           "iconType": "auto",
           "powerPerLevel": 0,
-          "element": "light",
+          "element": "physical",
           "maxTargets": 1,
           "hitCount": 1,
           "baseCritRate": 0,
@@ -5860,23 +5863,23 @@
             "target"
           ],
           "targetLimit": true,
-          "effect": "heal",
-          "systemEffect": "regen",
-          "power": 0.02,
-          "cooldown": 8,
-          "duration": 4,
-          "target": "allies",
+          "effect": "damage",
+          "systemEffect": "bind",
+          "power": 0,
+          "cooldown": 10,
+          "duration": 1,
+          "target": "enemy",
           "timing": {
-            "cooldownSeconds": 24,
-            "mpCost": 6,
+            "cooldownSeconds": 10,
+            "mpCost": 10,
             "castSeconds": 0,
             "actionCostSeconds": 0,
-            "priority": 0,
-            "durationSeconds": 12,
+            "priority": 2,
+            "durationSeconds": 0,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
-            "condition": "injured",
-            "initialCooldownSeconds": 2
+            "condition": "always",
+            "initialCooldownSeconds": 1
           }
         }
       ],
@@ -7028,8 +7031,8 @@
         },
         {
           "id": "wolf-double-bite-job3",
-          "name": "狼牙連咬",
-          "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+          "name": "野狼怒吼",
+          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -7051,37 +7054,38 @@
           "powerPerLevel": 0,
           "element": "physical",
           "maxTargets": 1,
-          "hitCount": 2,
+          "hitCount": 1,
           "baseCritRate": 0,
           "baseCritDamage": 1.5,
           "defensePenetration": 0,
           "defenseIgnore": 0,
           "commonEffectKeys": [
-            "target",
-            "hitCount"
+            "target"
           ],
           "targetLimit": true,
-          "effect": "damage",
-          "power": 0.65,
-          "cooldown": 3,
-          "target": "enemy",
+          "effect": "shield",
+          "power": 0.15,
+          "cooldown": 30,
+          "target": "self",
           "timing": {
-            "cooldownSeconds": 12,
+            "cooldownSeconds": 30,
             "mpCost": 5,
             "castSeconds": 0,
             "actionCostSeconds": 0,
             "priority": 2,
-            "durationSeconds": 0,
+            "durationSeconds": 10,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
             "condition": "always",
             "initialCooldownSeconds": 3
-          }
+          },
+          "systemEffect": "haste",
+          "duration": 10
         },
         {
           "id": "living-core-renewal-job3",
-          "name": "樹芯癒合",
-          "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+          "name": "藤蔓纏繞",
+          "description": "開場 1 秒後施放：隨機綑綁一名敵人，使其普通攻擊重新蓄力（重置到完整間隔一次）。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -7101,7 +7105,7 @@
           },
           "iconType": "auto",
           "powerPerLevel": 0,
-          "element": "light",
+          "element": "physical",
           "maxTargets": 1,
           "hitCount": 1,
           "baseCritRate": 0,
@@ -7112,23 +7116,23 @@
             "target"
           ],
           "targetLimit": true,
-          "effect": "heal",
-          "systemEffect": "regen",
-          "power": 0.02,
-          "cooldown": 8,
-          "duration": 4,
-          "target": "allies",
+          "effect": "damage",
+          "systemEffect": "bind",
+          "power": 0,
+          "cooldown": 10,
+          "duration": 1,
+          "target": "enemy",
           "timing": {
-            "cooldownSeconds": 24,
-            "mpCost": 6,
+            "cooldownSeconds": 10,
+            "mpCost": 10,
             "castSeconds": 0,
             "actionCostSeconds": 0,
-            "priority": 0,
-            "durationSeconds": 12,
+            "priority": 2,
+            "durationSeconds": 0,
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
-            "condition": "injured",
-            "initialCooldownSeconds": 2
+            "condition": "always",
+            "initialCooldownSeconds": 1
           }
         }
       ],
@@ -9208,7 +9212,25 @@
       ]
     ],
     [
-      [],
+      [
+        {
+          "id": "vine-staff",
+          "name": "纏藤法杖",
+          "wearableJobs": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "weaponType": "staff",
+          "fixedEffects": [
+            {
+              "key": "gearAtkPct",
+              "value": 10
+            }
+          ]
+        }
+      ],
       [
         {
           "id": "gel-armor",
@@ -9264,7 +9286,7 @@
         },
         {
           "id": "wolf-fang-pendant",
-          "name": "狼牙墜飾",
+          "name": "狼牙綴飾",
           "wearableJobs": [
             0,
             1,
@@ -9275,6 +9297,22 @@
             {
               "key": "attackPct",
               "value": 2
+            }
+          ]
+        },
+        {
+          "id": "gel-charm",
+          "name": "凝膠護符",
+          "wearableJobs": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fixedEffects": [
+            {
+              "key": "flatHp",
+              "value": 5
             }
           ]
         }
@@ -23733,10 +23771,10 @@
         },
         {
           "id": "gel-armor-normal",
-          "name": "凝膠護甲",
+          "name": "凝膠護符",
           "enabled": true,
           "type": "equipment",
-          "key": "form:4:1:0",
+          "key": "form:4:3:2",
           "kinds": [
             "normal"
           ],
@@ -23753,10 +23791,10 @@
         },
         {
           "id": "gel-armor-elite",
-          "name": "凝膠護甲",
+          "name": "凝膠護符",
           "enabled": true,
           "type": "equipment",
-          "key": "form:4:1:0",
+          "key": "form:4:3:2",
           "kinds": [
             "elite"
           ],
@@ -23773,7 +23811,7 @@
         },
         {
           "id": "wolf-fang-pendant-normal",
-          "name": "狼牙墜飾",
+          "name": "狼牙綴飾",
           "enabled": true,
           "type": "equipment",
           "key": "form:4:3:1",
@@ -23793,7 +23831,7 @@
         },
         {
           "id": "wolf-fang-pendant-elite",
-          "name": "狼牙墜飾",
+          "name": "狼牙綴飾",
           "enabled": true,
           "type": "equipment",
           "key": "form:4:3:1",
@@ -23813,10 +23851,10 @@
         },
         {
           "id": "living-core-talisman-normal",
-          "name": "活芯護符",
+          "name": "纏藤法杖",
           "enabled": true,
           "type": "equipment",
-          "key": "form:4:2:0",
+          "key": "form:4:0:0",
           "kinds": [
             "normal"
           ],
@@ -23833,10 +23871,10 @@
         },
         {
           "id": "living-core-talisman-elite",
-          "name": "活芯護符",
+          "name": "纏藤法杖",
           "enabled": true,
           "type": "equipment",
-          "key": "form:4:2:0",
+          "key": "form:4:0:0",
           "kinds": [
             "elite"
           ],
@@ -27921,6 +27959,20 @@
         "cooldown": 2
       },
       "weaponTypes": []
+    },
+    {
+      "id": "gel-recovery",
+      "name": "凝膠復原",
+      "description": "穿戴或由信物賦予時常駐生效：每秒恢復 1 點生命，戰鬥內外都生效。",
+      "kind": "buff",
+      "target": "self",
+      "effects": [
+        {
+          "key": "regenPerSecond",
+          "value": 1
+        }
+      ],
+      "requiredLevel": 0
     }
   ],
   "companionSettings": {
@@ -30989,6 +31041,24 @@
     },
     {
       "kind": "equipment",
+      "key": "form:4:1:0",
+      "iconType": "auto",
+      "description": ""
+    },
+    {
+      "kind": "equipment",
+      "key": "form:4:2:0",
+      "iconType": "auto",
+      "description": ""
+    },
+    {
+      "kind": "equipment",
+      "key": "form:4:3:1",
+      "iconType": "auto",
+      "description": ""
+    },
+    {
+      "kind": "equipment",
       "key": "boss:0:0",
       "iconType": "auto",
       "description": ""
@@ -32861,19 +32931,13 @@
     },
     {
       "kind": "equipment",
-      "key": "form:4:1:0",
+      "key": "form:4:0:0",
       "iconType": "auto",
       "description": ""
     },
     {
       "kind": "equipment",
-      "key": "form:4:2:0",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:4:3:1",
+      "key": "form:4:3:2",
       "iconType": "auto",
       "description": ""
     }
@@ -45414,12 +45478,13 @@
             "index": 28,
             "kind": "core"
           }
-        ]
+        ],
+        "disabled": true
       },
       {
         "id": "wolf-double-bite",
-        "name": "狼牙連咬",
-        "description": "對同一名敵人造成兩次物理傷害，每次為攻擊力的 65%。",
+        "name": "野狼怒吼",
+        "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
         "type": "active",
         "activation": "active",
         "jobs": [
@@ -45458,27 +45523,26 @@
         "powerPerLevel": 0,
         "element": "physical",
         "maxTargets": 1,
-        "hitCount": 2,
+        "hitCount": 1,
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
         "defensePenetration": 0,
         "defenseIgnore": 0,
         "commonEffectKeys": [
-          "target",
-          "hitCount"
+          "target"
         ],
         "targetLimit": true,
-        "effect": "damage",
-        "power": 0.65,
-        "cooldown": 3,
-        "target": "enemy",
+        "effect": "shield",
+        "power": 0.15,
+        "cooldown": 30,
+        "target": "self",
         "timing": {
-          "cooldownSeconds": 12,
+          "cooldownSeconds": 30,
           "mpCost": 5,
           "castSeconds": 0,
           "actionCostSeconds": 0,
           "priority": 2,
-          "durationSeconds": 0,
+          "durationSeconds": 10,
           "bossDurationSeconds": 0,
           "tickIntervalSeconds": 6,
           "condition": "always",
@@ -45505,12 +45569,14 @@
             "index": 29,
             "kind": "core"
           }
-        ]
+        ],
+        "systemEffect": "haste",
+        "duration": 10
       },
       {
         "id": "living-core-renewal",
-        "name": "樹芯癒合",
-        "description": "有隊員生命低於 75% 時，自身與存活隊友每 6 秒回復 2% 最大生命，持續 12 秒。",
+        "name": "藤蔓纏繞",
+        "description": "開場 1 秒後施放：隨機綑綁一名敵人，使其普通攻擊重新蓄力（重置到完整間隔一次）。",
         "type": "active",
         "activation": "active",
         "jobs": [
@@ -45547,7 +45613,7 @@
         },
         "iconType": "auto",
         "powerPerLevel": 0,
-        "element": "light",
+        "element": "physical",
         "maxTargets": 1,
         "hitCount": 1,
         "baseCritRate": 0,
@@ -45558,23 +45624,23 @@
           "target"
         ],
         "targetLimit": true,
-        "effect": "heal",
-        "systemEffect": "regen",
-        "power": 0.02,
-        "cooldown": 8,
-        "duration": 4,
-        "target": "allies",
+        "effect": "damage",
+        "systemEffect": "bind",
+        "power": 0,
+        "cooldown": 10,
+        "duration": 1,
+        "target": "enemy",
         "timing": {
-          "cooldownSeconds": 24,
-          "mpCost": 6,
+          "cooldownSeconds": 10,
+          "mpCost": 10,
           "castSeconds": 0,
           "actionCostSeconds": 0,
-          "priority": 0,
-          "durationSeconds": 12,
+          "priority": 2,
+          "durationSeconds": 0,
           "bossDurationSeconds": 0,
           "tickIntervalSeconds": 6,
-          "condition": "injured",
-          "initialCooldownSeconds": 2
+          "condition": "always",
+          "initialCooldownSeconds": 1
         },
         "adapters": [
           {
@@ -45598,6 +45664,49 @@
             "kind": "core"
           }
         ]
+      },
+      {
+        "id": "gel-recovery",
+        "name": "凝膠復原",
+        "description": "穿戴或由信物賦予時常駐生效：每秒恢復 1 點生命，戰鬥內外都生效。",
+        "kind": "buff",
+        "target": "self",
+        "effects": [
+          {
+            "key": "regenPerSecond",
+            "value": 1
+          }
+        ],
+        "requiredLevel": 0,
+        "partnerId": null,
+        "type": "passive",
+        "jobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "adapter": {
+          "job": 0,
+          "index": 22,
+          "kind": "passive"
+        },
+        "sources": [
+          {
+            "type": "equipment"
+          }
+        ],
+        "timing": {
+          "cooldownSeconds": 0,
+          "mpCost": 0,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 2,
+          "durationSeconds": 0,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "always"
+        }
       }
     ],
     "classRules": [
@@ -45802,7 +45911,17 @@
       "formRules": [
         {
           "formId": "gel-armor",
-          "skillId": "gel-guard",
+          "skillId": "gel-recovery",
+          "dropOnly": true
+        },
+        {
+          "formId": "living-core-talisman",
+          "skillId": "living-core-renewal",
+          "dropOnly": true
+        },
+        {
+          "formId": "gel-charm",
+          "skillId": "gel-recovery",
           "dropOnly": true
         },
         {
@@ -45811,7 +45930,7 @@
           "dropOnly": true
         },
         {
-          "formId": "living-core-talisman",
+          "formId": "vine-staff",
           "skillId": "living-core-renewal",
           "dropOnly": true
         }
