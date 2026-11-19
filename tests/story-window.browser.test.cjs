@@ -34,7 +34,7 @@ test('scene text scrolls inside a responsive dialog and the SVG speed control st
   }finally{await g.browser.close();}
  }
 });
-test('graphemes reveal in order, speed changes apply, and show-all completes the scene up to its choice',async()=>{
+test('graphemes reveal in order, speed changes apply, and summary skips the scene up to its choice',async()=>{
  const g=await openRuntime(root),p=g.page;try{
   await quest(p);await p.evaluate(()=>storyWindowSpeed('slow'));
   const sample='你好，世界！👨‍👩‍👧 é̃ 🇹🇼。'+'很長的句子。'.repeat(30);await fixture(p,sample);
@@ -42,8 +42,8 @@ test('graphemes reveal in order, speed changes apply, and show-all completes the
   assert.deepEqual(await p.locator('.story-char').allTextContents(),expected);
   await p.waitForTimeout(200);const n=await p.locator('.story-char.on').count();assert(n>0&&n<expected.length);
   await p.selectOption('.story-window-head [data-story-speed]','fast');await p.waitForTimeout(250);assert(await p.locator('.story-char.on').count()>n);
-  await p.click('[data-story-all]');await p.waitForSelector('.story-window-choices button');
-  assert.match(await p.locator('[data-story-scroll]').innerText(),/第二句。/);assert.equal(await p.evaluate(()=>EmberwildStoryWindow.fast),false);
+  await p.click('[data-story-summary]');await p.waitForSelector('.story-window-choices button');
+  assert.match(await p.locator('[data-story-scroll]').innerText(),/劇情摘要/);assert.equal(await p.evaluate(()=>EmberwildStoryWindow.fast),false);
   assert.equal(await p.evaluate(()=>localStorage.getItem('emberwild-story-text-speed')),'fast');assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
@@ -58,8 +58,23 @@ test('prologue accumulates until naming; skipping requires confirmation and gran
  const h=await openRuntime(root),q=h.page;try{
   await quest(q);await q.evaluate(()=>{storyWindowSpeed('slow');readStory('skill_equipment_intro');});
   const count=()=>q.evaluate(()=>playerHero().bag.filter(g=>g.storyRewardKey==='initiation_charm').length),before=await count();
-  await q.click('[data-story-skip]');await q.waitForTimeout(500);assert.equal(await count(),before);
-  await q.click('[data-story-skip-confirm]');assert.equal(await count(),before+1);assert.equal(await q.locator('.story-window').count(),0);
-  assert.equal(await q.evaluate(()=>skipStoryDialogue()),false);assert.equal(await count(),before+1);assert.deepEqual(h.errors,[]);
+  await q.click('[data-story-summary]');assert.equal(await count(),before+1);
+  assert.match(await q.locator('[data-story-scroll]').innerText(),/劇情摘要/);
+  await q.evaluate(()=>render());assert.equal(await count(),before+1);
+  assert.equal(await q.locator('[data-story-all]').count(),0);
+  assert.deepEqual(h.errors,[]);
  }finally{await h.browser.close();}
+});
+
+test('dialog position stays fixed while typing and choices appear on desktop and mobile',async()=>{
+ for(const [width,height] of [[1280,800],[390,780],[780,390]]){
+  const g=await openRuntime(root),p=g.page;try{
+   await p.setViewportSize({width,height});await quest(p);await p.evaluate(()=>storyWindowSpeed('slow'));await fixture(p,'劇情文字。'.repeat(80));
+   const rect=()=>p.locator('.story-window').evaluate(n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,height:r.height};});
+   const before=await rect();await p.waitForTimeout(150);assert.deepEqual(await rect(),before);
+   await p.selectOption('[data-story-speed]','instant');await p.waitForSelector('.story-window-choices button');assert.deepEqual(await rect(),before);
+   const choice=await p.locator('.story-window-choices').boundingBox(),body=await p.locator('[data-story-scroll]').boundingBox();
+   assert(choice.y>=body.y&&choice.y+choice.height<=body.y+body.height+1,'choices stay in the inner scroller');assert.deepEqual(g.errors,[]);
+  }finally{await g.browser.close();}
+ }
 });

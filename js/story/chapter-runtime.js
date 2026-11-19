@@ -75,7 +75,7 @@
 
  function chapterView(){
   const c=current();if(!c)return null;const {q,s,r}=c,sc=scene(q,s);
-  const head={eyebrow:sc.place||q.chapter.title,title:sc.name},base={sceneKey:'chapter:'+q.id,head,attrs:`data-chapter="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:'',line:null,body:'',advance:null,skip:null,continueLabel:q.chapter.ui.continue||'繼續'};
+  const head={eyebrow:sc.place||q.chapter.title,title:sc.name},base={sceneKey:'chapter:'+q.id,summary:s.description||s.name,head,attrs:`data-chapter="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:'',line:null,body:'',advance:null,skip:null,continueLabel:q.chapter.ui.continue||'繼續'};
   if(!linesRead(q,s)){
    if(!cursor||cursor.stage!==s.id)cursor={stage:s.id,index:0};
    cursor.index=Math.min(cursor.index,s.dialogue.length-1);

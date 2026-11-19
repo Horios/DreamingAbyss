@@ -3,11 +3,11 @@
 #prologue-layer{position:fixed;inset:auto;top:0;left:0;width:100%;height:100%;z-index:60;display:flex;align-items:center;justify-content:center;pointer-events:auto;overflow:hidden}
 /* The game stays visible behind a translucent mask; the mask takes the clicks so nothing behind it is pressed. */
 .story-window-mask{position:absolute;inset:0;background:rgba(7,8,12,.55)}
-.story-window{position:relative;box-sizing:border-box;display:flex;flex-direction:column;width:65%;max-width:760px;max-height:80%;min-height:0;border:1px solid rgba(214,196,140,.42);border-radius:12px;background:radial-gradient(ellipse at 50% 0%,#262d42 0%,#141826 60%,#0e1019 100%);color:#e8e6df;box-shadow:0 18px 50px rgba(0,0,0,.55);overflow:hidden}
+.story-window{position:relative;box-sizing:border-box;display:flex;flex-direction:column;width:65%;max-width:760px;height:80%;max-height:80%;min-height:0;border:1px solid rgba(214,196,140,.42);border-radius:12px;background:radial-gradient(ellipse at 50% 0%,#262d42 0%,#141826 60%,#0e1019 100%);color:#e8e6df;box-shadow:0 18px 50px rgba(0,0,0,.55);overflow:hidden}
 .story-window-head,.prologue-head{position:relative;flex:0 0 auto;background:none;border:0;box-shadow:none;padding:16px 18px 8px;margin:0;text-align:center}
 .prologue-head h1{margin:4px 0 0;font-size:clamp(20px,3.4vw,28px);letter-spacing:.16em;font-weight:500;color:#f4ecd4}
 .prologue-head .eyebrow{letter-spacing:.3em;color:#a9b4cf}
-.story-window-body{position:relative;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 18px 14px;scrollbar-gutter:stable}
+.story-window-body{position:relative;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 18px 14px;scrollbar-gutter:stable;overflow-anchor:none}
 .story-window-controls{position:relative;flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid rgba(214,196,140,.22);background:rgba(10,12,18,.72)}
 .story-window-tools,.story-window-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .story-window-actions{margin-left:auto;justify-content:flex-end}
@@ -63,8 +63,8 @@ body.story-window-open .story-dialogue{display:none}
 @keyframes prologue-glow{0%,100%{opacity:.7;transform:translate(-50%,-55%) scale(.94)}50%{opacity:1;transform:translate(-50%,-55%) scale(1.06)}}
 @keyframes prologue-gather{0%{opacity:0;transform:translate(var(--x),var(--y))}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%)}}
 @keyframes story-char-in{from{opacity:0}to{opacity:1}}
-@media (max-width:780px){.story-window{width:92%;max-height:84%}.prologue-options{grid-template-columns:1fr}.story-window-body{padding:6px 14px 12px}.story-window-controls{padding:8px 10px}.story-window-speed span{display:none}.prologue-task{flex-direction:column}.prologue-task-text{flex:0 0 auto}}
-@media (max-height:520px){.story-window{max-height:92%}.story-window-head{padding:8px 14px 2px}.prologue-head h1{font-size:18px}.prologue-option{min-height:44px}}
+@media (max-width:780px){.story-window{width:92%;height:84%;max-height:84%}.prologue-options{grid-template-columns:1fr}.story-window-body{padding:6px 14px 12px}.story-window-controls{padding:8px 10px}.story-window-speed span{display:none}.prologue-task{flex-direction:column}.prologue-task-text{flex:0 0 auto}}
+@media (max-height:520px){.story-window{height:92%;max-height:92%}.story-window-head{padding:8px 14px 2px}.prologue-head h1{font-size:18px}.prologue-option{min-height:44px}}
 /* The site turns animations off by default (base.css); the story window opts back in, and only when motion is welcome. */
 @media (prefers-reduced-motion:no-preference){.story-window{animation:prologue-rise .35s ease both!important}.prologue-light::before{animation:prologue-glow 5s ease-in-out infinite!important}.prologue-scene[data-scene="1"] .prologue-light i{animation:prologue-gather 4.5s ease-in-out infinite!important}.story-char.on{animation:story-char-in .1s ease-out both!important}.story-char.on.now{animation:none!important}#prologue-spotlight{animation:prologue-spot 1.4s ease-in-out infinite!important}.prologue-chapter-title{animation:prologue-rise 1.2s ease both!important}}
 /* v0.150 chapter scenes: locked entries while the chapter gate is on, and the reply buttons in the story window. */
@@ -81,3 +81,8 @@ body.story-window-open .story-dialogue{display:none}
 .story-window-head .story-window-speed select{min-height:36px;max-width:76px}
 .story-window-head .story-window-speed svg{flex-shrink:0}
 [data-story-history] p{white-space:pre-wrap}
+
+.story-window-head{padding-left:150px}
+.story-window-summary{position:absolute;left:12px;top:12px;min-height:36px;font-size:13px}
+.story-window-controls{min-height:60px;box-sizing:border-box}
+@media(max-width:480px){.story-window-head{padding-top:56px;padding-left:14px;padding-right:14px}}

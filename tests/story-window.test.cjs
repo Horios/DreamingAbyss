@@ -11,7 +11,7 @@ test('skippable is decided by the quest data: never the prologue, and any quest 
 test('quest dialogue is a window view: one line at a time, then the stage actions; the inline copy stays for the quest card',()=>{
  const r=game();assert.equal(view(r),null);r.run("readStory('skill_equipment_intro')");
  let v=view(r);assert.equal(v.head.eyebrow,'裝備技能與寶石入門');assert.equal(v.line.kind,'narrator');assert.equal(v.line.speaker,'');assert.match(v.line.text,/啟程護符/);assert.equal(v.advance,'nextStoryDialogue');assert.equal(v.skip,'skipStoryDialogue');
- assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-skip/);assert.match(r.run("$('prologue-layer').innerHTML"),/class="story-window-mask"/);
+ assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-summary/);assert.match(r.run("$('prologue-layer').innerHTML"),/class="story-window-mask"/);
  r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line.speaker,'女神','the goddess speaks after the opening narration');
  for(let i=0;i<10&&view(r).line;i++)r.run('nextStoryDialogue()');v=view(r);assert.equal(v.line,null);assert.equal(v.advance,'completeStoryDialogue');assert.equal(v.autoAdvance,true);assert.equal(v.skip,null);assert.match(r.run("$('prologue-layer').innerHTML"),/data-story-history/);
  r.run('endStoryDialogue()');assert.equal(view(r),null);assert.equal(r.run("$('prologue-layer').hidden"),true);assert.deepEqual(r.errors,[]);
@@ -36,7 +36,7 @@ test('skipping a read-only stage completes it once, exactly like finishing it; u
 test('the prologue offers no skip and refuses every skip route',()=>{
  const r=loadRuntime(root);r.run('selectSaveSlot(1)');
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'creation');const html=r.run("$('prologue-layer').innerHTML");
- assert.doesNotMatch(html,/data-story-skip/);assert.match(html,/data-story-all/);assert.match(html,/data-story-fast/);assert.match(html,/data-story-speed/);
+ assert.doesNotMatch(html,/data-story-skip/);assert.doesNotMatch(html,/data-story-all/);assert.match(html,/data-story-summary/);assert.match(html,/data-story-speed/);
  assert.equal(r.run('storyWindowSkip()'),false);assert.equal(r.run('storyWindowSkip(true)'),false);assert.equal(r.run('skipStoryDialogue()'),false);
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()+"/"+__EMBERWILD_PROLOGUE.phase()'),'creation/before');assert.deepEqual(r.errors,[]);
 });
@@ -55,4 +55,16 @@ test('continuing an ordinary scene preserves its dialogue and grants its reward 
  assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);
  assert.equal(r.run('completeStoryDialogue()'),false,'the next objective still requires the player');
  assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);
+});
+
+test('summary stops at a choice without making it or granting its reward',()=>{
+ const r=game();r.run(`const d=exportableBalance(),q=d.story.quests.find(q=>q.id==='two_regions'),s=q.stages[0];s.conditions.conditions=[];s.rewards.gold=37;s.choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('two_regions')`);
+ const gold=r.run('playerHero().gold');assert.equal(r.run('storyWindowSummarize()'),true);
+ assert.equal(view(r).line,null);assert.match(view(r).body,/選項甲/);assert.equal(r.run('playerHero().gold'),gold);
+ assert.deepEqual(r.json('party.story.quests.two_regions.completed'),[]);assert.equal(r.run('storyWindowSummarize()'),false);assert.deepEqual(r.errors,[]);
+});
+test('summary advances rewards through the existing transaction once and stops before a task',()=>{
+ const r=game();r.run("readStory('skill_equipment_intro')");assert.equal(r.run('storyWindowSummarize()'),true);
+ assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);
+ assert.match(view(r).attrs,/equip_skill/);r.run('render()');assert.equal(r.json('playerHero().bag.filter(g=>g.storyRewardKey==="initiation_charm").length'),1);assert.deepEqual(r.errors,[]);
 });

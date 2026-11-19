@@ -8,7 +8,7 @@
  const SPEEDS={slow:60,normal:30,fast:15,instant:0},LABELS={slow:'慢速',normal:'標準',fast:'快速',instant:'即時'},STORAGE='emberwild-story-text-speed';
  let speed='normal';try{const saved=localStorage.getItem(STORAGE);if(Object.hasOwn(SPEEDS,saved))speed=saved;}catch{}
  let sceneKey='',history=[],lastLineKey='',view=null,signature='',typing=null,fast=false,fastTimer=null,confirming=false,follow=true,latest=null;
- const reduced=()=>!!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ let summarizing=false,summaryShown=false;
  const graphemes=text=>{try{return [...new Intl.Segmenter('zh-Hant',{granularity:'grapheme'}).segment(text)].map(x=>x.segment);}catch{return Array.from(text);}};
  function layer(){let el=document.getElementById('prologue-layer');if(!el){el=document.createElement('div');el.id='prologue-layer';el.className='story-window-layer';el.hidden=true;document.body.appendChild(el);}return el;}
  // The mask covers the game content area only (below the header), not the whole browser window.
@@ -23,17 +23,17 @@
  function scroller(){return layer().querySelector?.('[data-story-scroll]')||null;}
  function finishTyping(){
   const node=textNode();stopTyping();
-  if(node){node.querySelectorAll('.story-char:not(.on)').forEach(c=>c.classList.add('on','now'));node.dataset.typed='done';}
+  if(node){node.querySelectorAll('.story-char:not(.on)').forEach(c=>c.classList.add('on','now'));node.dataset.typed='done';keepInView(node.querySelector('.story-char:last-child'));}
   syncControls();scheduleFast();
  }
  const charBottom=(box,char)=>char.getBoundingClientRect().bottom-box.getBoundingClientRect().top+box.scrollTop;
  function keepInView(char){
   const box=scroller();latest=char;if(!box||!follow||!char)return;
   const bottom=charBottom(box,char)-box.clientHeight+24;
-  if(bottom>box.scrollTop)box.scrollTo({top:bottom,behavior:reduced()?'auto':'smooth'});
+  if(bottom>box.scrollTop)box.scrollTo({top:bottom,behavior:'auto'});
  }
  function startTyping(){
-  stopTyping();const node=textNode();if(!node)return scheduleFast();
+  stopTyping();if(summarizing||summaryShown)return;const node=textNode();if(!node)return scheduleFast();
   const chars=[...node.querySelectorAll('.story-char:not(.on)')];
   if(!chars.length||fast||SPEEDS[speed]===0)return finishTyping();
   node.dataset.typed='running';let i=0;const run={timer:null};typing=run;
@@ -46,7 +46,7 @@
   step();
  }
  function scheduleFast(){
-  stopFast();if(!view||confirming)return;
+  stopFast();if(!view||confirming||summarizing||summaryShown)return;
   // Continue plain dialogue automatically; choices and task boundaries wait for the player.
   if(view.autoAdvance===false||(!view.line&&!view.autoAdvance)||!view.advance){fast=false;return syncControls();}
   const current=signature,hold=fast||speed==='instant'?0:350;
@@ -61,9 +61,8 @@
  }
  function controlsHTML(){
   const v=view,line=!!v.line;
-  const skip=v.skip?(confirming?`<span class="story-window-confirm" role="alertdialog" aria-label="確認跳過劇情"><span>跳過這段劇情？</span><button type="button" class="danger" data-story-skip-confirm onclick="storyWindowSkip(true)">確定跳過</button><button type="button" onclick="storyWindowSkip(false)">取消</button></span>`:`<button type="button" data-story-skip onclick="storyWindowSkip()">跳過劇情</button>`):'';
-  const tools=line?`<button type="button" data-story-all onclick="storyWindowShowAll()">顯示全部</button><button type="button" data-story-fast aria-pressed="${fast}" onclick="storyWindowToggleFast()">${fast?'停止加速':'加速'}</button>`:'';
-  const next=v.advance&&(!v.line&&!v.autoAdvance||v.autoAdvance===false)?`<button type="button" class="primary" data-story-continue onclick="storyWindowContinue()">${esc(v.continueLabel||'繼續')}</button>`:'';
+  const skip='',tools='';
+  const next=v.advance&&(summaryShown||!v.line&&!v.autoAdvance||v.autoAdvance===false)?`<button type="button" class="primary" data-story-continue onclick="storyWindowContinue()">${esc(v.continueLabel||'繼續')}</button>`:'';
   return `<div class="story-window-tools">${tools}${skip}</div><div class="story-window-actions actions">${v.actions||''}${next}</div>`;
  }
  function speedHTML(){return `<label class="story-window-speed" title="文字速度"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 18a9 9 0 1 1 16 0M12 12l5-5M5 18h14"/><circle cx="12" cy="12" r="2"/></svg><select data-story-speed aria-label="文字速度" onchange="storyWindowSpeed(this.value)">${Object.keys(SPEEDS).map(k=>`<option value="${k}" ${k===speed?'selected':''}>${LABELS[k]}</option>`).join('')}</select></label>`;}
@@ -71,7 +70,7 @@
  function html(){
   const v=view,l=v.line;
   const text=l?`<div class="prologue-box prologue-${esc(l.kind)}" data-line="${esc(v.lineKey||'')}">${l.speaker?`<b class="prologue-speaker">${esc(l.speaker)}</b>`:''}<p class="${l.kind==='narrator'?'prologue-narration':'prologue-text'} story-typed" data-story-text aria-label="${esc(l.text)}" onclick="storyWindowShowAll()">${graphemes(l.text).map(c=>`<span class="story-char" aria-hidden="true">${esc(c)}</span>`).join('')}</p></div>`:'';
-  return `<div class="story-window-mask" aria-hidden="true"></div><section class="story-window prologue-scene" role="dialog" aria-modal="true" aria-label="${esc(v.head?.title||'劇情')}" ${v.attrs||''}>${v.decor||''}<div class="story-window-head prologue-head">${speedHTML()}<span class="eyebrow">${esc(v.head?.eyebrow||'')}</span><h1>${esc(v.head?.title||'')}</h1></div><div class="story-window-body" data-story-scroll>${historyHTML()}${v.before||''}${text}${v.body||''}</div><div class="story-window-controls">${controlsHTML()}</div></section>`;
+  return `<div class="story-window-mask" aria-hidden="true"></div><section class="story-window prologue-scene" role="dialog" aria-modal="true" aria-label="${esc(v.head?.title||'劇情')}" ${v.attrs||''}>${v.decor||''}<div class="story-window-head prologue-head">${speedHTML()}${v.line&&v.advance?'<button type="button" class="story-window-summary" data-story-summary onclick="storyWindowSummarize()">跳過整段劇情</button>':''}<span class="eyebrow">${esc(v.head?.eyebrow||'')}</span><h1>${esc(v.head?.title||'')}</h1></div><div class="story-window-body" data-story-scroll>${historyHTML()}${v.before||''}${text}${v.body||''}</div><div class="story-window-controls">${controlsHTML()}</div></section>`;
  }
  function render(next){
   const el=layer();
@@ -85,7 +84,7 @@
   if(!sameScene){history=[];lastLineKey='';follow=true;}
   else if(view?.line&&lastLineKey!==lineIdentity(view)&&(!next.line||lineIdentity(next)!==lineIdentity(view))){history.push({...view.line});lastLineKey=lineIdentity(view);}
   if(!history.length&&next.history)history=next.history.map(l=>({...l}));
-  stopTyping();stopFast();view=next;signature=next.signature;sceneKey=key;confirming=false;
+  summaryShown=false;stopTyping();stopFast();view=next;signature=next.signature;sceneKey=key;confirming=false;
   const previous=el.querySelector?.('.story-window');
   if(previous){
    // Keep the dialog itself mounted across lines, choices and scenes.
@@ -96,11 +95,38 @@
   }else el.innerHTML=html();el.hidden=false;document.body.classList.add('prologue-open','story-window-open');
   // The whole line is laid out from the start, so "the bottom" is the newest revealed character. Following pauses only
   // when the reader scrolls (wheel, touch, keys, scrollbar) to where that character is out of view, and resumes when it is back.
-  const box=scroller();latest=null;if(box){box.scrollTop=sameScene?scrollTop:0;const reader=()=>{if(!latest){follow=true;return;}const bottom=charBottom(box,latest);follow=bottom<=box.scrollTop+box.clientHeight+12;/* Scrolled past the newest text into the part not shown yet: come back to it. */if(follow&&bottom-(latest.offsetHeight||24)<box.scrollTop+4)box.scrollTo({top:Math.max(0,bottom-box.clientHeight+24),behavior:'auto'});};for(const type of ['wheel','touchmove','keydown','pointerdown'])box.addEventListener(type,()=>{/* The reader takes over: stop following and cut short any smooth scroll still under way. */if(follow){follow=false;box.scrollTo({top:box.scrollTop,behavior:'auto'});}clearTimeout(box.__reader);box.__reader=setTimeout(reader,220);},{passive:true});}
-  if(!next.line&&follow){const choices=el.querySelector?.('.story-window-choices');choices?.scrollIntoView?.({block:'nearest'});}
-  if(next.focus)el.querySelector?.(next.focus)?.focus?.();
+  const box=scroller();latest=null;
+  if(box){
+   box.scrollTop=sameScene?scrollTop:0;
+   const reader=()=>{const bottom=latest?charBottom(box,latest):box.scrollHeight;follow=bottom>=box.scrollTop&&bottom<=box.scrollTop+box.clientHeight+24;};
+   // User scrolling owns the viewport until they return to the bottom.
+   box.addEventListener('scroll',reader,{passive:true});
+   if(!next.line&&follow){const choices=el.querySelector?.('.story-window-choices');if(choices)box.scrollTop=box.scrollHeight-box.clientHeight;}
+  }
+  if(next.focus)el.querySelector?.(next.focus)?.focus?.({preventScroll:true});
   startTyping();
  }
+ // Read-only lines use their normal advance handlers. Choices and task boundaries stay with the player.
+ globalThis.storyWindowSummarize=function(){
+  if(!view?.line||!view.advance)return false;
+  stopTyping();stopFast();fast=false;summarizing=true;
+  const parts=[],seen=new Set();
+  try{
+   for(let i=0;i<1000&&view;i++){
+    const text=view.summary||view.head?.title;
+    if(text&&!seen.has(text)){parts.push(text);seen.add(text);}
+    if(view.line?.text?.startsWith('【獲得'))parts.push(view.line.text);
+    if(!view.advance||view.autoAdvance===false||!view.line&&!view.autoAdvance)break;
+    const before=signature;call(view.advance);if(signature===before)break;
+   }
+  }finally{summarizing=false;stopTyping();stopFast();}
+  if(!view)return true;
+  summaryShown=true;history=[{kind:'narrator',speaker:'劇情摘要',text:parts.join('\n')}];
+  const box=scroller();if(box){box.innerHTML=historyHTML()+(view.before||'')+(view.body||'');box.scrollTop=0;}
+  const button=layer().querySelector?.('[data-story-summary]');if(button)button.hidden=true;
+  const bar=layer().querySelector?.('.story-window-controls');if(bar)bar.innerHTML=controlsHTML();
+  follow=true;return true;
+ };
  globalThis.storyWindowContinue=function(){if(!view?.advance)return;if(typing)return finishTyping();stopFast();return call(view.advance);};
  globalThis.storyWindowShowAll=function(){if(!view?.line)return;fast=true;if(typing)finishTyping();else scheduleFast();syncControls();};
  globalThis.storyWindowToggleFast=function(){if(!view)return;fast=!fast;if(fast){if(typing)finishTyping();else scheduleFast();}else scheduleFast();syncControls();};
@@ -113,7 +139,7 @@
  };
  globalThis.storyTextOptionsView=()=>`<section class="panel option-row"><div><h2>劇情文字速度</h2><p class="small">劇情對話逐字顯示的速度；「即時」不使用逐字效果。劇情視窗中也可以調整。</p></div><select data-story-speed aria-label="劇情文字速度" onchange="storyWindowSpeed(this.value)">${Object.keys(SPEEDS).map(k=>`<option value="${k}" ${k===speed?'selected':''}>${LABELS[k]}</option>`).join('')}</select></section>`;
  globalThis.addEventListener?.('resize',()=>{if(view)place();});
- globalThis.visualViewport?.addEventListener?.('resize',()=>{if(view){place();const active=document.activeElement;if(active&&layer().contains?.(active))active.scrollIntoView?.({block:'center'});}});
+ globalThis.visualViewport?.addEventListener?.('resize',()=>{if(view){place();const active=document.activeElement;if(active&&layer().contains?.(active))active.focus?.({preventScroll:true});}});
  globalThis.addEventListener?.('keydown',e=>{if(!view||e.defaultPrevented)return;if(e.key==='Escape'){e.preventDefault();return;}if((e.key==='Enter'||e.key===' ')&&view.advance&&!/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(e.target?.tagName||'')){e.preventDefault();storyWindowContinue();}});
  globalThis.EmberwildStoryWindow={render,hide:()=>render(null),get open(){return !!view;},get typing(){return !!typing;},get fast(){return fast;},get speed(){return speed;},speeds:{...SPEEDS},finish:finishTyping};
 })();

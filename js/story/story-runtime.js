@@ -79,7 +79,7 @@
   if(!dialogue||!party)return null;const q=design.quests.find(q=>q.id===dialogue.id),r=record(dialogue.id),s=q?.stages.find(s=>s.id===r?.current);
   if(!q||!r||r.done||!s||dialogue.stage!==s.id)return null;
   const line=s.dialogue[dialogue.index],ready=met(s.conditions,r),close=`<button type="button" onclick="endStoryDialogue()">結束對話</button>`;
-  const view={sceneKey:'story:'+q.id,head:{eyebrow:q.name,title:s.name},attrs:`data-quest="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:close,line:null,body:'',advance:null,skip:null,lineKey:String(dialogue.index)};
+  const view={sceneKey:'story:'+q.id,summary:s.description||s.name,head:{eyebrow:q.name,title:s.name},attrs:`data-quest="${esc(q.id)}" data-stage="${esc(s.id)}"`,actions:close,line:null,body:'',advance:null,skip:null,lineKey:String(dialogue.index)};
   if(line){view.line={speaker:line.kind==='player'?characterName(playerHero()):line.kind==='narrator'?'':line.speaker||s.speaker||q.npc,kind:line.kind,text:line.text};view.advance='nextStoryDialogue';if(M.skippable(q))view.skip='skipStoryDialogue';}
   else if(ready)view.body=`<div class="prologue-box"><p class="prologue-hint">${esc(s.description||s.name)}</p><div class="story-window-choices">${s.choices.length?s.choices.filter(c=>met(c.conditions,r)).map(c=>`<button type="button" onclick="completeStoryStage('${q.id}','${c.id}','${s.id}')">${esc(c.text)}</button>`).join(''):`<button type="button" class="primary" onclick="completeStoryStage('${q.id}','','${s.id}')">結束劇情</button>`}</div></div>`;
   else view.body='<div class="prologue-box"><p class="prologue-hint">完成任務目標後，可回來繼續。</p></div>';
