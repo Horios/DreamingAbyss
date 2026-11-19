@@ -178,10 +178,9 @@
       for(let i=0;i<p.sockets.length;i++){
         const id=p.sockets[i];
         if(id===null||p.skills[i])continue;
-        const wasUnlocked=next.permanent.unlocks[p.job+':core:'+i]===true;
-        const skill=d.skillSystem?.definitions.find(s=>(s.adapters||[s.adapter]).some(a=>a?.job===p.job&&a.kind==='core'&&a.index===i));
-        const gearOnly=skill?.sources?.some(s=>s.type==='equipment')===true;
-        if(!wasUnlocked||!gearOnly||!Object.hasOwn(next.permanent.gemInstances,id))continue;
+        // A gem left in the socket of a skill this plan no longer has (gear-only skills, or skills an older save learned
+        // under rules that changed since) goes back to the gem stock instead of rejecting the whole save (v0.170).
+        if(!Object.hasOwn(next.permanent.gemInstances,id))continue;
         p.sockets[i]=null;
         displaced.add(id);
       }

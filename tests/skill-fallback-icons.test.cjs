@@ -34,19 +34,19 @@ test('Chromium: configured custom/Lucide icons and semantic fallback survive rel
       const doc=exportableBalance(),def=id=>doc.skillSystem.definitions.find(s=>s.id===id);
       doc.skillIcons=[{id:'fallback-test',name:'自訂火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({size:48,color:'#fa7312',opacity:.75,effect:'float'})},...doc.skillIcons.filter(x=>x)];
       // Icons are set on the canonical definitions (skill system v1 projects classes[].skills from them).
-      def('job0-core0').iconType='custom:fallback-test';def('job0-core1').iconType='lucide:shield';
-      Object.assign(def('job0-core2'),{iconType:'auto',name:'臨時治療技能',effect:'heal'});
+      def('class0-initial1').iconType='custom:fallback-test';def('class0-initial2').iconType='lucide:shield';
+      Object.assign(def('job0-core4'),{iconType:'auto',name:'臨時治療技能',effect:'heal'});
       def('class0-initial0').iconType='custom:fallback-test';
       // Only the JSON import keeps a Preview balance across reloads.
       const text=JSON.stringify(doc);if(await importBalanceJSON({target:{files:[{size:text.length,text:async()=>text}],value:'test'}})!==true)throw Error('import failed');save();setTab('skills');
     });
     const verify=async()=>{
-      await page.evaluate(()=>{closeModal();setTab('skills');openSkillCatalog('job0-core0');});
-      const custom=page.locator('#modal [data-skill-id="job0-core0"] .skill-slot-name svg').first();
+      await page.evaluate(()=>{closeModal();setTab('skills');openSkillCatalog('class0-initial1');});
+      const custom=page.locator('#modal [data-skill-id="class0-initial1"] .skill-slot-name svg').first();
       const appearance=await custom.evaluate(svg=>({width:svg.getBoundingClientRect().width,color:getComputedStyle(svg).color,opacity:getComputedStyle(svg).opacity,animation:getComputedStyle(svg.querySelector('.ew-icon-motion')).animationName}));
       assert.deepEqual(appearance,{width:48,color:'rgb(250, 115, 18)',opacity:'0.75',animation:'tr-float'});
-      await page.evaluate(()=>openSkillCatalog('job0-core1'));assert.equal(await page.locator('#modal [data-skill-id="job0-core1"] .icon-lucide svg').count(),1);
-      await page.evaluate(()=>openSkillCatalog('job0-core2'));assert.equal(await page.locator('#modal [data-skill-id="job0-core2"] .icon-heal svg').count(),1);
+      await page.evaluate(()=>openSkillCatalog('class0-initial2'));assert.equal(await page.locator('#modal [data-skill-id="class0-initial2"] .icon-lucide svg').count(),1);
+      await page.evaluate(()=>openSkillCatalog('job0-core4'));assert.equal(await page.locator('#modal [data-skill-id="job0-core4"] .icon-heal svg').count(),1);
       await page.evaluate(()=>closeModal());
       assert.equal(await page.locator('[data-skill-slot="active:0"] .icon-custom svg').count(),1,'the loadout slot (initial skill) shows the custom icon');
       // Applying a balance re-applies the team plan, which selects the protagonist by design (team-runtime apply).
