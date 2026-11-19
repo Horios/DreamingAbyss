@@ -28,7 +28,7 @@ test('Battle journal preserves scrolling through redraws and sparse filters',asy
     await page.evaluate(()=>{selectSaveSlot(1);start(1);});
     await page.waitForTimeout(100);
     await page.evaluate(()=>{
-      closeModal();state.lv=20;state.hp=stats().hp;
+      closeModal();setClassMasteryLevel(19);state.hp=stats().hp;
       recruitCompanion(11);recruitCompanion(13);closeModal();
       for(const h of heroes()){h.lv=20;h.hp=stats(h).hp;}syncParty();setTab('battle');
     });

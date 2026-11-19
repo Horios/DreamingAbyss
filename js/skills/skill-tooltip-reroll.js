@@ -1,38 +1,31 @@
 
 (()=>{
   function coreSkillNextCapLevel(skillLevel){
-    if(skillLevel>=RULES.skillMax)return null;
-    const current=state.lv;
-    for(let lv=current+1;lv<=Math.max(current+120,120);lv++){
-      if(skillCap({...state,lv})>skillLevel)return lv;
-    }
     return null;
   }
   function coreSkillUpgradeReason(i){
     const sk=CLASSES[state.job]?.skills?.[i];if(!sk)return '技能資料不存在。';
     const reasons=[],level=state.skills[i]||0,advanced=skillRequiresAdvanced(sk,i),cap=skillCap();
     if(level>=RULES.skillMax)return `已達技能最高等級 Lv.${RULES.skillMax}。`;
-    if(state.lv<sk[2])reasons.push(`需要角色 LV${sk[2]}（目前 LV${state.lv}）`);
-    if(advanced&&!state.advanced)reasons.push('需要完成二轉');
+    if(!masteryRequirementMet(state,sk[2]))reasons.push(`需要職業精通 Lv${sk[2]}（目前 Lv${classMasteryLevel(state)}）`);
     for(const req of skillPrerequisites(sk)){
       const have=skillPrerequisiteLevel(req,state),name=skillPrerequisiteName(state.job,req);
       if(have<req.level)reasons.push(`需要 ${name} Lv.${req.level}（目前 Lv.${have}）`);
     }
-    if(level>=cap){const next=coreSkillNextCapLevel(level);reasons.push(next?`目前技能等級上限 Lv.${cap}；角色達 LV${next} 後可再升級`:`目前技能等級上限 Lv.${cap}`);}
-    if(state.sp<1){const gain=Math.max(0,Math.round(GS('progression.levelRewards.skillPoints',2)));reasons.push(`需要 1 技能點（目前 ${state.sp}${gain?`；角色升級時獲得 ${gain} 點`:''}）`);}
+    if(level>=cap){const next=coreSkillNextCapLevel(level);reasons.push(`目前技能等級上限 Lv.${cap}`);}
+    if(state.sp<1){const gain=Math.max(0,Math.round(GS('progression.levelRewards.skillPoints',2)));reasons.push(`需要 1 技能點（目前 ${state.sp}）`);}
     return reasons.length?'無法升級：'+reasons.join('；')+'。':'';
   }
   function supportSkillUpgradeReason(i){
     const sk=SUPPORT[state.job]?.[i];if(!sk)return '技能資料不存在。';
     const reasons=[],level=state.supportLevels[i]||0,max=Math.max(1,Math.floor(GS('skills.support.maxLevel',5)));
     if(level>=max)return `已達輔助技能最高等級 Lv.${max}。`;
-    if(state.lv<sk.level)reasons.push(`需要角色 LV${sk.level}（目前 LV${state.lv}）`);
-    if(i===2&&!state.advanced)reasons.push('需要完成二轉');
+    if(!masteryRequirementMet(state,sk.level))reasons.push(`需要職業精通 Lv${sk.level}（目前 Lv${classMasteryLevel(state)}）`);
     for(const req of skillPrerequisites(sk)){
       const have=skillPrerequisiteLevel(req,state),name=skillPrerequisiteName(state.job,req);
       if(have<req.level)reasons.push(`需要 ${name} Lv.${req.level}（目前 Lv.${have}）`);
     }
-    if(state.sp<1){const gain=Math.max(0,Math.round(GS('progression.levelRewards.skillPoints',2)));reasons.push(`需要 1 技能點（目前 ${state.sp}${gain?`；角色升級時獲得 ${gain} 點`:''}）`);}
+    if(state.sp<1){const gain=Math.max(0,Math.round(GS('progression.levelRewards.skillPoints',2)));reasons.push(`需要 1 技能點（目前 ${state.sp}）`);}
     return reasons.length?'無法升級：'+reasons.join('；')+'。':'';
   }
   function skillUpgradeButton(html,reason){
@@ -52,7 +45,7 @@
     syncHeroSkillArrays(state);ensureProcSlots(state);
     const slots=kind==='active'?Array.from({length:2},(_,i)=>state.active?.[i]??null):state.procSlots,clearFn=kind==='active'?'clearActiveSkill':'clearProcSkill',slotFn=kind==='active'?'equipSkill':'slotProcSkill';
     return `<div class="actions active-slot-summary">${slots.map((id,i)=>`<span>槽 ${i+1}：${id===null?'未配置':esc(CLASSES[state.job].skills[id]?.[0]||'未知技能')+skillTypeBadges(state.job,id)} <button onclick="${clearFn}(${i})">清空</button></span>`).join('')}</div><div class="skill-list">${CLASSES[state.job].skills.map((sk,i)=>({sk,i})).filter(x=>x.sk[1]===kind).map(({sk,i})=>{
-      const advanced=skillRequiresAdvanced(sk,i),prereqs=skillPrerequisites(sk),prereqsMet=skillPrerequisitesMet(sk,state),locked=state.lv<sk[2]||(advanced&&!state.advanced)||!prereqsMet,gem=state.sockets[i]??null,reason=coreSkillUpgradeReason(i),disabled=!!reason,label=locked?'尚未解鎖':state.skills[i]?'升級1點':'學習',upgrade=skillUpgradeButton(`<button onclick="learn(${i})" ${disabled?'disabled':''}>${label}</button>`,reason),meta=kind==='proc'?ensureProcSkillMeta(state.job,i):null,chance=kind==='proc'?'<p>Lv1 基礎 '+Number((meta.procBaseChance*100).toFixed(1))+'% · 每升 1 級 +'+Number((meta.procChancePerLevel*100).toFixed(1))+'% · 目前 '+Number((procChance(i,state)*100).toFixed(1))+'%</p>':'',requirement=prereqs.length?'<p class="small">前置：'+esc(skillPrerequisiteLabel(state.job,sk))+'</p>':'';
+      const advanced=skillRequiresAdvanced(sk,i),prereqs=skillPrerequisites(sk),prereqsMet=skillPrerequisitesMet(sk,state),locked=!masteryRequirementMet(state,sk[2])||!prereqsMet,gem=state.sockets[i]??null,reason=coreSkillUpgradeReason(i),disabled=!!reason,label=locked?'尚未解鎖':state.skills[i]?'升級1點':'學習',upgrade=skillUpgradeButton(`<button onclick="learn(${i})" ${disabled?'disabled':''}>${label}</button>`,reason),meta=kind==='proc'?ensureProcSkillMeta(state.job,i):null,chance=kind==='proc'?'<p>Lv1 基礎 '+Number((meta.procBaseChance*100).toFixed(1))+'% · 每升 1 級 +'+Number((meta.procChancePerLevel*100).toFixed(1))+'% · 目前 '+Number((procChance(i,state)*100).toFixed(1))+'%</p>':'',requirement=prereqs.length?'<p class="small">前置：'+esc(skillPrerequisiteLabel(state.job,sk))+'</p>':'';
       return `<article class="skill-list-row"><div><div class="skill-list-title"><b>${esc(sk[0])}</b><span>Lv.${state.skills[i]}/${RULES.skillMax}</span><span>${kind==='proc'?'普攻觸發':'主動'}</span></div>${skillTypeBadges(state.job,i)}${skillMechanicsDetails(state.job,i)}<p class="skill-flavor"><b>說明：</b>${esc(coreSkillFlavor(state.job,i))||'<span class="small">尚未填寫</span>'}</p><p class="skill-detail"><b>詳細：</b>${esc(kind==='proc'?procEffectDetail(i):coreSkillDetail(state.job,i,state))}</p>${requirement}${chance}</div><div class="skill-list-controls">${upgrade}${[0,1].map(slot=>`<button onclick="${slotFn}(${i},${slot})" ${!state.skills[i]?'disabled':''}>${slots[slot]===i?'已配置槽':'設為槽'} ${slot+1}</button>`).join('')}<label>寶石 <select aria-label="${esc(sk[0])}寶石" onchange="socket(${i},this.value)" ${!state.skills[i]?'disabled':''}><option value="-1" ${gem===null?'selected':''}>不鑲嵌</option>${GEMS.map((g,j)=>`<option value="${j}" ${gem===j?'selected':''} ${state.gems[j]<1&&gem!==j?'disabled':''}>${esc(g.name)} ×${state.gems[j]} · ${esc(g.desc)}</option>`).join('')}</select></label></div></article>`;
     }).join('')}</div>`;
   }

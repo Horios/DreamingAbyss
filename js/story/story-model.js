@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const copy=x=>JSON.parse(JSON.stringify(x));
- const TYPES={gearWorn:'穿戴指定裝備',skillSlotted:'配置技能至合法槽位',gearBaseGem:'指定孔基礎能力生效',encounter:'任務關卡通關',companions:'招募夥伴數',party:'上陣人數',region:'解鎖地區',visit:'到達地區',explore:'地區擊殺進度',kill:'指定怪物擊殺',kills:'任意怪物擊殺',boss:'指定地區 BOSS',bosses:'任意 BOSS',stock:'持有道具',acquired:'累積取得道具',gatherItem:'採集指定素材',gather:'採集次數',recipe:'完成指定配方',alchemy:'煉金次數',enhance:'強化次數',enhanceLevel:'裝備最高強化',level:'主角等級',quest:'完成任務',stage:'完成階段',flag:'任務 Flag',unlock:'永久解鎖'};
+ const TYPES={gearWorn:'穿戴指定裝備',skillSlotted:'配置技能至合法槽位',gearBaseGem:'指定孔基礎能力生效',encounter:'任務關卡通關',companions:'招募夥伴數',party:'上陣人數',region:'解鎖地區',visit:'到達地區',explore:'地區擊殺進度',kill:'指定怪物擊殺',kills:'任意怪物擊殺',boss:'指定地區 BOSS',bosses:'任意 BOSS',stock:'持有道具',acquired:'累積取得道具',gatherItem:'採集指定素材',gather:'採集次數',recipe:'完成指定配方',alchemy:'煉金次數',enhance:'強化次數',enhanceLevel:'裝備最高強化',classMastery:'主角職業精通等級',quest:'完成任務',stage:'完成階段',flag:'任務 Flag',unlock:'永久解鎖'};
  const GUIDES={battle:'前往探索',partnerRoster:'前往夥伴',roster:'前往隊伍',equipment:'前往背包',worn:'前往裝備',forge:'前往強化',gather:'前往採集',alchemy:'前往煉金',shop:'前往商店',skills:'前往技能'};
  const condition=(type='kills',key='',count=1,mode='lifetime')=>({type,key,count,mode,itemType:'material'});
  const group=conditions=>({mode:'all',conditions:conditions||[]});
@@ -92,7 +92,7 @@
   return out;
  }
  function defaults(){return {version:1,quests:[]};}
- function issues(d,ctx={}){
+ function issues(d,ctx={}){if(d&&typeof d==='object')migrateLevelConditions(d);
   const errors=[],add=m=>errors.push('劇情：'+m),id=v=>typeof v==='string'&&/^[A-Za-z][A-Za-z0-9_-]{0,79}$/.test(v)&&!['constructor','prototype','__proto__'].includes(v),key=v=>typeof v==='string'&&v.length<160&&!['constructor','prototype','__proto__'].includes(v),num=n=>Number.isSafeInteger(n)&&n>=0&&n<=1e9;
   if(!d||d.version!==1||!Array.isArray(d.quests))return ['劇情：版本或任務列表無效'];
   const gear=new Map();for(const g of d.gearRewards||[]){if(!g||!id(g.id)||gear.has(g.id)||typeof g.name!=='string'||!id(g.formId)||!id(g.skillId)||!num(g.socketCount)||g.socketCount>3||!num(g.level)||g.level<1||!num(g.powerTier)||g.powerTier<1||!num(g.rarity)||g.rarity>4)add('裝備獎勵設定無效');else gear.set(g.id,g);if(ctx.skills&&!ctx.skills.some(s=>s.id===g.skillId&&s.sources.some(x=>x.type==='equipment')))add('裝備獎勵技能不存在');if(ctx.forms&&!ctx.forms.flat(2).some(f=>f.id===g.formId))add('裝備獎勵外觀不存在');}
@@ -147,6 +147,8 @@
   for(const q of d.quests)for(const p of q?.prerequisites||[])if(edges.has(p))edges.get(p).push(q.id);
   acyclic(edges,'任務鏈');return [...new Set(errors)];
  }
- function validate(d,ctx){const e=issues(d,ctx);if(e.length)throw Error(e.join('\n'));return copy(d);}
+ // v0.161: the character-level condition became the protagonist's class mastery (LV L -> mastery L-1).
+function migrateLevelConditions(d){const walk=x=>{if(Array.isArray(x))x.forEach(walk);else if(x&&typeof x==='object'){if(x.type==='level'&&'count' in x){x.type='classMastery';x.count=Math.max(0,(Number(x.count)||1)-1);}Object.values(x).forEach(walk);}};walk(d);return d;}
+function validate(d,ctx){d=migrateLevelConditions(copy(d));const e=issues(d,ctx);if(e.length)throw Error(e.join('\n'));return d;}
  const api={copy,TYPES,GUIDES,condition,group,encounter,stage,quest,defaults,issues,validate,PROLOGUE_ACTIONS,PROLOGUE_ORDER,PROLOGUE_SOURCES,PROLOGUE_SCENES,prologueQuest,prologueIssues,chapterIssues,CHAPTER_ACTIONS,CHAPTER_ALLY_IDS,skippable};root.EmberwildStory=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

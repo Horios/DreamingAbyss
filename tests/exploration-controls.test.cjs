@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),M=(()=>{const vm=require('node:vm'),ctx={};vm.runInNewContext(fs.readFileSync(path.join(root,'js/items/timed-boosts.js'),'utf8'),ctx);return ctx.EmberwildTimedBoosts;})();
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function fixture(){const r=loadRuntime(root);r.ctx.seed=require('../data/balance.json');r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();state.lv=20;state.hp=stats().hp;recruitCompanion(11);recruitCompanion(13);closeModal();for(const h of heroes()){h.lv=20;h.hp=stats(h).hp;}syncParty();globalThis.durable=()=>{foes=[{...makeEnemy(0,state,()=>.9),id:'durable',hp:1e8,maxhp:1e8,atk:1,def:0}];enemy=foes[0];for(const h of heroes())h.shield=1e6;};globalThis.tickets=()=>{for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=2;useSupply(id);}};`);return r;}
+function fixture(){const r=loadRuntime(root);r.ctx.seed=require('../data/balance.json');r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();setClassMasteryLevel(19);state.hp=stats().hp;recruitCompanion(11);recruitCompanion(13);closeModal();for(const h of heroes()){h.lv=20;h.hp=stats(h).hp;}syncParty();globalThis.durable=()=>{foes=[{...makeEnemy(0,state,()=>.9),id:'durable',hp:1e8,maxhp:1e8,atk:1,def:0}];enemy=foes[0];for(const h of heroes())h.shield=1e6;};globalThis.tickets=()=>{for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=2;useSupply(id);}};`);return r;}
 const buff=(kind='exp',ms=60000,enabled=true)=>({itemId:kind,name:kind,boostType:kind,bonusPercent:100,durationMinutes:1,remainingMs:ms,enabled});
 test('same-name sources stack up to 24h while preserving independent strength and disabled time',()=>{
  const a=buff(),b={...a,itemId:'alias'};let rows=M.stackBuff([a],b);assert.equal(rows.length,1);assert.equal(rows[0].remainingMs,120000);assert.equal(rows[0].expiresAt,undefined);
@@ -39,9 +39,9 @@ test('runtime exploration clock, controls, save compatibility, effects and quest
   r.run('toggleBattle()');await move(1000);r.run('stopTeamExploration()');await move(100000);assert.equal(r.run('party.timedBoosts[0].remainingMs'),1569000);
  });
  await t.test('independent toggles change effects while retaining independent wall deadlines',async()=>{
-  reset();r.run('tickets();setTimedBoostEnabled("team:0",false);');assert.equal(r.run('EmberwildTimedBoosts.bonus(party,"exp")'),0);assert.equal(r.run('partyDropRateBonus()'),.5);r.run('awardXP(100)');assert.equal(r.run('state.xp'),100);
+  reset();r.run('tickets();setTimedBoostEnabled("team:0",false);');assert.equal(r.run('EmberwildTimedBoosts.bonus(party,"exp")'),0);assert.equal(r.run('partyDropRateBonus()'),.5);assert.equal(r.run('(()=>{const c=party.buildSystem.permanent.classes[state.job],b=c.xp;__EMBERWILD_MASTERY.gainMastery(state,__EMBERWILD_MASTERY.validMasteries(state.job)[0],100);return c.xp-b;})()'),100);
   r.run('startSelectedExploration();durable()');await move(2000);assert.deepEqual(json(r,'party.timedBoosts.map(b=>b.remainingMs)'),[1798000,1798000]);
-  r.run('setTimedBoostEnabled("team:0",true);state.xp=0;awardXP(100)');assert.equal(r.run('state.xp'),200);assert.equal(r.run('effectiveDropChance({chanceByDifficulty:[.05,.05,.05]},{difficulty:0})'),.07500000000000001);
+  r.run('setTimedBoostEnabled("team:0",true)');assert.equal(r.run('(()=>{const c=party.buildSystem.permanent.classes[state.job],b=c.xp;__EMBERWILD_MASTERY.gainMastery(state,__EMBERWILD_MASTERY.validMasteries(state.job)[0],100);return c.xp-b;})()'),200);assert.equal(r.run('effectiveDropChance({chanceByDifficulty:[.05,.05,.05]},{difficulty:0})'),.07500000000000001);
  });
  await t.test('save/reload restores running combat; old saves have no retrospective offline rewards',async()=>{
   reset();r.run('tickets();setTimedBoostEnabled("team:1",false);startSelectedExploration();durable();');await move(1200);r.run('save();globalThis.snapshot=structuredClone(packParty());');

@@ -15,7 +15,7 @@
   pageVisited:{label:'曾進入頁面',key:'page'},
   featureUnlocked:{label:'劇情解鎖鍵已開啟',key:'text'},
   questDone:{label:'任務已完成',key:'quest'},
-  level:{label:'主角等級達到',count:true},
+  classMastery:{label:'主角職業精通等級達到',count:true},
   companions:{label:'擁有的夥伴數',count:true},
   gearOwned:{label:'持有的一般裝備數（不含新手與任務裝備）',count:true},
   gearAcquired:{label:'取得一般裝備的件數（教學系統記錄，不含新手與任務裝備）',count:true},
@@ -210,7 +210,7 @@
    fill(m.trigger,{page:'',notify:false,notifyText:''});
    const conditions=[...(m.prerequisites?.conditions||[]),...(m.completion?.condition?.conditions||[])];
    if(Array.isArray(m.steps))for(const s of m.steps){fill(s,{page:'',target:'',placement:'auto',advance:{type:'next'},optional:false,requires:group(),onReplay:'same',skipIf:group()});if(s&&typeof s==='object')conditions.push(...(s.requires?.conditions||[]),...(s.skipIf?.conditions||[]),...(s.advance?.condition?[s.advance.condition]:[]));}
-   for(const c of conditions)fill(c,{key:'',count:1});
+   for(const c of conditions){fill(c,{key:'',count:1});if(c&&c.type==='level'){c.type='classMastery';c.count=Math.max(0,(Number(c.count)||1)-1);}}
   }
   return d;
  }

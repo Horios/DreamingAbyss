@@ -5558,14 +5558,5 @@
         "map0_mob2"
       ]
     }
-  ],
-  "levelGap": {
-    "enabled": true,
-    "freeLevels": 5,
-    "midGap": 10,
-    "midMultiplier": 0.5,
-    "highGap": 15,
-    "highMultiplier": 0.2,
-    "minimumMultiplier": 0.1
-  }
+  ]
 }

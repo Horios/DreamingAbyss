@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 function recovery(on){
  const r=loadRuntime(root);r.ctx.performance.now=performance.now.bind(performance);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`selectSaveSlot(1);start(3);closeModal();state.lv=10;syncParty();configureSkill('active',1,'class3-initial1');startSelectedExploration();setHeroRecoveryHealing(memberKey(state),${on});state.autoPotion=false;`);
+ r.run(`selectSaveSlot(1);start(3);closeModal();setClassMasteryLevel(9);syncParty();configureSkill('active',1,'class3-initial1');startSelectedExploration();setHeroRecoveryHealing(memberKey(state),${on});state.autoPotion=false;`);
  const drive=ms=>{for(let i=0;i<ms;i+=50){r.advance(50);r.run('tick()');}};
  for(let i=0;i<200&&r.run('EmberwildSecondsCombat.phase')!=='recovery';i++){r.run('for(const e of foes)e.hp=Math.min(e.hp,1);');drive(500);}
  assert.equal(r.run('EmberwildSecondsCombat.phase'),'recovery');

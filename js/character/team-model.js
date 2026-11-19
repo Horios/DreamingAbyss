@@ -18,7 +18,7 @@
   }
   function normalizeDocument(input){
     const d=copy(input);d.teamSettings=settings(d.teamSettings);d.balanceSettings??={};d.balanceSettings.meta??={};
-    const p=d.balanceSettings.progression??={};p.starting??={};p.levelRewards??={};delete p.starting.skillPoints;delete p.levelRewards.skillPoints;delete p.starting.abilityPoints;delete p.levelRewards.abilityPoints;delete p.statsPerPoint;d.balanceSettings.meta.teamBuildVersion=VERSION;
+    const p=d.balanceSettings.progression??={};p.starting??={};delete p.levelRewards;delete p.starting.skillPoints;delete p.starting.abilityPoints;delete p.statsPerPoint;d.balanceSettings.meta.teamBuildVersion=VERSION;
     for(const cls of d.classes||[])for(const sk of cls.skills||[]){delete sk.learnCost;Object.assign(sk,rules(sk));}
     for(const list of d.supportSkills||[])for(const sk of list){delete sk.learnCost;Object.assign(sk,rules(sk));}
     return d;
@@ -36,7 +36,7 @@
     if(d?.buildSystem?.permanent){delete d.buildSystem.permanent.skillCredit;delete d.buildSystem.permanent.abilityCredit;}for(const p of d?.buildSystem?.plans||[])delete p.stats;
     return d;
   }
-  function validate(build,{classes,supports,members,items,progression,level,config=defaults,wearable=()=>true}){
+  function validate(build,{classes,supports,members,items,progression,config=defaults,wearable=()=>true}){
     const b=copy(build),cfg=settings(config),fail=message=>{throw Error(message);},perm=b?.permanent;
     if(b?.version!==VERSION||!int(b.serial,2,1e9)||!Array.isArray(b.plans)||!b.plans.length||b.plans.length>12||!object(perm)||!int(perm.playerKey,0,1e9)||!object(perm.classes)||!object(perm.masteries)||!object(perm.unlocks)||!object(perm.payments)||!object(perm.gemInstances)||!int(perm.gemSerial,1,1e9))fail('永久養成或隊伍資料無效');
     const skillKeys=new Set();classes.forEach((c,j)=>{c.skills.forEach((_,i)=>skillKeys.add(key(j,'core',i)));(supports[j]||[]).forEach((_,i)=>skillKeys.add(key(j,'support',i)));});
@@ -59,7 +59,7 @@
       }
       if(!Array.isArray(p.skills)||p.skills.length!==c||p.skills.some(n=>!int(n,0,1))||!Array.isArray(p.supportLevels)||p.supportLevels.length!==s||p.supportLevels.some(n=>!int(n,0,1)))fail('隊伍技能學習資料無效');
       for(const [kind,list] of [['core',p.skills],['support',p.supportLevels]])if(list.some((v,i)=>v&&!perm.unlocks[key(p.job,kind,i)]))fail('隊伍學習了尚未永久解鎖的技能');
-      for(const [field,list,type] of [['active',p.skills,'active'],['procSlots',p.skills,'proc'],['supportSlots',p.supportLevels,null]]){const slots=p[field];if(!Array.isArray(slots)||slots.length!==(p.skillLoadout?globalThis.__EMBERWILD_SKILLS?.slotCounts({job:p.job??0,advanced:!!perm.classes[p.job]?.advanced})[type||'support']??2:2)||new Set(slots.filter(v=>v!==null)).size!==slots.filter(v=>v!==null).length||slots.some(i=>i!==null&&(!int(i,0,list.length-1)||!list[i]||type&&classes[p.job].skills[i].activation!==type)))fail('隊伍技能槽無效：'+p.id+'/'+field+'（槽數 '+(slots?.length??'缺少')+'）');}
+      for(const [field,list,type] of [['active',p.skills,'active'],['procSlots',p.skills,'proc'],['supportSlots',p.supportLevels,null]]){const slots=p[field];if(!Array.isArray(slots)||slots.length!==(p.skillLoadout?globalThis.__EMBERWILD_SKILLS?.slotCounts({job:p.job??0,advanced:true})[type||'support']??2:2)||new Set(slots.filter(v=>v!==null)).size!==slots.filter(v=>v!==null).length||slots.some(i=>i!==null&&(!int(i,0,list.length-1)||!list[i]||type&&classes[p.job].skills[i].activation!==type)))fail('隊伍技能槽無效：'+p.id+'/'+field+'（槽數 '+(slots?.length??'缺少')+'）');}
       if(p.passiveEnabled!==undefined&&(!object(p.passiveEnabled)||Object.entries(p.passiveEnabled).some(([id,v])=>!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(id)||typeof v!=='boolean')))fail('隊伍被動啟用設定無效');
       p.passiveEnabled??={};
       p.playerActive??=true;

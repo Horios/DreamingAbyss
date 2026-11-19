@@ -57,16 +57,17 @@ function validateSave(input,{companion=false}={}) {
   if(!object(input)||![1,2].includes(input.version))fail('存檔版本不符');
   const s=migrateLegacyEquipmentSlotsInSave(JSON.parse(JSON.stringify(input))),legacy=s.version===1;
   if(Array.isArray(s.gems)&&s.gems.length===3){s.gems=[...s.gems,...Array(GEMS.length-3).fill(0)];if(Array.isArray(s.sockets))s.sockets=s.sockets.map((v,i)=>v===1&&CLASSES[s.job]?.skills?.[i]?.[1]==='proc'?2:v===2&&CLASSES[s.job]?.skills?.[i]?.[1]==='active'?3:v);}
-  delete s.sp;delete s.ap;delete s.stats;s.xpFraction??=0;
-  // Older builds could persist fractional XP after shared combat rewards.
-  // Normalize only valid numeric fractions; malformed values still fail below.
-  if(Number.isFinite(s.xp)&&s.xp>=0&&s.xp<=1e12&&!Number.isInteger(s.xp)&&num(s.xpFraction,0,1)&&s.xpFraction<1){
-    const base=Math.floor(s.xp),fraction=s.xp-base+s.xpFraction,carry=Math.floor(fraction);
-    s.xp=base+carry;s.xpFraction=fraction-carry;
-  }
-  if(!int(s.job,0,3)||!int(s.lv,1,RULES.maxLevel)||!int(s.map,0,MAPS.length-1))fail('角色或地圖無效');
+  delete s.sp;delete s.ap;delete s.stats;
+  // v0.161 removed character levels. A save that still has one keeps the maps that level could enter (mapAccess);
+  // the level and XP themselves are dropped and are not converted into mastery.
+  if(s.lv!==undefined||s.xp!==undefined||s.xpFraction!==undefined){if(Number.isInteger(s.lv)&&s.lv>=1){if(s.mapAccess===undefined)s.mapAccess=legacyLevelMapAccess(s.lv,!!s.won);s.legacyLevel=Math.min(999,s.lv);}delete s.lv;delete s.xp;delete s.xpFraction;}
+  // legacyLevel only lives until the party loader turns it into party.legacySkillLevel (level-removal.js).
+  if(s.legacyLevel!==undefined&&!int(s.legacyLevel,1,999))delete s.legacyLevel;
+  if(s.mapAccess!==undefined&&(!Array.isArray(s.mapAccess)||s.mapAccess.length>MAPS.length||s.mapAccess.some(i=>!int(i,0,MAPS.length-1))||new Set(s.mapAccess).size!==s.mapAccess.length))fail('地圖開放紀錄無效');
+  if(!int(s.job,0,3)||!int(s.map,0,MAPS.length-1))fail('角色或地圖無效');
+  if(s.companionMastery!==undefined&&(!object(s.companionMastery)||!int(s.companionMastery.xp,0,1e12)||Object.keys(s.companionMastery).some(k=>k!=='xp')))fail('夥伴精通資料無效');
   if(s.avatarId!==undefined&&s.avatarId!==null&&s.avatarId!==''&&!['guardian','mage','ranger','healer','wanderer','phoenix'].includes(s.avatarId))fail('角色圖示無效');
-  for(const k of ['gold','ore','dust','totalKills','repeat','potions','xp'])if(!int(s[k]))fail('資源數值無效');
+  for(const k of ['gold','ore','dust','totalKills','repeat','potions'])if(!int(s[k]))fail('資源數值無效');
   for(const k of ['hp','shield'])if(!num(s[k]))fail('生命資料無效');
   const skillCount=CLASSES[s.job].skills.length,MAX_SAVE_SKILLS=64;
   // Boot-time validation runs before some late modules append their built-in skills.
@@ -74,12 +75,11 @@ function validateSave(input,{companion=false}={}) {
   // those modules are installed; otherwise a save written by the same build cannot reload.
   if(Array.isArray(s.skills)&&s.skills.length<skillCount)while(s.skills.length<skillCount)s.skills.push(0);
   if(Array.isArray(s.sockets)&&s.sockets.length<skillCount)while(s.sockets.length<skillCount)s.sockets.push(null);
-  if(!Number.isFinite(s.xpFraction)||s.xpFraction<0||s.xpFraction>=1)fail('小數經驗資料無效');
   if(!Array.isArray(s.skills)||s.skills.length<skillCount||s.skills.length>MAX_SAVE_SKILLS||!s.skills.every(v=>int(v,0,RULES.skillMax)))fail('技能陣列無效');
   if(!array(s.gems,GEMS.length)||!s.gems.every(v=>int(v,0,1e9)))fail('寶石陣列無效');
   for(const k of ['advanced','won','autoPotion'])if(typeof s[k]!=='boolean')fail('角色狀態無效');
-  if(!int(s.tutorial,0,3)||s.advanced&&s.lv<GS('progression.advance.level',15)||s.won&&s.lv<GS('progression.levelCaps.beforeClear',30))fail('角色進度無效');
-  for(let i=0;i<skillCount;i++)if(!companion&&s.skills[i]>0&&(s.lv<CLASSES[s.job].skills[i][2]||skillRequiresAdvanced(CLASSES[s.job].skills[i],i)&&!s.advanced))fail('尚未解鎖的技能');
+  if(!int(s.tutorial,0,3))fail('角色進度無效');
+  for(let i=0;i<skillCount;i++)if(!companion&&s.skills[i]>0&&skillRequiresAdvanced(CLASSES[s.job].skills[i],i)&&!s.advanced)fail('尚未解鎖的技能');
   if(!array(s.active,(s.skillLoadout||companion)?globalThis.__EMBERWILD_SKILLS?.slotCounts(s).active??2:2)||!s.active.every(i=>i===null||int(i,0,s.skills.length-1)&&(i>=skillCount||s.skills[i]>0&&CLASSES[s.job].skills[i][1]==='active'))||new Set(s.active.filter(i=>i!==null)).size!==s.active.filter(i=>i!==null).length)fail('主動槽無效');
   // Unknown trailing active slots belong to late-installed skills. Do not expose them
   // to early renderers; the original boot bytes are rehydrated after those skills exist.
@@ -106,7 +106,7 @@ function validateSave(input,{companion=false}={}) {
     if(g.region!==undefined&&(!int(g.region,0,MAPS.length-1)||g.region===6||g.boss===undefined||regionFamily(g.region)!==g.boss||regionTier(g.region)!==g.tier))fail('裝備來源無效');
     for(const a of g.affix)if(!object(a)||!int(a.type,0,legacy?3:18)||!num(a.value,0,RULES.affixMax)||!legacy&&!int(a.rank,0,3)||[4,5].includes(a.type)&&!int(a.skill,0,MAX_SAVE_SKILLS-1)||[12,14].includes(a.type)&&!['fire','ice','wind','light','shadow'].includes(a.element)||a.type===13&&!['beast','plant','undead','construct','demon','spirit'].includes(a.race))fail('詞條資料無效');
   }
-  if(!array(s.equipped,5)||new Set(s.equipped.filter(Boolean)).size!==s.equipped.filter(Boolean).length||!s.equipped.every((id,i)=>id===null||s.bag.some(g=>g.id===id&&gearEquipPositions(g).includes(i)&&(legacy||gearWearableJobs(g).includes(s.job))&&s.lv>=gearRequiredLevel(g))))fail('穿戴資料無效');
+  if(!array(s.equipped,5)||new Set(s.equipped.filter(Boolean)).size!==s.equipped.filter(Boolean).length||!s.equipped.every((id,i)=>id===null||s.bag.some(g=>g.id===id&&gearEquipPositions(g).includes(i)&&(legacy||gearWearableJobs(g).includes(s.job)))))fail('穿戴資料無效');
   for(const k of ['materials','kills'])if(!object(s[k])||Object.entries(s[k]).some(([key,n])=>key.length>80||/[<>]/.test(key)||['__proto__','constructor','prototype'].includes(key)||!int(n,0,1e9)))fail('素材資料無效');
   for(const k of ['claimed','discovered'])if(!Array.isArray(s[k])||s[k].length>200||!s[k].every(v=>typeof v==='string'&&v.length<100))fail('圖鑑資料無效');
   // A v1 save has no commission board; ignore unknown extension fields.
@@ -123,6 +123,6 @@ function validateSave(input,{companion=false}={}) {
     questIds.add(q.id);
   }
   if(!int(s.difficulty,0,2)||!array(s.modeClears,3)||!s.modeClears.every(v=>int(v)))fail('難度資料無效');
-  if(s.lv>levelCap(s)||!solo.canVisit(s.map,s))fail('尚未解鎖此等級或區域');
+  if(!solo.canVisit(s.map,s))fail('尚未解鎖此區域');
   return s;
 }

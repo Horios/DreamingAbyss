@@ -14,7 +14,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       globalThis.__equipmentDefaults=exportableBalance();
       globalThis.__equipmentTestGear=(extra={})=>({id:'equipment-test',job:0,slot:0,tier:10,formJob:0,form:0,powerTier:1,plus:0,rar:0,difficulty:0,prefixId:'',suffixId:'',affix:[],...extra});
       globalThis.__equipmentTestHero=()=>{
-        closeModal();state=initial(0);state.lv=60;state.won=true;state.bag=[];state.equipped=[null,null,null,null,null];
+        closeModal();state=initial(0);setClassMasteryLevel(59);state.won=true;state.bag=[];state.equipped=[null,null,null,null,null];
         party=createParty(state);party.cleared=true;syncParty();
         // A real new game saves right away, which builds the team system; do that here instead of relying on
         // an unrelated asynchronous save happening before the next render.
@@ -160,13 +160,15 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.deepEqual(out.issues,[]);assert.ok(out.checked>1500);t.diagnostic('Checked '+out.checked+' additive equipment source ledgers.');
     });
-    await t.test('All 336 published v0.016 character stat snapshots remain identical through seconds migration',async()=>{
+    // The v0.016 snapshots were taken at LV60; v0.161 removed character levels, so each published item is checked to
+    // still add its own stats on a fixed-base character instead.
+    await t.test('All 336 published v0.016 items still wear and add their stats on a fixed-base character',async()=>{
       const issues=await r.page.evaluate(fixtures=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const issues=[];
-        for(const {gear:g,stats:expected} of fixtures){
-          const h=initial(g.job);h.lv=60;h.stats=[35,10,14];h.advanced=true;h.bag=[structuredClone(g)];h.equipped=[];h.equipped[g.slot]=g.id;
-          if(JSON.stringify(stats(h))!==JSON.stringify(expected))issues.push(g);
+        for(const {gear:g} of fixtures){
+          const h=initial(g.job);h.bag=[structuredClone(g)];h.equipped=[];const bare=stats(h);h.equipped[g.slot]=g.id;const worn=stats(h);
+          if(!['hp','atk','def'].every(k=>Number.isFinite(worn[k])&&worn[k]>=bare[k])||['hp','atk','def'].every(k=>worn[k]===bare[k]))issues.push(g);
         }
         return issues;
       },regression);
@@ -185,9 +187,10 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
           const before=JSON.stringify(gift);rerollEquipmentPowerTier(gift.id);reroll(gift.id);if(JSON.stringify(gift)!==before)issues.push('reroll restriction '+job);
           equipSharedGear(gift.id,memberKey(state),0);
         }
-        gift.starterPack.fixedEffects=[{key:'gearAtkPct',value:30}];gift.starterPack.growth={enabled:true,startLevel:1,maxLevel:60,effects:[{key:'flatAttack',value:1},{key:'attackPct',value:.5}]};state.lv=10;
+        gift.starterPack.fixedEffects=[{key:'gearAtkPct',value:30}];gift.starterPack.growth={enabled:true,startLevel:1,maxLevel:60,effects:[{key:'flatAttack',value:1},{key:'attackPct',value:.5}]};setClassMasteryLevel(9);
         const ledger=equipmentStatContributions(gift),growth=ledger.rows.filter(x=>x.label.startsWith('成長加成'));
-        if(growth[0].stats.atk!==9||growth[1].stats.atk!==0)issues.push('growth');
+        // v0.161: starter growth followed the removed character level and no longer adds anything.
+        if(growth.some(x=>x.stats.atk!==0))issues.push('growth');
         for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('growth sum');
         return {issues,checked};
       });assert.equal(out.checked,4);assert.deepEqual(out.issues,[]);

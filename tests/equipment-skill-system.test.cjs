@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
-function game(){const r=loadRuntime(path.resolve(__dirname,'..'));r.run(`selectSaveSlot(1);start(1);closeModal();state.lv=25;state.mastery.fire=100000;state.gems=Array(15).fill(5);const doc=exportableBalance();
+function game(){const r=loadRuntime(path.resolve(__dirname,'..'));r.run(`selectSaveSlot(1);start(1);closeModal();setClassMasteryLevel(24);state.mastery.fire=100000;state.gems=Array(15).fill(5);const doc=exportableBalance();
  for(const id of ['job1-core0','job1-core6','job1-core7']){
   const sk=doc.skillSystem.definitions.find(s=>s.id===id);sk.sources=[{type:'equipment'}];sk.requiredLevel=1;sk.weaponTypes=[];sk.requiredMastery=null;sk.unlockConditions=EmberwildSkillSystem.emptyConditions();
  }

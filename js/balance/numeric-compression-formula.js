@@ -15,8 +15,7 @@
     if(!s||typeof s!=='object')return s;
     s.meta??={};
     s.meta.numericCompressionVersion=COMPRESSION_VERSION;
-    s.progression??={};s.progression.statsPerLevel??={};s.progression.advance??={};
-    Object.assign(s.progression.statsPerLevel,{hp:4,attack:1,defense:1});
+    s.progression??={};
     s.skills??={};s.skills.core??={};s.skills.gems??={};
     s.skills.core.effectPerExtraLevel=.18;
     Object.assign(s.skills.gems,{effectMultiplier:1.10,hybridMultiplier:1.05,hybridActiveHealAttack:.10});
@@ -84,10 +83,6 @@
       out.balanceSettings.combat??={};out.balanceSettings.combat.damageFormula??={attackCoefficient:1,defenseCoefficient:.55,minimumDamage:1};
       out.balance.combat??={};out.balance.combat.statCaps??={};out.balance.combat.statCaps.defenseIgnore??=.75;
       out.balance.affixes??={};out.balance.affixes.extendedValues??={};out.balance.affixes.extendedValues.defenseIgnore??={normal:0,fine:4,rare:8,legendary:12};
-      // Old v1 JSON used the same encounter/difficulty multipliers for gold and EXP.
-      const rewards=out.balanceSettings.rewards??={};rewards.xp??={};
-      rewards.xp.kindMultiplier??=clone(rewards.kindMultiplier||EmberwildProgression.defaults.settings.rewards.xp.kindMultiplier);
-      for(const [i,d] of (out.balanceSettings.difficulty?.modes||[]).entries())d.xpMultiplier??=d.reward??EmberwildProgression.defaults.settings.difficulty.modes[i].xpMultiplier;
     }
     (out.classes||[]).forEach((cls,job)=>(cls.skills||[]).forEach((sk,i)=>normalizeSkillExtras(sk,job,i)));
     for(const item of out.items||[])item.statEffects=normalizeStatEffects(item.statEffects);

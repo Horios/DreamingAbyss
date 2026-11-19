@@ -10,9 +10,9 @@ test('normal live ticks publish combat events to the battle journal without an o
  const r=game();for(let i=0;i<12;i++){r.advance(1000);r.run('tick()');}
  hasAttacks(r);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt'),null);assert.deepEqual(r.errors,[]);
 });
-test('delayed live ticks still record damage, XP and loot without opening offline settlement',async()=>{
+test('delayed live ticks still record damage and loot without opening offline settlement',async()=>{
  const r=game();r.advance(60000);r.run('tick()');await r.run('EmberwildOffline.settle(undefined,false)');
- hasAttacks(r);assert(r.run("logs.some(e=>e.type==='exp')"));
+ hasAttacks(r);assert(!r.run("logs.some(e=>e.type==='exp')"),'no EXP lines since v0.161');
  // Random drops may legitimately be absent in a one-minute session. Grant one
  // deterministic material through the real loot path to verify journal wiring.
  const beforeCount=r.run("state.materials['戰報測試素材']||0");

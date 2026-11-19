@@ -69,15 +69,18 @@
   GAMEPLAY_SETTINGS_DEFAULTS.maps ??={};
   GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog ??= defaultMapCatalogFromRuntime();
   GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog=GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog.map((m,i)=>{
-    const copy={...m};copy.mapType=rawMapType(copy,i);copy.bossStageMode??='fixed';copy.bossStageRandomCount??=1;copy.overlevelVoucherGold??=defaultOverlevelVoucherGold(copy.min);copy.progressionGate=copy.mapType==='final'&&(typeof copy.progressionGate==='boolean'?copy.progressionGate:i===LEGACY_GATE_INDEX);return copy;
+    const copy={...m};copy.mapType=rawMapType(copy,i);copy.bossStageMode??='fixed';copy.bossStageRandomCount??=1;copy.recommendedGearLevel??=Math.max(1,Math.round(copy.max||1));copy.progressionGate=copy.mapType==='final'&&(typeof copy.progressionGate==='boolean'?copy.progressionGate:i===LEGACY_GATE_INDEX);return copy;
   });
   GAMEPLAY_SETTINGS_DEFAULTS.maps.levelRanges = GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog.map(m=>({min:m.min,max:m.max}));
   GAMEPLAY_SETTINGS_DEFAULTS.monsters.kindMultipliers.eliteDefense ??=1;
   GAMEPLAY_SETTINGS_DEFAULTS.monsters.kindMultipliers.bossDefense ??=1;
   GAMEPLAY_SETTINGS_DEFAULTS.monsters.catalog=(GAMEPLAY_SETTINGS_DEFAULTS.monsters.catalog||[]).map(m=>extendMonsterRow(m));
 
-  function defaultOverlevelVoucherGold(min){return 100+300*Math.max(0,Math.floor((Math.max(1,min)-1)/5));}
-  globalThis.defaultOverlevelVoucherGold=defaultOverlevelVoucherGold;
+  // Recommended equipment level of a map, and a hero's equipment level (average required level of the five worn
+  // positions, empty positions count as 0). Both are shown as advice; neither gates anything.
+  function mapRecommendedGearLevel(i){const row=(GAMEPLAY_SETTINGS?.maps?.catalog||[])[i];return Number.isInteger(row?.recommendedGearLevel)?row.recommendedGearLevel:Math.max(1,Math.round(MAPS[i]?.max||1));}
+  function heroGearLevel(h=state){if(!h||h.companionId!==undefined)return 0;const worn=equipment(h).filter(Boolean);return Math.round(worn.reduce((n,g)=>n+gearRequiredLevel(g),0)/EQUIP_POSITION_NAMES.length);}
+  globalThis.mapRecommendedGearLevel=mapRecommendedGearLevel;globalThis.heroGearLevel=heroGearLevel;
   function normalizeMapRow(row,i){
     const def=GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog[i]||GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog[0];
     const src=row&&typeof row==='object'?row:{},mapType=rawMapType(src,i),final=mapType==='final';
@@ -91,9 +94,8 @@
       mapType,progressionGate:gate,bossStageMode:src.bossStageMode??'fixed',bossStageRandomCount:src.bossStageRandomCount??1,
       eliteEnabled:final?false:(typeof src.eliteEnabled==='boolean'?src.eliteEnabled:true),eliteChance:final?0:(Number.isFinite(src.eliteChance)?src.eliteChance:(def?.eliteChance??.12)),
       bossEnabled:final?true:(typeof src.bossEnabled==='boolean'?src.bossEnabled:true),bossChance:final?1:(Number.isFinite(src.bossChance)?src.bossChance:(def?.bossChance??.05)),
-      // Gold per region voucher once the hero exceeds this map's max level. Default: 100 for the level-1 band,
-      // +300 per 5-level band above it; the balance editor can override it per map.
-      overlevelVoucherGold:Number.isFinite(src.overlevelVoucherGold)&&src.overlevelVoucherGold>=0?Math.round(src.overlevelVoucherGold):defaultOverlevelVoucherGold(Number.isFinite(src.min)?Math.round(src.min):(def?.min||1))
+      // v0.161: the suggested equipment level for this map (advice only, never a gate). Default: the map's max level.
+      recommendedGearLevel:Number.isInteger(src.recommendedGearLevel)&&src.recommendedGearLevel>=1&&src.recommendedGearLevel<=999?src.recommendedGearLevel:(Number.isFinite(src.max)?Math.max(1,Math.round(src.max)):(def?.recommendedGearLevel||def?.max||1))
     };
   }
   function prepareWorldInput(input){
@@ -221,11 +223,11 @@
       const lv=Math.round(gate?f.level:runtime.max),{hp,atk,def}=EmberwildProgression.baseMonsterStats(GAMEPLAY_SETTINGS,lv,'final',row);
       return {name:row.name,icon:'',mat:row.material,lv,hp,maxhp:hp,atk,def,kind:'final',turn:0,monsterId:row.id,maxDrops:row.maxDrops,element:row.element,race:row.race};
     }
-    const normals=cat.filter(m=>m.mapIndex===map&&m.kind==='normal'&&m.enabled!==false),elites=normals.filter(m=>m.eliteEnabled!==false),boss=cat.find(m=>m.mapIndex===map&&m.kind==='boss'&&m.enabled!==false),ahead=EmberwildProgression.encounterLevelLead(GAMEPLAY_SETTINGS,h.lv),bossAllowed=!!boss&&mc.bossEnabled&&runtime.max<=h.lv+ahead;
+    const normals=cat.filter(m=>m.mapIndex===map&&m.kind==='normal'&&m.enabled!==false),elites=normals.filter(m=>m.eliteEnabled!==false),boss=cat.find(m=>m.mapIndex===map&&m.kind==='boss'&&m.enabled!==false),bossAllowed=!!boss&&mc.bossEnabled;
     if(!normals.length)throw Error('地圖沒有啟用中的普通怪物：'+runtime.name);
     const bossChance=bossAllowed?Math.max(0,Math.min(1,Number(mc.bossChance)||0)):0,eliteChance=mc.eliteEnabled&&elites.length?Math.max(0,Math.min(1-bossChance,Number(mc.eliteChance)||0)):0,r=rng();
     let kind='normal',row;if(r<bossChance){kind='boss';row=boss;}else if(r<bossChance+eliteChance){kind='elite';row=weightedPick(elites,rng);}else row=weightedPick(normals,rng);
-    const maxLv=Math.min(runtime.max,h.lv+ahead),lv=kind==='boss'?runtime.max:runtime.min+Math.floor(rng()*Math.max(1,maxLv-runtime.min+1));
+    const maxLv=runtime.max,lv=kind==='boss'?runtime.max:runtime.min+Math.floor(rng()*Math.max(1,maxLv-runtime.min+1));
     const {hp,atk,def}=EmberwildProgression.baseMonsterStats(GAMEPLAY_SETTINGS,lv,kind,row);
     return {name:(kind==='elite'?'菁英・':'')+row.name,icon:'',mat:row.material,lv,hp,maxhp:hp,atk,def,kind,turn:0,monsterId:row.id,maxDrops:row.maxDrops,element:row.element,race:row.race};
   };
@@ -234,12 +236,12 @@
   craftBoss=function(mi,job){const mc=worldMapConfig(mi);if(mc?.mapType==='final')return toast('終局地圖不提供 BOSS 裝備製作');const row=monsterCatalog().find(m=>m.mapIndex===mi&&m.kind==='boss');if(mc?.bossEnabled===false||row?.enabled===false)return toast('此地圖的 BOSS 挑戰已停用');return worldCraftBossBase(mi,job);};
   update12BossMemberView=function(){
     const mode=state.difficulty||0,b=GAMEPLAY_SETTINGS.equipment.boss,rank=b.affixRankByDifficulty[mode]??2,power=b.powerByDifficulty[mode]??1,skillValue=b.skillEffectByDifficulty[mode]??30,needMat=Math.max(0,Math.round(b.craftMaterialCount));
-    const rows=MAPS.map((m,i)=>{const mc=worldMapConfig(i),bossRow=monsterCatalog().find(x=>x.mapIndex===i&&x.kind==='boss');if(mc?.mapType==='final'||mc?.bossEnabled===false||bossRow?.enabled===false)return '';const family=regionFamily(i),tier=regionTier(i),g={job:state.job,slot:bossEquipmentSlot(family),tier,boss:family,region:i,difficulty:mode,rar:0,plus:0,affix:[{type:4,rank,skill:family,value:skillValue}]},mat=bossMaterial(i,mode),n=state.materials[mat]||0,cost=Math.round(tier*b.craftGoldPerTier*(mode+1)),ready=canVisit(i)&&state.lv>=m.min&&state.gold>=cost&&n>=needMat;return `<article class="card boss-recipe">${equipmentArt(g)}<span class="tag">${m.name}</span><h3>${equipmentNameHTML(g)}</h3><p class="small">${esc(characterName(state))} · LV${m.min} · ${AFFIX_RANK[rank]||'自訂'}</p><p class="effect-quality-${rank}">${CLASSES[state.job].skills[family]?.[0]||'技能'} 效果 +${skillValue}%</p><div class="recipe-cost"><span>${mat} ${n}/${needMat}</span><span>◈ ${cost}</span></div><button class="primary" onclick="craftBoss(${i})" ${ready?'':'disabled'}>${!canVisit(i)?'尚未解鎖':ready?'製作裝備':'等級／材料不足'}</button></article>`;}).join('');
+    const rows=MAPS.map((m,i)=>{const mc=worldMapConfig(i),bossRow=monsterCatalog().find(x=>x.mapIndex===i&&x.kind==='boss');if(mc?.mapType==='final'||mc?.bossEnabled===false||bossRow?.enabled===false)return '';const family=regionFamily(i),tier=regionTier(i),g={job:state.job,slot:bossEquipmentSlot(family),tier,boss:family,region:i,difficulty:mode,rar:0,plus:0,affix:[{type:4,rank,skill:family,value:skillValue}]},mat=bossMaterial(i,mode),n=state.materials[mat]||0,cost=Math.round(tier*b.craftGoldPerTier*(mode+1)),ready=canVisit(i)&&state.gold>=cost&&n>=needMat;return `<article class="card boss-recipe">${equipmentArt(g)}<span class="tag">${m.name}</span><h3>${equipmentNameHTML(g)}</h3><p class="small">${esc(characterName(state))} · 推薦裝等 ${mapRecommendedGearLevel(i)} · ${AFFIX_RANK[rank]||'自訂'}</p><p class="effect-quality-${rank}">${CLASSES[state.job].skills[family]?.[0]||'技能'} 效果 +${skillValue}%</p><div class="recipe-cost"><span>${mat} ${n}/${needMat}</span><span>◈ ${cost}</span></div><button class="primary" onclick="craftBoss(${i})" ${ready?'':'disabled'}>${!canVisit(i)?'尚未解鎖':ready?'製作裝備':'等級／材料不足'}</button></article>`;}).join('');
     return heading('BOSS WORKSHOP / 首領製作',MODES[mode].name+'模式專屬裝備')+modePicker()+`<section class="panel">${resourceLine()}${uiHelp('製作說明',`只有一般地圖中啟用 BOSS 挑戰的地圖會列出。終局地圖不列入製作。每件需要 ${needMat} 份對應難度素材。`)}</section><div class="cards boss-recipes">${rows||'<p class="small">目前沒有啟用中的可製作 BOSS。</p>'}</div>`;
   };
 
   const worldExportBase=exportableBalance;
-  exportableBalance=function(){const out=worldExportBase();out.balanceSettings=cloneGameplaySettings(GAMEPLAY_SETTINGS);out.notes=[...(out.notes||[]),'maps.catalog.mapType 可為 normal / final；final 地圖為固定關卡編成，必須有 1 名 final 首領，並可配置 normal 小怪。','maps.catalog.progressionGate 決定哪一張 final 地圖負責解除通關前等級上限；必須恰好一張。','普通怪以 monsters.catalog.mapIndex 分配；final 地圖使用 stageCount / stageElite / stageOrder 決定小怪數量、型態與集火隊列。'];return out;};
+  exportableBalance=function(){const out=worldExportBase();out.balanceSettings=cloneGameplaySettings(GAMEPLAY_SETTINGS);out.notes=[...(out.notes||[]),'maps.catalog.mapType 可為 normal / final；final 地圖為固定關卡編成，必須有 1 名 final 首領，並可配置 normal 小怪。','maps.catalog.progressionGate 決定哪一張 final 地圖負責開放通關後區域；必須恰好一張。','普通怪以 monsters.catalog.mapIndex 分配；final 地圖使用 stageCount / stageElite / stageOrder 決定小怪數量、型態與集火隊列。'];return out;};
 
   try{
     const saved=balanceSourceText();if(saved){const parsed=JSON.parse(saved);if(parsed?.balanceSettings)GAMEPLAY_SETTINGS=normalizeGameplaySettings(parsed.balanceSettings);}else GAMEPLAY_SETTINGS=normalizeGameplaySettings(GAMEPLAY_SETTINGS);

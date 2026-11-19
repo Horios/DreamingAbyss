@@ -280,12 +280,8 @@
     return meta;
   }
 
-  function growthLevels(meta,owner){
-    const growth=meta?.growth;
-    if(!growth?.enabled||!owner)return 0;
-    const capped=Math.max(growth.startLevel,Math.min(growth.maxLevel,Number(owner.lv)||1));
-    return Math.max(0,capped-growth.startLevel);
-  }
+  // Starter gear grew with the owner's character level; character levels were removed in v0.161, so it no longer grows.
+  function growthLevels(){return 0;}
 
   const starterItemFormBase=itemForm;
   itemForm=function(g){

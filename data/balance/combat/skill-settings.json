@@ -14,13 +14,37 @@
     "hybridActiveHealAttack": 0.1
   },
   "mastery": {
-    "characterXpMultiplier": 1,
     "xpBase": 8,
     "xpLinear": 5,
     "xpQuadratic": 1,
     "skillUseXp": 2,
     "basicAttackXp": 1,
     "maxLevel": 30,
-    "advanceRequiredLevel": 4
+    "classBonus": [
+      {
+        "hp": 3,
+        "atk": 0,
+        "def": 0.5,
+        "crit": 0
+      },
+      {
+        "hp": 1,
+        "atk": 0.6,
+        "def": 0,
+        "crit": 0
+      },
+      {
+        "hp": 1,
+        "atk": 0.5,
+        "def": 0,
+        "crit": 0.001
+      },
+      {
+        "hp": 2,
+        "atk": 0.3,
+        "def": 0.2,
+        "crit": 0
+      }
+    ]
   }
 }

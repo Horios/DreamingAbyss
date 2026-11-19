@@ -76,10 +76,5 @@
     "critBase": 2,
     "critPerRank": 2
   },
-  "dropLevelGap": {
-    "enabled": true,
-    "freeLevels": 5,
-    "penaltyPerLevel": 0.4,
-    "minimumMultiplier": 0.05
-  }
+  "maxLevel": 60
 }

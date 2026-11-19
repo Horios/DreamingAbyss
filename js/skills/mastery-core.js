@@ -88,12 +88,14 @@ const SUPPORT_PLAN=[
   [{level:1},{level:4},{level:15}],
   [{level:1,mastery:'light'},{level:4,mastery:'light'},{level:15,mastery:'light'}]
 ];
-const MASTERY_DEFAULTS={xpBase:8,xpLinear:5,xpQuadratic:1,skillUseXp:2,basicAttackXp:1,maxLevel:30,advanceRequiredLevel:4,characterXpMultiplier:1};
+const MASTERY_DEFAULTS={xpBase:8,xpLinear:5,xpQuadratic:1,skillUseXp:2,basicAttackXp:1,maxLevel:30};
+// v0.161: stats each class mastery level adds to a character of that class (capped by maxLevel; only the current class counts).
+const CLASS_MASTERY_BONUS_DEFAULTS=[{hp:3,atk:0,def:.5,crit:0},{hp:1,atk:.6,def:0,crit:0},{hp:1,atk:.5,def:0,crit:.001},{hp:2,atk:.3,def:.2,crit:0}];
 
 function ensureMasterySettings(settings){
   if(!settings||typeof settings!=='object')return settings;
-  settings.progression??={};settings.progression.starting??={};settings.progression.levelRewards??={};
-  delete settings.progression.starting.skillPoints;delete settings.progression.levelRewards.skillPoints;
+  settings.progression??={};settings.progression.starting??={};delete settings.progression.levelRewards;
+  delete settings.progression.starting.skillPoints;
   if(settings.quests?.tutorial)settings.quests.tutorial.skillLevelRequirement=1;
   settings.skills??={};settings.skills.mastery??={};
   for(const [k,v] of Object.entries(MASTERY_DEFAULTS))if(!Number.isFinite(Number(settings.skills.mastery[k])))settings.skills.mastery[k]=v;
@@ -103,8 +105,11 @@ function ensureMasterySettings(settings){
   settings.skills.mastery.skillUseXp=Math.max(0,Number(settings.skills.mastery.skillUseXp));
   settings.skills.mastery.basicAttackXp=Math.max(0,Number(settings.skills.mastery.basicAttackXp));
   settings.skills.mastery.maxLevel=Math.max(1,Math.floor(Number(settings.skills.mastery.maxLevel)));
-  settings.skills.mastery.advanceRequiredLevel=Math.max(0,Math.floor(Number(settings.skills.mastery.advanceRequiredLevel)));
-  settings.skills.mastery.characterXpMultiplier=Math.max(1,Number(settings.skills.mastery.characterXpMultiplier));
+  // v0.168: the second class was removed together with its mastery requirement and its settings.
+  delete settings.skills.mastery.characterXpMultiplier;delete settings.skills.mastery.advanceRequiredLevel;
+  const bonus=Array.isArray(settings.skills.mastery.classBonus)?settings.skills.mastery.classBonus:[];
+  settings.skills.mastery.classBonus=CLASS_MASTERY_BONUS_DEFAULTS.map((d,j)=>Object.fromEntries(Object.keys(d).map(k=>{const n=Number(bonus[j]?.[k]);return [k,Number.isFinite(n)&&n>=0&&n<=1000?n:d[k]];})));
+  delete settings.progression.advance;
   return settings;
 }
 ensureMasterySettings(GAMEPLAY_SETTINGS_DEFAULTS);
@@ -134,6 +139,22 @@ function masteryProgress(xp){
   let spent=0;for(let i=0;i<level;i++)spent+=masteryStepCost(i);
   return {level,xp:value,current:Math.max(0,value-spent),next:level>=max?0:masteryStepCost(level),max};
 }
+// Total XP that reaches the mastery level cap; XP beyond it is not kept (v0.161).
+function masteryMaxXp(){const s=masterySettings();let total=0;for(let l=0;l<s.maxLevel;l++)total+=masteryStepCost(l);return total;}
+// Class mastery replaces the removed character level as the gate for class skills and the second class.
+// Protagonist: the permanent class record of the current class (team builds). Companions: their own record.
+function classMasteryXp(h){
+  if(!h)return 0;
+  if(isCompanionHero(h))return Math.max(0,Math.floor(Number(h.companionMastery?.xp)||0));
+  // Any protagonist projection (including temporary copies for other team plans) reads the permanent class record;
+  // while a save is being restored that record is the incoming save's, not the party on screen.
+  const restoring=globalThis.__EMBERWILD_SKILLS?.restoringBuild?.(),c=(restoring||globalThis.__EMBERWILD_TEAMS?.build?.())?.permanent?.classes?.[h.job];
+  if(c&&(restoring||h===party?.members?.[0]||h.playerId!==undefined&&h.playerId===party?.members?.[0]?.playerId))return Math.max(0,Math.floor(Number(c.xp)||0));
+  return Object.values(h.mastery||{}).reduce((n,v)=>n+Math.max(0,Math.floor(Number(v)||0)),0);
+}
+function classMasteryLevel(h){return masteryLevelFromXp(classMasteryXp(h));}
+globalThis.classMasteryLevel=classMasteryLevel;globalThis.classMasteryXp=classMasteryXp;
+// The second class needs class mastery (replaces the old LV15 requirement).
 function validMasteries(job){return MASTERIES_BY_JOB[Number(job)]||[];}
 function normalizeMastery(raw,job){
   const out={};for(const key of validMasteries(job)){const n=Number(raw?.[key]);out[key]=Number.isFinite(n)&&n>=0?Math.floor(n):0;}return out;
@@ -257,8 +278,7 @@ function coreMissingRequirements(h,i,forUse=false){
   const sk=CLASSES[h.job]?.skills?.[i];if(!sk)return ['技能不存在'];
   const meta=runtimeCoreMeta(h.job,i),reasons=[];if(typeof skillAllowedForPartner==='function'&&!skillAllowedForPartner(h,meta))reasons.push(meta?.partnerId==null?'主角專屬':'指定夥伴專屬');
   if(forUse&&globalThis.companionSkillDisabled?.(h,'core',i))reasons.push('技能已禁用');
-  if((isCompanionHero(h)||!forUse)&&h.lv<sk[2])reasons.push(`角色 LV${sk[2]}`);
-  if(!isCompanionHero(h)&&!forUse&&skillRequiresAdvanced(sk,i)&&!h.advanced)reasons.push('完成二轉');
+  if((isCompanionHero(h)||!forUse)&&!masteryRequirementMet(h,sk[2]))reasons.push(`職業精通 Lv${sk[2]}`);
   const req=meta.requiredMastery,reqLv=Math.max(0,Math.floor(Number(meta.requiredMasteryLevel)||0));
   if(!isCompanionHero(h)&&!forUse&&req&&masteryLevelFromXp(h.mastery?.[req]||0)<reqLv)reasons.push(`${MASTERY_LABELS[req]||req}精通 Lv${reqLv}`);
   if(!skillWeaponAllowed(h,meta))reasons.push(`武器 ${meta.weaponTypes.map(x=>WEAPON_TYPE_LABELS[x]||x).join('／')}`);
@@ -267,8 +287,7 @@ function coreMissingRequirements(h,i,forUse=false){
 function supportMissingRequirements(h,i,forUse=false){
   const sk=SUPPORT[h.job]?.[i];if(!sk)return ['技能不存在'];const reasons=[];if(typeof skillAllowedForPartner==='function'&&!skillAllowedForPartner(h,sk))reasons.push(sk.partnerId==null?'主角專屬':'指定夥伴專屬');
   if(forUse&&globalThis.companionSkillDisabled?.(h,'support',i))reasons.push('技能已禁用');
-  if((isCompanionHero(h)||!forUse)&&h.lv<sk.level)reasons.push(`角色 LV${sk.level}`);
-  if(!isCompanionHero(h)&&!forUse&&i===2&&!h.advanced)reasons.push('完成二轉');
+  if((isCompanionHero(h)||!forUse)&&!masteryRequirementMet(h,sk.level))reasons.push(`職業精通 Lv${sk.level}`);
   const req=sk.requiredMastery,reqLv=Math.max(0,Math.floor(Number(sk.requiredMasteryLevel)||0));
   if(!isCompanionHero(h)&&!forUse&&req&&masteryLevelFromXp(h.mastery?.[req]||0)<reqLv)reasons.push(`${MASTERY_LABELS[req]||req}精通 Lv${reqLv}`);
   if(!skillWeaponAllowed(h,sk))reasons.push(`武器 ${(sk.weaponTypes||[]).map(x=>WEAPON_TYPE_LABELS[x]||x).join('／')}`);
@@ -302,15 +321,23 @@ procChance=function(i,h=state){
 supportAmount=function(job,index){const sk=SUPPORT[job]?.[index];return sk?Number(sk.value)||0:0;};
 
 let currentBattleMastery={},lastBattleMastery={};
+// The timed "精通經驗" boost (boostType exp) scales mastery gains; fractions carry over per character while the page is open.
+const masteryBoostCarry=new WeakMap();
+function boostedMastery(h,amount){const bonus=globalThis.EmberwildTimedBoosts&&party?EmberwildTimedBoosts.bonus(party,'exp'):0;if(!bonus)return amount;const total=amount*(1+bonus/100)+(masteryBoostCarry.get(h)||0),whole=Math.floor(total+1e-9);masteryBoostCarry.set(h,total-whole);return whole;}
 function masteryGainKey(h,key){return `${memberKey(h)}:${key}`;}
 function gainMastery(h,key,amount){
-  if(isCompanionHero(h)){delete h.mastery;return 0;}
+  if(isCompanionHero(h)){delete h.mastery;return globalThis.__EMBERWILD_COMPANION_MASTERY_GAIN?.(h,boostedMastery(h,Math.max(0,Math.floor(Number(amount)||0))))||0;}
   if(!h||!key||!validMasteries(h.job).includes(key))return 0;
-  ensureHeroMastery(h);const add=Math.max(0,Math.floor(Number(amount)||0));if(!add)return 0;
-  const before=masteryLevelFromXp(h.mastery[key]);h.mastery[key]+=add;const after=masteryLevelFromXp(h.mastery[key]);
-  globalThis.__EMBERWILD_TEAM_GAIN?.(h,add);
+  ensureHeroMastery(h);const requested=boostedMastery(h,Math.max(0,Math.floor(Number(amount)||0))),cap=masteryMaxXp(),add=Math.min(requested,Math.max(0,cap-h.mastery[key]));
+  const classBefore=classMasteryLevel(h);
+  if(add){const before=masteryLevelFromXp(h.mastery[key]);h.mastery[key]+=add;const after=masteryLevelFromXp(h.mastery[key]);if(after>before)note(`${characterName(h)}・${MASTERY_LABELS[key]||key}精通提升至 Lv${after}`);}
+  // Class mastery follows every weapon/element gain, even once that weapon mastery is full.
+  globalThis.__EMBERWILD_TEAM_GAIN?.(h,requested);
+  const classAfter=classMasteryLevel(h);
+  for(const fn of globalThis.__EMBERWILD_MASTERY_LISTENERS||[])fn(h,requested,classBefore,classAfter);
+  if(classAfter>classBefore){note(`${characterName(h)}・${CLASSES[h.job]?.name||''}職業精通提升至 Lv${classAfter}`);globalThis.__EMBERWILD_SKILL_REFRESH?.();}
+  if(!add)return 0;
   const k=masteryGainKey(h,key);currentBattleMastery[k]=(currentBattleMastery[k]||0)+add;
-  if(after>before)note(`${characterName(h)}・${MASTERY_LABELS[key]||key}精通提升至 Lv${after}`);
   return add;
 }
 const masterySpawnBase=spawnGroup;
@@ -339,18 +366,7 @@ performHeroBasic=function(h){
   return out;
 };
 
-const masteryAdvanceBase=advance;
-advance=function(){
-  if(!state||state.advanced)return masteryAdvanceBase();
-  ensureHeroMastery(state);const req=masterySettings().advanceRequiredLevel,best=Math.max(0,...validMasteries(state.job).map(k=>masteryLevelFromXp(state.mastery[k])));
-  if(best<req)return toast(`二轉還需要任一主要精通達 Lv${req}（目前最高 Lv${best}）`);
-  return masteryAdvanceBase();
-};
 
-const masteryNeedBase=need;
-// requiredXp (EmberwildProgression) already applies skills.mastery.characterXpMultiplier; applying it here again
-// squared the multiplier whenever it was not 1. Keep the single, shared formula.
-need=function(level){return Math.max(1,Math.round(masteryNeedBase(level)));};
 
 function prepSaveForLegacyValidator(input){
   const out=clone(input),rows=out?.version===3?out.members:[out];
@@ -424,8 +440,7 @@ function normalizeOverhaulDocument(input){
 }
 function validateOverhaulFields(doc){
   const fail=msg=>{throw Error(msg);};
-  const masteryMax=Math.max(1,Math.floor(Number(doc.balanceSettings?.skills?.mastery?.maxLevel)||1)),advanceReq=Math.max(0,Math.floor(Number(doc.balanceSettings?.skills?.mastery?.advanceRequiredLevel)||0));
-  if(advanceReq>masteryMax)fail('二轉精通需求不可高於精通最高等級');
+  const masteryMax=Math.max(1,Math.floor(Number(doc.balanceSettings?.skills?.mastery?.maxLevel)||1));
   for(let job=0;job<(doc.classes||[]).length;job++)for(let i=0;i<(doc.classes[job]?.skills||[]).length;i++){
     const sk=doc.classes[job].skills[i],valid=new Set(validMasteries(job));
     if(sk.mastery!=null&&!valid.has(sk.mastery))fail(`技能精通不存在：${job}-${i}-${sk.mastery}`);
@@ -523,7 +538,7 @@ if(state){save();render();}
 
 globalThis.__EMBERWILD_MASTERY={
   weaponTypes:clone(WEAPON_TYPE_LABELS),masteryTypes:clone(MASTERIES_BY_JOB),masteryLabels:clone(MASTERY_LABELS),iconTypes:[...SKILL_ICON_TYPES],iconDefinitions:()=>clone(customSkillIcons),
-  validMasteries,masterySettings,masteryStepCost,masteryLevelFromXp,masteryProgress,currentWeaponType,
+  validMasteries,masterySettings,masteryStepCost,masteryLevelFromXp,masteryProgress,masteryMaxXp,classMasteryXp,classMasteryLevel,currentWeaponType,
   coreMeta:runtimeCoreMeta,coreMissingRequirements,supportMissingRequirements,gainMastery,ensureHero:ensureHeroMastery,
   currentBattleGain:()=>clone(currentBattleMastery),lastBattleGain:()=>clone(lastBattleMastery),normalizeDocument:normalizeOverhaulDocument
 };

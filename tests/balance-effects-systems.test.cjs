@@ -28,15 +28,14 @@ test('drops: chance and quantity of a drop rule decide what a kill gives',()=>{
  assert.equal(chances()[id],undefined,'a disabled rule no longer applies to the monster');
 });
 
-test('skills and growth: MP cost and per-level growth follow the document',()=>{
- const g=game(),mp=g.read('skillManaCost(0)'),at5=()=>g.read('(()=>{const h=playerHero(),lv=h.lv;h.lv=5;const s=stats(h);h.lv=lv;return s;})()'),before=at5();
+test('skills and growth: MP cost and the class mastery bonus follow the document',()=>{
+ const g=game(),mp=g.read('skillManaCost(0)'),at5=()=>g.read('(()=>{setClassMasteryLevel(4);return stats(playerHero());})()'),before=at5();
  g.edit(d=>{d.skillSystem.definitions.find(x=>x.id==='job0-core0').timing.mpCost=mp+3.25;});
  assert.equal(g.read('skillManaCost(0)'),mp+3.25);
  const power=g.read('skillPower(0)');g.edit(d=>{d.skillSystem.definitions.find(x=>x.id==='job0-core0').power*=2;});
  assert.equal(g.read('skillPower(0)'),power*2,'damage multiplier of the first skill');
- g.edit(d=>{d.classes[0].growthPerLevel.hp+=3;});
- const after=at5();assert.equal(after.hp,before.hp+3*4,'four level-ups, three more HP each');assert.equal(after.atk,before.atk);
- const cap=g.read('levelCap()');g.edit(d=>{d.balanceSettings.progression.levelCaps.beforeClear=cap+7;});assert.equal(g.read('levelCap()'),cap+7);
+ g.edit(d=>{d.balanceSettings.skills.mastery.classBonus[0].hp+=3;});
+ const after=at5();assert.equal(after.hp,before.hp+3*4,'four mastery levels, three more HP each');assert.equal(after.atk,before.atk);
 });
 
 test('equipment: base stats, enhancement cost, required level and sell price follow the settings',()=>{
@@ -89,8 +88,8 @@ test('offline settlement uses the same published values as online play',async()=
  assert(normal.kills>0,'the fixture fights');assert.equal(hard.enemy,normal.enemy*5,'online spawn');
  // Monsters with five times the HP: fewer kills in the same quarter hour, from an identical save and seed.
  assert(hard.kills<normal.kills,'offline kills '+hard.kills+' < '+normal.kills);
- const rich=await settle(d=>{d.balanceSettings.rewards.xp.base*=3;d.balanceSettings.rewards.xp.perLevel*=3;});
- assert(rich.xp>normal.xp,'offline experience follows the reward settings: '+rich.xp+' > '+normal.xp);
+ const rich=await settle(d=>{d.balanceSettings.skills.mastery.skillUseXp*=3;d.balanceSettings.skills.mastery.basicAttackXp*=3;});
+ assert(rich.xp>normal.xp,'offline class mastery follows the mastery settings: '+rich.xp+' > '+normal.xp);
 });
 
 test('a document offered while the team is exploring is refused, not applied',()=>{

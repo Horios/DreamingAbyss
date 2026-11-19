@@ -19,7 +19,7 @@ function sourceSummary(raw){
  const d=JSON.parse(raw),members=d.version===3?d.members:[d];
  return {members:members.length,jobs:members.map(h=>h.job),lv:members[0].lv,gold:members[0].gold,gearIds:[...new Set(members.flatMap(h=>(h.bag||[]).map(g=>g.id)))].sort(),equipped:(members[0].equipped||[]).filter(Boolean)};
 }
-const loadedSummary=`JSON.stringify((()=>{if(!state||!party)return null;const p=packParty(),m=p.members;return {members:m.length,jobs:m.map(h=>h.job),lv:m[0].lv,gold:m[0].gold,gearIds:[...new Set(m.flatMap(h=>(h.bag||[]).map(g=>g.id)))].sort(),equipped:(m[0].equipped||[]).filter(Boolean),plus:Object.fromEntries(m.flatMap(h=>(h.bag||[]).map(g=>[g.id,g.plus||0])))};})())`;
+const loadedSummary=`JSON.stringify((()=>{if(!state||!party)return null;const p=packParty(),m=p.members;return {members:m.length,jobs:m.map(h=>h.job),lv:m[0].lv,legacy:p.legacySkillLevel,gold:m[0].gold,gearIds:[...new Set(m.flatMap(h=>(h.bag||[]).map(g=>g.id)))].sort(),equipped:(m[0].equipped||[]).filter(Boolean),plus:Object.fromEntries(m.flatMap(h=>(h.bag||[]).map(g=>[g.id,g.plus||0])))};})())`;
 const summarize=runtime=>JSON.parse(runtime.run(loadedSummary));
 
 for(const row of corpus()){
@@ -31,7 +31,9 @@ for(const row of corpus()){
   assert(loaded,'save must hydrate a party');
   assert.equal(loaded.members,expected.members,'party size');
   assert.deepEqual(loaded.jobs,expected.jobs,'member jobs and order');
-  assert.equal(loaded.lv,expected.lv,'player level');
+  // v0.161: the level is removed; the old level is kept only as the skill compatibility threshold.
+  assert.equal(loaded.lv,undefined,'no character level after loading');
+  assert.equal(loaded.legacy,expected.lv>1?expected.lv:(expected.lv===1?1:undefined),'old level kept as legacySkillLevel');
   assert.equal(loaded.gold,expected.gold,'gold');
   for(const id of expected.gearIds)assert(loaded.gearIds.includes(id),'gear UID kept: '+id);
   for(const id of expected.equipped)assert(loaded.equipped.includes(id),'worn gear kept: '+id);

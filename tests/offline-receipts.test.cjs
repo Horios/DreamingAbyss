@@ -21,12 +21,12 @@ test('one real completed encounter within ten seconds shows its applied rewards 
 });
 
 test('a completed encounter without any real reward never shows an empty receipt',async()=>{
- const r=game();r.run('foes.splice(1);foes[0].hp=1;rewardGroupKill=e=>{e.rewarded=true;};save()');await settle(r,10000);
+ const r=game();/* class mastery is a real offline reward since v0.161; switch it off to keep a reward-free fight */r.run('GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;foes.splice(1);foes[0].hp=1;rewardGroupKill=e=>{e.rewarded=true;};save()');await settle(r,10000);
  assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
 });
 
 test('open receipts stay unchanged during live background play; only a cold reload queues a new offline receipt',async()=>{
- const r=game();r.run('state.lv=20;syncParty();refillParty();save()');await settle(r,600000);const first=json(r,'party.offlineExploration.receipt'),html=r.elements.get('offline-settlement').innerHTML,kills=r.run('state.totalKills');
+ const r=game();r.run('setClassMasteryLevel(19);syncParty();refillParty();save()');await settle(r,600000);const first=json(r,'party.offlineExploration.receipt'),html=r.elements.get('offline-settlement').innerHTML,kills=r.run('state.totalKills');
  for(let i=0;i<60;i++){r.advance(1000);r.run('tick()');}assert(r.run('state.totalKills')>kills);assert.deepEqual(json(r,'party.offlineExploration.receipt'),first);assert.equal(r.elements.get('offline-settlement').innerHTML,html);
  hidden(r,true);r.advance(1200000);hidden(r,false);await r.run('EmberwildOffline.settle(undefined,false)');
  assert.deepEqual(json(r,'party.offlineExploration.receipt'),first);assert.equal(r.elements.get('offline-settlement').innerHTML,html);assert.equal(r.run('party.offlineExploration.pendingReceipt'),null);
@@ -74,10 +74,10 @@ test('title page never settles or displays errors and a late valid consumable sa
 
 
 test('normal defeat retries by existing rules, while a failed quest encounter stops with no fabricated rewards',async()=>{
- const r=game();r.run('state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,4000);
+ const r=game();r.run('GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,4000);
  assert.equal(r.run('running'),true);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.pendingReceipt.kills'),0);
  r.run('stopTeamExploration()');const before=rewardState(r);await settle(r,60000);assert.equal(r.run('state.totalKills'),before.kills);assert.equal(r.run('state.gold'),before.gold);
- const q=game();q.run(`stopTeamExploration();state.lv=20;syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save();`);await settle(q,60000);
+ const q=game();q.run(`GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;stopTeamExploration();setClassMasteryLevel(19);syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save();`);await settle(q,60000);
  assert.equal(q.run('running'),false);assert.equal(q.run('party.offlineExploration.receipt'),null);assert.equal(q.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(q.run('party.offlineExploration.pendingReceipt.kills'),0);assert.equal(q.run('expeditionChallengeResult.success'),false);
 });
 
