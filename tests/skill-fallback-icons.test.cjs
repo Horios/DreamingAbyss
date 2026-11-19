@@ -35,7 +35,7 @@ test('Chromium: configured custom/Lucide icons and semantic fallback survive rel
       doc.skillIcons=[{id:'fallback-test',name:'自訂火焰',layers:[{kind:'icon',icon:'lucide:flame',x:0,y:0,scale:1,rotation:0}],appearance:__EMBERWILD_SKILL_ICONS.normalizeAppearance({size:48,color:'#fa7312',opacity:.75,effect:'float'})},...doc.skillIcons.filter(x=>x)];
       // Icons are set on the canonical definitions (skill system v1 projects classes[].skills from them).
       def('class0-initial0').iconType='custom:fallback-test';def('class0-initial1').iconType='lucide:shield';
-      Object.assign(def('class0-initial2'),{iconType:'auto',name:'臨時治療技能',effect:'heal'});
+      Object.assign(def('class0-initial2'),{iconType:'auto',name:'臨時治療技能',effect:'heal',target:'weakest'});
       // Only the JSON import keeps a Preview balance across reloads.
       const text=JSON.stringify(doc);if(await importBalanceJSON({target:{files:[{size:text.length,text:async()=>text}],value:'test'}})!==true)throw Error('import failed');save();setTab('skills');
     });
