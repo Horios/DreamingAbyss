@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 32,
+  "dataRevision": 39,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "c2d6da323fc8e0695ff08ad3923a02d76824767ff02ed05f20f104e6aea6813b",
-    "bytes": 1209000
+    "sha256": "2f768c2ac3160de16afcc0980b3809e7d15628f2cd77ee26df5f82442850915b",
+    "bytes": 1251922
   },
   "layout": {
     "": [
@@ -286,9 +286,9 @@
       "file": "combat/skills.json",
       "source": "skillSystem.definitions",
       "present": true,
-      "version": 5,
-      "sha256": "b32fceffca71401009b67ff04ed251aadf812b4bfc85d52f9f4bd46492ff3590",
-      "bytes": 247280,
+      "version": 6,
+      "sha256": "2557cc4278a5b9e75b6dbcfe39c445a4dd1cdfe57f6052a67f54bf0a0b7dff3d",
+      "bytes": 247460,
       "dependsOn": [
         "characters/classes",
         "characters/companions",
@@ -388,9 +388,9 @@
       "file": "characters/companions.json",
       "source": "companions",
       "present": true,
-      "version": 1,
-      "sha256": "902fdbc4c51c500c7b22536b7fa556b87fd4a4e82d5c5181cfad181c6ca097c3",
-      "bytes": 24664,
+      "version": 2,
+      "sha256": "ed6997c614093d18939e99083aa531fdcb564691ea3881ca0f195c57ce3df056",
+      "bytes": 24604,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -404,9 +404,9 @@
       "file": "characters/passives.json",
       "source": "passiveDefinitions",
       "present": true,
-      "version": 5,
-      "sha256": "b262074d6c7fad1e7291500f22ad16db67ef6122f25bc4c68323afac3e13c937",
-      "bytes": 9045,
+      "version": 6,
+      "sha256": "c8b40a3820403c90ea743f741f71081c9f398720e810702aca95f2b10351cdad",
+      "bytes": 9225,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -618,9 +618,9 @@
       "file": "systems/story.json",
       "source": "story",
       "present": true,
-      "version": 19,
-      "sha256": "a47328075d45d0d01e07db3957dca49ee001bbd111a7760524a54808c268660c",
-      "bytes": 35677,
+      "version": 21,
+      "sha256": "1e4aa7a56d7e5c8019fa993f19747c5f59126ce6075ad32b921a44e914a7e8ad",
+      "bytes": 36481,
       "dependsOn": [
         "combat/skills",
         "equipment/forms",
@@ -701,9 +701,9 @@
       "file": "systems/tutorials.json",
       "source": "tutorials",
       "present": true,
-      "version": 3,
-      "sha256": "69872984f232d119610cdd3f6805c1923226b64d67609459a25450356c9560ce",
-      "bytes": 18041,
+      "version": 8,
+      "sha256": "c7618f286c855351a59663a55806003ad9222d91785729d67b4043d1679e2c50",
+      "bytes": 56875,
       "dependsOn": [
         "items/items",
         "systems/story"

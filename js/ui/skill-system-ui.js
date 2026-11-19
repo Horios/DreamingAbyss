@@ -15,8 +15,8 @@
  const questItems=q=>[...(q.rewards?.items||[]),...q.stages.flatMap(s=>s.rewards.items)];
  function routes(sk,h){
   const out=[],system=S.system(),rule=system.classRules.find(r=>r.job===h.job),story=globalThis.__EMBERWILD_STORY?.design;
-  for(const row of rule?.initial||[])if(row.skillId===sk.id)out.push('職業技能樹 · 精通 Lv'+row.masteryLevel);
-  for(const row of rule?.advanced||[])if(row.skillId===sk.id)out.push('職業技能樹 · 精通 Lv'+row.masteryLevel);
+  for(const row of rule?.initial||[])if(row.skillId===sk.id)out.push('職業技能 · 精通 Lv'+row.masteryLevel);
+  for(const row of rule?.advanced||[])if(row.skillId===sk.id)out.push('職業技能 · 精通 Lv'+row.masteryLevel);
   for(const src of sk.sources){
    if(src.type==='quest'){
     if(src.rewardOnly){for(const q of story?.quests||[])if(q.enabled!==false&&questItems(q).some(x=>x.type==='skill'&&x.key===sk.id&&(x.job===undefined||x.job===h.job)))out.push('任務獎勵：'+q.name);}
@@ -122,7 +122,7 @@
  let wornSocketTarget=null;
  globalThis.toggleWornEquipmentSockets=function(id){
   const g=findGear(id);if(!g?.skillSockets||!gearWearer(id))return false;
-  wornSocketTarget=wornSocketTarget===id?null:id;
+  wornSocketTarget=wornSocketTarget===id?null:id;globalThis.__EMBERWILD_WORN_SOCKET_TARGET=()=>wornSocketTarget;
   socketSelection=null;render();return true;
  };
  globalThis.wornEquipmentSocketPanel=function(g){
@@ -139,10 +139,13 @@
  resetSession=function(){wornSocketTarget=null;socketSelection=null;return resetSocketSession();};
  const detailBase=inventoryGearDetail;inventoryGearDetail=function(g){return detailBase(g);};
  const slotBase=gearSlotHTML;gearSlotHTML=function(g,options){
-  const html=slotBase(g,options),gems=g?.skillSockets?.gems;if(!gems?.length)return html;
+  // v0.173: the worn page rows (contentOnly) are all worn, so they show the sockets in place of the worn checkmark.
+  let html=slotBase(g,options);const gems=g?.skillSockets?.gems;if(options?.contentOnly)html=html.replace(/<span class="item-slot-worn"[\s\S]*?<\/svg><\/span>/,'');if(!gems?.length)return html;
   const label=gems.map((id,i)=>'第 '+(i+1)+' 孔：'+(GEMS[id]?.name||'空孔')).join('、');
   const icons=gems.map(id=>`<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="${esc(GEMS[id]?.color||'none')}" stroke="currentColor"/></svg>`).join('');
-  return html.replace(/(<\/button>)$/,`<span class="equipment-socket-badge" role="img" aria-label="${esc(label)}" title="${esc(label)}">${icons}</span>$1`);
+  const badge=`<span class="equipment-socket-badge" role="img" aria-label="${esc(label)}" title="${esc(label)}">${icons}</span>`;
+  if(options?.contentOnly)return html.replace(/(<\/span>)$/,` ${badge.replace('class="equipment-socket-badge"','class="equipment-socket-badge worn-socket-badge"')}$1`);
+  return html.replace(/(<\/button>)$/,badge+'$1');
  };
  // v0.076: newly learned skills are not equipped automatically. The skills tab shows NEW until the player has seen them,
  // and the skills page offers to equip each one. Seen skills are remembered per hero (seenSkillIds); on the first

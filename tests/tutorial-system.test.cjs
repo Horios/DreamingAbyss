@@ -4,7 +4,10 @@ const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirnam
 const D=require('../js/balance/balance-document.js');
 // start(0) makes a character without the prologue, which gets no automatic guides; these tests turn them on as the
 // prologue would.
-function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer);party.tutorials.auto=true');return r;}
+// The v0.173 system page guides (one per page) are marked done here, so these tests can move between pages and still
+// see only the five core guides; tests/onboarding-spotlight.browser.test.cjs and tests/system-tours.test.cjs cover them.
+const CORE=['explore_basics','equipment_basics','skill_basics','shop_basics','quest_basics'];
+function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run(`selectSaveSlot(1);start(0);closeModal();clearInterval(timer);party.tutorials.auto=true;for(const m of __EMBERWILD_TUTORIAL.design.modules)if(!${JSON.stringify(CORE)}.includes(m.id))party.tutorials.records[m.id]={triggered:true,completed:true,skipped:false,step:-1,revision:m.revision}`);return r;}
 const active=r=>r.json('__EMBERWILD_TUTORIAL.status().active');
 const step=r=>active(r)?.stepId||null;
 const records=r=>r.json('party.tutorials.records');
@@ -13,7 +16,9 @@ function edit(r,fn){r.run('globalThis.__d=exportableBalance()');const t=r.json('
 
 test('the built-in tutorials pass the shared rules and keep their exact form when normalized',()=>{
  const d=M.defaults();assert.deepEqual(M.issues(d),[]);assert.equal(JSON.stringify(M.validate(d)),JSON.stringify(d));
- assert.deepEqual(d.modules.map(m=>[m.id,m.type,m.category,m.implemented]),[['explore_basics','guide','battle',true],['equipment_basics','guide','equipment',true],['skill_basics','guide','skills',true],['shop_basics','guide','shop',true],['quest_basics','guide','quests',true]]);
+ assert.deepEqual(d.modules.map(m=>[m.id,m.type,m.category,m.implemented]),[['explore_basics','guide','battle',true],['equipment_basics','guide','equipment',true],['skill_basics','guide','skills',true],['shop_basics','guide','shop',true],['quest_basics','guide','quests',true],
+  ['onboarding_gift','guide','equipment',true],['onboarding_practice','guide','battle',true],['onboarding_helper','guide','companions',true],
+  ['statistics_basics','guide','battle',true],['roster_basics','guide','companions',true],['partner_basics','guide','companions',true],['character_basics','guide','character',true],['worn_basics','guide','equipment',true],['socket_basics','guide','equipment',true],['forge_basics','guide','equipment',true],['boss_basics','guide','equipment',true],['story_basics','guide','quests',true],['wishing_basics','guide','wishingLake',true],['gather_basics','guide','life',true],['alchemy_basics','guide','alchemy',true]]);
  assert.deepEqual(require('../data/balance.json').tutorials,d,'the published data carries the built-in tutorials');
 });
 
@@ -36,7 +41,7 @@ test('invalid tutorial data is reported with the module, step and reason',()=>{
 });
 
 test('the balance document check and the game both refuse invalid tutorials',()=>{
- const r=game();r.run('globalThis.__d=exportableBalance()');assert.equal(r.json('__d.tutorials.modules.length'),5,'export carries the tutorials');
+ const r=game();r.run('globalThis.__d=exportableBalance()');assert.equal(r.json('__d.tutorials.modules.length'),20,'export carries the tutorials');
  const bad=r.json('__d');bad.tutorials.modules[0].steps[0].target='nope';
  assert.match(D.inspect(bad).filter(x=>x.system==='教學').map(x=>x.reason).join('\n'),/引導目標不存在：nope/);
  assert.throws(()=>r.run('__d.tutorials.modules[0].steps[0].target="nope";applyBalanceConfig(__d,{persist:false})'),/引導目標不存在/);

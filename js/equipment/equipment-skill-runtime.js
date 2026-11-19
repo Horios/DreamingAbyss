@@ -61,7 +61,7 @@
  function transaction(change){
   if(!party)return false;
   const p=owner(),before=copy(packParty()),oldState=memberKey(state);
-  try{change();S.refreshAll();if(!globalThis.EmberwildBattleConfiguration?.pending())for(const h of party.members)h.hp=Math.min(h.hp,stats(h).hp);if(save()===false)throw Error('儲存失敗');globalThis.EmberwildBattleConfiguration?.notify();render();return true;}
+  try{change();S.refreshAll();if(!globalThis.EmberwildBattleConfiguration?.pending())for(const h of party.members)h.hp=Math.min(h.hp,stats(h).hp);if(save()===false)throw Error(saveFailureText());globalThis.EmberwildBattleConfiguration?.notify();render();return true;}
   catch(e){loadParty(before);state=partyMember(oldState)||p;toast('操作未保存：'+e.message);return false;}
  }
  globalThis.socketEquipmentGem=function(id,n,type){

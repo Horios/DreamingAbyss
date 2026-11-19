@@ -91,7 +91,7 @@
  save=function(...args){
   if(stepping||restoring)return true;
   if(!internal){sync();if(job)return true;}
-  if(failed||globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
+  if(failed||globalThis.__EMBERWILD_SAVE_OWNER===false){globalThis.__EMBERWILD_SAVE_ERROR=failed?'離線結算未完成，請先處理結算訊息':'存檔已交給其他分頁，請重新整理此頁';return false;}
   // Never move lastAt just because a save ran: it represents settled events only.
   const saved=baseSave(...args);if(saved===true&&typeof globalThis.__EMBERWILD_BOOT_SAVE_RAW==='string')lastCommitted=globalThis.__EMBERWILD_BOOT_SAVE_RAW;return saved;
  };

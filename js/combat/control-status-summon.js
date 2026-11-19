@@ -249,7 +249,7 @@
   const controlCoreDetailBase=coreSkillDetail;
   coreSkillDetail=function(job,i,h=state){
     const sk=CLASSES[job]?.skills?.[i],effect=sk?.[5];if(!sk||!CONTROL_EFFECTS.has(effect))return controlCoreDetailBase(job,i,h);
-    const m=normalizeControlMeta(sk[6],effect),cd=sk[1]==='active'?skillCooldown(i,h):0,head=actionTurnElementLabel(coreSkillElement(job,i))+' · 冷卻 '+cd+' 回合 · 需求 LV'+sk[2];
+    const m=normalizeControlMeta(sk[6],effect),cd=sk[1]==='active'?skillCooldown(i,h):0,head=actionTurnElementLabel(coreSkillElement(job,i))+' · 冷卻 '+cd+' 回合 · 需求精通 Lv'+sk[2];
     if(effect==='polymorph')return head+' · 變形護盾＝攻擊×'+Number(skillPower(i,h).toFixed(2))+' · 無法行動 '+m.duration+' 回合 · 不會成為單體目標 · 護盾破裂立即解除 · BOSS 無效';
     if(effect==='freeze')return head+' · 冰凍：無法行動 '+m.duration+' 回合；BOSS '+m.bossDuration+' 回合';
     if(effect==='frost')return head+' · 敵方全體結霜：速度 -'+Math.round(m.slowPct*100)+'% · 持續至遭遇結束或被陷阱轉為冰凍';

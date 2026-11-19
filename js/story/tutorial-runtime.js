@@ -4,7 +4,7 @@
 (()=>{
  'use strict';
  const M=EmberwildTutorial,copy=M.copy,STORY=()=>globalThis.__EMBERWILD_STORY,PRO=()=>globalThis.__EMBERWILD_PROLOGUE;
- const COUNTERS=['gearAcquired','explorationStarted','gearSelected','wearOpened','gearEquipped','skillSlotOpened','skillSlotted','catalogOpened'];
+ const COUNTERS=['gearAcquired','explorationStarted','gearSelected','wearOpened','gearEquipped','skillSlotOpened','skillSlotted','catalogOpened','socketsOpened','socketSelected','gemSocketed'];
  let design=M.defaults();
  let session=null;            // {id, index, mode:'normal'|'replay'|'test', paused, reason, startedOn}
  const snoozed=new Set();     // modules the player closed during this page load (they come back after a reload)
@@ -13,7 +13,16 @@
 
  // ---------- progress record ----------
  // auto:false — no automatic notices or guides (characters made without the prologue); review and replay still work.
- function fresh(auto=true){const events={};for(const k of COUNTERS)events[k]=0;return {version:1,auto,records:{},pages:{},events};}
+ function fresh(auto=true){const events={};for(const k of COUNTERS)events[k]=0;return {version:1,auto,records:{[TOURS_MARK]:{completed:true}},pages:{},events};}
+ // v0.173 added a guide for every system page. A save from before then has already used the pages it visited, so those
+ // guides count as done (legacy) once; pages it never opened still get theirs. The marker record keeps this to one pass.
+ const TOURS_MARK='system_tours_v173';
+ const TOUR_IDS=['statistics_basics','roster_basics','partner_basics','character_basics','worn_basics','forge_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ function migrateTours(t){
+  if(!t||t.records[TOURS_MARK])return false;
+  for(const id of TOUR_IDS){const m=design.modules.find(x=>x.id===id);if(m&&!t.records[id]&&t.pages[m.trigger.page])t.records[id]={triggered:true,completed:true,skipped:false,step:-1,revision:m.revision,legacy:true};}
+  t.records[TOURS_MARK]={completed:true};return true;
+ }
  const recordKeys={triggered:'boolean',completed:'boolean',skipped:'boolean',notified:'boolean',revision:'number',step:'number',notifiedRevision:'number',legacy:'boolean'};
  function validateProgress(raw){
   if(raw===undefined)return undefined;
@@ -45,7 +54,7 @@
   return t;
  }
  let creating=false,viaPrologue=false;
- function ensure(){if(!party)return null;if(!party.tutorials){if(creating)party.tutorials=fresh(viaPrologue);else migrate();}return party.tutorials;}
+ function ensure(){if(!party)return null;if(!party.tutorials){if(creating)party.tutorials=fresh(viaPrologue);else migrate();}migrateTours(party.tutorials);return party.tutorials;}
  const rec=id=>{const t=ensure();return t?(t.records[id]??={triggered:false,completed:false,skipped:false,step:-1}):null;};
  const peek=id=>party?.tutorials?.records?.[id]||null;
  // Tutorial progress is saved after the current task (a microtask), never inside the render or the game action that
@@ -61,6 +70,9 @@
  const normalGear=g=>!!g&&!g.starterPack&&!g.storyRewardKey&&!globalThis.EmberwildTokens?.isToken?.(g);
  const allGear=()=>party?.sharedGear?.items||hero()?.bag||[];
  const prologueRunning=()=>!!STORY()?.prologueRunning?.()||!!PRO()?.active?.();
+ // v0.173: only the name and class screens hold tutorials back; the onboarding tasks after them play their own guides.
+ const creatingCharacter=()=>!!PRO()?.creating?.();
+ const onboardingStage=()=>{const r=STORY()?.record?.('prologue');return r&&!r.done?r.current:'';};
  function prologueLesson(action){const S=STORY(),q=S?.prologueQuest?.();if(!q)return 0;const r=S.record(q.id);if(!r)return 0;return Number(q.stages.some(s=>s.prologue?.action===action&&r.completed.includes(s.id)));}
  function skillDefs(h){const K=globalThis.__EMBERWILD_SKILLS;return K?K.system().definitions.filter(sk=>!sk.disabled&&sk.partnerId==null&&sk.jobs?.includes(h.job)):[];}
  function value(c){
@@ -81,10 +93,13 @@
    case 'activeSkillSlotted':return (h.skillLoadout?.active||[]).filter(Boolean).length;
    case 'skillSlots':return (h.skillLoadout?.[c.key]||[]).length;
    case 'prologueLesson':return prologueLesson(c.key);
+   case 'prologueStage':return Number(onboardingStage()===c.key);
+   case 'lakeUnlocked':return Number(!!party.wishingLake?.unlocked);
+   case 'socketGearWorn':return Number((h.equipped||[]).some(id=>id&&h.bag.find(g=>g.id===id)?.skillSockets?.count>0));
    default:return 0;
   }
  }
- const need=c=>c.type==='exploring'||c.type==='prologueLesson'||c.type==='prologueDone'||c.type==='tutorialDone'||c.type==='pageVisited'||c.type==='featureUnlocked'||c.type==='questDone'?Math.max(1,c.count):c.count;
+ const need=c=>c.type==='exploring'||c.type==='prologueLesson'||c.type==='prologueStage'||c.type==='lakeUnlocked'||c.type==='socketGearWorn'||c.type==='prologueDone'||c.type==='tutorialDone'||c.type==='pageVisited'||c.type==='featureUnlocked'||c.type==='questDone'?Math.max(1,c.count):c.count;
  const ok=c=>value(c)>=need(c);
  const met=g=>!g||!g.conditions.length||(g.mode==='any'?g.conditions.some(ok):g.conditions.every(ok));
  const label=c=>{const d=M.CONDITIONS[c.type];let key=c.key;if(c.type==='pageVisited')key=M.PAGES[c.key]||c.key;if(c.type==='tutorialDone')key=design.modules.find(m=>m.id===c.key)?.title||c.key;if(c.type==='skillSlots')key=M.SLOT_TYPES[c.key]||c.key;return (d?.label||c.type)+(key?'：'+key:'');};
@@ -102,14 +117,18 @@
  const done=m=>!!peek(m.id)?.completed;
  function status(m){const r=peek(m.id);if(session?.id===m.id&&session.mode==='normal')return session.paused?'paused':'running';if(r?.completed)return 'completed';if(r?.skipped)return 'skipped';if(r?.triggered)return 'started';return 'new';}
  const STATUS_TEXT={new:'尚未開始',started:'進行到一半',running:'進行中',paused:'暫停中',completed:'已完成',skipped:'已跳過'};
- const playing=()=>!!party&&!!state&&!globalThis.isEmberwildTitleOpen?.()&&!prologueRunning();
- const blocked=()=>{const layer=document.getElementById('prologue-layer');return !!document.getElementById('modal')?.open||!!layer&&!layer.hidden;};
+ const playing=()=>!!party&&!!state&&!globalThis.isEmberwildTitleOpen?.()&&!creatingCharacter();
+ const blocked=()=>{const layer=document.getElementById('prologue-layer');return !!document.getElementById('modal')?.open&&!dialogPage()||!!layer&&!layer.hidden;};
+ // The wishing lake opens as a dialog instead of a page; while it is open it counts as its own page.
+ const dialogPage=()=>{const d=document.getElementById('modal');return d?.open&&d.dataset?.view==='wishing-lake'?'wishingLake':'';};
  const pageOf=s=>s?.page||M.TARGETS[s?.target]?.page||'';
- const currentPage=()=>typeof tab==='string'?tab:'';
+ const currentPage=()=>dialogPage()||(typeof tab==='string'?tab:'');
 
  // ---------- targets ----------
  const $q=(sel,root=document)=>root.querySelector?.(sel)||null;
  const modal=()=>{const d=document.getElementById('modal');return d?.open?d:null;};
+ // The first of these that is on screen (a section can be present but empty and collapsed).
+ const shown=(...sels)=>sels.map(s=>$q(s)).find(el=>el&&el.getBoundingClientRect?.().height>0)||null;
  const main=()=>$q('#app .layout>main')||$q('#app');
  function newestGearRow(){
   const list=$q('.inline-equipment-list');if(!list)return null;
@@ -138,11 +157,45 @@
   'skills.supportSlots':()=>$q('main [onclick^="openSkillSlot(\'support\'"]')?.parentElement||null,
   'skills.slotChoice':()=>{const m=modal();return m?[...m.querySelectorAll('[onclick^="chooseSkillSlot("]')].find(b=>!b.disabled&&!/null\)$/.test(b.getAttribute('onclick')))||null:null;},
   'shop.categories':()=>$q('main .shop-category-tabs'),
-  'shop.fixed':()=>$q('main .shop-fixed-section'),
+  'shop.fixed':()=>$q('main .shop-fixed-section')||$q('main .shop-product-grid'),
   'shop.random':()=>$q('main .shop-random-section'),
   'quests.board':()=>$q('main .quest-design-card')?.parentElement||null,
   'quests.start':()=>$q('main [onclick^="startDailyCommission("]')||$q('main [onclick^="claimBoard("]'),
-  'header.options':()=>document.getElementById('utilityButton-options')
+  'header.options':()=>document.getElementById('utilityButton-options'),
+  'bag.starterGear':()=>{const h=hero(),g=(h?.bag||[]).filter(x=>x.starterPack&&!(h.equipped||[]).includes(x.id)).sort((a,b)=>(a.slot||0)-(b.slot||0))[0];return g?$q(`main [onclick*="selectInventoryGear('${g.id}')"]`):null;},
+  'stats.summary':()=>$q('main .statistics-summary'),
+  'stats.combat':()=>$q('main .statistics-combat-data'),
+  'stats.drops':()=>$q('main .statistics-layout'),
+  'roster.plans':()=>$q('main .team-plan-panel'),
+  'roster.list':()=>$q('main .roster-page .roster-list'),
+  'roster.recruit':()=>$q('main [onclick="showCompanionRecruitment()"]'),
+  'partners.list':()=>$q('main .partner-owned-list'),
+  'partners.recruit':()=>$q('main [onclick="showCompanionRecruitment()"]'),
+  'partners.recruitChoice':()=>{const m=modal();return m?[...m.querySelectorAll('[onclick*="recruitCompanion("]')].find(b=>!b.disabled)||null:null;},
+  'character.stats':()=>$q('main .page-owner-content .grid')||$q('main .page-owner-content'),
+  'character.mastery':()=>$q('main .class-mastery-grid'),
+  'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick="toggleWornEquipmentSockets('${g.id}')"]`):null;},
+  'worn.socketSlot':()=>$q('main .equipment-socket-editor .equipment-socket-slot'),
+  'worn.gemChoices':()=>$q('main .equipment-socket-choices')||$q('main .equipment-socket-editor'),
+  'worn.socketBadge':()=>$q('main .worn-socket-badge')?.closest('.worn-slot-choice')||null,
+  'worn.tokens':()=>$q('main .companion-token-panel'),
+  'worn.skillLink':()=>$q('main .inventory-wear-skill-link button')||$q('main [onclick="setTab(\'skills\')"]'),
+  'forge.list':()=>$q('main .forge-gear-pane')||$q('main .forge-gear-list'),
+  'forge.detail':()=>$q('main .forge-detail-pane .gear-detail-header')||$q('main .forge-detail-pane'),
+  'forge.actions':()=>$q('main [onclick^="enhance("]')?.parentElement||null,
+  'boss.classTabs':()=>$q('main .boss-class-tabs'),
+  'boss.recipe':()=>$q('main .boss-recipe'),
+  'story.tabs':()=>$q('main .game-subtabs'),
+  'story.card':()=>$q('main .story-card'),
+  'story.action':()=>$q('main .story-card .actions'),
+  'lake.panel':()=>$q('#modal .lake-panel h1')||$q('#modal .lake-panel'),
+  'lake.offerings':()=>shown('#modal .lake-offerings','#modal .lake-panel'),
+  'lake.confirm':()=>shown('#modal .lake-confirm','#modal .lake-result','#modal .lake-panel'),
+  'gather.target':()=>$q('main .life-gather-selector'),
+  'gather.start':()=>$q('main [onclick="startLifeGathering()"]')?.parentElement||null,
+  'life.stock':()=>$q('main .life-stock>summary')||$q('main .life-stock'),
+  'alchemy.recipe':()=>$q('main .life-recipe'),
+  'alchemy.start':()=>$q('main .life-recipe [onclick^="startLifeWork("]')?.parentElement||null
  };
  // A control marked data-tutorial-target="id" wins over the built-in lookup, so a redesigned screen can keep its target.
  function resolve(id){
@@ -168,6 +221,9 @@
   wrap('openSkillSlot',{kind:'skillSlotOpened',after:out=>out!==false});
   wrap('chooseSkillSlot',{kind:'skillSlotted',after:out=>out===true});
   wrap('openSkillCatalog',{kind:'catalogOpened',after:out=>out!==false});
+  wrap('toggleWornEquipmentSockets',{kind:'socketsOpened',after:(out,before,id)=>out===true&&before!==id,before:()=>globalThis.__EMBERWILD_WORN_SOCKET_TARGET?.()});
+  wrap('selectEquipmentSocket',{kind:'socketSelected',after:out=>out===true});
+  wrap('socketEquipmentGem',{kind:'gemSocketed',after:out=>out===true});
  }
 
  // ---------- sessions ----------
@@ -192,7 +248,7 @@
   const m=byId(id);if(!m)return {ok:false,error:'教學不存在：'+id};
   if(mode!=='test'&&!live(m))return {ok:false,error:'這個教學尚未實裝或已停用'};
   if(!party||!state)return {ok:false,error:'尚未建立角色'};
-  if(prologueRunning())return {ok:false,error:'序幕進行中，結束後才能使用教學'};
+  if(creatingCharacter())return {ok:false,error:'建立角色後才能使用教學'};
   if(session&&session.id!==id&&mode!=='test')return {ok:false,error:'另一個教學正在進行：'+(byId(session.id)?.title||session.id)};
   if(mode==='replay'&&!unlocked(m))return {ok:false,error:'這個功能尚未解鎖'};
   if(mode==='replay'&&!m.replayable)return {ok:false,error:'這個教學不提供重播'};
@@ -264,7 +320,7 @@
    if(m.trigger.type==='unlock'&&!r?.notified){notices.set(m.id,{kind:'unlock'});rec(m.id).notified=true;dirty=true;}
   }
   if(dirty)persist();
-  if(session){const c=current();if(c&&!session.paused)watch(c);return;}
+  if(session){const c=current();if(c&&stageOver(c.m))return finish(true);if(c&&!session.paused)watch(c);return;}
   if(blocked())return;
   // One guide at a time: the first eligible module in list order whose page is open starts (or resumes).
   for(const m of design.modules){
@@ -276,8 +332,10 @@
    const out=begin(m.id,'normal',page===startPage?at:0);if(out.ok)return;
   }
  }
+ // An onboarding guide is over when its onboarding task is: the onboarding has moved on (often to another page).
+ function stageOver(m){return session?.mode==='normal'&&m.prerequisites.conditions.some(c=>c.type==='prologueStage')&&!met(m.prerequisites);}
  function onPageChange(page){
-  const c=current();if(!c||session.paused)return;
+  const c=current();if(c&&stageOver(c.m))return finish(true);if(!c||session.paused)return;
   const want=pageOf(c.step);if(!want||want===page)return;
   // Moving on by the step's own action (the wear button opens the gear page) is the next step, not an interruption.
   const nextStep=c.m.steps[session.index+1];if(c.step.advance.type==='page'&&c.step.advance.key===page)return advance('page');
@@ -373,7 +431,7 @@
   const rows=design.modules.filter(unlocked);
   if(!rows.length)return '<section class="panel option-row"><div><h2>教學回顧</h2><p class="small">目前沒有已解鎖的教學。</p></div></section>';
   return rows.map(m=>{
-   const st=status(m),why=prologueRunning()?'序幕結束後才能重播':session&&session.id!==m.id?'另一個教學正在進行':!m.replayable?'這個教學不提供重播':'';
+   const st=status(m),why=creatingCharacter()?'建立角色後才能重播':session&&session.id!==m.id?'另一個教學正在進行':!m.replayable?'這個教學不提供重播':'';
    const steps=reviewOpen===m.id?`<ol class="tutorial-review-steps">${m.steps.map(s=>`<li><b>${esc2(s.title)}</b>：${esc2(s.text)}</li>`).join('')}</ol>`:'';
    return `<section class="panel option-row tutorial-review" data-tutorial-review="${esc2(m.id)}"><div><h2>${esc2(m.title)} <span class="tag">${esc2(M.TYPES[m.type])}</span> <span class="tag">${esc2(STATUS_TEXT[st])}</span></h2><p class="small">${esc2(M.CATEGORIES[m.category])} · ${esc2(m.description)}</p>${steps}${why?`<p class="small">${esc2(why)}</p>`:''}</div><div class="actions"><button type="button" onclick="toggleTutorialReview('${esc2(m.id)}')">${reviewOpen===m.id?'收起說明':'查看說明'}</button><button type="button" class="primary" onclick="replayTutorial('${esc2(m.id)}')" ${why?'disabled':''}>${m.type==='guide'?'重新執行引導':'重新查看'}</button></div></section>`;
   }).join('');
@@ -404,7 +462,7 @@
 
  const baseRender=render;render=function(...args){const out=baseRender(...args);try{evaluate();draw();}catch(e){console.warn(e);}return out;};
  installHooks();
- setInterval(()=>{try{if(!playing()){if(session&&session.mode!=='test'&&prologueRunning())session=null;draw();return;}evaluate();passiveCompletion();follow();scrollTarget();}catch(e){console.warn(e);}},200);
+ setInterval(()=>{try{if(!playing()){if(session&&session.mode!=='test'&&creatingCharacter())session=null;draw();return;}evaluate();passiveCompletion();follow();scrollTarget();}catch(e){console.warn(e);}},200);
  addEventListener?.('resize',()=>follow());
 
  // ---------- developer API (balance editor preview) ----------

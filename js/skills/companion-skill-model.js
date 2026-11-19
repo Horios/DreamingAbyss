@@ -85,11 +85,11 @@
   // Built-in catalog only; positional pools stay intact for existing saves.
   function configureDefaults(doc){
     const profiles={
-      10:{names:['裂地斬','反擊之刃'],passive:'attackPct',description:'專注劍術輸出；LV1 裂地斬、LV3 反擊之刃、LV8 攻擊強化。'},
-      11:{names:['嘲諷','堅毅壁壘'],passive:'defensePct',description:'專注承受敵方攻勢；LV1 嘲諷、LV3 堅毅壁壘、LV8 防禦強化。'},
-      12:{names:['火焰箭','餘燼爆發'],passive:'attackPct',description:'專注火焰法術輸出；LV1 火焰箭、LV3 餘燼爆發、LV8 攻擊強化。'},
-      13:{names:['治癒禱言','生命泉源'],passive:'healingPct',description:'專注隊伍治療；LV1 治癒禱言、LV3 生命泉源、LV8 治療強化。'},
-      14:{names:['穿透箭','連射'],passive:'attackPct',description:'專注箭術輸出；LV1 穿透箭、LV3 連射、LV8 攻擊強化。'}
+      10:{names:['裂地斬','反擊之刃'],passive:'attackPct',description:'專注劍術輸出；技能：裂地斬、反擊之刃、攻擊強化。'},
+      11:{names:['嘲諷','堅毅壁壘'],passive:'defensePct',description:'專注承受敵方攻勢；技能：嘲諷、堅毅壁壘、防禦強化。'},
+      12:{names:['火焰箭','餘燼爆發'],passive:'attackPct',description:'專注火焰法術輸出；技能：火焰箭、餘燼爆發、攻擊強化。'},
+      13:{names:['治癒禱言','生命泉源'],passive:'healingPct',description:'專注隊伍治療；技能：治癒禱言、生命泉源、治療強化。'},
+      14:{names:['穿透箭','連射'],passive:'attackPct',description:'專注箭術輸出；技能：穿透箭、連射、攻擊強化。'}
     };
     for(const p of doc.companions||[]){
       const profile=profiles[p.statTemplateId??p.id];if(!profile)continue;
@@ -99,7 +99,7 @@
       if(core.some(i=>i<0)||!passive)throw Error('內建夥伴技能不存在：'+p.id);
       p.core=core;p.active=core.filter(i=>pool[i].activation==='active');p.proc=core.filter(i=>pool[i].activation==='proc');p.support=[];p.passives=[passive.id];p.description=profile.description;p.availability=p.id>=10&&p.id<=14?'visible':'hidden';p.unlockCondition={type:'initial'};p.duplicateTicketGold=100;
       core.forEach((i,n)=>pool[i].requiredLevel=n?3:1);
-      passive.requiredLevel=8;passive.name=({attackPct:'攻擊強化',defensePct:'防禦強化',healingPct:'治療強化'})[profile.passive];passive.description='達到解鎖等級且啟用時常駐生效，不占技能槽。';
+      passive.requiredLevel=8;passive.name=({attackPct:'攻擊強化',defensePct:'防禦強化',healingPct:'治療強化'})[profile.passive];passive.description='達到解鎖的精通等級且啟用時常駐生效，不占技能槽。';
     }
     return doc;
   }

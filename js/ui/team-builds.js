@@ -73,7 +73,7 @@
     };
     const selected=entries.find(x=>x.key===selectedTeamSkill);
     const board=entries.length?`<div class="skill-level-board">${[...groups].map(([level,list])=>`<section class="skill-level-row" data-skill-level="${level}"><div class="skill-level-label"><span>精通</span><strong>${level}</strong></div><div class="skill-level-icons">${list.map(tile).join('')}</div></section>`).join('')}</div>`:'<p class="empty">此職業尚未設定主角技能。</p>';
-    return `<p class="small skill-board-help">依需求等級排列；點選圖示查看詳細資料與配置。✓ 已學習 · ● 已裝配</p><div class="skill-layout-split player-skill-layout"><div class="skill-tree-pane" aria-label="依等級排列的技能">${board}</div><div class="skill-detail-pane" aria-label="技能詳細">${selected?teamSkillDetail(job,h,current,selected):'<section class="panel skill-detail-empty"><p class="small">點選左側技能圖示，查看詳細資料。</p></section>'}</div></div>`;
+    return `<p class="small skill-board-help">依需求精通等級排列；點選圖示查看詳細資料與配置。✓ 已學習 · ● 已裝配</p><div class="skill-layout-split player-skill-layout"><div class="skill-tree-pane" aria-label="依等級排列的技能">${board}</div><div class="skill-detail-pane" aria-label="技能詳細">${selected?teamSkillDetail(job,h,current,selected):'<section class="panel skill-detail-empty"><p class="small">點選左側技能圖示，查看詳細資料。</p></section>'}</div></div>`;
   }
   const skillBase=globalThis.__EMBERWILD_MASTERY_UI.individual;
   globalThis.individualSkillsView=function(){

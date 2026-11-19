@@ -143,7 +143,7 @@
   };
   globalThis.openWornWearHelp=function(){
     const modal=$('modal');
-    modal.innerHTML=`<h2>穿戴流程說明</h2><ol class="inventory-wear-help-steps"><li>先點選要穿戴的部位，再從右側背包選擇裝備；也可以在背包詳情按「穿戴」直接帶入。</li><li>裝備必須符合角色職業與等級；飾品有兩個欄位，請選擇要使用的欄位。</li><li>換裝時先查看能力、詞綴比較，再按「確認穿戴」；原本是空欄位時會直接穿戴。</li><li>若裝備附帶技能，穿戴後，可前往「技能」頁配置該技能。</li><li>已穿戴裝備下方的「詳情」可查看完整能力，「鑲嵌」可管理寶石，「強化／洗鍊」可前往強化頁。</li></ol><div class="actions"><button type="button" onclick="closeModal()">關閉說明</button></div>`;
+    modal.innerHTML=`<h2>穿戴流程說明</h2><ol class="inventory-wear-help-steps"><li>先點選要穿戴的部位，再從右側背包選擇裝備；也可以在背包詳情按「穿戴」直接帶入。</li><li>裝備必須符合角色職業；飾品有兩個欄位，請選擇要使用的欄位。</li><li>換裝時先查看能力、詞綴比較，再按「確認穿戴」；原本是空欄位時會直接穿戴。</li><li>若裝備附帶技能，穿戴後，可前往「技能」頁配置該技能。</li><li>已穿戴裝備下方的「詳情」可查看完整能力，「鑲嵌」可管理寶石，「強化／洗鍊」可前往強化頁。</li></ol><div class="actions"><button type="button" onclick="closeModal()">關閉說明</button></div>`;
     if(!modal.open)modal.showModal();return true;
   };
   const wornBase=wornEquipmentView;

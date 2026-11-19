@@ -8976,7 +8976,7 @@
   {
     "id": "partner10-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9017,7 +9017,7 @@
   {
     "id": "partner11-passive1",
     "name": "防禦強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9058,7 +9058,7 @@
   {
     "id": "partner12-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9099,7 +9099,7 @@
   {
     "id": "partner13-passive1",
     "name": "治療強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9140,7 +9140,7 @@
   {
     "id": "partner14-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9181,7 +9181,7 @@
   {
     "id": "partner15-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9222,7 +9222,7 @@
   {
     "id": "partner16-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9263,7 +9263,7 @@
   {
     "id": "partner17-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9304,7 +9304,7 @@
   {
     "id": "partner18-passive1",
     "name": "防禦強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9345,7 +9345,7 @@
   {
     "id": "partner19-passive1",
     "name": "防禦強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9386,7 +9386,7 @@
   {
     "id": "partner20-passive1",
     "name": "防禦強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9427,7 +9427,7 @@
   {
     "id": "partner21-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9468,7 +9468,7 @@
   {
     "id": "partner22-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9509,7 +9509,7 @@
   {
     "id": "partner23-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9550,7 +9550,7 @@
   {
     "id": "partner24-passive1",
     "name": "治療強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9591,7 +9591,7 @@
   {
     "id": "partner25-passive1",
     "name": "治療強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9632,7 +9632,7 @@
   {
     "id": "partner26-passive1",
     "name": "治療強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9673,7 +9673,7 @@
   {
     "id": "partner27-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9714,7 +9714,7 @@
   {
     "id": "partner28-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [
@@ -9755,7 +9755,7 @@
   {
     "id": "partner29-passive1",
     "name": "攻擊強化",
-    "description": "達到解鎖等級且啟用時常駐生效，不占技能槽。",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
     "kind": "buff",
     "target": "self",
     "effects": [

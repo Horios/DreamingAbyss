@@ -35,7 +35,7 @@ for(const [label,width,height] of [['desktop',1280,800],['phone',390,780]])test(
   if(!await page.locator('#utilityButton-options').isVisible())await page.click('#utilityMoreButton');
   await page.click('#utilityButton-options');await page.click('[data-options-tab="tutorials"]');
   const rows=await page.locator('[data-tutorial-review]').evaluateAll(n=>n.map(x=>x.dataset.tutorialReview));
-  assert.deepEqual(rows,['explore_basics','skill_basics','shop_basics','quest_basics'],'the gear guide is not listed before any gear was found');
+  assert.deepEqual(rows,['explore_basics','skill_basics','shop_basics','quest_basics','statistics_basics','roster_basics','partner_basics','character_basics','worn_basics','forge_basics','boss_basics','story_basics','gather_basics','alchemy_basics'],'the gear guide is not listed before any gear was found');
   await page.click('[data-tutorial-review="explore_basics"] button:has-text("查看說明")');
   assert.match(await page.locator('[data-tutorial-review="explore_basics"]').innerText(),/選擇探索地圖/);
   await page.click('[data-tutorial-review="explore_basics"] button:has-text("重新執行引導")');

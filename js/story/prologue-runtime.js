@@ -24,7 +24,8 @@
   if(s.id==='departure'){
    party.story.flags.onboarding_story_notice=false;party.story.flags.onboarding_done=true;
    // The actual first exploration just taught this module; keep it available in tutorial review.
-   if(party.tutorials){const m=globalThis.__EMBERWILD_TUTORIAL?.design.modules.find(m=>m.id==='explore_basics');if(m)party.tutorials.records[m.id]={triggered:true,completed:true,skipped:false,step:-1,revision:m.revision};}
+   // The roster guide's content is part of the recruiting guide, so it does not replay on the same page right after.
+   if(party.tutorials)for(const id of ['explore_basics','partner_basics']){const m=globalThis.__EMBERWILD_TUTORIAL?.design.modules.find(m=>m.id===id);if(m&&!party.tutorials.records[m.id]?.completed)party.tutorials.records[m.id]={triggered:true,completed:true,skipped:false,step:-1,revision:m.revision};}
   }
  }
  function migrate(){
@@ -74,7 +75,7 @@
  function creationView(){
   const pick=stage()==='calling',options=Q().stages.find(s=>s.id==='calling').prologue.options;
   return {sceneKey:'creation',head:{eyebrow:'女神',title:pick?'選擇初始職業':'你的名字'},attrs:'data-stage="'+stage()+'"',line:null,advance:null,skip:null,
-   body:pick?`<div class="prologue-options" role="radiogroup">${options.map(o=>`<button type="button" class="prologue-option${chosenJob===o.job?' selected':''}" role="radio" aria-checked="${chosenJob===o.job}" onclick="prologuePickClass(${o.job})"><b>${esc(o.text)}</b><span>${esc(o.description)}</span></button>`).join('')}</div>`:`<p>女神：${esc(Q().stages[0].dialogue.map(l=>l.text).join(' '))}</p><label for="prologue-name">名字</label><input id="prologue-name" maxlength="20" autocomplete="off" onkeydown="if(event.key===\'Enter\')prologueConfirmName()">`,
+   body:pick?`<div class="prologue-options" role="radiogroup">${options.map(o=>`<button type="button" class="prologue-option${chosenJob===o.job?' selected':''}" role="radio" aria-checked="${chosenJob===o.job}" onclick="prologuePickClass(${o.job})"><b>${esc(o.text)}</b><span>${esc(o.description)}</span></button>`).join('')}</div>`:`<div class="prologue-goddess">${Q().stages[0].dialogue.map(l=>`<p>${esc(l.speaker||'女神')}：${esc(l.text)}</p>`).join('')}</div><label for="prologue-name">名字</label><input id="prologue-name" maxlength="20" autocomplete="off" onkeydown="if(event.key===\'Enter\')prologueConfirmName()">`,
    actions:`<button type="button" onclick="backToTitle()">返回標題</button>`+(pick?`<button type="button" class="primary" onclick="prologueConfirmClass()" ${CLASSES[chosenJob]?'':'disabled'}>開始冒險</button>`:'<button type="button" class="primary" onclick="prologueConfirmName()">選擇職業</button>'),focus:pick?'':'#prologue-name',signature:'creation|'+pick+'|'+chosenJob};
  }
  function draw(){
@@ -100,7 +101,11 @@
   if(party?.story?.flags?.caravan_warrior_notice){if(S().transaction(()=>{delete party.story.flags.caravan_warrior_notice;}))toast('戰士洛恩已加入夥伴名單');}
  }
  // The ordinary battle must actually finish; killing the first enemy in a group is insufficient.
- const roundBase=pacedRound;pacedRound=function*(){yield* roundBase();if(runningGuide()&&stage()==='practice'&&foes.length&&foes.every(e=>e.hp<=0)&&!party.questChallenge){if(S().transaction(()=>{party.story.flags.onboarding_battle=true;}))render();}};
+ function practiceWon(){if(runningGuide()&&stage()==='practice'&&!party.story.flags.onboarding_battle&&foes.length&&foes.every(e=>e.hp<=0)&&!party.questChallenge){if(S().transaction(()=>{party.story.flags.onboarding_battle=true;}))render();}}
+ const roundBase=pacedRound;pacedRound=function*(){yield* roundBase();practiceWon();};
+ // v0.173: seconds combat ends an encounter through the battle summary, never through pacedRound; the first battle
+ // in the onboarding was never counted there.
+ const summary=globalThis.EmberwildBattleSummary;if(summary?.finish){const finishBase=summary.finish;summary.finish=function(result,...args){const out=finishBase.call(this,result,...args);if(result==='victory'&&runningGuide()&&stage()==='practice')queueMicrotask(()=>{try{practiceWon();}catch(e){console.warn(e);}});return out;};}
  const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);migrate();return out;};
  const renderBase=render;render=function(...args){const out=renderBase(...args);draw();return out;};
  globalThis.__EMBERWILD_PROLOGUE={active,running:runningGuide,creating,stage,phase:()=>active()?'action':null,satisfied,draftKey:DRAFT_KEY,commitStage,migrate};

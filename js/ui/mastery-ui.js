@@ -250,7 +250,7 @@ characterView=function(){
 };
 const masteryGuideBase=guideView;
 guideView=function(){
-  return `<section class="panel"><h2>角色成長與精通</h2><p>角色沒有等級：使用職業戰鬥會累積職業精通，精通等級依序解鎖職業技能。戰士與弓箭手使用對應武器的普攻與技能可累積武器精通；法師與牧師依實際施放技能的體系累積元素或光暗精通。技能學習可能需要指定的精通等級，習得技能即可使用完整效果。</p></section>`+masteryGuideBase();
+  return `<section class="panel"><h2>角色成長與精通</h2><p>使用職業戰鬥會累積職業精通，精通等級依序解鎖職業技能。戰士與弓箭手使用對應武器的普攻與技能可累積武器精通；法師與牧師依實際施放技能的體系累積元素或光暗精通。技能學習可能需要指定的精通等級，習得技能即可使用完整效果。</p></section>`+masteryGuideBase();
 };
 if(state){save();render();}
 })();

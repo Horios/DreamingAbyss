@@ -575,8 +575,12 @@ function living(){return heroes().filter(h=>h.hp>0);}
 function withHero(hero,fn){const previous=state;state=hero;try{return fn();}finally{state=previous;}}
 function syncParty(){if(!party)return;for(const h of party.members){h.map=party.map;h.difficulty=party.difficulty;if(party.cleared)h.won=true;}}
 function packParty(){syncParty();return party;}
+// v0.173: the reason of the last refused save, so a failed action can say why it was not kept.
+globalThis.__EMBERWILD_SAVE_ERROR='';
+globalThis.saveFailureText=function(){const r=globalThis.__EMBERWILD_SAVE_ERROR;return '無法儲存'+(r?'（'+r+'）':'');};
 save=function(show=false){
- if(globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
+ globalThis.__EMBERWILD_SAVE_ERROR='';
+ if(globalThis.__EMBERWILD_SAVE_OWNER===false){globalThis.__EMBERWILD_SAVE_ERROR='存檔已交給其他分頁，請重新整理此頁';return false;}
  if(globalThis.__EMBERWILD_BALANCE_SOURCE&&!globalThis.__EMBERWILD_BALANCE_READY)return true;
  if(globalThis.__EMBERWILD_TEAM_BOOT_RAW&&!globalThis.__EMBERWILD_TEAM_READY)return;
  if(!saveReady||!state||partyBusy)return;
@@ -604,6 +608,7 @@ save=function(show=false){
   return true;
  }catch(e){
   console.warn('存檔寫入失敗',e);
+  globalThis.__EMBERWILD_SAVE_ERROR=/quota/i.test(e?.name+' '+e?.message)?'瀏覽器儲存空間已滿':String(e?.message||e);
   toast('無法自動儲存，舊存檔仍保留；請匯出 JSON 備份');
   return false;
  }
@@ -1118,7 +1123,7 @@ const beforePaceBattle=battleView;battleView=function(){return beforePaceBattle(
 
 
 guideView=function(){return heading('FIELD NOTES / 冒險指南','冒險指南')+`<section class="guide-scroll panel">
-${uiHelp('成長與隊伍','每職業可招募一人，最多三人出戰。角色沒有等級，戰力主要來自裝備；主角與夥伴使用職業戰鬥時各自累積精通，精通等級解鎖技能。擊敗地圖首領開放下一張地圖，擊敗噬日者後開放覺醒地圖。背包、金幣、材料與道具共用，技能與穿戴各自配置。')}
+${uiHelp('成長與隊伍','每職業可招募一人，最多三人出戰。戰力主要來自裝備；主角與夥伴使用職業戰鬥時各自累積精通，精通等級解鎖技能。擊敗地圖首領開放下一張地圖，擊敗噬日者後開放覺醒地圖。背包、金幣、材料與道具共用，技能與穿戴各自配置。')}
 ${uiHelp('戰鬥與速度','普攻依速度排序；同速依隊伍／遭遇順序。主動與輔助技能獨立施放。1× 每次出手間隔 0.9 秒，每回合至少 6 秒；2×、4× 分別縮短為一半、四分之一。速度受職業、等級、暴擊率與閃避率影響。')}
 ${uiHelp('恢復與計時','遭遇結束後全隊回滿生命。戰敗扣除 5% 金幣並停止探索。暫停不會回復；換圖、換人或切換難度會放棄遭遇。BUFF／DEBUFF 持續時間使用戰鬥回合；消耗品只在角色出戰的戰鬥回合扣減。暫停與對話框都不會消耗回合。')}
 ${uiHelp('技能與寶石','主動技能、普攻觸發技能、輔助技能各自使用獨立槽位；普攻觸發技能只有配置於觸發槽時才會生效。主動技能耗魔，不足時暫緩施放。主動與觸發技能可鑲嵌寶石，替換時退還原寶石；輔助技能不鑲嵌寶石。效果、冷卻與需求請見技能頁。')}
@@ -1227,7 +1232,7 @@ function wornEquipmentView(){
  const characters=members.map(h=>`<button type="button" class="worn-character-item ${h===selected?'selected':''}" data-member-key="${memberKey(h)}" aria-pressed="${h===selected}" aria-controls="worn-equipment-detail" onclick="selectPageHero('worn',${memberKey(h)})"><span class="worn-character-heading"><b>${esc(characterName(h))}</b>${memberStatusTag(h)}</span><span class="worn-character-meta">${memberIdentityTags(h,{includeStatus:false})}</span></button>`).join('');
  const slots=EQUIP_POSITION_NAMES.map((name,position)=>{
   const g=selected.bag.find(x=>x.id===selected.equipped[position]);
-  return `<article class="worn-slot ${position===selectedPosition?'selected-slot':''}"><button class="worn-slot-choice" onclick="selectWornSlot(${key},${position})" data-equip-position="${position}" aria-pressed="${position===selectedPosition}"><span class="slot-label">${esc(name)}</span>${g?gearSlotHTML(g,{contentOnly:true}):'<span>未穿戴</span>'}</button>${g?`<div class="actions"><button onclick="heroMenuAction(${key},()=>openForge('${g.id}'))">強化／洗鍊</button><button onclick="unequipSharedGear('${g.id}')">卸下</button><button type="button" onclick="toggleWornEquipmentSockets('${g.id}')" ${g.skillSockets?'':'disabled'}>鑲嵌</button><button type="button" onclick="showWornEquipmentDetail('${g.id}')">詳情</button></div>${globalThis.wornEquipmentSocketPanel?.(g)||''}`:''}</article>`;
+  return `<article class="worn-slot ${position===selectedPosition?'selected-slot':''}"><button class="worn-slot-choice" onclick="selectWornSlot(${key},${position})" data-equip-position="${position}" aria-pressed="${position===selectedPosition}"><span class="slot-label">${esc(name)}</span>${g?gearSlotHTML(g,{contentOnly:true}):'<span>未穿戴</span>'}</button>${g?`<div class="actions"><button onclick="heroMenuAction(${key},()=>openForge('${g.id}'))">強化／洗鍊</button><button onclick="unequipSharedGear('${g.id}')">卸下</button><button type="button" onclick="toggleWornEquipmentSockets('${g.id}')" ${g.skillSockets?.count>0?'':'disabled'}>鑲嵌</button><button type="button" onclick="showWornEquipmentDetail('${g.id}')">詳情</button></div>${globalThis.wornEquipmentSocketPanel?.(g)||''}`:''}</article>`;
  }).join('');
  const candidates=selectedPosition===null?[]:selected.bag.filter(g=>!gearWearer(g.id)&&eligibleWearers(g).includes(selected)&&gearEquipPositions(g).includes(selectedPosition)&&!inlineAffixDrafts.has(affixDraftKey(g)));
  const candidatePane=`<section class="worn-candidate-pane" aria-label="背包候選裝備"><h3>${selectedPosition===null?'選擇裝備欄位':esc(EQUIP_POSITION_NAMES[selectedPosition])+' · 可用裝備 '+candidates.length+' 件'}</h3><p class="small">${selectedPosition===null?'點選左側部位，查看符合職業與部位限制的背包裝備。':'選擇裝備查看換裝比較。'}</p><div class="worn-candidate-list">${candidates.map(g=>gearSlotHTML(g,{className:'worn-candidate',onclick:`previewEquip('${g.id}',${key},${selectedPosition})`})).join('')|| (selectedPosition===null?'':'<p class="empty">背包沒有符合此欄位的可用裝備。</p>')}</div></section>`;

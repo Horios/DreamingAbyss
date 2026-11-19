@@ -10,7 +10,7 @@ test('Chromium: roster has no retired skill toggles; unlock levels, designer vis
   assert.equal(await page.locator('[data-companion-toggle]').count(),0);
   assert.equal(await page.evaluate(()=>setCompanionSkillEnabled(10,'core',__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(10)).core[0],false)),false);
   assert.deepEqual(await page.evaluate(()=>partyMember(10).disabledCompanionSkills||{core:[],support:[],passive:[]}),{core:[],support:[],passive:[]});
-  const modalSnapshot=await page.evaluate(()=>{showCompanionRecruitment();const text=$('modal').innerText;closeModal();return text;});assert.match(modalSnapshot,/LV3/);assert.match(modalSnapshot,/LV8/);
+  const modalSnapshot=await page.evaluate(()=>{showCompanionRecruitment();const text=$('modal').innerText;closeModal();return text;});assert.match(modalSnapshot,/技能：/);assert.doesNotMatch(modalSnapshot,/LV\d/,'no character levels since v0.161 (v0.173 text)');
   await e.page.evaluate(()=>selectCompanionDesign(15));assert.equal(await e.page.locator('#companionAvailability').inputValue(),'hidden');assert.equal(await e.page.locator('[data-companion]').count(),20);
   await e.page.locator('#companionAvailability').selectOption('visible');assert.equal(await e.page.evaluate(()=>data.companions.find(p=>p.id===15).availability),'visible');
   await e.page.evaluate(()=>{selectCompanionUnlock(15);document.getElementById('companionUnlockType').value='achievement';document.getElementById('companionUnlockType').dispatchEvent(new Event('change'));openCompanionSkillPage(10,'active');});assert.equal(await e.page.locator('[data-key="requiredLevel"]').inputValue(),'0','old LV1 is class mastery 0');

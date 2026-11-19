@@ -343,19 +343,19 @@ guideView=function(){
  const g=GAMEPLAY_SETTINGS,p=g.progression,e=g.equipment,c=g.combat;
  return heading('FIELD NOTES / 冒險指南','遊戲系統說明')+`<section class="panel guide-scroll">
  <h2>角色成長與隊伍</h2>
- <p>角色沒有等級。戰力主要來自裝備；使用職業戰鬥會累積該職業的精通，精通等級會依序解鎖職業技能。夥伴各自累積自己的精通。最多三人出戰，其他夥伴可以留在候補。</p>
+ <p>戰力主要來自裝備；使用職業戰鬥會累積該職業的精通，精通等級會依序解鎖職業技能。夥伴各自累積自己的精通。最多三人出戰，其他夥伴可以留在候補。</p>
  <p>擊敗地圖首領會開放下一張地圖；地圖標示的推薦裝等只是參考，不限制進入。</p>
  <p>金幣、素材、消耗品與背包由隊伍共用；角色的技能與穿戴裝備則可分別設定。</p>
  <h2>探索與戰鬥</h2>
  <p>開始探索後會自動遭遇並攻擊怪物。普通探索的擊殺可累積地區 BOSS 挑戰進度。技能依裝備的技能槽與冷卻時間使用，普攻觸發技能須配置到觸發槽才會生效。火剋風、風剋冰、冰剋火，光與暗互相剋制。</p>
  <p>遭遇結束後全隊恢復生命；戰敗會停止探索並損失 ${Math.round(c.defeatGoldLoss*100)}% 金幣。暫停不會回復生命，停止探索則結束目前的掛機。</p>
- <h2>經驗與戰利品</h2>
- <p>怪物等級、種類與探索難度會影響獲得的經驗。經驗由出戰隊伍人數分配，再由主角累積並同步夥伴等級；經驗加倍券可額外提高收益。</p>
+ <h2>精通經驗與戰利品</h2>
+ <p>怪物種類與探索難度會影響獲得的精通經驗；主角與夥伴各自累積，經驗加倍券可額外提高收益。</p>
  
  <p>裝備、素材與其他戰利品依怪物掉落表判定；擊敗怪物取得的裝備會直接放入背包。一般裝備掉率依探索難度不同，詳情可在怪物資訊查看。</p>
  
  <h2>裝備與養成</h2>
- <p>裝備需符合職業及等級需求。背包最多持有 ${e.bagCapacity} 件裝備，可篩選、排序、鎖定及批次處理。強化最多 +${e.enhance.maxLevel}，能提升裝備能力；洗鍊可重新產生詞條，並選擇採用新結果或保留原詞條。BOSS 專屬裝備可使用對應素材製作。</p>
+ <p>裝備需符合職業才能穿戴，沒有等級限制。背包最多持有 ${e.bagCapacity} 件裝備，可篩選、排序、鎖定及批次處理。強化最多 +${e.enhance.maxLevel}，能提升裝備能力；洗鍊可重新產生詞條，並選擇採用新結果或保留原詞條。BOSS 專屬裝備可使用對應素材製作。</p>
  <h2>任務與生活技能</h2>
  <p>主線、支線、NPC 任務與每日委託會依各自條件推進並提供獎勵。採集會按時間取得材料；煉金則依配方消耗材料製作道具。</p>
  <h2>存檔與離線探索</h2>
@@ -366,7 +366,7 @@ guideView=function(){
 // Update 12 views whose original renderers captured old constants before the settings layer existed.
 function update12BossMemberView(){
   const mode=state.difficulty||0,b=GAMEPLAY_SETTINGS.equipment.boss,rank=b.affixRankByDifficulty[mode]??2,power=b.powerByDifficulty[mode]??1,skillValue=b.skillEffectByDifficulty[mode]??30,needMat=Math.max(0,Math.round(b.craftMaterialCount));
-  return heading('BOSS WORKSHOP / 首領製作',MODES[mode].name+'模式專屬裝備')+modePicker()+`<section class="panel">${resourceLine()}${uiHelp('製作說明',`此難度 BOSS 裝基礎能力 ×${power}、固定技能效果 +${skillValue}%；每件需要 ${needMat} 份對應難度素材。`)}</section><div class="cards boss-recipes">${MAPS.map((m,i)=>{if(i===6)return '';const family=regionFamily(i),tier=regionTier(i),g={job:state.job,slot:bossEquipmentSlot(family),tier,boss:family,region:i,difficulty:mode,rar:0,plus:0,affix:[{type:4,rank,skill:family,value:skillValue}]},mat=bossMaterial(i,mode),n=state.materials[mat]||0,cost=Math.round(tier*b.craftGoldPerTier*(mode+1)),ready=canVisit(i)&&state.gold>=cost&&n>=needMat;return `<article class="card boss-recipe">${equipmentArt(g)}<span class="tag">${m.name}</span><h3>${equipmentNameHTML(g)}</h3><p class="small">${esc(characterName(state))} · 推薦裝等 ${mapRecommendedGearLevel(i)} · ${AFFIX_RANK[rank]||'自訂'}</p><p class="effect-quality-${rank}">${CLASSES[state.job].skills[family]?.[0]||'技能'} 效果 +${skillValue}%</p><div class="recipe-cost"><span>${mat} ${n}/${needMat}</span><span>◈ ${cost}</span></div><button class="primary" onclick="craftBoss(${i})" ${ready?'':'disabled'}>${!canVisit(i)?'尚未解鎖':ready?'製作裝備':'等級／材料不足'}</button></article>`;}).join('')}</div>`;
+  return heading('BOSS WORKSHOP / 首領製作',MODES[mode].name+'模式專屬裝備')+modePicker()+`<section class="panel">${resourceLine()}${uiHelp('製作說明',`此難度 BOSS 裝基礎能力 ×${power}、固定技能效果 +${skillValue}%；每件需要 ${needMat} 份對應難度素材。`)}</section><div class="cards boss-recipes">${MAPS.map((m,i)=>{if(i===6)return '';const family=regionFamily(i),tier=regionTier(i),g={job:state.job,slot:bossEquipmentSlot(family),tier,boss:family,region:i,difficulty:mode,rar:0,plus:0,affix:[{type:4,rank,skill:family,value:skillValue}]},mat=bossMaterial(i,mode),n=state.materials[mat]||0,cost=Math.round(tier*b.craftGoldPerTier*(mode+1)),ready=canVisit(i)&&state.gold>=cost&&n>=needMat;return `<article class="card boss-recipe">${equipmentArt(g)}<span class="tag">${m.name}</span><h3>${equipmentNameHTML(g)}</h3><p class="small">${esc(characterName(state))} · 推薦裝等 ${mapRecommendedGearLevel(i)} · ${AFFIX_RANK[rank]||'自訂'}</p><p class="effect-quality-${rank}">${CLASSES[state.job].skills[family]?.[0]||'技能'} 效果 +${skillValue}%</p><div class="recipe-cost"><span>${mat} ${n}/${needMat}</span><span>◈ ${cost}</span></div><button class="primary" onclick="craftBoss(${i})" ${ready?'':'disabled'}>${!canVisit(i)?'尚未解鎖':ready?'製作裝備':'材料或金幣不足'}</button></article>`;}).join('')}</div>`;
 }
 bossCraftView=function(){return singlePagePanel('bossCraft','BOSS 裝備製作',update12BossMemberView);};
 

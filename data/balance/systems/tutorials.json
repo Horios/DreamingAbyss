@@ -50,7 +50,7 @@
         {
           "id": "map",
           "title": "選擇探索地圖",
-          "text": "從清單選擇要探索的地圖。地圖名稱後面是建議等級，先從等級相近的地圖開始。",
+          "text": "從清單選擇要探索的地圖。擊敗地圖首領後會開放下一張地圖；地圖旁的推薦裝等可以參考自己的裝備強度。",
           "page": "battle",
           "target": "battle.mapSelect",
           "placement": "auto",
@@ -521,8 +521,8 @@
         },
         {
           "id": "fixed",
-          "title": "固定商品",
-          "text": "固定商品隨時可以購買。買到的道具放進背包的「道具」分類。",
+          "title": "商品",
+          "text": "每件商品標示數量與價格，按「購買」後材料放進庫存、道具放進背包的「道具」分類。",
           "page": "shop",
           "target": "shop.fixed",
           "placement": "auto",
@@ -644,6 +644,1480 @@
           "text": "達成目標後回到這裡交付，領取委託上的獎勵。",
           "page": "quests",
           "target": "quests.board",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "onboarding_gift",
+      "title": "女神的贈禮",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "新手引導：在背包選擇女神送的新手武器並穿上。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "equipment",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueStage",
+            "key": "gift",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "bag",
+          "title": "背包",
+          "text": "女神送的新手裝備都放在背包。護甲與飾品已經穿好，還差一把武器。",
+          "page": "equipment",
+          "target": "bag.list",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "pick",
+          "title": "選擇新手武器",
+          "text": "點選這件還沒穿上的新手裝備，右側會顯示它的數值。",
+          "page": "equipment",
+          "target": "bag.starterGear",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "gearSelected"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "wear",
+          "title": "前往穿戴",
+          "text": "按「穿戴」前往裝備頁。",
+          "page": "equipment",
+          "target": "bag.wearButton",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "wearOpened"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "equip",
+          "title": "穿上武器",
+          "text": "按「穿戴至武器」把武器裝上。穿好之後就能出發探索。",
+          "page": "worn",
+          "target": "worn.candidate",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "gearEquipped"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": false,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "onboarding_practice",
+      "title": "首次探索戰鬥",
+      "category": "battle",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "新手引導：開始探索並完成第一場戰鬥。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "battle",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueStage",
+            "key": "practice",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "intro",
+          "title": "荒野探索",
+          "text": "這裡是荒野探索。上方是目前的探索地圖，第一站是無名密林。",
+          "page": "battle",
+          "target": "battle.destination",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "start",
+          "title": "開始探索",
+          "text": "按「開始探索」，隊伍會自動尋找怪物並開始戰鬥。",
+          "page": "battle",
+          "target": "battle.start",
+          "placement": "auto",
+          "advance": {
+            "type": "condition",
+            "condition": {
+              "type": "exploring",
+              "key": "",
+              "count": 1
+            }
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "enemies",
+          "title": "敵人",
+          "text": "敵人的生命與下一次行動的讀秒顯示在這裡。",
+          "page": "battle",
+          "target": "battle.enemies",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "auto",
+          "title": "自動戰鬥",
+          "text": "戰鬥自動進行。普攻與裝入的技能會依冷卻與 MP 自動施放。打完這一場就完成首次探索。",
+          "page": "battle",
+          "target": "battle.allies",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": false,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "onboarding_helper",
+      "title": "招募牧師",
+      "category": "companions",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "新手引導：在夥伴名冊招募第一位夥伴牧師艾琳。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "partnerRoster",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueStage",
+            "key": "helper",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "list",
+          "title": "夥伴名冊",
+          "text": "招募到的夥伴會列在這裡。夥伴會和你一起出戰，各自累積職業精通。",
+          "page": "partnerRoster",
+          "target": "partners.list",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "recruit",
+          "title": "招募夥伴",
+          "text": "按「招募夥伴」打開招募清單。",
+          "page": "partnerRoster",
+          "target": "partners.recruit",
+          "placement": "auto",
+          "advance": {
+            "type": "click"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "choose",
+          "title": "招募牧師艾琳",
+          "text": "按艾琳旁邊的「招募」。第一次招募免費，艾琳會負責治療與輔助。之後在名冊點選夥伴就能查看能力、技能與信物。",
+          "page": "partnerRoster",
+          "target": "partners.recruitChoice",
+          "placement": "auto",
+          "advance": {
+            "type": "condition",
+            "condition": {
+              "type": "companions",
+              "key": "",
+              "count": 1
+            }
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": false,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "statistics_basics",
+      "title": "戰鬥統計",
+      "category": "battle",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "目前地圖的戰鬥場次、隊員表現與掉落紀錄。第一次進入戰鬥統計時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "statistics",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "summary",
+          "title": "統計總覽",
+          "text": "這裡統計目前地圖完成的戰鬥場數、獲得的精通經驗與全滅次數。",
+          "page": "statistics",
+          "target": "stats.summary",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "combat",
+          "title": "戰鬥數據",
+          "text": "比較出戰隊員的傷害、承傷與治療，方便調整隊伍與技能。",
+          "page": "statistics",
+          "target": "stats.combat",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "drops",
+          "title": "掉落與死亡",
+          "text": "最近戰鬥的掉落道具與隊員死亡次數記錄在下方。",
+          "page": "statistics",
+          "target": "stats.drops",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "roster_basics",
+      "title": "隊伍編成",
+      "category": "companions",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "隊伍方案、上陣與後備的調整。第一次進入隊伍編成時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "roster",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "list",
+          "title": "上陣名單",
+          "text": "最多三人上陣。點「移至後備」或「上陣」調整出戰的成員，請先停止探索再調整。",
+          "page": "roster",
+          "target": "roster.list",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "plans",
+          "title": "隊伍方案",
+          "text": "隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。",
+          "page": "roster",
+          "target": "roster.plans",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "recruit",
+          "title": "招募夥伴",
+          "text": "解鎖新的夥伴後，也可以從這裡招募。",
+          "page": "roster",
+          "target": "roster.recruit",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "partner_basics",
+      "title": "夥伴名冊",
+      "category": "companions",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "查看每位夥伴的能力、技能與信物。新手引導結束後第一次進入夥伴名冊時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "partnerRoster",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "list",
+          "title": "夥伴資料",
+          "text": "點選夥伴可以查看能力、技能與信物。夥伴依固定走向自動成長，職業精通等級會解鎖夥伴技能。",
+          "page": "partnerRoster",
+          "target": "partners.list",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "recruit",
+          "title": "更多夥伴",
+          "text": "探索中達成條件就會解鎖新的夥伴，再從這裡招募。",
+          "page": "partnerRoster",
+          "target": "partners.recruit",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "character_basics",
+      "title": "角色能力",
+      "category": "character",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "人物能力與職業、武器、元素精通。第一次進入角色能力時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "character",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "stats",
+          "title": "人物能力",
+          "text": "生命、攻擊、防禦等能力會隨裝備、技能與信物變化。",
+          "page": "character",
+          "target": "character.stats",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "mastery",
+          "title": "精通等級",
+          "text": "戰鬥會累積職業、武器與元素精通。職業精通等級決定能學會哪些技能，切換職業後也會保留。",
+          "page": "character",
+          "target": "character.mastery",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "worn_basics",
+      "title": "裝備與信物",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "已穿戴的裝備、夥伴信物與技能配置的入口。第一次進入裝備與信物時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "worn",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "slots",
+          "title": "已穿戴裝備",
+          "text": "每個欄位都可以卸下、強化、鑲嵌寶石或查看詳情。點欄位會列出可以換上的裝備。",
+          "page": "worn",
+          "target": "worn.slots",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "tokens",
+          "title": "夥伴信物",
+          "text": "夥伴只能穿戴一件信物。信物也可以透過技能萃取帶上裝備技能。",
+          "page": "worn",
+          "target": "worn.tokens",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "skills",
+          "title": "技能配置",
+          "text": "裝備帶來的技能要到技能頁裝進技能槽才會使用。",
+          "page": "worn",
+          "target": "worn.skillLink",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "socket_basics",
+      "title": "寶石鑲嵌",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "在裝備的鑲嵌孔放入寶石。第一次穿著有鑲嵌孔的裝備進入裝備與信物時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "worn",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          },
+          {
+            "type": "socketGearWorn",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "badge",
+          "title": "鑲嵌孔",
+          "text": "裝備名稱旁的圓圈是鑲嵌孔。空心是空孔，有顏色的圓圈代表已放入的寶石。",
+          "page": "worn",
+          "target": "worn.socketBadge",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "open",
+          "title": "打開鑲嵌",
+          "text": "按「鑲嵌」打開這件裝備的鑲嵌孔。",
+          "page": "worn",
+          "target": "worn.socketButton",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "socketsOpened"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "slot",
+          "title": "選擇孔位",
+          "text": "點選要放寶石的孔。",
+          "page": "worn",
+          "target": "worn.socketSlot",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "socketSelected"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "gem",
+          "title": "放入寶石",
+          "text": "點一顆持有的寶石就會放進這個孔，提供屬性加成。拆除與替換都免費；出售或分解裝備時寶石會退回庫存。",
+          "page": "worn",
+          "target": "worn.gemChoices",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "forge_basics",
+      "title": "裝備強化",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "強化、洗鍊與基底重鑄。第一次進入裝備強化時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "forge",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "list",
+          "title": "選擇裝備",
+          "text": "先從清單選擇要強化的裝備，可以切換已穿戴與未穿戴。",
+          "page": "forge",
+          "target": "forge.list",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "detail",
+          "title": "目前能力",
+          "text": "右側顯示這件裝備的能力與強化後的變化。",
+          "page": "forge",
+          "target": "forge.detail",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "actions",
+          "title": "強化與洗鍊",
+          "text": "強化提高基礎能力；洗鍊重新抽取詞綴。兩者都會消耗金幣與材料。",
+          "page": "forge",
+          "target": "forge.actions",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "boss_basics",
+      "title": "BOSS 製作",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "bossCraft",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "classes",
+          "title": "職業分頁",
+          "text": "切換職業查看該職業可以製作的首領裝備。",
+          "page": "bossCraft",
+          "target": "boss.classTabs",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "recipe",
+          "title": "首領配方",
+          "text": "每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。",
+          "page": "bossCraft",
+          "target": "boss.recipe",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "story_basics",
+      "title": "任務",
+      "category": "quests",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "主線、支線與 NPC 任務。第一次進入任務頁時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "story",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "tabs",
+          "title": "任務分類",
+          "text": "任務分成主線、支線與 NPC 任務，有新任務時分頁會出現提示。",
+          "page": "story",
+          "target": "story.tabs",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "card",
+          "title": "任務內容",
+          "text": "任務卡片列出目前的目標與階段獎勵。",
+          "page": "story",
+          "target": "story.card",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "action",
+          "title": "進行任務",
+          "text": "按這裡閱讀劇情或前往目標所在的頁面。",
+          "page": "story",
+          "target": "story.action",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "wishing_basics",
+      "title": "許願湖",
+      "category": "wishingLake",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "每天投入物品，等待湖泊回贈。許願湖解鎖後第一次打開時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "wishingLake",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          },
+          {
+            "type": "lakeUnlocked",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "panel",
+          "title": "許願湖",
+          "text": "許願湖每天可以投入物品，湖泊有時會回贈其他道具。",
+          "page": "wishingLake",
+          "target": "lake.panel",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "offerings",
+          "title": "選擇物品",
+          "text": "背包裡有可投入的物品時，這裡會列出來，選擇要投入的物品與數量。",
+          "page": "wishingLake",
+          "target": "lake.offerings",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "confirm",
+          "title": "投入",
+          "text": "確認後物品會沉入湖底，湖泊的回贈結果顯示在這個視窗。每天的次數有限。",
+          "page": "wishingLake",
+          "target": "lake.confirm",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "end",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "gather_basics",
+      "title": "採集",
+      "category": "life",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "選擇採集對象並持續取得材料。第一次進入採集時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "gather",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "target",
+          "title": "採集對象",
+          "text": "選擇要採集的材料，下方會顯示每次採集的時間與機率。",
+          "page": "gather",
+          "target": "gather.target",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "start",
+          "title": "開始採集",
+          "text": "採集會持續進行，切換頁面或同時探索都不會中斷。",
+          "page": "gather",
+          "target": "gather.start",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "stock",
+          "title": "材料庫存",
+          "text": "採集到的材料全隊共用，可以在這裡查看與篩選。",
+          "page": "gather",
+          "target": "life.stock",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "alchemy_basics",
+      "title": "煉金",
+      "category": "alchemy",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "用材料煉製藥水與寶石。第一次進入煉金時開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "alchemy",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "recipe",
+          "title": "煉金配方",
+          "text": "每個配方列出需要的材料、持有數量與產物。",
+          "page": "alchemy",
+          "target": "alchemy.recipe",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "start",
+          "title": "開始煉金",
+          "text": "材料足夠時按「開始煉金」。每次完成才扣材料，材料不足時自動停止。",
+          "page": "alchemy",
+          "target": "alchemy.start",
           "placement": "auto",
           "advance": {
             "type": "next"
