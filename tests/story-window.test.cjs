@@ -36,9 +36,9 @@ test('skipping a read-only stage completes it once, exactly like finishing it; u
 test('the prologue offers no skip and refuses every skip route',()=>{
  const r=loadRuntime(root);r.run('selectSaveSlot(1)');
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'creation');const html=r.run("$('prologue-layer').innerHTML");
- assert.doesNotMatch(html,/data-story-skip/);assert.doesNotMatch(html,/data-story-all/);assert.match(html,/data-story-summary/);assert.match(html,/data-story-speed/);
+ assert.doesNotMatch(html,/data-story-skip/);assert.doesNotMatch(html,/data-story-all/);assert.doesNotMatch(html,/data-story-summary/);assert.match(html,/data-story-speed/);
  assert.equal(r.run('storyWindowSkip()'),false);assert.equal(r.run('storyWindowSkip(true)'),false);assert.equal(r.run('skipStoryDialogue()'),false);
- assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()+"/"+__EMBERWILD_PROLOGUE.phase()'),'creation/before');assert.deepEqual(r.errors,[]);
+ assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()+"/"+__EMBERWILD_PROLOGUE.phase()'),'creation/action');assert.deepEqual(r.errors,[]);
 });
 
 test('text speed is a saved setting with four values',()=>{

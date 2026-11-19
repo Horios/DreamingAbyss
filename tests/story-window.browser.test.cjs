@@ -47,24 +47,7 @@ test('graphemes reveal in order, speed changes apply, and summary skips the scen
   assert.equal(await p.evaluate(()=>localStorage.getItem('emberwild-story-text-speed')),'fast');assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
-test('prologue accumulates until naming; skipping requires confirmation and grants the reward once',async()=>{
- const g=await openRuntime(root),p=g.page;try{
-  await p.click('.save-slot-select');await p.evaluate(()=>{window.originalStoryWindow=document.querySelector('.story-window');storyWindowSpeed('instant');});await p.waitForSelector('#prologue-name');
-  assert.equal(await p.evaluate(()=>originalStoryWindow===document.querySelector('.story-window')),true);
-  assert(await p.locator('[data-story-history]').count()>1);assert.equal(await p.locator('[data-story-skip]').count(),0);
-  await p.fill('#prologue-name','艾拉');await p.click('button:has-text("就用這個名字")');await p.waitForSelector('.prologue-option');
-  assert.equal(await p.evaluate(()=>originalStoryWindow===document.querySelector('.story-window')),true);assert.equal(await p.locator('.prologue-option').count(),4);assert.deepEqual(g.errors,[]);
- }finally{await g.browser.close();}
- const h=await openRuntime(root),q=h.page;try{
-  await quest(q);await q.evaluate(()=>{storyWindowSpeed('slow');readStory('skill_equipment_intro');});
-  const count=()=>q.evaluate(()=>playerHero().bag.filter(g=>g.storyRewardKey==='initiation_charm').length),before=await count();
-  await q.click('[data-story-summary]');assert.equal(await count(),before+1);
-  assert.match(await q.locator('[data-story-scroll]').innerText(),/劇情摘要/);
-  await q.evaluate(()=>render());assert.equal(await count(),before+1);
-  assert.equal(await q.locator('[data-story-all]').count(),0);
-  assert.deepEqual(h.errors,[]);
- }finally{await h.browser.close();}
-});
+
 
 test('dialog position stays fixed while typing and choices appear on desktop and mobile',async()=>{
  for(const [width,height] of [[1280,800],[390,780],[780,390]]){

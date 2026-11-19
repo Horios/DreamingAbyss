@@ -17,6 +17,16 @@
  const skippable=q=>!!q&&!q.prologue&&q.skippable!==false;
  function prologueIssues(q,ctx={}){
   const out=[],add=m=>out.push('序章：'+m),p=q.prologue,text=(v,max=400)=>typeof v==='string'&&v.length<=max,line=x=>x&&['npc','player','narrator'].includes(x.kind)&&text(x.speaker,40)&&text(x.text,2000)&&(x.source===undefined||Object.hasOwn(PROLOGUE_SOURCES,x.source));
+  if(p?.version===2){
+   const stages=q.stages||[],actions=stages.map(s=>s.prologue?.action).filter(Boolean);
+   if(q.id!=='prologue'||q.type!=='main')add('任務 ID 必須是 prologue，類型為主線');
+   if(actions.join()!=='nameHero,chooseClass,equipLesson,recruitHelper,enterWorld')add('操作引導必須依序包含命名、職業、裝備、招募及完成');
+   if(stages.map(s=>s.id).join()!=='creation,calling,gift,practice,helper,departure'||q.entry!=='creation'||stages.some((s,i)=>s.next!==(stages[i+1]?.id||'')))add('操作引導階段連結無效');
+   const options=stages.find(s=>s.prologue?.action==='chooseClass')?.prologue?.options;
+   if(!Array.isArray(options)||options.length!==4||options.some((o,i)=>o.job!==i||!text(o.text,40)||!text(o.description,200)))add('職業選項必須依序對應全部初始職業');
+   if(stages.some(s=>s.encounter?.enabled||s.choices?.length||s.branches?.length))add('操作引導不使用劇情戰鬥或分歧');
+   return out;
+  }
   if(q.id!=='prologue'||q.type!=='main')add('任務 ID 必須是 prologue，類型為主線');
   if(!p||p.version!==1||!Array.isArray(p.scenes)||p.scenes.length!==PROLOGUE_SCENES||p.scenes.some((s,i)=>!s||s.id!==i+1||!text(s.name,60)||!s.name.trim()||!text(s.description)))add('需要 '+PROLOGUE_SCENES+' 個場景（id 1～'+PROLOGUE_SCENES+'，含名稱與說明）');
   if(!p||!p.helper||!text(p.helper.name,20)||!p.helper.name.trim()||!text(p.helper.title,40)||!text(p.helper.description)||!Array.isArray(p.helper.templates)||p.helper.templates.length!==4||p.helper.templates.some(id=>!Number.isInteger(id)))add('臨時隊友設定無效（名稱、說明與四個職業的範本夥伴）');

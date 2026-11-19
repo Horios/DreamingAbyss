@@ -33724,12 +33724,12 @@
       },
       {
         "id": "prologue",
-        "name": "序幕：造物",
+        "name": "新手引導",
         "type": "main",
         "npc": "女神",
-        "description": "在女神的造物室完成啟程前的準備。",
+        "description": "命名與選擇職業後，透過實際操作學習裝備、探索與招募。",
         "enabled": true,
-        "hidden": false,
+        "hidden": true,
         "unlock": {
           "mode": "all",
           "conditions": []
@@ -33741,240 +33741,12 @@
             "id": "creation",
             "name": "造物",
             "speaker": "女神",
-            "description": "在造物室醒來。",
+            "description": "女神詢問你的名字。",
             "dialogue": [
               {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "一間神祕的房間內，無源之光亮起。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "咚咚，咚咚……",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "最初聽到的，是腳步聲。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "一道矮小的身影披著寬大的長袍，走進了房間。",
-                "source": "draft"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "「知識」、「認知」、「天賦」……她伸出手，一顆顆光點在掌心上方匯聚成光團。",
-                "source": "draft"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "光團越來越亮，直到再也分不出彼此。",
-                "source": "draft"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "一片混沌中，你的意識逐漸清晰。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "睜開雙眼，一道柔和的光芒照亮了四周，眼前卻空無一人。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "似乎並不是。",
-                "source": "original"
-              },
-              {
-                "speaker": "少女",
                 "kind": "npc",
-                "text": "這裡！這裡！下面啦！",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "你的視線往下移動，一名矮小的少女正站在不遠處。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "滿頭銀髮垂落在房內水晶般的地面上，與純白的長袍相互輝映。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她觀察著你，這時你才發現自己正飄在空中。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "少女揮了揮手，你不由自主地緩緩下降，雙腳落在地上。",
-                "source": "original"
-              },
-              {
-                "speaker": "少女",
-                "kind": "npc",
-                "text": "醒了嗎？看來創造得很順利呢。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她似乎看出你還在發呆，便飄到空中，圍繞著你做起檢查。",
-                "source": "original"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "時而摸摸皮膚、拉拉頭髮、扯扯你身上穿著的衣服，最後還伸手拉開你的眼皮，仔細觀察瞳孔。",
-                "source": "original"
-              },
-              {
-                "speaker": "少女",
-                "kind": "npc",
-                "text": "嗯嗯，皮膚、頭髮、眼睛……全部都沒問題！",
-                "source": "draft"
-              },
-              {
-                "speaker": "少女",
-                "kind": "npc",
-                "text": "喂——聽得到我說話嗎？聽得到就回一聲嘛。",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "聽得到。這裡是什麼地方？你又是……？",
-                "source": "draft"
-              },
-              {
-                "speaker": "少女",
-                "kind": "npc",
-                "text": "這裡是我的造物室呀！至於我嘛……叫我女神就可以啦。",
-                "source": "draft"
-              },
-              {
                 "speaker": "女神",
-                "kind": "npc",
-                "text": "然後你呢，是我剛剛才做出來的！",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "做出來的？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "對呀！思考、說話、理解事情的能力，我都幫你裝好了。剩下的就要靠你自己慢慢學啦。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "啊，對了對了！你還沒有名字呢。",
-                "source": "draft"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "commission",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "prologue": {
-              "scene": 1,
-              "action": "nameHero",
-              "hint": "為自己取一個名字。",
-              "steps": [],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "好，就這麼決定啦！以後我就這樣叫你。",
-                  "source": "draft"
-                }
-              ]
-            }
-          },
-          {
-            "id": "commission",
-            "name": "女神的委託",
-            "speaker": "女神",
-            "description": "了解女神創造你的原因。",
-            "dialogue": [
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "所以，你為什麼要做出我？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "因為有個世界，讓我在意得不得了！",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "那裡有好多我還搞不懂的事情。我是很想自己跑去看啦，可是現在不太方便。",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "所以你希望我代替你去？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "答對了！你就到處走走、到處看看，發現什麼有趣的事情，再回來告訴我。",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "有什麼特別要調查的目標嗎？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "沒有喔。老實說，我自己知道的也不多。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "要去哪裡、要做什麼，全都由你決定。我想知道的，是你親眼看到的世界。",
+                "text": "告訴我你的名字，並選擇你的初始職業。",
                 "source": "draft"
               }
             ],
@@ -33993,9 +33765,9 @@
             "choices": [],
             "guides": [],
             "prologue": {
-              "scene": 2,
-              "action": "",
-              "hint": "",
+              "scene": 1,
+              "action": "nameHero",
+              "hint": "在造物室醒來。",
               "steps": [],
               "after": []
             }
@@ -34004,33 +33776,8 @@
             "id": "calling",
             "name": "選擇力量",
             "speaker": "女神",
-            "description": "選擇一種力量作為起點。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "不過在送你過去之前，還有幾件事要準備一下。",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "例如？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "總不能讓你空著手就出門吧？至少要有保護自己的能力才行。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "我做你的時候，讓你什麼力量都學得來。不過貪心可不行，先挑一種熟悉熟悉吧。",
-                "source": "draft"
-              }
-            ],
+            "description": "選擇初始職業。",
+            "dialogue": [],
             "conditions": {
               "mode": "all",
               "conditions": []
@@ -34052,30 +33799,11 @@
             "choices": [],
             "guides": [],
             "prologue": {
-              "scene": 3,
+              "scene": 1,
               "action": "chooseClass",
-              "hint": "選擇一種力量作為起點。到了艾斯蘭之後，可以在隊伍編成自由轉職。",
+              "hint": "選擇一種力量作為起點。",
               "steps": [],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "好，就從這個開始！",
-                  "source": "draft"
-                },
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "別擔心，這只是起點而已。以後能學會多少，就看你自己的經歷啦。",
-                  "source": "draft"
-                },
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "來來來，這些是我幫你準備的裝備。到了那邊一定用得上！",
-                  "source": "draft"
-                }
-              ],
+              "after": [],
               "options": [
                 {
                   "job": 0,
@@ -34104,85 +33832,8 @@
             "id": "gift",
             "name": "女神的贈禮",
             "speaker": "女神",
-            "description": "穿戴女神準備的武器與護符。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "等等，拿在手上可不算數喔。要好好穿上去才行！",
-                "source": "draft"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "gearWorn",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "skills",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment",
-              "worn"
-            ],
-            "prologue": {
-              "scene": 4,
-              "action": "equipLesson",
-              "hint": "到背包查看收到的武器與護符，再到裝備頁穿戴它們。",
-              "steps": [
-                "開啟背包查看收到的武器",
-                "穿戴武器",
-                "查看護符並穿戴",
-                "回到女神身邊"
-              ],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "嗯嗯，這樣才像樣嘛。",
-                  "source": "draft"
-                }
-              ]
-            }
-          },
-          {
-            "id": "skills",
-            "name": "技能安裝",
-            "speaker": "女神",
-            "description": "查看已掌握的技能，並安裝到技能槽。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "光有力量還不夠，得知道怎麼用才行。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "來，先看看你現在會些什麼。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "主動技能要放進技能槽，戰鬥的時候才會施放喔。放完要等冷卻，有些還會吃掉 MP。被動技能就輕鬆多了，學會之後一直有效。",
-                "source": "draft"
-              }
-            ],
+            "description": "前往背包選擇新手武器，按「穿戴」並選擇武器欄位。",
+            "dialogue": [],
             "conditions": {
               "mode": "all",
               "conditions": []
@@ -34197,69 +33848,26 @@
             "branches": [],
             "choices": [],
             "guides": [
-              "skills"
+              "equipment",
+              "worn"
             ],
             "prologue": {
-              "scene": 5,
-              "action": "skillLesson",
-              "hint": "在技能頁把一項已學會的主動技能安裝到主動技能槽。",
-              "steps": [
-                "點選空的主動技能槽",
-                "選擇一項已學會的技能",
-                "安裝完成後回到女神身邊"
-              ],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "戰鬥的時候，你會照著設定好的方式用技能。現在先記住最基本的配置就好啦。",
-                  "source": "draft"
-                }
-              ]
+              "scene": 1,
+              "action": "equipLesson",
+              "hint": "前往背包選擇新手武器，按「穿戴」並選擇武器欄位。",
+              "steps": [],
+              "after": []
             }
           },
           {
             "id": "practice",
-            "name": "第一次戰鬥練習",
+            "name": "首次探索戰鬥",
             "speaker": "女神",
-            "description": "與女神做出來的訓練對象實際戰鬥。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "接下來，實際打打看吧！",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "在這裡？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "放心放心，那只是我隨手捏出來的訓練對象。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "盡量試，看看自己能做到什麼程度。",
-                "source": "draft"
-              }
-            ],
+            "description": "開始無名密林探索。角色會自動攻擊並施放已配置技能；戰鬥結束後可查看戰報與掉落。",
+            "dialogue": [],
             "conditions": {
               "mode": "all",
-              "conditions": [
-                {
-                  "type": "encounter",
-                  "key": "prologue/practice",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
+              "conditions": []
             },
             "rewards": {
               "gold": 0,
@@ -34274,31 +33882,14 @@
               "battle"
             ],
             "prologue": {
-              "scene": 6,
+              "scene": 1,
               "action": "",
-              "hint": "擊敗訓練對象。戰鬥會自動進行，留意普通攻擊、技能施放、HP 與 MP、行動條與技能冷卻。",
-              "steps": [
-                "開始訓練戰鬥",
-                "觀察普通攻擊與技能自動施放",
-                "擊敗訓練對象"
-              ],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "喔——動作挺俐落的嘛！",
-                  "source": "draft"
-                },
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "不過呀，真正的冒險可不一定只有你一個人。",
-                  "source": "draft"
-                }
-              ]
+              "hint": "開始無名密林探索。角色會自動攻擊並施放已配置技能；戰鬥結束後可查看戰報與掉落。",
+              "steps": [],
+              "after": []
             },
             "encounter": {
-              "enabled": true,
+              "enabled": false,
               "name": "戰鬥練習",
               "mapIndex": 0,
               "repeatable": false,
@@ -34313,114 +33904,13 @@
           },
           {
             "id": "helper",
-            "name": "臨時隊友",
+            "name": "招募牧師",
             "speaker": "女神",
-            "description": "接納女神創造的助手，並讓它上陣。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "那個世界裡，應該還有其他冒險者。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "要是有人願意跟你一起走，就能組成隊伍，互相幫忙喔。",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "像剛才那樣一起戰鬥？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "差不多啦。我先示範給你看！",
-                "source": "draft"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "女神抬起手，光點再次匯聚，在你身旁凝成一道人形。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "這是我臨時做出來的小幫手。接下來的練習就讓它陪你。",
-                "source": "draft"
-              }
-            ],
+            "description": "前往隊友介面，按「招募夥伴」，招募牧師艾琳。首次招募免費且固定取得。",
+            "dialogue": [],
             "conditions": {
               "mode": "all",
               "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "trial",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "roster",
-              "partnerRoster"
-            ],
-            "prologue": {
-              "scene": 7,
-              "action": "recruitHelper",
-              "hint": "接納助手後，到隊伍頁讓它上陣，並看看它的技能與定位。",
-              "steps": [
-                "查看助手的資訊並接納它",
-                "開啟隊伍頁",
-                "將助手加入出戰隊伍",
-                "查看助手的技能"
-              ],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "看，這樣你們就是一支隊伍啦。",
-                  "source": "draft"
-                }
-              ]
-            }
-          },
-          {
-            "id": "trial",
-            "name": "隊伍試煉",
-            "speaker": "女神",
-            "description": "與助手一起完成一場訓練戰鬥。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "這次換兩個人一起上！",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "不一樣的能力可以互相配合喔。記得偷看一下隊友在做什麼。",
-                "source": "draft"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "encounter",
-                  "key": "prologue/trial",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
             },
             "rewards": {
               "gold": 0,
@@ -34432,95 +33922,23 @@
             "branches": [],
             "choices": [],
             "guides": [
-              "battle"
+              "partnerRoster",
+              "roster"
             ],
             "prologue": {
-              "scene": 7,
-              "action": "",
-              "hint": "與助手一起擊敗訓練對象，留意隊友的行動。",
-              "steps": [
-                "開始隊伍訓練戰鬥",
-                "觀察隊友的技能與行動",
-                "擊敗全部訓練對象"
-              ],
-              "after": [
-                {
-                  "speaker": "女神",
-                  "kind": "npc",
-                  "text": "很好很好！這樣我就能放心讓你出發了。",
-                  "source": "draft"
-                }
-              ]
-            },
-            "encounter": {
-              "enabled": true,
-              "name": "隊伍試煉",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": [
-                {
-                  "monsterId": "map0_mob0",
-                  "count": 3
-                }
-              ],
-              "training": true
+              "scene": 1,
+              "action": "recruitHelper",
+              "hint": "前往隊友介面，按「招募夥伴」，招募牧師艾琳。首次招募免費且固定取得。",
+              "steps": [],
+              "after": []
             }
           },
           {
             "id": "departure",
-            "name": "離開造物室",
+            "name": "完成教學",
             "speaker": "女神",
-            "description": "穿過出口，前往艾斯蘭。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "好啦，接下來就要靠你自己囉。",
-                "source": "draft"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "完成任務的助手化為光點，靜靜散去。",
-                "source": "draft"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "你不會一起過去嗎？",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "暫時不行啦。不過別擔心，我們還有機會聯絡的。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "到了那邊，不用急著找什麼了不起的答案喔。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "先好好看看那個世界吧。說不定你會發現連我都沒想到的事情呢！",
-                "source": "draft"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "造物室的出口開啟。",
-                "source": "draft"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "那麼——一路順風！",
-                "source": "draft"
-              }
-            ],
+            "description": "基本教學完成，可自由探索。",
+            "dialogue": [],
             "conditions": {
               "mode": "all",
               "conditions": []
@@ -34530,26 +33948,15 @@
               "ore": 0,
               "items": []
             },
-            "effects": [
-              {
-                "type": "flag",
-                "key": "chapter1_start",
-                "value": true
-              },
-              {
-                "type": "flag",
-                "key": "chapter_gate",
-                "value": true
-              }
-            ],
+            "effects": [],
             "next": "",
             "branches": [],
             "choices": [],
             "guides": [],
             "prologue": {
-              "scene": 8,
+              "scene": 1,
               "action": "enterWorld",
-              "hint": "穿過出口。",
+              "hint": "穿過出口，前往艾斯蘭。",
               "steps": [],
               "after": []
             }
@@ -34563,97 +33970,22 @@
         "effects": [],
         "nextQuests": [],
         "prologue": {
-          "version": 1,
+          "version": 2,
           "scenes": [
             {
               "id": 1,
-              "name": "序幕　造物",
-              "description": "造物室。主角醒來，女神為主角命名。"
-            },
-            {
-              "id": 2,
-              "name": "女神的委託",
-              "description": "女神說明創造主角的原因與旅程的方向。"
-            },
-            {
-              "id": 3,
-              "name": "選擇力量",
-              "description": "主角選擇一種力量作為起點。"
-            },
-            {
-              "id": 4,
-              "name": "女神的贈禮",
-              "description": "取得並穿戴女神準備的武器與護符。"
-            },
-            {
-              "id": 5,
-              "name": "技能安裝",
-              "description": "查看已掌握的技能並安裝到技能槽。"
-            },
-            {
-              "id": 6,
-              "name": "第一次戰鬥",
-              "description": "與訓練對象進行第一場戰鬥。"
-            },
-            {
-              "id": 7,
-              "name": "臨時隊友與隊伍試煉",
-              "description": "女神創造的助手加入隊伍，並一起完成隊伍訓練戰。"
-            },
-            {
-              "id": 8,
-              "name": "降臨艾斯蘭",
-              "description": "離開造物室，前往艾斯蘭。"
+              "name": "角色建立",
+              "description": "命名與選擇初始職業。"
             }
-          ],
-          "helper": {
-            "name": "造物助手",
-            "title": "女神臨時做出來的小幫手",
-            "description": "只在造物室陪你練習的臨時隊友。離開造物室時會消失。",
-            "templates": [
-              13,
-              13,
-              13,
-              10
-            ]
-          },
-          "training": {
-            "name": "訓練對象"
-          },
-          "chapter": {
-            "title": "第一章：初臨艾斯蘭",
-            "lines": []
-          },
-          "ui": {
-            "place": "造物室",
-            "continue": "繼續",
-            "nameLabel": "名字（最多 20 字）",
-            "namePlaceholder": "輸入名字",
-            "nameConfirm": "就用這個名字",
-            "nameRequired": "請先輸入名字",
-            "classConfirm": "選擇這種力量",
-            "toTask": "開始練習",
-            "returnToGoddess": "回到女神身邊",
-            "taskPending": "完成上面的步驟後，可以回到女神身邊。",
-            "startBattle": "開始訓練戰鬥",
-            "retryBattle": "再試一次",
-            "battleRunning": "訓練戰鬥進行中",
-            "helperAccept": "接納助手",
-            "helperJoined": "助手已加入名冊，請到隊伍頁讓它上陣。",
-            "giftReceived": "收到了武器與護符。",
-            "locked": "完成造物室的準備後才能使用這個功能。",
-            "enter": "穿過出口",
-            "begin": "開始旅程",
-            "backToTitle": "返回標題"
-          }
+          ]
         }
       },
       {
         "id": "chapter1",
-        "name": "第一章：初臨艾斯蘭",
+        "name": "商隊事件",
         "type": "main",
         "npc": "旁白",
-        "description": "穿過發光的門扉，來到艾斯蘭的無名密林。",
+        "description": "無名密林中的商隊遭到魔物襲擊。可自行開始，延後不影響探索。",
         "enabled": true,
         "hidden": true,
         "skippable": false,
@@ -34662,7 +33994,7 @@
           "conditions": [
             {
               "type": "flag",
-              "key": "chapter1_start",
+              "key": "onboarding_done",
               "count": 1,
               "mode": "lifetime",
               "itemType": "material"
@@ -34670,87 +34002,8 @@
           ]
         },
         "prerequisites": [],
-        "entry": "arrival",
+        "entry": "ambush",
         "stages": [
-          {
-            "id": "arrival",
-            "name": "林間小道",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "旁白",
-            "description": "沿著林間小道探索。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "你走入了發光的門扉。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "暈眩、失重、虛無……種種陌生的感覺接踵而至，卻又在不到一秒的時間內驟然消失。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "鞋底觸及堅實的地面，重力重新抓住了你的身體，眼前也隨之亮起。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "你發現自己正站在一條林間小道上。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "高大的樹木向四周延伸，茂密的枝葉遮蔽了大部分天空。幾道陽光穿過樹冠的縫隙，灑落在道路與草叢之間。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "不遠處的灌木傳來細微的窸窣聲。循聲望去，只見幾道動物的身影迅速掠過，轉眼便消失在樹影之中。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "沿著小道望向前方，樹木逐漸稀疏，遠處隱約可見森林的出口。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "explore",
-                  "key": "0",
-                  "count": 5,
-                  "mode": "stage",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "ambush",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ],
-            "chapter": {
-              "scene": 1,
-              "hint": "在無名密林探索並擊敗魔物。沿著小道前進一段路之後，劇情會繼續。",
-              "action": ""
-            }
-          },
           {
             "id": "ambush",
             "name": "突如其來的襲擊",
@@ -34762,102 +34015,17 @@
               "enemies": []
             },
             "speaker": "護衛",
-            "description": "前方的商隊遭到魔物襲擊。",
+            "description": "商隊遭到襲擊，你決定如何回應。",
             "dialogue": [
               {
-                "speaker": "旁白",
                 "kind": "narrator",
-                "text": "你沿著小道繼續前進。"
+                "speaker": "旁白",
+                "text": "林間的商隊遭到魔物襲擊，護衛洛恩正掩護商人與旅行牧師艾琳。"
               },
               {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "忽然，前方傳來一聲尖銳的馬鳴。"
-              },
-              {
-                "speaker": "？？？",
                 "kind": "npc",
-                "text": "小心左邊！"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "緊接著是金屬碰撞的聲響，以及幾聲急促的叫喊。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "你循著聲音向前趕去。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "不遠處，兩輛載滿貨物的馬車正停在道路中央。幾名商人躲在車廂後方，一名持劍的護衛站在前方，正與數隻魔物周旋。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "道路旁倒著另一名護衛。他的腿部似乎受了傷，一名身穿長袍的年輕牧師正跪在旁邊，雙手散發著柔和的金色光芒。"
-              },
-              {
-                "speaker": "受傷護衛",
-                "kind": "npc",
-                "text": "嘶……該死，竟然從旁邊衝出來……"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "先別動！傷口還沒完全癒合！"
-              },
-              {
-                "speaker": "受傷護衛",
-                "kind": "npc",
-                "text": "我知道！妳先去幫他，這點傷還死不了！"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "至少等我把血止住！"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "前方的護衛揮劍逼退一隻魔物，隨即又被另一隻逼得後退。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "喂！後面的！你們好了沒有？"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "快了！"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "金色光芒逐漸消散。牧師確認傷者的情況後，站起身來。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "就在這時，護衛注意到了你。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "那邊的人！你有武器吧？"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "他再次擋下一次攻擊。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "能幫忙就快過來！我們快守不住了！"
+                "speaker": "洛恩",
+                "text": "有人嗎？幫我們擊退這些魔物！"
               }
             ],
             "conditions": {
@@ -34907,12 +34075,7 @@
                 "nextQuests": []
               }
             ],
-            "guides": [],
-            "chapter": {
-              "scene": 2,
-              "hint": "",
-              "action": ""
-            }
+            "guides": []
           },
           {
             "id": "ambush_help",
@@ -34946,12 +34109,7 @@
             "next": "ambush_fight",
             "branches": [],
             "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 2,
-              "hint": "",
-              "action": ""
-            }
+            "guides": []
           },
           {
             "id": "ambush_ask",
@@ -34985,12 +34143,7 @@
             "next": "ambush_fight",
             "branches": [],
             "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 2,
-              "hint": "",
-              "action": ""
-            }
+            "guides": []
           },
           {
             "id": "ambush_what",
@@ -35024,12 +34177,7 @@
             "next": "ambush_fight",
             "branches": [],
             "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 2,
-              "hint": "",
-              "action": ""
-            }
+            "guides": []
           },
           {
             "id": "ambush_fight",
@@ -35047,34 +34195,8 @@
               ]
             },
             "speaker": "牧師",
-            "description": "與護衛、牧師一起擊退襲擊商隊的魔物。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "牧師快步來到你身旁。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "傷者已經沒有生命危險了。我也能幫忙！"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她抬起手，掌心浮現淡淡的金色光芒。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "如果受傷了，記得告訴我！"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "【護衛、牧師臨時加入隊伍】"
-              }
-            ],
+            "description": "擊退襲擊商隊的魔物。",
+            "dialogue": [],
             "conditions": {
               "mode": "all",
               "conditions": [
@@ -35093,807 +34215,12 @@
               "items": []
             },
             "effects": [],
-            "next": "aftermath",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ],
-            "chapter": {
-              "scene": 2,
-              "hint": "護衛與牧師會以臨時隊友的身分一起戰鬥。擊敗三隻魔物。",
-              "action": "allies"
-            }
-          },
-          {
-            "id": "aftermath",
-            "name": "戰鬥結束",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "魔物被擊退，護衛向你搭話。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "最後一隻魔物倒下。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "護衛握著長劍，警戒地環顧四周。確認沒有其他敵人後，他才放下武器。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "呼……總算結束了。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "他轉頭看向你。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "多虧你幫忙。再拖下去，我還真不知道能撐多久。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "牧師走向受傷的護衛，重新檢查他的傷勢。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "傷口已經癒合得差不多了，不過今天最好別再勉強走動。"
-              },
-              {
-                "speaker": "受傷護衛",
-                "kind": "npc",
-                "text": "知道了，知道了。妳已經說第三次了。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "那就請你記住。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "護衛收起長劍，朝你走來。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "我是這支商隊的護衛。剛才那些傢伙突然從林子裡衝出來，我們連反應的時間都沒有。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "他看了看地上的魔物。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "平常也不是沒遇過，但這次運氣實在不好。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "至少大家都平安。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "這倒是。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "他重新打量了你一眼。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "說起來，你是一個人穿過森林的？"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [
-              {
-                "id": "yes",
-                "text": "「是的。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "alone_yes",
-                "nextQuests": []
-              },
-              {
-                "id": "new",
-                "text": "「我剛來到這附近。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "alone_new",
-                "nextQuests": []
-              },
-              {
-                "id": "where",
-                "text": "「這條路通往哪裡？」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "alone_where",
-                "nextQuests": []
-              }
-            ],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "alone_yes",
-            "name": "戰鬥結束",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "護衛回應你的回答。",
-            "dialogue": [
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "一個人啊。膽子還真不小。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "invite",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "alone_new",
-            "name": "戰鬥結束",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "護衛回應你的回答。",
-            "dialogue": [
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "難怪沒見過你。這附近平常來往的人不算多。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "invite",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "alone_where",
-            "name": "戰鬥結束",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "護衛回應你的回答。",
-            "dialogue": [
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "前面就是村莊，再往東走便是通往城鎮的大路。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "invite",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "invite",
-            "name": "同行的邀請",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "護衛邀你一起前往村莊。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "護衛轉頭看向商隊。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "我們正準備去前面的村莊卸貨。你要是也往那個方向走，不如跟我們一起？"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "我也正好要到那裡。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "多一個人照應總是好事。何況你剛才還幫了我們大忙。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [
-              {
-                "id": "go",
-                "text": "「好，一起走吧。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "invite_go",
-                "nextQuests": []
-              },
-              {
-                "id": "later",
-                "text": "「我想先在附近看看。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "invite_later",
-                "nextQuests": []
-              }
-            ],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "invite_go",
-            "name": "同行的邀請",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "商隊正在整理貨物。",
-            "dialogue": [
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "那就這麼說定了。我們收拾一下就出發。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "caravan",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "invite_later",
-            "name": "同行的邀請",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "護衛",
-            "description": "商隊正在整理貨物。",
-            "dialogue": [
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "行。我們還得整理貨物，你準備好了再過來。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "caravan",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 3,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "caravan",
-            "name": "出發之前",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "旁白",
-            "description": "可以繼續探索森林，或與商隊交談後前往村莊。",
-            "dialogue": [],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "travel",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ],
-            "chapter": {
-              "scene": 3,
-              "hint": "可以繼續在無名密林探索。準備好之後，與商隊交談就會出發前往村莊。",
-              "action": "talk",
-              "actionLabel": "與商隊交談，前往村莊"
-            }
-          },
-          {
-            "id": "travel",
-            "name": "同行",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "與商隊一起穿過森林。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "商隊重新啟程。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "馬車的木輪沿著道路緩緩轉動，發出規律的聲響。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "受傷的護衛坐在其中一輛馬車上休息，另一名護衛則走在車隊前方。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "牧師與你並肩走在道路旁。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "剛才還沒機會好好向你道謝。"
-              },
-              {
-                "speaker": "牧師",
-                "kind": "npc",
-                "text": "我是艾琳，一名旅行中的牧師。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她微微一笑。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "你呢？該怎麼稱呼你？"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "{player}。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "{player}……我記住了。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她望向前方的馬車。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "原本只是想搭個順風車，沒想到會遇上這種事。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [
-              {
-                "id": "village",
-                "text": "「妳也是要去村莊嗎？」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "talk_village",
-                "nextQuests": []
-              },
-              {
-                "id": "heal",
-                "text": "「妳的治療法術很厲害。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "talk_heal",
-                "nextQuests": []
-              },
-              {
-                "id": "monsters",
-                "text": "「這附近經常有魔物襲擊嗎？」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "talk_monsters",
-                "nextQuests": []
-              }
-            ],
-            "guides": [],
-            "chapter": {
-              "scene": 4,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "talk_village",
-            "name": "同行",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳回應你的問題。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "只是經過而已。我的目的地是更遠一些的城鎮。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "不過商隊要先在村莊停留，我就跟著一起過來了。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "forest_edge",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 4,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "talk_heal",
-            "name": "同行",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳回應你的問題。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "謝謝。不過剛才那種傷勢，光靠治療神術還不夠，之後也得好好休養。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "幸好傷口不算太深。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "forest_edge",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 4,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "talk_monsters",
-            "name": "同行",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳回應你的問題。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "我也不太清楚。這是我第一次經過這片森林。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "不過護衛先生說，平常沒有這麼危險。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "forest_edge",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 4,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "forest_edge",
-            "name": "走出森林",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "車隊駛出森林，村莊就在前方。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "交談間，前方的護衛回過頭來。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "喂！前面就要出森林了！"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "你抬頭望去。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "原本密集的樹木逐漸稀疏，陽光也變得更加明亮。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "不久後，車隊駛出了森林。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "眼前是一片開闊的田野。道路兩側分布著農地與牧草地，遠處可以看見幾棟房屋，以及從屋頂緩緩升起的炊煙。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "看來我們到了。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
             "next": "village",
             "branches": [],
             "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 4,
-              "hint": "",
-              "action": ""
-            }
+            "guides": [
+              "battle"
+            ]
           },
           {
             "id": "village",
@@ -35906,42 +34233,12 @@
               "enemies": []
             },
             "speaker": "商人",
-            "description": "商隊抵達村莊，商人送上謝禮。",
+            "description": "商隊平安抵達村莊，商人送上謝禮：金幣 ×100。",
             "dialogue": [
               {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "馬車沿著道路駛入村莊。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "幾名村民正在路旁搬運農具，孩子們從屋舍間跑過。道路另一側，一名商販正在整理攤位上的蔬菜。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "商隊停在一間倉庫前。"
-              },
-              {
+                "kind": "npc",
                 "speaker": "商人",
-                "kind": "npc",
-                "text": "總算到了！今天可真夠折騰的。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "先把貨物卸下來吧。馬也得檢查一下。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "商人轉向你。"
-              },
-              {
-                "speaker": "商人",
-                "kind": "npc",
-                "text": "年輕人，今天多虧有你。這點錢請收下，算是我們的一點謝意。"
+                "text": "多虧你擊退魔物，商隊才能平安抵達。請收下金幣 100，作為我們的謝禮。"
               }
             ],
             "conditions": {
@@ -35954,430 +34251,10 @@
               "items": []
             },
             "effects": [],
-            "next": "plans",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "plans",
-            "name": "接下來的打算",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳問起你接下來的打算。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "【獲得商隊謝禮：金幣 ×100】"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "護衛拍了拍你的肩膀。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "以後要是再遇到，請你喝一杯。"
-              },
-              {
-                "speaker": "護衛",
-                "kind": "npc",
-                "text": "好了，我得去幫忙卸貨了。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "護衛離開後，牧師仍站在你身旁。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "看來他們今天是走不了了。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她望向正在卸貨的商隊。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "聽說馬車需要修理，至少得在這裡停留幾天。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "我本來打算跟著商隊繼續前往城鎮，不過現在恐怕得另外想辦法了。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她轉頭看向你。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "對了，你接下來有什麼打算？"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [
-              {
-                "id": "look",
-                "text": "「先在村莊看看。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "plan_look",
-                "nextQuests": []
-              },
-              {
-                "id": "travel",
-                "text": "「我想繼續旅行。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "plan_travel",
-                "nextQuests": []
-              },
-              {
-                "id": "undecided",
-                "text": "「還沒有決定。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "plan_undecided",
-                "nextQuests": []
-              }
-            ],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "plan_look",
-            "name": "接下來的打算",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳回應你的打算。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "這樣啊。我也想先找個地方休息，順便打聽一下附近的道路。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "offer",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "plan_travel",
-            "name": "接下來的打算",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳回應你的打算。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "旅行啊……那我們的目的倒是有些相似。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "offer",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "plan_undecided",
-            "name": "接下來的打算",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳回應你的打算。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "嗯，畢竟才剛來到這裡，先熟悉一下環境也好。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "offer",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "offer",
-            "name": "艾琳的提議",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳提議暫時一起行動。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "艾琳稍微思考了一會兒。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "既然如此，要不要暫時一起行動？"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "你剛才的身手很不錯，而我多少能幫忙治療傷勢。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "如果你之後也打算前往城鎮，我們還可以結伴走一段路。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [
-              {
-                "id": "yes",
-                "text": "「好，請多指教。」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "join_yes",
-                "nextQuests": []
-              },
-              {
-                "id": "why",
-                "text": "「為什麼想跟我一起走？」",
-                "conditions": {
-                  "mode": "all",
-                  "conditions": []
-                },
-                "effects": [],
-                "next": "join_why",
-                "nextQuests": []
-              }
-            ],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "join_yes",
-            "name": "艾琳的提議",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳決定與你同行。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "太好了！那就請多指教，{player}。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
             "next": "together",
             "branches": [],
             "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
-          },
-          {
-            "id": "join_why",
-            "name": "艾琳的提議",
-            "encounter": {
-              "enabled": false,
-              "name": "任務關卡",
-              "mapIndex": 0,
-              "repeatable": false,
-              "enemies": []
-            },
-            "speaker": "艾琳",
-            "description": "艾琳決定與你同行。",
-            "dialogue": [
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "因為你剛才願意幫助素不相識的人，而且戰鬥時也很可靠。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "她笑了笑。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "當然，兩個人旅行總比一個人安全。這也是原因之一。"
-              },
-              {
-                "speaker": "主角",
-                "kind": "player",
-                "text": "那就一起走吧。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "嗯！請多指教！"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "together",
-            "branches": [],
-            "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": ""
-            }
+            "guides": []
           },
           {
             "id": "together",
@@ -36390,22 +34267,17 @@
               "enemies": []
             },
             "speaker": "旁白",
-            "description": "艾琳正式加入隊伍，村莊的商店與委託開放。",
+            "description": "商隊平安抵達，戰士洛恩決定與你同行。",
             "dialogue": [
               {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "【艾琳正式加入隊伍】"
+                "kind": "npc",
+                "speaker": "洛恩",
+                "text": "你在危急時願意出手，我想與你一起走接下來的路。"
               },
               {
-                "speaker": "旁白",
                 "kind": "narrator",
-                "text": "【解鎖村莊探索】"
-              },
-              {
                 "speaker": "旁白",
-                "kind": "narrator",
-                "text": "現在可以使用商店與委託，並與艾琳一起探索周邊區域。"
+                "text": "完成後，戰士洛恩將加入夥伴名單。"
               }
             ],
             "conditions": {
@@ -36417,37 +34289,11 @@
               "ore": 0,
               "items": []
             },
-            "effects": [
-              {
-                "type": "unlock",
-                "key": "page_shop",
-                "value": true
-              },
-              {
-                "type": "unlock",
-                "key": "page_quests",
-                "value": true
-              },
-              {
-                "type": "unlock",
-                "key": "feature_hunt_mode",
-                "value": true
-              },
-              {
-                "type": "unlock",
-                "key": "feature_regions",
-                "value": true
-              }
-            ],
+            "effects": [],
             "next": "",
             "branches": [],
             "choices": [],
-            "guides": [],
-            "chapter": {
-              "scene": 5,
-              "hint": "",
-              "action": "recruit"
-            }
+            "guides": []
           }
         ],
         "rewards": {
@@ -36456,106 +34302,7 @@
           "items": []
         },
         "effects": [],
-        "nextQuests": [],
-        "chapter": {
-          "version": 1,
-          "title": "第一章：初臨艾斯蘭",
-          "gate": "chapter_gate",
-          "scenes": [
-            {
-              "id": 1,
-              "name": "林間小道",
-              "place": "無名密林"
-            },
-            {
-              "id": 2,
-              "name": "突如其來的襲擊",
-              "place": "無名密林"
-            },
-            {
-              "id": 3,
-              "name": "戰鬥結束",
-              "place": "無名密林"
-            },
-            {
-              "id": 4,
-              "name": "同行",
-              "place": "無名密林"
-            },
-            {
-              "id": 5,
-              "name": "抵達村莊",
-              "place": "村莊"
-            }
-          ],
-          "openPages": [
-            "battle",
-            "statistics",
-            "roster",
-            "skills",
-            "worn",
-            "equipment",
-            "character",
-            "story-main"
-          ],
-          "allies": [
-            {
-              "id": 900000002,
-              "name": "商隊護衛",
-              "template": 10
-            },
-            {
-              "id": 900000003,
-              "name": "旅行牧師",
-              "template": 13
-            }
-          ],
-          "companion": 13,
-          "ui": {
-            "continue": "繼續",
-            "startBattle": "開始戰鬥",
-            "retryBattle": "再試一次",
-            "battleRunning": "戰鬥進行中",
-            "resume": "繼續劇情",
-            "locked": "這個功能還沒有開放，隨著劇情進行會逐步解鎖。",
-            "modeLocked": "目前只能以單怪模式探索。",
-            "regionLocked": "目前只能在無名密林探索。",
-            "alliesJoined": "護衛與牧師暫時加入了隊伍。",
-            "companionJoined": "艾琳加入了隊伍。",
-            "reward": "獲得商隊謝禮："
-          },
-          "ending": {
-            "title": "第一章：初臨艾斯蘭　完",
-            "button": "結束",
-            "lines": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "馬車停在倉庫前，商人們忙著卸貨。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "村莊的屋頂升起炊煙。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "艾琳在你身旁伸了個懶腰。"
-              },
-              {
-                "speaker": "艾琳",
-                "kind": "npc",
-                "text": "接下來就先在這裡待幾天吧。"
-              },
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "你和艾琳的旅程，從這座村莊開始。"
-              }
-            ]
-          }
-        }
+        "nextQuests": []
       }
     ],
     "gearRewards": [
@@ -48462,7 +46209,7 @@
         "type": "guide",
         "enabled": true,
         "implemented": true,
-        "description": "選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。序幕的訓練戰之後，第一次進入荒野探索時開始。",
+        "description": "選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。",
         "trigger": {
           "type": "pageEnter",
           "page": "battle",
@@ -48934,7 +46681,7 @@
         "type": "guide",
         "enabled": true,
         "implemented": true,
-        "description": "商店的分類、固定商品與限時商品。劇情開放商店後，第一次進入商店時開始。",
+        "description": "商店的分類、固定商品與限時商品。第一次進入商店時開始。",
         "trigger": {
           "type": "pageEnter",
           "page": "shop",
@@ -48947,11 +46694,6 @@
             {
               "type": "prologueDone",
               "key": "",
-              "count": 1
-            },
-            {
-              "type": "featureUnlocked",
-              "key": "page_shop",
               "count": 1
             }
           ]
@@ -49037,7 +46779,7 @@
         "type": "guide",
         "enabled": true,
         "implemented": true,
-        "description": "每日委託的接取與交付。劇情開放委託後，第一次進入委託時開始。",
+        "description": "每日委託的接取與交付。第一次進入委託時開始。",
         "trigger": {
           "type": "pageEnter",
           "page": "quests",
@@ -49050,11 +46792,6 @@
             {
               "type": "prologueDone",
               "key": "",
-              "count": 1
-            },
-            {
-              "type": "featureUnlocked",
-              "key": "page_quests",
               "count": 1
             }
           ]
