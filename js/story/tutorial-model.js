@@ -73,7 +73,7 @@
  function makeModule(o){return {id:o.id,title:o.title,category:o.category,type:o.type||'guide',enabled:o.enabled!==false,implemented:o.implemented!==false,description:o.description||'',trigger:{type:'pageEnter',page:'',notify:false,notifyText:'',...o.trigger},prerequisites:o.prerequisites||group(),steps:o.steps||[],completion:o.completion||{type:'steps'},replayable:o.replayable!==false,skippable:o.skippable!==false,interrupt:o.interrupt||'pause',revision:o.revision||1,reprompt:!!o.reprompt};}
 
  function defaults(){return {version:VERSION,modules:[
-  makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。序幕的訓練戰之後，第一次進入荒野探索時開始。',
+  makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。',
    trigger:{type:'pageEnter',page:'battle'},prerequisites:group([condition('prologueDone')]),steps:[
    step('intro','探索介面','這裡是荒野探索。上方選擇要前往的地圖，下方是隊伍與敵人的戰鬥卡片。',{page:'battle',target:'battle.destination'}),
    step('map','選擇探索地圖','從清單選擇要探索的地圖。地圖名稱後面是建議等級，先從等級相近的地圖開始。',{page:'battle',target:'battle.mapSelect'}),
@@ -96,14 +96,14 @@
    step('auto','自動施放','戰鬥中，主動槽的技能在冷卻結束且 MP 足夠時自動施放；有施放條件的技能要等條件成立。沒有可用的技能時角色會普攻。',{page:'skills',target:'skills.activeSlots'}),
    step('others','觸發與輔助','觸發技能在普攻時依觸發率發動；輔助技能在戰鬥中同樣自動施放。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
   ]}),
-  makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。劇情開放商店後，第一次進入商店時開始。',
-   trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone'),condition('featureUnlocked','page_shop')]),steps:[
+  makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。第一次進入商店時開始。',
+   trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone')]),steps:[
    step('categories','商品分類','上方按鈕切換商品分類。',{page:'shop',target:'shop.categories'}),
    step('fixed','固定商品','固定商品隨時可以購買。買到的道具放進背包的「道具」分類。',{page:'shop',target:'shop.fixed'}),
    step('random','限時商品','這一區的商品會定期更換，也可以花金幣手動刷新。',{page:'shop',target:'shop.random'})
   ]}),
-  makeModule({id:'quest_basics',title:'委託',category:'quests',description:'每日委託的接取與交付。劇情開放委託後，第一次進入委託時開始。',
-   trigger:{type:'pageEnter',page:'quests'},prerequisites:group([condition('prologueDone'),condition('featureUnlocked','page_quests')]),steps:[
+  makeModule({id:'quest_basics',title:'委託',category:'quests',description:'每日委託的接取與交付。第一次進入委託時開始。',
+   trigger:{type:'pageEnter',page:'quests'},prerequisites:group([condition('prologueDone')]),steps:[
    step('board','每日委託','每天會出現五項委託，最多可以完成四項。',{page:'quests',target:'quests.board'}),
    step('start','接取委託','按「開始任務」接下委託。擊殺與強化等進度從接下之後開始計算。',{page:'quests',target:'quests.start'}),
    step('claim','交付','達成目標後回到這裡交付，領取委託上的獎勵。',{page:'quests',target:'quests.board'})
