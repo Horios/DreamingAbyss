@@ -1,8 +1,7 @@
 {
   "encounter": {
     "bossChance": 0,
-    "eliteChance": 0.12,
-    "levelLeadInterval": 5
+    "eliteChance": 0.12
   },
   "normal": {
     "hpBase": 18,

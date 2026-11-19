@@ -7,7 +7,7 @@
     "chapterSubtitle": "純文字遠征手札",
     "homeEyebrow": "DREAMING ABYSS · 選擇你的遠征者",
     "homeTitle": "向荒野出發。",
-    "homeDescription": "一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。",
+    "homeDescription": "一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\n擊敗各地首領開放新地圖，挑戰 {{finalBossLevel}} 級噬日者後解鎖覺醒地圖。",
     "homeFooter": "自動存檔 · 無離線戰鬥"
   },
   "textStyles": [],

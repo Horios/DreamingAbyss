@@ -18,7 +18,7 @@
   }
   function normalizeDocument(input){
     const d=copy(input);d.teamSettings=settings(d.teamSettings);d.balanceSettings??={};d.balanceSettings.meta??={};
-    const p=d.balanceSettings.progression??={};p.starting??={};p.levelRewards??={};delete p.starting.skillPoints;delete p.levelRewards.skillPoints;delete p.starting.abilityPoints;delete p.levelRewards.abilityPoints;delete p.statsPerPoint;d.balanceSettings.meta.teamBuildVersion=VERSION;
+    const p=d.balanceSettings.progression??={};p.starting??={};delete p.levelRewards;delete p.starting.skillPoints;delete p.starting.abilityPoints;delete p.statsPerPoint;d.balanceSettings.meta.teamBuildVersion=VERSION;
     for(const cls of d.classes||[])for(const sk of cls.skills||[]){delete sk.learnCost;Object.assign(sk,rules(sk));}
     for(const list of d.supportSkills||[])for(const sk of list){delete sk.learnCost;Object.assign(sk,rules(sk));}
     return d;
@@ -36,7 +36,7 @@
     if(d?.buildSystem?.permanent){delete d.buildSystem.permanent.skillCredit;delete d.buildSystem.permanent.abilityCredit;}for(const p of d?.buildSystem?.plans||[])delete p.stats;
     return d;
   }
-  function validate(build,{classes,supports,members,items,progression,level,config=defaults,wearable=()=>true}){
+  function validate(build,{classes,supports,members,items,progression,config=defaults,wearable=()=>true}){
     const b=copy(build),cfg=settings(config),fail=message=>{throw Error(message);},perm=b?.permanent;
     if(b?.version!==VERSION||!int(b.serial,2,1e9)||!Array.isArray(b.plans)||!b.plans.length||b.plans.length>12||!object(perm)||!int(perm.playerKey,0,1e9)||!object(perm.classes)||!object(perm.masteries)||!object(perm.unlocks)||!object(perm.payments)||!object(perm.gemInstances)||!int(perm.gemSerial,1,1e9))fail('永久養成或隊伍資料無效');
     const skillKeys=new Set();classes.forEach((c,j)=>{c.skills.forEach((_,i)=>skillKeys.add(key(j,'core',i)));(supports[j]||[]).forEach((_,i)=>skillKeys.add(key(j,'support',i)));});

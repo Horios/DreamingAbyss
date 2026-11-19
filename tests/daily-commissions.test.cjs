@@ -7,7 +7,7 @@ function complete(r,q){r.ctx.qid=q.id;r.run(`{const q=state.board.tasks.find(x=>
 
 test('five distinct snapshots survive switches, balance imports and cold reload, and refresh only at Taipei midnight',async()=>{
  let r=game(Date.parse('2026-10-19T15:59:59Z'));const before=r.run('JSON.stringify(state.board)');assert.equal(r.run('state.board.tasks.length'),5);assert.equal(new Set(json(r,'state.board.tasks.map(q=>q.templateId)')).size,5);
- r.run('party.map=1;refreshBoard();buildBoard();const cfg=exportableBalance();cfg.balanceSettings.quests.design.daily.entries.reverse();applyBalanceConfig(cfg,{persist:false});save();loadParty(packParty())');assert.equal(r.run('JSON.stringify(state.board)'),before);
+ r.run('playerHero().kills[MAPS[0].boss[2]]=1;party.map=1;refreshBoard();buildBoard();const cfg=exportableBalance();cfg.balanceSettings.quests.design.daily.entries.reverse();applyBalanceConfig(cfg,{persist:false});save();loadParty(packParty())');assert.equal(r.run('JSON.stringify(state.board)'),before);
  r=loadRuntime(root,'index.html',Object.fromEntries(r.values),r.now);r.run('continueFromTitle()');await r.run('EmberwildOffline.settle()');r.run('closeModal()');assert.equal(r.run('JSON.stringify(state.board)'),before);r.advance(1000);r.run('ensureBoard()');assert.equal(r.run('state.board.day'),'2026-10-20');assert.equal(r.run('state.board.tasks.length'),5);assert.equal(r.run('state.board.bonusClaimed'),false);assert.deepEqual(r.errors,[]);
 });
 

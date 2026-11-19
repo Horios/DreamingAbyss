@@ -5,7 +5,7 @@ function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);clos
 function force(r,type){r.ctx.rewardType=type;r.run("{const d=exportableBalance();d.wishingLake.typeWeights={gold:0,item:0,equipment:0};d.wishingLake.typeWeights[rewardType]=1;applyBalanceConfig(d,{persist:false});}");}
 test('unlock uses the complete first boss clear; legacy clears migrate and notification persists',()=>{
  const r=game();assert.equal(r.run('__EMBERWILD_WISHING_LAKE.ensure().unlocked'),false);
- r.run("state.materials['黏稠凝膠']=100;selectLakeOffering('gel');state.totalKills=999;state.lv=20;");assert.equal(r.run('confirmLakeOffering()'),false);
+ r.run("state.materials['黏稠凝膠']=100;selectLakeOffering('gel');state.totalKills=999;setClassMasteryLevel(19);");assert.equal(r.run('confirmLakeOffering()'),false);
  r.run('recordMapClear(0);');assert.equal(r.run('party.wishingLake.unlocked&&party.wishingLake.notified'),true);
  r.run('globalThis.savedLake=packParty();loadParty(savedLake);');assert.equal(r.run('party.wishingLake.notified'),true);
  r.run('delete savedLake.wishingLake;loadParty(savedLake);');assert.equal(r.run('party.wishingLake.unlocked'),true);
@@ -39,7 +39,7 @@ test('items use existing storage; equipment is legal, wearable, enhanceable and 
  const r=game();r.run("recordMapClear(0);state.materials['黏稠凝膠']=1000;");force(r,'item');
  r.run("{const d=exportableBalance();d.wishingLake.pools[0].rewards=d.wishingLake.pools[0].rewards.filter(x=>x.id==='heal');applyBalanceConfig(d,{persist:false});selectLakeOffering('gel');}");
  const before=r.run("__EMBERWILD_INVENTORY_STOCK.count('heal_small')");assert.equal(r.run('confirmLakeOffering()'),true);const n=r.run("__EMBERWILD_INVENTORY_STOCK.count('heal_small')")-before;assert(n>=2&&n<=5);
- r.advance(86400000);r.run('EmberwildOffline.advance(Date.now(),1000)');r.run("{const d=exportableBalance();d.wishingLake=EmberwildWishingLake.defaults();d.wishingLake.equipment.aheadChance=0;d.wishingLake.typeWeights={gold:0,item:0,equipment:1};applyBalanceConfig(d,{persist:false});playerHero().lv=20;syncParty();Math.random=()=>.1;selectLakeOffering('gel');}");assert.equal(r.run('confirmLakeOffering()'),true);
+ r.advance(86400000);r.run('EmberwildOffline.advance(Date.now(),1000)');r.run("{const d=exportableBalance();d.wishingLake=EmberwildWishingLake.defaults();d.wishingLake.equipment.aheadChance=0;d.wishingLake.typeWeights={gold:0,item:0,equipment:1};applyBalanceConfig(d,{persist:false});setClassMasteryLevel(19,playerHero());syncParty();Math.random=()=>.1;selectLakeOffering('gel');}");assert.equal(r.run('confirmLakeOffering()'),true);
  r.run('globalThis.lakeGear=state.bag.at(-1);');assert.equal(r.run('gearRequiredLevel(lakeGear)'),1);assert.equal(r.run('lakeGear.plus'),0);assert(r.run('lakeGear.powerTier')>=1);assert.equal(r.run('lakeGear.skillSockets.gems.every(x=>x===null)'),true);
  assert(r.run('eligibleWearers(lakeGear).length')>0);r.run('equipSharedGear(lakeGear.id,memberKey(playerHero()),lakeGear.slot);state.gold=100000;state.ore=1000;state.dust=1000;enhance(lakeGear.id);');assert.equal(r.run('lakeGear.plus'),1);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
  r.advance(86400000);r.run('EmberwildOffline.advance(Date.now(),1000)');r.run("{const template=JSON.parse(JSON.stringify(lakeGear));while(state.bag.length<RULES.bagCapacity){state.bag.push({...template,id:'lake-fill-'+state.bag.length});}selectLakeOffering('gel');}");

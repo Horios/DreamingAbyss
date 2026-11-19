@@ -15,8 +15,8 @@
  const questItems=q=>[...(q.rewards?.items||[]),...q.stages.flatMap(s=>s.rewards.items)];
  function routes(sk,h){
   const out=[],system=S.system(),rule=system.classRules.find(r=>r.job===h.job),story=globalThis.__EMBERWILD_STORY?.design;
-  for(const row of rule?.initial||[])if(row.skillId===sk.id)out.push('職業學習 · LV'+row.level);
-  for(const row of rule?.advanced||[])if(row.skillId===sk.id)out.push('二轉職業學習 · LV'+row.level);
+  for(const row of rule?.initial||[])if(row.skillId===sk.id)out.push('職業技能樹 · 精通 Lv'+row.masteryLevel);
+  for(const row of rule?.advanced||[])if(row.skillId===sk.id)out.push('二轉技能樹 · 精通 Lv'+row.masteryLevel);
   for(const src of sk.sources){
    if(src.type==='quest'){
     if(src.rewardOnly){for(const q of story?.quests||[])if(q.enabled!==false&&questItems(q).some(x=>x.type==='skill'&&x.key===sk.id&&(x.job===undefined||x.job===h.job)))out.push('任務獎勵：'+q.name);}
@@ -28,11 +28,11 @@
   }
   return [...new Set(out)];
  }
- function sortedSkills(list,h){return list.sort((a,b)=>Number(S.learned(h,b))-Number(S.learned(h,a))||(a.requiredLevel??a.level??1)-(b.requiredLevel??b.level??1));}
+ function sortedSkills(list,h){return list.sort((a,b)=>Number(S.learned(h,b))-Number(S.learned(h,a))||(a.requiredLevel??a.level??0)-(b.requiredLevel??b.level??0));}
  function catalog(h){return sortedSkills(S.system().definitions.filter(sk=>!sk.disabled&&sk.partnerId==null&&sk.jobs.includes(h.job)&&routes(sk,h).length),h);}
  function conditions(sk,h){
   if(sk.sources.some(s=>s.type==='equipment'))return '裝備附帶';
-  const a=EmberwildSkillSystem.adapterFor(sk,h.job),parts=['LV'+(sk.requiredLevel??sk.level??1)];
+  const a=EmberwildSkillSystem.adapterFor(sk,h.job),parts=[];const need=sk.requiredLevel??sk.level??0;if(need)parts.push('職業精通 Lv'+need);
   if(stage(sk,h)==='二轉')parts.push('完成二轉');
   if(sk.requiredMastery)parts.push((__EMBERWILD_MASTERY.masteryLabels[sk.requiredMastery]||sk.requiredMastery)+'精通 LV'+(sk.requiredMasteryLevel||0));
   if(sk.weaponTypes?.length)parts.push('武器：'+sk.weaponTypes.join('／'));
@@ -132,7 +132,7 @@
  globalThis.showWornEquipmentDetail=function(id){
   const g=findGear(id);if(!g||EmberwildTokens.isToken(g)||!gearWearer(id))return false;
   const modal=$('modal');
-  modal.innerHTML=`<h2>裝備詳情 · ${equipmentNameHTML(g)}</h2><p class="small">${esc(gearWearableJobsText(g))} · LV ${gearRequiredLevel(g)} · ${qualityTag(g)}</p><p class="equipment-total-summary">${globalThis.equipmentTotalSummaryHTML(g)}</p>${globalThis.equipmentAttributeDetailsHTML(g)}<div class="actions"><button type="button" onclick="closeModal()">關閉</button></div>`;
+  modal.innerHTML=`<h2>裝備詳情 · ${equipmentNameHTML(g)}</h2><p class="small">${esc(gearWearableJobsText(g))} · 裝等 ${gearRequiredLevel(g)} · ${qualityTag(g)}</p><p class="equipment-total-summary">${globalThis.equipmentTotalSummaryHTML(g)}</p>${globalThis.equipmentAttributeDetailsHTML(g)}<div class="actions"><button type="button" onclick="closeModal()">關閉</button></div>`;
   if(!modal.open)modal.showModal();
   return true;
  };

@@ -9,7 +9,7 @@
     if(!party||syncing)return;syncing=true;
     try{
       const progress=party.companionUnlocks??=validateProgress(),a=party.achievements??=A.migrate(undefined,progress),mailbox=party.mailbox??=A.mailboxDefaults();
-      const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE,key=cache?JSON.stringify([playerHero().lv,playerHero().won,party.members.map(h=>[memberKey(h),h.companionId]),progress.unlocked,a.eliteKills,a.bossKills]):null;
+      const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE,key=cache?JSON.stringify([playerHero().won,party.members.map(h=>[memberKey(h),h.companionId]),progress.unlocked,a.eliteKills,a.bossKills]):null;
       if(cache?.achievementOwner===party&&cache.achievementKey===key)return;
       for(const h of party.members.slice(1))if(h.companionId!==undefined&&!progress.unlocked.includes(h.companionId))progress.unlocked.push(h.companionId);
       MAPS.forEach((m,i)=>{if(solo.canVisit(i,playerHero())&&!progress.regions.includes(i))progress.regions.push(i);});

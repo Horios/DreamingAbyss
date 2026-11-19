@@ -19,7 +19,8 @@ test('Visibility has only two values, legacy states migrate and condition editor
 test('Region unlock uses the player gate; elite progress counts only elites in the configured region exactly once',()=>{
  const r=game();rules(r);assert.equal(r.run('companionUnlocked(15)'),false);assert.equal(r.run('companionUnlocked(16)'),false);
  r.run('acquireCompanion(16);');assert.equal(r.run('partyMember(16)'),undefined);
- r.run('playerHero().lv=20;syncParty();save();claimAllMailboxAttachments()');assert.equal(r.run('companionTicketCount(15)'),1);r.run('useCompanionRecruitmentTicket(15)');assert.equal(r.run('companionUnlocked(15)'),true);
+ // v0.161: regions open by defeating the previous map bosses (no character level).
+ r.run('for(let i=0;i<6;i++)playerHero().kills[MAPS[i].boss[2]]=1;syncParty();save();claimAllMailboxAttachments()');assert.equal(r.run('companionTicketCount(15)'),1);r.run('useCompanionRecruitmentTicket(15)');assert.equal(r.run('companionUnlocked(15)'),true);
  r.run("globalThis.defeat=(kind,region)=>{const e=makeEnemy(region,playerHero(),()=>.5);e.kind=kind;e.hp=0;rewardGroupKill(e);return e;};defeat('normal',0);defeat('boss',0);defeat('elite',1);");assert.equal(r.run('party.companionUnlocks.eliteKills[0]||0'),0);
  r.run("for(let i=0;i<49;i++)defeat('elite',0)");assert.equal(r.run('companionUnlocked(16)'),false);assert.equal(r.run('party.achievements.eliteKills[0]'),49);
  r.run("globalThis.last=defeat('elite',0);rewardGroupKill(last);claimAllMailboxAttachments();");assert.equal(r.run('party.companionUnlocks.eliteKills[0]'),50);assert.equal(r.run('companionTicketCount(16)'),1);r.run('useCompanionRecruitmentTicket(16)');assert.equal(r.run('companionUnlocked(16)'),true);

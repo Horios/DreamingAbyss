@@ -14,7 +14,7 @@
   }
   const coreRule=(j,i)=>replayRule(mastery.coreMeta(j,i)),supportRule=(j,i)=>replayRule(SUPPORT[j]?.[i]);
   const costs=()=>0;
-  const budgets=()=>M.budget(player().lv,GAMEPLAY_SETTINGS.progression,build().permanent);
+  const budgets=()=>M.budget(0,GAMEPLAY_SETTINGS.progression,build().permanent);
   function masteryView(h){
     if(h!==player()||!build())return null;
     const all=build().permanent.masteries,out={};
@@ -22,7 +22,7 @@
     return out;
   }
   globalThis.__EMBERWILD_TEAM_MASTERY=masteryView;
-  globalThis.__EMBERWILD_TEAM_GAIN=(h,n)=>{if(h!==player()||!build()||plan()?.job===null)return;const c=build().permanent.classes[h.job];if(c?.activated)c.xp+=n;refreshUnlocks();};
+  globalThis.__EMBERWILD_TEAM_GAIN=(h,n)=>{if(h!==player()||!build()||plan()?.job===null)return;const c=build().permanent.classes[h.job];if(c?.activated)c.xp=Math.min(mastery.masteryMaxXp(),c.xp+Math.max(0,Math.floor(Number(n)||0)));refreshUnlocks();};
   function snapshot(p){
     const h=player();p.skills=copy(h.skills);p.supportLevels=copy(h.supportLevels);p.active=copy(h.active);p.procSlots=copy(h.procSlots);p.supportSlots=copy(h.supportSlots);p.equipped=copy(h.equipped);if(h.skillLoadout)p.skillLoadout=copy(h.skillLoadout);p.passiveEnabled=copy(h.passiveEnabled||{});
     p.playerActive=party.active.includes(memberKey(h));p.companions=party.active.filter(k=>k!==memberKey(h));p.enlisted=(party.enlisted||party.members.map(memberKey)).filter(k=>k!==memberKey(h));
@@ -62,7 +62,7 @@
   function unlockMissing(j,kind,i){
     const h=player(),perm=build().permanent,c=perm.classes[j],sk=kind==='core'?CLASSES[j]?.skills?.[i]:SUPPORT[j]?.[i],r=kind==='core'?coreRule(j,i):supportRule(j,i),meta=kind==='core'?mastery.coreMeta(j,i):sk,reasons=[];
     if(!sk)return ['技能不存在'];if(!c?.activated)reasons.push('尚未使用此職業');if(meta.partnerId!==null&&meta.partnerId!==undefined)reasons.push('指定夥伴專屬');
-    const lv=kind==='core'?sk[2]:sk.level;if(h.lv<lv)reasons.push('主角 LV'+lv);
+    const need=kind==='core'?sk[2]:sk.level;if(!(mastery.masteryLevelFromXp(c?.xp||0)>=need||legacySkillLevel()>=need+1))reasons.push('職業精通 Lv'+need);
     if((kind==='core'?skillRequiresAdvanced(sk,i):i===2)&&!c?.advanced)reasons.push('完成二轉');
     if(meta.requiredMastery&&mastery.masteryLevelFromXp(perm.masteries[meta.requiredMastery]||0)<(meta.requiredMasteryLevel||0))reasons.push((mastery.masteryLabels[meta.requiredMastery]||meta.requiredMastery)+'精通 Lv'+meta.requiredMasteryLevel);
     if(mastery.masteryLevelFromXp(c?.xp||0)<r.unlockConditions.classMasteryLevel)reasons.push('職業精通 Lv'+r.unlockConditions.classMasteryLevel);
@@ -79,7 +79,7 @@
     if(!build())return;const perm=build().permanent,cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE,h=player();
     // Replay cannot edit builds. Re-evaluate gates when their dependencies change,
     // rather than scanning every skill on every point of mastery/character XP.
-    const key=cache?JSON.stringify([h.lv,h.tutorial,h.claimed,h.bag.length,party.achievements, Object.values(perm.classes).map(c=>[c.activated,c.advanced,mastery.masteryLevelFromXp(c.xp)]),Object.entries(perm.masteries).map(([k,n])=>[k,mastery.masteryLevelFromXp(n)])]):null;
+    const key=cache?JSON.stringify([legacySkillLevel(),h.tutorial,h.claimed,h.bag.length,party.achievements, Object.values(perm.classes).map(c=>[c.activated,c.advanced,mastery.masteryLevelFromXp(c.xp)]),Object.entries(perm.masteries).map(([k,n])=>[k,mastery.masteryLevelFromXp(n)])]):null;
     if(cache?.unlockOwner===perm&&cache.unlockKey===key)return;
     CLASSES.forEach((c,j)=>{for(const [kind,list] of [['core',c.skills],['support',SUPPORT[j]]])list.forEach((_,i)=>{const k=M.key(j,kind,i),r=kind==='core'?coreRule(j,i):supportRule(j,i);if(!perm.unlocks[k]&&!r.unlockConditions.materials.length&&!unlockMissing(j,kind,i).length)perm.unlocks[k]=true;});});
     if(cache){cache.unlockOwner=perm;cache.unlockKey=key;}
@@ -120,14 +120,13 @@
   const socketBase=socket;socket=function(i,value){if(state!==player())return socketBase(i,value);if(!safe()||plan().job===null||!Number.isInteger(i)||!player().skills[i])return false;const type=Number(value),p=plan();if(!Number.isInteger(type)||type< -1||type>=GEMS.length||type>=0&&!gemCompatible(type,player().job,i))return false;if(type>=0&&player().gems[type]<1)return false;return transaction(()=>{const old=p.sockets[i];p.sockets[i]=null;if(old&&!build().plans.some(other=>other.sockets.includes(old))){player().gems[build().permanent.gemInstances[old]]++;delete build().permanent.gemInstances[old];}if(type>=0){const id='gem-'+build().permanent.gemSerial++;build().permanent.gemInstances[id]=type;player().gems[type]--;p.sockets[i]=id;}player().sockets=p.sockets.map(id=>id?build().permanent.gemInstances[id]:null);});};
   const baseSave=save;save=function(...args){if(suppressSave)return true;if(party&&!hydrating)capture();return baseSave(...args);};
   const basePack=packParty;packParty=function(){capture();const out=basePack();out.buildSystem=copy(build());return out;};
-  function validateBuild(data,p){return M.validate(data,{classes:classDocs(),supports:SUPPORT,members:p.members,items:p.members.flatMap(h=>h.bag),progression:GAMEPLAY_SETTINGS.progression,level:p.members[0].lv,config:cfg,wearable:(g,j,i)=>!EmberwildTokens.isToken(g)&&gearWearableJobs(g).includes(j)&&gearEquipPositions(g).includes(i)&&gearRequiredLevel(g)<=p.members[0].lv});}
+  function validateBuild(data,p){return M.validate(data,{classes:classDocs(),supports:SUPPORT,members:p.members,items:p.members.flatMap(h=>h.bag),progression:GAMEPLAY_SETTINGS.progression,config:cfg,wearable:(g,j,i)=>!EmberwildTokens.isToken(g)&&gearWearableJobs(g).includes(j)&&gearEquipPositions(g).includes(i)});}
   const baseValidate=validateParty;validateParty=function(input){const d=M.prepareSave(input),p=baseValidate(d);if(d.buildSystem!==undefined)p.buildSystem=validateBuild(d.buildSystem,p);return p;};
   const baseLoad=loadParty;loadParty=function(input){
     const d=M.prepareSave(input);validateParty(d);hydrating=true;try{baseLoad(d);if(d.buildSystem)party.buildSystem=validateBuild(d.buildSystem,party);else delete party.buildSystem;}finally{hydrating=false;}
     migrate();apply(plan());if(party.enlisted.includes(d.selected)){party.selected=d.selected;state=partyMember(d.selected);}refreshUnlocks();syncPoints();return party;
   };
   const baseStart=start;start=function(...args){const out=baseStart(...args);migrate();capture();save();render();return out;};
-  const xpBase=awardXP;awardXP=function(...args){const out=xpBase(...args);if(build()){syncPoints();refreshUnlocks();}return out;};
   const advanceBase=advance;advance=function(){if(!safe()||state===player()&&plan()?.job===null)return false;if(state!==player())return advanceBase();return transaction(()=>{advanceBase();build().permanent.classes[state.job].advanced=state.advanced;refreshUnlocks();});};
   const baseBalanceValidate=validateBalanceConfig;validateBalanceConfig=function(input){return baseBalanceValidate(M.normalizeDocument(input));};
   function applyRules(d){cfg=M.settings(d.teamSettings);d.classes.forEach((c,j)=>c.skills.forEach((sk,i)=>Object.assign(mastery.coreMeta(j,i),M.rules(sk))));d.supportSkills.forEach((list,j)=>list.forEach((sk,i)=>Object.assign(SUPPORT[j][i],M.rules(sk))));}
@@ -162,7 +161,8 @@
         // stable-ID loadout and engine slot. All other skills remain untouched.
         const starters=d.skillSystem.classRules.find(r=>r.job===p.job)?.initial||[];
         for(const starter of starters){
-          if(player().lv<starter.level||!p.skillLoadout.active?.includes(starter.skillId))continue;
+          const need=starter.masteryLevel??Math.max(0,(starter.level||1)-1);
+          if(!(mastery.masteryLevelFromXp(next.permanent.classes[p.job]?.xp||0)>=need||legacySkillLevel()>=need+1)||!p.skillLoadout.active?.includes(starter.skillId))continue;
           const skill=d.skillSystem.definitions.find(s=>s.id===starter.skillId);
           const adapter=(skill?.adapters||[skill?.adapter]).find(a=>a?.job===p.job&&a.kind==='core');
           if(!adapter||!p.active.includes(adapter.index)||d.classes[p.job].skills[adapter.index]?.activation!=='active')continue;
@@ -193,7 +193,7 @@
       refundedGems.push(next.permanent.gemInstances[id]);
       delete next.permanent.gemInstances[id];
     }
-    try{return M.validate(next,{classes:d.classes,supports:d.supportSkills,members:party.members,items:player().bag,progression:d.balanceSettings.progression,level:player().lv,config:d.teamSettings,wearable:()=>true});}
+    try{return M.validate(next,{classes:d.classes,supports:d.supportSkills,members:party.members,items:player().bag,progression:d.balanceSettings.progression,config:d.teamSettings,wearable:()=>true});}
     catch(e){throw Error('平衡設定不相容於已保存的隊伍：'+e.message+'。請先調整配置；原設定保留。');}
   }
   const balanceBase=applyBalanceConfig;
@@ -217,7 +217,7 @@
       if(next){
         party.buildSystem=next;
         for(const type of refundedGems)player().gems[type]++;
-        for(const p of next.plans)if(p.job!==null)p.equipped=p.equipped.map((id,i)=>{const g=findGear(id);return g&&gearWearableJobs(g).includes(p.job)&&gearEquipPositions(g).includes(i)&&gearRequiredLevel(g)<=player().lv?id:null;});
+        for(const p of next.plans)if(p.job!==null)p.equipped=p.equipped.map((id,i)=>{const g=findGear(id);return g&&gearWearableJobs(g).includes(p.job)&&gearEquipPositions(g).includes(i)?id:null;});
         apply(plan());capture();resetBattleState();
       }
       if(persist)localStorage.setItem(BALANCE_KEY,JSON.stringify(exportableBalance()));
@@ -278,7 +278,7 @@
   globalThis.__EMBERWILD_TEAMS={build,plan,player,capture,apply,budgets,costs,busy,safe,savingSuppressed:()=>suppressSave,valid,refreshUnlocks,unlockMissing,unlockSummary,coreRule,supportRule,settings:()=>copy(cfg),validateBuild,resetBattleState};
   // Read the exact boot bytes after all late validators are installed.
   const boot=globalThis.__EMBERWILD_TEAM_BOOT_RAW;
-  try{const d=M.normalizeDocument(JSON.parse(balanceSourceText()||'null')||baseExport());applyRules(d);Object.assign(GAMEPLAY_SETTINGS.progression.starting,d.balanceSettings.progression.starting);Object.assign(GAMEPLAY_SETTINGS.progression.levelRewards,d.balanceSettings.progression.levelRewards);GAMEPLAY_SETTINGS.meta.teamBuildVersion=M.VERSION;
+  try{const d=M.normalizeDocument(JSON.parse(balanceSourceText()||'null')||baseExport());applyRules(d);Object.assign(GAMEPLAY_SETTINGS.progression.starting,d.balanceSettings.progression.starting);delete GAMEPLAY_SETTINGS.progression.levelRewards;GAMEPLAY_SETTINGS.meta.teamBuildVersion=M.VERSION;
     // The published loader rehydrates these exact bytes after every module is ready.
     if(boot&&!globalThis.__EMBERWILD_BALANCE_SOURCE)loadParty(JSON.parse(boot));else if(!boot&&party){migrate();apply(plan());}
     globalThis.__EMBERWILD_TEAM_READY=true;delete globalThis.__EMBERWILD_TEAM_BOOT_RAW;if(party)render();

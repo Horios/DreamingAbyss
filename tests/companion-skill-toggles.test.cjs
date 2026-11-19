@@ -13,11 +13,11 @@ test('Default recruitment contains five visible initial companions; hidden entri
 });
 function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();globalThis.__initialCatalog=exportableBalance();const unlocked=exportableBalance();for(const p of unlocked.companions)p.availability="visible";applyBalanceConfig(unlocked);for(const p of __EMBERWILD_COMPANION_TEST_API.plans){recruitCompanion(p.id);closeModal();}');return r;}
 
-test('All 20 built-in companions have three focused skills unlocking exactly at levels 1, 3 and 8',()=>{
+test('All 20 built-in companions have three focused skills unlocking exactly at class mastery 0, 2 and 7 (old LV1, 3, 8)',()=>{
  const r=game(),doc=json(r,'__initialCatalog');assert.equal(doc.companions.length,20);
- for(const p of doc.companions){assert.equal(p.core.length+p.support.length+p.passives.length,3);assert.deepEqual(p.core.map(i=>doc.classes[p.job].skills[i].requiredLevel),[1,3]);assert.equal(doc.passiveDefinitions.find(d=>d.id===p.passives[0]).requiredLevel,8);assert.equal(doc.classes[p.job].skills[p.core[0]].activation,'active');}
+ for(const p of doc.companions){assert.equal(p.core.length+p.support.length+p.passives.length,3);assert.deepEqual(p.core.map(i=>doc.classes[p.job].skills[i].requiredLevel),[0,2]);assert.equal(doc.passiveDefinitions.find(d=>d.id===p.passives[0]).requiredLevel,7);assert.equal(doc.classes[p.job].skills[p.core[0]].activation,'active');}
  for(const lv of [1,2,3,7,8,2,1]){
-  r.run(`playerHero().lv=${lv};syncParty();`);
+  r.run(`setPartyClassMasteryLevel(${lv}-1);`);
   for(const row of json(r,'party.members.slice(1).map(h=>{const p=__EMBERWILD_COMPANION_TEST_API.companionPlan(h);return {skills:p.core.map(i=>h.skills[i]),passives:__EMBERWILD_COMPANION_TEST_API.passivesFor(h).length};})')){assert.deepEqual(row.skills,[1,Number(lv>=3)]);assert.equal(row.passives,Number(lv>=8));}
  }
  const tank=doc.companions.find(p=>p.id===11),priest=doc.companions.find(p=>p.id===13);assert.deepEqual(tank.core.map(i=>doc.classes[0].skills[i].effect),['tauntRage','shield']);assert(priest.core.every(i=>doc.classes[3].skills[i].effect==='heal'));
@@ -29,7 +29,7 @@ test('All 20 built-in companions have three focused skills unlocking exactly at 
 // Skill system v1 retired per-companion skill switches: every unlocked companion skill is used automatically.
 // The three earlier toggle tests (casts, save validation, imported support/aura/induction toggles) covered that retired feature.
 test('Companion skill toggles are retired: calls are refused, the save is unchanged and unlocked skills stay in use',()=>{
- const r=game();r.run('playerHero().lv=8;syncParty();globalThis.h=partyMember(10);globalThis.p=__EMBERWILD_COMPANION_TEST_API.companionPlan(h);');
+ const r=game();r.run('setPartyClassMasteryLevel(7);globalThis.h=partyMember(10);globalThis.p=__EMBERWILD_COMPANION_TEST_API.companionPlan(h);');
  const before=r.run('JSON.stringify(packParty())'),learned=json(r,'p.core.map(i=>h.skills[i])');assert.deepEqual(learned,[1,1]);
  for(const code of ["setCompanionSkillEnabled(10,'core',p.core[0],false)","setCompanionSkillEnabled(10,'core',p.core[1],false)","setCompanionSkillEnabled(10,'passive',p.passives[0],false)","setCompanionSkillEnabled(10,'support',0,false)","setCompanionSkillEnabled(0,'core',0,false)","setCompanionSkillEnabled(10,'wrong',1,false)"]){
   assert.equal(r.run(code),false,code);assert.equal(r.run('JSON.stringify(packParty())'),before,code);

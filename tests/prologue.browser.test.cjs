@@ -62,7 +62,7 @@ for(const [label,width,height,job] of [['desktop',1280,800,0],['phone',390,780,3
   await read(page,'skills/action');await banner(page);assert.equal(await page.locator('#prologue-layer').isVisible(),false);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'the lesson banner does not widen the page');
   const skillTrail=await follow('skills');assert(skillTrail.some(x=>/裝入技能/.test(x)),'the skill dialog button is ringed: '+skillTrail.join(' → '));
-  assert.equal(await page.evaluate(()=>playerHero().skillLoadout.active[0]!==null),true);
+  assert.equal(await page.evaluate(()=>playerHero().skillLoadout.active[0]!==null),true,'loadout '+JSON.stringify(await page.evaluate(()=>({loadout:playerHero().skillLoadout,mastery:classMasteryLevel(playerHero()),learned:__EMBERWILD_SKILLS.system().definitions.filter(s=>s.jobs.includes(playerHero().job)&&__EMBERWILD_SKILLS.learned(playerHero(),s)).map(s=>s.id)})))+' trail '+skillTrail.join(' → '));
   await read(page,'practice/action');await banner(page);await follow('practice');
   await read(page,'helper/action');await fits(page,'helper');await page.click('#prologue-layer button:has-text("接納助手")');await banner(page);
   assert.equal(await page.evaluate(()=>tab),'roster');await follow('helper');assert.equal(await page.evaluate(()=>party.active.length),2);

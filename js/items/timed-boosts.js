@@ -2,7 +2,7 @@
 (function(root){
   'use strict';
   const TYPE='timedBoost',KINDS=['exp','drop'],MAX_STACK_MS=24*60*60*1000;
-  const LABELS={exp:'經驗值',drop:'掉寶率'};
+  const LABELS={exp:'精通經驗',drop:'掉寶率'};
   // Battle speed was removed: legacy speed tickets and their effects are dropped
   // from catalogs and saves without compensation.
   const REMOVED_KINDS=['speed2','speed4'],REMOVED_ITEM=/^speed[24]_/;

@@ -2,7 +2,7 @@
 // hides unlearned skills; mastery shows as colored icon bars, and the current class mastery sits in the exploration header.
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
-function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(3);closeModal();clearInterval(timer);playerHero().lv=12;save();');return r;}
+function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(3);closeModal();clearInterval(timer);setClassMasteryLevel(11,playerHero());save();');return r;}
 const modal=r=>r.run("$('modal').innerHTML");
 
 test('slot tabs list every slot and switch the right pane; unlearned skills can be hidden and shown again',()=>{

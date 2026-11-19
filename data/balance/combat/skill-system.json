@@ -6,33 +6,33 @@
       "initial": [
         {
           "skillId": "class0-initial0",
-          "level": 1
+          "masteryLevel": 0
         },
         {
           "skillId": "class0-initial1",
-          "level": 3
+          "masteryLevel": 2
         },
         {
           "skillId": "class0-initial2",
-          "level": 5
+          "masteryLevel": 4
         },
         {
           "skillId": "warrior-cleave-chain",
-          "level": 3
+          "masteryLevel": 2
         }
       ],
       "advanced": [
         {
           "skillId": "job0-core4",
-          "level": 15
+          "masteryLevel": 14
         },
         {
           "skillId": "job0-core5",
-          "level": 20
+          "masteryLevel": 19
         },
         {
           "skillId": "job0-support2",
-          "level": 15
+          "masteryLevel": 14
         }
       ],
       "slots": {
@@ -54,33 +54,33 @@
       "initial": [
         {
           "skillId": "class1-initial0",
-          "level": 1
+          "masteryLevel": 0
         },
         {
           "skillId": "class1-initial1",
-          "level": 3
+          "masteryLevel": 2
         },
         {
           "skillId": "class1-initial2",
-          "level": 5
+          "masteryLevel": 4
         },
         {
           "skillId": "mage-mana-cycle",
-          "level": 3
+          "masteryLevel": 2
         }
       ],
       "advanced": [
         {
           "skillId": "job1-core4",
-          "level": 15
+          "masteryLevel": 14
         },
         {
           "skillId": "job1-core5",
-          "level": 20
+          "masteryLevel": 19
         },
         {
           "skillId": "job1-support2",
-          "level": 15
+          "masteryLevel": 14
         }
       ],
       "slots": {
@@ -102,33 +102,33 @@
       "initial": [
         {
           "skillId": "class2-initial0",
-          "level": 1
+          "masteryLevel": 0
         },
         {
           "skillId": "class2-initial1",
-          "level": 3
+          "masteryLevel": 2
         },
         {
           "skillId": "class2-initial2",
-          "level": 5
+          "masteryLevel": 4
         },
         {
           "skillId": "archer-arrow-rain",
-          "level": 3
+          "masteryLevel": 2
         }
       ],
       "advanced": [
         {
           "skillId": "job2-core4",
-          "level": 15
+          "masteryLevel": 14
         },
         {
           "skillId": "job2-core5",
-          "level": 20
+          "masteryLevel": 19
         },
         {
           "skillId": "job2-support2",
-          "level": 15
+          "masteryLevel": 14
         }
       ],
       "slots": {
@@ -150,37 +150,37 @@
       "initial": [
         {
           "skillId": "class3-initial0",
-          "level": 1
+          "masteryLevel": 0
         },
         {
           "skillId": "class3-initial1",
-          "level": 3
+          "masteryLevel": 2
         },
         {
           "skillId": "class3-initial2",
-          "level": 5
+          "masteryLevel": 4
         },
         {
           "skillId": "priest-holy-prison",
-          "level": 3
+          "masteryLevel": 2
         }
       ],
       "advanced": [
         {
           "skillId": "job3-core4",
-          "level": 15
+          "masteryLevel": 14
         },
         {
           "skillId": "job3-core5",
-          "level": 20
+          "masteryLevel": 19
         },
         {
           "skillId": "job3-support2",
-          "level": 15
+          "masteryLevel": 14
         },
         {
           "skillId": "job3-support3",
-          "level": 15
+          "masteryLevel": 14
         }
       ],
       "slots": {
@@ -330,5 +330,6 @@
         ]
       }
     }
-  ]
+  ],
+  "masteryGateVersion": 1
 }

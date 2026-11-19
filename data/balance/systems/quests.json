@@ -79,8 +79,6 @@
           "description": "完成日常委託，協助營地補給。",
           "enabled": true,
           "weight": 1,
-          "minLevel": 1,
-          "maxLevel": 0,
           "mapIndices": [],
           "prerequisites": [],
           "objectives": [
@@ -99,7 +97,6 @@
             "ore": 0,
             "orePerTier": 0,
             "dust": 0,
-            "xp": 0,
             "randomGems": 0,
             "gemCounts": [
               0,
@@ -120,8 +117,6 @@
           "description": "開始任務後進行裝備作業，協助營地整備。",
           "enabled": true,
           "weight": 1,
-          "minLevel": 1,
-          "maxLevel": 0,
           "mapIndices": [],
           "prerequisites": [],
           "objectives": [
@@ -140,7 +135,6 @@
             "ore": 0,
             "orePerTier": 0,
             "dust": 0,
-            "xp": 0,
             "randomGems": 0,
             "gemCounts": [
               0,
@@ -161,8 +155,6 @@
           "description": "開始任務後進行裝備作業，協助營地整備。",
           "enabled": true,
           "weight": 1,
-          "minLevel": 1,
-          "maxLevel": 0,
           "mapIndices": [],
           "prerequisites": [],
           "objectives": [
@@ -181,7 +173,6 @@
             "ore": 0,
             "orePerTier": 0,
             "dust": 0,
-            "xp": 0,
             "randomGems": 0,
             "gemCounts": [
               0,
@@ -202,8 +193,6 @@
           "description": "完成日常委託，協助營地補給。",
           "enabled": true,
           "weight": 1,
-          "minLevel": 1,
-          "maxLevel": 0,
           "mapIndices": [],
           "prerequisites": [],
           "objectives": [
@@ -222,7 +211,6 @@
             "ore": 0,
             "orePerTier": 0,
             "dust": 0,
-            "xp": 0,
             "randomGems": 0,
             "gemCounts": [
               0,
@@ -243,8 +231,6 @@
           "description": "完成日常委託，協助營地補給。",
           "enabled": true,
           "weight": 1,
-          "minLevel": 1,
-          "maxLevel": 0,
           "mapIndices": [],
           "prerequisites": [],
           "objectives": [
@@ -263,7 +249,6 @@
             "ore": 0,
             "orePerTier": 0,
             "dust": 0,
-            "xp": 0,
             "randomGems": 0,
             "gemCounts": [
               0,
@@ -284,8 +269,6 @@
           "description": "完成日常委託，協助營地補給。",
           "enabled": true,
           "weight": 1,
-          "minLevel": 1,
-          "maxLevel": 0,
           "mapIndices": [],
           "prerequisites": [],
           "objectives": [
@@ -304,7 +287,6 @@
             "ore": 0,
             "orePerTier": 0,
             "dust": 0,
-            "xp": 0,
             "randomGems": 0,
             "gemCounts": [
               0,
@@ -345,8 +327,6 @@
         "description": "林間野狼的狼牙，是獵人交換皮革的憑證。",
         "enabled": true,
         "weight": 1,
-        "minLevel": 1,
-        "maxLevel": 0,
         "mapIndices": [],
         "prerequisites": [],
         "objectives": [
@@ -365,7 +345,6 @@
           "ore": 20,
           "orePerTier": 0,
           "dust": 0,
-          "xp": 0,
           "randomGems": 1,
           "gemCounts": [
             0,
@@ -386,8 +365,6 @@
         "description": "採集女巫符印，協助營地研究暮色詛咒。",
         "enabled": true,
         "weight": 1,
-        "minLevel": 1,
-        "maxLevel": 0,
         "mapIndices": [],
         "prerequisites": [],
         "objectives": [
@@ -406,7 +383,6 @@
           "ore": 55,
           "orePerTier": 0,
           "dust": 0,
-          "xp": 0,
           "randomGems": 1,
           "gemCounts": [
             0,
@@ -427,8 +403,6 @@
         "description": "取得星隕監視者的稜鏡，準備迎戰噬日者。",
         "enabled": true,
         "weight": 1,
-        "minLevel": 1,
-        "maxLevel": 0,
         "mapIndices": [],
         "prerequisites": [],
         "objectives": [
@@ -447,7 +421,6 @@
           "ore": 120,
           "orePerTier": 0,
           "dust": 0,
-          "xp": 0,
           "randomGems": 1,
           "gemCounts": [
             0,

@@ -15,9 +15,8 @@
    Use (ticket items live in the inventory's item tab; one save for the whole batch)
    - Claiming the ticket mail moves the tickets into the item inventory. The item shows only a short
      description; earnings are calculated when the player chooses to use it, then mailed.
-   - Projected hero level > region max level: only the region's overlevelVoucherGold (balance editor).
-     The projection includes XP still waiting in unclaimed voucher mail, and is re-checked per ticket.
-   - Otherwise: the locked XP and gold, plus item drops rolled by the existing per-enemy loot rules
+   - v0.161: character levels were removed, so there is no over-level rule and no XP; old XP attachments claim to nothing.
+   - Each ticket: the locked gold, plus item drops rolled by the existing per-enemy loot rules
      (rollEnemyItemLoot: base ore, configured drop table, ether) into a scratch inventory and mailed.
      Gear needs free bag space when the item mail is claimed, as with any other mail.
    - Using tickets never runs inside a combat reward, so it never enters battle or idle statistics, kill
@@ -31,7 +30,6 @@
  const num=(v,min=0,max=1e15)=>Number.isFinite(v)?Math.max(min,Math.min(max,v)):0;
  const modeName=d=>MODES?.[d]?.name||['普通','困難','地獄'][d]||'';
  function mapRow(map){return typeof worldMapConfig==='function'?worldMapConfig(map):null;}
- function overlevelGold(map){const m=mapRow(map);return Number.isFinite(m?.overlevelVoucherGold)?m.overlevelVoucherGold:(globalThis.defaultOverlevelVoucherGold?.(MAPS[map]?.min||1)??0);}
  function eligibleMap(map){return Number.isInteger(map)&&map>=0&&map<MAPS.length&&!(typeof isFinalMap==='function'&&isFinalMap(map));}
  // Price of one consumed unit, using the shop definitions (legacy potions are the standard heal potion).
  function unitPrice(key){
@@ -97,7 +95,7 @@
   if(q.remainder)l.remainders[key]=q.remainder;else delete l.remainders[key];
   if(!q.tickets)return 0;
   const mailbox=party.mailbox??=EmberwildAchievements.mailboxDefaults(),id=++mailbox.serial;
-  mailbox.messages.push({id,rewardKey:'voucher-'+id,subject:`${v.mapName} ${v.minutes} 分鐘收益券 ×${q.tickets}`,body:`離線探索改領收益券。每張代表在 ${v.mapName} 探索 ${v.minutes} 分鐘的收益。領取後放入背包的道具欄；使用時才計算經驗、金幣與道具，收益寄到信箱。主角等級超過 Lv.${v.levelMax} 後，此券只能兌換固定金幣 ${overlevelGold(map).toLocaleString()}。`,at:Date.now(),read:false,claimed:false,
+  mailbox.messages.push({id,rewardKey:'voucher-'+id,subject:`${v.mapName} ${v.minutes} 分鐘收益券 ×${q.tickets}`,body:`離線探索改領收益券。每張代表在 ${v.mapName} 探索 ${v.minutes} 分鐘的收益。領取後放入背包的道具欄；使用時才計算金幣與道具，收益寄到信箱。`,at:Date.now(),read:false,claimed:false,
    attachments:[{type:'regionVoucher',name:v.mapName+' '+v.minutes+' 分鐘收益券',quantity:q.tickets,voucher:v}]});
   return q.tickets;
  }
@@ -141,7 +139,7 @@
  function claimOwnMail(ids){
   const messages=(party?.mailbox?.messages||[]).filter(m=>ids.includes(m.id)&&['ticket','gold'].includes(mailKind(m))&&!m.claimed);if(!messages.length)return null;
   if(globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
-  const h=party.members[0],progressKeys=['lv','xp','xpFraction','hp','won','advanced','skills','active','procSlots','supportLevels','supportSlots','skillLoadout','passiveEnabled','equipped','sockets','gems','stats','ap','sp'];
+  const h=party.members[0],progressKeys=['hp','won','advanced','skills','active','procSlots','supportLevels','supportSlots','skillLoadout','passiveEnabled','equipped','sockets','gems','stats','ap','sp'];
   const before={vouchers:copy(ledger()),mailbox:copy(party.mailbox),gold:h.gold,build:copy(party.buildSystem),
    members:party.members.map(member=>({member,progress:Object.fromEntries(progressKeys.filter(key=>Object.hasOwn(member,key)).map(key=>[key,copy(member[key])]))}))};
   function restoreClaim(){
@@ -154,7 +152,8 @@
   try{for(const m of messages){
    for(const a of m.attachments){
     if(a.type==='regionVoucher'){addStack(a.voucher,a.quantity);out.tickets+=a.quantity;}
-    else if(a.type==='voucherXp'){withHero(h,()=>awardXP(a.quantity));out.xp+=a.quantity;}
+    // XP attachments from before v0.161 are claimed without effect: character XP no longer exists.
+    else if(a.type==='voucherXp'){}
     else if(a.type==='voucherGold'){h.gold+=a.quantity;out.gold+=a.quantity;}
    }
    m.claimed=true;m.read=true;
@@ -201,29 +200,22 @@
    return {items,gear:h.bag.slice()};
   }finally{note=noteBase;Object.assign(h,saved);party.etherBossClaims=claims;}
  }
- // XP and level the hero will have after claiming every unclaimed voucher XP mail.
- function projectedHero(){
-  const h=party.members[0];let lv=h.lv,xp=h.xp+(h.xpFraction||0);const cap=typeof levelCap==='function'?levelCap(h):Infinity;
-  const pending=(party.mailbox?.messages||[]).filter(m=>mailKind(m)==='gold'&&!m.claimed).flatMap(m=>m.attachments).filter(a=>a.type==='voucherXp').reduce((n,a)=>n+a.quantity,0);
-  const p={lv,xp,cap,add(amount){if(this.lv>=this.cap)return;this.xp+=amount;while(this.lv<this.cap&&this.xp>=need(this.lv)){this.xp-=need(this.lv);this.lv++;}}};p.add(pending);return p;
- }
- // Per-ticket plan: the projected level is re-checked before every ticket, including XP still in the mailbox.
+ // Per-ticket plan. v0.161: vouchers give no XP (character levels were removed) and have no over-level rule.
  function plan(requests){
-  const l=ledger(),p=projectedHero(),out={tickets:0,full:0,overlevel:0,xp:0,gold:0,potionCost:0,items:{},gear:0,rows:[],levelBefore:p.lv,levelAfter:p.lv,rolls:[]};
+  const l=ledger(),out={tickets:0,full:0,overlevel:0,xp:0,gold:0,potionCost:0,items:{},gear:0,rows:[],rolls:[]};
   const remaining=new Map(l.stacks.map(s=>[s.id,s.count]));
   for(const r of requests||[]){
    const s=l.stacks.find(x=>x.id===r.id),n=Math.min(Number(r.count)||0,remaining.get(r.id)||0);if(!s||!Number.isSafeInteger(n)||n<1)continue;
    // Repeated requests share the same stock limit before rewards are calculated.
    remaining.set(s.id,remaining.get(s.id)-n);
-   const row={id:s.id,name:s.mapName,levelMax:s.levelMax,count:n,full:0,overlevel:0,overGold:overlevelGold(s.map)};
+   const row={id:s.id,name:s.mapName,levelMax:s.levelMax,count:n,full:0,overlevel:0};
    for(let i=0;i<n;i++){
-    if(p.lv>s.levelMax){row.overlevel++;out.gold+=row.overGold;continue;}
-    row.full++;out.xp+=s.xp;out.gold+=s.gold;out.potionCost+=s.potionCost;out.gear+=s.expectedGear;out.rolls.push(s);
-    for(const [k,c] of Object.entries(s.expectedItems))out.items[k]=(out.items[k]||0)+c;p.add(s.xp);
+    row.full++;out.gold+=s.gold;out.potionCost+=s.potionCost;out.gear+=s.expectedGear;out.rolls.push(s);
+    for(const [k,c] of Object.entries(s.expectedItems))out.items[k]=(out.items[k]||0)+c;
    }
    out.tickets+=n;out.full+=row.full;out.overlevel+=row.overlevel;out.rows.push(row);
   }
-  out.levelAfter=p.lv;return out;
+  return out;
  }
  function preview(requests){if(!party)return null;const {rolls,...rest}=plan(requests);return rest;}
  const catalogueKey=k=>{const [kind,id]=k.split(/:(.+)/);return kind==='item'&&id==='legacy-potion'?['item','heal_standard']:[kind,id];};
@@ -236,13 +228,13 @@
   try{
    const loot=rollLoot(p.rolls),regions=p.rows.map(r=>r.name).join('、');
    for(const r of p.rows)l.stacks.find(s=>s.id===r.id).count-=r.count;l.stacks=l.stacks.filter(s=>s.count>0);
-   const subject=`收益券收益：${regions}`.slice(0,90),note=`使用 ${p.tickets} 張收益券（${regions}）${p.overlevel?`，其中 ${p.overlevel} 張超過地區等級，只兌換固定金幣`:''}。`;
+   const subject=`收益券收益：${regions}`.slice(0,90),note=`使用 ${p.tickets} 張收益券（${regions}）。`;
    const mails=[];
-   const currency=[p.xp>0?{type:'voucherXp',name:'經驗值',quantity:Math.round(p.xp)}:null,p.gold>0?{type:'voucherGold',name:'金幣',quantity:Math.round(p.gold)}:null].filter(Boolean);
+   const currency=[p.gold>0?{type:'voucherGold',name:'金幣',quantity:Math.round(p.gold)}:null].filter(Boolean);
    if(currency.length)mails.push(pushMail('voucher-gold-',subject+' · 經驗與金幣',note+'領取後經驗與金幣直接入帳。',currency));
    const goods=[...Object.entries(loot.items).map(([k,n])=>{const [kind,key]=catalogueKey(k);return {type:'catalogue',kind,key,name:itemName(k),quantity:n};}),...loot.gear.map(g=>({type:'gear',name:equipmentDisplayName(g),quantity:1,gear:g}))];
    for(let i=0;i<goods.length;i+=6)mails.push(pushMail('voucher-items-',subject+` · 道具${goods.length>6?`（${i/6+1}/${Math.ceil(goods.length/6)}）`:''}`,note+'領取後道具放入背包；裝備需要背包空位。',goods.slice(i,i+6)));
-   const total={tickets:p.tickets,overlevel:p.overlevel,xp:Math.round(p.xp),gold:Math.round(p.gold),gear:loot.gear.length,items:loot.items,regions:p.rows.map(r=>r.name),mails:mails.length,levelBefore:p.levelBefore,levelAfter:p.levelAfter};
+   const total={tickets:p.tickets,overlevel:p.overlevel,xp:Math.round(p.xp),gold:Math.round(p.gold),gear:loot.gear.length,items:loot.items,regions:p.rows.map(r=>r.name),mails:mails.length,levelBefore:0,levelAfter:0};
    l.history.push({at:Date.now(),tickets:total.tickets,overlevel:total.overlevel,xp:total.xp,gold:total.gold,items:total.items,gear:total.gear,regions:total.regions});if(l.history.length>RULES.historyLimit)l.history.splice(0,l.history.length-RULES.historyLimit);
    if(save()!==true)throw Error('無法儲存使用結果');
    return total;
@@ -264,7 +256,7 @@
   const mail=MAIL_VIRTUAL.exec(key);
   if(mail){const name=regionName(Number(mail[1]),Number(mail[2])),minutes=Number(mail[3]||30);return {name:name+' '+minutes+' 分鐘收益券',glyph:'ticket',description:`記錄在 ${name} 探索 ${minutes} 分鐘的收益。領取後放入背包的道具欄，使用時才計算收益。`};}
   const m=VIRTUAL.exec(key),s=m&&party?ledger().stacks.find(x=>x.id===m[1]):null;if(!s)return null;
-  return {name:s.mapName+' '+s.minutes+' 分鐘收益券',glyph:'ticket',description:`記錄在 ${s.mapName} 探索 ${s.minutes} 分鐘的收益。使用時計算經驗、金幣與道具，收益寄到信箱。`,
+  return {name:s.mapName+' '+s.minutes+' 分鐘收益券',glyph:'ticket',description:`記錄在 ${s.mapName} 探索 ${s.minutes} 分鐘的收益。使用時計算金幣與道具，收益寄到信箱。`,
    detail:()=>`<p>持有 ${fmt(s.count)} 張</p>`,
    actions:()=>`<div class="actions"><button onclick="closeItemDetails();useRegionVouchers('${esc(s.id)}',1)">使用</button>${s.count>1?`<button onclick="closeItemDetails();useRegionVouchers('${esc(s.id)}',${s.count})">全部使用（${fmt(s.count)}）</button>`:''}</div>`};
  };
@@ -280,10 +272,10 @@
  globalThis.useRegionVouchers=function(target,count){
   if(!party)return false;const requests=target==='all'?ledger().stacks.map(s=>({id:s.id,count:s.count})):[{id:target,count:Number(count)||1}],p=preview(requests);if(!p?.tickets)return false;
   pendingRequests=requests;const modal=detachModal();
-  modal.innerHTML=`<h2>使用收益券 · ${fmt(p.tickets)} 張</h2>${p.rows.map(r=>`<p>${esc(r.name)}：${fmt(r.count)} 張${r.overlevel?` · <b>${fmt(r.overlevel)} 張超過地區等級（Lv.${r.levelMax}）</b>，每張只兌換固定 ${fmt(r.overGold)} 金幣`:''}</p>`).join('')}
-   <h3>預估收益</h3><p>經驗 ${fmt(p.xp)}${p.levelAfter>p.levelBefore?`（Lv.${p.levelBefore} → 約 Lv.${p.levelAfter}）`:''} · 金幣 ${fmt(p.gold)}${p.potionCost?`（已扣除藥水費用 ${fmt(p.potionCost)}）`:''}</p>
+  modal.innerHTML=`<h2>使用收益券 · ${fmt(p.tickets)} 張</h2>${p.rows.map(r=>`<p>${esc(r.name)}：${fmt(r.count)} 張</p>`).join('')}
+   <h3>預估收益</h3><p>金幣 ${fmt(p.gold)}${p.potionCost?`（已扣除藥水費用 ${fmt(p.potionCost)}）`:''}</p>
    ${p.full?`<p>裝備 約 ${Math.round(p.gear*10)/10} 件</p><h3>道具（預估）</h3>${itemsHTML(p.items,true)}<p class="small">確認後依地區掉落機率實際抽取道具與裝備。</p>`:'<p>全部超過地區等級，只兌換固定金幣，不發放經驗與道具。</p>'}
-   <p class="small">收益寄到信箱，領取後入帳。每張使用前都會依目前等級（含信箱中尚未領取的收益券經驗）判斷是否超過地區等級上限。</p>
+   <p class="small">收益寄到信箱，領取後入帳。</p>
    <div class="actions"><button type="button" class="primary" onclick="confirmRegionVouchers()">確認使用</button><button type="button" onclick="closeModal()">取消</button></div>`;
   if(!modal.open)modal.showModal();return true;
  };
@@ -291,11 +283,11 @@
   const requests=pendingRequests;pendingRequests=null;if(!requests)return false;
   const t=redeem(requests);if(!t){closeModal();return false;}
   const modal=detachModal();
-  modal.innerHTML=`<h2>收益已寄到信箱</h2><p>使用 ${fmt(t.tickets)} 張收益券${t.overlevel?`（其中 ${fmt(t.overlevel)} 張只兌換固定金幣）`:''}，收益分為 ${t.mails} 封郵件。</p><p>經驗 ${fmt(t.xp)} · 金幣 ${fmt(t.gold)} · 裝備 ${fmt(t.gear)} 件</p><h3>道具</h3>${itemsHTML(t.items,false)}<div class="actions"><button type="button" class="primary" onclick="openUtilityPanel('mailbox')">前往信箱</button><button type="button" onclick="closeModal()">關閉</button></div>`;
+  modal.innerHTML=`<h2>收益已寄到信箱</h2><p>使用 ${fmt(t.tickets)} 張收益券，收益分為 ${t.mails} 封郵件。</p><p>金幣 ${fmt(t.gold)} · 裝備 ${fmt(t.gear)} 件</p><h3>道具</h3>${itemsHTML(t.items,false)}<div class="actions"><button type="button" class="primary" onclick="openUtilityPanel('mailbox')">前往信箱</button><button type="button" onclick="closeModal()">關閉</button></div>`;
   if(!modal.open)modal.showModal();render();return true;
  };
   // ---------------------------------------------------------------- save
  const createBase=createParty;createParty=function(...args){const p=createBase.apply(this,args);p.regionVouchers=emptyLedger();return p;};
  const validatePartyBase=validateParty;validateParty=function(data){const p=validatePartyBase(data);p.regionVouchers=normalize(data?.regionVouchers);return p;};
- globalThis.EmberwildRegionVouchers={RULES,inventorySlots,normalize,ticketFor,available,quote,issue,redeem,preview,projectedHero,overlevelGold,unitPrice,ledger:()=>party?copy(ledger()):null};
+ globalThis.EmberwildRegionVouchers={RULES,inventorySlots,normalize,ticketFor,available,quote,issue,redeem,preview,unitPrice,ledger:()=>party?copy(ledger()):null};
 })();

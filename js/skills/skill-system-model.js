@@ -47,6 +47,8 @@
       if(passive)Object.assign(sk,{kind:'buff',effects:[],eventPassive:job===0?{event:'kill',power:.8,maxAttacks:3}:{event:'enemyDeath',reduction:1,cooldown:2}});
       else if(job===2)Object.assign(sk,{commonEffectKeys:['target'],targetLimit:false});
       else Object.assign(sk,{statusId:'holy-prison-mark',statusTarget:'enemies',statusMaxTargets:3});
+      // A document already on class-mastery gates gets the converted values (LV3 -> mastery 2).
+      if(s.masteryGateVersion===1){sk.requiredLevel=2;sk.sources=[{type:'class',masteryLevel:2}];s.definitions.push(sk);s.classRules.find(r=>r.job===job).initial.push({skillId:sk.id,masteryLevel:2});continue;}
       s.definitions.push(sk);s.classRules.find(r=>r.job===job).initial.push({skillId:sk.id,level:3});
     }
     s.clearingSkillsVersion=1;return s;
@@ -66,14 +68,27 @@
       if(sk.eventPassive){const e=sk.eventPassive;if(sk.type!=='passive'||!['kill','enemyDeath'].includes(e.event)||e.event==='kill'&&(!finite(e.power,0,100)||!integer(e.maxAttacks,1,99))||e.event==='enemyDeath'&&(!integer(e.reduction,0,99)||!integer(e.cooldown,0,99)))fail('事件型被動設定無效：'+sk.id);}
       if(sk.systemEffect!==undefined&&!['taunt','guard','slow','regen'].includes(sk.systemEffect))fail('未知特殊效果：'+sk.id);
       if(sk.systemEffect&&(!integer(sk.duration,1,999)||!finite(sk.power,0,1)))fail('特殊效果持續時間或倍率無效：'+sk.id);
-      for(const src of sk.sources)if(src.level!==undefined&&!integer(src.level,1,999))fail('技能取得等級無效：'+sk.id);
+      for(const src of sk.sources)if(src.level!==undefined||src.masteryLevel!==undefined&&!integer(src.masteryLevel,0,100))fail('技能取得精通等級無效：'+sk.id);
       ids.set(sk.id,sk);positions.add(`${a.job}:${a.kind}:${a.index}`);
     }
     const classJobs=new Set();
     for(const rule of s.classRules){
       if(!integer(rule.job,0,3)||classJobs.has(rule.job))fail('職業設定重複');classJobs.add(rule.job);
-      for(const k of ['initial','advanced']){if(!Array.isArray(rule[k]))fail('職業技能清單無效');for(const row of rule[k])if(!ids.has(row.skillId)||!ids.get(row.skillId).jobs.includes(rule.job)||!integer(row.level,1,999))fail('職業引用不存在或等級無效：'+row.skillId);}
+      for(const k of ['initial','advanced']){if(!Array.isArray(rule[k]))fail('職業技能清單無效');for(const row of rule[k])if(!ids.has(row.skillId)||!ids.get(row.skillId).jobs.includes(rule.job)||row.level!==undefined||!integer(row.masteryLevel,0,100))fail('職業引用不存在或精通等級無效：'+row.skillId);}
       for(const stage of ['first','advanced'])for(const type of ['active','proc','support'])if(!integer(rule.slots?.[stage]?.[type],0,type==='active'?3:2))fail('職業槽位超出上限');
+      // Skill tree (v0.161): optional prerequisites (skills of the same class tree) and display position per node.
+      const nodes=[...rule.initial,...rule.advanced],inTree=new Set(nodes.map(r=>r.skillId));
+      if(inTree.size!==nodes.length)fail('同一技能在職業技能樹出現多次：'+rule.job);
+      for(const row of nodes){
+        if(row.prerequisites!==undefined&&(!Array.isArray(row.prerequisites)||row.prerequisites.length>8||new Set(row.prerequisites).size!==row.prerequisites.length||row.prerequisites.some(id=>id===row.skillId||!inTree.has(id))))fail('技能樹前置技能無效：'+row.skillId);
+        if(row.position!==undefined&&(!row.position||typeof row.position!=='object'||!integer(row.position.col,0,7)||!integer(row.position.row,0,40)))fail('技能樹位置無效：'+row.skillId);
+      }
+      const byId=new Map(nodes.map(r=>[r.skillId,r])),done=new Set(),walking=new Set();
+      const visit=id=>{if(walking.has(id))fail('技能樹前置技能形成循環：'+id);if(done.has(id))return;walking.add(id);for(const p of byId.get(id)?.prerequisites||[])visit(p);walking.delete(id);done.add(id);};
+      for(const id of byId.keys())visit(id);
+      // A prerequisite that needs more mastery than its dependant, or that sits in the second-class list under a
+      // first-class node, would hold the dependant behind a later gate than its own; such trees are rejected.
+      for(const row of nodes)for(const p of row.prerequisites||[]){const q=byId.get(p);if(rule.advanced.includes(q)&&rule.initial.includes(row))fail('一轉技能不能以二轉技能為前置：'+row.skillId);}
     }
     const e=s.equipment;if(!e||Object.hasOwn(e,'pool')||Object.hasOwn(e,'chanceByDifficulty'))fail('裝備技能只能來自指定裝備');
     if(e.formRules!==undefined&&(!Array.isArray(e.formRules)||e.formRules.some(r=>!safe(r.formId)||r.dropOnly!==undefined&&typeof r.dropOnly!=='boolean'||r.dropOnly&&!r.skillId||r.skillId&&!ids.get(r.skillId)?.sources.some(x=>x.type==='equipment'))))fail('固定裝備技能設定無效');
@@ -87,7 +102,7 @@
     return s;
   }
   function project(d){
-    const s=validate(d.skillSystem);
+    const s=validate(migrateMasteryGates(d.skillSystem));
     const forms=new Set();
     for(const [job,slots] of (d.equipmentForms||[]).entries())for(const [slot,rows] of slots.entries())for(const [i,row] of rows.entries())forms.add(row.id||`job${job}-slot${slot}-form${i}`);
     const rules=s.equipment.formRules||[];
@@ -104,14 +119,29 @@
       if(kind==='passive'){d.passiveDefinitions[index]=row;continue;}
       const list=kind==='core'?d.classes[job].skills:d.supportSkills[job];
       if(index>list.length)throw Error('技能引擎對照不可跳號：'+sk.id);
-      if(kind==='core'){row.activation=type;row.requiredLevel??=1;row.requiresAdvanced=false;row.powerPerLevel??=0;if(type==='proc'){row.procChancePerLevel??=0;row.procBaseChance??=.245;}}
-      else row.level??=1;
+      if(kind==='core'){row.activation=type;row.requiredLevel??=0;row.requiresAdvanced=false;row.powerPerLevel??=0;if(type==='proc'){row.procChancePerLevel??=0;row.procBaseChance??=.245;}}
+      else row.level??=0;
       list[index]=row;
       }
     }
     return d;
   }
-  function normalizeDocument(input){const d=copy(input);d.skillSystem??=fromLegacy(d);if(!d.skillSystem.clearingSkillsVersion)addClearingSkills(d.skillSystem,d);return project(d);}
+  // v0.161 removed character levels. Skill gates that were character levels become class mastery levels once:
+  // a requirement of LV L becomes class mastery L-1 (LV1 means no requirement). Rows in classRules keep that number as
+  // masteryLevel; skills keep it in requiredLevel (support skills in level). masteryGateVersion marks the conversion.
+  const MASTERY_GATE_VERSION=1,toMastery=v=>Math.max(0,Math.floor(Number(v)||1)-1);
+  function migrateMasteryGates(s){
+    // Rows or sources written in the old shape after the conversion (an older editor, a test fixture) still carry `level`.
+    if(s.masteryGateVersion===MASTERY_GATE_VERSION){for(const rule of s.classRules||[])for(const k of ['initial','advanced'])for(const row of rule[k]||[])if(row.level!==undefined&&row.masteryLevel===undefined){row.masteryLevel=toMastery(row.level);delete row.level;}for(const sk of s.definitions||[])for(const src of sk.sources||[])if(src.level!==undefined&&src.masteryLevel===undefined){src.masteryLevel=toMastery(src.level);delete src.level;}return s;}
+    for(const sk of s.definitions){
+      if(sk.requiredLevel!==undefined)sk.requiredLevel=toMastery(sk.requiredLevel);
+      if(sk.type==='support'&&sk.level!==undefined)sk.level=toMastery(sk.level);
+      for(const src of sk.sources||[])if(src.level!==undefined){src.masteryLevel=toMastery(src.level);delete src.level;}
+    }
+    for(const rule of s.classRules)for(const k of ['initial','advanced'])for(const row of rule[k]||[])if(row.level!==undefined){row.masteryLevel=toMastery(row.level);delete row.level;}
+    s.masteryGateVersion=MASTERY_GATE_VERSION;return s;
+  }
+  function normalizeDocument(input){const d=copy(input);d.skillSystem??=fromLegacy(d);if(!d.skillSystem.clearingSkillsVersion)addClearingSkills(d.skillSystem,d);migrateMasteryGates(d.skillSystem);return project(d);}
   function slots(system,job,advanced){return copy(system.classRules.find(r=>r.job===job)?.slots[advanced?'advanced':'first']||{active:3,proc:1,support:1});}
   function gear(g,{legacy=false,source='drop',system,random=Math.random}={}){
     if(!g||g.type==='companionToken')return g;
@@ -138,5 +168,5 @@
     const ids=new Set();for(const member of members)for(const g of member.bag||[]){if(ids.has(g.id))throw Error('重複裝備 ID：'+g.id);ids.add(g.id);gear(g,{legacy:true,source:'legacy',system});}
     d.skillSystemVersion=VERSION;return d;
   }
-  return {VERSION,copy,adapters,adapterFor,types,sources,emptyConditions,fromLegacy,clearingStatus,addClearingSkills,validate,project,normalizeDocument,slots,gear,migrateSave};
+  return {VERSION,MASTERY_GATE_VERSION,migrateMasteryGates,copy,adapters,adapterFor,types,sources,emptyConditions,fromLegacy,clearingStatus,addClearingSkills,validate,project,normalizeDocument,slots,gear,migrateSave};
 });

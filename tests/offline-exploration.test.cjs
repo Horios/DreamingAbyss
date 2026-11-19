@@ -59,134 +59,6 @@ test('25-minute one-action victories respect the shared action floor and never d
   assert.deepEqual(offline.errors,[]);
  }
 });
-test('offline drop chances apply the published level-gap rules to ordinary loot without double-penalizing equipment',()=>{
- const r=game(),kinds=['sourceMaterial','material','ore','dust','gem','potion','item','token'];
- const chance=(type,kind='normal')=>r.run(`__EMBERWILD_DROP_TEST.effectiveDropChance({type:"${type}",chanceByDifficulty:[1,1,1]},{kind:"${kind}",lv:5,region:0,difficulty:0},0)`);
- for(const [lv,expected] of [[5,1],[10,1],[15,.5],[20,.2],[21,.1]]){
-  r.run('party.members[0].lv='+lv);
-  for(const kind of ['normal','elite'])for(const type of kinds)assert(Math.abs(chance(type,kind)-expected)<1e-10,`LV${lv} ${kind} ${type}: expected ${expected}`);
- }
- r.run('party.members[0].lv=15');
- for(const type of ['gear','gearLegendary','equipment','bossGear'])assert.equal(chance(type),0,'equipment only uses its existing XP-level-gap rule: '+type);
- for(const type of kinds)assert.equal(chance(type,'boss'),1,'boss loot remains exempt from common-item penalty: '+type);
- assert.deepEqual(r.errors,[]);
-});
-test('offline low-level farm reduces gem, potion and token drops along with XP and money',async()=>{
- const r=game();
- r.run(`state.lv=20;syncParty();refillParty();
-  const sources=GAMEPLAY_SETTINGS.monsters.catalog.filter(m=>m.mapIndex===0&&m.kind==='normal').map(m=>m.id);
-  GAMEPLAY_SETTINGS.drops.entries=['gem','potion','token'].map(type=>({
-   id:'offline-gap-'+type,name:type,key:type==='token'?'berserk':'random',
-   type,enabled:true,kinds:['normal','elite'],sources,chanceByDifficulty:[1,1,1],quantityMin:1,quantityMax:1
-  }));
-  globalThis.monsterGoldAwards=[];
-  const baseEnemyGold=EmberwildProgression.enemyGold;
-  EmberwildProgression.enemyGold=function(...args){
-   const amount=baseEnemyGold(...args);
-   monsterGoldAwards.push({playerLevel:args[4],enemyLevel:args[1],amount});
-   return amount;
-  };
-  Math.random=()=>.5;foes.forEach(e=>e.kind='elite');save();`);
- const before=json(r,'({gems:state.gems,bag:state.bag.length,potions:state.potions,ore:state.ore,ether:state.materials["以太鍛鐵"]||0})');
- await settle(r,60000);
- const rec=json(r,'party.offlineExploration.receipt');
- assert(rec?.kills>0,'high-level party must actually defeat low-level enemies');
- assert.equal(rec.xp,0,'10+ levels above monsters earns zero XP');
- const monsterGold=json(r,'monsterGoldAwards');
- assert(monsterGold.length>0,'test must verify actual monster reward calculations');
- assert(monsterGold.every(row=>row.amount===0),'10+ levels above monsters earn zero monster gold: '+JSON.stringify(monsterGold));
- // The offline receipt can also count rewards from other systems, so its
- // aggregate gold is not a reliable measure of monster gold alone.
- assert.deepEqual(json(r,'state.gems'),before.gems,'discounted gem odds must be used by offline loot rolls');
- assert.equal(r.run('state.bag.length'),before.bag,'discounted token odds must be used by offline loot rolls');
- assert.equal(r.run('state.potions'),before.potions,'discounted potion odds must be used by offline loot rolls');
- assert.equal(r.run('state.ore'),before.ore,'overlevelled elite enemies must not guarantee base iron');
- assert.equal(r.run('state.materials["以太鍛鐵"]||0'),before.ether,'overlevelled elite ether must use common drop penalty');
- assert.deepEqual(r.errors,[]);
-});
-test('elite ether level penalty is applied at the kill and a first-clear BOSS reward remains guaranteed',()=>{
- const r=game();
- r.run(`state.lv=20;syncParty();Math.random=()=>.005;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
- assert.equal(r.run('state.materials["以太鍛鐵"]||0'),0,'a high-level party must not get the undiscounted elite chance');
- assert.equal(r.run('etherDropChance({kind:"elite",region:0})'),r.run('GAMEPLAY_SETTINGS.rewards.ether.eliteBase'),'elite ether chance must match published balance settings before the level-gap penalty');
- r.run(`state.lv=5;syncParty();Math.random=()=>0;awardEther({kind:'elite',lv:5,region:0,difficulty:0});`);
- assert.equal(r.run('generalDropLevelGapFactor({type:"material"},{kind:"elite",lv:5,region:0})'),1,'same-level elite material odds are unpenalized');
- assert.equal(r.run('state.materials["以太鍛鐵"]||0'),1,'same-level elite retains the configured base chance');
- r.run(`state.lv=20;syncParty();awardEther({kind:'boss',lv:5,region:0,difficulty:0});`);
- assert(r.run('state.materials["以太鍛鐵"]||0')>=2,'BOSS first-clear materials remain guaranteed');
- assert.deepEqual(r.errors,[]);
-});
-test('offline kills level up immediately and recalculate later monster XP, gold and drop penalties in the same encounter',async()=>{
- const r=game();r.run("party.huntingMode='group';spawnGroup();");
- r.run(`
-   state.lv=15;state.xp=need(15)-1;state.xpFraction=0;syncParty();refillParty();
-   foes=foes.slice(0,3);
-   foes.forEach((e,i)=>{e.lv=[15,13,10][i];e.kind='normal';e.hp=1;e.maxhp=1;e.rewarded=false;});
-   enemy=foes[0];state.active=[];state.supportSlots=[];
-   castPartySkill=()=>false;castSupport=()=>false;
-   initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];
-   performHeroBasic=()=>{for(const e of foes)e.hp=0;};
-   globalThis.levelPenaltyTrace=[];globalThis.levelGoldCalls=[];
-   const baseEnemyGold=EmberwildProgression.enemyGold;
-   EmberwildProgression.enemyGold=function(...args){
-    const amount=baseEnemyGold(...args);
-    levelGoldCalls.push({playerLevel:args[4],enemyLevel:args[1],amount});
-    return amount;
-   };
-   const originalReward=rewardGroupKill;
-   rewardGroupKill=function(e){
-    const h=party.members[0],before=h.lv,beforeXp=h.xp+(h.xpFraction||0),beforeGold=h.gold,
-     expectXp=EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),heroes().length),
-     expectGold=baseEnemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,before),
-     gearChance=__EMBERWILD_DROP_TEST.effectiveDropChance({type:'gear',chanceByDifficulty:[1,1,1]},e,0),
-     materialChance=__EMBERWILD_DROP_TEST.effectiveDropChance({type:'sourceMaterial',chanceByDifficulty:[1,1,1]},e,0);
-    const goldCallStart=levelGoldCalls.length;
-    const out=originalReward(e);
-    levelPenaltyTrace.push({before,after:h.lv,enemyLv:e.lv,expectXp,actualXp:h.xp+(h.xpFraction||0)-beforeXp+(h.lv>before?need(before):0),
-     expectGold,actualGold:h.gold-beforeGold,goldCalls:levelGoldCalls.slice(goldCallStart),gearChance,materialChance});
-    if(foes.every(x=>x.rewarded))running=false;
-    return out;
-   };
-   nextActionAt=Date.now()+1500;save();
- `);
- await settle(r,7000);
- const rows=json(r,'levelPenaltyTrace');
- assert.equal(rows.length,3,'all three defeated monsters must settle individually');
- assert.deepEqual(rows.map(x=>[x.before,x.after,x.enemyLv]),[[15,16,15],[16,16,13],[16,16,10]]);
- for(const row of rows){
-  assert(Math.abs(row.actualXp-row.expectXp)<1e-7,'XP penalty must be computed from the current level: '+JSON.stringify(row));
-  assert.deepEqual(row.goldCalls,[{playerLevel:row.before,enemyLevel:row.enemyLv,amount:row.expectGold}],
-   'the monster-gold calculation must use the current level exactly once');
- }
- assert.deepEqual(rows.map(x=>x.gearChance),[1,.5,.2]);
- assert.deepEqual(rows.map(x=>Math.round(x.materialChance*100)/100),[1,1,.9]);
- assert.equal(r.run('party.offlineExploration.receipt.kills'),3);
- assert.deepEqual(r.errors,[]);
-});
-test('fast replay prevents fractional XP from crossing a level boundary before switching to full simulation',()=>{
- const source=file=>file==='js/combat/offline-exploration.js';
- const r=loadRuntime(root,'index.html',{},undefined,{transformSource:(name,code)=>source(name)
-  ?code.replace('globalThis.EmberwildOffline={',`globalThis.__levelBoundaryProbe=function(){
-    const h=playerHero();h.lv=15;h.xp=need(15)-1;h.xpFraction=.95;
-    round=0;roundIterator=null;combatRoundProgress=null;
-    foes.forEach(e=>{e.kind='normal';e.lv=15;e.evasion=0;e.lifesteal=0;});
-    const hp=foes.reduce((n,e)=>n+e.maxhp,0),key=combatKey();
-    analysis={ready:true,key,profiles:new Map([['fraction',{count:8,rows:Array.from({length:8},()=>({duration:10000,rounds:1,mastery:{},hero:{}})),min:hp,max:hp}]])};
-    observed={key:'fraction',hp,at:Date.now()};
-    metrics={fallbacks:{}};simpleCombat=()=>'';running=true;
-    const previous=EmberwildProgression.enemyXp;
-    EmberwildProgression.enemyXp=()=>.1/foes.length;
-    try{const executed=tryFast(Date.now()+20000);return {executed,fallbacks:metrics.fallbacks,lv:h.lv,xp:h.xp,fraction:h.xpFraction};}
-    finally{EmberwildProgression.enemyXp=previous;}
-   };globalThis.EmberwildOffline={`)
-  :code});
- r.run('selectSaveSlot(1);start(0);closeModal();startSelectedExploration();');
- const result=json(r,'__levelBoundaryProbe()');
- assert.equal(result.executed,false,'fractional EXP should force normal full simulation');
- assert.equal(result.fallbacks['level-boundary'],1);
- assert.equal(result.lv,15);
- assert.deepEqual(r.errors,[]);
-});
 test('resume a persisted mid-turn cursor including support, enemy cooldowns, control, custom status and token state',async()=>{
  const a=game();for(let i=0;i<10;i++){a.advance(50);a.run('tick()');}a.run('save()');assert(a.run('!!EmberwildSecondsCombat.pack().timeline'));assert.equal(a.run('combatRoundProgress'),null);
  const data=json(a,'packParty()'),rng=a.run('rngState'),serial=a.run('uidSerial'),b=game();b.advance(500);b.ctx.saved=data;b.run('loadParty(saved);');b.ctx.rng=rng;b.ctx.serial=serial;b.run('rngState=rng;uidSerial=serial');
@@ -275,7 +147,7 @@ test('a failed checkpoint restores the last committed batch and keeps its unfini
  r.ctx.localStorage.setItem=put;await r.run('retryOfflineExploration()');assert.equal(r.run('EmberwildOffline.failed'),false);assert.equal(r.run('party.offlineExploration.lastAt'),r.now);assert.equal(r.run('party.offlineExploration.receipt.kills'),r.run('state.totalKills'));assert.equal(r.run('party.offlineExploration.receipt.complete'),true);
 });
 test('quest challenge and terminal victory survive cold combat restoration and use existing quest kill events',async()=>{
- const r=game();r.run(`stopTeamExploration();state.lv=20;syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');save();globalThis.copySave=structuredClone(packParty());loadParty(copySave);`);
+ const r=game();r.run(`stopTeamExploration();setClassMasteryLevel(19);syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');save();globalThis.copySave=structuredClone(packParty());loadParty(copySave);`);
  assert.equal(r.run('party.questChallenge.key'),'shop_rescue/rescue');await settle(r,60000);assert.equal(r.run('party.offlineExploration.receipt.stage'),'解救商人');assert.equal(r.run('party.offlineExploration.receipt.kills'),3);assert.equal(r.run('__EMBERWILD_STORY.stats().encounters["shop_rescue/rescue"]'),1);assert.equal(r.run('running'),false);
 });
 
@@ -287,3 +159,5 @@ test('multi-hour replay paints progress before work and reports simulation curso
  r.ctx.performance.now=()=>0;r.ctx.setTimeout=fn=>setImmediate(fn);while(callbacks.length){callbacks.shift()();await new Promise(setImmediate);}await pending;
  assert.equal(r.run('EmberwildOffline.failed'),false);assert.equal(r.run('party.offlineExploration.lastAt'),r.now);assert.match(box.innerHTML,/計入離線/);assert.match(box.innerHTML,/有效掛機/);assert.doesNotMatch(box.innerHTML,/<progress/);assert.deepEqual(r.errors,[]);
 });
+// v0.161 removed character levels: level-gap drops, level-ups and XP boundaries no longer exist.
+// Offline class mastery, its cap and the 1/8/24 hour settlements are covered by level-removal.test.cjs.

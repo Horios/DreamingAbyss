@@ -15,7 +15,7 @@ test('new and legacy priests can acquire, equip, reload and cast holy prison thr
    if(!old){
     assert(await prison.getByRole('button').isDisabled());
     await p.getByRole('button',{name:'關閉',exact:true}).click();
-    await p.evaluate(()=>{awardXP(need(1));awardXP(need(2));save();render();});
+    await p.evaluate(()=>{setClassMasteryLevel(2);save();render();});
     await p.locator('[data-skill-slot="active:0"]').click();
    }
    assert.equal(await prison.getByRole('button').isDisabled(),false);
@@ -36,17 +36,17 @@ test('skill previews, catalog and passive switches work on desktop/mobile and pe
   await p.evaluate(async()=>{selectSaveSlot(1);start(2);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);setTab('skills');});
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:900});await p.locator('[data-skill-slot="active:0"]').click();
-   const rain=p.locator('[data-skill-id="archer-arrow-rain"]');assert(await rain.isVisible());assert(await rain.getByRole('button').isDisabled());assert.match(await rain.innerText(),/LV3/);
+   const rain=p.locator('[data-skill-id="archer-arrow-rain"]');assert(await rain.isVisible());assert(await rain.getByRole('button').isDisabled());assert.match(await rain.innerText(),/職業精通 Lv2/);
    assert.equal(await p.locator('[data-skill-id="job2-core4"]').count(),0);assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
    await p.getByRole('button',{name:'關閉',exact:true}).click();await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
    /* v0.092: the catalog lists skills on the left and details the clicked one on the right */assert(await p.locator('[data-skill-pick="job2-core4"]').isVisible());assert.equal(await p.locator('[data-skill-pick^="partner"]').count(),0);await p.locator('[data-skill-pick="tutorial_echo"]').click();assert.match(await p.locator('.skill-catalog-detail [data-skill-id="tutorial_echo"]').innerText(),/解鎖條件\s*裝備附帶/);
    assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.getByRole('button',{name:'關閉',exact:true}).click();
   }
-  await p.evaluate(()=>{awardXP(need(1)+need(2));save();render();});await p.locator('[data-skill-slot="active:0"]').click();
+  await p.evaluate(()=>{setClassMasteryLevel(2);save();render();});await p.locator('[data-skill-slot="active:0"]').click();
   await p.locator('[data-skill-id="archer-arrow-rain"]').getByRole('button',{name:'裝入技能',exact:true}).click();assert.equal(await p.evaluate(()=>state.skillLoadout.active[0]),'archer-arrow-rain');
   // Pointer release queues rendering on a timer; the test clock is paused.
   await p.clock.runFor(50);
-  const status=await p.evaluate(()=>{const switched=changePlayerClass(0);const started=switched&&startSelectedExploration();running=false;setTab('skills');globalThis.battleBefore=EmberwildBattleConfiguration.pack();return {switched,started,job:state.job,level:state.lv,learned:__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('warrior-cleave-chain')),tab};});
+  const status=await p.evaluate(()=>{const switched=changePlayerClass(0);/* v0.161: each class has its own mastery; the new class needs mastery 2 for its clearing skill */if(switched)setClassMasteryLevel(2);const started=switched&&startSelectedExploration();running=false;setTab('skills');globalThis.battleBefore=EmberwildBattleConfiguration.pack();return {switched,started,job:state.job,level:classMasteryLevel(state),learned:__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('warrior-cleave-chain')),tab};});
   assert.equal(status.switched,true,JSON.stringify(status));assert.equal(status.job,0,JSON.stringify(status));assert.equal(status.learned,true,JSON.stringify(status));
   const passive=p.locator('[data-passive-id="warrior-cleave-chain"]');await passive.getByRole('switch').click();await p.clock.runFor(50);assert.equal(await passive.getByRole('switch').getAttribute('aria-checked'),'false');
   assert.equal(await p.evaluate(()=>state.passiveEnabled['warrior-cleave-chain']),false);assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>state.passiveEnabled['warrior-cleave-chain'])),true);
@@ -62,7 +62,7 @@ test('equipment skill source and skill slot remain clickable during an active en
  try{
   await p.evaluate(async()=>{
    selectSaveSlot(1);start(1);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);
-   playerHero().lv=25;playerHero().mastery.fire=100000;recruitCompanion(10);closeModal();
+   setClassMasteryLevel(24,playerHero());playerHero().mastery.fire=100000;recruitCompanion(10);closeModal();
    const g=gear(3,0,0,1);g.id='encounter-skill-test';__EMBERWILD_SKILLS.byId('job1-core2').sources=[{type:'equipment'}];g.skillId='job1-core2';g.skillSockets={version:1,count:1,gems:[null]};
    addGear(g);equipSharedGear(g.id,memberKey(playerHero()),0);startSelectedExploration();selectHero(10);setTab('skills');
   });

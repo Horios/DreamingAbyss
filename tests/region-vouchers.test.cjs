@@ -51,30 +51,28 @@ test('claimed tickets become inventory items with a short description; using the
  assert.match(html,/data-inventory-group="tickets"[\s\S]*data-voucher-stack="v1"[\s\S]*class="item-slot[^"]*"[^>]*data-item-key="region-voucher:v1"[^>]*aria-label="無名密林 30 分鐘收益券 ×16"[\s\S]*data-inventory-group="potions"[\s\S]*目前裝備藥水：/);
  assert.match(html,/data-item-key="region-voucher:v1"[\s\S]*?<svg/,'the ticket uses an SVG icon');
  const virtual=json(r,`(()=>{const v=__EMBERWILD_VIRTUAL_ITEM('region-voucher:v1');return {name:v.name,glyph:v.glyph,description:v.description,detail:v.detail(),actions:v.actions()};})()`);
- assert.equal(virtual.glyph,'ticket');assert.match(virtual.description,/使用時計算經驗、金幣與道具，收益寄到信箱/);assert(!/經驗 \d|金幣 \d/.test(virtual.description+virtual.detail),'the item shows no earnings until used');
+ assert.equal(virtual.glyph,'ticket');assert.match(virtual.description,/使用時計算金幣與道具，收益寄到信箱/);assert(!/經驗 \d|金幣 \d/.test(virtual.description+virtual.detail),'the item shows no earnings until used');
  assert.match(virtual.actions,/useRegionVouchers\('v1',1\)[\s\S]*全部使用（16）/);
  // Later team changes cannot raise a locked ticket.
  r.run('playerHero().autoPotion=!playerHero().autoPotion');assert.deepEqual(json(r,'party.regionVouchers.stacks[0]'),stack);
- r.run('running=false;playerHero().lv=1;playerHero().xp=0;save()');
+ r.run('running=false;save()');
  const stats=json(r,'party.idleStatistics.regions["0:0"].total'),kills=r.run('state.totalKills'),inv=json(r,'({gold:state.gold,lv:state.lv,bag:state.bag.length,ore:state.ore,mats:state.materials})');
- assert.equal(r.run(`useRegionVouchers('${stack.id}',3)`),true);assert.match(r.run("$('modal').innerHTML"),/預估收益[\s\S]*經驗[\s\S]*金幣[\s\S]*確認使用/);
+ assert.equal(r.run(`useRegionVouchers('${stack.id}',3)`),true);assert.match(r.run("$('modal').innerHTML"),/預估收益[\s\S]*金幣[\s\S]*確認使用/);
  r.run('render()');assert.match(r.run("$('modal').innerHTML"),/確認使用/,'a mailbox refresh does not overwrite the dialog');
  const p=json(r,`EmberwildRegionVouchers.preview([{id:'${stack.id}',count:3}])`);
  r.run('confirmRegionVouchers()');assert.match(r.run("$('modal').innerHTML"),/收益已寄到信箱/);
  assert.deepEqual(json(r,'({gold:state.gold,lv:state.lv,bag:state.bag.length,ore:state.ore,mats:state.materials})'),inv,'nothing is granted before the mail is claimed');
  const h=json(r,'party.regionVouchers.history.at(-1)');assert.equal(h.tickets,3);assert.equal(h.overlevel,p.overlevel);assert.equal(json(r,'party.regionVouchers.stacks[0].count'),13);
  const gold=mails(r,'gold');assert.equal(gold.length,1);const cur=Object.fromEntries(gold[0].attachments.map(a=>[a.type,a.quantity]));
- assert.equal(cur.voucherGold,h.gold);assert.equal(cur.voucherXp||0,h.xp);assert.equal(h.gold,(3-h.overlevel)*stack.gold+h.overlevel*r.run('worldMapConfig(0).overlevelVoucherGold'));
- // Unclaimed XP already counts: using more tickets now sees the projected level.
- assert.equal(r.run('EmberwildRegionVouchers.projectedHero().lv'),p.levelAfter);
- assert.equal(r.run(`claimMailboxAttachments(${gold[0].id})`),true);assert.equal(r.run('state.gold'),inv.gold+h.gold);assert(r.run('state.lv')>1);
+ assert.equal(cur.voucherGold,h.gold);assert.equal(cur.voucherXp||0,h.xp);assert.equal(h.overlevel,0);assert.equal(h.gold,3*stack.gold);
+ assert.equal(r.run(`claimMailboxAttachments(${gold[0].id})`),true);assert.equal(r.run('state.gold'),inv.gold+h.gold);
  const items=mails(r,'items');assert.equal(items.length>0,h.overlevel<3);
  r.run('claimAllMailboxAttachments()');assert(json(r,'party.mailbox.messages.filter(m=>m.rewardKey.startsWith("voucher-")).every(m=>m.claimed)'),'item mail is claimed into the inventory');
  assert(r.run('state.ore')>=inv.ore);
  assert.equal(r.run('state.totalKills'),kills,'using tickets adds no kills');assert.deepEqual(json(r,'party.idleStatistics.regions["0:0"].total'),stats,'using tickets never feeds statistics');
- // Overlevel tickets only mail gold.
- const before=mails(r,'items').length;const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:5}])`);assert.equal(t.overlevel,5);assert.equal(t.xp,0);assert.deepEqual(t.items,{});assert.equal(t.gear,0);
- assert.equal(mails(r,'items').length,before);assert.deepEqual(mails(r,'gold').at(-1).attachments.map(a=>[a.type,a.quantity]),[['voucherGold',5*r.run('worldMapConfig(0).overlevelVoucherGold')]]);
+ // v0.161: no over-level rule; more tickets mail full gold and no XP.
+ const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:5}])`);assert.equal(t.overlevel,0);assert.equal(t.xp,0);
+ assert.deepEqual(mails(r,'gold').at(-1).attachments.map(a=>[a.type,a.quantity]),[['voucherGold',5*stack.gold]]);
  assert.deepEqual(r.errors,[]);
 });
 test('used tickets roll drops through the existing per-enemy loot rules without touching the real inventory',async()=>{
@@ -85,7 +83,7 @@ test('used tickets roll drops through the existing per-enemy loot rules without 
  const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:8}])`);const expected=Object.values(stack.enemies).reduce((a,b)=>a+b,0)*8;
  assert(Math.abs(r.run('__calls')-expected)<=Object.keys(stack.enemies).length*8,'one loot roll per locked enemy');
  assert.equal(r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions})'),inv,'rolls happen in a scratch inventory');
- assert(t.xp>0);assert(Object.keys(t.items).length>0);
+ assert.equal(t.xp,0);assert(Object.keys(t.items).length>0);
  const goods=mails(r,'items').flatMap(m=>m.attachments);assert(goods.every(a=>['catalogue','gear'].includes(a.type)));assert.equal(goods.filter(a=>a.type==='gear').length,t.gear);
  assert.equal(goods.filter(a=>a.type==='catalogue').reduce((n,a)=>n+a.quantity,0),Object.values(t.items).reduce((a,b)=>a+b,0));
  assert(mails(r,'items').every(m=>m.attachments.length<=6));
@@ -113,7 +111,8 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  const gold=r.run('state.gold');assert.equal(r.run(`claimMailboxAttachments(${g.id})`),true);assert.equal(r.run(`claimMailboxAttachments(${g.id})`),false);
  assert.equal(r.run('state.gold'),gold+(g.attachments.find(a=>a.type==='voucherGold')?.quantity||0));
  assert.deepEqual(json(r,'EmberwildRegionVouchers.normalize({version:1,serial:3,remainders:{"0:0":99999999,"6:0":5,"x":1},stacks:[{id:"v1",count:0},{id:"bad"}],history:[]})'),{version:1,serial:3,remainders:{'0:0':30*MIN-1},stacks:[],history:[]});
- assert.equal(r.run('worldMapConfig(13).overlevelVoucherGold'),100);assert.equal(r.run('worldMapConfig(1).overlevelVoucherGold'),400);assert.equal(r.run('worldMapConfig(12).overlevelVoucherGold'),3400);
+ // v0.161: maps carry a recommended gear level (default: the map's max level) instead of an over-level voucher price.
+ assert.equal(r.run('worldMapConfig(1).recommendedGearLevel'),r.run('MAPS[1].max'));assert.equal(r.run('worldMapConfig(1).overlevelVoucherGold'),undefined);
  assert.match(r.run('party.mailbox.messages.find(m=>m.rewardKey.startsWith("starter-")).body'),/初始裝已穿戴/);
  assert.deepEqual(r.errors,[]);
 });
@@ -136,27 +135,3 @@ test('ticket length and potion charging come from balance settings; invalid valu
  assert.deepEqual(r.errors,[]);
 });
 
-test('failed voucher XP claims restore every companion and permanent skill unlock before retry',()=>{
- const r=loadRuntime(root);r.ctx.seed=seed;
- r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();
-  playerHero().lv=14;playerHero().xp=0;syncParty();
-  for(const id of [10,11,12,13,14]){closeModal();recruitCompanion(id);}closeModal();
-  const mailbox=party.mailbox,id=++mailbox.serial;
-  mailbox.messages.push({id,rewardKey:'voucher-gold-'+id,subject:'收益券測試',body:'',at:Date.now(),read:false,claimed:false,attachments:[{type:'voucherXp',name:'經驗值',quantity:need(14)},{type:'voucherGold',name:'金幣',quantity:10}]});
-  globalThis.__claimId=id;
-  globalThis.__claimState=()=>JSON.stringify({members:packParty().members,build:party.buildSystem,mailbox:party.mailbox,vouchers:party.regionVouchers});
-  save();`);
- assert(r.run('party.members.length')>1,'the claim includes recruited companions');
- const before=r.run('__claimState()');
- for(const saveBody of ['return false','throw Error("quota")']){
-  r.ctx.saveBody=saveBody;r.run('globalThis.__claimSave=save;save=new Function(saveBody)');
-  try{assert.equal(r.run('claimMailboxAttachments(__claimId)'),false);}
-  finally{r.run('save=__claimSave');}
-  assert.equal(r.run('__claimState()'),before,'failed claims restore roster growth, builds, tickets and mail: '+saveBody);
- }
- assert.equal(r.run('claimMailboxAttachments(__claimId)'),true,'retry can claim the same retained mail');
- assert(json(r,'party.members.every(h=>h.lv===15)'),'successful claim advances the whole roster');
- assert.equal(r.run('claimMailboxAttachments(__claimId)'),false,'the successful retry cannot be claimed twice');
- assert.doesNotThrow(()=>r.run('validateParty(JSON.parse(JSON.stringify(packParty())))'));
- assert.deepEqual(r.errors,[]);
-});

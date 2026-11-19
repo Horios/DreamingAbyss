@@ -175,7 +175,7 @@
   function compareHTML(g){
     const h=party.members[0],who=esc(characterName(h)),wearer=gearWearer(g.id);
     if(wearer)return `<p class="small">${esc(characterName(wearer))}目前穿戴這件裝備。</p>`;
-    if(!eligibleWearers(g).includes(h))return `<p class="small">${who}無法穿戴（職業、等級或部位不符）。</p>`;
+    if(!eligibleWearers(g).includes(h))return `<p class="small">${who}無法穿戴（職業或部位不符）。</p>`;
     const positions=gearEquipPositions(g);let target=positions.find(p=>!h.equipped[p]);if(target===undefined)target=positions[0];
     const current=h.bag.find(x=>x.id===h.equipped[target]);
     const fmt=(r,unit='')=>`<td>${r.before}${r.percent?'%':unit}</td><td>${r.after}${r.percent?'%':unit}</td><td class="${r.good?'delta-up':'delta-down'}">${r.delta>0?'+':''}${r.delta}${r.percent?' 百分點':unit}</td>`;
@@ -190,7 +190,7 @@
     let pane=grid?.querySelector(':scope>.inventory-compare-pane');
     const g=grid&&wide.matches&&typeof inventorySelectedGearId!=='undefined'?findGear(inventorySelectedGearId):null;
     if(!g||EmberwildTokens.isToken(g)){pane?.remove();return;}
-    const h=party.members[0],key=[g.id,g.plus||0,h.lv,h.equipped.join(','),(g.affix||[]).length].join('|');
+    const h=party.members[0],key=[g.id,g.plus||0,h.equipped.join(','),(g.affix||[]).length].join('|');
     if(pane?.dataset.key===key)return;
     if(!pane){pane=document.createElement('section');pane.className='inventory-compare-pane';pane.setAttribute('aria-label','與目前穿戴比較');grid.appendChild(pane);}
     pane.dataset.key=key;

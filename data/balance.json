@@ -1981,7 +1981,7 @@
           "id": "job0-core0",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2017,7 +2017,7 @@
           "id": "job0-core1",
           "name": "堅毅壁壘",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 6,
           "power": 0.9,
           "effect": "shield",
@@ -2053,7 +2053,7 @@
           "id": "job0-core2",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2091,7 +2091,7 @@
           "id": "job0-core3",
           "name": "浴血重擊",
           "activation": "proc",
-          "requiredLevel": 7,
+          "requiredLevel": 6,
           "cooldown": 0,
           "power": 0.4,
           "effect": "drain",
@@ -2129,7 +2129,7 @@
           "id": "job0-core4",
           "name": "聖鋼裁決",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.05,
           "effect": "damage",
@@ -2165,7 +2165,7 @@
           "id": "job0-core5",
           "name": "不屈戰意",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.8,
           "effect": "shield",
@@ -2203,7 +2203,7 @@
           "id": "job0-core6",
           "name": "狂亂嘲諷",
           "activation": "active",
-          "requiredLevel": 9,
+          "requiredLevel": 8,
           "cooldown": 6,
           "power": 0,
           "effect": "tauntRage",
@@ -2246,7 +2246,7 @@
           "id": "partner10-core7",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2282,7 +2282,7 @@
           "id": "partner10-core8",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2320,7 +2320,7 @@
           "id": "partner10-core9",
           "name": "聖鋼裁決",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.05,
           "effect": "damage",
@@ -2356,7 +2356,7 @@
           "id": "partner11-core10",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2392,7 +2392,7 @@
           "id": "partner11-core11",
           "name": "堅毅壁壘",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 6,
           "power": 0.9,
           "effect": "shield",
@@ -2428,7 +2428,7 @@
           "id": "partner11-core12",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2466,7 +2466,7 @@
           "id": "partner11-core13",
           "name": "嘲諷",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 6,
           "power": 0,
           "effect": "tauntRage",
@@ -2509,7 +2509,7 @@
           "id": "partner15-core14",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2545,7 +2545,7 @@
           "id": "partner15-core15",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2583,7 +2583,7 @@
           "id": "partner15-core16",
           "name": "聖鋼裁決",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.05,
           "effect": "damage",
@@ -2619,7 +2619,7 @@
           "id": "partner16-core17",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2655,7 +2655,7 @@
           "id": "partner16-core18",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2693,7 +2693,7 @@
           "id": "partner16-core19",
           "name": "聖鋼裁決",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.05,
           "effect": "damage",
@@ -2729,7 +2729,7 @@
           "id": "partner17-core20",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2765,7 +2765,7 @@
           "id": "partner17-core21",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2803,7 +2803,7 @@
           "id": "partner17-core22",
           "name": "聖鋼裁決",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.05,
           "effect": "damage",
@@ -2839,7 +2839,7 @@
           "id": "partner18-core23",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -2875,7 +2875,7 @@
           "id": "partner18-core24",
           "name": "堅毅壁壘",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 6,
           "power": 0.9,
           "effect": "shield",
@@ -2911,7 +2911,7 @@
           "id": "partner18-core25",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -2949,7 +2949,7 @@
           "id": "partner18-core26",
           "name": "嘲諷",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 6,
           "power": 0,
           "effect": "tauntRage",
@@ -2992,7 +2992,7 @@
           "id": "partner19-core27",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -3028,7 +3028,7 @@
           "id": "partner19-core28",
           "name": "堅毅壁壘",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 6,
           "power": 0.9,
           "effect": "shield",
@@ -3064,7 +3064,7 @@
           "id": "partner19-core29",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -3102,7 +3102,7 @@
           "id": "partner19-core30",
           "name": "嘲諷",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 6,
           "power": 0,
           "effect": "tauntRage",
@@ -3145,7 +3145,7 @@
           "id": "partner20-core31",
           "name": "裂地斬",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.35,
           "effect": "damage",
@@ -3181,7 +3181,7 @@
           "id": "partner20-core32",
           "name": "堅毅壁壘",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 6,
           "power": 0.9,
           "effect": "shield",
@@ -3217,7 +3217,7 @@
           "id": "partner20-core33",
           "name": "反擊之刃",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.65,
           "effect": "damage",
@@ -3255,7 +3255,7 @@
           "id": "partner20-core34",
           "name": "嘲諷",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 6,
           "power": 0,
           "effect": "tauntRage",
@@ -3301,7 +3301,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -3342,7 +3342,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -3383,7 +3383,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -3419,7 +3419,7 @@
           "id": "tutorial_echo-job0",
           "name": "追擊",
           "activation": "proc",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 0,
           "power": 0.5,
           "effect": "damage",
@@ -3462,7 +3462,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -3515,7 +3515,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -3567,7 +3567,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -3620,22 +3620,7 @@
         "def": 6,
         "crit": 0.07,
         "critDamage": 1.5
-      },
-      "growthPerLevel": {
-        "hp": 5,
-        "atk": 1,
-        "def": 1,
-        "crit": 0,
-        "critDamage": 0
-      },
-      "growthSteps": [
-        {
-          "every": 3,
-          "hp": 0,
-          "atk": 1,
-          "def": 0
-        }
-      ]
+      }
     },
     {
       "id": 1,
@@ -3650,7 +3635,7 @@
           "id": "job1-core0",
           "name": "火焰箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.55,
           "effect": "damage",
@@ -3687,7 +3672,7 @@
           "id": "job1-core1",
           "name": "冰霜護幕",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 5,
           "power": 0.9,
           "effect": "shield",
@@ -3724,7 +3709,7 @@
           "id": "job1-core2",
           "name": "餘燼爆發",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.8,
           "effect": "damage",
@@ -3763,7 +3748,7 @@
           "id": "job1-core3",
           "name": "奧術汲取",
           "activation": "proc",
-          "requiredLevel": 7,
+          "requiredLevel": 6,
           "cooldown": 0,
           "power": 0.45,
           "effect": "drain",
@@ -3802,7 +3787,7 @@
           "id": "job1-core4",
           "name": "隕星墜落",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 5,
           "power": 2.6,
           "effect": "damage",
@@ -3839,7 +3824,7 @@
           "id": "job1-core5",
           "name": "魔力迴響",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 1.15,
           "effect": "damage",
@@ -3878,7 +3863,7 @@
           "id": "job1-core6",
           "name": "變形術",
           "activation": "active",
-          "requiredLevel": 12,
+          "requiredLevel": 11,
           "cooldown": 7,
           "power": 1,
           "effect": "polymorph",
@@ -3921,7 +3906,7 @@
           "id": "job1-core7",
           "name": "冰霜新星",
           "activation": "active",
-          "requiredLevel": 8,
+          "requiredLevel": 7,
           "cooldown": 6,
           "power": 0,
           "effect": "frost",
@@ -3964,7 +3949,7 @@
           "id": "job1-core8",
           "name": "寒冰箭",
           "activation": "active",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 5,
           "power": 0,
           "effect": "freeze",
@@ -4007,7 +3992,7 @@
           "id": "partner12-core9",
           "name": "火焰箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.55,
           "effect": "damage",
@@ -4044,7 +4029,7 @@
           "id": "partner12-core10",
           "name": "餘燼爆發",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.8,
           "effect": "damage",
@@ -4083,7 +4068,7 @@
           "id": "partner12-core11",
           "name": "隕星墜落",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 5,
           "power": 2.6,
           "effect": "damage",
@@ -4120,7 +4105,7 @@
           "id": "partner21-core12",
           "name": "火焰箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.55,
           "effect": "damage",
@@ -4157,7 +4142,7 @@
           "id": "partner21-core13",
           "name": "餘燼爆發",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.8,
           "effect": "damage",
@@ -4196,7 +4181,7 @@
           "id": "partner21-core14",
           "name": "隕星墜落",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 5,
           "power": 2.6,
           "effect": "damage",
@@ -4233,7 +4218,7 @@
           "id": "partner22-core15",
           "name": "火焰箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.55,
           "effect": "damage",
@@ -4270,7 +4255,7 @@
           "id": "partner22-core16",
           "name": "餘燼爆發",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.8,
           "effect": "damage",
@@ -4309,7 +4294,7 @@
           "id": "partner22-core17",
           "name": "隕星墜落",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 5,
           "power": 2.6,
           "effect": "damage",
@@ -4346,7 +4331,7 @@
           "id": "partner23-core18",
           "name": "火焰箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.55,
           "effect": "damage",
@@ -4383,7 +4368,7 @@
           "id": "partner23-core19",
           "name": "餘燼爆發",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.8,
           "effect": "damage",
@@ -4422,7 +4407,7 @@
           "id": "partner23-core20",
           "name": "隕星墜落",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 5,
           "power": 2.6,
           "effect": "damage",
@@ -4462,7 +4447,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -4501,7 +4486,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -4541,7 +4526,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -4577,7 +4562,7 @@
           "id": "tutorial_echo-job1",
           "name": "追擊",
           "activation": "proc",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 0,
           "power": 0.5,
           "effect": "damage",
@@ -4620,7 +4605,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -4673,7 +4658,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -4725,7 +4710,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -4778,22 +4763,7 @@
         "def": 3,
         "crit": 0.07,
         "critDamage": 1.5
-      },
-      "growthPerLevel": {
-        "hp": 3,
-        "atk": 2,
-        "def": 0,
-        "crit": 0,
-        "critDamage": 0
-      },
-      "growthSteps": [
-        {
-          "every": 3,
-          "hp": 0,
-          "atk": 0,
-          "def": 1
-        }
-      ]
+      }
     },
     {
       "id": 2,
@@ -4808,7 +4778,7 @@
           "id": "job2-core0",
           "name": "穿透箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.45,
           "effect": "damage",
@@ -4844,7 +4814,7 @@
           "id": "job2-core1",
           "name": "林間休憩",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 5,
           "power": 0.8,
           "effect": "heal",
@@ -4880,7 +4850,7 @@
           "id": "job2-core2",
           "name": "連射",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.75,
           "effect": "damage",
@@ -4918,7 +4888,7 @@
           "id": "job2-core3",
           "name": "獵手印記",
           "activation": "proc",
-          "requiredLevel": 7,
+          "requiredLevel": 6,
           "cooldown": 0,
           "power": 0.95,
           "effect": "damage",
@@ -4956,7 +4926,7 @@
           "id": "job2-core4",
           "name": "疾風箭雨",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.15,
           "effect": "damage",
@@ -4992,7 +4962,7 @@
           "id": "job2-core5",
           "name": "生命之箭",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.55,
           "effect": "drain",
@@ -5030,7 +5000,7 @@
           "id": "job2-core6",
           "name": "冰凍陷阱",
           "activation": "active",
-          "requiredLevel": 8,
+          "requiredLevel": 7,
           "cooldown": 6,
           "power": 0,
           "effect": "summonFreezeTrap",
@@ -5073,7 +5043,7 @@
           "id": "job2-core7",
           "name": "變形陷阱",
           "activation": "active",
-          "requiredLevel": 12,
+          "requiredLevel": 11,
           "cooldown": 7,
           "power": 1,
           "effect": "summonMorphTrap",
@@ -5116,7 +5086,7 @@
           "id": "partner14-core8",
           "name": "穿透箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.45,
           "effect": "damage",
@@ -5152,7 +5122,7 @@
           "id": "partner14-core9",
           "name": "連射",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.75,
           "effect": "damage",
@@ -5190,7 +5160,7 @@
           "id": "partner14-core10",
           "name": "疾風箭雨",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.15,
           "effect": "damage",
@@ -5226,7 +5196,7 @@
           "id": "partner27-core11",
           "name": "穿透箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.45,
           "effect": "damage",
@@ -5262,7 +5232,7 @@
           "id": "partner27-core12",
           "name": "連射",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.75,
           "effect": "damage",
@@ -5300,7 +5270,7 @@
           "id": "partner27-core13",
           "name": "疾風箭雨",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.15,
           "effect": "damage",
@@ -5336,7 +5306,7 @@
           "id": "partner28-core14",
           "name": "穿透箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.45,
           "effect": "damage",
@@ -5372,7 +5342,7 @@
           "id": "partner28-core15",
           "name": "連射",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.75,
           "effect": "damage",
@@ -5410,7 +5380,7 @@
           "id": "partner28-core16",
           "name": "疾風箭雨",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.15,
           "effect": "damage",
@@ -5446,7 +5416,7 @@
           "id": "partner29-core17",
           "name": "穿透箭",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.45,
           "effect": "damage",
@@ -5482,7 +5452,7 @@
           "id": "partner29-core18",
           "name": "連射",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.75,
           "effect": "damage",
@@ -5520,7 +5490,7 @@
           "id": "partner29-core19",
           "name": "疾風箭雨",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2.15,
           "effect": "damage",
@@ -5559,7 +5529,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5599,7 +5569,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5638,7 +5608,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5676,7 +5646,7 @@
           "id": "tutorial_echo-job2",
           "name": "追擊",
           "activation": "proc",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 0,
           "power": 0.5,
           "effect": "damage",
@@ -5719,7 +5689,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5758,7 +5728,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5811,7 +5781,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5863,7 +5833,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -5916,22 +5886,7 @@
         "def": 4,
         "crit": 0.17,
         "critDamage": 1.5
-      },
-      "growthPerLevel": {
-        "hp": 4,
-        "atk": 1,
-        "def": 0,
-        "crit": 0,
-        "critDamage": 0
-      },
-      "growthSteps": [
-        {
-          "every": 2,
-          "hp": 0,
-          "atk": 1,
-          "def": 1
-        }
-      ]
+      }
     },
     {
       "id": 3,
@@ -5946,7 +5901,7 @@
           "id": "job3-core0",
           "name": "聖光審判",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.4,
           "effect": "damage",
@@ -5983,7 +5938,7 @@
           "id": "job3-core1",
           "name": "治癒禱言",
           "activation": "active",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 4,
           "power": 1,
           "effect": "heal",
@@ -6020,7 +5975,7 @@
           "id": "job3-core2",
           "name": "懲戒",
           "activation": "proc",
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "cooldown": 0,
           "power": 0.7,
           "effect": "damage",
@@ -6059,7 +6014,7 @@
           "id": "job3-core3",
           "name": "生命泉源",
           "activation": "proc",
-          "requiredLevel": 7,
+          "requiredLevel": 6,
           "cooldown": 0,
           "power": 0.65,
           "effect": "heal",
@@ -6098,7 +6053,7 @@
           "id": "job3-core4",
           "name": "黎明聖印",
           "activation": "active",
-          "requiredLevel": 15,
+          "requiredLevel": 14,
           "cooldown": 4,
           "power": 2,
           "effect": "damage",
@@ -6135,7 +6090,7 @@
           "id": "job3-core5",
           "name": "神聖庇護",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.9,
           "effect": "shield",
@@ -6174,7 +6129,7 @@
           "id": "job3-core6",
           "name": "植入恐怖",
           "activation": "active",
-          "requiredLevel": 10,
+          "requiredLevel": 9,
           "cooldown": 6,
           "power": 0,
           "effect": "fear",
@@ -6217,7 +6172,7 @@
           "id": "partner13-core7",
           "name": "聖光審判",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.4,
           "effect": "damage",
@@ -6254,7 +6209,7 @@
           "id": "partner13-core8",
           "name": "治癒禱言",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 4,
           "power": 1,
           "effect": "heal",
@@ -6291,7 +6246,7 @@
           "id": "partner13-core9",
           "name": "生命泉源",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "heal",
@@ -6330,7 +6285,7 @@
           "id": "partner13-core10",
           "name": "神聖庇護",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.9,
           "effect": "shield",
@@ -6369,7 +6324,7 @@
           "id": "partner24-core11",
           "name": "聖光審判",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.4,
           "effect": "damage",
@@ -6406,7 +6361,7 @@
           "id": "partner24-core12",
           "name": "治癒禱言",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 4,
           "power": 1,
           "effect": "heal",
@@ -6443,7 +6398,7 @@
           "id": "partner24-core13",
           "name": "生命泉源",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "heal",
@@ -6482,7 +6437,7 @@
           "id": "partner24-core14",
           "name": "神聖庇護",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.9,
           "effect": "shield",
@@ -6521,7 +6476,7 @@
           "id": "partner25-core15",
           "name": "聖光審判",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.4,
           "effect": "damage",
@@ -6558,7 +6513,7 @@
           "id": "partner25-core16",
           "name": "治癒禱言",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 4,
           "power": 1,
           "effect": "heal",
@@ -6595,7 +6550,7 @@
           "id": "partner25-core17",
           "name": "生命泉源",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "heal",
@@ -6634,7 +6589,7 @@
           "id": "partner25-core18",
           "name": "神聖庇護",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.9,
           "effect": "shield",
@@ -6673,7 +6628,7 @@
           "id": "partner26-core19",
           "name": "聖光審判",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 3,
           "power": 1.4,
           "effect": "damage",
@@ -6710,7 +6665,7 @@
           "id": "partner26-core20",
           "name": "治癒禱言",
           "activation": "active",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 4,
           "power": 1,
           "effect": "heal",
@@ -6747,7 +6702,7 @@
           "id": "partner26-core21",
           "name": "生命泉源",
           "activation": "proc",
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "cooldown": 0,
           "power": 0.65,
           "effect": "heal",
@@ -6786,7 +6741,7 @@
           "id": "partner26-core22",
           "name": "神聖庇護",
           "activation": "proc",
-          "requiredLevel": 20,
+          "requiredLevel": 19,
           "cooldown": 0,
           "power": 0.9,
           "effect": "shield",
@@ -6828,7 +6783,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -6867,7 +6822,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -6906,7 +6861,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 5,
+          "requiredLevel": 4,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -6944,7 +6899,7 @@
           "id": "tutorial_echo-job3",
           "name": "追擊",
           "activation": "proc",
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "cooldown": 0,
           "power": 0.5,
           "effect": "damage",
@@ -6987,7 +6942,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 3,
+          "requiredLevel": 2,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -7025,7 +6980,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -7078,7 +7033,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -7130,7 +7085,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 1,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -7183,28 +7138,7 @@
         "def": 5,
         "crit": 0.07,
         "critDamage": 1.5
-      },
-      "growthPerLevel": {
-        "hp": 4,
-        "atk": 1,
-        "def": 0,
-        "crit": 0,
-        "critDamage": 0
-      },
-      "growthSteps": [
-        {
-          "every": 2,
-          "hp": 0,
-          "atk": 0,
-          "def": 1
-        },
-        {
-          "every": 3,
-          "hp": 0,
-          "atk": 1,
-          "def": 0
-        }
-      ]
+      }
     }
   ],
   "supportSkills": [
@@ -7217,7 +7151,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -7247,7 +7181,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -7277,7 +7211,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -7312,7 +7246,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -7342,7 +7276,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -7377,7 +7311,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -7407,7 +7341,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -7437,7 +7371,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -7472,7 +7406,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -7502,7 +7436,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -7537,7 +7471,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -7567,7 +7501,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -7602,7 +7536,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -7632,7 +7566,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -7662,7 +7596,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -7694,7 +7628,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -7724,7 +7658,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -7755,7 +7689,7 @@
         "value": 0.25,
         "duration": 10,
         "cooldown": 16,
-        "level": 15,
+        "level": 14,
         "description": "在集火目標上留下元素印記，放大後續攻擊的效果。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -7789,7 +7723,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -7819,7 +7753,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -7849,7 +7783,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -7879,7 +7813,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -7909,7 +7843,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -7939,7 +7873,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -7969,7 +7903,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -7999,7 +7933,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -8031,7 +7965,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -8062,7 +7996,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -8091,7 +8025,7 @@
         "value": 0.15,
         "duration": 8,
         "cooldown": 16,
-        "level": 15,
+        "level": 14,
         "element": "wind",
         "description": "以流動氣流環繞隊伍，減輕敵方攻擊造成的壓力。",
         "baseCritRate": 0,
@@ -8126,7 +8060,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -8157,7 +8091,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -8186,7 +8120,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -8217,7 +8151,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -8246,7 +8180,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -8277,7 +8211,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -8306,7 +8240,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -8337,7 +8271,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -8368,7 +8302,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -8398,7 +8332,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -8428,7 +8362,7 @@
         "value": 0.22,
         "duration": 10,
         "cooldown": 18,
-        "level": 15,
+        "level": 14,
         "element": "light",
         "description": "向全隊獻上祈願，鼓舞眾人的攻擊意志。",
         "baseCritRate": 0,
@@ -8470,7 +8404,7 @@
         "value": 0,
         "duration": 99,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
         "defensePenetration": 0,
@@ -8498,7 +8432,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -8528,7 +8462,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -8558,7 +8492,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -8588,7 +8522,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -8618,7 +8552,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -8648,7 +8582,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -8678,7 +8612,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -8708,7 +8642,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -9665,58 +9599,26 @@
   ],
   "balanceSettings": {
     "progression": {
-      "xpCurve": {
-        "base": 24,
-        "linear": 18,
-        "quadratic": 8,
-        "multiplierBase": 16,
-        "multiplierPerLevel": 0,
-        "lateStart": 30,
-        "latePerLevel": 0.05,
-        "endStart": 45,
-        "endPerLevel": 0.075
-      },
       "starting": {
         "gold": 150,
         "ore": 12,
         "dust": 0,
         "potions": 5
       },
-      "levelCaps": {
-        "beforeClear": 30,
-        "afterClear": 60
-      },
-      "levelRewards": {},
-      "statsPerLevel": {
-        "hp": 4,
-        "attack": 1,
-        "defense": 1
-      },
       "baseCrit": {
         "default": 0.07,
         "archer": 0.17
       },
       "advance": {
-        "level": 15,
         "gold": 500,
         "ore": 20,
         "materialCount": 3,
         "hpMultiplier": 1.12,
         "attackMultiplier": 1.15,
-        "defenseMultiplier": 1.12
+        "defenseMultiplier": 1.12,
+        "masteryLevel": 15
       },
-      "regionTierLevels": 5,
-      "mapAheadAllowance": 5,
-      "xpLevelGap": {
-        "enabled": true,
-        "freeLevels": 2,
-        "midGap": 3,
-        "midMultiplier": 0.5,
-        "highGap": 5,
-        "highMultiplier": 0.2,
-        "zeroGap": 10,
-        "minimumMultiplier": 0
-      }
+      "regionTierLevels": 5
     },
     "skills": {
       "core": {},
@@ -9734,14 +9636,39 @@
         "hybridActiveHealAttack": 0.1
       },
       "mastery": {
-        "characterXpMultiplier": 1,
         "xpBase": 8,
         "xpLinear": 5,
         "xpQuadratic": 1,
         "skillUseXp": 2,
         "basicAttackXp": 1,
         "maxLevel": 30,
-        "advanceRequiredLevel": 4
+        "advanceRequiredLevel": 4,
+        "classBonus": [
+          {
+            "hp": 3,
+            "atk": 0,
+            "def": 0.5,
+            "crit": 0
+          },
+          {
+            "hp": 1,
+            "atk": 0.6,
+            "def": 0,
+            "crit": 0
+          },
+          {
+            "hp": 1,
+            "atk": 0.5,
+            "def": 0,
+            "crit": 0.001
+          },
+          {
+            "hp": 2,
+            "atk": 0.3,
+            "def": 0.2,
+            "crit": 0
+          }
+        ]
       }
     },
     "equipment": {
@@ -9822,18 +9749,12 @@
         "critBase": 2,
         "critPerRank": 2
       },
-      "dropLevelGap": {
-        "enabled": true,
-        "freeLevels": 5,
-        "penaltyPerLevel": 0.4,
-        "minimumMultiplier": 0.05
-      }
+      "maxLevel": 60
     },
     "monsters": {
       "encounter": {
         "bossChance": 0,
-        "eliteChance": 0.12,
-        "levelLeadInterval": 5
+        "eliteChance": 0.12
       },
       "normal": {
         "hpBase": 18,
@@ -17089,7 +17010,6 @@
           "bossGearChance": 0.06,
           "ore": 1,
           "legendaryGearChance": 0.0006,
-          "xpMultiplier": 1,
           "goldMultiplier": 1
         },
         {
@@ -17110,7 +17030,6 @@
           "bossGearChance": 0.1,
           "ore": 1.5,
           "legendaryGearChance": 0.0016,
-          "xpMultiplier": 1.45,
           "goldMultiplier": 1.35
         },
         {
@@ -17131,7 +17050,6 @@
           "bossGearChance": 0.15,
           "ore": 2,
           "legendaryGearChance": 0.0032,
-          "xpMultiplier": 2,
           "goldMultiplier": 1.8
         }
       ],
@@ -17173,15 +17091,6 @@
           "zeroGap": 10
         }
       },
-      "xp": {
-        "base": 18,
-        "perLevel": 9,
-        "kindMultiplier": {
-          "normal": 1,
-          "elite": 2.2,
-          "boss": 10
-        }
-      },
       "ore": {
         "normalKindMultiplier": 0.25,
         "eliteBossKindMultiplier": 0.6,
@@ -17219,7 +17128,6 @@
         "weaken": 0.7,
         "resistance": 0.75
       },
-      "levelGapDamagePerLevel": 0.12,
       "finalBoss": {
         "enrageAfterTurn": 45,
         "enrageMultiplier": 4,
@@ -17442,8 +17350,6 @@
               "description": "完成日常委託，協助營地補給。",
               "enabled": true,
               "weight": 1,
-              "minLevel": 1,
-              "maxLevel": 0,
               "mapIndices": [],
               "prerequisites": [],
               "objectives": [
@@ -17462,7 +17368,6 @@
                 "ore": 0,
                 "orePerTier": 0,
                 "dust": 0,
-                "xp": 0,
                 "randomGems": 0,
                 "gemCounts": [
                   0,
@@ -17483,8 +17388,6 @@
               "description": "開始任務後進行裝備作業，協助營地整備。",
               "enabled": true,
               "weight": 1,
-              "minLevel": 1,
-              "maxLevel": 0,
               "mapIndices": [],
               "prerequisites": [],
               "objectives": [
@@ -17503,7 +17406,6 @@
                 "ore": 0,
                 "orePerTier": 0,
                 "dust": 0,
-                "xp": 0,
                 "randomGems": 0,
                 "gemCounts": [
                   0,
@@ -17524,8 +17426,6 @@
               "description": "開始任務後進行裝備作業，協助營地整備。",
               "enabled": true,
               "weight": 1,
-              "minLevel": 1,
-              "maxLevel": 0,
               "mapIndices": [],
               "prerequisites": [],
               "objectives": [
@@ -17544,7 +17444,6 @@
                 "ore": 0,
                 "orePerTier": 0,
                 "dust": 0,
-                "xp": 0,
                 "randomGems": 0,
                 "gemCounts": [
                   0,
@@ -17565,8 +17464,6 @@
               "description": "完成日常委託，協助營地補給。",
               "enabled": true,
               "weight": 1,
-              "minLevel": 1,
-              "maxLevel": 0,
               "mapIndices": [],
               "prerequisites": [],
               "objectives": [
@@ -17585,7 +17482,6 @@
                 "ore": 0,
                 "orePerTier": 0,
                 "dust": 0,
-                "xp": 0,
                 "randomGems": 0,
                 "gemCounts": [
                   0,
@@ -17606,8 +17502,6 @@
               "description": "完成日常委託，協助營地補給。",
               "enabled": true,
               "weight": 1,
-              "minLevel": 1,
-              "maxLevel": 0,
               "mapIndices": [],
               "prerequisites": [],
               "objectives": [
@@ -17626,7 +17520,6 @@
                 "ore": 0,
                 "orePerTier": 0,
                 "dust": 0,
-                "xp": 0,
                 "randomGems": 0,
                 "gemCounts": [
                   0,
@@ -17647,8 +17540,6 @@
               "description": "完成日常委託，協助營地補給。",
               "enabled": true,
               "weight": 1,
-              "minLevel": 1,
-              "maxLevel": 0,
               "mapIndices": [],
               "prerequisites": [],
               "objectives": [
@@ -17667,7 +17558,6 @@
                 "ore": 0,
                 "orePerTier": 0,
                 "dust": 0,
-                "xp": 0,
                 "randomGems": 0,
                 "gemCounts": [
                   0,
@@ -17708,8 +17598,6 @@
             "description": "林間野狼的狼牙，是獵人交換皮革的憑證。",
             "enabled": true,
             "weight": 1,
-            "minLevel": 1,
-            "maxLevel": 0,
             "mapIndices": [],
             "prerequisites": [],
             "objectives": [
@@ -17728,7 +17616,6 @@
               "ore": 20,
               "orePerTier": 0,
               "dust": 0,
-              "xp": 0,
               "randomGems": 1,
               "gemCounts": [
                 0,
@@ -17749,8 +17636,6 @@
             "description": "採集女巫符印，協助營地研究暮色詛咒。",
             "enabled": true,
             "weight": 1,
-            "minLevel": 1,
-            "maxLevel": 0,
             "mapIndices": [],
             "prerequisites": [],
             "objectives": [
@@ -17769,7 +17654,6 @@
               "ore": 55,
               "orePerTier": 0,
               "dust": 0,
-              "xp": 0,
               "randomGems": 1,
               "gemCounts": [
                 0,
@@ -17790,8 +17674,6 @@
             "description": "取得星隕監視者的稜鏡，準備迎戰噬日者。",
             "enabled": true,
             "weight": 1,
-            "minLevel": 1,
-            "maxLevel": 0,
             "mapIndices": [],
             "prerequisites": [],
             "objectives": [
@@ -17810,7 +17692,6 @@
               "ore": 120,
               "orePerTier": 0,
               "dust": 0,
-              "xp": 0,
               "randomGems": 1,
               "gemCounts": [
                 0,
@@ -17959,7 +17840,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 5
         },
         {
           "id": "map1",
@@ -17977,7 +17859,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 10
         },
         {
           "id": "map2",
@@ -17995,7 +17878,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 15
         },
         {
           "id": "map3",
@@ -18013,7 +17897,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 20
         },
         {
           "id": "map4",
@@ -18031,7 +17916,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 25
         },
         {
           "id": "map5",
@@ -18049,7 +17935,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 30
         },
         {
           "id": "map6",
@@ -18067,7 +17954,8 @@
           "eliteEnabled": false,
           "eliteChance": 0,
           "bossEnabled": true,
-          "bossChance": 1
+          "bossChance": 1,
+          "recommendedGearLevel": 40
         },
         {
           "id": "map7",
@@ -18085,7 +17973,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 35
         },
         {
           "id": "map8",
@@ -18103,7 +17992,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 40
         },
         {
           "id": "map9",
@@ -18121,7 +18011,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 45
         },
         {
           "id": "map10",
@@ -18139,7 +18030,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 50
         },
         {
           "id": "map11",
@@ -18157,7 +18049,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 55
         },
         {
           "id": "map12",
@@ -18175,7 +18068,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 60
         },
         {
           "id": "map13",
@@ -18193,7 +18087,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 5
         },
         {
           "id": "map14",
@@ -18211,7 +18106,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 10
         },
         {
           "id": "map15",
@@ -18229,7 +18125,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 15
         },
         {
           "id": "map16",
@@ -18247,7 +18144,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 20
         },
         {
           "id": "map17",
@@ -18265,7 +18163,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 25
         },
         {
           "id": "map18",
@@ -18283,7 +18182,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 30
         },
         {
           "id": "map19",
@@ -18301,7 +18201,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 35
         },
         {
           "id": "map20",
@@ -18319,7 +18220,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 40
         },
         {
           "id": "map21",
@@ -18337,7 +18239,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 45
         },
         {
           "id": "map22",
@@ -18355,7 +18258,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 50
         },
         {
           "id": "map23",
@@ -18373,7 +18277,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 55
         },
         {
           "id": "map24",
@@ -18391,7 +18296,8 @@
           "eliteEnabled": true,
           "eliteChance": 0.12,
           "bossEnabled": true,
-          "bossChance": 0
+          "bossChance": 0,
+          "recommendedGearLevel": 60
         }
       ]
     },
@@ -23955,16 +23861,7 @@
             "map0_mob2"
           ]
         }
-      ],
-      "levelGap": {
-        "enabled": true,
-        "freeLevels": 5,
-        "midGap": 10,
-        "midMultiplier": 0.5,
-        "highGap": 15,
-        "highMultiplier": 0.2,
-        "minimumMultiplier": 0.1
-      }
+      ]
     },
     "economy": {
       "equipmentSellPriceByQuality": [
@@ -24459,7 +24356,7 @@
     "chapterSubtitle": "純文字遠征手札",
     "homeEyebrow": "DREAMING ABYSS · 選擇你的遠征者",
     "homeTitle": "向荒野出發。",
-    "homeDescription": "一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。",
+    "homeDescription": "一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\n擊敗各地首領開放新地圖，挑戰 {{finalBossLevel}} 級噬日者後解鎖覺醒地圖。",
     "homeFooter": "自動存檔 · 無離線戰鬥"
   },
   "timeUnits": {
@@ -27665,7 +27562,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 10
     },
     {
@@ -27680,7 +27577,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 11
     },
     {
@@ -27695,7 +27592,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 12
     },
     {
@@ -27710,7 +27607,7 @@
           "value": 15
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 13
     },
     {
@@ -27725,7 +27622,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 14
     },
     {
@@ -27740,7 +27637,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 15
     },
     {
@@ -27755,7 +27652,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 16
     },
     {
@@ -27770,7 +27667,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 17
     },
     {
@@ -27785,7 +27682,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 18
     },
     {
@@ -27800,7 +27697,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 19
     },
     {
@@ -27815,7 +27712,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 20
     },
     {
@@ -27830,7 +27727,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 21
     },
     {
@@ -27845,7 +27742,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 22
     },
     {
@@ -27860,7 +27757,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 23
     },
     {
@@ -27875,7 +27772,7 @@
           "value": 15
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 24
     },
     {
@@ -27890,7 +27787,7 @@
           "value": 15
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 25
     },
     {
@@ -27905,7 +27802,7 @@
           "value": 15
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 26
     },
     {
@@ -27920,7 +27817,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 27
     },
     {
@@ -27935,7 +27832,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 28
     },
     {
@@ -27950,7 +27847,7 @@
           "value": 10
         }
       ],
-      "requiredLevel": 8,
+      "requiredLevel": 7,
       "partnerId": 29
     },
     {
@@ -27959,7 +27856,7 @@
       "description": "普攻或技能擊殺後，以 80% 攻擊追擊目前生命最低敵人；擊殺可連續追擊，最多 3 次。常駐生效、不占槽。",
       "usageScope": "character",
       "partnerId": null,
-      "requiredLevel": 3,
+      "requiredLevel": 2,
       "requiresAdvanced": false,
       "requiredMastery": null,
       "requiredMasteryLevel": 0,
@@ -28000,7 +27897,7 @@
       "description": "敵人死亡事件群組使自身所有技能冷卻縮減；縮減秒數與獨立內部冷卻依秒數設定換算。常駐生效、不占槽。",
       "usageScope": "character",
       "partnerId": null,
-      "requiredLevel": 3,
+      "requiredLevel": 2,
       "requiresAdvanced": false,
       "requiredMastery": null,
       "requiredMasteryLevel": 0,
@@ -36725,7 +36622,7 @@
         "id": "job0-core0",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -36782,7 +36679,7 @@
         "id": "job0-core1",
         "name": "堅毅壁壘",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 6,
         "power": 0.9,
         "effect": "shield",
@@ -36843,7 +36740,7 @@
         "id": "job0-core2",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -36900,7 +36797,7 @@
         "id": "job0-core3",
         "name": "浴血重擊",
         "activation": "proc",
-        "requiredLevel": 7,
+        "requiredLevel": 6,
         "cooldown": 0,
         "power": 0.4,
         "effect": "drain",
@@ -36957,7 +36854,7 @@
         "id": "job0-core4",
         "name": "聖鋼裁決",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.05,
         "effect": "damage",
@@ -37018,7 +36915,7 @@
         "id": "job0-core5",
         "name": "不屈戰意",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.8,
         "effect": "shield",
@@ -37079,7 +36976,7 @@
         "id": "job0-core6",
         "name": "狂亂嘲諷",
         "activation": "active",
-        "requiredLevel": 9,
+        "requiredLevel": 8,
         "cooldown": 6,
         "power": 0,
         "effect": "tauntRage",
@@ -37144,7 +37041,7 @@
         "id": "partner10-core7",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -37206,7 +37103,7 @@
         "id": "partner10-core8",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -37268,7 +37165,7 @@
         "id": "partner10-core9",
         "name": "聖鋼裁決",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.05,
         "effect": "damage",
@@ -37330,7 +37227,7 @@
         "id": "partner11-core10",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -37392,7 +37289,7 @@
         "id": "partner11-core11",
         "name": "堅毅壁壘",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 6,
         "power": 0.9,
         "effect": "shield",
@@ -37454,7 +37351,7 @@
         "id": "partner11-core12",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -37516,7 +37413,7 @@
         "id": "partner11-core13",
         "name": "嘲諷",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 6,
         "power": 0,
         "effect": "tauntRage",
@@ -37585,7 +37482,7 @@
         "id": "partner15-core14",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -37647,7 +37544,7 @@
         "id": "partner15-core15",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -37709,7 +37606,7 @@
         "id": "partner15-core16",
         "name": "聖鋼裁決",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.05,
         "effect": "damage",
@@ -37771,7 +37668,7 @@
         "id": "partner16-core17",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -37833,7 +37730,7 @@
         "id": "partner16-core18",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -37895,7 +37792,7 @@
         "id": "partner16-core19",
         "name": "聖鋼裁決",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.05,
         "effect": "damage",
@@ -37957,7 +37854,7 @@
         "id": "partner17-core20",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -38019,7 +37916,7 @@
         "id": "partner17-core21",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -38081,7 +37978,7 @@
         "id": "partner17-core22",
         "name": "聖鋼裁決",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.05,
         "effect": "damage",
@@ -38143,7 +38040,7 @@
         "id": "partner18-core23",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -38205,7 +38102,7 @@
         "id": "partner18-core24",
         "name": "堅毅壁壘",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 6,
         "power": 0.9,
         "effect": "shield",
@@ -38267,7 +38164,7 @@
         "id": "partner18-core25",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -38329,7 +38226,7 @@
         "id": "partner18-core26",
         "name": "嘲諷",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 6,
         "power": 0,
         "effect": "tauntRage",
@@ -38398,7 +38295,7 @@
         "id": "partner19-core27",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -38460,7 +38357,7 @@
         "id": "partner19-core28",
         "name": "堅毅壁壘",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 6,
         "power": 0.9,
         "effect": "shield",
@@ -38522,7 +38419,7 @@
         "id": "partner19-core29",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -38584,7 +38481,7 @@
         "id": "partner19-core30",
         "name": "嘲諷",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 6,
         "power": 0,
         "effect": "tauntRage",
@@ -38653,7 +38550,7 @@
         "id": "partner20-core31",
         "name": "裂地斬",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.35,
         "effect": "damage",
@@ -38715,7 +38612,7 @@
         "id": "partner20-core32",
         "name": "堅毅壁壘",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 6,
         "power": 0.9,
         "effect": "shield",
@@ -38777,7 +38674,7 @@
         "id": "partner20-core33",
         "name": "反擊之刃",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.65,
         "effect": "damage",
@@ -38839,7 +38736,7 @@
         "id": "partner20-core34",
         "name": "嘲諷",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 6,
         "power": 0,
         "effect": "tauntRage",
@@ -38912,7 +38809,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -38972,7 +38869,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -39024,7 +38921,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -39085,7 +38982,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -39142,7 +39039,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -39204,7 +39101,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -39261,7 +39158,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -39318,7 +39215,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -39380,7 +39277,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -39437,7 +39334,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -39499,7 +39396,7 @@
         "value": 0.18,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "physical",
         "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
         "baseCritRate": 0,
@@ -39556,7 +39453,7 @@
         "value": 0.2,
         "duration": 8,
         "cooldown": 15,
-        "level": 15,
+        "level": 14,
         "element": "physical",
         "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
         "baseCritRate": 0,
@@ -39618,7 +39515,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -39675,7 +39572,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -39732,7 +39629,7 @@
         "value": 0.3,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
         "baseCritRate": 0,
@@ -39785,7 +39682,7 @@
         "id": "job1-core0",
         "name": "火焰箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.55,
         "effect": "damage",
@@ -39843,7 +39740,7 @@
         "id": "job1-core1",
         "name": "冰霜護幕",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 5,
         "power": 0.9,
         "effect": "shield",
@@ -39905,7 +39802,7 @@
         "id": "job1-core2",
         "name": "餘燼爆發",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.8,
         "effect": "damage",
@@ -39963,7 +39860,7 @@
         "id": "job1-core3",
         "name": "奧術汲取",
         "activation": "proc",
-        "requiredLevel": 7,
+        "requiredLevel": 6,
         "cooldown": 0,
         "power": 0.45,
         "effect": "drain",
@@ -40021,7 +39918,7 @@
         "id": "job1-core4",
         "name": "隕星墜落",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 5,
         "power": 2.6,
         "effect": "damage",
@@ -40083,7 +39980,7 @@
         "id": "job1-core5",
         "name": "魔力迴響",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 1.15,
         "effect": "damage",
@@ -40145,7 +40042,7 @@
         "id": "job1-core6",
         "name": "變形術",
         "activation": "active",
-        "requiredLevel": 12,
+        "requiredLevel": 11,
         "cooldown": 7,
         "power": 1,
         "effect": "polymorph",
@@ -40209,7 +40106,7 @@
         "id": "job1-core7",
         "name": "冰霜新星",
         "activation": "active",
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "cooldown": 6,
         "power": 0,
         "effect": "frost",
@@ -40273,7 +40170,7 @@
         "id": "job1-core8",
         "name": "寒冰箭",
         "activation": "active",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 5,
         "power": 0,
         "effect": "freeze",
@@ -40337,7 +40234,7 @@
         "id": "partner12-core9",
         "name": "火焰箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.55,
         "effect": "damage",
@@ -40400,7 +40297,7 @@
         "id": "partner12-core10",
         "name": "餘燼爆發",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.8,
         "effect": "damage",
@@ -40463,7 +40360,7 @@
         "id": "partner12-core11",
         "name": "隕星墜落",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 5,
         "power": 2.6,
         "effect": "damage",
@@ -40526,7 +40423,7 @@
         "id": "partner21-core12",
         "name": "火焰箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.55,
         "effect": "damage",
@@ -40589,7 +40486,7 @@
         "id": "partner21-core13",
         "name": "餘燼爆發",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.8,
         "effect": "damage",
@@ -40652,7 +40549,7 @@
         "id": "partner21-core14",
         "name": "隕星墜落",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 5,
         "power": 2.6,
         "effect": "damage",
@@ -40715,7 +40612,7 @@
         "id": "partner22-core15",
         "name": "火焰箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.55,
         "effect": "damage",
@@ -40778,7 +40675,7 @@
         "id": "partner22-core16",
         "name": "餘燼爆發",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.8,
         "effect": "damage",
@@ -40841,7 +40738,7 @@
         "id": "partner22-core17",
         "name": "隕星墜落",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 5,
         "power": 2.6,
         "effect": "damage",
@@ -40904,7 +40801,7 @@
         "id": "partner23-core18",
         "name": "火焰箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.55,
         "effect": "damage",
@@ -40967,7 +40864,7 @@
         "id": "partner23-core19",
         "name": "餘燼爆發",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.8,
         "effect": "damage",
@@ -41030,7 +40927,7 @@
         "id": "partner23-core20",
         "name": "隕星墜落",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 5,
         "power": 2.6,
         "effect": "damage",
@@ -41097,7 +40994,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -41157,7 +41054,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -41210,7 +41107,7 @@
         "value": 0.25,
         "duration": 10,
         "cooldown": 16,
-        "level": 15,
+        "level": 14,
         "description": "在集火目標上留下元素印記，放大後續攻擊的效果。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -41270,7 +41167,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -41327,7 +41224,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -41384,7 +41281,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -41441,7 +41338,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -41498,7 +41395,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -41555,7 +41452,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -41612,7 +41509,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 17,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
         "baseCritRate": 0,
@@ -41669,7 +41566,7 @@
         "value": 0.18,
         "duration": 7,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "ice",
         "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
         "baseCritRate": 0,
@@ -41722,7 +41619,7 @@
         "id": "job2-core0",
         "name": "穿透箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.45,
         "effect": "damage",
@@ -41779,7 +41676,7 @@
         "id": "job2-core1",
         "name": "林間休憩",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 5,
         "power": 0.8,
         "effect": "heal",
@@ -41840,7 +41737,7 @@
         "id": "job2-core2",
         "name": "連射",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.75,
         "effect": "damage",
@@ -41897,7 +41794,7 @@
         "id": "job2-core3",
         "name": "獵手印記",
         "activation": "proc",
-        "requiredLevel": 7,
+        "requiredLevel": 6,
         "cooldown": 0,
         "power": 0.95,
         "effect": "damage",
@@ -41954,7 +41851,7 @@
         "id": "job2-core4",
         "name": "疾風箭雨",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.15,
         "effect": "damage",
@@ -42015,7 +41912,7 @@
         "id": "job2-core5",
         "name": "生命之箭",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.55,
         "effect": "drain",
@@ -42076,7 +41973,7 @@
         "id": "job2-core6",
         "name": "冰凍陷阱",
         "activation": "active",
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "cooldown": 6,
         "power": 0,
         "effect": "summonFreezeTrap",
@@ -42140,7 +42037,7 @@
         "id": "job2-core7",
         "name": "變形陷阱",
         "activation": "active",
-        "requiredLevel": 12,
+        "requiredLevel": 11,
         "cooldown": 7,
         "power": 1,
         "effect": "summonMorphTrap",
@@ -42204,7 +42101,7 @@
         "id": "partner14-core8",
         "name": "穿透箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.45,
         "effect": "damage",
@@ -42266,7 +42163,7 @@
         "id": "partner14-core9",
         "name": "連射",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.75,
         "effect": "damage",
@@ -42328,7 +42225,7 @@
         "id": "partner14-core10",
         "name": "疾風箭雨",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.15,
         "effect": "damage",
@@ -42390,7 +42287,7 @@
         "id": "partner27-core11",
         "name": "穿透箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.45,
         "effect": "damage",
@@ -42452,7 +42349,7 @@
         "id": "partner27-core12",
         "name": "連射",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.75,
         "effect": "damage",
@@ -42514,7 +42411,7 @@
         "id": "partner27-core13",
         "name": "疾風箭雨",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.15,
         "effect": "damage",
@@ -42576,7 +42473,7 @@
         "id": "partner28-core14",
         "name": "穿透箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.45,
         "effect": "damage",
@@ -42638,7 +42535,7 @@
         "id": "partner28-core15",
         "name": "連射",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.75,
         "effect": "damage",
@@ -42700,7 +42597,7 @@
         "id": "partner28-core16",
         "name": "疾風箭雨",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.15,
         "effect": "damage",
@@ -42762,7 +42659,7 @@
         "id": "partner29-core17",
         "name": "穿透箭",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.45,
         "effect": "damage",
@@ -42824,7 +42721,7 @@
         "id": "partner29-core18",
         "name": "連射",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.75,
         "effect": "damage",
@@ -42886,7 +42783,7 @@
         "id": "partner29-core19",
         "name": "疾風箭雨",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2.15,
         "effect": "damage",
@@ -42952,7 +42849,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -43013,7 +42910,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -43064,7 +42961,7 @@
         "value": 0.15,
         "duration": 8,
         "cooldown": 16,
-        "level": 15,
+        "level": 14,
         "element": "wind",
         "description": "以流動氣流環繞隊伍，減輕敵方攻擊造成的壓力。",
         "baseCritRate": 0,
@@ -43125,7 +43022,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -43183,7 +43080,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -43239,7 +43136,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -43297,7 +43194,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -43353,7 +43250,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -43411,7 +43308,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -43467,7 +43364,7 @@
         "value": 0.1,
         "duration": 12,
         "cooldown": 18,
-        "level": 1,
+        "level": 0,
         "element": "wind",
         "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
         "baseCritRate": 0,
@@ -43525,7 +43422,7 @@
         "value": 0.2,
         "duration": 10,
         "cooldown": 15,
-        "level": 4,
+        "level": 3,
         "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
@@ -43577,7 +43474,7 @@
         "id": "job3-core0",
         "name": "聖光審判",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.4,
         "effect": "damage",
@@ -43635,7 +43532,7 @@
         "id": "job3-core1",
         "name": "治癒禱言",
         "activation": "active",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 4,
         "power": 1,
         "effect": "heal",
@@ -43697,7 +43594,7 @@
         "id": "job3-core2",
         "name": "懲戒",
         "activation": "proc",
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "cooldown": 0,
         "power": 0.7,
         "effect": "damage",
@@ -43755,7 +43652,7 @@
         "id": "job3-core3",
         "name": "生命泉源",
         "activation": "proc",
-        "requiredLevel": 7,
+        "requiredLevel": 6,
         "cooldown": 0,
         "power": 0.65,
         "effect": "heal",
@@ -43813,7 +43710,7 @@
         "id": "job3-core4",
         "name": "黎明聖印",
         "activation": "active",
-        "requiredLevel": 15,
+        "requiredLevel": 14,
         "cooldown": 4,
         "power": 2,
         "effect": "damage",
@@ -43875,7 +43772,7 @@
         "id": "job3-core5",
         "name": "神聖庇護",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.9,
         "effect": "shield",
@@ -43937,7 +43834,7 @@
         "id": "job3-core6",
         "name": "植入恐怖",
         "activation": "active",
-        "requiredLevel": 10,
+        "requiredLevel": 9,
         "cooldown": 6,
         "power": 0,
         "effect": "fear",
@@ -44001,7 +43898,7 @@
         "id": "partner13-core7",
         "name": "聖光審判",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.4,
         "effect": "damage",
@@ -44064,7 +43961,7 @@
         "id": "partner13-core8",
         "name": "治癒禱言",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 4,
         "power": 1,
         "effect": "heal",
@@ -44127,7 +44024,7 @@
         "id": "partner13-core9",
         "name": "生命泉源",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "heal",
@@ -44190,7 +44087,7 @@
         "id": "partner13-core10",
         "name": "神聖庇護",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.9,
         "effect": "shield",
@@ -44253,7 +44150,7 @@
         "id": "partner24-core11",
         "name": "聖光審判",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.4,
         "effect": "damage",
@@ -44316,7 +44213,7 @@
         "id": "partner24-core12",
         "name": "治癒禱言",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 4,
         "power": 1,
         "effect": "heal",
@@ -44379,7 +44276,7 @@
         "id": "partner24-core13",
         "name": "生命泉源",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "heal",
@@ -44442,7 +44339,7 @@
         "id": "partner24-core14",
         "name": "神聖庇護",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.9,
         "effect": "shield",
@@ -44505,7 +44402,7 @@
         "id": "partner25-core15",
         "name": "聖光審判",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.4,
         "effect": "damage",
@@ -44568,7 +44465,7 @@
         "id": "partner25-core16",
         "name": "治癒禱言",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 4,
         "power": 1,
         "effect": "heal",
@@ -44631,7 +44528,7 @@
         "id": "partner25-core17",
         "name": "生命泉源",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "heal",
@@ -44694,7 +44591,7 @@
         "id": "partner25-core18",
         "name": "神聖庇護",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.9,
         "effect": "shield",
@@ -44757,7 +44654,7 @@
         "id": "partner26-core19",
         "name": "聖光審判",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 3,
         "power": 1.4,
         "effect": "damage",
@@ -44820,7 +44717,7 @@
         "id": "partner26-core20",
         "name": "治癒禱言",
         "activation": "active",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 4,
         "power": 1,
         "effect": "heal",
@@ -44883,7 +44780,7 @@
         "id": "partner26-core21",
         "name": "生命泉源",
         "activation": "proc",
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "cooldown": 0,
         "power": 0.65,
         "effect": "heal",
@@ -44946,7 +44843,7 @@
         "id": "partner26-core22",
         "name": "神聖庇護",
         "activation": "proc",
-        "requiredLevel": 20,
+        "requiredLevel": 19,
         "cooldown": 0,
         "power": 0.9,
         "effect": "shield",
@@ -45013,7 +44910,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -45073,7 +44970,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -45125,7 +45022,7 @@
         "value": 0.22,
         "duration": 10,
         "cooldown": 18,
-        "level": 15,
+        "level": 14,
         "element": "light",
         "description": "向全隊獻上祈願，鼓舞眾人的攻擊意志。",
         "baseCritRate": 0,
@@ -45193,7 +45090,7 @@
         "value": 0,
         "duration": 99,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "baseCritRate": 0,
         "baseCritDamage": 1.5,
         "defensePenetration": 0,
@@ -45247,7 +45144,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -45304,7 +45201,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -45361,7 +45258,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -45418,7 +45315,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -45475,7 +45372,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -45532,7 +45429,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -45589,7 +45486,7 @@
         "value": 0.025,
         "duration": 10,
         "cooldown": 16,
-        "level": 1,
+        "level": 0,
         "element": "light",
         "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
         "baseCritRate": 0,
@@ -45646,7 +45543,7 @@
         "value": 0.35,
         "duration": 8,
         "cooldown": 14,
-        "level": 4,
+        "level": 3,
         "element": "light",
         "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
         "baseCritRate": 0,
@@ -45707,7 +45604,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 10,
         "type": "passive",
         "jobs": [
@@ -45748,7 +45645,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 11,
         "type": "passive",
         "jobs": [
@@ -45789,7 +45686,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 12,
         "type": "passive",
         "jobs": [
@@ -45830,7 +45727,7 @@
             "value": 15
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 13,
         "type": "passive",
         "jobs": [
@@ -45871,7 +45768,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 14,
         "type": "passive",
         "jobs": [
@@ -45912,7 +45809,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 15,
         "type": "passive",
         "jobs": [
@@ -45953,7 +45850,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 16,
         "type": "passive",
         "jobs": [
@@ -45994,7 +45891,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 17,
         "type": "passive",
         "jobs": [
@@ -46035,7 +45932,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 18,
         "type": "passive",
         "jobs": [
@@ -46076,7 +45973,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 19,
         "type": "passive",
         "jobs": [
@@ -46117,7 +46014,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 20,
         "type": "passive",
         "jobs": [
@@ -46158,7 +46055,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 21,
         "type": "passive",
         "jobs": [
@@ -46199,7 +46096,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 22,
         "type": "passive",
         "jobs": [
@@ -46240,7 +46137,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 23,
         "type": "passive",
         "jobs": [
@@ -46281,7 +46178,7 @@
             "value": 15
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 24,
         "type": "passive",
         "jobs": [
@@ -46322,7 +46219,7 @@
             "value": 15
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 25,
         "type": "passive",
         "jobs": [
@@ -46363,7 +46260,7 @@
             "value": 15
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 26,
         "type": "passive",
         "jobs": [
@@ -46404,7 +46301,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 27,
         "type": "passive",
         "jobs": [
@@ -46445,7 +46342,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 28,
         "type": "passive",
         "jobs": [
@@ -46486,7 +46383,7 @@
             "value": 10
           }
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 7,
         "partnerId": 29,
         "type": "passive",
         "jobs": [
@@ -46532,12 +46429,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 1
+            "masteryLevel": 0
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -46600,12 +46497,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -46668,12 +46565,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 5
+            "masteryLevel": 4
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -46734,12 +46631,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 1
+            "masteryLevel": 0
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -46800,12 +46697,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -46867,12 +46764,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 5
+            "masteryLevel": 4
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -46933,12 +46830,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 1
+            "masteryLevel": 0
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47000,12 +46897,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47066,12 +46963,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 5
+            "masteryLevel": 4
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47134,12 +47031,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 1
+            "masteryLevel": 0
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47200,12 +47097,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47266,12 +47163,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 5
+            "masteryLevel": 4
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 5,
+        "requiredLevel": 4,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47321,7 +47218,7 @@
         "id": "tutorial_echo",
         "name": "追擊",
         "activation": "proc",
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "cooldown": 0,
         "power": 0.5,
         "effect": "damage",
@@ -47423,12 +47320,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47490,12 +47387,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47558,12 +47455,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47624,12 +47521,12 @@
         "sources": [
           {
             "type": "class",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 3,
+        "requiredLevel": 2,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47696,7 +47593,7 @@
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47788,7 +47685,7 @@
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47879,7 +47776,7 @@
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 1,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -47954,33 +47851,33 @@
         "initial": [
           {
             "skillId": "class0-initial0",
-            "level": 1
+            "masteryLevel": 0
           },
           {
             "skillId": "class0-initial1",
-            "level": 3
+            "masteryLevel": 2
           },
           {
             "skillId": "class0-initial2",
-            "level": 5
+            "masteryLevel": 4
           },
           {
             "skillId": "warrior-cleave-chain",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "advanced": [
           {
             "skillId": "job0-core4",
-            "level": 15
+            "masteryLevel": 14
           },
           {
             "skillId": "job0-core5",
-            "level": 20
+            "masteryLevel": 19
           },
           {
             "skillId": "job0-support2",
-            "level": 15
+            "masteryLevel": 14
           }
         ],
         "slots": {
@@ -48002,33 +47899,33 @@
         "initial": [
           {
             "skillId": "class1-initial0",
-            "level": 1
+            "masteryLevel": 0
           },
           {
             "skillId": "class1-initial1",
-            "level": 3
+            "masteryLevel": 2
           },
           {
             "skillId": "class1-initial2",
-            "level": 5
+            "masteryLevel": 4
           },
           {
             "skillId": "mage-mana-cycle",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "advanced": [
           {
             "skillId": "job1-core4",
-            "level": 15
+            "masteryLevel": 14
           },
           {
             "skillId": "job1-core5",
-            "level": 20
+            "masteryLevel": 19
           },
           {
             "skillId": "job1-support2",
-            "level": 15
+            "masteryLevel": 14
           }
         ],
         "slots": {
@@ -48050,33 +47947,33 @@
         "initial": [
           {
             "skillId": "class2-initial0",
-            "level": 1
+            "masteryLevel": 0
           },
           {
             "skillId": "class2-initial1",
-            "level": 3
+            "masteryLevel": 2
           },
           {
             "skillId": "class2-initial2",
-            "level": 5
+            "masteryLevel": 4
           },
           {
             "skillId": "archer-arrow-rain",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "advanced": [
           {
             "skillId": "job2-core4",
-            "level": 15
+            "masteryLevel": 14
           },
           {
             "skillId": "job2-core5",
-            "level": 20
+            "masteryLevel": 19
           },
           {
             "skillId": "job2-support2",
-            "level": 15
+            "masteryLevel": 14
           }
         ],
         "slots": {
@@ -48098,37 +47995,37 @@
         "initial": [
           {
             "skillId": "class3-initial0",
-            "level": 1
+            "masteryLevel": 0
           },
           {
             "skillId": "class3-initial1",
-            "level": 3
+            "masteryLevel": 2
           },
           {
             "skillId": "class3-initial2",
-            "level": 5
+            "masteryLevel": 4
           },
           {
             "skillId": "priest-holy-prison",
-            "level": 3
+            "masteryLevel": 2
           }
         ],
         "advanced": [
           {
             "skillId": "job3-core4",
-            "level": 15
+            "masteryLevel": 14
           },
           {
             "skillId": "job3-core5",
-            "level": 20
+            "masteryLevel": 19
           },
           {
             "skillId": "job3-support2",
-            "level": 15
+            "masteryLevel": 14
           },
           {
             "skillId": "job3-support3",
-            "level": 15
+            "masteryLevel": 14
           }
         ],
         "slots": {
@@ -48278,7 +48175,8 @@
           ]
         }
       }
-    ]
+    ],
+    "masteryGateVersion": 1
   },
   "wishingLake": {
     "version": 1,

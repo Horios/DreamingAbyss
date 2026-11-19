@@ -33,7 +33,7 @@
         if(e.key==='raceDamagePct'){assert(races.includes(e.race),'被動種族無效：'+d.id);out.race=e.race;}
         return out;
       });
-      const requiredLevel=d.requiredLevel??1;assert(Number.isSafeInteger(requiredLevel)&&requiredLevel>=1,'被動解鎖等級無效：'+d.id);
+      const requiredLevel=d.requiredLevel??0;assert(Number.isSafeInteger(requiredLevel)&&requiredLevel>=0,'被動解鎖精通等級無效：'+d.id);
       assert(d.partnerId==null||Number.isInteger(d.partnerId)&&d.partnerId>=10,'被動指定夥伴無效：'+d.id);
       return {...(d.eventPassive?{eventPassive:copy(d.eventPassive)}:{}),id:d.id,name:d.name.trim(),description:d.description??'',kind,target,effects,requiredLevel,...(d.partnerId!=null?{partnerId:d.partnerId}:{})};
     });

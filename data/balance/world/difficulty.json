@@ -18,7 +18,6 @@
       "bossGearChance": 0.06,
       "ore": 1,
       "legendaryGearChance": 0.0006,
-      "xpMultiplier": 1,
       "goldMultiplier": 1
     },
     {
@@ -39,7 +38,6 @@
       "bossGearChance": 0.1,
       "ore": 1.5,
       "legendaryGearChance": 0.0016,
-      "xpMultiplier": 1.45,
       "goldMultiplier": 1.35
     },
     {
@@ -60,7 +58,6 @@
       "bossGearChance": 0.15,
       "ore": 2,
       "legendaryGearChance": 0.0032,
-      "xpMultiplier": 2,
       "goldMultiplier": 1.8
     }
   ],

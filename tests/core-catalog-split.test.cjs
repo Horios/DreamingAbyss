@@ -38,7 +38,7 @@ test('catalog, runtime balance initialization and previous save remain available
   assert.equal(game.run('SUPPORT.length'),4);
   assert.equal(game.run('ITEM_FORMS.length'),5);
   assert.equal(game.run('GAME_BALANCE_DEFAULTS.combat.minimumActiveCooldown'),1);
-  assert(game.run('GAMEPLAY_SETTINGS_DEFAULTS.progression.levelCaps.beforeClear')>0);
+  assert(game.run('GAMEPLAY_SETTINGS_DEFAULTS.equipment.maxLevel')>0);
   game.run('selectSaveSlot(1);start(0);closeModal();save()');
   assert(game.run('party&&state'));
   assert.equal(game.run('globalThis.__EMBERWILD_BOOT_SAVE_ERROR'),null);

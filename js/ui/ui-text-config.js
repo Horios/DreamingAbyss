@@ -1,6 +1,6 @@
 
 /* Update 17: editable main-screen/interface copy. */
-const UI_TEXT_DEFAULTS={"browserTitle":"夢淵 · Dreaming Abyss","gameTitle":"夢淵","gameSubtitle":"DREAMING ABYSS","chapterTitle":"","chapterSubtitle":"","homeEyebrow":"DREAMING ABYSS · 選擇你的遠征者","homeTitle":"","homeDescription":"一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\nLV{{beforeClearLevel}} 挑戰 {{finalBossLevel}} 級噬日者，通關後解鎖 LV{{afterClearLevel}} 與覺醒地圖。","homeFooter":"自動存檔 · 無離線戰鬥"};
+const UI_TEXT_DEFAULTS={"browserTitle":"夢淵 · Dreaming Abyss","gameTitle":"夢淵","gameSubtitle":"DREAMING ABYSS","chapterTitle":"","chapterSubtitle":"","homeEyebrow":"DREAMING ABYSS · 選擇你的遠征者","homeTitle":"","homeDescription":"一場沒有主線束縛的遠征。探索、收集、雕琢你的技能。\n擊敗各地首領開放新地圖，挑戰 {{finalBossLevel}} 級噬日者後解鎖覺醒地圖。","homeFooter":"自動存檔 · 無離線戰鬥"};
 let UI_TEXT=structuredClone(UI_TEXT_DEFAULTS);
 function normalizeUIText(input){
   const src=input&&typeof input==='object'&&!Array.isArray(input)?input:{};
@@ -16,12 +16,11 @@ function normalizeUIText(input){
 function resolveUIText(value){
   const g=globalThis.__EMBERWILD_GAMEPLAY_SETTINGS||GAMEPLAY_SETTINGS||{};
   const values={
-    beforeClearLevel:g.progression?.levelCaps?.beforeClear??30,
-    afterClearLevel:g.progression?.levelCaps?.afterClear??60,
+    afterClearLevel:g.equipment?.maxLevel??60,
     finalBossLevel:g.monsters?.finalBoss?.level??40,
-    advanceLevel:g.progression?.advance?.level??15
+    advanceLevel:g.progression?.advance?.masteryLevel??15
   };
-  return String(value??'').replace(/\{\{\s*(beforeClearLevel|afterClearLevel|finalBossLevel|advanceLevel)\s*\}\}/g,(_,key)=>String(values[key]));
+  return String(value??'').replace(/\{\{\s*(afterClearLevel|finalBossLevel|advanceLevel)\s*\}\}/g,(_,key)=>String(values[key]));
 }
 function applyUITextDOM(){
   document.title=resolveUIText(UI_TEXT.browserTitle);
@@ -143,7 +142,7 @@ function inventoryGearDetail(g){
       <div><h2>${equipmentNameHTML(g)}</h2></div>
       <span class="tag">${qualityTag(g)}${locked?' · 已鎖定':''}</span>
     </div>
-    <div class="inventory-detail-meta">${gearWearableJobsText(g)} · ${CLASS_GEAR[g.job][g.slot]} · LV ${gearRequiredLevel(g)}${worn?' · 目前由 '+esc(characterName(wearer))+' 穿戴':''}</div>
+    <div class="inventory-detail-meta">${gearWearableJobsText(g)} · ${CLASS_GEAR[g.job][g.slot]} · 裝等 ${gearRequiredLevel(g)}${worn?' · 目前由 '+esc(characterName(wearer))+' 穿戴':''}</div>
     <section class="inventory-detail-section"><h3>裝備能力</h3><p class="inventory-detail-stats equipment-total-summary">${globalThis.equipmentTotalSummaryHTML(g)}</p>${globalThis.equipmentAttributeDetailsHTML(g)}</section>
     <section class="inventory-detail-section"><div class="actions inventory-detail-actions"><button onclick="enhance('${g.id}')" ${g.plus>=RULES.enhanceMax||!canEnhance(g)?'disabled':''}>${g.plus>=RULES.enhanceMax?'已達 +'+RULES.enhanceMax:'強化 +'+(g.plus+1)+'／'+upgradeCostText(g)}</button><button onclick="reroll('${g.id}')" ${(()=>{const c=rerollCostFor(g);return draft||state.gold<c.gold||state.dust<c.dust;})()?'disabled':''}>洗鍊／${rerollCostFor(g).gold} 金幣＋${rerollCostFor(g).dust} 粉塵</button><button onclick="toggleGearLock('${g.id}')">${locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="salvage('${g.id}')" ${worn||draft||locked?'disabled':''}>分解</button></div></section>
     ${inlineAffixComparison(g)}
@@ -391,10 +390,7 @@ inlineInventoryView=function(){
   if(typeof note==='function'){
     const auditedNoteBase=note;
     note=function(text,type){
-      if(text==='噬日者已倒下！LV30 成員解鎖 LV60，其他成員達 LV30 時解鎖。'){
-        const before=Math.floor(GS('progression.levelCaps.beforeClear',30)),after=Math.floor(GS('progression.levelCaps.afterClear',60));
-        text=`噬日者已倒下！LV${before} 成員解鎖 LV${after}，其他成員達 LV${before} 時解鎖。`;
-      }
+      if(text==='噬日者已倒下！LV30 成員解鎖 LV60，其他成員達 LV30 時解鎖。')text='噬日者已倒下！通關後區域已開放。';
       return auditedNoteBase(text,type);
     };
   }
@@ -414,7 +410,7 @@ inlineInventoryView=function(){
       let html=continuedAuditCharacterViewBase();
       const h=typeof pageHero==='function'?pageHero('character'):state;
       const a=GAMEPLAY_SETTINGS.progression.advance;
-      const shouldDisable=!!h&&(h.advanced||h.lv<a.level);
+      const shouldDisable=!!h&&(h.advanced||!classAdvanceReady(h));
       html=html.replace(/<button class="primary" onclick="heroMenuAction\((\d+),\(\)=>\{advance\(\)\}\)"\s*(?:disabled)?\s*>/,function(full,job){
         return `<button class="primary" onclick="heroMenuAction(${job},()=>{advance()})"${shouldDisable?' disabled':''}>`;
       });

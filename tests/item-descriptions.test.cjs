@@ -29,7 +29,7 @@ test('shop, inventory, life stock, gems, scrolls and old token snapshots use cur
  const itemList=r.run('accountItemsView()'),gemList=r.run('accountGemsView()');
  // Current inventory deliberately shows name and icon only. Copy belongs in the item detail dialog.
  assert.match(itemList,/data-item-kind="item" data-item-key="imbue_fire" data-item-context="inventory"/);
- assert.match(itemList,/data-item-kind="item" data-item-key="level_scroll" data-item-context="inventory"/);
+ assert.doesNotMatch(itemList,/data-item-key="level_scroll"/,"level scrolls are no longer an item (v0.161)");
  assert.match(gemList,/data-item-kind="gem" data-item-key="0" data-item-context="inventory"/);
  assert.doesNotMatch(itemList,/管理器的藥|管理器的卷/);
  assert.doesNotMatch(gemList,/管理器的寶石/);
