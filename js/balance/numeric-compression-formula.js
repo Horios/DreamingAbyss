@@ -15,7 +15,7 @@
     if(!s||typeof s!=='object')return s;
     s.meta??={};
     s.meta.numericCompressionVersion=COMPRESSION_VERSION;
-    s.progression??={};s.progression.advance??={};
+    s.progression??={};
     s.skills??={};s.skills.core??={};s.skills.gems??={};
     s.skills.core.effectPerExtraLevel=.18;
     Object.assign(s.skills.gems,{effectMultiplier:1.10,hybridMultiplier:1.05,hybridActiveHealAttack:.10});

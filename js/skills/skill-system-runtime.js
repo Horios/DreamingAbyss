@@ -11,11 +11,11 @@
  const legacyMember=h=>!!h&&h!==player()&&h.companionId===undefined&&!!party?.members?.includes(h);
  const position=(j,k,i)=>`${j}:${k}:${i}`;
  function install(s){system=copy(M.validate(s));byId=new Map(system.definitions.map(sk=>[sk.id,sk]));byPosition=new Map(system.definitions.flatMap(sk=>M.adapters(sk).map(a=>[position(a.job,a.kind,a.index),sk])));}
- function slotCounts(h){return companion(h)?{active:h.active?.length||0,proc:h.procSlots?.length||0,support:h.supportSlots?.length||0}:M.slots(system,h.job,h.advanced);}
+ function slotCounts(h){return companion(h)?{active:h.active?.length||0,proc:h.procSlots?.length||0,support:h.supportSlots?.length||0}:M.slots(system,h.job,true);}
  // A tree node is met when its class mastery requirement is met and every prerequisite node is met too.
  function treeRowMet(h,r,row,depth=0){
   if(depth>16||!masteryRequirementMet(h,row.masteryLevel))return false;
-  for(const id of row.prerequisites||[]){const p=r.initial.find(x=>x.skillId===id)||(h.advanced?r.advanced.find(x=>x.skillId===id):null);if(!p||!treeRowMet(h,r,p,depth+1))return false;}
+  for(const id of row.prerequisites||[]){const p=r.initial.find(x=>x.skillId===id)||r.advanced.find(x=>x.skillId===id);if(!p||!treeRowMet(h,r,p,depth+1))return false;}
   return true;
  }
  function learned(h,sk){
@@ -29,9 +29,9 @@
   const gates=sk.unlockConditions||{};
   if(!unlocked&&(gates.classMasteryLevel||['materials','bossKills','eliteKills','bossEquipment'].some(k=>gates[k]?.length)))return false;
   const r=system.classRules.find(r=>r.job===h.job);
-  // Class skills unlock automatically once class mastery, the tree prerequisites (and the second class for advanced
-  // rows) are reached. No point or currency is spent, and nothing can be locked out permanently.
-  const row=r.initial.find(x=>x.skillId===sk.id)||(h.advanced?r.advanced.find(x=>x.skillId===sk.id):null);
+  // Class skills unlock automatically once class mastery and the tree prerequisites are reached (v0.168: every row,
+  // including the former second-class rows). No point or currency is spent, and nothing can be locked out permanently.
+  const row=r.initial.find(x=>x.skillId===sk.id)||r.advanced.find(x=>x.skillId===sk.id);
   if(row&&treeRowMet(h,r,row))return true;
   for(const src of sk.sources){
    if(src.masteryLevel&&!masteryRequirementMet(h,src.masteryLevel))continue;
@@ -45,7 +45,7 @@
   const previous=exportSystem;exportSystem=previousSystem;
   try{return read();}finally{exportSystem=previous;}
  }
- function emptyLoadout(h){const c=M.slots(system,h.job,h.advanced);return Object.fromEntries(['active','proc','support'].map(t=>[t,Array(c[t]).fill(null)]));}
+ function emptyLoadout(h){const c=M.slots(system,h.job,true);return Object.fromEntries(['active','proc','support'].map(t=>[t,Array(c[t]).fill(null)]));}
  function legacyLoadout(h){const out=emptyLoadout(h);for(const [type,field,kind] of [['active','active','core'],['proc','procSlots','core'],['support','supportSlots','support']])out[type]=out[type].map((_,n)=>byPosition.get(position(h.job,kind,h[field]?.[n]))?.id??null);return out;}
  function projectHero(h){
   if(!h||!system)return h;

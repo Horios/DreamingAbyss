@@ -15,11 +15,10 @@ function masteryRequirementText(meta){
 }
 function coreRequirementParts(sk,i){
   const meta=M.coreMeta(state.job,i),parts=[`職業精通 Lv${sk[2]}`];
-  if(skillRequiresAdvanced(sk,i))parts.push('完成二轉');
   if(meta?.partnerId!=null)parts.push('此夥伴專屬');return parts.concat(masteryRequirementText(meta));
 }
 function supportRequirementParts(sk,i){
-  const parts=[`職業精通 Lv${sk.level}`];if(i===2)parts.push('完成二轉');
+  const parts=[`職業精通 Lv${sk.level}`];
   if(sk?.partnerId!=null)parts.push('此夥伴專屬');return parts.concat(masteryRequirementText(sk));
 }
 function requirementHTML(parts,missing){
@@ -75,8 +74,8 @@ const DEFAULT_SUPPORT_ICONS={
   '鷹眼指引':'eagleEye','獵手標記':'trap','風行庇佑':'eagleEye',
   '晨光祝福':'light','聖光庇護':'light','光明祈願':'light'
 };
-function skillTurnOfCore(sk,i){return skillRequiresAdvanced(sk,i)?2:1;}
-function skillTurnOfSupport(sk,i){return i===2?2:1;}
+function skillTurnOfCore(){return 1;}
+function skillTurnOfSupport(){return 1;}
 function inferredCoreIcon(sk,i,job=state.job){
   const meta=M.coreMeta(job,i),explicit=meta?.iconType;
   if(explicit&&explicit!=='auto')return explicit;
@@ -191,7 +190,7 @@ function devToolHTML(){
 }
 skillsView=function(){
   M.ensureHero(state);
-  return singlePagePanel('skills','技能',()=>{const entries=skillCatalogEntries();if(skillSelectionJob!==memberKey(state)){skillSelectionJob=memberKey(state);skillSelection=null;skillTurn=1;}const visible=entries.filter(x=>x.turn===skillTurn),detail=selectedSkillDetailHTML(entries);return `${skillLoadoutSummaryHTML()}<div class="actions skill-turn-tabs"><button class="${skillTurn===1?'primary':''}" onclick="setSkillTurn(1)">一轉</button><button class="${skillTurn===2?'primary':''}" onclick="setSkillTurn(2)">二轉</button></div>${masterySummaryHTML()}<p class="small skill-board-help">技能依需求職業精通分列；移到圖示上可查看精通與其他學習條件，點擊圖示可查看詳細資料與配置。</p><div class="skill-layout-split"><div class="skill-tree-pane">${skillLevelBoardHTML(visible)}</div><div class="skill-detail-pane">${detail}</div></div>${devToolHTML()}`;});
+  return singlePagePanel('skills','技能',()=>{const entries=skillCatalogEntries();if(skillSelectionJob!==memberKey(state)){skillSelectionJob=memberKey(state);skillSelection=null;skillTurn=1;}const visible=entries.filter(x=>x.turn===skillTurn),detail=selectedSkillDetailHTML(entries);return `${skillLoadoutSummaryHTML()}${masterySummaryHTML()}<p class="small skill-board-help">技能依需求職業精通分列；移到圖示上可查看精通與其他學習條件，點擊圖示可查看詳細資料與配置。</p><div class="skill-layout-split"><div class="skill-tree-pane">${skillLevelBoardHTML(visible)}</div><div class="skill-detail-pane">${detail}</div></div>${devToolHTML()}`;});
 };
 globalThis.__EMBERWILD_MASTERY_UI={icon:skillIconHTML,skillIcon:skillIconFor,loadout:skillLoadoutSummaryHTML,devTools:devToolHTML,individual:()=>skillLoadoutSummaryHTML()+masterySummaryHTML()+coreSkillRows()+procSkillRows()+supportSkillRows()+devToolHTML()};
 
@@ -247,26 +246,11 @@ const masteryCharacterViewBase=characterView;
 characterView=function(){
   const h=typeof pageHero==='function'?pageHero('character'):state;M.ensureHero(h);let html=masteryCharacterViewBase();
   html=html.replace(/升級獲得\s*\d+\s*能力點[、，]\s*\d+\s*技能點；?/g,'').replace(/技能點\s*\+\s*\d+/g,'');
-  const req=M.masterySettings().advanceRequiredLevel,best=Math.max(0,...M.validMasteries(h.job).map(k=>M.masteryLevelFromXp(h.mastery[k]))),a=GAMEPLAY_SETTINGS.progression.advance,disabled=h.advanced||!classAdvanceReady(h)||best<req;
-  html=html.replace(/<button class="primary" onclick="heroMenuAction\((\d+),\(\)=>\{advance\(\)\}\)"\s*(?:disabled)?\s*>/,(_,job)=>`<button class="primary" onclick="heroMenuAction(${job},()=>{advance()})"${disabled?' disabled':''}>`);
-  // v0.113: the mastery requirement and where 怨念碎片 drops live inside the 二轉 panel (no separate panel).
-  const note=`<p class="small advance-mastery-note">另需本職任一主要精通達 Lv${req}（目前最高 Lv${best}）；不要求所有精通平均培養。</p>`+advanceMaterialHint();
-  const button=/<button class="primary" onclick="heroMenuAction\(\d+,\(\)=>\{advance\(\)\}\)"/;
-  return button.test(html)?html.replace(button,m=>note+m):html+`<section class="panel"><h2>二轉條件</h2>${note}</section>`;
+  return html;
 };
-// Regions whose monsters drop the 二轉 material, from the balance-driven monster catalog (MAPS as fallback).
-function advanceMaterialHint(material='怨念碎片'){
-  const found=new Map(),add=(mapIndex,name)=>{const m=MAPS[mapIndex];if(!m)return;if(!found.has(mapIndex))found.set(mapIndex,new Set());found.get(mapIndex).add(name);};
-  const catalog=typeof monsterCatalog==='function'?monsterCatalog():[];
-  for(const m of catalog)if(m?.material===material&&Number.isInteger(m.mapIndex))add(m.mapIndex,m.name);
-  if(!found.size)MAPS.forEach((m,i)=>{for(const mob of m.mobs||[])if(mob[2]===material)add(i,mob[0]);if(m.boss?.[2]===material)add(i,m.boss[0]);});
-  if(!found.size)return '';
-  const places=[...found].sort((a,b)=>a[0]-b[0]).map(([i,names])=>`${esc(MAPS[i].name)}（推薦裝等 ${mapRecommendedGearLevel(i)}・${[...names].map(esc).join('、')}）`).join('、');
-  return `<p class="small advance-material-hint">${esc(material)}取得地區：${places}</p>`;
-}
 const masteryGuideBase=guideView;
 guideView=function(){
-  return `<section class="panel"><h2>角色成長與精通</h2><p>角色沒有等級：使用職業戰鬥會累積職業精通，精通等級依序解鎖職業技能並決定二轉。戰士與弓箭手使用對應武器的普攻與技能可累積武器精通；法師與牧師依實際施放技能的體系累積元素或光暗精通。技能學習與二轉可能需要指定的精通等級，習得技能即可使用完整效果。</p></section>`+masteryGuideBase();
+  return `<section class="panel"><h2>角色成長與精通</h2><p>角色沒有等級：使用職業戰鬥會累積職業精通，精通等級依序解鎖職業技能。戰士與弓箭手使用對應武器的普攻與技能可累積武器精通；法師與牧師依實際施放技能的體系累積元素或光暗精通。技能學習可能需要指定的精通等級，習得技能即可使用完整效果。</p></section>`+masteryGuideBase();
 };
 if(state){save();render();}
 })();

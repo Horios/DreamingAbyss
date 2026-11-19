@@ -473,7 +473,6 @@
   }
   stats=function(h=state){
     const cls=typeof heroGrowthDefinition==='function'?heroGrowthDefinition(h):CLASSES[h.job],initial=typeof globalThis.classInitialStats==='function'?classInitialStats(cls,h.job):{hp:cls.hp,atk:cls.atk,def:cls.def,crit:h.job===2?GS('progression.baseCrit.archer',.17):GS('progression.baseCrit.default',.07),critDamage:GS('combat.baseCritDamage',1.5)},natural=EmberwildProgression.naturalStats({initialStats:initial}),mb=typeof globalThis.classMasteryBonus==='function'?classMasteryBonus(h):{hp:0,atk:0,def:0,crit:0},v={hp:natural.hp+mb.hp,atk:natural.atk+mb.atk,def:natural.def+mb.def,crit:initial.crit+mb.crit,critDamage:initial.critDamage,pierce:0,defenseIgnore:0,lifesteal:0,evasion:0,elementBonus:0,bossDamage:0,elementDamage:{},raceDamage:{},resist:{}};
-    if(h.advanced){v.hp*=GS('progression.advance.hpMultiplier',1.18);v.atk*=GS('progression.advance.attackMultiplier',1.22);v.def*=GS('progression.advance.defenseMultiplier',1.15);}
     if(h.companionId!==undefined)for(const key of ['pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage'])v[key]=cls.initialStats?.[key]||0;
     const attackBox={value:0,hp:0,defense:0};let fixedSpeed=0;
     for(const g of equipment(h)){

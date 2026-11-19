@@ -17,10 +17,9 @@ function resolveUIText(value){
   const g=globalThis.__EMBERWILD_GAMEPLAY_SETTINGS||GAMEPLAY_SETTINGS||{};
   const values={
     afterClearLevel:g.equipment?.maxLevel??60,
-    finalBossLevel:g.monsters?.finalBoss?.level??40,
-    advanceLevel:g.progression?.advance?.masteryLevel??15
+    finalBossLevel:g.monsters?.finalBoss?.level??40
   };
-  return String(value??'').replace(/\{\{\s*(afterClearLevel|finalBossLevel|advanceLevel)\s*\}\}/g,(_,key)=>String(values[key]));
+  return String(value??'').replace(/\{\{\s*(afterClearLevel|finalBossLevel)\s*\}\}/g,(_,key)=>String(values[key]));
 }
 function applyUITextDOM(){
   document.title=resolveUIText(UI_TEXT.browserTitle);
@@ -399,25 +398,6 @@ inlineInventoryView=function(){
 
 
 
-// Update 20: continued audit fixes.
-// The party-page renderer wraps advance() in heroMenuAction(), so the older
-// button-state patch no longer matched the final markup. Keep the displayed
-// requirement and clickability aligned with the actual advance() guard.
-(function installContinuedAuditFixes(){
-  if(typeof characterView==='function'){
-    const continuedAuditCharacterViewBase=characterView;
-    characterView=function(){
-      let html=continuedAuditCharacterViewBase();
-      const h=typeof pageHero==='function'?pageHero('character'):state;
-      const a=GAMEPLAY_SETTINGS.progression.advance;
-      const shouldDisable=!!h&&(h.advanced||!classAdvanceReady(h));
-      html=html.replace(/<button class="primary" onclick="heroMenuAction\((\d+),\(\)=>\{advance\(\)\}\)"\s*(?:disabled)?\s*>/,function(full,job){
-        return `<button class="primary" onclick="heroMenuAction(${job},()=>{advance()})"${shouldDisable?' disabled':''}>`;
-      });
-      return html;
-    };
-  }
-})();
 
 // The first save-load pass runs before late gameplay modules are installed. Run
 // one final hydration unconditionally so fields introduced by late modules are

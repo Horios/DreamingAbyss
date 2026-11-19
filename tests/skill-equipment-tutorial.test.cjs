@@ -25,7 +25,7 @@ for(let job=0;job<4;job++)test(`job ${job}: ordinary two-socket gear, actual pro
  assert.equal(r.run('state.gems[0]'),1);assert.equal(r.run('claim()'),false);
  assert.equal(r.run('socketEquipmentGem(charm.id,0,0)'),true);
  assert.equal(r.run('stats(state).atk'),atk+2);assert.equal(r.run('claim()'),true);
- assert.equal(r.run('lesson().done'),true);assert.equal(r.run(`state.acquiredSkillIds.filter(id=>id==='job${job}-support0').length`),1);assert.equal(r.run(`configureSkill('support',0,'job${job}-support0')`),true);assert.equal(r.run('state.supportSlots.length'),1);assert.equal(r.run('__EMBERWILD_SKILLS.validCast(state,0,"support")'),true);
+ assert.equal(r.run('lesson().done'),true);assert.equal(r.run(`state.acquiredSkillIds.filter(id=>id==='job${job}-support0').length`),1);assert.equal(r.run(`configureSkill('support',0,'job${job}-support0')`),true);assert.equal(r.run('state.supportSlots.length'),2);assert.equal(r.run('__EMBERWILD_SKILLS.validCast(state,0,"support")'),true);
  const count=r.run('state.bag.length'),gems=r.run('JSON.stringify(state.gems)');r.run('save();loadParty(JSON.parse(JSON.stringify(packParty())));__EMBERWILD_STORY.sync()');assert.equal(r.run('claim()'),false);assert.equal(r.run('state.bag.length'),count);assert.equal(r.run('JSON.stringify(state.gems)'),gems);assert.equal(r.run(`state.acquiredSkillIds.filter(id=>id==='job${job}-support0').length`),1);r.run('state.equipped=state.equipped.map(()=>null);save()');assert.equal(r.run(`__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('job${job}-support0'))`),true);assert.deepEqual(r.errors,[]);
 });
 test('protected sale/salvage, finite missing-item recovery and no stock duplication',()=>{

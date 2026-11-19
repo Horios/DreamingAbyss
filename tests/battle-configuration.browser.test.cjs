@@ -37,7 +37,7 @@ test('skill previews, catalog and passive switches work on desktop/mobile and pe
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:900});await p.locator('[data-skill-slot="active:0"]').click();
    const rain=p.locator('[data-skill-id="archer-arrow-rain"]');assert(await rain.isVisible());assert(await rain.getByRole('button').isDisabled());assert.match(await rain.innerText(),/職業精通 Lv2/);
-   assert.equal(await p.locator('[data-skill-id="job2-core4"]').count(),0);assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
+   assert.equal(await p.locator('[data-skill-id="job2-core4"]').count(),1,'v0.168: former second-class skills are listed (locked)');assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
    await p.getByRole('button',{name:'關閉',exact:true}).click();await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
    /* v0.092: the catalog lists skills on the left and details the clicked one on the right */assert(await p.locator('[data-skill-pick="job2-core4"]').isVisible());assert.equal(await p.locator('[data-skill-pick^="partner"]').count(),0);await p.locator('[data-skill-pick="tutorial_echo"]').click();assert.match(await p.locator('.skill-catalog-detail [data-skill-id="tutorial_echo"]').innerText(),/解鎖條件\s*裝備附帶/);
    assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.getByRole('button',{name:'關閉',exact:true}).click();

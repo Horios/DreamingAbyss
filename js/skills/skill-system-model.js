@@ -88,7 +88,7 @@
       for(const id of byId.keys())visit(id);
       // A prerequisite that needs more mastery than its dependant, or that sits in the second-class list under a
       // first-class node, would hold the dependant behind a later gate than its own; such trees are rejected.
-      for(const row of nodes)for(const p of row.prerequisites||[]){const q=byId.get(p);if(rule.advanced.includes(q)&&rule.initial.includes(row))fail('一轉技能不能以二轉技能為前置：'+row.skillId);}
+      for(const row of nodes)for(const p of row.prerequisites||[]){const q=byId.get(p);}
     }
     const e=s.equipment;if(!e||Object.hasOwn(e,'pool')||Object.hasOwn(e,'chanceByDifficulty'))fail('裝備技能只能來自指定裝備');
     if(e.formRules!==undefined&&(!Array.isArray(e.formRules)||e.formRules.some(r=>!safe(r.formId)||r.dropOnly!==undefined&&typeof r.dropOnly!=='boolean'||r.dropOnly&&!r.skillId||r.skillId&&!ids.get(r.skillId)?.sources.some(x=>x.type==='equipment'))))fail('固定裝備技能設定無效');

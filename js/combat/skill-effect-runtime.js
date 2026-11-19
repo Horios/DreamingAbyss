@@ -123,7 +123,7 @@
     const labels={cleanse:'淨化減益',dispel:'驅散增益',revive:'復活'},targets={self:'自己',weakest:'最低生命隊友',allies:'我方全體',enemy:'敵人',enemies:'敵方全體',fallen:'陣亡隊友',fallenAllies:'全體陣亡隊友'};
     const damage=['damage','drain'].includes(sk[5]),mode=m.commonEffectKeys?.includes('target')?m.target:schema.defaults(sk[5]).target;
     text=text.replace(/ · 目標 [^·]*/g,'');
-    if(labels[sk[5]])text=labels[sk[5]]+' · '+(sk[1]==='active'?'冷卻 '+skillCooldown(i,h)+' 回合':'普攻觸發率 '+Math.round(procChance(i,h)*100)+'% · 冷卻 無')+' · 需求 LV'+sk[2]+(skillRequiresAdvanced(sk,i)?'／二轉':'');
+    if(labels[sk[5]])text=labels[sk[5]]+' · '+(sk[1]==='active'?'冷卻 '+skillCooldown(i,h)+' 回合':'普攻觸發率 '+Math.round(procChance(i,h)*100)+'% · 冷卻 無')+' · 需求 LV'+sk[2];
     text+=' · 目標 '+(mode==='enemy'?(m.maxTargets>=99?'敵方全體':'敵人（最多 '+(m.maxTargets||1)+' 個）'):targets[mode]);
     const basisLabels={fixed:'固定點數',casterAttack:'施放者攻擊力',casterDefense:'施放者防禦',casterMaxHp:'施放者最大生命',casterCurrentHp:'施放者當前生命',casterMissingHp:'施放者已損生命',casterShield:'施放者護盾',casterLevel:'施放者等級',targetAttack:'目標攻擊力',targetDefense:'目標防禦',targetMaxHp:'目標最大生命',targetCurrentHp:'目標當前生命',targetMissingHp:'目標已損生命',targetShield:'目標護盾',targetLevel:'目標等級'};
     if(['damage','drain','heal','shield'].includes(sk[5]))text+=' · 基準 '+basisLabels[m.powerBasis||'casterAttack'];

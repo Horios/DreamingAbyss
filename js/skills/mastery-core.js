@@ -88,7 +88,7 @@ const SUPPORT_PLAN=[
   [{level:1},{level:4},{level:15}],
   [{level:1,mastery:'light'},{level:4,mastery:'light'},{level:15,mastery:'light'}]
 ];
-const MASTERY_DEFAULTS={xpBase:8,xpLinear:5,xpQuadratic:1,skillUseXp:2,basicAttackXp:1,maxLevel:30,advanceRequiredLevel:4};
+const MASTERY_DEFAULTS={xpBase:8,xpLinear:5,xpQuadratic:1,skillUseXp:2,basicAttackXp:1,maxLevel:30};
 // v0.161: stats each class mastery level adds to a character of that class (capped by maxLevel; only the current class counts).
 const CLASS_MASTERY_BONUS_DEFAULTS=[{hp:3,atk:0,def:.5,crit:0},{hp:1,atk:.6,def:0,crit:0},{hp:1,atk:.5,def:0,crit:.001},{hp:2,atk:.3,def:.2,crit:0}];
 
@@ -105,11 +105,11 @@ function ensureMasterySettings(settings){
   settings.skills.mastery.skillUseXp=Math.max(0,Number(settings.skills.mastery.skillUseXp));
   settings.skills.mastery.basicAttackXp=Math.max(0,Number(settings.skills.mastery.basicAttackXp));
   settings.skills.mastery.maxLevel=Math.max(1,Math.floor(Number(settings.skills.mastery.maxLevel)));
-  settings.skills.mastery.advanceRequiredLevel=Math.max(0,Math.floor(Number(settings.skills.mastery.advanceRequiredLevel)));
-  delete settings.skills.mastery.characterXpMultiplier;
+  // v0.168: the second class was removed together with its mastery requirement and its settings.
+  delete settings.skills.mastery.characterXpMultiplier;delete settings.skills.mastery.advanceRequiredLevel;
   const bonus=Array.isArray(settings.skills.mastery.classBonus)?settings.skills.mastery.classBonus:[];
   settings.skills.mastery.classBonus=CLASS_MASTERY_BONUS_DEFAULTS.map((d,j)=>Object.fromEntries(Object.keys(d).map(k=>{const n=Number(bonus[j]?.[k]);return [k,Number.isFinite(n)&&n>=0&&n<=1000?n:d[k]];})));
-  settings.progression.advance??={};const adv=Number(settings.progression.advance.masteryLevel);settings.progression.advance.masteryLevel=Number.isInteger(adv)&&adv>=0&&adv<=100?adv:15;delete settings.progression.advance.level;
+  delete settings.progression.advance;
   return settings;
 }
 ensureMasterySettings(GAMEPLAY_SETTINGS_DEFAULTS);
@@ -155,9 +155,6 @@ function classMasteryXp(h){
 function classMasteryLevel(h){return masteryLevelFromXp(classMasteryXp(h));}
 globalThis.classMasteryLevel=classMasteryLevel;globalThis.classMasteryXp=classMasteryXp;
 // The second class needs class mastery (replaces the old LV15 requirement).
-function classAdvanceLevel(){return Math.max(0,Math.floor(GS('progression.advance.masteryLevel',15)));}
-function classAdvanceReady(h){return !!h&&classMasteryLevel(h)>=classAdvanceLevel();}
-globalThis.classAdvanceLevel=classAdvanceLevel;globalThis.classAdvanceReady=classAdvanceReady;
 function validMasteries(job){return MASTERIES_BY_JOB[Number(job)]||[];}
 function normalizeMastery(raw,job){
   const out={};for(const key of validMasteries(job)){const n=Number(raw?.[key]);out[key]=Number.isFinite(n)&&n>=0?Math.floor(n):0;}return out;
@@ -282,7 +279,6 @@ function coreMissingRequirements(h,i,forUse=false){
   const meta=runtimeCoreMeta(h.job,i),reasons=[];if(typeof skillAllowedForPartner==='function'&&!skillAllowedForPartner(h,meta))reasons.push(meta?.partnerId==null?'主角專屬':'指定夥伴專屬');
   if(forUse&&globalThis.companionSkillDisabled?.(h,'core',i))reasons.push('技能已禁用');
   if((isCompanionHero(h)||!forUse)&&!masteryRequirementMet(h,sk[2]))reasons.push(`職業精通 Lv${sk[2]}`);
-  if(!isCompanionHero(h)&&!forUse&&skillRequiresAdvanced(sk,i)&&!h.advanced)reasons.push('完成二轉');
   const req=meta.requiredMastery,reqLv=Math.max(0,Math.floor(Number(meta.requiredMasteryLevel)||0));
   if(!isCompanionHero(h)&&!forUse&&req&&masteryLevelFromXp(h.mastery?.[req]||0)<reqLv)reasons.push(`${MASTERY_LABELS[req]||req}精通 Lv${reqLv}`);
   if(!skillWeaponAllowed(h,meta))reasons.push(`武器 ${meta.weaponTypes.map(x=>WEAPON_TYPE_LABELS[x]||x).join('／')}`);
@@ -292,7 +288,6 @@ function supportMissingRequirements(h,i,forUse=false){
   const sk=SUPPORT[h.job]?.[i];if(!sk)return ['技能不存在'];const reasons=[];if(typeof skillAllowedForPartner==='function'&&!skillAllowedForPartner(h,sk))reasons.push(sk.partnerId==null?'主角專屬':'指定夥伴專屬');
   if(forUse&&globalThis.companionSkillDisabled?.(h,'support',i))reasons.push('技能已禁用');
   if((isCompanionHero(h)||!forUse)&&!masteryRequirementMet(h,sk.level))reasons.push(`職業精通 Lv${sk.level}`);
-  if(!isCompanionHero(h)&&!forUse&&i===2&&!h.advanced)reasons.push('完成二轉');
   const req=sk.requiredMastery,reqLv=Math.max(0,Math.floor(Number(sk.requiredMasteryLevel)||0));
   if(!isCompanionHero(h)&&!forUse&&req&&masteryLevelFromXp(h.mastery?.[req]||0)<reqLv)reasons.push(`${MASTERY_LABELS[req]||req}精通 Lv${reqLv}`);
   if(!skillWeaponAllowed(h,sk))reasons.push(`武器 ${(sk.weaponTypes||[]).map(x=>WEAPON_TYPE_LABELS[x]||x).join('／')}`);
@@ -371,13 +366,6 @@ performHeroBasic=function(h){
   return out;
 };
 
-const masteryAdvanceBase=advance;
-advance=function(){
-  if(!state||state.advanced)return masteryAdvanceBase();
-  ensureHeroMastery(state);const req=masterySettings().advanceRequiredLevel,best=Math.max(0,...validMasteries(state.job).map(k=>masteryLevelFromXp(state.mastery[k])));
-  if(best<req)return toast(`二轉還需要任一主要精通達 Lv${req}（目前最高 Lv${best}）`);
-  return masteryAdvanceBase();
-};
 
 
 function prepSaveForLegacyValidator(input){
@@ -452,8 +440,7 @@ function normalizeOverhaulDocument(input){
 }
 function validateOverhaulFields(doc){
   const fail=msg=>{throw Error(msg);};
-  const masteryMax=Math.max(1,Math.floor(Number(doc.balanceSettings?.skills?.mastery?.maxLevel)||1)),advanceReq=Math.max(0,Math.floor(Number(doc.balanceSettings?.skills?.mastery?.advanceRequiredLevel)||0));
-  if(advanceReq>masteryMax)fail('二轉精通需求不可高於精通最高等級');
+  const masteryMax=Math.max(1,Math.floor(Number(doc.balanceSettings?.skills?.mastery?.maxLevel)||1));
   for(let job=0;job<(doc.classes||[]).length;job++)for(let i=0;i<(doc.classes[job]?.skills||[]).length;i++){
     const sk=doc.classes[job].skills[i],valid=new Set(validMasteries(job));
     if(sk.mastery!=null&&!valid.has(sk.mastery))fail(`技能精通不存在：${job}-${i}-${sk.mastery}`);

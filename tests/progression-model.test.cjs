@@ -5,7 +5,7 @@ const curve=require('../js/balance/progression-model.js');
 test('class natural stats are the fixed initial stats; level, XP and level-gap formulas are gone',()=>{
   for(const cls of curve.defaults.classes){const n=curve.naturalStats(cls);for(const k of ['hp','atk','def'])assert.equal(n[k],Math.round(cls.initialStats[k]));assert(!('growthPerLevel' in cls)&&!('growthSteps' in cls));}
   for(const name of ['requiredXp','enemyXp','xpLevelGapFactor','xpShare','encounterLevelLead','goldLevelGapFactor','validSteps'])assert.equal(curve[name],undefined,name);
-  const p=curve.defaults.settings.progression;for(const k of ['xpCurve','levelCaps','statsPerLevel','xpLevelGap','mapAheadAllowance'])assert(!(k in p),k);
+  const p=curve.defaults.settings.progression||{};assert(!('advance' in p),'v0.168: no second class');for(const k of ['xpCurve','levelCaps','statsPerLevel','xpLevelGap','mapAheadAllowance'])assert(!(k in p),k);
   assert.equal(curve.enemyGold(curve.defaults.settings,10,'normal',0),curve.enemyGold(curve.defaults.settings,10,'normal',0,99),'gold ignores any extra level argument');
 });
 test('Direct equipment stats and each displayed contribution are integral and monotonic',()=>{

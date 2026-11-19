@@ -56,14 +56,6 @@
     }
   ],
   "settings": {
-    "progression": {
-      "advance": {
-        "hpMultiplier": 1.12,
-        "attackMultiplier": 1.15,
-        "defenseMultiplier": 1.12,
-        "masteryLevel": 15
-      }
-    },
     "equipment": {
       "baseStats": {
         "weaponAttackPerTier": 3,

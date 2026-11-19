@@ -7,7 +7,7 @@ const html=r=>r.elements.get('app').innerHTML,modal=r=>r.elements.get('modal').i
 const slot=(r,key)=>html(r).match(new RegExp(`data-skill-slot="${key}"[\\s\\S]*?</button>`))[0];
 test('Player skills show canonical slots with SVG icons; the catalog sorts learned first then by level and details show one skill',()=>{
  const r=game();
- assert.deepEqual([...html(r).matchAll(/data-skill-slot="([^"]+)"/g)].map(x=>x[1]),['active:0','active:1','active:2','proc:0','support:0']);
+ assert.deepEqual([...html(r).matchAll(/data-skill-slot="([^"]+)"/g)].map(x=>x[1]),['active:0','active:1','active:2','proc:0','proc:1','support:0','support:1']);
  assert.match(slot(r,'active:0'),/<svg[\s\S]*<b>[^<]+<\/b>/);assert.match(slot(r,'active:1'),/選擇技能/);
  assert.equal(r.run('openSkillCatalog()'),true);
  // v0.092: the catalog lists every skill on the left (data-skill-pick) and details the selected one on the right.

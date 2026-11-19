@@ -167,7 +167,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const issues=[];
         for(const {gear:g} of fixtures){
-          const h=initial(g.job);h.advanced=true;h.bag=[structuredClone(g)];h.equipped=[];const bare=stats(h);h.equipped[g.slot]=g.id;const worn=stats(h);
+          const h=initial(g.job);h.bag=[structuredClone(g)];h.equipped=[];const bare=stats(h);h.equipped[g.slot]=g.id;const worn=stats(h);
           if(!['hp','atk','def'].every(k=>Number.isFinite(worn[k])&&worn[k]>=bare[k])||['hp','atk','def'].every(k=>worn[k]===bare[k]))issues.push(g);
         }
         return issues;

@@ -63,7 +63,6 @@
     const h=player(),perm=build().permanent,c=perm.classes[j],sk=kind==='core'?CLASSES[j]?.skills?.[i]:SUPPORT[j]?.[i],r=kind==='core'?coreRule(j,i):supportRule(j,i),meta=kind==='core'?mastery.coreMeta(j,i):sk,reasons=[];
     if(!sk)return ['技能不存在'];if(!c?.activated)reasons.push('尚未使用此職業');if(meta.partnerId!==null&&meta.partnerId!==undefined)reasons.push('指定夥伴專屬');
     const need=kind==='core'?sk[2]:sk.level;if(!(mastery.masteryLevelFromXp(c?.xp||0)>=need||legacySkillLevel()>=need+1))reasons.push('職業精通 Lv'+need);
-    if((kind==='core'?skillRequiresAdvanced(sk,i):i===2)&&!c?.advanced)reasons.push('完成二轉');
     if(meta.requiredMastery&&mastery.masteryLevelFromXp(perm.masteries[meta.requiredMastery]||0)<(meta.requiredMasteryLevel||0))reasons.push((mastery.masteryLabels[meta.requiredMastery]||meta.requiredMastery)+'精通 Lv'+meta.requiredMasteryLevel);
     if(mastery.masteryLevelFromXp(c?.xp||0)<r.unlockConditions.classMasteryLevel)reasons.push('職業精通 Lv'+r.unlockConditions.classMasteryLevel);
     for(const q of r.unlockConditions.quests)if(!(q==='tutorial'&&h.tutorial>=3)&&!h.claimed.includes(q))reasons.push('永久任務：'+q);
@@ -127,7 +126,6 @@
     migrate();apply(plan());if(party.enlisted.includes(d.selected)){party.selected=d.selected;state=partyMember(d.selected);}refreshUnlocks();syncPoints();return party;
   };
   const baseStart=start;start=function(...args){const out=baseStart(...args);migrate();capture();save();render();return out;};
-  const advanceBase=advance;advance=function(){if(!safe()||state===player()&&plan()?.job===null)return false;if(state!==player())return advanceBase();return transaction(()=>{advanceBase();build().permanent.classes[state.job].advanced=state.advanced;refreshUnlocks();});};
   const baseBalanceValidate=validateBalanceConfig;validateBalanceConfig=function(input){return baseBalanceValidate(M.normalizeDocument(input));};
   function applyRules(d){cfg=M.settings(d.teamSettings);d.classes.forEach((c,j)=>c.skills.forEach((sk,i)=>Object.assign(mastery.coreMeta(j,i),M.rules(sk))));d.supportSkills.forEach((list,j)=>list.forEach((sk,i)=>Object.assign(SUPPORT[j][i],M.rules(sk))));}
   const baseExport=exportableBalance;exportableBalance=function(){const d=baseExport();d.teamSettings=copy(cfg);d.balanceSettings.meta.teamBuildVersion=M.VERSION;for(const [j,c] of d.classes.entries())c.skills.forEach((sk,i)=>Object.assign(sk,coreRule(j,i)));d.supportSkills.forEach((list,j)=>list.forEach((sk,i)=>Object.assign(sk,supportRule(j,i))));d.notes=d.notes.filter(x=>!String(x).includes('技能點'));d.notes.push('技能沒有技能點成本；永久解鎖共用，學習與 2 主動／2 觸發／2 輔助槽由各隊伍獨立保存。');d.notes.push('技能 unlockConditions 可指定職業精通、任務、材料、BOSS 擊殺、菁英擊殺與持有 BOSS 裝備；同一技能的多項條件需全部達成。');return d;};
@@ -144,7 +142,7 @@
       // Convert only the unoccupied tail of legacy 2/2/2 slots to the
       // currently configured stable-ID skill slot sizes.
       if(p.skillLoadout){
-        const stage=next.permanent.classes[p.job]?.advanced?'advanced':'first';
+        const stage='advanced';
         const rule=d.skillSystem?.classRules?.find(r=>r.job===p.job)?.slots?.[stage];
         if(rule)for(const [type,field] of [['active','active'],['proc','procSlots'],['support','supportSlots']]){
           const count=rule[type],slots=p[field],ids=p.skillLoadout[type];

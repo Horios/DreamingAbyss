@@ -297,7 +297,7 @@
     "starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects、prefixId、suffixId 與兩條固定 affixes。",
     "新手裝備不可在遊戲內強化、洗鍊或重鑄 T 階；growth 只允許依角色等級增加固定屬性。",
     "textStyles 以 id 定義顯示樣式；equipmentForms / equipmentPowerSystem.bossAffixes / items 的 textStyleId 選擇套用。省略或空字串時使用原有外觀，既有存檔不會儲存樣式副本。",
-    "companions 每位角色使用單一 name 與獨立技能池；core/support 為夥伴專屬技能，達到需求角色等級後自動學會，不需要二轉與精通；active/proc 依順序配置，可個別啟用或禁用並保存。passives 引用該夥伴的 passiveDefinitions，達到 requiredLevel 且啟用後常駐生效、不占技能槽。",
+    "companions 每位角色使用單一 name 與獨立技能池；core/support 為夥伴專屬技能，達到需求精通後自動學會；active/proc 依順序配置，可個別啟用或禁用並保存。passives 引用該夥伴的 passiveDefinitions，達到 requiredLevel 且啟用後常駐生效、不占技能槽。",
     "randomOffers.entries 的 selection=weighted 依 weight 抽選；selection=extra 依 chance 每批額外判定一次。重鑄石也由這個商品池控制。",
     "商品 type=item 的 key 引用 items[].id；unitPrice=null 沿用 items[].cost。名稱與說明留空時沿用道具本身；實際效果由結構化能力自動產生。",
     "type=timedBoost 使用 boostType / bonusPercent / durationMinutes；各類來源加算，同名效果刷新，不累積倍率或時間。",
@@ -9609,15 +9609,6 @@
         "default": 0.07,
         "archer": 0.17
       },
-      "advance": {
-        "gold": 500,
-        "ore": 20,
-        "materialCount": 3,
-        "hpMultiplier": 1.12,
-        "attackMultiplier": 1.15,
-        "defenseMultiplier": 1.12,
-        "masteryLevel": 15
-      },
       "regionTierLevels": 5
     },
     "skills": {
@@ -9642,7 +9633,6 @@
         "skillUseXp": 2,
         "basicAttackXp": 1,
         "maxLevel": 30,
-        "advanceRequiredLevel": 4,
         "classBonus": [
           {
             "hp": 3,

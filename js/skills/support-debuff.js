@@ -155,7 +155,7 @@
     const level=Math.max(1,h?.supportLevels?.[i]||1),value=+((sk.value+Math.max(0,level-1)*(Number.isFinite(sk.effectPerLevel)?sk.effectPerLevel:GS('skills.support.effectPerExtraLevel',.2)))*100).toFixed(1),cd=supportSkillCooldown(h,i);
     const elementText=sk.kind==='followup'?`${actionTurnElementLabel(sk.element)} · `:'';
     const combatText=sk.kind==='followup'?` · 基礎暴率 +${Number((sk.baseCritRate*100).toFixed(1))}% · 基礎暴傷 ${Number((sk.baseCritDamage*100).toFixed(1))}% · 防穿 +${Number(sk.defensePenetration.toFixed(2))} · 防無 +${Number((sk.defenseIgnore*100).toFixed(1))}%`:'';
-    return `${elementText}目標 ${TARGET_NAMES[sk.target]} · ${supportEffectDescription(sk,value)}${combatText} · 持續 ${Math.round(sk.duration)} 戰鬥回合 · 冷卻 ${cd} 回合 · 需求精通 Lv${sk.level}${i===2?'／二轉':''}`;
+    return `${elementText}目標 ${TARGET_NAMES[sk.target]} · ${supportEffectDescription(sk,value)}${combatText} · 持續 ${Math.round(sk.duration)} 戰鬥回合 · 冷卻 ${cd} 回合 · 需求精通 Lv${sk.level}`;
   };
 
   battleBuffRows=function(){

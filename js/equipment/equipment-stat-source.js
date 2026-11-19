@@ -226,7 +226,6 @@ bossPower=function(g){const a=GS('equipment.boss.powerByDifficulty',[1,1.25,1.55
 
 stats=function(h=state){
   const c=CLASSES[h.job],natural=EmberwildProgression.naturalStats(c),v={hp:natural.hp,atk:natural.atk,def:natural.def,crit:h.job===2?GS('progression.baseCrit.archer',.17):GS('progression.baseCrit.default',.07),critDamage:GS('combat.baseCritDamage',1.5),pierce:0,lifesteal:0,evasion:0,elementBonus:0,elementDamage:{},raceDamage:{},resist:{}};
-  if(h.advanced){v.hp*=GS('progression.advance.hpMultiplier',1.18);v.atk*=GS('progression.advance.attackMultiplier',1.22);v.def*=GS('progression.advance.defenseMultiplier',1.15);}
   let totalAttackPct=0;
   for(const g of equipment(h)){
     const base=gearBaseStats(g),{ex}=exclusiveEquipmentStats(g);v.atk+=base.atk;v.hp+=base.hp;v.def+=base.def;
@@ -244,7 +243,6 @@ procChance=function(i,h=state){const meta=ensureProcSkillMeta(h.job,i);if(!meta)
 supportAmount=function(job,index){const h=party.members.find(h=>h.job===job),sk=SUPPORT[job][index];return sk.value+Math.max(0,(Number(h.supportLevels[index])||0)-1)*(Number.isFinite(sk.effectPerLevel)?sk.effectPerLevel:GS('skills.support.effectPerExtraLevel',.2));};
 
 claimTutorial=function(){const t=GAMEPLAY_SETTINGS.quests.tutorial;if(state.tutorial===0&&state.bag.length>=RULES.bagCapacity)return toast('背包已滿，請先整理再領取新手護甲');let ok=[state.totalKills>=t.killRequirement,state.bag.some(g=>g.plus>0),state.skills[0]>=t.skillLevelRequirement][state.tutorial];if(!ok)return;state.tutorial++;state.gold+=Math.round(t.rewardGold);state.ore+=Math.round(t.rewardOre);if(state.tutorial===1){addGear(gear(Math.max(1,Math.round(t.armorTier)),Math.max(0,Math.min(3,Math.round(t.armorSlot))),Math.max(0,Math.min(3,Math.round(t.armorQuality))),state.job));}save();render();toast('獲得 '+Math.round(t.rewardGold)+' 金幣與 '+Math.round(t.rewardOre)+' 鍛鐵');};
-advance=function(){const a=GAMEPLAY_SETTINGS.progression.advance;if(state.advanced)return;if(!classAdvanceReady(state))return toast(`二轉需要${CLASSES[state.job].name}職業精通 Lv${classAdvanceLevel()}（目前 Lv${classMasteryLevel(state)}）`);if(state.gold<a.gold||state.ore<a.ore||(state.materials['怨念碎片']||0)<a.materialCount)return toast('二轉資源不足');state.gold-=Math.round(a.gold);state.ore-=Math.round(a.ore);state.materials['怨念碎片']=(state.materials['怨念碎片']||0)-Math.round(a.materialCount);state.advanced=true;state.hp=stats().hp;save();render();toast('二轉完成，進階技能已開放！');};
 
 makeBaseEnemy=function(map=state.map,h=state,rng=Math.random){const m=MAPS[map],f=GAMEPLAY_SETTINGS.monsters.finalBoss;if(map===6)return{name:m.boss[0],icon:m.boss[1],mat:m.boss[2],lv:Math.round(f.level),hp:Math.round(f.hp),maxhp:Math.round(f.hp),atk:Math.round(f.attack),def:Math.round(f.defense),kind:'final',turn:0};const ec=GAMEPLAY_SETTINGS.monsters.encounter,r=rng(),kind=r<ec.bossChance?'boss':r<ec.bossChance+ec.eliteChance?'elite':'normal',mob=kind==='boss'?m.boss:m.mobs[Math.floor(rng()*m.mobs.length)],maxLv=m.max,lv=kind==='boss'?m.max:m.min+Math.floor(rng()*Math.max(1,maxLv-m.min+1)),n=GAMEPLAY_SETTINGS.monsters.normal,k=GAMEPLAY_SETTINGS.monsters.kindMultipliers,hp=Math.round((n.hpBase+lv*n.hpPerLevel+lv*lv*n.hpQuadratic)*(kind==='boss'?k.bossHp:kind==='elite'?k.eliteHp:1)),atk=Math.round((n.attackBase+lv*n.attackPerLevel)*(kind==='boss'?k.bossAttack:kind==='elite'?k.eliteAttack:1));return{name:(kind==='elite'?'菁英・':'')+mob[0],icon:mob[1],mat:mob[2],lv,hp,maxhp:hp,atk,def:Math.round(lv*n.defensePerLevel),kind,turn:0};};
 makeEnemy=function(mi=state.map,h=state,rng=Math.random){let e=makeBaseEnemy(mi,h,rng),mode=h.difficulty||0;Object.assign(e,EmberwildProgression.scaleMonsterStats(GAMEPLAY_SETTINGS,e.lv,e.kind,mode,e));e.maxhp=e.hp;e.difficulty=mode;e.region=mi;const meta=species.get(e.mat)||{element:'physical',race:'beast'};return {...e,...meta};};
@@ -329,8 +327,6 @@ if(state){for(const h of party?.members||[state])withHero(h,clampVitals);render(
 // Update 12 display consistency: controls and summaries show the live balance settings.
 tutorial=function(){if(state.tutorial>=3)return '';const t=GAMEPLAY_SETTINGS.quests.tutorial,texts=[['01 / 初次狩獵',`在無名密林開始自動探索，擊敗 ${Math.round(t.killRequirement)} 隻怪物。`,state.totalKills>=t.killRequirement],['02 / 整理行囊','前往「裝備強化」，將任一裝備強化一次。',state.bag.some(g=>g.plus>0)],['03 / 學習技能',`前往「技能」，將初始主動技能提升至 ${Math.round(t.skillLevelRequirement)} 級。`,state.skills[0]>=t.skillLevelRequirement]][state.tutorial];return `<div class="tutorial"><div><b>${texts[0]}</b><p>${texts[1]}</p></div><button ${texts[2]?'':'disabled'} onclick="claimTutorial()">領取獎勵</button></div>`;};
 
-const update12CharacterViewBase=characterView;
-characterView=function(){let html=update12CharacterViewBase(),a=GAMEPLAY_SETTINGS.progression.advance;html=html.replace(/LV15 ·/g,`職業精通 Lv${classAdvanceLevel()} ·`).replace(/進階後生命 \+18%、攻擊 \+22%、防禦 \+15%/g,`進階後生命 +${Math.round((a.hpMultiplier-1)*10000)/100}%、攻擊 +${Math.round((a.attackMultiplier-1)*10000)/100}%、防禦 +${Math.round((a.defenseMultiplier-1)*10000)/100}%`).replace(/需求：LV15、500 金幣、20 鍛鐵、怨念碎片 ×3/g,`需求：職業精通 Lv${classAdvanceLevel()}、${a.gold} 金幣、${a.ore} 鍛鐵、怨念碎片 ×${a.materialCount}`);return html;};
 
 const update12ForgeViewBase=forgeView;
 forgeView=function(){return update12ForgeViewBase().replace(/最高 \+10/g,'最高 +'+RULES.enhanceMax).replace(/已達 \+10 強化上限/g,'已達 +'+RULES.enhanceMax+' 強化上限');};
@@ -347,7 +343,7 @@ guideView=function(){
  const g=GAMEPLAY_SETTINGS,p=g.progression,e=g.equipment,c=g.combat;
  return heading('FIELD NOTES / 冒險指南','遊戲系統說明')+`<section class="panel guide-scroll">
  <h2>角色成長與隊伍</h2>
- <p>角色沒有等級。戰力主要來自裝備；使用職業戰鬥會累積該職業的精通，精通等級會依序解鎖職業技能，職業精通 Lv${classAdvanceLevel()} 可以二轉。夥伴各自累積自己的精通。最多三人出戰，其他夥伴可以留在候補。</p>
+ <p>角色沒有等級。戰力主要來自裝備；使用職業戰鬥會累積該職業的精通，精通等級會依序解鎖職業技能。夥伴各自累積自己的精通。最多三人出戰，其他夥伴可以留在候補。</p>
  <p>擊敗地圖首領會開放下一張地圖；地圖標示的推薦裝等只是參考，不限制進入。</p>
  <p>金幣、素材、消耗品與背包由隊伍共用；角色的技能與穿戴裝備則可分別設定。</p>
  <h2>探索與戰鬥</h2>
@@ -382,9 +378,6 @@ function update12QuestMemberView(){
 }
 questView=function(){return singlePagePanel('quests','委託手札',update12QuestMemberView);};
 
-// Correct the captured character renderer's advance button state when the threshold is changed.
-const update12CharacterViewConsistency=characterView;
-characterView=function(){let html=update12CharacterViewConsistency(),a=GAMEPLAY_SETTINGS.progression.advance;const disabled=state.advanced||!globalThis.classAdvanceReady?.(state)?' disabled':'';html=html.replace(/<button class="primary" onclick="advance\(\)"[^>]*>/,`<button class="primary" onclick="advance()"${disabled}>`);return html;};
 
 // The battle page was composed by earlier wrappers; replace only the stale balance-dependent supply text.
 const update12BattleViewConsistency=battleView;

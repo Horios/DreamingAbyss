@@ -51,11 +51,18 @@ test('the class skill tree unlocks by mastery and prerequisites, never twice, an
  assert.deepEqual(r.errors,[]);
 });
 
-test('the second class needs class mastery; companions grow their own mastery',()=>{
+test('there is no second class: former second-class skills unlock at their mastery level, slots are full, no stat multiplier; companions grow their own mastery',()=>{
  const r=game(0);
- assert.equal(r.run('classAdvanceReady(playerHero())'),false);
- r.run(`__EMBERWILD_TEAMS.build().permanent.classes[0].xp=(()=>{let n=0;for(let i=0;i<classAdvanceLevel();i++)n+=__EMBERWILD_MASTERY.masteryStepCost(i);return n;})();`);
- assert.equal(r.run('classAdvanceReady(playerHero())'),true);
+ assert.equal(r.run('typeof advance'),'undefined');assert.equal(r.run('typeof classAdvanceReady'),'undefined');
+ // Rows with an achievement gate (e.g. defeat elites) also need that achievement; the others need mastery only.
+ const rows=json(r,`__EMBERWILD_SKILLS.system().classRules[0].advanced.filter(x=>{const g=__EMBERWILD_SKILLS.byId(x.skillId).unlockConditions||{};return !g.classMasteryLevel&&!['materials','bossKills','eliteKills','bossEquipment'].some(k=>g[k]?.length);})`),top=Math.max(...rows.map(x=>x.masteryLevel));
+ const ids=JSON.stringify(rows.map(x=>x.skillId)),learned=()=>json(r,`${ids}.filter(id=>__EMBERWILD_SKILLS.learned(playerHero(),__EMBERWILD_SKILLS.byId(id))).sort()`);
+ assert.deepEqual(learned(),[],'not before their mastery level');
+ r.run(`setClassMasteryLevel(${top},playerHero());for(const k of Object.keys(playerHero().mastery||{}))playerHero().mastery[k]=100000;__EMBERWILD_SKILL_REFRESH();`);
+ assert.deepEqual(learned(),rows.map(x=>x.skillId).sort(),'unlocked by mastery alone');
+ assert.deepEqual(json(r,'__EMBERWILD_SKILLS.slotCounts(playerHero())'),json(r,'__EMBERWILD_SKILLS.system().classRules[0].slots.advanced'),'every slot is available');
+ const s=json(r,'(()=>{const h=playerHero(),a=stats(h);h.advanced=true;const b=stats(h);h.advanced=false;return {a,b};})()');
+ assert.deepEqual([s.b.hp,s.b.atk,s.b.def],[s.a.hp,s.a.atk,s.a.def],'an old advanced flag adds nothing');
  const c=json(r,`(()=>{const id=EmberwildCompanions.defaultPlans.find(p=>p.job!==playerHero().job).id;party.companionUnlocks??={};globalThis.companionUnlocked=()=>true;recruitCompanion(id);const h=partyMember(id);const before=classMasteryLevel(h);__EMBERWILD_COMPANION_MASTERY_GAIN(h,100000);return {before,after:classMasteryLevel(h),xp:h.companionMastery.xp,max:__EMBERWILD_MASTERY.masteryMaxXp(),lv:h.lv,player:classMasteryLevel(playerHero())};})()`);
  assert.equal(c.before,0);assert.equal(c.xp,c.max,'companion mastery is capped too');assert(c.after>c.before);assert.equal(c.lv,undefined);
 });

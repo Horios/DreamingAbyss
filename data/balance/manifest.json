@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 23,
+  "dataRevision": 24,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "73b27f1584c43a4a089a8a48ab5ff733b77e723b7a444db42042c2162babd949",
-    "bytes": 1278489
+    "sha256": "d49198e7dc93b2eabdb068924135b66b52aa9cf43fd29c79df2beb12a7c6ea57",
+    "bytes": 1278199
   },
   "layout": {
     "": [
@@ -114,9 +114,9 @@
       "file": "meta/notes.json",
       "source": "notes",
       "present": true,
-      "version": 1,
-      "sha256": "de9353526e143720aa833e427f54b891918240616079299ea1cc58ff7b9a1ea6",
-      "bytes": 11139,
+      "version": 2,
+      "sha256": "6ab447a320ef9b98f494f966e2fca50b49372b85c025f141a9d8c43a240cbe3b",
+      "bytes": 11106,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -271,9 +271,9 @@
       "file": "combat/skill-settings.json",
       "source": "balanceSettings.skills",
       "present": true,
-      "version": 2,
-      "sha256": "498168331981566946abea02bdfa065f203f0f5417447e78403e7003164597cd",
-      "bytes": 857,
+      "version": 3,
+      "sha256": "4a8581150bfa0edd3f65f05e3fe32307be1f3ab7784194d82b5e42f46eee2f97",
+      "bytes": 826,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -372,9 +372,9 @@
       "file": "characters/progression.json",
       "source": "balanceSettings.progression",
       "present": true,
-      "version": 2,
-      "sha256": "52f5ab648656e3e456fd2d979d127bfba3205519efcc1e6f345e54fb1f91c3a6",
-      "bytes": 360,
+      "version": 3,
+      "sha256": "717950bdd1cb4c6569535f3dd98660374f2d7d97eb164fde7d5ef80164a3f2bc",
+      "bytes": 174,
       "dependsOn": [],
       "validators": [
         "field-rules",
