@@ -370,7 +370,8 @@
    if(step.advance.type==='next'||explainOnly||missing||testing())buttons.push(`<button type="button" class="primary" onclick="tutorialControl('next')">${i===n-1?'完成':'下一步'}</button>`);
   }
   if(session.mode==='normal'&&m.skippable)buttons.push('<button type="button" onclick="tutorialControl(\'skipAll\')">跳過教學</button>');
-  buttons.push(`<button type="button" onclick="tutorialControl('close')">${session.mode==='normal'?'稍後再看':'結束'}</button>`);
+  // v0.175: a first-time guide has no 「稍後再看」; it ends by finishing or 「跳過教學」. Replays and tests keep 「結束」.
+  if(session.mode!=='normal')buttons.push(`<button type="button" onclick="tutorialControl('close')">結束</button>`);
   return `<div class="tutorial-card-head"><span>${M.CATEGORIES[m.category]&&M.CATEGORIES[m.category]!==m.title?esc2(M.CATEGORIES[m.category])+' · ':''}${esc2(m.title)}</span>${mode}<span class="tutorial-count">${i+1} / ${n}</span></div><h3>${esc2(step.title)}</h3><p>${esc2(step.text)}</p>${explainOnly?'<p class="tutorial-note">重播時只說明，不需要實際操作。</p>':''}${session.paused?`<p class="tutorial-warn">教學已暫停：${esc2(session.reason)}</p>`:unavail?`<p class="tutorial-warn">目前無法進行這一步：${esc2(unavail)}</p>`:wait?`<p class="tutorial-wait">${esc2(wait)}</p>`:''}${missing}<div class="tutorial-card-actions">${buttons.join('')}</div>`;
  }
  // The card keeps clear of the page header and of a menu bar fixed to the bottom edge (phones), so their buttons stay usable.

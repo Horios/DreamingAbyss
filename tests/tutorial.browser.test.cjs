@@ -18,6 +18,8 @@ for(const [label,width,height] of [['desktop',1280,800],['phone',390,780]])test(
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
   await page.evaluate(()=>{start(0);party.tutorials.auto=true;render();});await page.waitForSelector('#tutorial-card:not([hidden])');
   assert.deepEqual(await active(page),{id:'explore_basics',step:'intro',target:'found',mode:'normal',paused:false});
+  // v0.175: a first-time guide has no 「稍後再看」.
+  assert.deepEqual(await page.locator('#tutorial-card button').allInnerTexts(),['下一步','跳過教學']);
   const first=await layout(page,'intro');if(label==='desktop')assert.equal(first.overlap,0,'the card sits beside its target');
   await page.click('#tutorial-card button:has-text("下一步")');await page.click('#tutorial-card button:has-text("下一步")');
   assert.equal((await active(page)).step,'start');
