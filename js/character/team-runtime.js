@@ -169,7 +169,7 @@
         }
       }
     }
-    // A previously learned core skill may require equipment in the new catalog.
+    // A previously learned core skill may require equipment or be retired in the new catalog.
     // If it is no longer learned, unmount only its old *owned* skill gem.
     // Do not silently accept other corrupt skill or gem references.
     const displaced=new Set();
@@ -181,7 +181,9 @@
         const wasUnlocked=next.permanent.unlocks[p.job+':core:'+i]===true;
         const skill=d.skillSystem?.definitions.find(s=>(s.adapters||[s.adapter]).some(a=>a?.job===p.job&&a.kind==='core'&&a.index===i));
         const gearOnly=skill?.sources?.some(s=>s.type==='equipment')===true;
-        if(!wasUnlocked||!gearOnly||!Object.hasOwn(next.permanent.gemInstances,id))continue;
+        const rule=d.skillSystem?.classRules.find(r=>r.job===p.job);
+        const retired=skill&&!skill.sources.length&&![...(rule?.initial||[]),...(rule?.advanced||[])].some(r=>r.skillId===skill.id);
+        if(!wasUnlocked||!(gearOnly||retired)||!Object.hasOwn(next.permanent.gemInstances,id))continue;
         p.sockets[i]=null;
         displaced.add(id);
       }

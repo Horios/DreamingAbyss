@@ -32858,6 +32858,24 @@
       "description": "防禦 +3",
       "color": "#64AAF0",
       "displayName": "守護石・3階"
+    },
+    {
+      "kind": "equipment",
+      "key": "form:4:1:0",
+      "iconType": "auto",
+      "description": ""
+    },
+    {
+      "kind": "equipment",
+      "key": "form:4:2:0",
+      "iconType": "auto",
+      "description": ""
+    },
+    {
+      "kind": "equipment",
+      "key": "form:4:3:1",
+      "iconType": "auto",
+      "description": ""
     }
   ],
   "iconColorTemplates": [
