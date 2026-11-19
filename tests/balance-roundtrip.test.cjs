@@ -8,12 +8,12 @@ const set=(d,p,v)=>{const keys=p.split('.'),key=keys.pop();get(d,keys.join('.'))
 const def=id=>'skillSystem.definitions.'+require('../data/balance.json').skillSystem.definitions.findIndex(s=>s.id===id);
 const fields=[
  ['balance.combat.elementMultipliers.neutral',n=>1+n/100],
- ['classes.0.initialStats.hp',n=>30+n],['classes.0.growthPerLevel.hp',n=>5+n/10],
+ ['classes.0.initialStats.hp',n=>30+n],['classes.0.initialStats.atk',n=>10+n],
  [def('job0-core0')+'.power',n=>2+n/10],[def('job0-core0')+'.hitCount',n=>2+n],
  [def('job0-support0')+'.value',n=>.1+n/100],
  ['equipmentForms.0.0.0.fixedEffects.0.value',n=>5+n],
- ['items.0.cost',n=>10+n],['balanceSettings.progression.xpCurve.linear',n=>18+n],
- ['balanceSettings.monsters.encounter.levelLeadInterval',n=>n],
+ ['items.0.cost',n=>10+n],['balanceSettings.skills.mastery.xpLinear',n=>5+n],
+ ['balanceSettings.maps.catalog.0.recommendedGearLevel',n=>5+n],
  ['balanceSettings.maps.catalog.0.name',n=>'循環測試地圖'+n],
  ['balanceSettings.monsters.catalog.0.name',n=>'循環測試怪物'+n],
  ['balanceSettings.drops.entries.0.quantityMin',n=>n],
@@ -59,7 +59,7 @@ test('six cycles: 30 modified balance fields survive editor file import, game fi
   g=loadRuntime(root,'index.html',Object.fromEntries(g.values));
   const reloaded=json(g,'exportableBalance()');
   for(const [p,value] of fields)assert.deepEqual(get(reloaded,p),value(cycle),'cold reload: '+p);
-  assert.equal(g.run('GS("progression.xpCurve.linear")'),18+cycle);
+  assert.equal(g.run('GS("skills.mastery.xpLinear")'),5+cycle);
   assert.equal(g.run('materialSellPrice(exportableBalance().balanceSettings.economy.materialPrices[0].key)'),cycle+3);
   assert.deepEqual(g.errors,[]);
   e.ctx.importText=JSON.stringify(reloaded);

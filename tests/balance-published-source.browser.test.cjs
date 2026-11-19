@@ -26,7 +26,8 @@ test('older production fails closed on expanded life data; upgraded runtime reta
   // The loader is asynchronous: wait until the older runtime either refuses the document or finishes booting.
   await r.page.waitForFunction(()=>/資料載入失敗/.test(document.getElementById('app')?.innerText||'')||window.emberwildBootComplete===true,{},{timeout:30000});
   const version=await r.page.evaluate(()=>/資料載入失敗/.test(document.getElementById('app').innerText)?0:EmberwildBalanceDocument.lifeProductsVersion||0);
-  if(version<1){assert.match(await r.page.locator('#app').innerText(),/資料載入失敗.*lifeSkills/);assert.equal(await r.page.evaluate(()=>typeof exportableBalance),'undefined');}
+  // Since v0.161 the older runtime refuses the class-mastery skill gates (skillSystem) before it reaches lifeSkills; either way it fails closed.
+  if(version<1){assert.match(await r.page.locator('#app').innerText(),/資料載入失敗[^]*(lifeSkills|skillSystem)/);assert.equal(await r.page.evaluate(()=>typeof exportableBalance),'undefined');}
   else retainsPublished(await r.page.evaluate(()=>exportableBalance()),await r.page.evaluate(()=>({tutorialsVersion:EmberwildBalanceDocument.tutorialsVersion||0})));
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
