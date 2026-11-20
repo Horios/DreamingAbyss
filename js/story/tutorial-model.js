@@ -4,7 +4,7 @@
 (function(root){
  'use strict';
  const VERSION=1,copy=x=>structuredClone(x);
- const TYPES={guide:'操作引導',intro:'功能介紹',tip:'簡短提示'};
+ const TYPES={guide:'操作引導',intro:'功能介紹',tip:'簡短提示',notice:'說明彈窗'};
  const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',life:'生活技能',alchemy:'煉金',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
  // Page identities are the game's fixed navigation ids (js/ui/navigation-tree.js); 'story' is the quest page.
  const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備強化',bossCraft:'BOSS 製作',story:'任務',quests:'委託',wishingLake:'許願湖',gather:'採集',alchemy:'煉金'};
@@ -113,6 +113,10 @@
  const step=(id,title,body,o={})=>({id,title,text:body,page:o.page??'',target:o.target??'',placement:o.placement||'auto',advance:o.advance||{type:'next'},optional:!!o.optional,requires:o.requires||group(),onReplay:o.onReplay||'same',skipIf:o.skipIf||group()});
  function makeModule(o){return {id:o.id,title:o.title,category:o.category,type:o.type||'guide',enabled:o.enabled!==false,implemented:o.implemented!==false,description:o.description||'',trigger:{type:'pageEnter',page:'',notify:false,notifyText:'',...o.trigger},prerequisites:o.prerequisites||group(),steps:o.steps||[],completion:o.completion||{type:'steps'},replayable:o.replayable!==false,skippable:o.skippable!==false,interrupt:o.interrupt||'pause',revision:o.revision||1,reprompt:!!o.reprompt};}
 
+ // v0.176: only the key systems (exploring, wearing gear, the party) keep the spotlight. The other guides are a popup that
+ // lists their steps, never takes focus and has one 「關閉」 button.
+ const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ const asNotice=m=>NOTICE_GUIDES.includes(m.id)?{...m,type:'notice',steps:m.steps.map(x=>({...x,advance:{type:'next'},optional:false,onReplay:'same'}))}:m;
  function defaults(){return {version:VERSION,modules:[
   makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。',
    trigger:{type:'pageEnter',page:'battle'},prerequisites:group([condition('prologueDone')]),steps:[
@@ -242,7 +246,7 @@
    step('recipe','煉金配方','每個配方列出需要的材料、持有數量與產物。',{page:'alchemy',target:'alchemy.recipe'}),
    step('start','開始煉金','材料足夠時按「開始煉金」。每次完成才扣材料，材料不足時自動停止。',{page:'alchemy',target:'alchemy.start'})
   ]})
- ]};}
+ ].map(asNotice)};}
 
  function conditionIssues(c,where,ctx,ids,add){
   if(!c||typeof c!=='object'||Array.isArray(c)||!Object.hasOwn(CONDITIONS,c.type)){add(where+'：未知的條件類型 '+(c?.type??''));return;}
@@ -318,6 +322,7 @@
     const a=s.advance;
     if(!a||typeof a!=='object'||!Object.hasOwn(ADVANCE,a.type)){add(where+'：未知的下一步條件');return;}
     if(m.type==='tip'&&a.type!=='next')add(where+'：簡短提示只能用「下一步」結束');
+    if(m.type==='notice'&&a.type!=='next')add(where+'：說明彈窗一次列出全部步驟，只能用「下一步」');
     if(a.type==='click'&&!s.target)add(where+'：「點擊高亮目標」必須指定引導目標');
     if(a.type==='event'&&!Object.hasOwn(EVENTS,a.key))add(where+'：遊戲不支援這個事件：'+a.key);
     if(a.type==='page'&&!Object.hasOwn(PAGES,a.key))add(where+'：等待的頁面不存在：'+a.key);

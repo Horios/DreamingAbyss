@@ -23,3 +23,9 @@
 #tutorial-card[data-dock="bottom"]{width:calc(100vw - 16px)}
 @media(max-width:640px){#tutorial-notices{right:8px;left:8px;bottom:72px;width:auto}}
 @media (prefers-reduced-motion:reduce){#tutorial-spotlight{transition:none}}
+/* v0.176: guide popup (說明彈窗). Not a dialog: it never takes focus and the page stays usable. */
+#tutorial-tip{position:fixed;right:16px;bottom:16px;z-index:58;box-sizing:border-box;width:min(380px,calc(100vw - 32px));max-height:min(60vh,480px);overflow:auto;padding:14px 16px;border:1px solid #a18457;border-left:3px solid #e0bd79;border-radius:8px;background:linear-gradient(135deg,#26243c,#181e30);color:#eceaf4;box-shadow:0 12px 32px #000a;font-size:13px}
+#tutorial-tip[hidden]{display:none}
+.tutorial-tip-steps{margin:8px 0;padding:0;list-style:none;display:grid;gap:8px}
+.tutorial-tip-steps p{margin:2px 0 0;line-height:1.6}
+@media(max-width:640px){#tutorial-tip{right:8px;left:8px;bottom:72px;width:auto}}

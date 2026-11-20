@@ -46,24 +46,35 @@ test('the goddess introduces the world; the three onboarding tasks each play a s
  }finally{await game.browser.close();}
 });
 
-test('every system page plays its spotlight guide once on the first visit after the onboarding',async()=>{
+// v0.176: exploring, gear and the party keep the spotlight; every other system page shows a popup that lists the steps,
+// leaves focus where it was and closes with 「關閉」.
+test('every system page plays its guide once on the first visit after the onboarding: popup or spotlight',async()=>{
  const game=await openRuntime(root),page=game.page;
  try{
   await page.setViewportSize({width:1280,height:860});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
   await page.evaluate(()=>{start(0);party.tutorials.auto=true;party.tutorials.records.explore_basics={triggered:true,completed:true,skipped:false,step:-1};party.wishingLake.unlocked=true;party.wishingLake.notified=true;closeModal();render();});
   const tours=[['statistics','statistics_basics'],['roster','roster_basics'],['partnerRoster','partner_basics'],['character','character_basics'],['worn','worn_basics'],['forge','forge_basics'],['bossCraft','boss_basics'],['story','story_basics'],['gather','gather_basics'],['alchemy','alchemy_basics'],['shop','shop_basics'],['quests','quest_basics'],['wishingLake','wishing_basics']];
+  const open=tab=>page.evaluate(tab=>{closeModal();tab==='story'?openStory('','main'):setTab(tab);},tab);
   for(const [tab,id] of tours){
-   await page.evaluate(tab=>{closeModal();tab==='story'?openStory('','main'):setTab(tab);},tab);
-   const steps=await page.evaluate(id=>__EMBERWILD_TUTORIAL.design.modules.find(m=>m.id===id).steps.map(s=>s.id),id);
-   for(const [i,step] of steps.entries()){
-    await wait(page,id,step);
-    await page.click(`#tutorial-card button:has-text("${i===steps.length-1?'完成':'下一步'}")`);
+   await open(tab);
+   const m=await page.evaluate(id=>{const m=__EMBERWILD_TUTORIAL.design.modules.find(m=>m.id===id);return {type:m.type,steps:m.steps.map(s=>({id:s.id,title:s.title}))};},id);
+   if(m.type==='notice'){
+    await page.waitForFunction(id=>__EMBERWILD_TUTORIAL.status().tip?.id===id&&!document.getElementById('tutorial-tip').hidden,id,{timeout:20000}).catch(async e=>{throw Error(id+' popup: '+JSON.stringify(await page.evaluate(()=>__EMBERWILD_TUTORIAL.status())))});
+    const tip=page.locator('#tutorial-tip');
+    assert.equal(await tip.getAttribute('role'),'status','not a dialog');assert.equal(await active(page),null,'no spotlight');
+    assert.equal(await page.evaluate(()=>document.getElementById('tutorial-tip').contains(document.activeElement)),false,'focus stays on the page');
+    for(const x of m.steps)assert((await tip.innerText()).includes(x.title),id+' lists '+x.title);
+    assert.deepEqual(await tip.locator('button').allInnerTexts(),['關閉']);
+    await tip.locator('button').click();await page.waitForFunction(()=>document.getElementById('tutorial-tip').hidden);
+   }else for(const [i,x] of m.steps.entries()){
+    await wait(page,id,x.id);
+    await page.click(`#tutorial-card button:has-text("${i===m.steps.length-1?'完成':'下一步'}")`);
    }
    assert.equal(await page.evaluate(id=>party.tutorials.records[id]?.completed,id),true,id);
    // A second visit plays nothing.
-   await page.evaluate(()=>{closeModal();setTab('battle');});await page.evaluate(tab=>{closeModal();tab==='story'?openStory('','main'):setTab(tab);},tab);
-   await page.waitForTimeout(400);assert.equal(await active(page),null,id+' plays once');
+   await page.evaluate(()=>{closeModal();setTab('battle');});await open(tab);
+   await page.waitForTimeout(400);assert.equal(await active(page),null,id+' plays once');assert.equal(await page.evaluate(()=>__EMBERWILD_TUTORIAL.status().tip),null,id+' popup once');
   }
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}

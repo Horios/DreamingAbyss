@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 39,
+  "dataRevision": 40,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "2f768c2ac3160de16afcc0980b3809e7d15628f2cd77ee26df5f82442850915b",
-    "bytes": 1251922
+    "sha256": "37f8737189c2d1427c85c23482a304ba7d216f7063b44bdb3826abd473992ffe",
+    "bytes": 1251816
   },
   "layout": {
     "": [
@@ -701,9 +701,9 @@
       "file": "systems/tutorials.json",
       "source": "tutorials",
       "present": true,
-      "version": 8,
-      "sha256": "c7618f286c855351a59663a55806003ad9222d91785729d67b4043d1679e2c50",
-      "bytes": 56875,
+      "version": 9,
+      "sha256": "8b8c2b4d68c293ffbfa41b4b622169c12114c05885913c77448d68a18436c6a2",
+      "bytes": 56775,
       "dependsOn": [
         "items/items",
         "systems/story"

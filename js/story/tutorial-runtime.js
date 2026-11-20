@@ -7,6 +7,8 @@
  const COUNTERS=['gearAcquired','explorationStarted','gearSelected','wearOpened','gearEquipped','skillSlotOpened','skillSlotted','catalogOpened','socketsOpened','socketSelected','gemSocketed'];
  let design=M.defaults();
  let session=null;            // {id, index, mode:'normal'|'replay'|'test', paused, reason, startedOn}
+ // v0.176: a 說明彈窗 (type notice) guide shown as a popup: {id,mode}. It holds no step and takes no focus.
+ let tip=null;
  const snoozed=new Set();     // modules the player closed during this page load (they come back after a reload)
  const notices=new Map();     // id -> {kind:'unlock'|'revision'}
  let lastTab=null,lastStatus='';
@@ -253,6 +255,7 @@
   if(mode==='replay'&&!unlocked(m))return {ok:false,error:'這個功能尚未解鎖'};
   if(mode==='replay'&&!m.replayable)return {ok:false,error:'這個教學不提供重播'};
   if(!Number.isSafeInteger(step)||step<0||step>=m.steps.length)return {ok:false,error:'步驟不存在'};
+  if(m.type==='notice'&&mode!=='test'){if(tip&&tip.id!==id&&mode==='normal')return {ok:false,error:'另一個說明正在顯示'};session=null;tip={id,mode};notices.delete(id);if(mode==='normal')rec(id).triggered=true;draw();return {ok:true};}
   session={id,index:step,mode,paused:false,reason:''};notices.delete(id);
   if(mode==='normal'){const r=rec(id);r.triggered=true;}
   enter(step);return {ok:true};
@@ -282,6 +285,12 @@
   resume(){const c=current();if(!c)return false;session.paused=false;return enter(session.index,{record:false});},
   pause(){if(!session)return false;session.paused=true;session.reason='已暫停';draw();return true;},
   restartStep(){const c=current();if(!c)return false;return enter(session.index,{record:false});}
+ };
+ // Closing the popup completes the guide (a replay completes it only when it never was).
+ globalThis.tutorialCloseTip=function(){
+  if(!tip)return false;const m=byId(tip.id),mode=tip.mode;tip=null;
+  if(m&&(mode==='normal'||!peek(m.id)?.completed)){const r=rec(m.id);r.triggered=true;r.completed=true;r.skipped=false;r.step=-1;r.revision=m.revision;persist();}
+  draw();return true;
  };
  globalThis.tutorialControl=function(action){return typeof api[action]==='function'?api[action]():false;};
  globalThis.tutorialNotice=function(id,action){
@@ -321,6 +330,8 @@
   }
   if(dirty)persist();
   if(session){const c=current();if(c&&stageOver(c.m))return finish(true);if(c&&!session.paused)watch(c);return;}
+  // A guide popup belongs to its page: leaving the page puts it away unread, and it shows again on the next visit.
+  if(tip){const m=byId(tip.id);if(tip.mode==='normal'&&m&&page!==m.trigger.page){tip=null;draw();}else return;}
   if(blocked())return;
   // One guide at a time: the first eligible module in list order whose page is open starts (or resumes).
   for(const m of design.modules){
@@ -400,10 +411,21 @@
   const shown=playing()?[...notices.entries()].filter(([id])=>byId(id)).slice(0,3):[];
   const html=shown.map(([id,n])=>{const m=byId(id);return `<div class="tutorial-notice" data-tutorial-notice="${esc2(id)}"><b>${n.kind==='revision'?'教學已更新：':'新功能：'}${esc2(m.title)}</b><p>${esc2(n.kind==='revision'?'內容有新的步驟，可以重新看一次。':m.trigger.notifyText||m.description)}</p><div class="tutorial-card-actions"><button type="button" class="primary" onclick="tutorialNotice('${esc2(id)}','go')">${m.trigger.type==='pageEnter'&&n.kind!=='revision'?'前往':'查看'}</button>${n.kind!=='revision'&&m.skippable?`<button type="button" onclick="tutorialNotice('${esc2(id)}','skip')">不需要</button>`:''}<button type="button" onclick="tutorialNotice('${esc2(id)}','later')">關閉</button></div></div>`;}).join('');
   if(box.dataset.html!==html){box.innerHTML=html;box.dataset.html=html;}box.hidden=!html||!!session;
+  drawTip();
   const c=current();
   if(!c||!playing()){card.hidden=true;spot.hidden=true;ringOff();lastStatus='';return;}
   const html2=cardHTML(c);if(card.dataset.html!==html2){card.innerHTML=html2;card.dataset.html=html2;}
   card.dataset.type=c.m.type;card.hidden=false;follow();
+ }
+ function drawTip(){
+  const box=layer('tutorial-tip'),m=tip&&byId(tip.id);
+  box.setAttribute('role','status');box.setAttribute('aria-live','polite');box.setAttribute('aria-label','說明');
+  if(!m||!playing()){box.hidden=true;return;}
+  const html=`<div class="tutorial-card-head"><span>${M.CATEGORIES[m.category]&&M.CATEGORIES[m.category]!==m.title?esc2(M.CATEGORIES[m.category])+' · ':''}${esc2(m.title)}</span></div><ul class="tutorial-tip-steps">${m.steps.map(s=>`<li><b>${esc2(s.title)}</b><p>${esc2(s.text)}</p></li>`).join('')}</ul><div class="tutorial-card-actions"><button type="button" onclick="tutorialCloseTip()">關閉</button></div>`;
+  if(box.dataset.html!==html){box.innerHTML=html;box.dataset.html=html;box.dataset.tutorialTip=m.id;}
+  // Inside an open dialog (the wishing lake) the popup joins it, so it is not under the dialog.
+  const dlg=modal(),host=dlg||document.body;if(box.parentElement!==host)host.appendChild(box);
+  box.hidden=false;
  }
  function ringOff(){ringEl?.classList.remove('tutorial-ring');ringEl=null;}
  // Position the card and the highlight on every frame tick; cheap (a few rects).
@@ -453,22 +475,22 @@
  // ---------- save ----------
  const validatePartyBase=validateParty;validateParty=function(raw){const p=validatePartyBase(raw);const t=validateProgress(raw?.tutorials);if(t)p.tutorials=t;else delete p.tutorials;return p;};
  const packBase=packParty;packParty=function(){const out=packBase();if(party?.tutorials)out.tutorials=copy(party.tutorials);return out;};
- const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);session=null;known=null;snoozed.clear();notices.clear();lastTab=null;ensure();return out;};
+ const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);session=null;tip=null;known=null;snoozed.clear();notices.clear();lastTab=null;ensure();return out;};
  // Only a character made through the prologue gets automatic guides; one made by a direct start(job) (old flow, tests)
  // is treated as already arrived, like the prologue does.
  // The prologue creates its character through the starter pack's asPrologue(); that marks it.
  const SP=globalThis.__EMBERWILD_STARTER_PACK;if(SP?.asPrologue){const base=SP.asPrologue;SP.asPrologue=function(action){viaPrologue=true;try{return base.call(this,action);}finally{viaPrologue=false;}};}
  const startBase=start;start=function(...args){creating=true;let out;try{out=startBase(...args);}finally{creating=false;}session=null;notices.clear();lastTab=null;if(party&&!party.tutorials)party.tutorials=fresh(viaPrologue);viaPrologue=false;known=null;trackGear();return out;};
- const newGameBase=newGame;newGame=function(...args){session=null;notices.clear();snoozed.clear();return newGameBase(...args);};
+ const newGameBase=newGame;newGame=function(...args){session=null;tip=null;notices.clear();snoozed.clear();return newGameBase(...args);};
 
  const baseRender=render;render=function(...args){const out=baseRender(...args);try{evaluate();draw();}catch(e){console.warn(e);}return out;};
  installHooks();
- setInterval(()=>{try{if(!playing()){if(session&&session.mode!=='test'&&creatingCharacter())session=null;draw();return;}evaluate();passiveCompletion();follow();scrollTarget();}catch(e){console.warn(e);}},200);
+ setInterval(()=>{try{if(!playing()){if(session&&session.mode!=='test'&&creatingCharacter())session=null;draw();return;}evaluate();passiveCompletion();follow();drawTip();scrollTarget();}catch(e){console.warn(e);}},200);
  addEventListener?.('resize',()=>follow());
 
  // ---------- developer API (balance editor preview) ----------
  function report(){
-  const c=current(),m=c?.m,out={ready:!!party&&!!state,prologue:prologueRunning(),active:null};
+  const c=current(),m=c?.m,out={ready:!!party&&!!state,prologue:prologueRunning(),active:null,tip:tip?{id:tip.id,mode:tip.mode}:null};
   if(c){const t=resolve(c.step.target);out.active={id:m.id,title:m.title,mode:session.mode,paused:session.paused,reason:session.reason,step:session.index,stepId:c.step.id,stepTitle:c.step.title,steps:m.steps.length,page:currentPage(),stepPage:pageOf(c.step),
    target:{id:c.step.target,state:t.state,text:TARGET_TEXT[t.state]},advance:{type:c.step.advance.type,key:c.step.advance.key||'',explainOnly:replayExplain(c.step),met:c.step.advance.type==='condition'?ok(c.step.advance.condition):null},requires:explain(c.step.requires),unavailable:stepUnavailable(c)};}
   return out;

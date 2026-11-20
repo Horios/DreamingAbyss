@@ -22,18 +22,19 @@ test('worn rows show sockets instead of a checkmark; the socket guide plays once
   assert.equal(await page.locator('main .worn-slot-choice .item-slot-worn').count(),0,'no worn checkmark on the worn page');
   const charmRow=page.locator('main .worn-slot-choice',{hasText:'啟程護符'});
   assert.equal(await charmRow.locator('.worn-socket-badge svg').count(),2,'two sockets beside the charm');
-  await wait(page,'badge');await page.click('#tutorial-card button:has-text("下一步")');
-  await wait(page,'open');assert.equal(await page.locator('main [onclick^="toggleWornEquipmentSockets("]:not([disabled])').count(),1,'only gear with sockets offers 鑲嵌');await page.click('main [onclick^="toggleWornEquipmentSockets("]:not([disabled])');
-  await wait(page,'slot');await page.click('main .equipment-socket-editor .equipment-socket-slot >> nth=0');
-  await wait(page,'gem');
+  // v0.176: the socket guide is a popup listing its steps; the sockets are still used from the page while it shows.
+  await page.waitForFunction(()=>__EMBERWILD_TUTORIAL.status().tip?.id==='socket_basics');
+  assert.match(await page.locator('#tutorial-tip').innerText(),/鑲嵌孔[\s\S]*打開鑲嵌[\s\S]*選擇孔位[\s\S]*放入寶石/);
+  assert.equal(await page.locator('main [onclick^="toggleWornEquipmentSockets("]:not([disabled])').count(),1,'only gear with sockets offers 鑲嵌');await page.click('main [onclick^="toggleWornEquipmentSockets("]:not([disabled])');
+  await page.click('main .equipment-socket-editor .equipment-socket-slot >> nth=0');
   await page.click('main .equipment-gem-choice >> nth=0');
   assert.equal(await page.evaluate(()=>playerHero().bag.find(x=>x.storyRewardKey==='initiation_charm').skillSockets.gems[0]),0,'the gem went into the first socket');
-  await page.click('#tutorial-card button:has-text("完成")');
+  await page.click('#tutorial-tip button:has-text("關閉")');
   assert.equal(await page.evaluate(()=>party.tutorials.records.socket_basics?.completed),true);
   // The filled socket shows its gem colour; the bag list keeps its checkmark.
   assert.notEqual(await charmRow.locator('.worn-socket-badge circle >> nth=0').getAttribute('fill'),'none');
   await page.evaluate(()=>{closeModal();setTab('battle');});await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(400);
-  assert.equal(await active(page),null,'plays once');
+  assert.equal(await active(page),null,'plays once');assert.equal(await page.evaluate(()=>__EMBERWILD_TUTORIAL.status().tip),null);
   await page.evaluate(()=>setTab('equipment'));assert(await page.locator('main .item-slot-worn').count()>0,'the bag still marks worn gear');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}

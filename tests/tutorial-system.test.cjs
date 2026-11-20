@@ -16,9 +16,9 @@ function edit(r,fn){r.run('globalThis.__d=exportableBalance()');const t=r.json('
 
 test('the built-in tutorials pass the shared rules and keep their exact form when normalized',()=>{
  const d=M.defaults();assert.deepEqual(M.issues(d),[]);assert.equal(JSON.stringify(M.validate(d)),JSON.stringify(d));
- assert.deepEqual(d.modules.map(m=>[m.id,m.type,m.category,m.implemented]),[['explore_basics','guide','battle',true],['equipment_basics','guide','equipment',true],['skill_basics','guide','skills',true],['shop_basics','guide','shop',true],['quest_basics','guide','quests',true],
+ assert.deepEqual(d.modules.map(m=>[m.id,m.type,m.category,m.implemented]),[['explore_basics','guide','battle',true],['equipment_basics','guide','equipment',true],['skill_basics','notice','skills',true],['shop_basics','notice','shop',true],['quest_basics','notice','quests',true],
   ['onboarding_gift','guide','equipment',true],['onboarding_practice','guide','battle',true],['onboarding_helper','guide','companions',true],
-  ['statistics_basics','guide','battle',true],['roster_basics','guide','companions',true],['partner_basics','guide','companions',true],['character_basics','guide','character',true],['worn_basics','guide','equipment',true],['socket_basics','guide','equipment',true],['forge_basics','guide','equipment',true],['boss_basics','guide','equipment',true],['story_basics','guide','quests',true],['wishing_basics','guide','wishingLake',true],['gather_basics','guide','life',true],['alchemy_basics','guide','alchemy',true]]);
+  ['statistics_basics','notice','battle',true],['roster_basics','guide','companions',true],['partner_basics','notice','companions',true],['character_basics','notice','character',true],['worn_basics','notice','equipment',true],['socket_basics','notice','equipment',true],['forge_basics','notice','equipment',true],['boss_basics','notice','equipment',true],['story_basics','notice','quests',true],['wishing_basics','notice','wishingLake',true],['gather_basics','notice','life',true],['alchemy_basics','notice','alchemy',true]]);
  assert.deepEqual(require('../data/balance.json').tutorials,d,'the published data carries the built-in tutorials');
 });
 
@@ -109,21 +109,22 @@ test('gear: the notice comes first, the guide starts on the bag page, and replay
  assert.deepEqual(r.errors,[]);
 });
 
-test('skill guide follows the character: steps that cannot be done say why and can be passed',()=>{
- const r=game();r.run('render();tutorialControl("skipAll");setTab("skills")');assert.equal(step(r),'slots');
- r.run('tutorialControl("next");tutorialControl("next")');assert.equal(step(r),'active');
- r.run('openSkillSlot("active",0)');assert.equal(step(r),'auto','opening a slot is the action this step waits for');
- // A step whose requirement the character does not meet is unavailable, with the reason.
- r.run('closeModal()');edit(r,t=>{t.modules[2].steps[4].requires=M.group([M.condition('level','',99)]);});
- assert.equal(step(r),'auto','editing the data keeps the running step');assert.equal(r.run('tutorialControl("next")'),true);
- assert.equal(step(r),'others');assert.match(active(r).unavailable,/主角職業精通等級達到（目前 0／需要 98）/);assert.equal(r.run('tutorialControl("skipStep")'),true);
- assert.equal(active(r),null);assert.equal(records(r).skill_basics.completed,false,'an unavailable step that was passed does not count as done');
+// v0.176: guides other than exploring, gear and the party are a popup listing their steps with one 「關閉」 button.
+test('a popup guide lists its steps without taking over the page; 「關閉」 completes it',()=>{
+ const r=game();r.run('render();tutorialControl("skipAll");setTab("skills")');
+ assert.equal(active(r),null,'no spotlight session');assert.deepEqual(r.json('__EMBERWILD_TUTORIAL.status().tip'),{id:'skill_basics',mode:'normal'});
+ assert.equal(records(r).skill_basics.triggered,true);assert.equal(records(r).skill_basics.completed,false);
+ // Leaving the page puts it away unread; the next visit shows it again.
+ r.run('setTab("battle");__EMBERWILD_TUTORIAL.evaluate()');assert.equal(r.json('__EMBERWILD_TUTORIAL.status().tip'),null);
+ r.run('setTab("skills");__EMBERWILD_TUTORIAL.evaluate()');assert.equal(r.json('__EMBERWILD_TUTORIAL.status().tip.id'),'skill_basics');
+ assert.equal(r.run('tutorialCloseTip()'),true);assert.equal(r.json('__EMBERWILD_TUTORIAL.status().tip'),null);assert.equal(records(r).skill_basics.completed,true);
+ r.run('setTab("battle");setTab("skills");__EMBERWILD_TUTORIAL.evaluate()');assert.equal(r.json('__EMBERWILD_TUTORIAL.status().tip'),null,'shown once');
  assert.deepEqual(r.errors,[]);
 });
 
 test('one guide at a time, in list order; others wait',()=>{
  const r=game();
- edit(r,t=>{const m=M.copy(t.modules[2]);m.id='battle_second';m.title='第二個探索教學';m.trigger.page='battle';m.steps=[M.step('one','一','說明',{page:'battle'})];t.modules.push(m);});
+ edit(r,t=>{const m=M.copy(t.modules[2]);m.type='guide';m.id='battle_second';m.title='第二個探索教學';m.trigger.page='battle';m.steps=[M.step('one','一','說明',{page:'battle'})];t.modules.push(m);});
  r.run('setTab("statistics");setTab("battle")');assert.equal(active(r).id,'explore_basics');
  assert.equal(r.json('__EMBERWILD_TUTORIAL.start("battle_second").ok'),false,'a second guide is refused while one runs');
  r.run('tutorialControl("skipAll");__EMBERWILD_TUTORIAL.evaluate()');assert.equal(active(r).id,'battle_second','the next one starts after the first ends');
@@ -168,7 +169,7 @@ test('a character made without the prologue gets no automatic guide, but can sti
  const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer);render();setTab("skills")');
  assert.equal(r.json('party.tutorials.auto'),false);assert.equal(active(r),null);
  assert.match(r.run('tutorialReviewView()'),/data-tutorial-review="explore_basics"/);
- assert.equal(r.run('replayTutorial("skill_basics")'),true);assert.equal(active(r).mode,'replay');assert.deepEqual(r.errors,[]);
+ assert.equal(r.run('replayTutorial("skill_basics")'),true);assert.equal(r.json('__EMBERWILD_TUTORIAL.status().tip.mode'),'replay');assert.deepEqual(r.errors,[]);
  // The prologue creates its character through the starter pack's asPrologue(): that one gets automatic guides.
  const p=loadRuntime(root);p.run('selectSaveSlot(1);__EMBERWILD_STARTER_PACK.asPrologue(()=>start(0));closeModal();clearInterval(timer)');
  assert.equal(p.run('party.tutorials.auto'),true);
