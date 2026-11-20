@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
-async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-11-20T02:00:00Z')});await g.page.evaluate(()=>{
+async function setup(){const g=await openRuntime(root);await g.page.evaluate(()=>{
  selectSaveSlot(1);start(1);closeModal();clearInterval(timer);setClassMasteryLevel(7);syncParty();startSelectedExploration();clearInterval(timer);spawnGroup();running=true;render();
  globalThis.lootWin=()=>{beginBattleStatistics();for(const e of foes){e.hp=0;rewardGroupKill(e);}finalizeBattleStatistics('victory');};
  // Exercise the actual reward path with guaranteed physical inventory and gear drops.
@@ -10,7 +10,7 @@ async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTim
  {independent:true,id:'fx-ether',type:'material',key:'以太鍛鐵',quantityMin:1,quantityMax:1,chanceByDifficulty:[1,1,1]},
  {independent:true,id:'fx-gem',type:'gem',key:'0',quantityMin:2,quantityMax:2,chanceByDifficulty:[1,1,1]},
  {independent:true,id:'fx-gear',type:'gearLegendary',quantityMin:1,quantityMax:1,chanceByDifficulty:[1,1,1]}
- ];foes.forEach(e=>{e.maxDrops=99;e.kind='elite';});render();
+ ];foes.forEach(e=>{e.maxDrops=99;e.kind='elite';});render();nextActionAt=Date.now()+1e9;
  });return g;}
 test('victory receives inventory immediately; stream beam, flight, receiving light and names use actual names/quantities',async()=>{
  const g=await setup(),p=g.page;try{
@@ -54,7 +54,7 @@ test('backpack coordinates are resolved from visible desktop/mobile navigation; 
  for(const width of [1440,390]){
  await p.setViewportSize({width,height:900});await p.evaluate(()=>{setLootEffects('stream');spawnGroup();render();lootWin();});await p.waitForTimeout(600);
  const routes=await p.locator('.loot-fx-flight').evaluateAll(ns=>ns.map(n=>({x:parseFloat(n.style.left)+parseFloat(n.style.getPropertyValue('--loot-dx')),y:parseFloat(n.style.top)+parseFloat(n.style.getPropertyValue('--loot-dy'))})));
- const bag=await p.locator('.game-nav [data-nav-group="bag"]').boundingBox();assert(bag,'visible backpack entry');
+ const bag=await p.locator('nav [data-nav-group="bag"]').boundingBox();assert(bag,'visible backpack entry');
  assert(routes.length>0);for(const r of routes){assert(Math.abs(r.x-(bag.x+bag.width/2))<1);assert(Math.abs(r.y-(bag.y+bag.height/2))<1);}for(const r of routes){assert(r.x>0&&r.x<width);assert(r.y>0&&r.y<900);}
  await p.waitForTimeout(1900);
  }
