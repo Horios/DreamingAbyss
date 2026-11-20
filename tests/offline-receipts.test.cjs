@@ -6,11 +6,13 @@ async function settle(r,ms=0){r.advance(ms);await r.run('EmberwildOffline.settle
 function hidden(r,value){r.ctx.document.hidden=value;r.ctx.document.visibilityState=value?'hidden':'visible';r.dispatch('visibilitychange','document');}
 function rewardState(r){return json(r,'({gold:state.gold,xp:state.xp,lv:state.lv,kills:state.totalKills,bag:state.bag,materials:state.materials,at:party.offlineExploration.lastAt})');}
 
+// v0.181: the encounter in progress is made 20× tougher and harmless where a test needs it unfinished, instead of relying on the
+// encounter sequence (fewer elites since v0.181 make the first group fights short).
 test('one second or an unfinished ten-second encounter preserves cursor without opening any window',async()=>{
- const r=game();await settle(r,1000);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
+ const r=game();r.run('for(const e of foes)if(e.hp>0){e.maxhp*=20;e.hp*=20;e.atk=1;}save();');await settle(r,1000);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
  await settle(r,9000);assert.equal(r.run('party.offlineExploration.receipt'),null);assert(r.run('foes.some(e=>e.hp>0)'));assert(r.run('!!party.offlineExploration.combat'));assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);
  const raw=json(r,'packParty()'),cursor=json(r,'combatRoundProgress');r.ctx.saved=raw;r.run('loadParty(saved)');assert.deepEqual(json(r,'combatRoundProgress'),cursor);
- await settle(r,50000);assert(r.run('party.offlineExploration.receipt.battles')>=1);assert.equal(r.elements.get('offline-settlement').hidden,false);
+ r.run('for(const e of foes)if(e.hp>0)e.hp=1;save();');await settle(r,50000);assert(r.run('party.offlineExploration.receipt.battles')>=1);assert.equal(r.elements.get('offline-settlement').hidden,false);
 });
 
 test('one real completed encounter within ten seconds shows its applied rewards once',async()=>{
@@ -38,7 +40,7 @@ test('open receipts stay unchanged during live background play; only a cold relo
 });
 
 test('queued incomplete battle and merged absence intervals keep all partial rewards until a later completion',async()=>{
- const r=game();await settle(r,60000);const first=json(r,'party.offlineExploration.receipt');await settle(r,1000);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);
+ const r=game();await settle(r,60000);const first=json(r,'party.offlineExploration.receipt');r.run('for(const e of foes)if(e.hp>0){e.maxhp*=20;e.hp*=20;e.atk=1;}save();');await settle(r,1000);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);
  assert.equal(r.run('acknowledgeOfflineExploration()'),true);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.elements.get('offline-settlement').hidden,true);
  // A foreground gap is not part of the next actual absence duration.
  r.advance(1000);r.run('EmberwildOffline.sync()');await settle(r,60000);let next=json(r,'party.offlineExploration.receipt');if(!next){assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);r.run('foes.forEach(e=>{if(e.hp>0)e.hp=1;})');await settle(r,30000);next=json(r,'party.offlineExploration.receipt');}assert(next&&next.battles>0);assert(next.intervals.reduce((n,x)=>n+x.end-x.start,0)>=61000);assert.equal(next.intervals.length,2);assert(next.start>=first.end);

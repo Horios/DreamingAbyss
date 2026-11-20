@@ -1,5 +1,8 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
+// v0.181 made elites 30% stronger, and the lone starting warrior can now lose to one in this seeded 40-minute run. These
+// tests check the statistics bookkeeping of a run without wipes, so they keep the earlier elite strength.
+Object.assign(seed.balanceSettings.monsters.kindMultipliers,{eliteHp:1.6,eliteAttack:1.2,eliteDefense:1.1});
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 // v0.179: players always meet groups; these statistics tests keep the internal single-enemy setting so the 40-minute
 // runs stay free of wipes and their totals stay comparable.

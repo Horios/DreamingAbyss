@@ -11,13 +11,13 @@
         0.2
       ],
       "gemChance": [
-        0.04,
-        0.12,
-        0.35
+        0.044,
+        0.132,
+        0.385
       ],
       "bossGearChance": 0.06,
       "ore": 1,
-      "legendaryGearChance": 0.0006,
+      "legendaryGearChance": 0.00066,
       "goldMultiplier": 1
     },
     {
@@ -31,13 +31,13 @@
         0.25
       ],
       "gemChance": [
-        0.08,
-        0.22,
-        0.5
+        0.088,
+        0.242,
+        0.55
       ],
       "bossGearChance": 0.1,
       "ore": 1.5,
-      "legendaryGearChance": 0.0016,
+      "legendaryGearChance": 0.00176,
       "goldMultiplier": 1.35
     },
     {
@@ -51,13 +51,13 @@
         0.3
       ],
       "gemChance": [
-        0.13,
-        0.35,
-        0.7
+        0.143,
+        0.385,
+        0.77
       ],
       "bossGearChance": 0.15,
       "ore": 2,
-      "legendaryGearChance": 0.0032,
+      "legendaryGearChance": 0.00352,
       "goldMultiplier": 1.8
     }
   ],

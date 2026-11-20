@@ -9929,7 +9929,7 @@
     "monsters": {
       "encounter": {
         "bossChance": 0,
-        "eliteChance": 0.12
+        "eliteChance": 0.06
       },
       "normal": {
         "hpBase": 18,
@@ -9941,10 +9941,10 @@
       },
       "kindMultipliers": {
         "bossHp": 9,
-        "eliteHp": 1.6,
+        "eliteHp": 2.08,
         "bossAttack": 2,
-        "eliteAttack": 1.2,
-        "eliteDefense": 1.1,
+        "eliteAttack": 1.56,
+        "eliteDefense": 1.43,
         "bossDefense": 1.2
       },
       "finalBoss": {
@@ -17178,13 +17178,13 @@
             0.2
           ],
           "gemChance": [
-            0.04,
-            0.12,
-            0.35
+            0.044,
+            0.132,
+            0.385
           ],
           "bossGearChance": 0.06,
           "ore": 1,
-          "legendaryGearChance": 0.0006,
+          "legendaryGearChance": 0.00066,
           "goldMultiplier": 1
         },
         {
@@ -17198,13 +17198,13 @@
             0.25
           ],
           "gemChance": [
-            0.08,
-            0.22,
-            0.5
+            0.088,
+            0.242,
+            0.55
           ],
           "bossGearChance": 0.1,
           "ore": 1.5,
-          "legendaryGearChance": 0.0016,
+          "legendaryGearChance": 0.00176,
           "goldMultiplier": 1.35
         },
         {
@@ -17218,13 +17218,13 @@
             0.3
           ],
           "gemChance": [
-            0.13,
-            0.35,
-            0.7
+            0.143,
+            0.385,
+            0.77
           ],
           "bossGearChance": 0.15,
           "ore": 2,
-          "legendaryGearChance": 0.0032,
+          "legendaryGearChance": 0.00352,
           "goldMultiplier": 1.8
         }
       ],
@@ -17277,7 +17277,7 @@
         "chanceFactor": 0.7
       },
       "equipmentQuality": {
-        "rareChance": 0.22,
+        "rareChance": 0.242,
         "fineConditionalChance": 0.46
       },
       "potionDropChance": 0.08,
@@ -18014,7 +18014,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 5
@@ -18033,7 +18033,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 10
@@ -18052,7 +18052,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 15
@@ -18071,7 +18071,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 20
@@ -18090,7 +18090,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 25
@@ -18109,7 +18109,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 30
@@ -18147,7 +18147,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 35
@@ -18166,7 +18166,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 40
@@ -18185,7 +18185,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 45
@@ -18204,7 +18204,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 50
@@ -18223,7 +18223,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 55
@@ -18242,7 +18242,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 60
@@ -18261,7 +18261,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 5
@@ -18280,7 +18280,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 10
@@ -18299,7 +18299,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 15
@@ -18318,7 +18318,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 20
@@ -18337,7 +18337,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 25
@@ -18356,7 +18356,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 30
@@ -18375,7 +18375,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 35
@@ -18394,7 +18394,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 40
@@ -18413,7 +18413,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 45
@@ -18432,7 +18432,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 50
@@ -18451,7 +18451,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 55
@@ -18470,7 +18470,7 @@
           "bossStageRandomCount": 1,
           "progressionGate": false,
           "eliteEnabled": true,
-          "eliteChance": 0.12,
+          "eliteChance": 0.06,
           "bossEnabled": true,
           "bossChance": 0,
           "recommendedGearLevel": 60
@@ -22601,9 +22601,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.0006,
-            0.0016,
-            0.0032
+            0.00066,
+            0.00176,
+            0.00352
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22688,9 +22688,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.03,
-            0.06,
-            0.1
+            0.033,
+            0.066,
+            0.11
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22791,9 +22791,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.09,
-            0.17,
-            0.27
+            0.099,
+            0.187,
+            0.297
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22895,9 +22895,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.27,
-            0.4,
-            0.55
+            0.297,
+            0.44,
+            0.605
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23515,9 +23515,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.000006,
-            0.000012,
-            0.00002
+            0.0000066,
+            0.0000132,
+            0.000022
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23618,9 +23618,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.000008,
-            0.000018,
-            0.000036
+            0.0000088,
+            0.0000198,
+            0.0000396
           ],
           "quantityMin": 1,
           "quantityMax": 1,

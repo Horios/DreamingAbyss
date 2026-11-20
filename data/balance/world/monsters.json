@@ -1,7 +1,7 @@
 {
   "encounter": {
     "bossChance": 0,
-    "eliteChance": 0.12
+    "eliteChance": 0.06
   },
   "normal": {
     "hpBase": 18,
@@ -13,10 +13,10 @@
   },
   "kindMultipliers": {
     "bossHp": 9,
-    "eliteHp": 1.6,
+    "eliteHp": 2.08,
     "bossAttack": 2,
-    "eliteAttack": 1.2,
-    "eliteDefense": 1.1,
+    "eliteAttack": 1.56,
+    "eliteDefense": 1.43,
     "bossDefense": 1.2
   },
   "finalBoss": {

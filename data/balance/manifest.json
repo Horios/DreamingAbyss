@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 53,
+  "dataRevision": 55,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "761368af80f643802b0807ef4096de6d6f9c36fa4fc1aa6339ff9f6fca6ccdc7",
-    "bytes": 1265063
+    "sha256": "c6f3d798d49dc725a36d2aeedfc8177076847022f3d82806b85b95407f530d63",
+    "bytes": 1265097
   },
   "layout": {
     "": [
@@ -172,8 +172,8 @@
       "file": "world/maps.json",
       "source": "balanceSettings.maps",
       "present": true,
-      "version": 3,
-      "sha256": "b3db086833f2a55a00b1c931509dde1e560f01a9419556a822620856334e80b7",
+      "version": 4,
+      "sha256": "2003832bea1699c0e2fa4e39c19bef48fa1173850e3958c7fb857abff554afc2",
       "bytes": 12367,
       "dependsOn": [],
       "validators": [
@@ -190,9 +190,9 @@
       "file": "world/monsters.json",
       "source": "balanceSettings.monsters",
       "present": true,
-      "version": 2,
-      "sha256": "75066a8605cbffcc325708a3be2ea19f67e957f0b909516fe1f2f96fb276605e",
-      "bytes": 162060,
+      "version": 3,
+      "sha256": "ac9ee203a7c53d5d47906e28e4754c5e705e2a7874ef6b893d3ee8a1370807ea",
+      "bytes": 162063,
       "dependsOn": [
         "combat/skills",
         "world/maps"
@@ -212,9 +212,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 6,
-      "sha256": "70d254d2162e5881773eb364b193928fc2fcb77b0469998788ec6cae4702af6a",
-      "bytes": 108818,
+      "version": 8,
+      "sha256": "06cce2a00f81f144a0967b598ea809f0b56d6de6e7963795f4800708c5c743ab",
+      "bytes": 108836,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -232,9 +232,9 @@
       "file": "world/difficulty.json",
       "source": "balanceSettings.difficulty",
       "present": true,
-      "version": 2,
-      "sha256": "29e0177065ea4faf5f429b7416fc8ab2c9a7b5ebcc0314004aeac98bfea43b6a",
-      "bytes": 1138,
+      "version": 3,
+      "sha256": "5e74d8e913850f19a82896ee3adce391d56c757c1302069c56262fbe4f22324f",
+      "bytes": 1150,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -587,9 +587,9 @@
       "file": "systems/rewards.json",
       "source": "balanceSettings.rewards",
       "present": true,
-      "version": 3,
-      "sha256": "da2ba5f34a12448ea7562d88a837e10cface96d282592632780ce9cbd1758efa",
-      "bytes": 1140,
+      "version": 4,
+      "sha256": "a6e6570451dcf8dfa0b6d408695a6458c83d6b9f5194e69cec16d3de5525c05f",
+      "bytes": 1141,
       "dependsOn": [],
       "validators": [
         "field-rules",

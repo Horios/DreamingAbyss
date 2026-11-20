@@ -41,7 +41,7 @@
   const isToken=g=>!!g&&globalThis.EmberwildTokens?.isToken(g);
   const row=level=>{const n=Math.floor(Number(level)||0);return n>=1&&n<=levels().length?tableRow(levels()[n-1]):null;};
   const bonusAt=plus=>plus>0?row(plus)?.bonus||0:0;
-  const enhanceable=g=>!!g&&!isToken(g)&&g.slot!==ACCESSORY_SLOT&&g.canEnhance!==false;
+  const enhanceable=g=>!!g&&g.slot!==ACCESSORY_SLOT&&g.canEnhance!==false;
   // Cost multiplier from the item level (裝等): 1～5 ×1, 6～10 ×2, 11～15 ×3...
   const levelMultiplier=g=>Math.max(1,Math.ceil((Number(typeof gearRequiredLevel==='function'?gearRequiredLevel(g):g?.equipmentLevel)||1)/Math.max(1,Number(settings().costLevelStep)||5)));
   const costOf=g=>{const r=row((g?.plus||0)+1),m=levelMultiplier(g);return {ore:(r?.cost.ore||0)*m,dust:(r?.cost.dust||0)*m,ether:(r?.cost.ether||0)*m};};
@@ -52,12 +52,15 @@
   const P=globalThis.EmberwildProgression;
   if(P)P.enhancedGearStats=function(base,plus){const m=1+bonusAt(Number(plus)||0);return Object.fromEntries(['hp','atk','def'].map(k=>{const v=Math.max(0,Number(base?.[k])||0);return [k,v>0?Math.round(v*m):0];}));};
 
-  const baseMaterials=upgradeMaterials;
-  upgradeMaterials=function(g){return isToken(g)?baseMaterials(g):costOf(g);};
+  // v0.181: companion tokens follow the same table. Their attribute effects grow by the same cumulative bonus instead of
+  // the former +5% per level (statPerLevel); special abilities keep their parameters.
+  const TK=globalThis.EmberwildTokens;
+  if(TK?.effectsFor){const baseEffects=TK.effectsFor;TK.effectsFor=function(g){return baseEffects.call(this,{...g,plus:1},bonusAt(Number(g?.plus)||0));};}
+
+  upgradeMaterials=function(g){return costOf(g);};
   globalThis.upgradeMaterials=upgradeMaterials;
   const have=c=>state.dust>=c.dust&&state.ore>=c.ore&&(state.materials['以太鍛鐵']||0)>=c.ether;
-  const baseCan=canEnhance;
-  canEnhance=function(g){if(isToken(g))return baseCan(g);return enhanceable(g)&&(g.plus||0)<maxLevel()&&have(costOf(g));};
+  canEnhance=function(g){return enhanceable(g)&&(g.plus||0)<maxLevel()&&have(costOf(g));};
   globalThis.canEnhance=canEnhance;
 
   function destroy(g){
@@ -70,13 +73,13 @@
   }
   const baseEnhance=enhance;
   enhance=function(id){
-    const g=findGear(id);if(!g||isToken(g))return baseEnhance(id);
+    const g=findGear(id);if(!g)return baseEnhance(id);
     if(g.slot===ACCESSORY_SLOT){toast('飾品無法強化');return false;}
     if(g.canEnhance===false){toast('此裝備不可強化');return false;}
     const plus=g.plus||0,MAX=maxLevel();if(plus>=MAX){toast('已達 +'+MAX+' 強化上限');return false;}
     const target=plus+1,r=row(target),c=costOf(g);
     if(!have(c)){toast('材料不足：'+upgradeCostText(g));return false;}
-    if(r.fail==='destroy'&&!confirm(`強化至 +${target} 的成功率為 ${pct(r.rate)}，失敗時「${equipmentDisplayName(g)}」會損毀並消失，無法復原${gearWearer(g.id)?'（穿戴中的裝備也會損毀）':''}。\n確定強化？`))return false;
+    if(r.fail==='destroy'&&!confirm(`強化至 +${target} 的成功率為 ${pct(r.rate)}，失敗時「${equipmentDisplayName(g)}」會損毀並消失，無法復原${gearWearer(g.id)?(isToken(g)?'（穿戴中的信物也會損毀）':'（穿戴中的裝備也會損毀）'):''}。\n確定強化？`))return false;
     const T=globalThis.__EMBERWILD_TEAMS,M=globalThis.EmberwildTeams;T?.capture?.();
     const snap={ore:state.ore,dust:state.dust,ether:state.materials['以太鍛鐵']||0,plus,bag:state.bag,members:party.members.map(x=>({equipped:[...(x.equipped||[])],tokenId:x.tokenId,hp:x.hp})),build:T&&M?M.copy(T.build()):null,gems:[...(playerHero().gems||[])],progress:party.progressStats?JSON.parse(JSON.stringify(party.progressStats)):null,board:JSON.parse(JSON.stringify(playerHero().board||null))};
     state.dust-=c.dust;state.ore-=c.ore;if(c.ether)state.materials['以太鍛鐵']=snap.ether-c.ether;
@@ -101,7 +104,8 @@
 
   // Forge page text for the selected item.
   function controlsHTML(g){
-    if(!g||isToken(g))return '';
+    if(!g)return '';
+    if(isToken(g))return tokenControlsHTML(g);
     if(g.slot===ACCESSORY_SLOT)return '<p class="small enhance-locked">飾品無法強化。</p>';
     if(g.canEnhance===false)return '<p class="small enhance-locked">此裝備不可強化。</p>';
     const plus=g.plus||0,MAX=maxLevel();
@@ -110,6 +114,14 @@
     const gains=['atk','hp','def'].filter(k=>next[k]>now[k]).map(k=>`${{atk:'攻擊',hp:'生命',def:'防禦'}[k]} +${next[k]-now[k]}`).join(' / ')||'基礎數值較小，這一級四捨五入後沒有增加';
     const fail=r.fail===null?'':r.fail==='destroy'?`<p class="enhance-danger">失敗時裝備會損毀並消失（穿戴中與任務裝備也一樣），強化前會再次確認。</p>`:`<p class="small">失敗時：退至 +${r.fail}</p>`;
     return `<p class="green">強化至 +${target}：基礎能力 +${pct(bonusAt(plus))} → +${pct(r.bonus)}，${gains}</p><p class="small">費用：${itemCostHTML(g)}${levelMultiplier(g)>1?'（裝等 '+gearRequiredLevel(g)+'，材料 ×'+levelMultiplier(g)+'）':''} · 成功率 ${pct(r.rate)}</p>${fail}<button class="${r.fail==='destroy'?'danger':'primary'}" onclick="enhance('${g.id}')" ${canEnhance(g)?'':'disabled'}>強化至 +${target}</button>`;
+  }
+  // Token forge: the attribute effects (not the special ability) grow by the table's cumulative bonus.
+  function tokenControlsHTML(g){
+    const plus=g.plus||0,MAX=maxLevel();
+    if(plus>=MAX)return `<p class="gold">已達 +${MAX} 強化上限（信物屬性 +${pct(bonusAt(plus))}）。</p>`;
+    const target=plus+1,r=row(target);
+    const fail=r.fail===null?'':r.fail==='destroy'?`<p class="enhance-danger">失敗時信物會損毀並消失（穿戴中的信物也一樣），強化前會再次確認。</p>`:`<p class="small">失敗時：退至 +${r.fail}</p>`;
+    return `<p class="green">強化至 +${target}：信物屬性 +${pct(bonusAt(plus))} → +${pct(r.bonus)}（特殊能力參數不變）</p><p class="small">費用：${itemCostHTML(g)} · 成功率 ${pct(r.rate)}</p>${fail}<button class="${r.fail==='destroy'?'danger':'primary'}" onclick="enhance('${g.id}')" ${canEnhance(g)?'':'disabled'}>強化至 +${target}</button>`;
   }
   function tableHTML(){
     const cost=c=>[c.dust?'粉塵 ×'+c.dust:'',c.ore?'鍛鐵 ×'+c.ore:'',c.ether?'以太鍛鐵 ×'+c.ether:''].filter(Boolean).join('、');

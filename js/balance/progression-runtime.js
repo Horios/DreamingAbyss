@@ -21,7 +21,7 @@
       'balanceSettings.rewards.gold':'金幣採獨立曲線和各怪物種類倍率，不共用 EXP。',
       'balanceSettings.difficulty.modes[].goldMultiplier':'各難度獨立金幣倍率。'
     });
-    out.legacySettings['balanceSettings.equipment.enhance.statPerLevel']={status:'tokens-only',replacement:'balanceSettings.equipment.enhance.flatStatsPerLevel',note:'只保留信物百分比強化；一般裝備、BOSS 裝及新手裝使用固定值精煉。'};
+    out.legacySettings['balanceSettings.equipment.enhance.statPerLevel']={status:'unused',replacement:'balanceSettings.equipment.enhance.levels',note:'v0.181 起裝備與信物都依強化表的累計加成成長，不再使用每級百分比。'};
     for(const path of ['classes[].growthPerLevel','classes[].growthSteps','balanceSettings.progression.statsPerLevel','balanceSettings.progression.xpCurve','balanceSettings.progression.xpLevelGap','balanceSettings.progression.levelCaps','balanceSettings.progression.mapAheadAllowance','balanceSettings.rewards.xp','balanceSettings.difficulty.modes[].xpMultiplier','balanceSettings.drops.levelGap','balanceSettings.equipment.dropLevelGap','balanceSettings.monsters.encounter.levelLeadInterval','balanceSettings.combat.levelGapDamagePerLevel'])out.legacySettings[path]={status:'removed',note:'v0.161 移除角色等級與經驗後不再使用。'};
     return out;
   };

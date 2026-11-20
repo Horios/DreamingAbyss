@@ -4122,9 +4122,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.0006,
-        0.0016,
-        0.0032
+        0.00066,
+        0.00176,
+        0.00352
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4209,9 +4209,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.03,
-        0.06,
-        0.1
+        0.033,
+        0.066,
+        0.11
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4312,9 +4312,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.09,
-        0.17,
-        0.27
+        0.099,
+        0.187,
+        0.297
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4416,9 +4416,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.27,
-        0.4,
-        0.55
+        0.297,
+        0.44,
+        0.605
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -5036,9 +5036,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.000006,
-        0.000012,
-        0.00002
+        0.0000066,
+        0.0000132,
+        0.000022
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -5139,9 +5139,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.000008,
-        0.000018,
-        0.000036
+        0.0000088,
+        0.0000198,
+        0.0000396
       ],
       "quantityMin": 1,
       "quantityMax": 1,
