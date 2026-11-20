@@ -13,7 +13,7 @@ test('Item interfaces share one persisted icon-name or name-only list mode',asyn
     await start(p);
     assert.equal(await p.locator('html').getAttribute('data-item-display'),'icon-name');
     for(const setup of [
-      ()=>{setTab('equipment');setInventoryCategory('equipment');},
+      ()=>{setTab('equipment');setInventoryCategory('equipment');setGearInventoryFilter('worn','all');},/* v0.184: a new character's gear is all worn */
       ()=>setTab('forge'),
       ()=>setTab('shop'),
       ()=>setTab('lifeSkills')

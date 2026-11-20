@@ -35,7 +35,7 @@ test('worn rows show sockets instead of a checkmark; the socket guide plays once
   assert.notEqual(await charmRow.locator('.worn-socket-badge circle >> nth=0').getAttribute('fill'),'none');
   await page.evaluate(()=>{closeModal();setTab('battle');});await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(400);
   assert.equal(await active(page),null,'plays once');assert.equal(await page.evaluate(()=>__EMBERWILD_TUTORIAL.status().tip),null);
-  await page.evaluate(()=>setTab('equipment'));assert(await page.locator('main .item-slot-worn').count()>0,'the bag still marks worn gear');
+  await page.evaluate(()=>{setTab('equipment');setGearInventoryFilter('worn','all');});assert(await page.locator('main .item-slot-worn').count()>0,'the bag still marks worn gear when 穿戴：全部 is chosen');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}
 });

@@ -62,7 +62,8 @@ test('冒險配置 opens 探索與挑戰 as a dialog; there is no hunting mode c
  // An active BOSS challenge starts even when the selection says 一般探索.
  await p.evaluate(()=>{stopTeamExploration();bossProgressEntry(party.map).charges=1;setExplorationCategory('boss');startSelectedExploration();setExplorationCategory('explore');});await settled();
  assert.equal(await p.evaluate(()=>!!party.bossChallenge?.active),true);
- // Starting from the dialog closes it so combat runs.
- await p.evaluate(()=>{stopTeamExploration();});await p.locator('[data-adventure-config]').click();await p.locator('#modal .exploration-primary-actions button').first().click();
- assert.equal(await p.evaluate(()=>$('modal').open),false);assert.equal(await p.evaluate(()=>running),true);
+ // v0.185: the dialog keeps only potions and recovery thresholds; exploring starts from the toolbar.
+ await p.evaluate(()=>{stopTeamExploration();});await p.locator('[data-adventure-config]').click();assert.equal(await p.locator('#modal .exploration-primary-actions').count(),0);
+ assert.match(await p.locator('#modal').innerText(),/遭遇前恢復[\s\S]*自動藥水[\s\S]*隊伍補給[\s\S]*限時增益/);assert.doesNotMatch(await p.locator('#modal').innerText(),/隊伍戰鬥統計|探索難度|難度：/);
+ await p.getByRole('button',{name:'關閉',exact:true}).click();await p.locator('.seconds-adventure-toolbar [onclick="startSelectedExploration()"]').first().click();assert.equal(await p.evaluate(()=>running),true);
  assert.deepEqual(g.errors,[]);}finally{await g.browser.close();}});

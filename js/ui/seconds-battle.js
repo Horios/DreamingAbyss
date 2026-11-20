@@ -81,9 +81,11 @@
   const cut=takeSection(html,'<section class="panel battle-map-column expedition-control-card">');
   // v0.068: destination type and map sit under the toolbar (一般地圖／任務地圖／BOSS地圖／地圖選單); the dialog keeps the
   // quest stage, details and other settings, and no pause or stop buttons (the toolbar has them).
-  configHTML=cut.section.replace(/<div class="exploration-categories"[^>]*>[\s\S]*?<\/div>/,'')
-   .replace(/<label><span>選擇地圖<\/span><select aria-label="探索地圖"[\s\S]*?<\/select><\/label>/,'')
-   .replace(/<button[^>]*onclick="(?:toggleBattle|stopTeamExploration)\(\)"[^>]*>[\s\S]*?<\/button>/g,'');
+  // v0.185: the 冒險配置 dialog keeps only the encounter recovery thresholds (索敵標準), auto potions and the party's potion
+  // supply. Timed boosts (consumable items) stay here too. Destination and difficulty are on the battle page; combat statistics have
+  // their own page.
+  const head=(cut.section.match(/<div class="control-head">[\s\S]*?<\/div>/)||[''])[0].replace('<h2>探索與挑戰</h2>','<h2>藥水與索敵標準</h2>');
+  configHTML=cut.section?`<section class="panel battle-map-column expedition-control-card">${head}${control}${globalThis.explorationCompactSupply?.()||''}${typeof timedBoostManagement==='function'?timedBoostManagement():''}</section>`:'';
   return toolbar+destinationBar()+cut.rest;
  };
  let configHTML='',configShown='';
@@ -92,8 +94,27 @@
   // v0.120: phones hide the 地圖 suffix so the three types and the map list share one row.
   // v0.182: 任務地圖 is removed from this bar (its entry will move to the quest page); BOSS地圖 shows the BOSS meter.
   const buttons=[['explore','一般'],['boss','BOSS']].map(([id,name])=>`<button type="button" data-destination-category="${id}" aria-pressed="${category===id}" aria-label="${name}地圖" class="${category===id?'primary':''}" onclick="setExplorationCategory('${id}')">${name}<span class="destination-suffix">地圖</span></button>`).join('');
-  return `<section class="seconds-destination-bar" aria-label="探索目的地"><div class="seconds-destination-types" role="group" aria-label="關卡分類">${buttons}</div><select aria-label="探索地圖" ${locked?'disabled title="任務地圖依任務關卡決定，請在冒險配置選擇關卡"':''} onchange="selectExplorationMap(Number(this.value))">${choices.map(c=>`<option value="${c.index}" ${c.index===map?'selected':''}>${esc(c.name)} · 推薦裝等 ${c.recommendedGearLevel}${c.unlocked?'':' · 未解鎖'}</option>`).join('')}</select></section>`+(category==='boss'?`<section class="panel seconds-boss-meter" aria-label="BOSS 進度">${globalThis.explorationBossBlock?.(map)||''}</section>`:'');
+  return `<section class="seconds-destination-bar" aria-label="探索目的地"><div class="seconds-destination-types" role="group" aria-label="關卡分類">${buttons}</div><select aria-label="探索地圖" ${locked?'disabled title="任務地圖依任務關卡決定，請在冒險配置選擇關卡"':''} onchange="selectExplorationMap(Number(this.value))">${choices.map(c=>`<option value="${c.index}" ${c.index===map?'selected':''}>${esc(c.name)} · 推薦裝等 ${c.recommendedGearLevel}${c.unlocked?'':' · 未解鎖'}</option>`).join('')}</select>${difficultyPanel()}</section>`+(()=>{const result=globalThis.expeditionChallengeResult;return result?`<div class="exploration-result seconds-challenge-result" role="status">${esc(result.name)} · ${result.success?'挑戰成功':'挑戰失敗'}${result.key?`<button onclick="openStory('${esc(result.key.split('/')[0])}')">查看任務</button>`:''}</div>`:'';})()+((running||globalThis.EmberwildOffline?.busy)&&map!==party.map&&category==='explore'?'<p class="small seconds-pending-note">選擇其他目的地僅供準備，停止後再開始才會切換。</p>':'')+(category==='boss'?`<section class="panel seconds-boss-meter" aria-label="BOSS 進度">${globalThis.explorationBossBlock?.(map)||''}</section>`:'');
  }
+ // v0.185: map difficulty with what it changes (monster stats, rewards and drop rates) and the buttons to change it.
+ const pct=v=>{const n=(Number(v)||0)*100;return (n>=10?Math.round(n):n>=1?Math.round(n*10)/10:Math.round(n*100)/100)+'%';};
+ const times=v=>'×'+Math.round((Number(v)||0)*100)/100;
+ function difficultyPanel(){
+  if(!Array.isArray(MODES)||!MODES.length)return '';
+  const mode=party.difficulty||0,m=MODES[mode]||MODES[0],g=GAMEPLAY_SETTINGS.difficulty?.modes?.[mode]||{},eq=m.equip||[],gem=m.gem||[];
+  const buttons=MODES.map((x,i)=>`<button type="button" data-difficulty="${i}" aria-pressed="${i===mode}" class="${i===mode?'primary':''}" onclick="setMapDifficulty(${i})">${esc(x.name)}</button>`).join('');
+  // One item at the end of the destination bar; its panel opens over the page so the battlefield keeps its height.
+  return `<details class="seconds-pop seconds-difficulty" aria-label="地圖難度"><summary><span class="pop-long">難度：</span>${esc(m.name)}</summary><div class="seconds-pop-body">`+
+   `<div class="seconds-difficulty-modes" role="group" aria-label="切換難度">${buttons}</div>`+
+   `<p class="seconds-difficulty-line" data-difficulty-monsters><span>怪物</span>生命 ${times(m.hp)} · 攻擊 ${times(m.atk)} · 防禦 ${times(m.def)}</p>`+
+   `<p class="seconds-difficulty-line" data-difficulty-drops><span>掉落</span>金幣 ${times(g.goldMultiplier??1)} · 素材 ${times(m.ore)} · 裝備 一般 ${pct(eq[0])}／菁英 ${pct(eq[1])}／首領 ${pct(eq[2])} · 寶石 一般 ${pct(gem[0])}／菁英 ${pct(gem[1])}／首領 ${pct(gem[2])} · BOSS 專屬 ${pct(m.boss)} · 傳說 ${pct(m.rare)}</p>`+
+   `<p class="small">切換難度會停止探索並放棄目前遭遇。</p><button type="button" class="seconds-bestiary" onclick="showRegionBestiary()">地區圖鑑</button></div></details>`;
+ }
+ globalThis.setMapDifficulty=function(i){
+  i=Number(i);if(![0,1,2].includes(i)||i===(party.difficulty||0))return false;
+  if((running||foes?.some?.(e=>e.hp>0))&&!confirm('切換難度會停止探索並放棄目前遭遇，確定切換為「'+MODES[i].name+'」？'))return false;
+  changeDifficulty(i);return (party.difficulty||0)===i;
+ };
  function takeSection(html,open){
   const start=html.indexOf(open);if(start<0)return {section:'',rest:html};
   const tags=/<\/?section\b[^>]*>/g;tags.lastIndex=start;let depth=0,m;

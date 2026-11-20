@@ -60,7 +60,7 @@ test('equipment sockets: horizontal icons, icon gem choices, stat gems and inven
     Object.assign(item,{id:'socket-count-'+n,skillSockets:{version:1,count:n,gems:Array(n).fill(null)}});
     addGear(item);
    }
-   setTab('equipment');setInventoryCategory('equipment');
+   setTab('equipment');setInventoryCategory('equipment');setGearInventoryFilter('worn','all');/* v0.184: worn gear is hidden by default */
   });
   for(const width of [1280,390]){
    await p.setViewportSize({width,height:900});

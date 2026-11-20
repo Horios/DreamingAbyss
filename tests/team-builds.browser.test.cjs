@@ -51,7 +51,7 @@ test('Chromium: create blank plans, choose classes, learn, copy, rename, safety 
 test('Chromium: worn equipment can be force-sold after a native warning naming all plans, with cancellation and one reward',async()=>{
  const g=await openRuntime(root,'index.html',OPEN_PLANS),p=g.page;p.setDefaultTimeout(10000);
  try{
-  await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();copyTeamPlan();renameTeamPlan('team-1','戰士甲');renameTeamPlan('team-2','戰士乙');setTab('equipment');});
+  await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();copyTeamPlan();renameTeamPlan('team-1','戰士甲');renameTeamPlan('team-2','戰士乙');setTab('equipment');setGearInventoryFilter('worn','all');/* v0.184: worn gear is hidden by default */});
   await p.waitForTimeout(50);await p.evaluate(()=>closeModal());
   const before=await p.evaluate(()=>({id:state.equipped[0],gold:state.gold,price:equipmentSellPrice(findGear(state.equipped[0]))}));await p.evaluate(id=>selectInventoryGear(id),before.id);const button=p.locator('.inventory-detail-pane button[onclick*="sellGear("]').first();
   assert.equal(await button.isDisabled(),false);let message='';p.once('dialog',async d=>{message=d.message();await d.dismiss();});await button.click();assert(message.includes('戰士甲')&&message.includes('戰士乙'));assert.equal(await p.evaluate(id=>!!findGear(id),before.id),true);

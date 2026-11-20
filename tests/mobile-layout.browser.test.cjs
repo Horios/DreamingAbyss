@@ -176,18 +176,20 @@ test('Mobile: expedition settings, readable touch controls and skill details are
   // v0.063: the detailed adventure settings open from 冒險配置 as a dialog instead of sitting below the battlefield.
   assert.equal(await p.locator('#app .expedition-control-card').count(),0);
   await p.locator('[data-adventure-config]').click();
-  assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),false);
-  const layout=await p.evaluate(()=>{const card=document.querySelector('#modal .expedition-control-card'),action=card.querySelector('.exploration-primary-actions button'),modal=document.getElementById('modal').getBoundingClientRect();return {start:action.getBoundingClientRect().toJSON(),controls:card.getBoundingClientRect().toJSON(),modal:{left:modal.left,right:modal.right}};});
-  assert(layout.modal.left>=0&&layout.modal.right<=390,'the dialog fits the phone');assert(layout.start.height>=40,'exploration start control remains touchable');assert(layout.start.left>=layout.controls.left-1&&layout.start.right<=layout.controls.right+1,'start control stays inside panel');
+  // v0.185: the dialog keeps the recovery thresholds, auto potions and the potion supply; starting is on the toolbar.
+  assert.equal(await p.locator('#modal .exploration-primary-actions').count(),0,'no start control in the dialog');
+  assert.equal(await p.locator('#modal .exploration-supply').evaluate(d=>d.open),true,'the potion supply is open');
+  const layout=await p.evaluate(()=>{const modal=document.getElementById('modal').getBoundingClientRect();return {modal:{left:modal.left,right:modal.right}};});
+  assert(layout.modal.left>=0&&layout.modal.right<=390,'the dialog fits the phone');
   for(const viewport of [{width:320,height:640},{width:390,height:844},{width:844,height:390}]){
    await p.setViewportSize(viewport);
-   await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
-   assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),true);
    await fits(p,'expanded settings '+viewport.width);
-   await p.locator('.control-row select[aria-label="探索難度"]').selectOption('1');
+   // v0.185: difficulty is changed from the battle page's exploration area; a change while this dialog is open keeps it open.
+   assert.equal(await p.locator('#modal select[aria-label="探索難度"]').count(),0,'no difficulty control in the dialog');
+   await p.evaluate(()=>changeDifficulty(1));
    await p.waitForFunction(()=>party.difficulty===1&&!isEmberwildUIInteracting());
    await p.evaluate(()=>render());
-   assert.equal(await p.locator('.exploration-secondary-settings>details:last-child').evaluate(d=>d.open),true);
+   assert.equal(await p.evaluate(()=>$('modal').open),true,'the dialog stays open');
    // v0.120: phones reach the auto-potion settings from this dialog; the bar under the toolbar is desktop-only.
    if(viewport.width<=700)assert.equal(await p.locator('.heal-auto-panel').isVisible(),false,'no auto-potion bar on phones');
    for(const button of ['#modal button[onclick="openHealingSettings()"]']){
@@ -195,7 +197,6 @@ test('Mobile: expedition settings, readable touch controls and skill details are
    }
    // v0.081: the 生效效果 panel is gone; badge details show on hover instead.
    assert.equal(await p.locator('.battle-effects-bar').count(),0,'no 生效效果 panel');
-   await p.locator('.exploration-secondary-settings>details:last-child>summary').click();
   }
   await p.setViewportSize({width:390,height:844});
   // v0.120: on phones the auto-potion settings open from 冒險配置 → 自動藥水.
@@ -219,7 +220,7 @@ test('Mobile: expedition settings, readable touch controls and skill details are
   await p.setViewportSize({width:1440,height:900});await p.evaluate(()=>setTab('battle'));
   await p.locator('[data-adventure-config]').click();
   assert.equal(await p.locator('#modal .expedition-control-card').isVisible(),true,'desktop exploration controls open from 冒險配置');
-  assert.equal(await p.locator('.exploration-secondary-settings>details:last-child>summary').isVisible(),true,'difficulty controls remain discoverable');
+  assert.equal(await p.locator('.seconds-destination-bar .seconds-difficulty>summary').isVisible(),true,'v0.185: difficulty is in the destination bar');
   await p.evaluate(()=>closeModal());
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

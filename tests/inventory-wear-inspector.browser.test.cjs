@@ -10,6 +10,9 @@ test('backpack sort, modal filters and guided wear work on desktop and mobile; b
    await p.setViewportSize({width,height:900});
    assert(await p.locator('.inventory-master-heading select[aria-label="裝備排序"]').isVisible());
    assert.equal(await p.locator('.gear-management-panel .gear-control-fold').count(),0);
+   // v0.184: with worn items hidden the list holds fewer items, so selecting the charm on a phone opens its detail sheet;
+   // close it before using the filter button underneath.
+   await p.evaluate(()=>closeDetailSheet());
    await p.getByRole('button',{name:'裝備篩選',exact:true}).click();
    const modal=p.locator('#modal');assert(await modal.isVisible());
    if(!await modal.locator('details').evaluate(el=>el.open))await modal.locator('summary').click();await modal.getByLabel('詞綴效果',{exact:true}).selectOption('4');

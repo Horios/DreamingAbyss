@@ -86,3 +86,7 @@ body.story-window-open .story-dialogue{display:none}
 .story-window-summary{position:absolute;left:12px;top:12px;min-height:36px;font-size:13px}
 .story-window-controls{min-height:60px;box-sizing:border-box}
 @media(max-width:480px){.story-window-head{padding-top:56px;padding-left:14px;padding-right:14px}}
+/* v0.185: the goddess's opening lines type out one sentence per paragraph; a tap shows them all. */
+.prologue-goddess{cursor:pointer}.prologue-goddess .goddess-line{margin:0 0 12px;line-height:1.7;min-height:1.7em}.prologue-goddess .goddess-line:last-child{margin-bottom:6px}
+.goddess-skip{opacity:.7;margin:4px 0 0}
+.prologue-goddess .goddess-line.pending{display:none}

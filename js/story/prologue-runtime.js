@@ -70,14 +70,31 @@
  globalThis.prologueNext=()=>render();
  globalThis.prologueOpenTask=function(){const s=Q()?.stages.find(s=>s.id===stage());if(s?.guides[0])setTab(s.guides[0]);};
  globalThis.prologueReturn=()=>render();
+ // v0.185: the goddess's opening lines type out quickly, one paragraph per sentence; the name box appears afterwards.
+ // A tap on the dialogue shows everything at once.
+ let introDone=false,introTimer=null;
+ const sentences=text=>String(text||'').split(/(?<=[。！？!?…])/).map(x=>x.trim()).filter(Boolean);
+ function introLines(){return Q().stages[0].dialogue.flatMap(l=>sentences(l.text).map((text,i)=>({who:i===0?(l.speaker||'女神'):'',text})));}
+ function startIntro(){
+  if(introDone||introTimer)return;const lines=[...(document.querySelectorAll?.('#prologue-layer .goddess-line')||[])];if(!lines.length)return;
+  let li=0,ci=0;const step=()=>{
+   introTimer=null;if(introDone)return;const line=lines[li];if(!line?.isConnected){return finishIntro();}
+   const text=line.dataset.text||'',out=line.querySelector('span');line.classList.remove('pending');ci++;out.textContent=text.slice(0,ci);
+   let wait=22;if(ci>=text.length){li++;ci=0;wait=260;if(li>=lines.length)return finishIntro();}else if(/[，、；：,;:]/.test(text[ci-1]))wait=90;
+   introTimer=setTimeout(step,wait);
+  };introTimer=setTimeout(step,200);
+ }
+ function finishIntro(){clearTimeout(introTimer);introTimer=null;if(introDone)return;introDone=true;render();}
+ globalThis.prologueFinishIntro=finishIntro;
  function creationView(){
   const pick=stage()==='calling',options=Q().stages.find(s=>s.id==='calling').prologue.options;
   return {sceneKey:'creation',head:{eyebrow:'女神',title:pick?'選擇初始職業':'你的名字'},attrs:'data-stage="'+stage()+'"',line:null,advance:null,skip:null,
-   body:pick?`<div class="prologue-options" role="radiogroup">${options.map(o=>`<button type="button" class="prologue-option${chosenJob===o.job?' selected':''}" role="radio" aria-checked="${chosenJob===o.job}" onclick="prologuePickClass(${o.job})"><b>${esc(o.text)}</b><span>${esc(o.description)}</span></button>`).join('')}</div>`:`<div class="prologue-goddess">${Q().stages[0].dialogue.map(l=>`<p>${esc(l.speaker||'女神')}：${esc(l.text)}</p>`).join('')}</div><label for="prologue-name">名字</label><input id="prologue-name" maxlength="20" autocomplete="off" onkeydown="if(event.key===\'Enter\')prologueConfirmName()">`,
-   actions:`<button type="button" onclick="backToTitle()">返回標題</button>`+(pick?`<button type="button" class="primary" onclick="prologueConfirmClass()" ${CLASSES[chosenJob]?'':'disabled'}>開始冒險</button>`:'<button type="button" class="primary" onclick="prologueConfirmName()">選擇職業</button>'),focus:pick?'':'#prologue-name',signature:'creation|'+pick+'|'+chosenJob};
+   body:pick?`<div class="prologue-options" role="radiogroup">${options.map(o=>`<button type="button" class="prologue-option${chosenJob===o.job?' selected':''}" role="radio" aria-checked="${chosenJob===o.job}" onclick="prologuePickClass(${o.job})"><b>${esc(o.text)}</b><span>${esc(o.description)}</span></button>`).join('')}</div>`:`<div class="prologue-goddess" data-goddess-intro="${introDone?'done':'typing'}" onclick="prologueFinishIntro()">${introLines().map(x=>`<p class="goddess-line${introDone?'':' pending'}" data-text="${esc(x.text)}">${x.who?`<b>${esc(x.who)}：</b>`:''}<span>${introDone?esc(x.text):''}</span></p>`).join('')}</div>${introDone?`<label for="prologue-name">名字</label><input id="prologue-name" maxlength="20" autocomplete="off" onkeydown="if(event.key===\'Enter\')prologueConfirmName()">`:'<p class="small goddess-skip">點一下對話可直接顯示全部</p>'}`,
+   actions:`<button type="button" onclick="backToTitle()">返回標題</button>`+(pick?`<button type="button" class="primary" onclick="prologueConfirmClass()" ${CLASSES[chosenJob]?'':'disabled'}>開始冒險</button>`:(introDone?'<button type="button" class="primary" onclick="prologueConfirmName()">選擇職業</button>':'')),focus:pick||!introDone?'':'#prologue-name',signature:'creation|'+pick+'|'+chosenJob+'|'+introDone};
  }
  function draw(){
-  const W=globalThis.EmberwildStoryWindow;if(creating()){const start=document.getElementById('app').querySelector?.('.start');if(start)start.hidden=true;W.render(creationView());return;}
+  const W=globalThis.EmberwildStoryWindow;if(creating()){const start=document.getElementById('app').querySelector?.('.start');if(start)start.hidden=true;W.render(creationView());if(stage()!=='calling')startIntro();return;}
+  if(introDone||introTimer){clearTimeout(introTimer);introTimer=null;introDone=false;}
   if(runningGuide()&&!busy&&!globalThis.EmberwildOffline?.busy){
    busy=true;try{
     for(let i=0;i<4&&runningGuide()&&satisfied();i++){

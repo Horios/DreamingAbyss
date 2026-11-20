@@ -23,6 +23,14 @@
   :is(.expedition-control-card,.seconds-boss-meter) .boss-meta{display:flex;gap:5px 8px;flex-wrap:wrap;font-size:11px;color:var(--muted);line-height:1.4}
   :is(.expedition-control-card,.seconds-boss-meter) .boss-actions{display:flex;gap:6px;align-items:center;margin-top:7px}
   :is(.expedition-control-card,.seconds-boss-meter) .boss-actions button{flex:1}
+  .seconds-destination-bar{position:relative}
+  .seconds-pop{position:static;flex:0 0 auto;margin:0}.seconds-pop>summary{display:flex;align-items:center;list-style:none;cursor:pointer;padding:0 10px;min-height:36px;border:1px solid var(--line);border-radius:5px;font-size:13px;white-space:nowrap}
+  .seconds-pop>summary::-webkit-details-marker{display:none}.seconds-pop>summary::marker{content:''}.seconds-pop>summary::after{content:'▾';margin-left:4px;font-size:11px}.seconds-pop[open]>summary{border-color:var(--gold)}
+  .seconds-pop[open]>.seconds-pop-body{position:absolute;right:0;top:calc(100% + 4px);z-index:60;width:min(560px,100%);box-sizing:border-box;padding:10px 12px;background:var(--panel,#1b1e32);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px #0008;text-align:left;white-space:normal}
+  .seconds-difficulty-modes{display:flex;gap:4px;margin-bottom:8px}.seconds-difficulty-modes>button{min-width:56px;padding:4px 10px}
+  @media(max-width:700px){.seconds-pop>summary{min-height:44px;padding:0 8px;font-size:var(--fs-sm,13px)}.seconds-pop .pop-long{display:none}}
+  .seconds-difficulty-line{margin:0 0 5px;font-size:12px;line-height:1.5}.seconds-difficulty-line>span{display:inline-block;margin-right:6px;color:var(--gold);font-weight:600}
+  .seconds-pop-body>.small{margin:0 0 6px}
   .seconds-boss-meter{flex-shrink:0;overflow:visible;margin:6px 0 0;padding:8px 12px}.seconds-boss-meter .boss-actions button.icon-help{flex:0 0 auto}.seconds-boss-meter .boss-compact{margin-top:0;padding-top:0;border-top:0}
   .expedition-control-card details{margin-top:7px}
   .expedition-control-card details>summary{cursor:pointer;color:var(--muted);font-size:11px}
@@ -99,6 +107,8 @@
   globalThis.selectedExplorationCategory=()=>party?selectedDestination().category:'explore';
   // v0.182: the battle page shows the BOSS meter under the destination bar when BOSS地圖 is selected.
   globalThis.explorationBossBlock=mi=>bossBlock(mi);
+  // v0.185: the party potion supply, shown open in the 冒險配置 dialog.
+  globalThis.explorationCompactSupply=()=>compactSupply().replace('<details>','<details class="exploration-supply" open>');
   globalThis.selectedExplorationMap=()=>party?selectedDestination().map:0;
   globalThis.explorationMapChoices=category=>MAPS.map((m,i)=>({m,i})).filter(({i})=>category==='boss'||!isFinal(i)).map(({m,i})=>({index:i,name:m.name,min:m.min,recommendedGearLevel:mapRecommendedGearLevel(i),unlocked:canVisit(i)}));
   globalThis.setExplorationCategory=function(category){if(!['explore','boss','quest'].includes(category))return;const d=selectedDestination();d.category=category;const maps=MAPS.map((_,i)=>i).filter(i=>category==='boss'||!isFinal(i));if(category!=='quest'&&!maps.includes(d.map))d.map=maps[0]??0;render();};
