@@ -11269,5 +11269,48 @@
       "tickIntervalSeconds": 6,
       "condition": "always"
     }
+  },
+  {
+    "id": "ancient-heart-revival",
+    "name": "古木之心",
+    "description": "穿戴或由信物賦予時常駐生效：生命值降到 30% 以下時立即恢復為滿血，之後冷卻 60 秒。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "lowHpFullHeal",
+        "value": 30
+      }
+    ],
+    "requiredLevel": 0,
+    "partnerId": null,
+    "type": "passive",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 23,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   }
 ]

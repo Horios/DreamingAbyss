@@ -9265,6 +9265,22 @@
               "value": 5
             }
           ]
+        },
+        {
+          "id": "ancient-heart-bracer",
+          "name": "古木之心護腕",
+          "wearableJobs": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fixedEffects": [
+            {
+              "key": "flatHp",
+              "value": 50
+            }
+          ]
         }
       ],
       [
@@ -24036,6 +24052,26 @@
           "sources": [
             "map0_mob2"
           ]
+        },
+        {
+          "id": "ancient-heart-bracer-boss",
+          "name": "古木之心護腕",
+          "enabled": true,
+          "type": "equipment",
+          "key": "form:4:2:1",
+          "kinds": [
+            "boss"
+          ],
+          "chanceByDifficulty": [
+            0.05,
+            0.08,
+            0.12
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_boss"
+          ]
         }
       ]
     },
@@ -28121,6 +28157,20 @@
         }
       ],
       "requiredLevel": 0
+    },
+    {
+      "id": "ancient-heart-revival",
+      "name": "古木之心",
+      "description": "穿戴或由信物賦予時常駐生效：生命值降到 30% 以下時立即恢復為滿血，之後冷卻 60 秒。",
+      "kind": "buff",
+      "target": "self",
+      "effects": [
+        {
+          "key": "lowHpFullHeal",
+          "value": 30
+        }
+      ],
+      "requiredLevel": 0
     }
   ],
   "companionSettings": {
@@ -31196,6 +31246,12 @@
     {
       "kind": "equipment",
       "key": "form:4:2:0",
+      "iconType": "auto",
+      "description": ""
+    },
+    {
+      "kind": "equipment",
+      "key": "form:4:2:1",
       "iconType": "auto",
       "description": ""
     },
@@ -46012,6 +46068,49 @@
           "tickIntervalSeconds": 6,
           "condition": "always"
         }
+      },
+      {
+        "id": "ancient-heart-revival",
+        "name": "古木之心",
+        "description": "穿戴或由信物賦予時常駐生效：生命值降到 30% 以下時立即恢復為滿血，之後冷卻 60 秒。",
+        "kind": "buff",
+        "target": "self",
+        "effects": [
+          {
+            "key": "lowHpFullHeal",
+            "value": 30
+          }
+        ],
+        "requiredLevel": 0,
+        "partnerId": null,
+        "type": "passive",
+        "jobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "adapter": {
+          "job": 0,
+          "index": 23,
+          "kind": "passive"
+        },
+        "sources": [
+          {
+            "type": "equipment"
+          }
+        ],
+        "timing": {
+          "cooldownSeconds": 60,
+          "mpCost": 0,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 2,
+          "durationSeconds": 0,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "always"
+        }
       }
     ],
     "classRules": [
@@ -46237,6 +46336,11 @@
         {
           "formId": "vine-staff",
           "skillId": "living-core-renewal",
+          "dropOnly": true
+        },
+        {
+          "formId": "ancient-heart-bracer",
+          "skillId": "ancient-heart-revival",
           "dropOnly": true
         }
       ],

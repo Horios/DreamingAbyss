@@ -224,6 +224,11 @@
         "formId": "vine-staff",
         "skillId": "living-core-renewal",
         "dropOnly": true
+      },
+      {
+        "formId": "ancient-heart-bracer",
+        "skillId": "ancient-heart-revival",
+        "dropOnly": true
       }
     ],
     "socketBands": [

@@ -2,7 +2,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.EmberwildPassives=api;})(globalThis,function(){
   'use strict';
   const copy=x=>JSON.parse(JSON.stringify(x));
-  const labels={flatAttack:'攻擊（固定值）',flatDefense:'防禦（固定值）',flatHp:'生命（固定值）',attackPct:'攻擊 %',defensePct:'防禦 %',hpPct:'生命 %',healingPct:'治療量 %',crit:'暴擊率 %',critDamage:'暴擊傷害 %',speed:'速度（固定值）',pierce:'防禦穿透（固定值）',defenseIgnore:'防禦無視 %',lifesteal:'生命竊取 %',evasion:'閃避率 %',elementBonus:'全屬性增傷 %',bossDamagePct:'BOSS 增傷 %',elementDamagePct:'指定屬性增傷 %',elementResistPct:'指定屬性抗性 %',raceDamagePct:'指定種族增傷 %',guard:'受到傷害減少 %',power:'主動／觸發技能效果 %',procChance:'普攻觸發率 %',weaken:'敵方攻擊降低 %',fracture:'敵方防禦降低 %',damageAmp:'敵方承受傷害增加 %',regenPerSecond:'每秒恢復生命（固定值）'};
+  const labels={flatAttack:'攻擊（固定值）',flatDefense:'防禦（固定值）',flatHp:'生命（固定值）',attackPct:'攻擊 %',defensePct:'防禦 %',hpPct:'生命 %',healingPct:'治療量 %',crit:'暴擊率 %',critDamage:'暴擊傷害 %',speed:'速度（固定值）',pierce:'防禦穿透（固定值）',defenseIgnore:'防禦無視 %',lifesteal:'生命竊取 %',evasion:'閃避率 %',elementBonus:'全屬性增傷 %',bossDamagePct:'BOSS 增傷 %',elementDamagePct:'指定屬性增傷 %',elementResistPct:'指定屬性抗性 %',raceDamagePct:'指定種族增傷 %',guard:'受到傷害減少 %',power:'主動／觸發技能效果 %',procChance:'普攻觸發率 %',weaken:'敵方攻擊降低 %',fracture:'敵方防禦降低 %',damageAmp:'敵方承受傷害增加 %',regenPerSecond:'每秒恢復生命（固定值）',lowHpFullHeal:'低於此生命 % 時回滿（觸發後冷卻依技能設定）'};
   const combatKeys=['guard','power','weaken','fracture','damageAmp'],enemyKeys=['weaken','fracture','damageAmp'];
   const elements=['physical','fire','ice','wind','light','shadow'],races=['beast','plant','undead','construct','demon','spirit'];
   const targets={self:'自己',allies:'我方全體',enemies:'敵方全體'};

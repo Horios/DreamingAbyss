@@ -593,6 +593,22 @@
             "value": 5
           }
         ]
+      },
+      {
+        "id": "ancient-heart-bracer",
+        "name": "古木之心護腕",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 50
+          }
+        ]
       }
     ],
     [

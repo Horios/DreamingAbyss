@@ -5557,6 +5557,26 @@
       "sources": [
         "map0_mob2"
       ]
+    },
+    {
+      "id": "ancient-heart-bracer-boss",
+      "name": "古木之心護腕",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:2:1",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.05,
+        0.08,
+        0.12
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss"
+      ]
     }
   ]
 }

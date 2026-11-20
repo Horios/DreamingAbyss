@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 55,
+  "dataRevision": 57,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "c6f3d798d49dc725a36d2aeedfc8177076847022f3d82806b85b95407f530d63",
-    "bytes": 1265097
+    "sha256": "52063ebbe2efee0d7fc75709fcf6b48f4faa68012877a8cade56610d1dbef5d2",
+    "bytes": 1267598
   },
   "layout": {
     "": [
@@ -212,9 +212,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 8,
-      "sha256": "06cce2a00f81f144a0967b598ea809f0b56d6de6e7963795f4800708c5c743ab",
-      "bytes": 108836,
+      "version": 9,
+      "sha256": "514e7e5127ff3090d4821ad884431cce4878b0f17bc9230aadd707c5ed0719e6",
+      "bytes": 109219,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -286,9 +286,9 @@
       "file": "combat/skills.json",
       "source": "skillSystem.definitions",
       "present": true,
-      "version": 6,
-      "sha256": "2557cc4278a5b9e75b6dbcfe39c445a4dd1cdfe57f6052a67f54bf0a0b7dff3d",
-      "bytes": 247460,
+      "version": 7,
+      "sha256": "4e63777e58db5d9e410bffb8aa9335cce93d7608dd96a6007853770261eb5283",
+      "bytes": 248348,
       "dependsOn": [
         "characters/classes",
         "characters/companions",
@@ -307,9 +307,9 @@
       "file": "combat/skill-system.json",
       "source": "skillSystem.*",
       "present": true,
-      "version": 6,
-      "sha256": "5b41080d728cf2c5a5bc427176cb349041d96f110b2d75e7ea904b2f48cb370b",
-      "bytes": 6431,
+      "version": 7,
+      "sha256": "c694b16760ab1243778e6073c8026dee62a4835d095d6b91e6b7e4dd3d040067",
+      "bytes": 6559,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -404,9 +404,9 @@
       "file": "characters/passives.json",
       "source": "passiveDefinitions",
       "present": true,
-      "version": 6,
-      "sha256": "c8b40a3820403c90ea743f741f71081c9f398720e810702aca95f2b10351cdad",
-      "bytes": 9225,
+      "version": 7,
+      "sha256": "2b9787bb0585c5c855b5c05ba9d29ca472be9e3ba722ed9f294a60e27d92b4b4",
+      "bytes": 9594,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -434,9 +434,9 @@
       "file": "equipment/forms.json",
       "source": "equipmentForms",
       "present": true,
-      "version": 3,
-      "sha256": "0772a8a831efd7a59d0a191580adee11203dd2effc5a47cbbe195e118b6a2650",
-      "bytes": 11665,
+      "version": 4,
+      "sha256": "a993cfa5249c5e9eb0507ea73577e0279fc4f0ba149fcd4ebfe22e03e2033f0c",
+      "bytes": 11959,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -521,9 +521,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 6,
-      "sha256": "88bd2547886b21b03a1516d849836fd6f3cb18c5a5f50e65421d721abfa1b573",
-      "bytes": 49866,
+      "version": 7,
+      "sha256": "6b747b6a8c1ad6f21f20c19dc43caa630cadc9595f774a535a29f84a91f4e858",
+      "bytes": 49971,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",

@@ -5,8 +5,8 @@ function apply(r,icons,edit=()=>{}){const d=JSON.parse(r.run('JSON.stringify(exp
 const plain=v=>JSON.parse(JSON.stringify(v));
 // Counts follow the reviewed data: speed tickets (v0.023) and 紅色草泥 were retired; gems are 5 types × 3 tiers.
 // v0.178: +20 companion tickets (every companion can have one).
-test('reviewed detailed hierarchy contains all 364 definitions including 48 difficulty material keys without duplicate stock',()=>{
- const rows=M.entries(published).filter(x=>x.kind!=='skill');assert.equal(rows.length,364);assert.equal(new Set(rows.map(r=>r.id)).size,364);assert.equal(new Set(rows.map(r=>r.categoryPath.join('|'))).size,46,'the companion tickets add one category');
+test('reviewed detailed hierarchy contains all 365 definitions including 48 difficulty material keys without duplicate stock',()=>{
+ const rows=M.entries(published).filter(x=>x.kind!=='skill');assert.equal(rows.length,365);assert.equal(new Set(rows.map(r=>r.id)).size,365);assert.equal(new Set(rows.map(r=>r.categoryPath.join('|'))).size,46,'the companion tickets add one category');
  assert.deepEqual(rows.find(r=>r.id==='material:清水').categoryPath,['素材','製作材料','煉金與加工材料','液體']);assert.deepEqual(rows.find(r=>r.id==='item:heal_small').categoryPath,['消耗品','藥水','治療藥水']);assert.deepEqual(rows.find(r=>r.id==='token:berserk').categoryPath.slice(0,2),['裝備','夥伴信物']);
  for(const [key,monster] of [['form:4:3:2','苔原史萊姆'],['form:4:3:1','林間野狼'],['form:4:0:0','迷路樹精']]){
   const row=rows.find(r=>r.key===key),sources=row.sourceDetails.filter(s=>s.type==='monster');
