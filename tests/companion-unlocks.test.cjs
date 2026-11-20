@@ -2,7 +2,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),editor=path.resolve(root,'../Emberwild-Balance');
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
-function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();');return r;}
+// v0.179: achievement and shop tickets are off in the game; these mechanics tests switch them back on.
+function game(){const r=loadRuntime(root);r.run('__EMBERWILD_SET_EXTRA_TICKET_SOURCES(true);selectSaveSlot(1);start(0);closeModal();');return r;}
 function rules(r){r.run(`const d=exportableBalance();for(const [id,unlockCondition] of [[15,{type:'region',mapIndex:2}],[16,{type:'elite',mapIndex:0,count:50}],[17,{type:'ticket',chance:1,price:100}]]){const p=d.companions.find(p=>p.id===id);p.availability='visible';p.unlockCondition=unlockCondition;}applyBalanceConfig(d);`);}
 test('Visibility has only two values, legacy states migrate and condition editor exports valid rules',()=>{
  const e=loadRuntime(editor,'balance-editor.html');assert.deepEqual(json(e,'validateData()'),[]);

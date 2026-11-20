@@ -1,7 +1,8 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),A=require('../js/character/achievement-model.js');
 const root=path.resolve(__dirname,'..'),json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
-function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();for(const m of [...party.mailbox.messages])if(m.rewardKey.startsWith("starter-"))claimMailboxAttachments(m.id)');return r;}
+// v0.179: achievement and shop tickets are off in the game; these mechanics tests switch them back on.
+function game(){const r=loadRuntime(root);r.run('__EMBERWILD_SET_EXTRA_TICKET_SOURCES(true);selectSaveSlot(1);start(0);closeModal();for(const m of [...party.mailbox.messages])if(m.rewardKey.startsWith("starter-"))claimMailboxAttachments(m.id)');return r;}
 function mail(r){r.run("{const d=exportableBalance(),p=d.companions.find(p=>p.id===15);p.availability='visible';p.unlockCondition={type:'achievement',achievementIds:['region-0-open']};applyBalanceConfig(d);globalThis.testMail=party.mailbox.messages.find(m=>m.rewardKey==='companion-15').id;}");}
 test('Three SVG buttons replace sidebar entries and open dialogs without changing the main page; redeem codes remain only in Options',()=>{
  // Settings is also a page in the top game menu (navigation data); mailbox and achievements open only as dialogs.

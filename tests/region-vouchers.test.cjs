@@ -2,10 +2,12 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 const MIN=60000;
+// v0.179: players always meet groups; the sampling run keeps the internal single-enemy setting so it builds its 30-minute
+// snapshot without wipes.
 // One runtime with a real 30-minute snapshot of map 0, reused through state copies (building it takes ~30 game minutes).
 let base=null;
 function sampled(){
- if(!base){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
+ if(!base){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();party.huntingMode='single';globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
   // Play online until a 30-minute snapshot exists: level-ups that equip new skills restart the sampling run.
   for(let i=0;i<120*60*2&&!r.run('!!EmberwildRegionVouchers.ticketFor(0,0)');i++){r.advance(500);r.run('tick()');}r.run('save()');assert(json(r,'EmberwildRegionVouchers.ticketFor(0,0)'),'snapshot built');base={values:Object.fromEntries(r.values),now:r.now};}
  const r=loadRuntime(root,'index.html',base.values);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.advance(base.now-r.now);r.run("continueFromTitle();closeModal()");return r;

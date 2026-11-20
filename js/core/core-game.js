@@ -1590,7 +1590,7 @@ solo.validateSave=dynamicValidateSave;validateSave=dynamicValidateSave;
 // Update 10: fixed-row chronological battle journal with incremental DOM updates.
 const BATTLE_LOG_VISIBLE_ROWS=12;
 let battleLogGeneration=0,battleLogSequence=0,battleReportPaused=false,battleLogFilter='all';
-const BATTLE_LOG_FILTERS={all:'全部顯示',playerDamage:'玩家造成傷害',enemyDamage:'怪物造成傷害',exp:'獲得經驗',item:'獲得物品'};
+const BATTLE_LOG_FILTERS={all:'全部顯示',playerDamage:'玩家造成傷害',enemyDamage:'怪物造成傷害',exp:'獲得精通經驗',item:'獲得物品'};
 
 
 

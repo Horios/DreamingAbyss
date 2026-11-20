@@ -19,7 +19,12 @@
     return 'prereq';
   }
   const STATE_TEXT={equipped:'已解鎖・使用中',unlocked:'已解鎖',mastery:'未達精通需求',prereq:'前置技能未解鎖'};
-  function bonusText(h){const b=classMasteryBonus(h);const parts=Object.entries(b).filter(([,v])=>v>0).map(([k,v])=>STAT[k]+' +'+(k==='crit'?Math.round(v*1000)/10+'%':Math.round(v*10)/10));return parts.length?parts.join('、'):'無';}
+  // v0.179: class masteries add HP / attack / defense per level (main class + one sub-class); weapon and element
+  // masteries add damage only (js/skills/mastery-damage.js).
+  function bonusText(h){const L=__EMBERWILD_MASTERY.masteryLabels||{},b=classMasteryBonus(h),rows=globalThis.__EMBERWILD_MASTERY_DAMAGE?.summary(h)||[];
+    const stats=[['hp','生命'],['atk','攻擊'],['def','防禦']].filter(([k])=>b[k]>0).map(([k,n])=>n+' +'+Math.round(b[k]*10)/10);
+    const dmg=rows.map(r=>`${L[r.key]||r.key}精通 Lv${r.level}：${r.kind==='weapon'?'使用'+(L[r.key]||r.key)+'時傷害':(L[r.key]||r.key)+'屬性法術傷害'} +${Math.round(r.bonus*100)}%${r.kind==='weapon'&&!r.active?'（目前未持有）':''}`);
+    return [stats.length?'職業精通（主職業＋副職業）'+stats.join('、'):'',...dmg].filter(Boolean).join('；')||'無';}
   function headHTML(h){
     const p=M.masteryProgress(classMasteryXp(h)),job=CLASSES[h.job].name,full=p.level>=p.max,width=full?100:Math.round(p.current/Math.max(1,p.next)*100);
     return `<div class="class-mastery-head"><div><h2>${esc(job)}精通 <b>Lv.${p.level}</b> <small>/ ${p.max}</small></h2><p class="small">精通加成：${esc(bonusText(h))}</p></div><div class="class-mastery-bar" role="progressbar" aria-label="${esc(job)}精通經驗" aria-valuemin="0" aria-valuemax="${full?1:p.next}" aria-valuenow="${full?1:p.current}"><span style="width:${width}%"></span><small>${full?'已達上限':`${p.current} / ${p.next}`}</small></div></div>`;

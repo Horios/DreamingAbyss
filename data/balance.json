@@ -9329,7 +9329,7 @@
       "name": "火屬性附魔藥水",
       "sellPrice": 45,
       "statEffects": {},
-      "shopEnabled": true,
+      "shopEnabled": false,
       "timing": {
         "cooldownSeconds": 0,
         "durationSeconds": 300
@@ -9370,7 +9370,7 @@
       "name": "冰屬性附魔藥水",
       "sellPrice": 45,
       "statEffects": {},
-      "shopEnabled": true,
+      "shopEnabled": false,
       "timing": {
         "cooldownSeconds": 0,
         "durationSeconds": 300
@@ -9411,7 +9411,7 @@
       "name": "風屬性附魔藥水",
       "sellPrice": 45,
       "statEffects": {},
-      "shopEnabled": true,
+      "shopEnabled": false,
       "timing": {
         "cooldownSeconds": 0,
         "durationSeconds": 300
@@ -9452,7 +9452,7 @@
       "name": "光屬性附魔藥水",
       "sellPrice": 45,
       "statEffects": {},
-      "shopEnabled": true,
+      "shopEnabled": false,
       "timing": {
         "cooldownSeconds": 0,
         "durationSeconds": 300
@@ -9493,7 +9493,7 @@
       "name": "暗屬性附魔藥水",
       "sellPrice": 45,
       "statEffects": {},
-      "shopEnabled": true,
+      "shopEnabled": false,
       "timing": {
         "cooldownSeconds": 0,
         "durationSeconds": 300
@@ -9673,26 +9673,26 @@
         "maxLevel": 30,
         "classBonus": [
           {
-            "hp": 3,
-            "atk": 0,
-            "def": 0.5,
-            "crit": 0
-          },
-          {
-            "hp": 1,
-            "atk": 0.6,
-            "def": 0,
-            "crit": 0
-          },
-          {
-            "hp": 1,
-            "atk": 0.5,
-            "def": 0,
-            "crit": 0.001
-          },
-          {
             "hp": 2,
-            "atk": 0.3,
+            "atk": 0.2,
+            "def": 0.6,
+            "crit": 0
+          },
+          {
+            "hp": 1,
+            "atk": 0.7,
+            "def": 0.1,
+            "crit": 0
+          },
+          {
+            "hp": 1.5,
+            "atk": 0.5,
+            "def": 0.3,
+            "crit": 0
+          },
+          {
+            "hp": 3.5,
+            "atk": 0.2,
             "def": 0.2,
             "crit": 0
           }
@@ -17244,8 +17244,8 @@
           }
         ],
         "groupWeights": [
-          1,
-          1,
+          6,
+          3,
           1
         ],
         "migration": {
@@ -28186,7 +28186,7 @@
       "entries": [
         {
           "id": "imbue_fire",
-          "enabled": true,
+          "enabled": false,
           "type": "item",
           "key": "imbue_fire",
           "name": "",
@@ -28213,7 +28213,7 @@
         },
         {
           "id": "imbue_ice",
-          "enabled": true,
+          "enabled": false,
           "type": "item",
           "key": "imbue_ice",
           "name": "",
@@ -28240,7 +28240,7 @@
         },
         {
           "id": "imbue_wind",
-          "enabled": true,
+          "enabled": false,
           "type": "item",
           "key": "imbue_wind",
           "name": "",
@@ -28267,7 +28267,7 @@
         },
         {
           "id": "imbue_light",
-          "enabled": true,
+          "enabled": false,
           "type": "item",
           "key": "imbue_light",
           "name": "",
@@ -28294,7 +28294,7 @@
         },
         {
           "id": "imbue_shadow",
-          "enabled": true,
+          "enabled": false,
           "type": "item",
           "key": "imbue_shadow",
           "name": "",

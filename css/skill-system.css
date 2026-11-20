@@ -92,3 +92,13 @@
 @media(max-width:700px){.class-mastery-head{grid-template-columns:1fr}}
 .equipment-socket-badge.worn-socket-badge{align-self:center;margin-left:auto;gap:3px}
 .equipment-socket-badge.worn-socket-badge svg{width:13px;height:13px}
+/* v0.179: 精通加成 panel on the character page */
+.class-mastery-bonus-panel .mastery-bonus-lines{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px}
+.class-mastery-bonus-panel .mastery-bonus-lines li{display:flex;flex-wrap:wrap;gap:4px 12px}
+.class-mastery-bonus-panel .mastery-bonus-lines span{color:var(--muted)}
+.class-mastery-bonus-panel .mastery-sub-select{display:inline-flex;gap:8px;align-items:center;margin:4px 0 8px}
+.class-mastery-bonus-panel .mastery-bonus-total{font-weight:600}
+.mastery-class-table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 12px}
+.mastery-class-table th,.mastery-class-table td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left}
+.mastery-class-table .mastery-main-row td,.mastery-class-table .mastery-sub-row td{color:var(--gold,#e0bd79)}
+@media(max-width:640px){.mastery-class-table{font-size:12px}.mastery-class-table th,.mastery-class-table td{padding:4px 3px}}

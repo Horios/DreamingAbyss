@@ -3,6 +3,12 @@
   const model=EmberwildCompanionSkills,A=EmberwildAchievements,copy=A.copy||((x)=>JSON.parse(JSON.stringify(x)));
   const plans=()=>__EMBERWILD_COMPANION_TEST_API.plans,validateProgress=model.validateUnlockProgress;
   const catalog=()=>{const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;if(!cache)return A.catalog(GAMEPLAY_SETTINGS.maps.catalog);return cache.achievements??=A.catalog(GAMEPLAY_SETTINGS.maps.catalog);};
+  /* v0.179: only the story hands out companion tickets (艾琳 at the start, 洛恩 after the caravan story). Achievements no
+     longer mail tickets and the shop no longer offers them, whatever a companion's unlock rule says. Tickets already held
+     or waiting in the mailbox keep working. Set to true to bring both sources back. */
+  let EXTRA_TICKET_SOURCES=false;
+  // Tests of the mailbox and shop mechanics (tickets already issued still go through them) switch the sources back on.
+  globalThis.__EMBERWILD_SET_EXTRA_TICKET_SOURCES=on=>{EXTRA_TICKET_SOURCES=!!on;return EXTRA_TICKET_SOURCES;};
   let syncing=false;
   const announced=new Set(party?.mailbox?.messages.map(m=>m.id)||[]);
   function syncUnlocks(){
@@ -22,7 +28,7 @@
         if(p.availability==='hidden'||progress.unlocked.includes(p.id))continue;
         const c=p.unlockCondition;
         if(c.type==='initial')progress.unlocked.push(p.id);
-        else if(c.type==='achievement'&&!a.rewardCompanions.includes(p.id)&&c.achievementIds.some(id=>completed.has(id))){
+        else if(EXTRA_TICKET_SOURCES&&c.type==='achievement'&&!a.rewardCompanions.includes(p.id)&&c.achievementIds.some(id=>completed.has(id))){
           a.rewardCompanions.push(p.id);
           if(!a.tickets[p.id]&&!mailbox.messages.some(m=>m.rewardKey==='companion-'+p.id)){const achievement=catalog().find(x=>c.achievementIds.includes(x.id)&&completed.has(x.id));mailbox.serial++;mailbox.messages.push({id:mailbox.serial,rewardKey:'companion-'+p.id,subject:'夥伴招募券 - '+p.name+'（成就獎勵）',body:`已達成「${achievement?.name||'指定成就'}」。請領取附件，夥伴招募券 - ${p.name}將存入背包 → 道具，使用後${p.name}直接加入隊伍。`,at:Date.now(),read:false,claimed:false,attachments:[{type:'companionTicket',companionId:p.id,quantity:1,name:p.name+'招募券'}]});}
         }
@@ -34,6 +40,7 @@
   globalThis.companionPendingMail=function(id){syncUnlocks();return party?.mailbox?.messages.some(m=>!m.claimed&&m.attachments.some(x=>x.companionId===id))||false;};
   globalThis.companionUnlocked=function(id){syncUnlocks();return !!party?.companionUnlocks?.unlocked.includes(id);};
   globalThis.companionTicketCount=function(id){syncUnlocks();return party?.achievements?.tickets[id]||0;};
+  globalThis.__EMBERWILD_EXTRA_TICKET_SOURCES=()=>EXTRA_TICKET_SOURCES;
   globalThis.companionUnlockText=function(p){
     syncUnlocks();if(companionUnlocked(p.id))return '已解鎖，可招募';if(companionTicketCount(p.id))return '已持有夥伴招募券，請到背包 → 道具使用';if(companionPendingMail(p.id))return '招募券已寄到信箱，請領取附件';
     const c=p.unlockCondition;
@@ -86,11 +93,12 @@
     if(duplicate){$('modal').innerHTML=`<h2>夥伴已在隊伍中</h2><p>「${esc(p.name)}」已在隊伍中，${esc(companionTicketName(id))} ×1 已轉換為 <b>${value} 金幣</b>。</p><button onclick="closeModal()">確認</button>`;$('modal').showModal();toast(`招募券已轉換為 ${value} 金幣`);}
     else toast(p.name+(party.enlisted.includes(id)?'已加入隊伍':'已加入名冊；現役夥伴已達上限'));return true;
   };
-  const candidates=()=>plans().filter(p=>p.availability==='visible'&&p.unlockCondition.type==='ticket'&&!companionUnlocked(p.id)&&!companionTicketCount(p.id)&&!companionPendingMail(p.id));
+  const candidates=()=>!EXTRA_TICKET_SOURCES?[]:plans().filter(p=>p.availability==='visible'&&p.unlockCondition.type==='ticket'&&!companionUnlocked(p.id)&&!companionTicketCount(p.id)&&!companionPendingMail(p.id));
   globalThis.hasCompanionRecruitmentOffers=()=>!!party&&candidates().length>0;
   const baseGenerate=generateMarket;
   generateMarket=function(){const market=baseGenerate();for(const p of candidates()){if(market.offers.length>=100)break;const c=p.unlockCondition;if(Math.random()<c.chance)market.offers.push({id:`${market.serial}-${market.offers.length}`,kind:'material',key:`夥伴招募券-${p.id}`,qty:1,price:c.price,sold:false,ruleId:`companion-recruit-${p.id}`});}return market;};
-  function ticketPlan(o){return o?.ruleId?.startsWith('companion-recruit-')?plans().find(p=>p.id===Number(o.ruleId.slice(18))&&p.availability==='visible'&&p.unlockCondition.type==='ticket'&&o.kind==='material'&&o.key===`夥伴招募券-${p.id}`&&o.qty===1&&o.price===p.unlockCondition.price):null;}
+  // An offer left in a saved market from before v0.179 is no longer shown or sold.
+  function ticketPlan(o){return EXTRA_TICKET_SOURCES&&o?.ruleId?.startsWith('companion-recruit-')?plans().find(p=>p.id===Number(o.ruleId.slice(18))&&p.availability==='visible'&&p.unlockCondition.type==='ticket'&&o.kind==='material'&&o.key===`夥伴招募券-${p.id}`&&o.qty===1&&o.price===p.unlockCondition.price):null;}
   const baseCards=marketCards;
   marketCards=function(){const extra=(party.market?.offers||[]).map(o=>{const p=ticketPlan(o);if(!p)return '';const done=o.sold||companionUnlocked(p.id)||companionTicketCount(p.id)||companionPendingMail(p.id);return `<article class="shop-product-row icon-product random-shop-row">${itemSlotHTML('item','companion-ticket-'+p.id,{count:1,context:'shop',detailLabel:'商品數量',price:globalThis.shopPayablePrice?.(o.price)??o.price,shopType:'market',shopId:o.id,sold:done,soldLabel:'已取得'})}</article>`;}).join('');const base=baseCards();return (extra&&base.includes('本批沒有隨機商品')?'':base)+extra;};
   const baseBuy=buyMarketOffer;

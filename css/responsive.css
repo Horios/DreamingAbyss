@@ -139,6 +139,12 @@
   #app .seconds-battlefield .seconds-unit .seconds-mp>small{text-align:center}
   #app .seconds-battlefield .seconds-unit .seconds-charge-list{grid-template-columns:minmax(0,1fr)}
   #app .seconds-field-foot{flex-wrap:nowrap;margin-top:0}
+  /* v0.179: encounters are always groups of 3～5. Four or five enemies stay in one compact row (no portrait, smaller
+     text), so the party and its health stay above the controls. */
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies:has(>.unit:nth-child(4)){gap:6px 5px!important;flex-wrap:nowrap!important}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies:has(>.unit:nth-child(4))>.unit.seconds-unit.seconds-stack{flex:1 1 0!important;width:auto!important;min-width:0!important;padding:4px!important;min-height:0!important}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies:has(>.unit:nth-child(4))>.unit.seconds-unit .battle-enemy-icon{display:none!important}
+  #app .seconds-battlefield #battleEnemyIcons.seconds-enemies:has(>.unit:nth-child(4))>.unit.seconds-unit .unit-title b{font-size:12px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   #app .seconds-face-switch>button{min-height:44px;padding:2px 14px;font-size:var(--fs-sm)}
 }
 

@@ -50,7 +50,6 @@
   'battle.categories':{label:'關卡分類按鈕',page:'battle'},
   'battle.mapSelect':{label:'探索地圖選單',page:'battle'},
   'battle.start':{label:'開始／停止探索按鈕',page:'battle'},
-  'battle.huntMode':{label:'單怪／群怪切換',page:'battle'},
   'battle.allies':{label:'我方戰鬥卡片',page:'battle'},
   'battle.enemies':{label:'敵方戰鬥卡片',page:'battle'},
   'bag.categories':{label:'背包分類按鈕',page:'equipment'},

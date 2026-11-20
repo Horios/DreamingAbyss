@@ -220,7 +220,7 @@
  let analysis=null,observed=null,metrics=null,replayCache=null,modelSeed=0;
  function sampleRandom(){modelSeed=(Math.imul(modelSeed,1664525)+1013904223)>>>0;return modelSeed/4294967296;}
  function fastReason(reason){if(metrics)metrics.fallbacks[reason]=(metrics.fallbacks[reason]||0)+1;return false;}
- function combatKey(){return JSON.stringify([party.map,party.difficulty,party.active,battleRate,party.members.map(h=>[memberKey(h),classMasteryLevel(h),h.job,h.advanced,h.stats,h.skills,h.active,h.procSlots,h.supportSlots,h.passiveEnabled,h.recoveryHealing===true,equipment(h),stats(h)]),buffs().filter(b=>b.enabled&&b.remainingMs>0).map(b=>[b.name,b.boostType,b.bonusPercent,b.effectPercent])]);}
+ function combatKey(){return JSON.stringify([party.map,party.difficulty,party.active,battleRate,party.members.map(h=>[memberKey(h),classMasteryLevel(h),/* v0.179: weapon/element mastery levels change damage */Object.entries(h.mastery||{}).map(([k,x])=>[k,__EMBERWILD_MASTERY.masteryLevelFromXp(x)]),h.job,h.advanced,h.stats,h.skills,h.active,h.procSlots,h.supportSlots,h.passiveEnabled,h.recoveryHealing===true,equipment(h),stats(h)]),buffs().filter(b=>b.enabled&&b.remainingMs>0).map(b=>[b.name,b.boostType,b.bonusPercent,b.effectPercent])]);}
  function simpleCombat(){
   if(globalThis.EmberwildSecondsCombat?.active)return 'seconds-event-model';
   if(party.questChallenge||party.bossChallenge?.active||isFinalMap(party.map))return 'special-stage';
@@ -296,6 +296,8 @@
   // A class mastery level-up can unlock skills and change the fight: finish that battle in full mode.
   const h=playerHero(),gain=Object.values(sample.mastery||{}).reduce((n,v)=>n+Math.max(0,v),0);
   if(gain>0&&__EMBERWILD_MASTERY.masteryLevelFromXp(classMasteryXp(h)+gain)!==classMasteryLevel(h))return fastReason('mastery-boundary');
+  // v0.179: a weapon or element mastery level-up changes damage (js/skills/mastery-damage.js): also a full battle.
+  if(Object.entries(sample.mastery||{}).some(([k,n])=>n>0&&h.mastery&&__EMBERWILD_MASTERY.masteryLevelFromXp((h.mastery[k]||0)+n)!==__EMBERWILD_MASTERY.masteryLevelFromXp(h.mastery[k]||0)))return fastReason('mastery-boundary');
   // Require a large HP reserve even with twice the longest sampled battle,
   // no evasion, healing, shield or beneficial status. Special attacks are excluded.
   const v=stats(h),formula=GAMEPLAY_SETTINGS.combat.damageFormula||{},maxRounds=Math.max(...p.rows.map(x=>x.rounds))*2;

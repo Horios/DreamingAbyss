@@ -1,7 +1,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;}
+// v0.179: players always meet groups; these statistics tests keep the internal single-enemy setting so the 40-minute
+// runs stay free of wipes and their totals stay comparable.
+function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();party.huntingMode='single';globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;}
 function play(r,minutes){for(let i=0;i<minutes*60*4;i++){r.advance(250);r.run('tick()');}}
 const inventory=r=>json(r,`(()=>{const h=playerHero(),out={'material:鍛鐵':h.ore,'material:粉塵':h.dust,'item:legacy-potion':h.potions};h.gems.forEach((n,i)=>out['gem:'+i]=n);for(const k in h.materials)out['material:'+k]=h.materials[k];for(const k in h.healingPotions)out['item:'+k]=h.healingPotions[k];for(const k in h.consumables)out['item:'+k]=h.consumables[k];return out;})()`);
 test('online idle play records region totals equal to the rewards actually granted and builds a 30-minute snapshot',()=>{

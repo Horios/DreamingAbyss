@@ -2,7 +2,7 @@
 (function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('../character/achievement-model.js'):root.EmberwildAchievements);if(typeof module==='object'&&module.exports)module.exports=api;else root.EmberwildCompanionSkills=api;})(globalThis,function(Achievements){
   const copy=x=>JSON.parse(JSON.stringify(x));
   const availabilityLabels={visible:'顯示',hidden:'隱藏'};
-  const unlockTypes={initial:'初始開放',achievement:'達成指定成就',ticket:'商店隨機招募券'};
+  const unlockTypes={initial:'初始開放',achievement:'達成指定成就（目前不發放招募券）',ticket:'商店隨機招募券（目前不上架）'};
   function availability(p){let value=p.availability??(p.id>=15&&p.id<=29?'hidden':'visible');if(['unlocked','locked'].includes(value))value='visible';if(!Object.hasOwn(availabilityLabels,value))throw Error('夥伴顯示狀態無效：'+p.id);return value;}
   function duplicateTicketGold(p){const value=p.duplicateTicketGold??100;if(!Number.isSafeInteger(value)||value<0||value>1e9)throw Error('重複招募券轉換金幣無效：'+p.id);return value;}
   function unlockCondition(p,maps){

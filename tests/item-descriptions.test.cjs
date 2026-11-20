@@ -40,7 +40,8 @@ test('shop, inventory, life stock, gems, scrolls and old token snapshots use cur
   r.run('closeItemDetails()');
  }
  r.run("setShopCategory('fixed')");
- assert.match(r.run('shopView()'),/火屬性附魔藥水/);
+ // v0.179: the elemental potions are off the shop; the fixed goods are the healing potions.
+ assert.match(r.run('shopView()'),/簡易治療藥水/);assert.doesNotMatch(r.run('shopView()'),/(附魔|抗性|增幅)藥水/);
  assert.match(r.run('lifeSkillsView()'),/紅色草/);
 
  assert.equal(r.run('companionTokenDescription({tokenId:"berserk",snapshot:{description:"舊快照",name:"舊信物"}})'),'管理器的信物');

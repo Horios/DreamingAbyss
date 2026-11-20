@@ -27,10 +27,12 @@
     const found=Math.max(0,...out.members.map(h=>Number.isSafeInteger(h.legacyLevel)?h.legacyLevel:0));
     for(const h of out.members)delete h.legacyLevel;
     const level=own??(found||undefined);if(level)out.legacySkillLevel=level;else delete out.legacySkillLevel;
+    const sub=data?.masterySubClass;if(sub!==undefined&&sub!==null&&!(Number.isInteger(sub)&&sub>=0&&sub<CLASSES.length))throw Error('副職業精通無效');
+    out.masterySubClass=sub??null;
     return out;
   };
   const packBase=packParty;
-  packParty=function(){const out=packBase();if(out&&party){if(legacyLevel())out.legacySkillLevel=legacyLevel();else delete out.legacySkillLevel;for(const h of out.members||[])delete h.legacyLevel;}return out;};
+  packParty=function(){const out=packBase();if(out&&party){out.masterySubClass=party.masterySubClass??null;if(legacyLevel())out.legacySkillLevel=legacyLevel();else delete out.legacySkillLevel;for(const h of out.members||[])delete h.legacyLevel;}return out;};
 
   function refundScrolls(){
     if(!party||!state)return 0;const n=materialCount(SCROLL);if(!(n>0))return 0;
@@ -48,11 +50,35 @@
   // A save hydrated during boot (before this module loaded) still carries the old level on its members.
   if(party){const found=Math.max(0,...party.members.map(h=>Number.isSafeInteger(h.legacyLevel)?h.legacyLevel:0));for(const h of party.members)delete h.legacyLevel;if(found&&!party.legacySkillLevel)party.legacySkillLevel=found;if(refundScrolls())save();}
   // Class mastery stat bonus: per level of the character's current class mastery (companions: their own mastery).
-  function classMasteryBonus(h){
-    const row=GAMEPLAY_SETTINGS.skills?.mastery?.classBonus?.[h?.job],level=h?classMasteryLevel(h):0;
-    return Object.fromEntries(['hp','atk','def','crit'].map(k=>[k,(Number(row?.[k])||0)*level]));
+  /* v0.179: class mastery gives HP, attack and defense per level from its class's row of the classBonus table (no crit).
+     The protagonist uses two class masteries at a time: the main class (the class being played) and one sub-class chosen
+     on the character page (party.masterySubClass, any other class already trained; null for none). Switching takes
+     effect at once. A companion has one class mastery, its own. Weapon and element masteries add damage only
+     (js/skills/mastery-damage.js). */
+  const classes=()=>globalThis.__EMBERWILD_TEAMS?.build?.()?.permanent?.classes||null;
+  const trainedLevel=j=>{const c=classes()?.[j];return c?.activated?__EMBERWILD_MASTERY.masteryLevelFromXp(c.xp||0):0;};
+  function subClass(h){const j=party?.masterySubClass;return Number.isInteger(j)&&j!==h?.job&&classes()?.[j]?.activated?j:null;}
+  // The class masteries that count for h, with their levels and per-level rows.
+  function classMasterySources(h){
+    if(!h)return [];const rows=GAMEPLAY_SETTINGS.skills?.mastery?.classBonus||[],row=j=>({hp:Number(rows[j]?.hp)||0,atk:Number(rows[j]?.atk)||0,def:Number(rows[j]?.def)||0});
+    const out=[{job:h.job,role:'main',level:classMasteryLevel(h),perLevel:row(h.job)}];
+    if(h.companionId===undefined&&typeof playerHero==='function'&&h===playerHero()){const s=subClass(h);if(s!==null)out.push({job:s,role:'sub',level:trainedLevel(s),perLevel:row(s)});}
+    return out;
   }
-  // The bonus is added to the class's natural stats inside stats() (equipment-identity.js), before percentage effects.
+  function classMasteryBonus(h){
+    const out={hp:0,atk:0,def:0,crit:0};
+    for(const s of classMasterySources(h))for(const k of ['hp','atk','def'])out[k]+=s.perLevel[k]*s.level;
+    return out;
+  }
+  globalThis.classMasterySources=classMasterySources;
+  globalThis.masterySubClass=()=>party?subClass(playerHero()):null;
+  globalThis.setMasterySubClass=function(j){
+    if(!party)return false;const h=playerHero();
+    if(j!==null&&(!Number.isInteger(j)||j===h.job||!classes()?.[j]?.activated))return false;
+    const old=party.masterySubClass??null;party.masterySubClass=j;
+    if(save()===false){party.masterySubClass=old;return false;}
+    h.hp=Math.min(h.hp,stats(h).hp);render();return true;
+  };
   globalThis.classMasteryBonus=classMasteryBonus;
   // Developer/test helper: put a character's current class mastery at exactly `level` and refresh what it unlocks.
   globalThis.setClassMasteryLevel=function(level,h=state){

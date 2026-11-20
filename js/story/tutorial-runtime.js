@@ -146,7 +146,6 @@
   'battle.categories':()=>$q('main [onclick^="setExplorationCategory"]')?.parentElement||null,
   'battle.mapSelect':()=>$q('main select[aria-label="探索地圖"]'),
   'battle.start':()=>$q('main [onclick="startSelectedExploration()"]')||$q('main .seconds-adventure-toolbar [onclick="toggleBattle()"]'),
-  'battle.huntMode':()=>$q('main [onclick^="setHuntingMode"]'),
   'battle.allies':()=>$q('main .seconds-side-ally')||$q('main .party-combat'),
   'battle.enemies':()=>$q('main .seconds-side-enemy'),
   'bag.categories':()=>$q('main [onclick^="setInventoryCategory"]')?.parentElement||null,

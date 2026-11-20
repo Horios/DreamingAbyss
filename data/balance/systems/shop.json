@@ -116,7 +116,7 @@
     "entries": [
       {
         "id": "imbue_fire",
-        "enabled": true,
+        "enabled": false,
         "type": "item",
         "key": "imbue_fire",
         "name": "",
@@ -143,7 +143,7 @@
       },
       {
         "id": "imbue_ice",
-        "enabled": true,
+        "enabled": false,
         "type": "item",
         "key": "imbue_ice",
         "name": "",
@@ -170,7 +170,7 @@
       },
       {
         "id": "imbue_wind",
-        "enabled": true,
+        "enabled": false,
         "type": "item",
         "key": "imbue_wind",
         "name": "",
@@ -197,7 +197,7 @@
       },
       {
         "id": "imbue_light",
-        "enabled": true,
+        "enabled": false,
         "type": "item",
         "key": "imbue_light",
         "name": "",
@@ -224,7 +224,7 @@
       },
       {
         "id": "imbue_shadow",
-        "enabled": true,
+        "enabled": false,
         "type": "item",
         "key": "imbue_shadow",
         "name": "",

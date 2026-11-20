@@ -12,7 +12,7 @@ test('normal live ticks publish combat events to the battle journal without an o
 });
 test('delayed live ticks still record damage and loot without opening offline settlement',async()=>{
  const r=game();r.advance(60000);r.run('tick()');await r.run('EmberwildOffline.settle(undefined,false)');
- hasAttacks(r);assert(!r.run("logs.some(e=>e.type==='exp')"),'no EXP lines since v0.161');
+ hasAttacks(r);assert(r.run("logs.filter(e=>e.type==='exp').every(e=>/獲得精通經驗/.test(e.text))"),'v0.179: the only EXP lines are the mastery lines');
  // Random drops may legitimately be absent in a one-minute session. Grant one
  // deterministic material through the real loot path to verify journal wiring.
  const beforeCount=r.run("state.materials['戰報測試素材']||0");

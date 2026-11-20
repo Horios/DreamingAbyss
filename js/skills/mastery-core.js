@@ -90,7 +90,9 @@ const SUPPORT_PLAN=[
 ];
 const MASTERY_DEFAULTS={xpBase:8,xpLinear:5,xpQuadratic:1,skillUseXp:2,basicAttackXp:1,maxLevel:30};
 // v0.161: stats each class mastery level adds to a character of that class (capped by maxLevel; only the current class counts).
-const CLASS_MASTERY_BONUS_DEFAULTS=[{hp:3,atk:0,def:.5,crit:0},{hp:1,atk:.6,def:0,crit:0},{hp:1,atk:.5,def:0,crit:.001},{hp:2,atk:.3,def:.2,crit:0}];
+// Class mastery per level (v0.179): warrior leans on defense, mage on attack, archer is balanced, priest leans on HP. No crit.
+// Only the main class (the class played) and one chosen sub-class count (js/character/level-removal.js).
+const CLASS_MASTERY_BONUS_DEFAULTS=[{hp:2,atk:.2,def:.6,crit:0},{hp:1,atk:.7,def:.1,crit:0},{hp:1.5,atk:.5,def:.3,crit:0},{hp:3.5,atk:.2,def:.2,crit:0}];
 
 function ensureMasterySettings(settings){
   if(!settings||typeof settings!=='object')return settings;
@@ -328,14 +330,28 @@ let currentBattleMastery={},lastBattleMastery={};
 const masteryBoostCarry=new WeakMap();
 function boostedMastery(h,amount){const bonus=globalThis.EmberwildTimedBoosts&&party?EmberwildTimedBoosts.bonus(party,'exp'):0;if(!bonus)return amount;const total=amount*(1+bonus/100)+(masteryBoostCarry.get(h)||0),whole=Math.floor(total+1e-9);masteryBoostCarry.set(h,total-whole);return whole;}
 function masteryGainKey(h,key){return `${memberKey(h)}:${key}`;}
+/* v0.179: mastery experience gained in the current encounter, per member, for the battle log (filter 「獲得精通經驗」).
+   One line per member is written when the encounter ends (EmberwildBattleSummary.finish → __EMBERWILD_MASTERY_BATTLE_NOTE). */
+let battleMasteryLog=new Map();
+function logMasteryGain(h,classAmount,key,keyAmount){
+  if(!h||!(classAmount>0||keyAmount>0))return;const k=memberKey(h);let row=battleMasteryLog.get(k);
+  if(!row){row={hero:h,cls:0,keys:{}};battleMasteryLog.set(k,row);}
+  row.cls+=classAmount||0;if(key&&keyAmount>0)row.keys[key]=(row.keys[key]||0)+keyAmount;
+}
+globalThis.__EMBERWILD_MASTERY_BATTLE_NOTE=function(){
+  const rows=[...battleMasteryLog.values()];battleMasteryLog=new Map();
+  for(const r of rows){const h=r.hero,parts=Object.entries(r.keys).map(([key,n])=>(MASTERY_LABELS[key]||key)+' +'+n);
+   note(`${characterName(h)}・獲得精通經驗 ${CLASSES[h.job]?.name||'職業'} +${r.cls}${parts.length?'（'+parts.join('、')+'）':''}`,'exp');}
+  return rows.length;
+};
 function gainMastery(h,key,amount){
-  if(isCompanionHero(h)){delete h.mastery;return globalThis.__EMBERWILD_COMPANION_MASTERY_GAIN?.(h,boostedMastery(h,Math.max(0,Math.floor(Number(amount)||0))))||0;}
+  if(isCompanionHero(h)){delete h.mastery;const got=globalThis.__EMBERWILD_COMPANION_MASTERY_GAIN?.(h,boostedMastery(h,Math.max(0,Math.floor(Number(amount)||0))))||0;logMasteryGain(h,got);return got;}
   if(!h||!key||!validMasteries(h.job).includes(key))return 0;
   ensureHeroMastery(h);const requested=boostedMastery(h,Math.max(0,Math.floor(Number(amount)||0))),cap=masteryMaxXp(),add=Math.min(requested,Math.max(0,cap-h.mastery[key]));
   const classBefore=classMasteryLevel(h);
   if(add){const before=masteryLevelFromXp(h.mastery[key]);h.mastery[key]+=add;const after=masteryLevelFromXp(h.mastery[key]);if(after>before)note(`${characterName(h)}・${MASTERY_LABELS[key]||key}精通提升至 Lv${after}`);}
   // Class mastery follows every weapon/element gain, even once that weapon mastery is full.
-  globalThis.__EMBERWILD_TEAM_GAIN?.(h,requested);
+  globalThis.__EMBERWILD_TEAM_GAIN?.(h,requested);logMasteryGain(h,requested,key,add);
   const classAfter=classMasteryLevel(h);
   for(const fn of globalThis.__EMBERWILD_MASTERY_LISTENERS||[])fn(h,requested,classBefore,classAfter);
   if(classAfter>classBefore){note(`${characterName(h)}・${CLASSES[h.job]?.name||''}職業精通提升至 Lv${classAfter}`);globalThis.__EMBERWILD_SKILL_REFRESH?.();}

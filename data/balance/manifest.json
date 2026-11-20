@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 42,
+  "dataRevision": 47,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "138593ac06d610cc2d600968b207c22996b2fee3e5a28d29746dd1c263200909",
-    "bytes": 1258523
+    "sha256": "84d75d19ca28f97e67de442bd54e52190c3bf7002b14fa3b590b8a9b70a8c9cb",
+    "bytes": 1258539
   },
   "layout": {
     "": [
@@ -246,8 +246,8 @@
       "file": "combat/rules.json",
       "source": "balanceSettings.combat",
       "present": true,
-      "version": 3,
-      "sha256": "d4b826ed535b9472d9dec57a456c424a01c3d0312236ba14c1ff3dd063a89016",
+      "version": 4,
+      "sha256": "3f5b79e4cb449d44272738e333bd70df61f9a980480eb916d824b8e974df997e",
       "bytes": 2922,
       "dependsOn": [
         "characters/companion-settings",
@@ -271,9 +271,9 @@
       "file": "combat/skill-settings.json",
       "source": "balanceSettings.skills",
       "present": true,
-      "version": 2,
-      "sha256": "4a8581150bfa0edd3f65f05e3fe32307be1f3ab7784194d82b5e42f46eee2f97",
-      "bytes": 826,
+      "version": 5,
+      "sha256": "e3b8bd05390e6bde46fe2d1e65e5ffa998db5f0f206fddad36192ae79d115e55",
+      "bytes": 832,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -497,9 +497,9 @@
       "file": "items/items.json",
       "source": "items",
       "present": true,
-      "version": 1,
-      "sha256": "a7077d5d8431bcfc8c29c8d011540f83757a339d3445e25ae3fef7ed3515aa8c",
-      "bytes": 6530,
+      "version": 2,
+      "sha256": "587522797e73379ed106e30fd2dc02a0947c2f2478591d1218650deb60806ac5",
+      "bytes": 6535,
       "dependsOn": [
         "world/drops"
       ],
@@ -641,9 +641,9 @@
       "file": "systems/shop.json",
       "source": "shopSettings",
       "present": true,
-      "version": 2,
-      "sha256": "a0f1005ac78707097fc9a09bbd7e41aa058cd594c65c2386b18151175a0338cf",
-      "bytes": 53467,
+      "version": 3,
+      "sha256": "12b26467091df6abfda2ff5e3747cff90635a8b3ba537c5eca75da3e9385a1ba",
+      "bytes": 53472,
       "dependsOn": [
         "items/items",
         "world/maps"

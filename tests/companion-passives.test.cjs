@@ -27,7 +27,9 @@ test('Obsolete companion mastery is removed from old saves, runtime, snapshots a
 
 test('Permanent attack, defense and HP use existing stat aggregation, work in reserves and never expire or stack per round',()=>{
  const r=game(8),out=json(r,`(()=>{const d=exportableBalance();const tank=d.companions.find(p=>p.id===11);d.passiveDefinitions.push({id:'test-health',partnerId:11,name:'生命強化（測試）',kind:'buff',target:'self',requiredLevel:0,effects:[{key:'hpPct',value:10}]});tank.passives.push('test-health');applyBalanceConfig(d,{persist:false});const withPassives=party.members.slice(1).map(h=>stats(h)),assignments=d.companions.map(p=>p.passives.slice());for(const p of d.companions)p.passives=[];applyBalanceConfig(d,{persist:false});const base=party.members.slice(1).map(h=>stats(h));d.companions.forEach((p,i)=>p.passives=assignments[i]);applyBalanceConfig(d,{persist:false});party.active=[memberKey(playerHero())];const first=party.members.slice(1).map(h=>stats(h));for(let i=0;i<100;i++){partyClock++;for(const h of party.members)stats(h);}resetEncounter();return {withPassives,base,first,last:party.members.slice(1).map(h=>stats(h)),timedEffects:effects.length};})()`);
- assert.equal(out.withPassives[0].atk,Math.round(out.base[0].atk*1.1));assert.equal(out.withPassives[1].def,Math.round(out.base[1].def*1.1));assert.equal(out.withPassives[1].hp,Math.round(out.base[1].hp*1.1));
+ // The base is shown rounded while class mastery adds fractional stats (v0.179), so allow one point of rounding.
+ const near=(a,b,m)=>assert(Math.abs(a-b)<=1,m+': '+a+' vs '+b);
+ near(out.withPassives[0].atk,Math.round(out.base[0].atk*1.1),'attack');near(out.withPassives[1].def,Math.round(out.base[1].def*1.1),'defense');near(out.withPassives[1].hp,Math.round(out.base[1].hp*1.1),'HP');assert(out.withPassives[0].atk>out.base[0].atk&&out.withPassives[1].def>out.base[1].def&&out.withPassives[1].hp>out.base[1].hp);
  assert.deepEqual(out.first,out.last);assert.deepEqual(out.first,out.withPassives);assert.equal(out.timedEffects,0);
 });
 

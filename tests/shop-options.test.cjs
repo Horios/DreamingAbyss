@@ -71,7 +71,7 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
           await game.page.mouse.move(0,0);
         }
       }
-      assert(rows.length>=16);
+      assert(rows.length>=11,'v0.179: the five elemental potions are off the shop: '+rows.length);
       for(const row of rows){const lines=row.tooltip.split('\n').map(x=>x.trim()).filter(Boolean);assert(lines[0].includes(row.name.trim()),JSON.stringify(row));assert(lines.length>=3&&lines[1].length>4,'every product has a description: '+JSON.stringify(row));assert(!/隨機出現|隨機挑選|本批隨機商品/.test(row.tooltip));assert(!/回合/.test(row.tooltip),'durations use seconds: '+row.tooltip);assert(row.height<140,JSON.stringify(row));assert(row.scrollWidth<=row.width+1,JSON.stringify(row));}
       const stone=rows.find(x=>x.name.includes('重鑄'));assert(stone);assert(stone.tooltip.includes('基底'));assert(stone.tooltip.includes('基底評級'));
       assert.equal(await game.page.locator('main button[onclick="showTestCodes()"] ').count(),0);

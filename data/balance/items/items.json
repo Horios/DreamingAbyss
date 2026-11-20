@@ -8,7 +8,7 @@
     "name": "火屬性附魔藥水",
     "sellPrice": 45,
     "statEffects": {},
-    "shopEnabled": true,
+    "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
@@ -49,7 +49,7 @@
     "name": "冰屬性附魔藥水",
     "sellPrice": 45,
     "statEffects": {},
-    "shopEnabled": true,
+    "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
@@ -90,7 +90,7 @@
     "name": "風屬性附魔藥水",
     "sellPrice": 45,
     "statEffects": {},
-    "shopEnabled": true,
+    "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
@@ -131,7 +131,7 @@
     "name": "光屬性附魔藥水",
     "sellPrice": 45,
     "statEffects": {},
-    "shopEnabled": true,
+    "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
@@ -172,7 +172,7 @@
     "name": "暗屬性附魔藥水",
     "sellPrice": 45,
     "statEffects": {},
-    "shopEnabled": true,
+    "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
