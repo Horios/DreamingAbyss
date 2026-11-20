@@ -30,7 +30,9 @@
   // v0.173: the inline onboarding (story quest 'prologue') is at this stage now; it stops holding once the stage is done.
   prologueStage:{label:'新手引導進行到',key:'stage'},
   lakeUnlocked:{label:'許願湖已解鎖'},
-  socketGearWorn:{label:'主角穿著有鑲嵌孔的裝備'}
+  socketGearWorn:{label:'主角穿著有鑲嵌孔的裝備'},
+  // v0.178: tickets held for a companion (key: companion id).
+  companionTicket:{label:'持有指定夥伴的招募券',key:'companion',count:true}
  };
  // Stages of the inline onboarding a tutorial can wait for (js/story/prologue-runtime.js).
  const STAGES={gift:'女神的贈禮',practice:'首次探索戰鬥',helper:'招募牧師'};
@@ -38,7 +40,7 @@
  // Lessons the prologue already teaches (its fixed system actions). A step can be left out for players who did them.
  const LESSONS={equipLesson:'穿戴裝備',skillLesson:'裝入技能',recruitHelper:'加入隊友'};
  // Events the game reports to a waiting step. They come from the game's own handlers, after they succeed.
- const EVENTS={explorationStarted:'開始探索',gearSelected:'在背包點選裝備',wearOpened:'按下背包的「穿戴」',gearEquipped:'完成穿戴',skillSlotOpened:'開啟技能槽',skillSlotted:'裝入技能',catalogOpened:'開啟技能圖鑑',socketsOpened:'開啟裝備的鑲嵌孔',socketSelected:'點選鑲嵌孔',gemSocketed:'鑲嵌或拆除寶石'};
+ const EVENTS={explorationStarted:'開始探索',gearSelected:'在背包點選裝備',wearOpened:'按下背包的「穿戴」',gearEquipped:'完成穿戴',skillSlotOpened:'開啟技能槽',skillSlotted:'裝入技能',catalogOpened:'開啟技能圖鑑',socketsOpened:'開啟裝備的鑲嵌孔',itemsOpened:'開啟背包的道具分類',itemDetailsOpened:'開啟道具詳細資料',ticketUsed:'使用夥伴招募券',socketSelected:'點選鑲嵌孔',gemSocketed:'鑲嵌或拆除寶石'};
  const ADVANCE={next:'按「下一步」',click:'點擊高亮目標',event:'等待遊戲事件',condition:'等待狀態成立',page:'進入指定頁面'};
  const TRIGGERS={pageEnter:'首次進入頁面時開始',unlock:'條件成立時立即提示',manual:'只能從教學回顧開始'};
  const PLACEMENTS={auto:'自動',top:'目標上方',bottom:'目標下方',left:'目標左側',right:'目標右側',center:'畫面中央'};
@@ -77,10 +79,10 @@
   'stats.drops':{label:'掉落與死亡紀錄',page:'statistics'},
   'roster.plans':{label:'隊伍方案',page:'roster'},
   'roster.list':{label:'上陣與後備名單',page:'roster'},
-  'roster.recruit':{label:'隊伍頁的「招募夥伴」',page:'roster'},
   'partners.list':{label:'夥伴名冊清單',page:'partnerRoster'},
-  'partners.recruit':{label:'名冊的「招募夥伴」',page:'partnerRoster'},
-  'partners.recruitChoice':{label:'招募視窗的「招募」',page:'partnerRoster'},
+  'bag.itemsCategory':{label:'背包的「道具」分類',page:'equipment'},
+  'bag.companionTicket':{label:'道具中的夥伴招募券',page:'equipment'},
+  'items.useTicket':{label:'招募券詳細資料的「使用招募券」',page:'equipment'},
   'character.stats':{label:'人物能力',page:'character'},
   'character.mastery':{label:'職業精通',page:'character'},
   'worn.tokens':{label:'夥伴信物',page:'worn'},
@@ -169,11 +171,18 @@
    step('enemies','敵人','敵人的生命與下一次行動的讀秒顯示在這裡。',{page:'battle',target:'battle.enemies'}),
    step('auto','自動戰鬥','戰鬥自動進行。普攻與裝入的技能會依冷卻與 MP 自動施放。打完這一場就完成首次探索。',{page:'battle',target:'battle.allies'})
   ]}),
-  makeModule({id:'onboarding_helper',title:'招募牧師',category:'companions',description:'新手引導：在夥伴名冊招募第一位夥伴牧師艾琳。',
-   trigger:{type:'pageEnter',page:'partnerRoster'},prerequisites:group([condition('prologueStage','helper')]),skippable:false,steps:[
-   step('list','夥伴名冊','招募到的夥伴會列在這裡。夥伴會和你一起出戰，各自累積職業精通。',{page:'partnerRoster',target:'partners.list'}),
-   step('recruit','招募夥伴','按「招募夥伴」打開招募清單。',{page:'partnerRoster',target:'partners.recruit',advance:{type:'click'}}),
-   step('choose','招募牧師艾琳','按艾琳旁邊的「招募」。第一次招募免費，艾琳會負責治療與輔助。之後在名冊點選夥伴就能查看能力、技能與信物。',{page:'partnerRoster',target:'partners.recruitChoice',advance:{type:'condition',condition:condition('companions','',1)}})
+  // v0.178: companions join by their ticket. The onboarding hands out the priest's; the caravan story hands out 洛恩's.
+  makeModule({id:'onboarding_helper',title:'招募牧師',category:'companions',description:'新手引導：在背包使用「夥伴招募券 - 艾琳」，讓牧師艾琳加入隊伍。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','helper')]),skippable:false,steps:[
+   step('items','道具分類','按「道具」切換到道具清單。夥伴招募券放在「票券」。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   step('ticket','夥伴招募券','點選「夥伴招募券 - 艾琳」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
+   step('use','使用招募券','艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源與治療強化。按「使用招募券」，艾琳就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
+  ]}),
+  makeModule({id:'recruit_lorne',title:'招募戰士',category:'companions',description:'完成商隊事件後取得「夥伴招募券 - 洛恩」，在背包使用讓戰士洛恩加入隊伍。',
+   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 道具使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
+   step('items','道具分類','按「道具」切換到道具清單。夥伴招募券放在「票券」。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   step('ticket','夥伴招募券','點選「夥伴招募券 - 洛恩」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
+   step('use','使用招募券','洛恩是戰士，專注劍術輸出，技能有裂地斬、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
   ]}),
   // v0.173: every other system page plays one spotlight guide the first time it is opened after the onboarding.
   makeModule({id:'statistics_basics',title:'戰鬥統計',category:'battle',description:'目前地圖的戰鬥場次、隊員表現與掉落紀錄。第一次進入戰鬥統計時開始。',
@@ -185,13 +194,12 @@
   makeModule({id:'roster_basics',title:'隊伍編成',category:'companions',description:'隊伍方案、上陣與後備的調整。第一次進入隊伍編成時開始。',
    trigger:{type:'pageEnter',page:'roster'},prerequisites:group([condition('prologueDone')]),steps:[
    step('list','上陣名單','最多三人上陣。點「移至後備」或「上陣」調整出戰的成員，請先停止探索再調整。',{page:'roster',target:'roster.list'}),
-   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。',{page:'roster',target:'roster.plans'}),
-   step('recruit','招募夥伴','解鎖新的夥伴後，也可以從這裡招募。',{page:'roster',target:'roster.recruit'})
+   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 道具）。',{page:'roster',target:'roster.plans'})
   ]}),
   makeModule({id:'partner_basics',title:'夥伴名冊',category:'companions',description:'查看每位夥伴的能力、技能與信物。新手引導結束後第一次進入夥伴名冊時開始。',
    trigger:{type:'pageEnter',page:'partnerRoster'},prerequisites:group([condition('prologueDone')]),steps:[
    step('list','夥伴資料','點選夥伴可以查看能力、技能與信物。夥伴依固定走向自動成長，職業精通等級會解鎖夥伴技能。',{page:'partnerRoster',target:'partners.list'}),
-   step('recruit','更多夥伴','探索中達成條件就會解鎖新的夥伴，再從這裡招募。',{page:'partnerRoster',target:'partners.recruit'})
+   step('recruit','更多夥伴','新夥伴要使用夥伴招募券加入：到背包 → 道具，點選招募券後按「使用招募券」。',{page:'partnerRoster'})
   ]}),
   makeModule({id:'character_basics',title:'角色能力',category:'character',description:'人物能力與職業、武器、元素精通。第一次進入角色能力時開始。',
    trigger:{type:'pageEnter',page:'character'},prerequisites:group([condition('prologueDone')]),steps:[
@@ -259,6 +267,7 @@
   if(def.key==='lesson'&&!Object.hasOwn(LESSONS,c.key))add(where+'：序幕操作必須為 equipLesson、skillLesson 或 recruitHelper');
   if(def.key==='slotType'&&!Object.hasOwn(SLOT_TYPES,c.key))add(where+'：技能槽類型必須為 active、proc 或 support');
   if(def.key==='text'&&!filled(c.key,80))add(where+'：必須填寫解鎖鍵');
+  if(def.key==='companion'&&!/^\d{1,9}$/.test(String(c.key)))add(where+'：必須指定夥伴 ID');
   if(def.key==='quest'&&(!filled(c.key,80)||Array.isArray(ctx.quests)&&!ctx.quests.some(q=>q?.id===c.key)))add(where+'：任務不存在：'+c.key);
   if(def.key==='item'){if(!['item','material'].includes(c.itemType))add(where+'：物品類型必須為 item 或 material');if(!filled(c.key,80))add(where+'：必須指定物品');else if(c.itemType==='item'&&Array.isArray(ctx.items)&&!ctx.items.some(i=>i?.id===c.key))add(where+'：道具不存在：'+c.key);}
  }

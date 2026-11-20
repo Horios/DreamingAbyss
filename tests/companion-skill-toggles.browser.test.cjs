@@ -10,13 +10,14 @@ test('Chromium: roster has no retired skill toggles; unlock levels, designer vis
   assert.equal(await page.locator('[data-companion-toggle]').count(),0);
   assert.equal(await page.evaluate(()=>setCompanionSkillEnabled(10,'core',__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(10)).core[0],false)),false);
   assert.deepEqual(await page.evaluate(()=>partyMember(10).disabledCompanionSkills||{core:[],support:[],passive:[]}),{core:[],support:[],passive:[]});
-  const modalSnapshot=await page.evaluate(()=>{showCompanionRecruitment();const text=$('modal').innerText;closeModal();return text;});assert.match(modalSnapshot,/技能：/);assert.doesNotMatch(modalSnapshot,/LV\d/,'no character levels since v0.161 (v0.173 text)');
+  // v0.178: the ticket's details describe the companion (there is no recruiting page).
+  const modalSnapshot=await page.evaluate(()=>{grantCompanionTicket(11);inventoryCategory='items';setTab('equipment');openItemSlotDetails(document.querySelector('[data-companion-ticket="11"] .item-slot'));const text=document.getElementById('item-detail-dialog').innerText;closeItemDetails();return text;});assert.match(modalSnapshot,/技能：/);assert.doesNotMatch(modalSnapshot,/LV\d/,'no character levels since v0.161 (v0.173 text)');
   await e.page.evaluate(()=>selectCompanionDesign(15));assert.equal(await e.page.locator('#companionAvailability').inputValue(),'hidden');assert.equal(await e.page.locator('[data-companion]').count(),20);
   await e.page.locator('#companionAvailability').selectOption('visible');assert.equal(await e.page.evaluate(()=>data.companions.find(p=>p.id===15).availability),'visible');
   await e.page.evaluate(()=>{selectCompanionUnlock(15);document.getElementById('companionUnlockType').value='achievement';document.getElementById('companionUnlockType').dispatchEvent(new Event('change'));openCompanionSkillPage(10,'active');});assert.equal(await e.page.locator('[data-key="requiredLevel"]').inputValue(),'0','old LV1 is class mastery 0');
   const designer=await e.page.evaluate(()=>__EMBERWILD_MASTERY_EDITOR.cleanExport());assert.deepEqual(await e.page.evaluate(()=>validateData()),[]);
   await page.evaluate(d=>{applyBalanceConfig(d);save();loadParty(structuredClone(packParty()));setTab('partnerRoster');},designer);
-  await page.evaluate(()=>showCompanionRecruitment());const locked=page.locator('#modal .roster-row').filter({hasText:'雷昂'});assert.equal(await locked.count(),1);assert.equal(await locked.getByRole('button',{name:'未解鎖',exact:true}).isDisabled(),true);assert.equal(await page.locator('#modal .roster-row').filter({hasText:'凱斯'}).count(),0);await page.evaluate(()=>closeModal());
+  assert.equal(await page.evaluate(()=>useCompanionRecruitmentTicket(15)),false,'no ticket: 雷昂 cannot join');assert.equal(await page.evaluate(()=>{grantCompanionTicket(16);return useCompanionRecruitmentTicket(16);}),false,'a hidden companion cannot join by ticket');
   assert.deepEqual(g.errors,[]);assert.deepEqual(e.errors,[]);
  }finally{await g.browser.close();await e.browser.close();}
 });

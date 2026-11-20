@@ -11,9 +11,11 @@ for(const [width,height] of [[1280,800],[390,780]])test('direct creation and inl
   await p.evaluate(()=>withHero(playerHero(),()=>equipGear(playerHero().bag.find(g=>g.starterPack).id)));
   await p.waitForSelector('.prologue-task[data-stage="practice"]');
   await p.evaluate(()=>{clearInterval(timer);running=true;spawnGroup();for(let i=0;i<500&&__EMBERWILD_PROLOGUE.stage()==='practice';i++){const it=pacedRound();for(let n=0;n<5000&&!it.next().done;n++){}}stopTeamExploration();render();});
-  await p.waitForSelector('.prologue-task[data-stage="helper"]');await p.click('main button:has-text("招募夥伴")');
-  assert.equal(await p.locator('#modal .roster-row').count(),1);assert.match(await p.locator('#modal').innerText(),/艾琳/);
-  await p.click('#modal button:has-text("招募")');await p.waitForFunction(()=>party.story.quests.prologue.done);
+  // v0.178: the helper stage opens the bag; the priest's ticket is used from 道具.
+  await p.waitForSelector('.prologue-task[data-stage="helper"]');assert.equal(await p.evaluate(()=>tab),'equipment');
+  await p.evaluate(()=>setInventoryCategory('items'));await p.click('main [data-companion-ticket="13"] .item-slot');
+  assert.match(await p.locator('#item-detail-dialog').innerText(),/艾琳/);
+  await p.click('#item-detail-dialog button:has-text("使用招募券")');await p.waitForFunction(()=>party.story.quests.prologue.done);
   assert.equal(await p.evaluate(()=>!!partyMember(13)),true);assert.equal(await p.locator('#prologue-layer').isVisible(),false);
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}

@@ -33,15 +33,19 @@ test('the goddess introduces the world; the three onboarding tasks each play a s
   await page.click('main [onclick="startSelectedExploration()"]');await wait(page,'onboarding_practice','enemies');
   // A real seconds-combat victory completes the task (it never passes through pacedRound).
   await page.waitForFunction(()=>{for(const e of foes)e.hp=Math.min(e.hp,1);return __EMBERWILD_PROLOGUE.stage()==='helper';},null,{timeout:60000,polling:300});
-  // 招募牧師
-  await wait(page,'onboarding_helper','list');
+  // 招募牧師 (v0.178): the bag opens; the priest's ticket is used from 道具 and she joins.
+  await wait(page,'onboarding_helper','items');
   assert.equal(await page.evaluate(()=>party.tutorials.records.onboarding_practice.completed),true);
-  await next(page);await wait(page,'onboarding_helper','recruit');
-  await page.click('main [onclick="showCompanionRecruitment()"]');await wait(page,'onboarding_helper','choose');
-  await page.click('#modal [onclick*="recruitCompanion("]');
+  assert.equal(await page.evaluate(()=>[tab,companionTicketCount(13)].join()),'equipment,1');
+  await page.click(`main [onclick="setInventoryCategory('items')"]`);await wait(page,'onboarding_helper','ticket');
+  await page.click('main [data-companion-ticket="13"] .item-slot');await wait(page,'onboarding_helper','use');
+  const detail=await page.locator('#item-detail-dialog').innerText();assert.match(detail,/夥伴招募券 - 艾琳/);assert.match(detail,/治療/,'the ticket describes the companion');
+  assert.equal(await page.evaluate(()=>document.getElementById('item-detail-dialog').contains(document.getElementById('tutorial-card'))),true,'the guide card follows into the item details');
+  await page.click('#item-detail-dialog button:has-text("使用招募券")');
   await page.waitForFunction(()=>!__EMBERWILD_PROLOGUE.running()&&!__EMBERWILD_TUTORIAL.status().active);
   const rec=await page.evaluate(()=>party.tutorials.records);
   for(const id of ['onboarding_gift','onboarding_practice','onboarding_helper','explore_basics','partner_basics'])assert.equal(rec[id]?.completed,true,id);
+  assert.equal(await page.evaluate(()=>[!!partyMember(13),companionTicketCount(13)].join()),'true,0');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}
 });

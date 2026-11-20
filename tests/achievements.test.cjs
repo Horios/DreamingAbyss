@@ -24,10 +24,10 @@ test('Real kills count their own region and category once; staged achievements s
 });
 test('Achievement awards a named ticket once, not immediate unlock; actual inventory use unlocks and later stages do not award again',()=>{
  const r=game();bind(r,15,['region-0-elite-50','region-0-elite-100']);r.run('party.achievements.eliteKills[0]=49');kill(r,'elite');
- assert.equal(r.run('companionUnlocked(15)'),false);assert.equal(r.run('companionTicketCount(15)'),1);assert.equal(r.run('party.achievements.rewardCompanions.includes(15)'),true);assert.match(r.run('accountItemsView()'),/雷昂招募券/);assert.match(r.elements.get('toast').textContent,/已領取.*道具已放入背包/);
+ assert.equal(r.run('companionUnlocked(15)'),false);assert.equal(r.run('companionTicketCount(15)'),1);assert.equal(r.run('party.achievements.rewardCompanions.includes(15)'),true);assert.match(r.run('accountItemsView()'),/夥伴招募券 - 雷昂/);assert.match(r.elements.get('toast').textContent,/已領取.*道具已放入背包/);
  r.run('acquireCompanion(15)');assert.equal(r.run('partyMember(15)'),undefined);
  r.run('party.achievements.eliteKills[0]=99');kill(r,'elite');assert.equal(r.run('companionTicketCount(15)'),1);
- assert.equal(r.run('useCompanionRecruitmentTicket(15)'),true);assert.equal(r.run('companionUnlocked(15)'),true);assert.equal(r.run('companionTicketCount(15)'),0);assert.equal(r.run('useCompanionRecruitmentTicket(15)'),false);
+ assert.equal(r.run('useCompanionRecruitmentTicket(15)'),true);assert.equal(r.run('companionUnlocked(15)'),true);assert.equal(r.run('!!partyMember(15)'),true,'v0.178: the ticket brings the companion');assert.equal(r.run('companionTicketCount(15)'),0);assert.equal(r.run('useCompanionRecruitmentTicket(15)'),false);
  r.run('recruitCompanion(15);closeModal();save();loadParty(structuredClone(packParty()));save()');assert.equal(r.run('partyMember(15).name'),'雷昂');assert.equal(r.run('companionTicketCount(15)'),0);
  const reload=loadRuntime(root,'index.html',Object.fromEntries(r.values));assert.equal(reload.run('party.achievements.eliteKills[0]'),100);assert.equal(reload.run('companionTicketCount(15)'),0);assert.equal(reload.run('partyMember(15).name'),'雷昂');assert.deepEqual(reload.errors,[]);
 });
@@ -69,9 +69,10 @@ test('Designer links multiple real achievements and exports rules that produce g
 test('Duplicate tickets convert once with a popup and configurable gold; failed saves and gold cap preserve the voucher',t=>{
  if(!fs.existsSync(path.join(editor,'balance-editor.html')))return t.skip('Requires private balance editor fixture');
  const e=loadRuntime(editor,'balance-editor.html');e.run("selectCompanionUnlock(10);document.getElementById('companionDuplicateGold').onchange({target:{value:'123'}})");assert.deepEqual(json(e,'validateData()'),[]);
- const r=game();r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);party.achievements.tickets[10]=2;globalThis.gold=state.gold;');// Compact item slots; the conversion amount is checked by actually using the duplicate ticket below.
+ const r=game();r.ctx.doc=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');r.run('applyBalanceConfig(doc);recruitCompanion(10);closeModal();party.achievements.tickets[10]=2;globalThis.gold=state.gold;');// v0.178: a ticket is a duplicate once its companion is in the party.
+ // Compact item slots; the conversion amount is checked by actually using the duplicate ticket below.
  assert.match(r.run('accountItemsView()'),/data-item-key="companion-ticket-10"[^>]*data-item-quantity="2"/);
- assert.equal(r.run('useCompanionRecruitmentTicket(10)'),true);assert.equal(r.run('state.gold'),r.run('gold+123'));assert.equal(r.run('companionTicketCount(10)'),1);assert.match(r.elements.get('modal').innerHTML,/已解鎖/);assert.match(r.elements.get('modal').innerHTML,/123 金幣/);assert.equal(r.elements.get('modal').open,true);
+ assert.equal(r.run('useCompanionRecruitmentTicket(10)'),true);assert.equal(r.run('state.gold'),r.run('gold+123'));assert.equal(r.run('companionTicketCount(10)'),1);assert.match(r.elements.get('modal').innerHTML,/已在隊伍中/);assert.match(r.elements.get('modal').innerHTML,/123 金幣/);assert.equal(r.elements.get('modal').open,true);
  r.run('closeModal();globalThis.originalSave=save;save=()=>false;globalThis.gold=state.gold');assert.equal(r.run('useCompanionRecruitmentTicket(10)'),false);assert.equal(r.run('state.gold'),r.run('gold'));assert.equal(r.run('companionTicketCount(10)'),1);assert.equal(r.elements.get('modal').open,false);
  r.run('save=originalSave;state.gold=1e12');assert.equal(r.run('useCompanionRecruitmentTicket(10)'),false);assert.equal(r.run('companionTicketCount(10)'),1);assert.equal(r.run('state.gold'),1e12);
  r.run('state.gold=0');assert.equal(r.run('useCompanionRecruitmentTicket(10)'),true);assert.equal(r.run('state.gold'),123);assert.equal(r.run('companionTicketCount(10)'),0);assert.equal(r.run('useCompanionRecruitmentTicket(10)'),false);

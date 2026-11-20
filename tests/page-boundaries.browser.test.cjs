@@ -39,8 +39,9 @@ test('Chromium: companion roster excludes the protagonist and counts recruited c
   assert.match(await p.locator('main .heading .tag').innerText(),/持有 0 · 現役 0 \/ 5/);
   assert.match(await p.locator('.partner-roster-empty').innerText(),/尚未招募任何夥伴/);
   assert.doesNotMatch(await p.locator('main').innerText(),/名冊排除主角/);
-  await p.getByRole('button',{name:'招募夥伴',exact:true}).click();
-  await p.locator('#modal .roster-row').first().getByRole('button',{name:'招募',exact:true}).click();
+  // v0.178: no recruit button; a companion joins by its ticket.
+  assert.equal(await p.getByRole('button',{name:'招募夥伴',exact:true}).count(),0);
+  await p.evaluate(()=>{grantCompanionTicket(10);useCompanionRecruitmentTicket(10);setTab('partnerRoster');});
   await p.waitForFunction(()=>party.members.length===2);
   assert.equal(await p.locator('.partner-owned-list .roster-row').count(),1);
   assert.equal(await p.locator('.partner-owned-list [data-member-key="0"]').count(),0);

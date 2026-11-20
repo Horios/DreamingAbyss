@@ -2,10 +2,11 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),editorRoot=path.resolve(root,'../Emberwild-Balance');
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
-test('Default recruitment contains five visible initial companions; hidden entries cannot be acquired',()=>{
- const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();showCompanionRecruitment();');const doc=json(r,'exportableBalance()');
+test('Five visible initial companions; hidden entries cannot be acquired',()=>{
+ const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();');const doc=json(r,'exportableBalance()');
  assert.deepEqual(doc.companions.filter(p=>p.availability==='visible').map(p=>p.id),[10,11,12,13,14]);assert.equal(doc.companions.filter(p=>p.availability==='hidden').length,15);
- const modal=r.elements.get('modal').innerHTML;assert.equal((modal.match(/recruitCompanion\(/g)||[]).length,5);assert(!modal.includes('雷昂'));
+ assert.equal(r.run('typeof showCompanionRecruitment'),'undefined','v0.178: no recruiting page');
+ r.run('grantCompanionTicket(15);');assert.equal(r.run('useCompanionRecruitmentTicket(15)'),false,'a hidden companion cannot join by ticket');
  r.run('closeModal();recruitCompanion(15);acquireCompanion(16);');assert.equal(r.run('party.members.length'),1);
  r.run("recruitCompanion(10);closeModal();{const d=exportableBalance();d.companions.find(p=>p.id===15).availability='visible';applyBalanceConfig(d);}recruitCompanion(15);closeModal();party.active=[10,15];party.enlisted=[10,15];party.selected=15;state=partyMember(15);{const d=exportableBalance();d.companions.find(p=>p.id===15).availability='hidden';applyBalanceConfig(d);setTab('partnerRoster');save();}");assert.notEqual(r.run('party.selected'),15);assert.equal(r.run('party.enlisted.includes(party.selected)'),true);assert(!r.elements.get('app').innerHTML.includes('雷昂'));assert.equal(r.run('party.active.includes(15)'),false);assert.equal(r.run('party.enlisted.includes(15)'),false);assert.equal(r.run('setPartnerEnlisted(15,true)'),false);assert.equal(r.run('toggleMember(15)'),false);
  const before=r.run('JSON.stringify(exportableBalance())');assert.throws(()=>r.run(`{const d=exportableBalance();d.companions[0].availability='bad';applyBalanceConfig(d);}`),/顯示狀態無效/);assert.equal(r.run('JSON.stringify(exportableBalance())'),before);

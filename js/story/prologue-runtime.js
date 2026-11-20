@@ -15,12 +15,10 @@
  const worn=()=>{const h=playerHero();return h.bag.some(g=>g.starterPack&&h.equipped.includes(g.id));};
  const priest=()=>party?.members.slice(1).find(h=>h.companionId===13||h.job===3&&![900000001,900000002,900000003,900000004].includes(h.companionId));
  function satisfied(){switch(stage()){case 'calling':return true;case 'gift':return worn();case 'practice':return !!party.story.flags.onboarding_battle;case 'helper':return !!priest();case 'departure':return true;default:return false;}}
- function unlock(id){party.companionUnlocks??={version:1,unlocked:[],regions:[]};if(!party.companionUnlocks.unlocked.includes(id))party.companionUnlocks.unlocked.push(id);}
- function recruit(id){if(partyMember(id))return;unlock(id);globalThis.__EMBERWILD_RECRUIT_FOR_STORY?.(id);if(!partyMember(id))throw Error('夥伴未能加入，請稍後重試');}
  // Runs inside the stage transaction: both rewards and joining roll back when saving fails.
  function commitStage(q,s){
-  if(s.id==='calling')grantStarterPackDirect(playerHero().job,globalThis.__EMBERWILD_STARTER_PACK.rows(playerHero().job));
-  if(s.id==='practice')unlock(13);
+  // v0.178: the priest joins by her ticket (夥伴招募券 - 艾琳), handed out with the starter gear and used in the helper stage.
+  if(s.id==='calling'){grantStarterPackDirect(playerHero().job,globalThis.__EMBERWILD_STARTER_PACK.rows(playerHero().job));if(!priest()&&!companionTicketCount(13))grantCompanionTicket(13);}
   if(s.id==='departure'){
    party.story.flags.onboarding_story_notice=false;party.story.flags.onboarding_done=true;
    // The actual first exploration just taught this module; keep it available in tutorial review.
@@ -49,7 +47,7 @@
     if(!ids.has(c.current))c.current=c.completed.includes('village')?'together':c.completed.includes('ambush_fight')?'village':'ambush';
     c.baseline={};
    }
-   if(c?.done&&!partyMember(10)){recruit(10);story.flags.caravan_warrior_notice=true;}
+   if(c?.done&&!partyMember(10)&&!companionTicketCount(10)){grantCompanionTicket(10);story.flags.caravan_warrior_notice=true;}
    // Temporary story actors are no longer needed; their inventory is returned by the existing removal routine.
    globalThis.__EMBERWILD_PROLOGUE_HELPER?.remove();
    for(const id of [900000002,900000003,900000004])globalThis.__EMBERWILD_TEMP_ALLY?.remove(id);
@@ -85,7 +83,7 @@
     for(let i=0;i<4&&runningGuide()&&satisfied();i++){
      const id=stage();if(!completeStoryStage('prologue','',id))break;
      if(stage()==='practice'&&tab!=='battle')setTab('battle');
-     if(stage()==='helper'&&tab!=='partnerRoster')setTab('partnerRoster');
+     if(stage()==='helper'&&tab!=='equipment')setTab('equipment');
     }
    }finally{busy=false;}
   }
@@ -93,12 +91,12 @@
   if(runningGuide()){
    const s=Q().stages.find(s=>s.id===stage());if(!s)return;
    const host=document.getElementById('app').querySelector?.('.layout>main');
-   if(host&&!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',`<aside class="prologue-task" data-stage="${s.id}"><div><b>新手引導 · ${esc(s.name)}</b><p>${esc(s.description)}</p></div><button onclick="prologueOpenTask()">${s.id==='helper'?'前往隊友':s.id==='practice'?'前往探索':'前往背包'}</button></aside>`);
+   if(host&&!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',`<aside class="prologue-task" data-stage="${s.id}"><div><b>新手引導 · ${esc(s.name)}</b><p>${esc(s.description)}</p></div><button onclick="prologueOpenTask()">${s.id==='practice'?'前往探索':'前往背包'}</button></aside>`);
   }
   if(party&&!globalThis.__EMBERWILD_TITLE?.open()&&R()?.done&&!party.story.flags.onboarding_story_notice){
    if(S().transaction(()=>{party.story.flags.onboarding_story_notice=true;}))toast('主線任務已有「商隊事件」，可自行開始；也可繼續自由探索。');
   }
-  if(party?.story?.flags?.caravan_warrior_notice){if(S().transaction(()=>{delete party.story.flags.caravan_warrior_notice;}))toast('戰士洛恩已加入夥伴名單');}
+  if(party?.story?.flags?.caravan_warrior_notice){if(S().transaction(()=>{delete party.story.flags.caravan_warrior_notice;}))toast('獲得夥伴招募券 - 洛恩，到背包 → 道具使用');}
  }
  // The ordinary battle must actually finish; killing the first enemy in a group is insufficient.
  function practiceWon(){if(runningGuide()&&stage()==='practice'&&!party.story.flags.onboarding_battle&&foes.length&&foes.every(e=>e.hp<=0)&&!party.questChallenge){if(S().transaction(()=>{party.story.flags.onboarding_battle=true;}))render();}}
@@ -106,7 +104,16 @@
  // v0.173: seconds combat ends an encounter through the battle summary, never through pacedRound; the first battle
  // in the onboarding was never counted there.
  const summary=globalThis.EmberwildBattleSummary;if(summary?.finish){const finishBase=summary.finish;summary.finish=function(result,...args){const out=finishBase.call(this,result,...args);if(result==='victory'&&runningGuide()&&stage()==='practice')queueMicrotask(()=>{try{practiceWon();}catch(e){console.warn(e);}});return out;};}
- const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);migrate();return out;};
+ /* v0.178: saves from before the tickets. A guide waiting for the priest gets her ticket; a finished caravan story
+    without 洛恩 gets his. Runs once per save. */
+ function migrateTickets(){
+  if(!party?.story||party.story.flags.companion_tickets_v178)return;
+  S().transaction(()=>{const f=party.story.flags,r=R(),c=party.story.quests.chapter1;
+   if(r&&!r.done&&!priest()&&!companionTicketCount(13))grantCompanionTicket(13);
+   if(c?.done&&!partyMember(10)&&!companionTicketCount(10))grantCompanionTicket(10);
+   f.companion_tickets_v178=true;});
+ }
+ const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);migrate();migrateTickets();return out;};
  const renderBase=render;render=function(...args){const out=renderBase(...args);draw();return out;};
  globalThis.__EMBERWILD_PROLOGUE={active,running:runningGuide,creating,stage,phase:()=>active()?'action':null,satisfied,draftKey:DRAFT_KEY,commitStage,migrate};
  draw();

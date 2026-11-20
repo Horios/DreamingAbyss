@@ -4,7 +4,7 @@
 (()=>{
  'use strict';
  const M=EmberwildTutorial,copy=M.copy,STORY=()=>globalThis.__EMBERWILD_STORY,PRO=()=>globalThis.__EMBERWILD_PROLOGUE;
- const COUNTERS=['gearAcquired','explorationStarted','gearSelected','wearOpened','gearEquipped','skillSlotOpened','skillSlotted','catalogOpened','socketsOpened','socketSelected','gemSocketed'];
+ const COUNTERS=['gearAcquired','explorationStarted','gearSelected','wearOpened','gearEquipped','skillSlotOpened','skillSlotted','catalogOpened','socketsOpened','socketSelected','gemSocketed','itemsOpened','itemDetailsOpened','ticketUsed'];
  let design=M.defaults();
  let session=null;            // {id, index, mode:'normal'|'replay'|'test', paused, reason, startedOn}
  // v0.176: a 說明彈窗 (type notice) guide shown as a popup: {id,mode}. It holds no step and takes no focus.
@@ -97,6 +97,7 @@
    case 'prologueLesson':return prologueLesson(c.key);
    case 'prologueStage':return Number(onboardingStage()===c.key);
    case 'lakeUnlocked':return Number(!!party.wishingLake?.unlocked);
+   case 'companionTicket':return globalThis.companionTicketCount?.(Number(c.key))||0;
    case 'socketGearWorn':return Number((h.equipped||[]).some(id=>id&&h.bag.find(g=>g.id===id)?.skillSockets?.count>0));
    default:return 0;
   }
@@ -128,7 +129,10 @@
 
  // ---------- targets ----------
  const $q=(sel,root=document)=>root.querySelector?.(sel)||null;
- const modal=()=>{const d=document.getElementById('modal');return d?.open?d:null;};
+ // v0.178: the bag's item details are their own dialog; a step pointing into it is shown there.
+ const modal=()=>{for(const id of ['modal','item-detail-dialog']){const d=document.getElementById(id);if(d?.open)return d;}return null;};
+ // The companion whose ticket the running guide is about (its companionTicket prerequisite), or the priest's in the onboarding.
+ const ticketFor=()=>{const m=session&&byId(session.id),c=m?.prerequisites.conditions.find(c=>c.type==='companionTicket');return c?Number(c.key):m?.id==='onboarding_helper'?13:null;};
  // The first of these that is on screen (a section can be present but empty and collapsed).
  const shown=(...sels)=>sels.map(s=>$q(s)).find(el=>el&&el.getBoundingClientRect?.().height>0)||null;
  const main=()=>$q('#app .layout>main')||$q('#app');
@@ -170,10 +174,10 @@
   'stats.drops':()=>$q('main .statistics-layout'),
   'roster.plans':()=>$q('main .team-plan-panel'),
   'roster.list':()=>$q('main .roster-page .roster-list'),
-  'roster.recruit':()=>$q('main [onclick="showCompanionRecruitment()"]'),
   'partners.list':()=>$q('main .partner-owned-list'),
-  'partners.recruit':()=>$q('main [onclick="showCompanionRecruitment()"]'),
-  'partners.recruitChoice':()=>{const m=modal();return m?[...m.querySelectorAll('[onclick*="recruitCompanion("]')].find(b=>!b.disabled)||null:null;},
+  'bag.itemsCategory':()=>$q(`main [onclick="setInventoryCategory('items')"]`),
+  'bag.companionTicket':()=>{const id=ticketFor();return $q(id===null?'main [data-companion-ticket] .item-slot':`main [data-companion-ticket="${id}"] .item-slot`);},
+  'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):null;},
   'character.stats':()=>$q('main .page-owner-content .grid')||$q('main .page-owner-content'),
   'character.mastery':()=>$q('main .class-mastery-grid'),
   'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick="toggleWornEquipmentSockets('${g.id}')"]`):null;},
@@ -224,6 +228,9 @@
   wrap('chooseSkillSlot',{kind:'skillSlotted',after:out=>out===true});
   wrap('openSkillCatalog',{kind:'catalogOpened',after:out=>out!==false});
   wrap('toggleWornEquipmentSockets',{kind:'socketsOpened',after:(out,before,id)=>out===true&&before!==id,before:()=>globalThis.__EMBERWILD_WORN_SOCKET_TARGET?.()});
+  wrap('setInventoryCategory',{kind:'itemsOpened',after:(out,before,value)=>value==='items'});
+  wrap('openItemSlotDetails',{kind:'itemDetailsOpened',after:()=>!!document.getElementById('item-detail-dialog')?.open});
+  wrap('useCompanionRecruitmentTicket',{kind:'ticketUsed',after:out=>out===true});
   wrap('selectEquipmentSocket',{kind:'socketSelected',after:out=>out===true});
   wrap('socketEquipmentGem',{kind:'gemSocketed',after:out=>out===true});
  }

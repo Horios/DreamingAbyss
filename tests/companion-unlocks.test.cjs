@@ -35,7 +35,7 @@ test('Random recruitment offers purchase once, survive load, stop spawning and r
  r.run('buyMarketOffer(offer.id);buyMarketOffer(offer.id)');assert.equal(r.run('companionUnlocked(17)'),false);assert.equal(r.run('companionTicketCount(17)'),1);r.run('useCompanionRecruitmentTicket(17)');assert.equal(r.run('companionUnlocked(17)'),true);assert.equal(r.run('playerHero().gold'),0);assert.equal(r.run('offer.sold'),true);assert.equal(r.run('generateMarket().offers.some(o=>o.ruleId==="companion-recruit-17")'),false);
  r.run('save();');const reload=loadRuntime(root,'index.html',Object.fromEntries(r.values));assert.equal(reload.run('companionUnlocked(17)'),true);assert.equal(reload.run('party.companionUnlocks.eliteKills[0]||0'),0);assert.deepEqual(reload.errors,[]);
  const other=game();rules(other);assert.equal(other.run('companionUnlocked(17)'),false);
- r.run("const h=exportableBalance();h.companions.find(p=>p.id===17).availability='hidden';applyBalanceConfig(h);acquireCompanion(17)");assert.equal(r.run('partyMember(17)'),undefined);assert.equal(r.run('generateMarket().offers.some(o=>o.ruleId==="companion-recruit-17")'),false);
+ r.run("const h=exportableBalance();h.companions.find(p=>p.id===17).availability='hidden';applyBalanceConfig(h);acquireCompanion(17)");assert.equal(r.run('party.members.filter(h=>h.companionId===17).length'),1,'v0.178: the ticket brought 17; hiding it never adds a second copy');assert.equal(r.run('generateMarket().offers.some(o=>o.ruleId==="companion-recruit-17")'),false);
 });
 test('Malformed conditions and account progress fail atomically; acquired legacy companions remain unlocked',()=>{
  const r=game();const before=r.run('JSON.stringify(exportableBalance())');

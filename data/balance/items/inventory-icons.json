@@ -930,6 +930,146 @@
     "description": "提升全隊共用等級 1 級，後備與名冊夥伴同步成長。"
   },
   {
+    "id": "item:companion-ticket-10",
+    "kind": "item",
+    "key": "companion-ticket-10",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-11",
+    "kind": "item",
+    "key": "companion-ticket-11",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-12",
+    "kind": "item",
+    "key": "companion-ticket-12",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-13",
+    "kind": "item",
+    "key": "companion-ticket-13",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-14",
+    "kind": "item",
+    "key": "companion-ticket-14",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-15",
+    "kind": "item",
+    "key": "companion-ticket-15",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-16",
+    "kind": "item",
+    "key": "companion-ticket-16",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-17",
+    "kind": "item",
+    "key": "companion-ticket-17",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-18",
+    "kind": "item",
+    "key": "companion-ticket-18",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-19",
+    "kind": "item",
+    "key": "companion-ticket-19",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-20",
+    "kind": "item",
+    "key": "companion-ticket-20",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-21",
+    "kind": "item",
+    "key": "companion-ticket-21",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-22",
+    "kind": "item",
+    "key": "companion-ticket-22",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-23",
+    "kind": "item",
+    "key": "companion-ticket-23",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-24",
+    "kind": "item",
+    "key": "companion-ticket-24",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-25",
+    "kind": "item",
+    "key": "companion-ticket-25",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-26",
+    "kind": "item",
+    "key": "companion-ticket-26",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-27",
+    "kind": "item",
+    "key": "companion-ticket-27",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-28",
+    "kind": "item",
+    "key": "companion-ticket-28",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-29",
+    "kind": "item",
+    "key": "companion-ticket-29",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
     "kind": "material",
     "key": "鍛鐵",
     "iconType": "auto",

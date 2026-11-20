@@ -18,7 +18,8 @@
     for(const [job,cls] of (doc.classes||[]).entries())for(const [index,sk]of (cls.skills||[]).entries())add('skill','core:'+job+':'+index,sk.name);
     for(const [job,list]of (doc.supportSkills||[]).entries())for(const [index,sk]of list.entries())add('skill','support:'+job+':'+index,sk.name);
     for(const item of doc.items||[])add('item',item.id,item.name,item);add('item','level_scroll','升級卷軸');
-    for(const p of doc.companions||[])if(['ticket','achievement'].includes(p.unlockCondition?.type))add('item','companion-ticket-'+p.id,p.name+'招募券');
+    // v0.178: every companion can have a ticket (the story hands some out), whatever its unlock rule or visibility.
+    for(const p of doc.companions||[])add('item','companion-ticket-'+p.id,'夥伴招募券 - '+p.name);
     for(const key of ['鍛鐵','粉塵','以太鍛鐵','光輝碎塊','紅色草','小蟲','清水','藥水瓶'])add('material',key,key);
     for(const r of doc.balanceSettings?.economy?.materialPrices||[])if(r.key!=='升級卷軸')add('material',r.key,r.key);
     for(const m of doc.balanceSettings?.monsters?.catalog||[])if(m.material)add('material',m.material,m.material);
@@ -80,7 +81,7 @@
         const native=object(doc,row),rules=[...(doc.shopSettings?.fixedOffers?.entries||[]),...(doc.shopSettings?.randomOffers?.entries||[])];
         const rule=rules.find(r=>r.description&&((row.kind==='item'&&r.type==='item'&&r.key===row.key)||(row.kind==='gem'&&r.type==='gem'&&(r.key===row.key||r.key==='random'))||(row.kind==='material'&&((r.type==='material'&&(r.key===row.key||r.key==='region'))||(r.type==='ore'&&row.key==='鍛鐵')||(r.type==='dust'&&row.key==='粉塵')))));
         const bossSource=(doc.balanceSettings?.monsters?.catalog||[]).find(m=>m.material===row.key);
-        record.description=(native?.description||native?.desc||undefined)??(row.kind==='item'&&row.key==='power_tier_reroll'?(doc.equipmentPowerSystem?.rerollItem?.description||undefined):undefined)??descriptionDefaults[row.id]??rule?.description??(row.key.startsWith('companion-ticket-')?'使用後開放該夥伴招募，再到夥伴名冊加入隊伍。':bossSource?'取自'+bossSource.name+'的探索素材。':row.kind==='material'?'共用材料。':'');
+        record.description=(native?.description||native?.desc||undefined)??(row.kind==='item'&&row.key==='power_tier_reroll'?(doc.equipmentPowerSystem?.rerollItem?.description||undefined):undefined)??descriptionDefaults[row.id]??rule?.description??(row.key.startsWith('companion-ticket-')?'讓指定夥伴加入隊伍的招募券。':bossSource?'取自'+bossSource.name+'的探索素材。':row.kind==='material'?'共用材料。':'');
       }
       if(typeof record.description!=='string'||record.description.length>2000)throw Error('物品說明必須是最多 2000 字的文字：'+row.id);
 
@@ -221,7 +222,8 @@
     for(const [i,r] of doc.inventoryIcons.entries()){
       if(!r||!kinds.includes(r.kind)||typeof r.key!=='string'||!r.key.trim()||r.key.length>100||['__proto__','constructor','prototype'].includes(r.key)){errors.push('道具圖示第 '+(i+1)+' 筆種類或名稱無效');continue;}
       const id=r.kind+':'+r.key;if(seen.has(id))errors.push('道具圖示重複：'+id);seen.add(id);
-      if(r.kind!=='material'&&!known.has(id))errors.push('道具圖示引用不存在的道具：'+id);
+      // A ticket row of a companion the document no longer has is left over, not an error (companions can be deleted).
+      if(r.kind!=='material'&&!known.has(id)&&!(r.kind==='item'&&/^companion-ticket-\d+$/.test(r.key)))errors.push('道具圖示引用不存在的道具：'+id);
       if(r.color!==undefined&&(typeof r.color!=='string'||!/^#[0-9a-fA-F]{6}$/.test(r.color)))errors.push('道具圖示顏色必須是 #RRGGBB：'+id);
       if(r.sellPrice!==undefined&&(!Number.isSafeInteger(r.sellPrice)||r.sellPrice<0||r.sellPrice>1e9))errors.push('個別道具售價必須是 0～1000000000 的整數：'+id);
       if(r.categoryPath!==undefined&&(!Array.isArray(r.categoryPath)||r.categoryPath.length<2||r.categoryPath.length>5||!['裝備','素材','消耗品'].includes(r.categoryPath[0])||r.categoryPath.some(x=>typeof x!=='string'||!x.trim()||x!==x.trim()||x.length>40)))errors.push('道具分類必須為 2～5 層，每層最多 40 字：'+id);

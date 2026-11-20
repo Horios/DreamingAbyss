@@ -46,7 +46,7 @@
   function rawName(kind,key){
     const virtual=virtualItem(kind,key);if(virtual)return virtual.name;
     if(kind==='gem')return GEMS[Number(key)]?.name||key;
-    if(kind==='item'&&key.startsWith('companion-ticket-'))return (exportableBalance().companions?.find(p=>p.id===Number(key.slice(17)))?.name||'夥伴')+'招募券';
+    if(kind==='item'&&key.startsWith('companion-ticket-'))return '夥伴招募券 - '+(exportableBalance().companions?.find(p=>p.id===Number(key.slice(17)))?.name||'夥伴');
     if(kind==='equipment'){
       const ref=globalThis.EmberwildMonsterDesign?.equipmentRef(key,exportableBalance());
       if(ref?.form)return ref.form.name;
@@ -115,7 +115,7 @@
     const {kind,key,g}=ref,item=definition(kind,key),description=globalThis.EmberwildTokens?.isToken(g)?companionTokenDescription(g):globalThis.__EMBERWILD_ITEM_DESCRIPTION?.(kind,key)||'';
     let detail='';
     if(g)detail=gearInfoDetail(g);
-    else if(kind==='item'&&key.startsWith('companion-ticket-'))detail='<p>領取後存入背包，使用可解鎖指定夥伴；重複取得依原規則轉換。</p>';
+    else if(kind==='item'&&key.startsWith('companion-ticket-')){const id=Number(key.slice(17)),p=exportableBalance().companions?.find(p=>p.id===id);detail=(p?`<p class="ticket-companion"><b>${esc(p.name)}</b> · ${esc(CLASSES[p.job]?.name||'')}</p><p>${esc(p.description||'')}</p>`:'')+`<p>使用後${esc(p?.name||'夥伴')}直接加入隊伍；已在隊伍中時轉換為金幣。</p>`;}
     else if(item&&key!=='level_scroll')detail='<p>'+esc(supplyDetail(item))+'</p>';
     else if(kind==='gem'&&!description)detail='<p>'+esc(GEMS[Number(key)]?.desc||'技能鑲嵌寶石')+'</p>';
     if(ref.context==='inventory'){

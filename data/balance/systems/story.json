@@ -932,7 +932,7 @@
           "id": "helper",
           "name": "招募牧師",
           "speaker": "女神",
-          "description": "前往隊友介面，按「招募夥伴」，招募牧師艾琳。首次招募免費且固定取得。",
+          "description": "到背包 → 道具，點選「夥伴招募券 - 艾琳」並使用，讓牧師艾琳加入隊伍。",
           "dialogue": [],
           "conditions": {
             "mode": "all",
@@ -948,13 +948,12 @@
           "branches": [],
           "choices": [],
           "guides": [
-            "partnerRoster",
-            "roster"
+            "equipment"
           ],
           "prologue": {
             "scene": 1,
             "action": "recruitHelper",
-            "hint": "前往隊友介面，按「招募夥伴」，招募牧師艾琳。首次招募免費且固定取得。",
+            "hint": "到背包 → 道具，點選「夥伴招募券 - 艾琳」並使用，讓牧師艾琳加入隊伍。",
             "steps": [],
             "after": []
           }
@@ -1303,7 +1302,7 @@
             {
               "kind": "narrator",
               "speaker": "旁白",
-              "text": "完成後，戰士洛恩將加入夥伴名單。"
+              "text": "完成後會取得「夥伴招募券 - 洛恩」，到背包 → 道具使用，洛恩就會加入隊伍。"
             }
           ],
           "conditions": {
