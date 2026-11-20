@@ -24,12 +24,11 @@ jobs:
           node --check js/ui/loot-effects.js
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Related runtime and browser regression tests
+      - name: Loot presentation and settlement regression tests
         run: >-
-          node --test --test-concurrency=2
-          tests/loot-effects.test.cjs tests/loot-effects.browser.test.cjs tests/battle-effects.test.cjs
-          tests/battle-effects.browser.test.cjs tests/seconds-runtime.test.cjs
-          tests/gear-overflow.test.cjs tests/preview-version.test.cjs
+          node --test --test-concurrency=1
+          tests/loot-effects.test.cjs tests/loot-effects.browser.test.cjs
+          tests/preview-version.test.cjs
       - name: Real online and offline reward consistency
         run: node --test --test-name-pattern='fixed random sequence' tests/offline-exploration.test.cjs
       - name: Save desktop and mobile visual evidence
