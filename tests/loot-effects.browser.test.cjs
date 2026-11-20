@@ -32,6 +32,7 @@ test('local names fit desktop/mobile battlefield; no flight, tail or receiving l
  const r=await p.locator('#battleEnemyIcons').boundingBox(),names=await p.locator('.loot-fx-name').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}));
  for(const n of names){assert(n.left>=r.x-1);assert(n.right<=r.x+r.width+1);assert(n.top>=r.y-1);assert(n.right<=size.width);}
  for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i],b=names[j];assert(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top,'name rectangles must not overlap');}
+ await p.screenshot({path:'/tmp/loot-local-'+size.width+'.png'});
  await p.evaluate(()=>spawnGroup());assert(await p.locator('.loot-fx-local').count()>0,'new encounter does not wait or cancel a prior win');
  await p.waitForTimeout(1250);assert.equal(await p.locator('.loot-fx-layer').count(),0);
  }
@@ -54,7 +55,8 @@ test('backpack coordinates are resolved from visible desktop/mobile navigation; 
  for(const width of [1440,390]){
  await p.setViewportSize({width,height:900});await p.evaluate(()=>{setLootEffects('stream');spawnGroup();render();lootWin();});await p.waitForTimeout(600);
  const routes=await p.locator('.loot-fx-flight').evaluateAll(ns=>ns.map(n=>({x:parseFloat(n.style.left)+parseFloat(n.style.getPropertyValue('--loot-dx')),y:parseFloat(n.style.top)+parseFloat(n.style.getPropertyValue('--loot-dy'))})));
- assert(routes.length>0);for(const r of routes){assert(r.x>0&&r.x<width);assert(r.y>0&&r.y<900);}
+ const bag=await p.locator('.game-nav [data-nav-group="bag"]').boundingBox();assert(bag,'visible backpack entry');
+ assert(routes.length>0);for(const r of routes){assert(Math.abs(r.x-(bag.x+bag.width/2))<1);assert(Math.abs(r.y-(bag.y+bag.height/2))<1);}for(const r of routes){assert(r.x>0&&r.x<width);assert(r.y>0&&r.y<900);}
  await p.waitForTimeout(1900);
  }
  await p.evaluate(()=>{document.querySelectorAll('nav').forEach(n=>n.style.visibility='hidden');spawnGroup();render();lootWin();});await p.waitForTimeout(1200);assert(await p.locator('.loot-fx-name').count()>0);

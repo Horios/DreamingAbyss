@@ -31,3 +31,10 @@ jobs:
           tests/battle-effects.browser.test.cjs tests/seconds-runtime.test.cjs
           tests/gear-overflow.test.cjs tests/preview-version.test.cjs
           tests/offline-exploration.test.cjs
+      - name: Save desktop and mobile visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loot-effects-v0182
+          path: /tmp/loot-*.png
+          if-no-files-found: ignore

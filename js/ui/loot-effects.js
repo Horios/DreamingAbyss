@@ -39,9 +39,9 @@
  function root(){if(!layer){layer=document.createElement('div');layer.className='loot-fx-layer';layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);}return layer;}
  function remove(n){active.delete(n);n.remove();if(!active.size){layer?.remove();layer=null;}}
  function mount(n){active.add(n);root().appendChild(n);}
- function finishAnimation(n,fn){
+ function finishAnimation(n,fn,slot){
   n.addEventListener('animationend',event=>{if(event.target===n)safe(()=>{if(!active.has(n))return;remove(n);if(live())fn?.();});});
-  n.addEventListener('animationcancel',event=>{if(event.target===n)remove(n);});
+  n.addEventListener('animationcancel',event=>{if(event.target===n){remove(n);if(slot!==undefined)slots.delete(slot);}});
  }
  function target(){
   const group=globalThis.EmberwildNavigation?.design.groups.find(g=>g.pages.some(p=>p.id==='equipment'))?.id;
@@ -66,7 +66,7 @@
   const limit=matchMedia('(max-width:600px)').matches?8:12;if(active.size>=limit){slots.delete(slot);return;}
   const n=node('loot-fx-name',item,color);n.textContent=item.name+' × '+item.count;
   n.style.width=width+'px';n.style.left=Math.max(6,Math.min(innerWidth-width-6,x-width/2))+'px';n.style.top=Math.max(6,Math.min(innerHeight-50,y))+'px';
-  mount(n);finishAnimation(n,()=>slots.delete(slot));
+  mount(n);finishAnimation(n,()=>slots.delete(slot),slot);
  }
  function receive(item,color,slot,width){
   const end=target(),limit=matchMedia('(max-width:600px)').matches?8:12;
@@ -76,17 +76,19 @@
  function flight(item,color,x,y,slot,width){
   if(!live())return;const end=target(),n=node('loot-fx-flight',item,color);
   n.style.left=x+'px';n.style.top=y+'px';n.style.setProperty('--loot-dx',(end.x-x)+'px');n.style.setProperty('--loot-dy',(end.y-y)+'px');n.style.setProperty('--loot-mx',((end.x-x)*.45)+'px');n.style.setProperty('--loot-my',((end.y-y)*.45-55)+'px');
-  mount(n);finishAnimation(n,()=>receive(item,color,slot,width));
+  mount(n);finishAnimation(n,()=>receive(item,color,slot,width),slot);
  }
  function present(){
   const items=[...pending.values()];pending.clear();encounter=null;owner=null;
   if(preference==='off'||!live()||!items.length)return;
   const field=document.querySelector('#battleEnemyIcons'),r=rect(field);if(!r)return;
-  const mobile=matchMedia('(max-width:600px)').matches,limit=mobile?8:12,max=mobile?4:6;
+  const mobile=matchMedia('(max-width:600px)').matches,limit=mobile?8:12,local=preference==='local'||reduced.matches;
+  const columns=Math.max(1,Math.floor(r.width/150)),rowCapacity=Math.max(1,Math.floor((r.height-10)/62));
+  const max=Math.min(mobile?4:6,local?columns*rowCapacity:Infinity);
   // No unbounded queue under rapid victories. Already-visible names keep their full lifetime.
   const free=Array.from({length:max},(_,i)=>i).filter(i=>!slots.has(i));
   const count=Math.min(items.length,free.length,Math.max(0,Math.floor((limit-active.size)/2)));if(!count)return;
-  const local=preference==='local'||reduced.matches,columns=Math.max(1,Math.min(max,Math.floor(r.width/150))),rows=Math.ceil(max/columns),width=Math.min(220,Math.max(100,r.width/columns-8));
+  const rows=Math.ceil(max/columns),width=Math.min(220,Math.max(100,r.width/columns-8));
   for(const [i,item] of items.slice(0,count).entries()){
    const {color,rank}=palette(item),enemy=[...field.querySelectorAll('[data-enemy-id]')].find(n=>n.dataset.enemyId===String(item.enemyId)),er=rect(enemy);
    const slot=free[i];slots.add(slot);
@@ -95,7 +97,7 @@
    const n=node('loot-fx-drop'+(local?' loot-fx-local':''),item,color);n.style.left=x+'px';n.style.top=y+'px';n.style.setProperty('--loot-power',String(1+rank*.15));
    n.innerHTML='<i class="loot-fx-beam"></i><i class="loot-fx-point"></i>';mount(n);
    if(local)label(item,color,x,Math.max(r.top,y-56),width,slot);
-   finishAnimation(n,local?null:()=>flight(item,color,x,y,slot,width));
+   finishAnimation(n,local?null:()=>flight(item,color,x,y,slot,width),slot);
   }
  }
  const finalizeBase=finalizeBattleStatistics;
@@ -108,7 +110,7 @@
  const renderBase=render;render=function(...args){if(!live())clear();return renderBase.apply(this,args);};
  const modal=$('modal');if(modal)new MutationObserver(()=>{if(modal.open)clear();}).observe(modal,{attributes:true,attributeFilter:['open']});
  for(const event of ['pagehide','visibilitychange','resize'])addEventListener(event,clear);
- addEventListener('scroll',clear,{passive:true,capture:true});
+ addEventListener('scroll',event=>{const field=document.querySelector('#battleEnemyIcons');if(event.target===document||field&&event.target?.contains?.(field))clear();},{passive:true,capture:true});
  addEventListener('storage',e=>{if(e.key===key||e.key===null){preference=modes.includes(e.newValue)?e.newValue:'stream';clear();}});
  globalThis.EmberwildLootEffects={clear,get preference(){return preference;},get activeCount(){return active.size;},get pendingCount(){return pending.size;}};
 })();
