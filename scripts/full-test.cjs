@@ -5,6 +5,9 @@
                               [--editor-root <path>] [--report <dir>] [--jobs <n>] [--list]
    每個項目各自一個行程；全部跑完才結束，任何失敗、逾時或「不該略過卻略過」都會讓結束碼為 1。 */
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),{spawn,execFileSync}=require('node:child_process');
+/* `npm test`（node --test）會依檔名把本檔當成測試檔載入。完整流程本身就會跑全部測試，套在 node --test 裡面會重跑一次，
+   而且子行程的結果回報給外層，統計變成 0 個測試案例。被這樣載入時只說明並結束；完整流程請用 npm run test:full。 */
+if(process.env.NODE_TEST_CONTEXT&&require.main===module){console.log('# 完整測試流程不在 npm test 內執行；請用 npm run test:full');process.exit(0);}
 const root=path.resolve(__dirname,'..'),argv=process.argv.slice(2);
 const flag=name=>argv.includes('--'+name),value=(name,fallback)=>{const i=argv.indexOf('--'+name);return i>=0&&argv[i+1]?argv[i+1]:fallback;};
 const editorCandidates=[value('editor-root'),process.env.EMBERWILD_BALANCE_ROOT,path.join(root,'../Emberwild-Balance'),path.join(root,'../emberwild-balance'),path.join(root,'../DreamingAbyss-BalanceEditor'),path.join(root,'../dreamingabyss-balanceeditor')].filter(Boolean).map(p=>path.resolve(p));
@@ -45,7 +48,9 @@ function layout(){
 }
 const place=layout();
 const chromium=process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||(fs.existsSync('/opt/pw-browsers/chromium')?'/opt/pw-browsers/chromium':'');
-const modules=path.join(root,'node_modules'),hasPlaywright=fs.existsSync(path.join(modules,'playwright'));
+/* Playwright：優先用本倉庫 npm ci 安裝的版本；沒有時用 Node 能找到的 Playwright（例如環境預先安裝的全域版本）。 */
+const playwrightRoot=()=>{try{return path.dirname(path.dirname(require.resolve('playwright/package.json')));}catch{return null;}};
+const modules=fs.existsSync(path.join(root,'node_modules','playwright'))?path.join(root,'node_modules'):playwrightRoot()||path.join(root,'node_modules'),hasPlaywright=fs.existsSync(path.join(modules,'playwright'));
 const env={...process.env,EMBERWILD_BALANCE_ROOT:place.editor||'',EMBERWILD_EDITOR_ROOT:place.editor||'',EMBERWILD_GAME_ROOT:place.game,CODEX_PRIMARY_RUNTIME_NODE_MODULES:modules,NODE_PATH:modules,FORCE_COLOR:'0',NO_COLOR:'1'};
 if(chromium&&!process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH&&fs.statSync(chromium).isFile())env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=chromium;
 

@@ -1209,6 +1209,12 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
   - 新增一項：大／中／小的字級依序遞減且不超過上限、相同數字的暴擊大於一般傷害、設定畫面可切換、重新載入後保留。
   - `responsive-shell` 的寬螢幕檢查改為「頁面不放大」，並新增「滑鼠移到背包物品上時，說明框緊貼在物品旁（水平間距 16px 內、頂端對齊）」。
 
+## v0.177 完整測試流程不再被 npm test 當成測試
+
+- `scripts/full-test.cjs` 檔名符合 `node --test` 的測試檔規則，`npm test` 會把整個完整流程再跑一次；套在 `node --test` 內時子行程結果回報給外層，統計為 0 個測試案例而判定失敗，所以每次 `npm test` 都固定多一項失敗。現在偵測到 `NODE_TEST_CONTEXT` 時只印說明並結束，完整流程照舊用 `npm run test:full`。
+- 完整流程的平衡器瀏覽器測試從遊戲的 `node_modules` 載入 Playwright；沒有執行 `npm ci` 時 12 項全部找不到模組。現在本倉庫沒有 Playwright 時，改用 Node 能找到的版本（例如環境預先安裝的全域版本）。
+- 遊戲程式沒有變動。
+
 ## v0.176 一般系統教學改為說明彈窗
 
 - 只有重要系統保留聚光燈引導：探索（`explore_basics`、`onboarding_practice`）、穿戴裝備（`equipment_basics`、`onboarding_gift`）、隊伍（`roster_basics`、`onboarding_helper`）。
