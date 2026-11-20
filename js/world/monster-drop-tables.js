@@ -118,7 +118,10 @@ function rollConfiguredDrops(e,rng=Math.random){
 // first-BOSS ether claim, which is not a repeatable idle reward.
 function rollEnemyItemLoot(e,{voucher=false}={}){
   const mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards;
-  const oreFactor=1;if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
+  // v0.180: 鍛鐵 and 粉塵 swapped drop sources. The per-kill base material (settings rewards.ore) now gives 粉塵; the drop
+  // rules that gave 粉塵 now give 鍛鐵 (data/balance/world/drops.json).
+  // v0.180: rewards.ore.chanceFactor (0.7) lowers the chance of the per-kill base material for every kind, elites and bosses included.
+  const oreFactor=Math.max(0,Math.min(1,Number(r.ore.chanceFactor??1)));if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)state.dust+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
   rollConfiguredDrops(e);
   const firstBossClaim=(e.kind==='boss'||e.kind==='final')&&!(party?.etherBossClaims||[]).includes((e.region??party?.map)+':'+(e.difficulty||0));
   if(!voucher||!firstBossClaim)awardEther(e);

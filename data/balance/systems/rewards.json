@@ -37,7 +37,8 @@
       0.08,
       0.1,
       0.12
-    ]
+    ],
+    "chanceFactor": 0.7
   },
   "equipmentQuality": {
     "rareChance": 0.22,

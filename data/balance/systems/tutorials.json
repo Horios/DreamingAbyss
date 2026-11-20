@@ -1771,6 +1771,109 @@
       "reprompt": false
     },
     {
+      "id": "extraction_basics",
+      "title": "技能萃取",
+      "category": "equipment",
+      "type": "notice",
+      "enabled": true,
+      "implemented": true,
+      "description": "把技能裝備的技能轉移到夥伴信物。第一次進入裝備強化、看完強化教學後開始。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "forge",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          },
+          {
+            "type": "tutorialDone",
+            "key": "forge_basics",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "panel",
+          "title": "技能萃取",
+          "text": "裝備強化頁下方的「技能萃取」可以把技能裝備的技能轉移到夥伴信物。",
+          "page": "forge",
+          "target": "forge.extraction",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "extract",
+          "title": "萃取方式",
+          "text": "在信物那一列按「萃取技能」，再選一件技能裝備。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。",
+          "page": "forge",
+          "target": "forge.extraction",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "use",
+          "title": "使用技能",
+          "text": "夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。",
+          "page": "forge",
+          "target": "forge.extraction",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
       "id": "boss_basics",
       "title": "BOSS 製作",
       "category": "equipment",

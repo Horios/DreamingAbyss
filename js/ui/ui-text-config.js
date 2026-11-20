@@ -86,8 +86,9 @@ function inventorySortValue(g,key){
   if(key==='job')return g.slot===1?-1:(Number(g.job)||0);
   return 0;
 }
+// v0.180: the bag never lists worn equipment; worn items are managed on 裝備與信物 and in the forge.
 function sortedFilteredGear(){
-  const items=filteredGear().filter(g=>inventoryVisibleSlots.has(Number(g.slot))&&gearWearableJobs(g).some(job=>inventoryVisibleJobs.has(Number(job))));
+  const items=filteredGear().filter(g=>!gearWearer(g.id)&&inventoryVisibleSlots.has(Number(g.slot))&&gearWearableJobs(g).some(job=>inventoryVisibleJobs.has(Number(job))));
   items.sort((a,b)=>{
     let diff=0;
     if(inventorySortKey==='job'){
@@ -114,7 +115,7 @@ function inventorySortControls(){
   return '<div class="inventory-sortbar"><div class="inventory-sort-row"><label>排序 <select onchange="setInventorySort(this.value)">'+
     options.map(([value,label])=>'<option value="'+value+'" '+(inventorySortKey===value?'selected':'')+'>'+label+'</option>').join('')+
     '</select></label><button type="button" onclick="toggleInventorySortDirection()">'+(inventorySortDirection==='desc'?'高 → 低':'低 → 高')+'</button></div>'+
-    '<div class="inventory-visibility-filters">'+checks('slot',slotOptions,inventoryVisibleSlots)+checks('job',jobOptions,inventoryVisibleJobs)+'<label class="inventory-hide-equipped"><input type="checkbox" '+(filters.hideEquipped?'checked':'')+' onchange="setFilter(\'hideEquipped\',this.checked)"> 隱藏已穿戴裝備</label></div></div>';
+    '<div class="inventory-visibility-filters">'+checks('slot',slotOptions,inventoryVisibleSlots)+checks('job',jobOptions,inventoryVisibleJobs)+'</div></div>';
 }
 globalThis.setInventorySort=function(key){
   if(!['quality','plus','job'].includes(key))return;

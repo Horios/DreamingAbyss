@@ -1,8 +1,8 @@
 {
   "starting": {
     "gold": 150,
-    "ore": 12,
-    "dust": 0,
+    "ore": 0,
+    "dust": 12,
     "potions": 5
   },
   "baseCrit": {

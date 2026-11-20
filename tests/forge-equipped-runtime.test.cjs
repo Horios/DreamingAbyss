@@ -10,7 +10,7 @@ function listIds(html){return [...html.matchAll(/onclick="chooseForge\('([^']+)'
 test('Forge lists the initial white set as enhanceable SVG slots with details',()=>{
   const r=game(),out=json(r,`(()=>{
     const ids=state.equipped.filter(Boolean),html=forgeView();
-    chooseForge(ids[0]);const selected=forgeView(),g=findGear(ids[0]);state.ore=10000;
+    chooseForge(ids[0]);const selected=forgeView(),g=findGear(ids[0]);state.ore=10000;state.dust=10000;
     return {ids,html,selected,canEnhance:canEnhance(g)};
   })()`);
   assert.equal(out.ids.length,5);assert.deepEqual(listIds(out.html),out.ids.sort());assert.match(out.html,/<svg/);

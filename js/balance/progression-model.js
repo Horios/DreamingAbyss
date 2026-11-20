@@ -232,9 +232,11 @@
     const rounded=v=>Object.fromEntries(['hp','atk','def'].map(k=>[k,Math.max(0,Math.round(v[k]||0))]));
     const body=rounded({hp:raw.hp*(1+(effects.hp||0)/100),atk:raw.atk*(1+(effects.atk||0)/100),def:raw.def*(1+(effects.def||0)/100)});
     const graded=rounded(Object.fromEntries(['hp','atk','def'].map(k=>[k,body[k]*power])));
-    const total=enhancedGearStats(graded,plus,equipmentLevel,flat,growth);
+    // v0.180: the game replaces api.enhancedGearStats with the percentage enhancement table (js/equipment/enhancement-rules.js).
+    const total=api.enhancedGearStats(graded,plus,equipmentLevel,flat,growth);
     const grade=Object.fromEntries(['hp','atk','def'].map(k=>[k,graded[k]-body[k]])),enhance=Object.fromEntries(['hp','atk','def'].map(k=>[k,total[k]-graded[k]]));
     return {raw:rounded(raw),body,grade,enhance,total};
   }
-  return {defaults,applyDefaults,applyClassDefaults,naturalStats,baseMonsterStats,scaleMonsterStats,monsterStats,enemyGold,gearStats,enhancedGearStats};
+  const api={defaults,applyDefaults,applyClassDefaults,naturalStats,baseMonsterStats,scaleMonsterStats,monsterStats,enemyGold,gearStats,enhancedGearStats};
+  return api;
 });

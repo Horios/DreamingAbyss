@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 47,
+  "dataRevision": 53,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "84d75d19ca28f97e67de442bd54e52190c3bf7002b14fa3b590b8a9b70a8c9cb",
-    "bytes": 1258539
+    "sha256": "761368af80f643802b0807ef4096de6d6f9c36fa4fc1aa6339ff9f6fca6ccdc7",
+    "bytes": 1265063
   },
   "layout": {
     "": [
@@ -212,9 +212,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 4,
-      "sha256": "d3b7091eb9d32f5c43944e027119a8877e6ecbf98de4a7bc19124e2010317d1f",
-      "bytes": 108814,
+      "version": 6,
+      "sha256": "70d254d2162e5881773eb364b193928fc2fcb77b0469998788ec6cae4702af6a",
+      "bytes": 108818,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -372,8 +372,8 @@
       "file": "characters/progression.json",
       "source": "balanceSettings.progression",
       "present": true,
-      "version": 2,
-      "sha256": "717950bdd1cb4c6569535f3dd98660374f2d7d97eb164fde7d5ef80164a3f2bc",
+      "version": 3,
+      "sha256": "1bc7f254a07c4422cbd916c93d133cca81442f8675125c8adb451c6476070ef9",
       "bytes": 174,
       "dependsOn": [],
       "validators": [
@@ -481,9 +481,9 @@
       "file": "equipment/settings.json",
       "source": "balanceSettings.equipment",
       "present": true,
-      "version": 2,
-      "sha256": "2129712879391cfbac777bc4f9c669e20b9f3aa3df84ffd31b9c530de5af7116",
-      "bytes": 1605,
+      "version": 4,
+      "sha256": "b1de5a870773ad40ec901cd166ae6029dbd5c6fb8e517594acd2898aff029d74",
+      "bytes": 4477,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -587,9 +587,9 @@
       "file": "systems/rewards.json",
       "source": "balanceSettings.rewards",
       "present": true,
-      "version": 2,
-      "sha256": "143ec76d139a8b016e7014266bf9c91cde74353f4fae5b99ddc28155f69647e5",
-      "bytes": 1115,
+      "version": 3,
+      "sha256": "da2ba5f34a12448ea7562d88a837e10cface96d282592632780ce9cbd1758efa",
+      "bytes": 1140,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -701,9 +701,9 @@
       "file": "systems/tutorials.json",
       "source": "tutorials",
       "present": true,
-      "version": 10,
-      "sha256": "4179aa52e56eeaed3e58cd579552c64abbe0f51c4567babf830eef4890fd1c0a",
-      "bytes": 59227,
+      "version": 11,
+      "sha256": "5bb2e7c062672b2f34c8e4f8b93497f2b7a7488dfc10ec0467739de21d53d2f2",
+      "bytes": 62052,
       "dependsOn": [
         "items/items",
         "systems/story"

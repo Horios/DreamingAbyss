@@ -256,7 +256,9 @@ enhanceCost=function(g){return upgradeMaterials(g).ore;};
 canEnhance=function(g){const c=upgradeMaterials(g);return g.plus<RULES.enhanceMax&&state.ore>=c.ore&&state.dust>=c.dust&&(state.materials['以太鍛鐵']||0)>=c.ether;};
 enhance=function(id){ensureBoard();const g=findGear(id);if(!g||g.plus>=RULES.enhanceMax)return;if(!canEnhance(g))return toast('材料不足：'+upgradeCostText(g));const c=upgradeMaterials(g),ether=state.materials['以太鍛鐵']||0;state.ore-=c.ore;state.dust-=c.dust;if(c.ether)state.materials['以太鍛鐵']=ether-c.ether;const oldProgress=party?.progressStats?JSON.parse(JSON.stringify(party.progressStats)):null,oldBoard=JSON.parse(JSON.stringify(playerHero().board));g.plus++;globalThis.recordEnhancement?.(g.plus);if(!save()){if(oldProgress)party.progressStats=oldProgress;playerHero().board=oldBoard;g.plus--;state.ore+=c.ore;state.dust+=c.dust;if(c.ether)state.materials['以太鍛鐵']=ether;return;}render();toast('已強化至 +'+g.plus);};
 
-function update12SalvageRewards(g,includeEnhance=true){const q=gearQualityRank(g),c=GAMEPLAY_SETTINGS.equipment.salvage;return {ore:Math.max(0,Math.round(g.tier*(c.oreBasePerTier+q*c.orePerQualityPerTier+(includeEnhance?(g.plus||0)*c.orePerEnhancePerTier:0)))),dust:Math.max(0,Math.round(c.dustBase+q*c.dustPerQuality))};}
+// v0.180: 鍛鐵 and 粉塵 swapped: the tier/quality/enhancement amount (the ore* settings) is now 粉塵 and the small fixed
+// amount (the dust* settings) is 鍛鐵. Item-specific salvage rules keep exactly what they configure.
+function update12SalvageRewards(g,includeEnhance=true){const q=gearQualityRank(g),c=GAMEPLAY_SETTINGS.equipment.salvage;return {dust:Math.max(0,Math.round(g.tier*(c.oreBasePerTier+q*c.orePerQualityPerTier+(includeEnhance?(g.plus||0)*c.orePerEnhancePerTier:0)))),ore:Math.max(0,Math.round(c.dustBase+q*c.dustPerQuality))};}
 salvage=function(id){const g=findGear(id);if(!g||g.locked||gearWearer(g.id)||inlineAffixDrafts.has(affixDraftKey(g)))return;const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;state.bag=state.bag.filter(x=>x.id!==id);pruneGearSelections();save();render();};
 confirmMassSalvage=function(){if(!massSalvageIds)return;const items=massSalvageTargets(massSalvageIds),ids=new Set(items.map(g=>g.id)),bag=state.bag,ore=state.ore,dust=state.dust;for(const g of items){const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));if(!save()){state.bag=bag;state.ore=ore;state.dust=dust;return;}massSalvageIds=null;pruneGearSelections();closeModal();render();toast('已分解 '+items.length+' 件裝備');};
 salvageAll=function(){const targets=state.bag.filter(g=>gearQualityRank(g)===0&&(g.plus||0)===0&&!g.affix.length&&g.boss===undefined&&!state.equipped.includes(g.id)&&!g.locked),ids=new Set(targets.map(g=>g.id));for(const g of targets){const r=update12SalvageRewards(g,false);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));pruneGearSelections();save();render();toast(`已分解 ${ids.size} 件未養成普通裝備`);};
@@ -268,8 +270,8 @@ addGear=function(g){
   // contract: never append beyond capacity, salvage only the new drop, and
   // keep exploration running. The old implementation appended then stopped.
   if(state.bag.length>=RULES.bagCapacity){
-    state.ore+=g.tier*(3+q*2);
-    state.dust+=1+q;
+    state.dust+=g.tier*(3+q*2);/* v0.180: 鍛鐵 and 粉塵 amounts swapped */
+    state.ore+=1+q;
     note('背包已滿，掉落裝備自動分解。','item');
     return;
   }

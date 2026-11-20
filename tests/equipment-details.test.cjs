@@ -234,7 +234,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.match(out.html,/gear-tier-10[^]*?T10/);assert.doesNotMatch(out.html,/claimPending|pending-gear/);assert.equal(out.pending,'undefined');
     });
-    await t.test('Equipment comparison, wear, enhancement to configured +15, reroll and save/load still work',async()=>{
+    await t.test('Equipment comparison, wear, enhancement to configured +11, reroll and save/load still work',async()=>{
       const out=await r.page.evaluate(async()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         const h=__equipmentTestHero(),first=__equipmentTestGear({id:'worn-test'}),next=__equipmentTestGear({id:'next-test',powerTier:10,plus:10,affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]});
@@ -244,14 +244,14 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const previewText=$('modal').textContent,unchanged=h.equipped[0]===first.id;
         confirmEquipComparison(next.id,memberKey(h),0);
         const after=stats(h),worn=h.equipped[0]===next.id;
-        const doc=exportableBalance();doc.balanceSettings.equipment.enhance.maxLevel=15;
+        const doc=exportableBalance();doc.balanceSettings.equipment.enhance.maxLevel=11;
         // Use the in-game test-balance import, which is the path that keeps a preview balance across reloads.
         const imported=await importBalanceJSON({target:{files:[new File([JSON.stringify(doc)],'balance.json',{type:'application/json'})],value:''}});if(!imported)throw Error('balance import failed');
         h.ore=h.dust=100000;h.materials['以太鍛鐵']=100000;
-        for(let i=0;i<5;i++)enhance(next.id);
+        const random=Math.random,ask=window.confirm;Math.random=()=>0;window.confirm=()=>true;for(let i=0;i<5;i++)enhance(next.id);Math.random=random;window.confirm=ask;
         const enhanced=next.plus,baseRating=equipmentBaseRating(next);
         h.consumables.power_tier_reroll=1;rerollEquipmentPowerTier(next.id);
-        const rerolled=h.consumables.power_tier_reroll===0&&next.plus===15&&next.affix[1].type===15;
+        const rerolled=h.consumables.power_tier_reroll===0&&next.plus===11&&next.affix[1].type===15;
         const saveResult=save(),packed=structuredClone(packParty()),beforeLoad=stats(h),gearJSON=JSON.stringify(next),summary=equipmentTotalSummaryText(next);
         loadParty(packed);
         const loaded=state.bag.find(x=>x.id===next.id);
@@ -259,7 +259,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       });
       assert.ok(out.comparison.some(x=>x.label==='攻擊力'));assert.match(out.previewText,/角色能力變化/);
       assert.ok(out.unchanged&&out.worn);assert.ok(out.after.atk>out.before.atk);
-      assert.equal(out.enhanced,15);assert.equal(out.baseRating,'SSS');
+      assert.equal(out.enhanced,11);assert.equal(out.baseRating,'SSS');
       for(const key of ['rerolled','saveResult','gearEqual','statsEqual','summaryEqual'])assert.equal(out[key],true,key);
       const reopened=await openRuntime(root,'index.html',out.storage,{pathname:'/preview/'});
       try{

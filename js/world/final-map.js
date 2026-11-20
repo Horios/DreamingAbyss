@@ -44,9 +44,9 @@
     state.totalKills++;state.kills[e.mat]=(state.kills[e.mat]||0)+1;if(!state.discovered.includes(e.mat))state.discovered.push(e.mat);
     const gold=EmberwildProgression.enemyGold(GAMEPLAY_SETTINGS,e.lv,e.kind,mode);
     state.gold+=gold;
-    const oreFactor=1;
+    const oreFactor=Math.max(0,Math.min(1,Number(r.ore.chanceFactor??1)));/* v0.180: base material chance factor */
     if(kindIndex>0?(oreFactor>=1||Math.random()<oreFactor):Math.random()<(r.ore.normalChanceByDifficulty?.[mode]??1)*oreFactor)
-      state.ore+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);
+      state.dust+=Math.ceil(tier*(kindIndex===0?r.ore.normalKindMultiplier:r.ore.eliteBossKindMultiplier)*d.ore);/* v0.180: per-kill base material is 粉塵 */
     rollConfiguredDrops(e);awardEther(e);
     if(e.kind==='final'){
       running=false;

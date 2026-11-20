@@ -93,6 +93,7 @@
   'forge.list':{label:'強化裝備清單',page:'forge'},
   'forge.detail':{label:'強化詳情與數值',page:'forge'},
   'forge.actions':{label:'強化與洗鍊按鈕',page:'forge'},
+  'forge.extraction':{label:'技能萃取區塊',page:'forge'},
   'boss.classTabs':{label:'BOSS 製作職業分頁',page:'bossCraft'},
   'boss.recipe':{label:'第一張 BOSS 配方',page:'bossCraft'},
   'story.tabs':{label:'任務分類分頁',page:'story'},
@@ -116,7 +117,7 @@
 
  // v0.176: only the key systems (exploring, wearing gear, the party) keep the spotlight. The other guides are a popup that
  // lists their steps, never takes focus and has one 「關閉」 button.
- const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','extraction_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
  const asNotice=m=>NOTICE_GUIDES.includes(m.id)?{...m,type:'notice',steps:m.steps.map(x=>({...x,advance:{type:'next'},optional:false,onReplay:'same'}))}:m;
  function defaults(){return {version:VERSION,modules:[
   makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。',
@@ -224,6 +225,12 @@
    step('list','選擇裝備','先從清單選擇要強化的裝備，可以切換已穿戴與未穿戴。',{page:'forge',target:'forge.list'}),
    step('detail','目前能力','右側顯示這件裝備的能力與強化後的變化。',{page:'forge',target:'forge.detail'}),
    step('actions','強化與洗鍊','強化提高基礎能力；洗鍊重新抽取詞綴。兩者都會消耗金幣與材料。',{page:'forge',target:'forge.actions'})
+  ]}),
+  makeModule({id:'extraction_basics',title:'技能萃取',category:'equipment',description:'把技能裝備的技能轉移到夥伴信物。第一次進入裝備強化、看完強化教學後開始。',
+   trigger:{type:'pageEnter',page:'forge'},prerequisites:group([condition('prologueDone'),condition('tutorialDone','forge_basics')]),steps:[
+   step('panel','技能萃取','裝備強化頁下方的「技能萃取」可以把技能裝備的技能轉移到夥伴信物。',{page:'forge',target:'forge.extraction'}),
+   step('extract','萃取方式','在信物那一列按「萃取技能」，再選一件技能裝備。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。',{page:'forge',target:'forge.extraction'}),
+   step('use','使用技能','夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。',{page:'forge',target:'forge.extraction'})
   ]}),
   makeModule({id:'boss_basics',title:'BOSS 製作',category:'equipment',description:'用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。',
    trigger:{type:'pageEnter',page:'bossCraft'},prerequisites:group([condition('prologueDone')]),steps:[

@@ -47,6 +47,7 @@ test('game and standalone editor share exact companion/token contracts',t=>{
  const file=path.resolve(process.env.EMBERWILD_EDITOR_ROOT||path.join(root,'../Emberwild-Balance'),'balance-editor.html');
  if(!fs.existsSync(file))return t.skip('Private balance editor fixture unavailable in standalone game CI');
 const html=fs.readFileSync(path.resolve(process.env.EMBERWILD_EDITOR_ROOT||path.join(root,'../Emberwild-Balance'),'balance-editor.html'),'utf8');for(const [id,file] of [['companion-model-v1','js/character/companion-model.js'],['companion-token-model-v1','js/items/companion-token-model.js']]){const embedded=html.match(new RegExp('<script id="'+id+'">\\s*([\\s\\S]*?)</script>'))?.[1];assert.equal(embedded.trim(),fs.readFileSync(path.join(root,file),'utf8').trim());}});
+// v0.180: the level-1 rows were regenerated for the percentage enhancement table (+2 = +10% of base stats).
 test('LV1 player equipment/stat snapshots still equal the published pre-seconds v0.016 checkpoint (no level growth since v0.161)',()=>{
  const r=loadRuntime(root);r.run('Math.random=()=>.5;start(0);');
  const out=json(r,`(()=>{const out=[];for(const job of [0,1,2,3])for(const lv of [1]){const h=initial(job);h.stats=[5,6,7];h.advanced=false;for(const slot of [1,2,3,3]){const g=gear(1,slot,2,job);g.plus=2;g.affix=[{type:0,value:2,rank:1}];h.bag.push(g);h.equipped.push(g.id);}out.push({job,lv,v:stats(h)});}return out;})()`);

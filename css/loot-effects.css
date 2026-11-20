@@ -1,0 +1,19 @@
+/* Victory cosmetics are outside replaceable combat DOM and never receive input. */
+.loot-fx-layer{position:fixed;inset:0;z-index:1100;pointer-events:none!important;overflow:hidden;contain:layout style paint}
+.loot-fx-layer *{pointer-events:none!important;box-sizing:border-box}
+.loot-fx-drop,.loot-fx-flight,.loot-fx-receive{position:absolute;width:10px;height:10px;color:var(--loot-color);border-radius:50%;transform:translate(-50%,-50%)}
+.loot-fx-drop{animation:loot-drop 520ms ease-out both!important;filter:drop-shadow(0 0 5px currentColor)}
+.loot-fx-point{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 0 15%,currentColor 35%,transparent 72%);box-shadow:0 0 calc(9px * var(--loot-power)) currentColor}
+.loot-fx-beam{position:absolute;bottom:5px;left:50%;width:calc(14px * var(--loot-power));height:calc(45px * var(--loot-power));transform:translateX(-50%);transform-origin:bottom;background:linear-gradient(to top,currentColor,transparent);opacity:.45;clip-path:polygon(35% 100%,0 0,100% 0,65% 100%);animation:loot-beam 520ms ease-out both!important}
+.loot-fx-flight{background:radial-gradient(circle,#fff,currentColor 40%,transparent 75%);box-shadow:0 0 10px currentColor;animation:loot-flight 480ms cubic-bezier(.3,0,.3,1) both!important}
+.loot-fx-flight::after{content:"";position:absolute;right:3px;top:3px;width:30px;height:4px;border-radius:50%;background:linear-gradient(to left,currentColor,transparent);opacity:.7;transform:rotate(-25deg);transform-origin:right}
+.loot-fx-name{position:absolute;min-height:30px;padding:6px 9px;border:1px solid var(--loot-color);border-radius:7px;color:var(--loot-color);background:rgba(12,17,23,.94);box-shadow:0 0 9px color-mix(in srgb,var(--loot-color) 28%,transparent);font:600 12px/1.4 system-ui,sans-serif;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:loot-name 1100ms ease-out both!important}
+.loot-fx-receive{width:36px;height:36px;border:1px solid currentColor;box-shadow:0 0 14px currentColor;animation:loot-receive 280ms ease-out both!important}
+.loot-fx-local{animation-duration:1100ms!important}.loot-fx-local .loot-fx-beam{height:24px;animation:loot-local-beam 1100ms ease-out both!important}
+@keyframes loot-drop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}25%,70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:1;transform:translate(-50%,-50%) scale(.8)}}
+@keyframes loot-beam{0%{opacity:0;transform:translateX(-50%) scaleY(.2)}30%,65%{opacity:.45;transform:translateX(-50%) scaleY(1)}100%{opacity:0;transform:translateX(-50%) scaleX(.15) scaleY(.2)}}
+@keyframes loot-flight{0%{opacity:1;transform:translate(-50%,-50%)}50%{opacity:1;transform:translate(calc(-50% + var(--loot-mx)),calc(-50% + var(--loot-my)))}100%{opacity:0;transform:translate(calc(-50% + var(--loot-dx)),calc(-50% + var(--loot-dy))) scale(.5)}}
+@keyframes loot-name{0%{opacity:0;filter:brightness(1)}12%,70%{opacity:1;filter:brightness(1)}40%{opacity:1;filter:brightness(1.25)}85%{opacity:1;filter:brightness(1.08)}100%{opacity:0;filter:brightness(1)}}
+@keyframes loot-local-beam{0%,100%{opacity:0}20%,75%{opacity:.45}45%{opacity:.6}}
+@keyframes loot-receive{0%{opacity:.7;transform:translate(-50%,-50%) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+@media(prefers-reduced-motion:reduce){.loot-fx-drop,.loot-fx-name,.loot-fx-beam{filter:none!important}}

@@ -58,9 +58,9 @@ test('every system page plays its guide once on the first visit after the onboar
   await page.setViewportSize({width:1280,height:860});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
   await page.evaluate(()=>{start(0);party.tutorials.auto=true;party.tutorials.records.explore_basics={triggered:true,completed:true,skipped:false,step:-1};party.wishingLake.unlocked=true;party.wishingLake.notified=true;closeModal();render();});
-  const tours=[['statistics','statistics_basics'],['roster','roster_basics'],['partnerRoster','partner_basics'],['character','character_basics'],['worn','worn_basics'],['forge','forge_basics'],['bossCraft','boss_basics'],['story','story_basics'],['gather','gather_basics'],['alchemy','alchemy_basics'],['shop','shop_basics'],['quests','quest_basics'],['wishingLake','wishing_basics']];
+  const tours=[['statistics','statistics_basics'],['roster','roster_basics'],['partnerRoster','partner_basics'],['character','character_basics'],['worn','worn_basics'],['forge','forge_basics'],['forge','extraction_basics'],['bossCraft','boss_basics'],['story','story_basics'],['gather','gather_basics'],['alchemy','alchemy_basics'],['shop','shop_basics'],['quests','quest_basics'],['wishingLake','wishing_basics']];
   const open=tab=>page.evaluate(tab=>{closeModal();tab==='story'?openStory('','main'):setTab(tab);},tab);
-  for(const [tab,id] of tours){
+  for(const [n,[tab,id]] of tours.entries()){
    await open(tab);
    const m=await page.evaluate(id=>{const m=__EMBERWILD_TUTORIAL.design.modules.find(m=>m.id===id);return {type:m.type,steps:m.steps.map(s=>({id:s.id,title:s.title}))};},id);
    if(m.type==='notice'){
@@ -76,7 +76,8 @@ test('every system page plays its guide once on the first visit after the onboar
     await page.click(`#tutorial-card button:has-text("${i===m.steps.length-1?'完成':'下一步'}")`);
    }
    assert.equal(await page.evaluate(id=>party.tutorials.records[id]?.completed,id),true,id);
-   // A second visit plays nothing.
+   // A second visit plays nothing (the forge's skill-extraction popup follows its forge popup).
+   if(tours[n+1]?.[0]===tab)continue;
    await page.evaluate(()=>{closeModal();setTab('battle');});await open(tab);
    await page.waitForTimeout(400);assert.equal(await active(page),null,id+' plays once');assert.equal(await page.evaluate(()=>__EMBERWILD_TUTORIAL.status().tip),null,id+' popup once');
   }

@@ -9639,8 +9639,8 @@
     "progression": {
       "starting": {
         "gold": 150,
-        "ore": 12,
-        "dust": 0,
+        "ore": 0,
+        "dust": 12,
         "potions": 5
       },
       "baseCrit": {
@@ -9715,7 +9715,7 @@
         "offhandHpPerTier": 3
       },
       "enhance": {
-        "maxLevel": 10,
+        "maxLevel": 12,
         "statPerLevel": 0.05,
         "flatStatsPerLevel": {
           "atk": 0.5,
@@ -9731,7 +9731,154 @@
         "dustStartLevel": 6,
         "dustPerTierPerLevelAboveStart": 1,
         "etherStartLevel": 10,
-        "etherCost": 1
+        "etherCost": 1,
+        "costLevelStep": 5,
+        "levels": [
+          {
+            "level": 1,
+            "cost": {
+              "dust": 2,
+              "ore": 0,
+              "ether": 0
+            },
+            "successRate": 1,
+            "failure": "none",
+            "failureLevel": 0,
+            "baseBonus": 0.05
+          },
+          {
+            "level": 2,
+            "cost": {
+              "dust": 4,
+              "ore": 0,
+              "ether": 0
+            },
+            "successRate": 1,
+            "failure": "none",
+            "failureLevel": 0,
+            "baseBonus": 0.1
+          },
+          {
+            "level": 3,
+            "cost": {
+              "dust": 6,
+              "ore": 0,
+              "ether": 0
+            },
+            "successRate": 1,
+            "failure": "none",
+            "failureLevel": 0,
+            "baseBonus": 0.15
+          },
+          {
+            "level": 4,
+            "cost": {
+              "dust": 8,
+              "ore": 0,
+              "ether": 0
+            },
+            "successRate": 0.9,
+            "failure": "drop",
+            "failureLevel": 2,
+            "baseBonus": 0.22
+          },
+          {
+            "level": 5,
+            "cost": {
+              "dust": 0,
+              "ore": 2,
+              "ether": 0
+            },
+            "successRate": 0.8,
+            "failure": "drop",
+            "failureLevel": 3,
+            "baseBonus": 0.3
+          },
+          {
+            "level": 6,
+            "cost": {
+              "dust": 0,
+              "ore": 3,
+              "ether": 0
+            },
+            "successRate": 0.7,
+            "failure": "drop",
+            "failureLevel": 4,
+            "baseBonus": 0.4
+          },
+          {
+            "level": 7,
+            "cost": {
+              "dust": 0,
+              "ore": 4,
+              "ether": 0
+            },
+            "successRate": 0.6,
+            "failure": "drop",
+            "failureLevel": 3,
+            "baseBonus": 0.55
+          },
+          {
+            "level": 8,
+            "cost": {
+              "dust": 0,
+              "ore": 5,
+              "ether": 0
+            },
+            "successRate": 0.5,
+            "failure": "drop",
+            "failureLevel": 3,
+            "baseBonus": 0.75
+          },
+          {
+            "level": 9,
+            "cost": {
+              "dust": 0,
+              "ore": 6,
+              "ether": 0
+            },
+            "successRate": 0.4,
+            "failure": "drop",
+            "failureLevel": 0,
+            "baseBonus": 1
+          },
+          {
+            "level": 10,
+            "cost": {
+              "dust": 0,
+              "ore": 0,
+              "ether": 1
+            },
+            "successRate": 0.3,
+            "failure": "drop",
+            "failureLevel": 0,
+            "baseBonus": 1.3
+          },
+          {
+            "level": 11,
+            "cost": {
+              "dust": 0,
+              "ore": 0,
+              "ether": 2
+            },
+            "successRate": 0.2,
+            "failure": "destroy",
+            "failureLevel": 0,
+            "baseBonus": 1.6
+          },
+          {
+            "level": 12,
+            "cost": {
+              "dust": 0,
+              "ore": 0,
+              "ether": 3
+            },
+            "successRate": 0.1,
+            "failure": "destroy",
+            "failureLevel": 0,
+            "baseBonus": 1.9
+          }
+        ]
       },
       "salvage": {
         "oreBasePerTier": 3,
@@ -17126,7 +17273,8 @@
           0.08,
           0.1,
           0.12
-        ]
+        ],
+        "chanceFactor": 0.7
       },
       "equipmentQuality": {
         "rareChance": 0.22,
@@ -23565,17 +23713,17 @@
         },
         {
           "id": "cultivation_dust_normal",
-          "name": "粉塵",
+          "name": "鍛鐵",
           "enabled": true,
-          "type": "dust",
+          "type": "ore",
           "key": "",
           "kinds": [
             "normal"
           ],
           "chanceByDifficulty": [
-            0.009,
-            0.013,
-            0.016
+            0.0063,
+            0.0091,
+            0.0112
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23668,17 +23816,17 @@
         },
         {
           "id": "cultivation_dust_elite",
-          "name": "粉塵",
+          "name": "鍛鐵",
           "enabled": true,
-          "type": "dust",
+          "type": "ore",
           "key": "",
           "kinds": [
             "elite"
           ],
           "chanceByDifficulty": [
-            0.07,
-            0.09,
-            0.11
+            0.049,
+            0.063,
+            0.077
           ],
           "quantityMin": 1,
           "quantityMax": 2,
@@ -48128,6 +48276,109 @@
             "text": "強化提高基礎能力；洗鍊重新抽取詞綴。兩者都會消耗金幣與材料。",
             "page": "forge",
             "target": "forge.actions",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": true,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      },
+      {
+        "id": "extraction_basics",
+        "title": "技能萃取",
+        "category": "equipment",
+        "type": "notice",
+        "enabled": true,
+        "implemented": true,
+        "description": "把技能裝備的技能轉移到夥伴信物。第一次進入裝備強化、看完強化教學後開始。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "forge",
+          "notify": false,
+          "notifyText": ""
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueDone",
+              "key": "",
+              "count": 1
+            },
+            {
+              "type": "tutorialDone",
+              "key": "forge_basics",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "panel",
+            "title": "技能萃取",
+            "text": "裝備強化頁下方的「技能萃取」可以把技能裝備的技能轉移到夥伴信物。",
+            "page": "forge",
+            "target": "forge.extraction",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "extract",
+            "title": "萃取方式",
+            "text": "在信物那一列按「萃取技能」，再選一件技能裝備。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。",
+            "page": "forge",
+            "target": "forge.extraction",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "use",
+            "title": "使用技能",
+            "text": "夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。",
+            "page": "forge",
+            "target": "forge.extraction",
             "placement": "auto",
             "advance": {
               "type": "next"

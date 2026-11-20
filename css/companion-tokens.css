@@ -21,7 +21,8 @@
 
 /* v0.111: brief highlight when the backpack 穿戴 button opens this card. */
 .token-slot.token-wear-target{outline:2px solid var(--gold);outline-offset:2px}
-/* v0.170 skill extraction */
+/* v0.170 skill extraction. v0.180: main is a flex column; the panel keeps its height instead of shrinking to one line. */
+.forge-extraction{flex-shrink:0;overflow:visible;margin-top:var(--card-gap,10px)}
 .token-extracted-skill{margin:6px 0;padding:6px 8px;border-left:3px solid var(--gold);background:var(--inset)}
 .skill-extraction-list{display:grid;gap:8px;margin:10px 0;max-height:60vh;overflow:auto}
 .skill-extraction-row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px;border:1px solid var(--line);border-radius:8px}

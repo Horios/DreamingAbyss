@@ -188,6 +188,7 @@
   'forge.list':()=>$q('main .forge-gear-pane')||$q('main .forge-gear-list'),
   'forge.detail':()=>$q('main .forge-detail-pane .gear-detail-header')||$q('main .forge-detail-pane'),
   'forge.actions':()=>$q('main [onclick^="enhance("]')?.parentElement||null,
+  'forge.extraction':()=>$q('main .forge-extraction'),
   'boss.classTabs':()=>$q('main .boss-class-tabs'),
   'boss.recipe':()=>$q('main .boss-recipe'),
   'story.tabs':()=>$q('main .game-subtabs'),
