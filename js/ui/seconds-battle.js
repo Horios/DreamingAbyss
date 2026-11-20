@@ -108,7 +108,7 @@
    `<div class="seconds-difficulty-modes" role="group" aria-label="切換難度">${buttons}</div>`+
    `<p class="seconds-difficulty-line" data-difficulty-monsters><span>怪物</span>生命 ${times(m.hp)} · 攻擊 ${times(m.atk)} · 防禦 ${times(m.def)}</p>`+
    `<p class="seconds-difficulty-line" data-difficulty-drops><span>掉落</span>金幣 ${times(g.goldMultiplier??1)} · 素材 ${times(m.ore)} · 裝備 一般 ${pct(eq[0])}／菁英 ${pct(eq[1])}／首領 ${pct(eq[2])} · 寶石 一般 ${pct(gem[0])}／菁英 ${pct(gem[1])}／首領 ${pct(gem[2])} · BOSS 專屬 ${pct(m.boss)} · 傳說 ${pct(m.rare)}</p>`+
-   `<p class="small">切換難度會停止探索並放棄目前遭遇。</p><button type="button" class="seconds-bestiary" onclick="showRegionBestiary()">地區圖鑑</button></div></details>`;
+   `<p class="small">切換難度會停止探索並放棄目前遭遇。怪物與掉落一覽在「探索 → 怪物圖鑑」。</p></div></details>`;
  }
  globalThis.setMapDifficulty=function(i){
   i=Number(i);if(![0,1,2].includes(i)||i===(party.difficulty||0))return false;

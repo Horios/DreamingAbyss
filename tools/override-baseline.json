@@ -6,7 +6,7 @@
   "loadParty": 20,
   "validateParty": 23,
   "tick": 6,
-  "render": 30,
+  "render": 31,
   "pacedRound": 10,
   "stats": 9
  }

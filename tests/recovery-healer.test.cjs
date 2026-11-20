@@ -9,7 +9,7 @@ function priest(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn
   // v0.181: the first encounter ends quickly so the run always reaches recovery (elites are stronger since v0.181).
   for(const e of foes)e.hp=Math.min(e.hp,1);`);
  assert.equal(r.run('configured'),true);
- for(let i=0;i<200&&r.run("EmberwildSecondsCombat.phase")!=='recovery';i++){r.advance(250);r.run('tick()');}
+ for(let i=0;i<200&&r.run("EmberwildSecondsCombat.phase")!=='recovery';i++){r.advance(250);r.run('for(const e of foes)e.hp=Math.min(e.hp,1);tick()');}
  assert.equal(r.run("EmberwildSecondsCombat.phase"),'recovery');
  r.run(`{const T=EmberwildSecondsCombat.timeline,base=T.handlers.onEvent;T.handlers.onEvent=function(e){const out=base.call(this,e);if(!foes.some(f=>f.hp>0))EV.push(e.type+':'+(e.skillId||''));return out;};}`);
  return r;}

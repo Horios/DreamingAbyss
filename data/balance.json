@@ -34663,6 +34663,10 @@
           {
             "id": "statistics",
             "label": "戰鬥統計"
+          },
+          {
+            "id": "bestiary",
+            "label": "怪物圖鑑"
           }
         ]
       },
