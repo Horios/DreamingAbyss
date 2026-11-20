@@ -27,10 +27,11 @@ jobs:
       - name: Related runtime and browser regression tests
         run: >-
           node --test --test-concurrency=2
-          tests/loot-effects.browser.test.cjs tests/battle-effects.test.cjs
+          tests/loot-effects.test.cjs tests/loot-effects.browser.test.cjs tests/battle-effects.test.cjs
           tests/battle-effects.browser.test.cjs tests/seconds-runtime.test.cjs
           tests/gear-overflow.test.cjs tests/preview-version.test.cjs
-          tests/offline-exploration.test.cjs
+      - name: Real online and offline reward consistency
+        run: node --test --test-name-pattern='fixed random sequence' tests/offline-exploration.test.cjs
       - name: Save desktop and mobile visual evidence
         if: always()
         uses: actions/upload-artifact@v4

@@ -39,12 +39,11 @@ test('local names fit desktop/mobile battlefield; no flight, tail or receiving l
  assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
-test('off and offline modes build no effects, settings persist, changing mode/navigation cancels all nodes',async()=>{
+test('off mode builds no effects, settings persist, changing mode/navigation cancels all nodes',async()=>{
  const g=await setup(),p=g.page;try{
  await p.evaluate(()=>{setLootEffects('off');lootWin();});assert.equal(await p.locator('.loot-fx-layer').count(),0);assert.equal(await p.evaluate(()=>EmberwildLootEffects.pendingCount),0);
  await p.evaluate(()=>{setLootEffects('local');spawnGroup();render();lootWin();});assert(await p.locator('.loot-fx-name').count()>0);
  await p.evaluate(()=>setLootEffects('stream'));assert.equal(await p.locator('.loot-fx-layer').count(),0);
- await p.evaluate(()=>{spawnGroup();globalThis.__EMBERWILD_OFFLINE_RULE_CACHE={};lootWin();delete globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;});assert.equal(await p.locator('.loot-fx-layer').count(),0);assert.equal(await p.evaluate(()=>EmberwildLootEffects.pendingCount),0);
  await p.evaluate(()=>{spawnGroup();render();lootWin();setTab('options');});assert.equal(await p.locator('.loot-fx-layer').count(),0);
  await p.locator('[data-loot-effects]').selectOption('local');assert.equal(await p.evaluate(()=>localStorage.getItem('emberwild-battle-effects.loot')),'local');
  await p.reload();assert.equal(await p.evaluate(()=>EmberwildLootEffects.preference),'local');assert.equal(await p.locator('.loot-fx-layer').count(),0);assert.deepEqual(g.errors,[]);

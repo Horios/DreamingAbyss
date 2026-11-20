@@ -6,7 +6,7 @@
  let preference='stream',pending=new Map(),encounter=null,owner=null,layer=null;
  const active=new Set(),slots=new Set(),reduced=matchMedia('(prefers-reduced-motion: reduce)');
  try{const saved=localStorage.getItem(key);if(modes.includes(saved))preference=saved;}catch{}
- const live=()=>!!party&&tab==='battle'&&!document.hidden&&!$('modal')?.open&&!globalThis.isEmberwildTitleOpen?.()&&!globalThis.EmberwildOffline?.busy&&!globalThis.__EMBERWILD_OFFLINE_RULE_CACHE&&!party.offlineExploration?.receipt;
+ const live=()=>!!party&&tab==='battle'&&!document.hidden&&!$('modal')?.open&&!globalThis.isEmberwildTitleOpen?.()&&!globalThis.EmberwildOffline?.busy&&!party.offlineExploration?.receipt;
  function rect(node){if(!node?.isConnected)return null;const r=node.getBoundingClientRect(),s=getComputedStyle(node);return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth&&s.visibility!=='hidden'&&s.display!=='none'?r:null;}
  function clear(){for(const n of active)n.remove();active.clear();slots.clear();layer?.remove();layer=null;pending.clear();encounter=null;owner=null;}
  function safe(fn){try{return fn();}catch(error){clear();console.warn('戰利品演出已清理',error);}}
