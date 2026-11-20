@@ -42,6 +42,5 @@
  for(const name of ['resetSession','loadParty','returnToTitle']){const base=globalThis[name];if(typeof base==='function')globalThis[name]=function(...args){clear();return base.apply(this,args);};}
  const renderBase=render;render=function(...args){const out=renderBase.apply(this,args);if(layer&&(!visible()||String(forgeSelection)!==currentGear))clear();return out;};
  for(const event of ['pagehide','visibilitychange','resize'])addEventListener(event,clear);
- addEventListener('scroll',event=>{const field=document.querySelector('.forge-workbench');if(event.target===document||field&&event.target?.contains?.(field)||event.target?.classList?.contains('responsive-detail-body'))clear();},{capture:true,passive:true});
  globalThis.EmberwildEnhancementEffects={present:safePresent,clear,sequence,flashMs,gapMs,get activeCount(){return layer?layer.childElementCount:0;}};
 })();
