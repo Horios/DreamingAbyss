@@ -14,12 +14,12 @@ async function setup(){const g=await openRuntime(root);await g.page.evaluate(()=
  });return g;}
 test('victory receives inventory immediately; stream beam, flight, receiving light and names use actual names/quantities',async()=>{
  const g=await setup(),p=g.page;try{
- const result=await p.evaluate(()=>{const before=state.ore;lootWin();return {ore:state.ore-before,bag:state.bag.map(equipmentDisplayName),pending:EmberwildLootEffects.pendingCount};});
+ const result=await p.evaluate(()=>{const before=state.ore,ether=state.materials['以太鍛鐵']||0;lootWin();return {ore:state.ore-before,ether:(state.materials['以太鍛鐵']||0)-ether,bag:state.bag.map(equipmentDisplayName),pending:EmberwildLootEffects.pendingCount};});
  assert(result.ore>=3);assert.equal(result.pending,0);assert(await p.locator('.loot-fx-drop').count()>0);assert.equal(await p.locator('.loot-fx-name').count(),0);
  const colors=await p.locator('.loot-fx-drop').evaluateAll(ns=>ns.map(n=>({name:n.dataset.lootName,color:n.style.getPropertyValue('--loot-color')})));
  assert.equal(colors.find(x=>x.name==='鍛鐵').color,'rgb(220, 227, 222)');assert.equal(colors.find(x=>x.name==='以太鍛鐵').color,'rgb(255, 229, 154)');
  await p.waitForTimeout(650);assert(await p.locator('.loot-fx-flight').count()>0);assert.equal(await p.locator('.loot-fx-local').count(),0);
- await p.waitForTimeout(550);const names=await p.locator('.loot-fx-name').allTextContents();assert(names.includes('以太鍛鐵 × 1'));assert(names.some(n=>n.startsWith('鍛鐵 × ')));assert(names.some(n=>result.bag.some(name=>n===name+' × 1')));
+ await p.waitForTimeout(550);const names=await p.locator('.loot-fx-name').allTextContents();assert(names.includes('以太鍛鐵 × '+result.ether));assert(names.some(n=>n.startsWith('鍛鐵 × ')));assert(names.some(n=>result.bag.some(name=>n===name+' × 1')));
  assert.equal(await p.locator('.loot-fx-layer').evaluate(n=>getComputedStyle(n).pointerEvents),'none');
  await p.waitForTimeout(1300);assert.equal(await p.locator('.loot-fx-layer').count(),0);assert.equal(await p.evaluate(()=>EmberwildLootEffects.activeCount),0);assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
@@ -58,7 +58,7 @@ test('backpack coordinates are resolved from visible desktop/mobile navigation; 
  assert(routes.length>0);for(const r of routes){assert(Math.abs(r.x-(bag.x+bag.width/2))<1);assert(Math.abs(r.y-(bag.y+bag.height/2))<1);}for(const r of routes){assert(r.x>0&&r.x<width);assert(r.y>0&&r.y<900);}
  await p.waitForTimeout(1900);
  }
- await p.evaluate(()=>{document.querySelectorAll('nav').forEach(n=>n.style.visibility='hidden');spawnGroup();render();lootWin();});await p.waitForTimeout(1200);assert(await p.locator('.loot-fx-name').count()>0);
+ await p.evaluate(()=>{spawnGroup();render();document.querySelectorAll('nav').forEach(n=>n.style.visibility='hidden');lootWin();});await p.waitForTimeout(1200);assert(await p.locator('.loot-fx-name').count()>0);
  assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });

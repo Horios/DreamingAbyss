@@ -19,7 +19,7 @@ test('actual saved +1/+4/+8 enhancements show the correct yellow stages, with an
 });
 test('reserved +11/+12 and explicit failure/destruction presentation never alter inventory or enhancement rules',async()=>{
  const g=await setup(),p=g.page;try{
- const before=await p.evaluate(()=>JSON.stringify({party:packParty(),max:RULES.enhanceMax}));
+ const before=await p.evaluate(()=>JSON.stringify({bag:state.bag,ore:state.ore,dust:state.dust,materials:state.materials,gold:state.gold,max:RULES.enhanceMax,config:GAMEPLAY_SETTINGS.equipment.enhance}));
  for(const level of [11,12]){
  await p.evaluate(level=>EmberwildEnhancementEffects.present({gearId:fxGear,outcome:'success',level}),level);assert.deepEqual((await stages(p)).map(x=>x.type),['small','medium','large','rainbow']);
  assert.equal(await p.locator('.forge-enhance-layer').evaluate(n=>n.style.getPropertyValue('--enhance-lifetime')),'1700ms');
@@ -29,7 +29,7 @@ test('reserved +11/+12 and explicit failure/destruction presentation never alter
  await p.evaluate(outcome=>dispatchEvent(new CustomEvent('emberwild:enhancement-result',{detail:{gearId:fxGear,outcome}})),outcome);assert.deepEqual((await stages(p)).map(x=>x.type),[type]);
  await p.waitForTimeout(100);await p.screenshot({path:'/tmp/enhance-'+type+'.png'});await p.waitForTimeout(ms+100);assert.equal(await p.locator('.forge-enhance-layer').count(),0);
  }
- assert.equal(await p.evaluate(()=>JSON.stringify({party:packParty(),max:RULES.enhanceMax})),before);assert.deepEqual(g.errors,[]);
+ assert.equal(await p.evaluate(()=>JSON.stringify({bag:state.bag,ore:state.ore,dust:state.dust,materials:state.materials,gold:state.gold,max:RULES.enhanceMax,config:GAMEPLAY_SETTINGS.equipment.enhance})),before);assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
 test('desktop/mobile positions stay visible; rejected/rolled-back actions do not show failure; navigation cleans all stages',async()=>{
