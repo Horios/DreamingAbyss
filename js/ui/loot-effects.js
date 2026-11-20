@@ -6,6 +6,9 @@
  let preference='stream',pending=new Map(),encounter=null,owner=null,layer=null;
  const active=new Set(),slots=new Set(),reduced=matchMedia('(prefers-reduced-motion: reduce)');
  try{const saved=localStorage.getItem(key);if(modes.includes(saved))preference=saved;}catch{}
+ // v0.182: beam size. 小 is the original size; 中 and 大 scale the beam, glow, flight trail and arrival flash.
+ const sizeKey='emberwild-battle-effects.loot-size',SIZES={small:1,medium:1.6,large:2.2},SIZE_NAMES={small:'小',medium:'中',large:'大'};
+ let size='small';try{const saved=localStorage.getItem(sizeKey);if(saved in SIZES)size=saved;}catch{}
  const live=()=>!!party&&tab==='battle'&&!document.hidden&&!$('modal')?.open&&!globalThis.isEmberwildTitleOpen?.()&&!globalThis.EmberwildOffline?.busy&&!party.offlineExploration?.receipt;
  function rect(node){if(!node?.isConnected)return null;const r=node.getBoundingClientRect(),s=getComputedStyle(node);return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth&&s.visibility!=='hidden'&&s.display!=='none'?r:null;}
  function clear(){for(const n of active)n.remove();active.clear();slots.clear();layer?.remove();layer=null;pending.clear();encounter=null;owner=null;}
@@ -36,7 +39,7 @@
   });
   return out;
  };
- function root(){if(!layer){layer=document.createElement('div');layer.className='loot-fx-layer';layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);}return layer;}
+ function root(){if(!layer){layer=document.createElement('div');layer.className='loot-fx-layer';layer.dataset.lootSize=size;layer.style.setProperty('--loot-size',String(SIZES[size]));layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);}return layer;}
  function remove(n){active.delete(n);n.remove();if(!active.size){layer?.remove();layer=null;}}
  function mount(n){active.add(n);root().appendChild(n);}
  function finishAnimation(n,fn,slot){
@@ -107,7 +110,9 @@
  const finalizeBase=finalizeBattleStatistics;
  finalizeBattleStatistics=function(result,...args){const out=finalizeBase.call(this,result,...args);safe(()=>{if(result==='victory'&&owner===party&&encounter===foes)present();else pending.clear();});return out;};
  const optionsBase=battleEffectsOptionsView;
- battleEffectsOptionsView=function(){return optionsBase()+'<section class="panel option-row"><div><h2>戰利品掉落演出</h2><p class="small">勝利後顯示已取得的道具，不影響掉落結算與探索速度。</p></div><select data-loot-effects aria-label="戰利品掉落演出" onchange="setLootEffects(this.value)">'+modes.map((v,i)=>'<option value="'+v+'" '+(v===preference?'selected':'')+'>'+['關閉','流光入袋','原地顯示'][i]+'</option>').join('')+'</select></section>';};
+ battleEffectsOptionsView=function(){return optionsBase()+'<section class="panel option-row"><div><h2>戰利品掉落演出</h2><p class="small">勝利後顯示已取得的道具，不影響掉落結算與探索速度。</p></div><select data-loot-effects aria-label="戰利品掉落演出" onchange="setLootEffects(this.value)">'+modes.map((v,i)=>'<option value="'+v+'" '+(v===preference?'selected':'')+'>'+['關閉','流光入袋','原地顯示'][i]+'</option>').join('')+'</select></section>'+
+  '<section class="panel option-row"><div><h2>掉落光柱大小</h2><p class="small">小為原本大小；中、大會放大光柱、光點與飛行軌跡。</p></div><select data-loot-size aria-label="掉落光柱大小" onchange="setLootEffectSize(this.value)">'+Object.keys(SIZES).map(v=>'<option value="'+v+'" '+(v===size?'selected':'')+'>'+SIZE_NAMES[v]+'</option>').join('')+'</select></section>';};
+ globalThis.setLootEffectSize=function(value){if(!(value in SIZES))return false;size=value;clear();try{localStorage.setItem(sizeKey,value);}catch{toast('光柱大小已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-loot-size]').forEach(n=>n.value=value);return true;};
  globalThis.setLootEffects=function(value){if(!modes.includes(value))return false;preference=value;clear();try{localStorage.setItem(key,value);}catch{toast('掉落演出已套用，但瀏覽器無法保存設定。');}document.querySelectorAll('[data-loot-effects]').forEach(n=>n.value=value);return true;};
  for(const name of ['resetEncounter','resetSession','loadParty','stopTeamExploration','returnToTitle']){const base=globalThis[name];if(typeof base==='function')globalThis[name]=function(...args){clear();return base.apply(this,args);};}
  const tabBase=setTab;setTab=function(id,...args){clear();return tabBase.call(this,id,...args);};
@@ -115,6 +120,6 @@
  const modal=$('modal');if(modal)new MutationObserver(()=>{if(modal.open)clear();}).observe(modal,{attributes:true,attributeFilter:['open']});
  for(const event of ['pagehide','visibilitychange','resize'])addEventListener(event,clear);
  addEventListener('scroll',event=>{const field=document.querySelector('#battleEnemyIcons');if(event.target===document||field&&event.target?.contains?.(field))clear();},{passive:true,capture:true});
- addEventListener('storage',e=>{if(e.key===key||e.key===null){preference=modes.includes(e.newValue)?e.newValue:'stream';clear();}});
- globalThis.EmberwildLootEffects={clear,get preference(){return preference;},get activeCount(){return active.size;},get pendingCount(){return pending.size;}};
+ addEventListener('storage',e=>{if(e.key===key||e.key===null){preference=modes.includes(e.newValue)?e.newValue:'stream';clear();}if(e.key===sizeKey||e.key===null){size=e.newValue in SIZES?e.newValue:'small';clear();}});
+ globalThis.EmberwildLootEffects={clear,get preference(){return preference;},get size(){return size;},SIZES,get activeCount(){return active.size;},get pendingCount(){return pending.size;}};
 })();

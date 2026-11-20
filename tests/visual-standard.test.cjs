@@ -29,7 +29,9 @@ test('display colors are read on apply, exported only when set, validated, and d
  assert.equal(out.classes[0].cardColor,'#abcdef');assert.equal(out.classes[1].cardColor,undefined);
  assert.equal(r.run('EmberwildVisualColors.battlefield(1)'),out.balanceSettings.maps.catalog[1].color.toLowerCase(),'default battlefield color is the map color');
  assert.equal(r.run('EmberwildVisualColors.cls(1)'),'#7d5fd0','default class color');
- r.run('selectSaveSlot(1);start(0);closeModal();startSelectedExploration();');for(let i=0;i<40;i++){r.advance(250);r.run('tick()');}
+ r.run('selectSaveSlot(1);start(0);closeModal();startSelectedExploration();');
+ // Wait until an encounter with living map-0 monsters is on the field (a lost fight leaves only the recovering party).
+ for(let i=0;i<200&&(i<40||!r.run('foes.some(e=>e.hp>0)'));i++){r.advance(250);r.run('tick()');}r.run('render()');
  const html=r.run("document.getElementById('app').innerHTML");
  assert.match(html,/class="squad-field seconds-battlefield" style="--vs-field:#123456"/);assert.match(html,/style="--vs-card:#abcdef"/,'the warrior card uses the class color');assert.match(html,/style="--vs-card:#654321"/,'map 0 monsters use their color');
  seed.classes[0].cardColor='red';assert.throws(()=>r.run('applyBalanceConfig(seed,{persist:false})'),/卡片顏色必須是 #RRGGBB/);

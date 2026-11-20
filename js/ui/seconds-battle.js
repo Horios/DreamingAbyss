@@ -90,8 +90,9 @@
  function destinationBar(){
   const category=globalThis.selectedExplorationCategory?.()||'explore',map=globalThis.selectedExplorationMap?.()??party.map,choices=globalThis.explorationMapChoices?.(category==='boss'?'boss':'explore')||[],locked=category==='quest';
   // v0.120: phones hide the 地圖 suffix so the three types and the map list share one row.
-  const buttons=[['explore','一般'],['quest','任務'],['boss','BOSS']].map(([id,name])=>`<button type="button" data-destination-category="${id}" aria-pressed="${category===id}" aria-label="${name}地圖" class="${category===id?'primary':''}" onclick="setExplorationCategory('${id}')">${name}<span class="destination-suffix">地圖</span></button>`).join('');
-  return `<section class="seconds-destination-bar" aria-label="探索目的地"><div class="seconds-destination-types" role="group" aria-label="關卡分類">${buttons}</div><select aria-label="探索地圖" ${locked?'disabled title="任務地圖依任務關卡決定，請在冒險配置選擇關卡"':''} onchange="selectExplorationMap(Number(this.value))">${choices.map(c=>`<option value="${c.index}" ${c.index===map?'selected':''}>${esc(c.name)} · 推薦裝等 ${c.recommendedGearLevel}${c.unlocked?'':' · 未解鎖'}</option>`).join('')}</select></section>`;
+  // v0.182: 任務地圖 is removed from this bar (its entry will move to the quest page); BOSS地圖 shows the BOSS meter.
+  const buttons=[['explore','一般'],['boss','BOSS']].map(([id,name])=>`<button type="button" data-destination-category="${id}" aria-pressed="${category===id}" aria-label="${name}地圖" class="${category===id?'primary':''}" onclick="setExplorationCategory('${id}')">${name}<span class="destination-suffix">地圖</span></button>`).join('');
+  return `<section class="seconds-destination-bar" aria-label="探索目的地"><div class="seconds-destination-types" role="group" aria-label="關卡分類">${buttons}</div><select aria-label="探索地圖" ${locked?'disabled title="任務地圖依任務關卡決定，請在冒險配置選擇關卡"':''} onchange="selectExplorationMap(Number(this.value))">${choices.map(c=>`<option value="${c.index}" ${c.index===map?'selected':''}>${esc(c.name)} · 推薦裝等 ${c.recommendedGearLevel}${c.unlocked?'':' · 未解鎖'}</option>`).join('')}</select></section>`+(category==='boss'?`<section class="panel seconds-boss-meter" aria-label="BOSS 進度">${globalThis.explorationBossBlock?.(map)||''}</section>`:'');
  }
  function takeSection(html,open){
   const start=html.indexOf(open);if(start<0)return {section:'',rest:html};

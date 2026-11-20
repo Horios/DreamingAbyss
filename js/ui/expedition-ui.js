@@ -15,14 +15,15 @@
   .expedition-control-card select,.expedition-control-card button{min-width:0;height:30px;padding:3px 7px;font-size:12px}
   .expedition-control-card .control-row select{width:100%}
   .expedition-control-card .icon-help{width:28px!important;min-width:28px!important;padding:0!important;border-radius:999px;font-weight:700}
-  .expedition-control-card .boss-compact{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
-  .expedition-control-card .boss-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px}
-  .expedition-control-card .boss-head b{font-size:12px}
-  .expedition-control-card .boss-meter{height:6px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:5px 0}
-  .expedition-control-card .boss-meter>span{display:block;height:100%;background:currentColor;opacity:.72}
-  .expedition-control-card .boss-meta{display:flex;gap:5px 8px;flex-wrap:wrap;font-size:11px;color:var(--muted);line-height:1.4}
-  .expedition-control-card .boss-actions{display:flex;gap:6px;align-items:center;margin-top:7px}
-  .expedition-control-card .boss-actions button{flex:1}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-compact{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-head b{font-size:12px}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-meter{height:6px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:5px 0}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-meter>span{display:block;height:100%;background:currentColor;opacity:.72}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-meta{display:flex;gap:5px 8px;flex-wrap:wrap;font-size:11px;color:var(--muted);line-height:1.4}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-actions{display:flex;gap:6px;align-items:center;margin-top:7px}
+  :is(.expedition-control-card,.seconds-boss-meter) .boss-actions button{flex:1}
+  .seconds-boss-meter{flex-shrink:0;overflow:visible;margin:6px 0 0;padding:8px 12px}.seconds-boss-meter .boss-actions button.icon-help{flex:0 0 auto}.seconds-boss-meter .boss-compact{margin-top:0;padding-top:0;border-top:0}
   .expedition-control-card details{margin-top:7px}
   .expedition-control-card details>summary{cursor:pointer;color:var(--muted);font-size:11px}
   .expedition-control-card .supply-list{display:grid;gap:5px;margin-top:6px}
@@ -96,6 +97,8 @@
     return destination;
   }
   globalThis.selectedExplorationCategory=()=>party?selectedDestination().category:'explore';
+  // v0.182: the battle page shows the BOSS meter under the destination bar when BOSS地圖 is selected.
+  globalThis.explorationBossBlock=mi=>bossBlock(mi);
   globalThis.selectedExplorationMap=()=>party?selectedDestination().map:0;
   globalThis.explorationMapChoices=category=>MAPS.map((m,i)=>({m,i})).filter(({i})=>category==='boss'||!isFinal(i)).map(({m,i})=>({index:i,name:m.name,min:m.min,recommendedGearLevel:mapRecommendedGearLevel(i),unlocked:canVisit(i)}));
   globalThis.setExplorationCategory=function(category){if(!['explore','boss','quest'].includes(category))return;const d=selectedDestination();d.category=category;const maps=MAPS.map((_,i)=>i).filter(i=>category==='boss'||!isFinal(i));if(category!=='quest'&&!maps.includes(d.map))d.map=maps[0]??0;render();};

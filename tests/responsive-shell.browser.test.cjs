@@ -43,7 +43,7 @@ test('Exploration: a phone shows both sides without scrolling and keeps the cont
  assert(Math.abs(phone.barBottom-phone.navTop)<=1,'controls sit directly above the navigation');
  assert(phone.buttons.every(h=>h>=44),'control height '+phone.buttons);
  assert.equal(phone.heal,'none');assert(phone.destination<=46,'destination is one row');assert.equal(phone.suffix,'none');
- assert.deepEqual(await p.locator('.seconds-destination-bar [data-destination-category]').evaluateAll(es=>es.map(e=>e.getAttribute('aria-label'))),['一般地圖','任務地圖','BOSS地圖']);
+ assert.deepEqual(await p.locator('.seconds-destination-bar [data-destination-category]').evaluateAll(es=>es.map(e=>e.getAttribute('aria-label'))),['一般地圖','BOSS地圖']);
  assert.equal(await p.locator('.seconds-field-help').evaluate(e=>e.open),false,'the rules text starts folded');
  await p.locator('[data-adventure-config]').click();assert.equal(await p.evaluate(()=>isAdventureConfigOpen()),true);await p.evaluate(()=>closeModal());
  await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>render());

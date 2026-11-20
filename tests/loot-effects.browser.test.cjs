@@ -75,3 +75,20 @@ test('continuous wins are bounded and do not replace existing names; identical d
  await p.waitForTimeout(1400);assert.equal(await p.locator('.loot-fx-layer').count(),0);assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
+test('v0.182: the beam size setting has 小 (original), 中 and 大, scales the beam and point, and is remembered',async()=>{
+ const g=await setup(),p=g.page;try{
+ await p.setViewportSize({width:1440,height:900});
+ const measure=async value=>{await p.evaluate(v=>{setLootEffects('stream');setLootEffectSize(v);spawnGroup();foes.forEach(e=>{e.maxDrops=99;e.kind='elite';});render();lootWin();},value);
+  const box=await p.locator('.loot-fx-drop').first().evaluate(n=>{const b=n.querySelector('.loot-fx-beam');return {beamW:b.offsetWidth,beamH:b.offsetHeight,point:n.offsetWidth,size:n.closest('.loot-fx-layer').dataset.lootSize};});
+  await p.evaluate(()=>EmberwildLootEffects.clear());return box;};
+ // Layout sizes (offsetWidth/Height) are not affected by the animated transform.
+ const sizes={};for(const v of ['small','medium','large']){sizes[v]=await measure(v);assert.equal(sizes[v].size,v);}
+ assert.equal(sizes.small.point,10,'小 keeps the original 10px point');
+ for(const [v,k] of [['medium',1.6],['large',2.2]]){assert(Math.abs(sizes[v].point/sizes.small.point-k)<.05,v+' point ×'+k);assert(Math.abs(sizes[v].beamW/sizes.small.beamW-k)<.1,v+' beam width ×'+k);assert(Math.abs(sizes[v].beamH/sizes.small.beamH-k)<.1,v+' beam height ×'+k);}
+ // The options page lists both settings and the size choice is stored.
+ await p.evaluate(()=>{setLootEffectSize('medium');});assert.equal(await p.evaluate(()=>localStorage.getItem('emberwild-battle-effects.loot-size')),'medium');
+ assert.match(await p.evaluate(()=>battleEffectsOptionsView()),/掉落光柱大小[\s\S]*value="medium" selected/);
+ assert.equal(await p.evaluate(()=>setLootEffectSize('huge')),false);assert.equal(await p.evaluate(()=>EmberwildLootEffects.size),'medium');
+ assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});

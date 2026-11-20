@@ -5,7 +5,9 @@ const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirnam
 function priest(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);
  r.run(`selectSaveSlot(1);start(3);closeModal();clearInterval(timer);const h=playerHero();h.lv=17;syncParty();
   state.acquiredSkillIds=[...(state.acquiredSkillIds||[]),'job3-support0'];const b=__EMBERWILD_TEAMS.build().permanent;b.unlocks??={};b.unlocks['3:support:0']=true;__EMBERWILD_SKILLS.refreshAll();
-  globalThis.configured=configureSkill('support',0,'job3-support0');h.recoveryHealing=true;startSelectedExploration();globalThis.EV=[];`);
+  globalThis.configured=configureSkill('support',0,'job3-support0');h.recoveryHealing=true;startSelectedExploration();globalThis.EV=[];
+  // v0.181: the first encounter ends quickly so the run always reaches recovery (elites are stronger since v0.181).
+  for(const e of foes)e.hp=Math.min(e.hp,1);`);
  assert.equal(r.run('configured'),true);
  for(let i=0;i<200&&r.run("EmberwildSecondsCombat.phase")!=='recovery';i++){r.advance(250);r.run('tick()');}
  assert.equal(r.run("EmberwildSecondsCombat.phase"),'recovery');

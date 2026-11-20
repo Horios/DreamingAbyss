@@ -49,11 +49,12 @@ test('冒險配置 opens 探索與挑戰 as a dialog; there is no hunting mode c
  await p.getByRole('button',{name:'關閉',exact:true}).click();
  // Live combat delays redraws for a moment after a click (interaction guard); the test clock is fake, so advance it until the redraw.
  const settled=async()=>{for(let i=0;i<20&&await p.evaluate(()=>isEmberwildUIInteracting());i++)await p.clock.runFor(100);};
- assert.deepEqual(await p.locator('.seconds-destination-bar [data-destination-category]').allInnerTexts(),['一般地圖','任務地圖','BOSS地圖']);
+ assert.deepEqual(await p.locator('.seconds-destination-bar [data-destination-category]').allInnerTexts(),['一般地圖','BOSS地圖'],'v0.182: 任務地圖 is no longer in the destination bar');
  const mapMenu=p.locator('.seconds-destination-bar select[aria-label="探索地圖"]');
- // BOSS and quest destinations lock the hunting mode; only quests lock the map menu (final maps are BOSS-only).
- for(const [name,mapLocked] of [['BOSS地圖',false],['任務地圖',true]]){await p.locator('[data-destination-category]',{hasText:name}).click();await settled();assert.equal(await mapMenu.isDisabled(),mapLocked,name);
-  await p.locator('[data-adventure-config]').click();assert.match(await p.locator('#modal .seconds-mode-note').innerText(),/依關卡規則生成敵人/);assert.equal(await p.locator('#modal select[aria-label="任務關卡"]').count(),name==='任務地圖'?1:0);await p.getByRole('button',{name:'關閉',exact:true}).click();}
+ // BOSS destinations lock the hunting mode but not the map menu (final maps are BOSS-only); BOSS地圖 shows the BOSS meter.
+ for(const [name,mapLocked] of [['BOSS地圖',false]]){await p.locator('[data-destination-category]',{hasText:name}).click();await settled();assert.equal(await mapMenu.isDisabled(),mapLocked,name);
+  await p.locator('[data-adventure-config]').click();assert.match(await p.locator('#modal .seconds-mode-note').innerText(),/依關卡規則生成敵人/);assert.equal(await p.locator('#modal select[aria-label="任務關卡"]').count(),0);await p.getByRole('button',{name:'關閉',exact:true}).click();
+  assert.match(await p.locator('.seconds-boss-meter').innerText(),/BOSS 進度[\s\S]*挑戰 BOSS/);}
  assert(await p.evaluate(()=>[...document.querySelectorAll('.seconds-destination-bar select option')].some(o=>/LV40|LV 40/.test(o.textContent))||explorationMapChoices('boss').length>explorationMapChoices('explore').length),'BOSS lists the final maps');
  await p.locator('[data-destination-category]',{hasText:'一般地圖'}).click();await settled();assert.equal(await mapMenu.isDisabled(),false);
  await p.locator('[data-adventure-config]').click();
