@@ -1,0 +1,40 @@
+name: Loot effects v0.182
+on:
+  push:
+    branches: ['feature/v0.182-loot-effects']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Verify requested experimental version and unchanged balance
+        run: |
+          node -e "if(require('./data/preview-version.json').version!=='v0.182')throw Error('Expected v0.182')"
+          git diff --exit-code ad05618 -- data/balance.json data/balance
+          node --check js/ui/loot-effects.js
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Loot presentation and settlement regression tests
+        run: >-
+          node --test --test-concurrency=1
+          tests/loot-effects.test.cjs tests/loot-effects.browser.test.cjs
+          tests/preview-version.test.cjs
+      - name: Real online and offline reward consistency
+        run: node --test --test-name-pattern='fixed random sequence' tests/offline-exploration.test.cjs
+      - name: Save desktop and mobile visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loot-effects-v0182
+          path: /tmp/loot-*.png
+          if-no-files-found: ignore
