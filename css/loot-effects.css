@@ -9,7 +9,7 @@
 .loot-fx-flight::after{content:"";position:absolute;right:3px;top:3px;width:30px;height:4px;border-radius:50%;background:linear-gradient(to left,currentColor,transparent);opacity:.7;transform:rotate(-25deg);transform-origin:right}
 .loot-fx-name{position:absolute;min-height:30px;padding:6px 9px;border:1px solid var(--loot-color);border-radius:7px;color:var(--loot-color);background:rgba(12,17,23,.94);box-shadow:0 0 9px color-mix(in srgb,var(--loot-color) 28%,transparent);font:600 12px/1.4 system-ui,sans-serif;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:loot-name 1100ms ease-out both!important}
 .loot-fx-receive{width:36px;height:36px;border:1px solid currentColor;box-shadow:0 0 14px currentColor;animation:loot-receive 280ms ease-out both!important}
-.loot-fx-local{animation-duration:1100ms!important}.loot-fx-local .loot-fx-beam{animation:loot-local-beam 1100ms ease-out both!important}
+.loot-fx-local{animation-duration:1100ms!important}.loot-fx-local .loot-fx-beam{height:24px;animation:loot-local-beam 1100ms ease-out both!important}
 @keyframes loot-drop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}25%,70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:1;transform:translate(-50%,-50%) scale(.8)}}
 @keyframes loot-beam{0%{opacity:0;transform:translateX(-50%) scaleY(.2)}30%,65%{opacity:.45;transform:translateX(-50%) scaleY(1)}100%{opacity:0;transform:translateX(-50%) scaleX(.15) scaleY(.2)}}
 @keyframes loot-flight{0%{opacity:1;transform:translate(-50%,-50%)}50%{opacity:1;transform:translate(calc(-50% + var(--loot-mx)),calc(-50% + var(--loot-my)))}100%{opacity:0;transform:translate(calc(-50% + var(--loot-dx)),calc(-50% + var(--loot-dy))) scale(.5)}}
