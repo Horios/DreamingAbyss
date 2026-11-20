@@ -30,6 +30,8 @@ test('local names fit desktop/mobile battlefield; no flight, tail or receiving l
  await p.setViewportSize(size);await p.evaluate(()=>{setLootEffects('local');spawnGroup();render();lootWin();});
  assert(await p.locator('.loot-fx-local').count()>0);assert(await p.locator('.loot-fx-name').count()>0);assert.equal(await p.locator('.loot-fx-flight,.loot-fx-receive').count(),0);
  const r=await p.locator('#battleEnemyIcons').boundingBox(),names=await p.locator('.loot-fx-name').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}));
+ const health=await p.locator('#battleEnemyIcons .unit-numbers,#battleEnemyIcons .battle-health-bar').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}));
+ for(const n of names)for(const h of health)assert(n.right<=h.left||h.right<=n.left||n.bottom<=h.top||h.bottom<=n.top,'local names must not cover health information');
  for(const n of names){assert(n.left>=r.x-1);assert(n.right<=r.x+r.width+1);assert(n.top>=r.y-1);assert(n.right<=size.width);}
  for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i],b=names[j];assert(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top,'name rectangles must not overlap');}
  await p.screenshot({path:'/tmp/loot-local-'+size.width+'.png'});

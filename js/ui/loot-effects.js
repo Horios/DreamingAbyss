@@ -49,8 +49,9 @@
   for(const node of nodes){if(node.dataset.page!=='equipment'&&(!group||node.dataset.navGroup!==group))continue;const r=rect(node);if(r)return {x:Math.max(18,Math.min(innerWidth-18,r.left+r.width/2)),y:Math.max(18,Math.min(innerHeight-18,r.top+r.height/2)),node};}
   return {x:innerWidth-28,y:Math.max(50,innerHeight-85),node:null};
  }
+ function itemRank(item){return item.gear?gearQualityRank(item.gear):item.kind==='material'&&(item.key==='以太鍛鐵'||item.key==='光輝碎塊')?3:0;}
  function palette(item){
-  const g=item.gear,rank=g?gearQualityRank(g):0;
+  const g=item.gear,rank=itemRank(item);
   // These are the existing rare crafting material inventory keys, not matches on display names.
   const rare=item.kind==='material'&&(item.key==='以太鍛鐵'||item.key==='光輝碎塊');
   const sample=document.createElement('span');sample.className=g?equipmentNameClass(g):'loot-rarity-'+(rare?3:0);
@@ -83,20 +84,23 @@
   if(preference==='off'||!live()||!items.length)return;
   const field=document.querySelector('#battleEnemyIcons'),r=rect(field);if(!r)return;
   const mobile=matchMedia('(max-width:600px)').matches,limit=mobile?8:12,local=preference==='local'||reduced.matches;
-  const columns=Math.max(1,Math.floor(r.width/150)),rowCapacity=Math.max(1,Math.floor((r.height-10)/62));
-  const max=Math.min(mobile?4:6,local?columns*rowCapacity:Infinity);
+  const columns=Math.max(1,Math.floor(r.width/150));
+  const max=Math.min(mobile?4:6,local?columns:Infinity);
+  const allyHead=rect(document.querySelector('.seconds-side-ally>.seconds-side-head'));
+  const localTop=allyHead&&allyHead.top-r.bottom>=38?r.bottom+4:r.top+4;
+  if(local)items.sort((a,b)=>itemRank(b)-itemRank(a));
   // No unbounded queue under rapid victories. Already-visible names keep their full lifetime.
   const free=Array.from({length:max},(_,i)=>i).filter(i=>!slots.has(i));
   const count=Math.min(items.length,free.length,Math.max(0,Math.floor((limit-active.size)/2)));if(!count)return;
-  const rows=Math.ceil(max/columns),width=Math.min(220,Math.max(100,r.width/columns-8));
+  const width=Math.min(220,Math.max(100,r.width/columns-8));
   for(const [i,item] of items.slice(0,count).entries()){
    const {color,rank}=palette(item),enemy=[...field.querySelectorAll('[data-enemy-id]')].find(n=>n.dataset.enemyId===String(item.enemyId)),er=rect(enemy);
    const slot=free[i];slots.add(slot);
-   const col=slot%columns,row=Math.floor(slot/columns),x=local?r.left+(col+.5)*r.width/columns:Math.max(r.left+12,Math.min(r.right-12,(er?er.left+er.width/2:r.left+r.width/2)+(i-(count-1)/2)*22));
-   const y=local?Math.min(innerHeight-20,r.bottom-10)-((rows-1-row)*62):Math.min(innerHeight-20,(er?.bottom||r.bottom)-8);
+   const col=slot%columns,x=local?r.left+(col+.5)*r.width/columns:Math.max(r.left+12,Math.min(r.right-12,(er?er.left+er.width/2:r.left+r.width/2)+(i-(count-1)/2)*22));
+   const y=local?Math.min(innerHeight-20,localTop+36):Math.min(innerHeight-20,(er?.bottom||r.bottom)-8);
    const n=node('loot-fx-drop'+(local?' loot-fx-local':''),item,color);n.style.left=x+'px';n.style.top=y+'px';n.style.setProperty('--loot-power',String(1+rank*.15));
    n.innerHTML='<i class="loot-fx-beam"></i><i class="loot-fx-point"></i>';mount(n);
-   if(local)label(item,color,x,Math.max(r.top,y-56),width,slot);
+   if(local)label(item,color,x,localTop,width,slot);
    finishAnimation(n,local?null:()=>flight(item,color,x,y,slot,width),slot);
   }
  }
