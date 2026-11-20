@@ -1,0 +1,33 @@
+name: Loot effects v0.182
+on:
+  push:
+    branches: ['feature/v0.182-loot-effects']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Verify requested experimental version and unchanged balance
+        run: |
+          node -e "if(require('./data/preview-version.json').version!=='v0.182')throw Error('Expected v0.182')"
+          git diff --exit-code ad05618 -- data/balance.json data/balance
+          node --check js/ui/loot-effects.js
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Related runtime and browser regression tests
+        run: >-
+          node --test --test-concurrency=2
+          tests/loot-effects.browser.test.cjs tests/battle-effects.test.cjs
+          tests/battle-effects.browser.test.cjs tests/seconds-runtime.test.cjs
+          tests/gear-overflow.test.cjs tests/preview-version.test.cjs
+          tests/offline-exploration.test.cjs
