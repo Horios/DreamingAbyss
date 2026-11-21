@@ -22,8 +22,10 @@
     const foe={monsterId:m.id,kind,lv:Number(MAPS[m.mapIndex]?.max)||1,region:m.mapIndex,difficulty:party.difficulty||0,mat:m.material||m.mat};
     const groups={常見:[],少見:[],稀有:[]};
     const material=foe.mat;if(material&&kind!=='boss')groups['常見'].push(material);
-    if(kind!=='boss')groups[GAMEPLAY_SETTINGS.rewards?.ore?.chanceFactor>=.1||kind==='elite'?'常見':'少見'].push('粉塵');
-    for(const r of configuredDropRules(foe))groups[tier(chance(r,kind))].push(ruleName(r));
+    const ore=GAMEPLAY_SETTINGS.rewards?.ore||{},factor=Math.max(0,Math.min(1,Number(ore.chanceFactor??1)));
+    const dustChance=(kind==='normal'?(ore.normalChanceByDifficulty?.[foe.difficulty]??1):1)*factor;
+    if(dustChance>0)groups[tier(dustChance)].push('粉塵');
+    for(const r of configuredDropRules(foe)){const c=chance(r,kind);if(c>0)groups[tier(c)].push(ruleName(r));}
     // Each item is listed once, in its most likely group.
     const seen=new Set();return Object.fromEntries(Object.entries(groups).map(([k,v])=>[k,unique(v).filter(x=>!seen.has(x)&&seen.add(x))]));
   }

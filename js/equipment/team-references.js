@@ -29,17 +29,19 @@
     const b=copy(T.build()),bag=state.bag,selected=party.selected,hp=party.members.map(h=>h.hp),memberGear=party.members.map(x=>({equipped:copy(x.equipped),tokenId:x.tokenId})),h=T.player(),resource={};
     for(const k of ['gold','ore','dust','gems','materials','potions','consumables'])resource[k]=copy(h[k]);
     const healingPotions=copy(healingInventory()),oldBoard=copy(h.board);
-    const removed=new Set(items.map(g=>g.id));
+    const removed=new Set(items.map(g=>g.id));let total=0;
     try{
       M.clearReferences(T.build(),[...removed]);
       for(const x of party.members){x.equipped=x.equipped.map(id=>removed.has(id)?null:id);if(removed.has(x.tokenId))x.tokenId=null;}
-      let total=0;for(const g of items){globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.refund(g,h);if(mode==='extract')continue;if(mode==='sell'){const price=equipmentSellPrice(g);h.gold+=price;total+=price;}else grantSalvageRewards(g,includeEnhance);}
+      for(const g of items){globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.refund(g,h);if(mode==='extract')continue;if(mode==='sell'){const price=equipmentSellPrice(g);h.gold+=price;total+=price;}else grantSalvageRewards(g,includeEnhance);}
       // v0.172: a skill extraction moves the skill onto a token inside this same transaction (rolled back with it).
       if(mode==='extract')options.apply?.();
       state.bag=bag.filter(g=>!removed.has(g.id));if(mode==='salvage')globalThis.recordDailyProgress?.('salvage','',items.length);
       for(const x of party.members)x.hp=Math.min(x.hp,stats(x).hp);
-      if(save()===false)throw Error('儲存失敗');pruneGearSelections();render();toast(mode==='extract'?(options.message||'已萃取'):`已${verb} ${items.length} 件装備${mode==='sell'?'，獲得 '+total+' 金幣':''}${blocked.length?'；略過 '+blocked.length+' 件目前戰鬥隊伍裝備':''}`);return true;
+      if(save()===false)throw Error('儲存失敗');
     }catch(e){h.board=oldBoard;party.buildSystem=b;state.bag=bag;for(const k of Object.keys(resource))h[k]=resource[k];const inv=healingInventory();for(const k of Object.keys(inv))delete inv[k];Object.assign(inv,healingPotions);party.selected=selected;state=partyMember(selected)||h;party.members.forEach((x,i)=>{x.equipped=copy(memberGear[i].equipped);x.tokenId=memberGear[i].tokenId;x.hp=hp[i];});toast('操作未保存：'+e.message);return false;}
+    // The save is committed. A rendering error must not restore items/resources only in memory.
+    pruneGearSelections();render();toast(mode==='extract'?(options.message||'已萃取'):`已${verb} ${items.length} 件装備${mode==='sell'?'，獲得 '+total+' 金幣':''}${blocked.length?'；略過 '+blocked.length+' 件目前戰鬥隊伍裝備':''}`);return true;
   }
   globalThis.__EMBERWILD_DISPOSE_GEAR=dispose;
   salvage=id=>dispose([id],'salvage');globalThis.sellGear=id=>dispose([id],'sell');
