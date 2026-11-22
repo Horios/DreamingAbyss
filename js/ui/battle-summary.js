@@ -16,6 +16,7 @@
   // Keep the actual array, including its final HP, even if result cleanup clears
   // the global foes binding. This is O(1), including during offline simulation.
   terminal={owner:party,units:foes,name:currentExplorationName(),result};
+  globalThis.__EMBERWILD_COMPANION_BATTLE_MASTERY?.(result);
   globalThis.__EMBERWILD_MASTERY_BATTLE_NOTE?.();
  }
  function snapshot(){return globalThis.EmberwildBattleConfiguration?EmberwildBattleConfiguration.combat(snapshotCore):snapshotCore();}

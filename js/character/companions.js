@@ -149,6 +149,14 @@
     return gain;
   }
   globalThis.__EMBERWILD_COMPANION_MASTERY_GAIN=companionMasteryGain;
+  // One participation XP per settled encounter, including defeats and fallen allies.
+  // The encounter array is shared by online/offline settlement; repeated finish calls are harmless.
+  const settledMasteryEncounters=new WeakSet();
+  globalThis.__EMBERWILD_COMPANION_BATTLE_MASTERY=function(result){
+    if(!party||!foes.length||!['victory','wipe'].includes(result)||settledMasteryEncounters.has(foes))return;
+    settledMasteryEncounters.add(foes);
+    for(const h of heroes())if(h.companionId!==undefined)__EMBERWILD_MASTERY.gainMastery(h,null,1);
+  };
   function syncCompanionLevels({fullHealth=false}={}){
     const player=party?.members[0];if(!player)return;
     hideCompanions(party);
@@ -273,7 +281,9 @@
   globalThis.rememberCompanionRosterDetail=function(key,kind,open){if(partyMember(key)&&['ability','skills'].includes(kind))rosterDetails.set(key+':'+kind,!!open);};
   function memberRow(h,manage=false){
     const key=memberKey(h),plan=companionPlan(h),player=h===party.members[0];
-    const header=`<div><div class="member-identity"><b>${esc(characterName(h))}</b>${memberIdentityTags(h)}</div>${plan?`<p class="small">${esc(plan.description)}</p>`:''}</div><div class="roster-member-actions">${manage?`<button onclick="setPartnerEnlisted(${key},${!isEnlisted(h)})" ${party.active.includes(key)?'disabled':''}>${isEnlisted(h)?'移出現役':'編入現役'}</button>`:`<button onclick="toggleMember(${key})">${party.active.includes(key)?'移至後備':'加入上陣'}</button>`}${player?`<button onclick="requestRename(${key})">改名</button>`:''}</div>`;
+    const progress=player?null:__EMBERWILD_MASTERY.masteryProgress(classMasteryXp(h));
+    const masteryText=progress?`<p class="small companion-mastery-progress">職業精通 Lv${progress.level} · ${progress.next?'經驗 '+progress.current+' / '+progress.next:'已達上限'}</p>`:'';
+    const header=`<div><div class="member-identity"><b>${esc(characterName(h))}</b>${memberIdentityTags(h)}</div>${masteryText}${plan?`<p class="small">${esc(plan.description)}</p>`:''}</div><div class="roster-member-actions">${manage?`<button onclick="setPartnerEnlisted(${key},${!isEnlisted(h)})" ${party.active.includes(key)?'disabled':''}>${isEnlisted(h)?'移出現役':'編入現役'}</button>`:`<button onclick="toggleMember(${key})">${party.active.includes(key)?'移至後備':'加入上陣'}</button>`}${player?`<button onclick="requestRename(${key})">改名</button>`:''}</div>`;
     const detail=(kind,title,view)=>`<details class="companion-roster-${kind}" ${rosterDetails.get(key+':'+kind)?'open':''} ontoggle="rememberCompanionRosterDetail(${key},'${kind}',this.open)"><summary>${title}</summary><div class="companion-roster-detail-content">${withHero(h,view)}</div></details>`;
     return `<article class="roster-row ${player?'roster-player-row':''} ${manage?'roster-owned-row':''}" data-member-key="${key}">${manage?`<div class="roster-member-header">${header}</div>`:header}${manage&&!player?`<div class="companion-roster-details">${detail('ability','夥伴能力',companionCharacterView)}${detail('skills','夥伴技能',companionSkillsView)}</div>`:''}</article>`;
   }

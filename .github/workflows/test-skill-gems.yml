@@ -99,7 +99,7 @@ jobs:
               tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/skill-equipment-tutorial.test.cjs tests/skill-system-model.test.cjs tests/passive-save-compat.test.cjs tests/skill-system-runtime.test.cjs tests/legacy-member-skills.test.cjs
           - group: skill-events
             tests: >-
-              tests/initial-clearing-skills.test.cjs tests/battle-configuration.test.cjs
+              tests/initial-clearing-skills.test.cjs tests/battle-configuration.test.cjs tests/companion-battle-mastery.test.cjs
           - group: skill-effects
             tests: >-
               tests/status-advanced.test.cjs tests/skill-effects.test.cjs tests/shop-rule-price-name.test.cjs
