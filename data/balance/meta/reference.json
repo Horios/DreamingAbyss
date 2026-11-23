@@ -225,7 +225,8 @@
     "boss": "BOSS 專屬裝備沒有前後綴與隨機洗鍊詞條；bossAffixes 每筆固定 3 條效果。",
     "effects": [
       "basicElement",
-      "basicAdvanceNextRound",
+      "basicAttackSpeedStack",
+      "attackSpeedPct",
       "flatHp",
       "gearHpPct",
       "hpPct",

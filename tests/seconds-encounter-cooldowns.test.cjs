@@ -49,7 +49,7 @@ test('each encounter re-applies initial cooldowns and a full basic charge; recov
 
 test('heroes use their class interval and monsters their own catalog interval',()=>{
  const intervals=Object.fromEntries(doc.balanceSettings.combat.seconds.classes.map(c=>[c.job,c.baseIntervalSeconds]));
- assert.deepEqual(intervals,{0:2,1:2.8,2:1.6,3:2.5});
+ assert.deepEqual(intervals,{0:2,1:2.65,2:1.4,3:2.65},'v0.196 class base intervals');
  for(const job of [0,1,2,3]){const r=game(job);step(r);
   const v=json(r,`(()=>{const T=EmberwildSecondsCombat.timeline,h=T.find(heroKey(state)),e=T.find(foes[0].id);return {hero:h.definition.baseIntervalSeconds,foe:e.definition.baseIntervalSeconds,catalog:EmberwildSecondsCombat.source.balanceSettings.monsters.catalog.find(m=>m.id===foes[0].monsterId).timing.baseIntervalSeconds};})()`);
   assert.equal(v.hero,intervals[job]);assert.equal(v.foe,v.catalog);assert.deepEqual(r.errors,[]);

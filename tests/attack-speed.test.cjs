@@ -130,9 +130,9 @@ test('runtime: live exploration never schedules two basics of one hero closer th
  const g=game(2);
  g.r.run(`{const w=equipment(playerHero())[0];w.skillSockets={version:1,count:3,gems:[11,11,11]};__EMBERWILD_SKILLS.refreshAll();globalThis.__asTotal=companionPassiveStatEffects;companionPassiveStatEffects=h=>[...__asTotal(h),{key:'attackSpeedPct',value:400}];}`);
  g.r.run(`globalThis.__basics=[];{const base=performHeroBasic;performHeroBasic=function(h){__basics.push(partyClock);return base.apply(this,arguments);};}`);
- g.r.run(`running=true;for(let i=0;i<400&&partyClock<120;i++){const r=EmberwildSecondsCombat.step();if(r&&r.delaySeconds)partyClock=Math.max(partyClock,EmberwildSecondsCombat.nextSimulationAt);}`);
+ g.r.run(`globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();for(const e of foes){e.hp=e.maxhp=1e9;e.atk=0;}for(let i=0;i<20000&&__basics.length<40;i++){const r=EmberwildSecondsCombat.step();if(r&&r.delaySeconds)partyClock=Math.max(partyClock,EmberwildSecondsCombat.nextSimulationAt);}`);
  const times=g.read('__basics').map(t=>Math.round(t*1e6));
- assert.ok(times.length>10,'basics happened: '+times.length);
+ assert.ok(times.length>=40,'basics happened: '+times.length);
  const gs=gaps(times);assert.ok(gs.every(x=>x>=666667),'min gap '+Math.min(...gs));
 });
 
