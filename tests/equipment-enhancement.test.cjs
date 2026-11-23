@@ -1,27 +1,29 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
 const curve=require('../js/balance/progression-model.js');
-const root=path.resolve(__dirname,'..'),flat={atk:.5,hp:1,def:.2},growth={atk:.02,hp:.08,def:.015};
+const root=path.resolve(__dirname,'..'),flat={atk:1,hp:1,def:.35},growth={atk:.02,hp:.08,def:.015};
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();');return r;}
 
-// The progression module's own fallback (fixed refinement by equipment level). Since v0.180 the game replaces it with the
-// percentage table of js/equipment/enhancement-rules.js; the tests after this one check the game.
-test('refinement depends only on equipment level, adds after T and never creates absent stats',()=>{
-  assert.deepEqual(curve.enhancedGearStats({atk:3,hp:0,def:0},10,1),{hp:0,atk:13,def:0});
-  assert.deepEqual(curve.enhancedGearStats({atk:0,hp:8,def:2},10,1),{hp:18,atk:0,def:12});
-  for(const [level,atk,hp,def] of [[1,10,10,10],[10,10,20,10],[30,20,40,10],[60,20,60,20]]){
-    for(const base of [1,3,36,100]){
-      const out=curve.enhancedGearStats({atk:base,hp:base,def:base},10,level);
-      assert.deepEqual(out,{hp:base+hp,atk:base+atk,def:base+def});
+const bonus=[0,.05,.10,.15,.22,.30,.40,.55,.75,1,1.3,1.6,1.9];
+test('shared enhancement formula takes the greater gain over +0..+12 and item levels 1/5/10/30/60',()=>{
+  for(const L of [1,5,10,30,60])for(const B of [0,1,3,8,30,100]){
+    let previous;
+    for(let n=0;n<=12;n++){
+      const out=curve.enhancedGearStats({atk:B,hp:B,def:B},n,L,flat,growth,bonus[n]);
+      for(const k of ['atk','hp','def']){
+        assert.equal(out[k],B===0?0:B+Math.max(Math.round(B*bonus[n]),Math.round(n*(flat[k]+growth[k]*(L-1)))));
+        assert(Number.isSafeInteger(out[k]));if(previous)assert(out[k]>=previous[k]);
+        if(k==='atk'&&B>0&&previous)assert(out[k]>previous[k]);
+      }
+      previous=out;
     }
   }
-  assert.deepEqual([0,1,2,3,4,5,10,15].map(p=>curve.enhancedGearStats({atk:3},p,1).atk),[3,4,5,6,7,8,13,18]);
+  assert.deepEqual([0,1,3,5,8,10,12].map(n=>curve.enhancedGearStats({atk:3},n,1,flat,growth,bonus[n]).atk),[3,4,6,8,11,13,15]);
+  assert.equal(curve.enhancedGearStats({atk:30},10,60,flat,growth,bonus[10]).atk,69);
+  assert.deepEqual(curve.enhancedGearStats({atk:0,hp:8,def:2},10,1,flat,growth,bonus[10]),{hp:18,atk:0,def:6});
 });
 
-// v0.180: enhancement multiplies the item's base attack / HP / defense by the cumulative bonus of the table
-// (+1 5% … +9 100%, +10 130%, +12 190%); success rates are forced with Math.random so every step succeeds.
-const bonus=[0,.05,.10,.15,.22,.30,.40,.55,.75,1,1.3,1.6,1.9];
 const sure="Math.random=()=>0;";
 test('actual enhancement, preview, combat stats and an existing +10 save use the same growth without changing base/T',()=>{
   const r=game(),out=json(r,`(()=>{${sure}
@@ -122,7 +124,11 @@ test('all slots and T grades stay monotonic and additive; BOSS percentages apply
         const g=gear(tier,slot,0,job);Object.assign(g,{powerTier:t,formJob:job,form:0,prefixId:'',suffixId:'',affix:[]});delete g.baseSnapshot;
         let previous;for(let plus=0;plus<=12;plus++){
           g.plus=plus;const b=gearStatBreakdown(g),ledger=equipmentStatContributions(g);checked++;
-          for(const k of ['atk','hp','def'])if(!Number.isSafeInteger(b.total[k])||b.total[k]!==b.body[k]+b.grade[k]+b.enhance[k]||(previous&&b.total[k]<previous[k])||(b.body[k]===0&&b.total[k]!==0)||b.total[k]!==Math.round((b.body[k]+b.grade[k])*(1+[0,.05,.10,.15,.22,.30,.40,.55,.75,1,1.3,1.6,1.9][plus])))issues.push('growth '+[job,slot,tier,t,plus,k]);
+          for(const k of ['atk','hp','def']){
+            const B=b.body[k]+b.grade[k],rate=[0,.05,.10,.15,.22,.30,.40,.55,.75,1,1.3,1.6,1.9][plus],cfg=GAMEPLAY_SETTINGS.equipment.enhance;
+            const expected=B>0?B+Math.max(Math.round(B*rate),Math.round(plus*(cfg.flatStatsPerLevel[k]+cfg.flatStatsPerEquipmentLevel[k]*(gearRequiredLevel(g)-1)))):0;
+            if(!Number.isSafeInteger(b.total[k])||b.total[k]!==b.body[k]+b.grade[k]+b.enhance[k]||(previous&&b.total[k]<previous[k])||b.total[k]!==expected)issues.push('growth '+[job,slot,tier,t,plus,k]);
+          }
           for(const k of ['atk','hp','def','speed'])if(ledger.total[k]!==ledger.rows.reduce((n,row)=>n+row.stats[k],0))issues.push('ledger');
           previous=b.total;
         }
@@ -149,4 +155,31 @@ test('the enhancement table roundtrips, older JSON without it receives the defau
   assert.equal(out.old.levels.length,12);assert.equal(out.old.costLevelStep,5);assert.equal(out.old.levels[3].successRate,.9);
   assert.equal(out.exported.levels[0].baseBonus,.5);assert.equal(out.exported.costLevelStep,10);
   assert.equal(out.attack,Math.round(out.base*1.5));assert.match(out.error,/依序/);assert.deepEqual(r.errors,[]);
+});
+
+
+test('runtime floors follow item levels, survive old enhanced saves, and ignore tokens, affixes and absent base stats',()=>{
+ const r=game(),out=json(r,`(()=>{
+  const rows=[];
+  for(const L of [1,5,10,30,60])for(const slot of [0,1,2]){
+   const g=gear(1,slot,0,0);Object.assign(g,{equipmentLevel:L,plus:0,powerTier:1,formJob:0,form:0,affix:[],prefixId:'',suffixId:''});delete g.baseSnapshot;state.bag.push(g);
+   const B=gearBaseStats(g),snapshot=JSON.stringify(g.baseSnapshot);
+   for(let n=0;n<=12;n++){
+    g.plus=n;const total=gearBaseStats(g);globalThis.__EMBERWILD_OFFLINE_RULE_CACHE={};const cached=gearBaseStats(g);delete globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;
+    rows.push({L,n,B,total,cached,stable:snapshot===JSON.stringify(g.baseSnapshot)});
+   }
+  }
+  const g=state.bag.find(x=>x.slot===0&&!EmberwildTokens.isToken(x));g.plus=10;const id=g.id,B=gearBaseStats({...g,plus:0}),snapshot=JSON.stringify(g.baseSnapshot);
+  loadParty(JSON.parse(JSON.stringify(packParty())));const restored=findGear(id),afterLoad=gearBaseStats(restored),preserved=snapshot===JSON.stringify(restored.baseSnapshot);
+  const token=__EMBERWILD_TOKEN_TEST.makeToken('arcane');token.plus=10;const tokenBefore=JSON.stringify(EmberwildTokens.effectsFor(token));
+  const doc=exportableBalance();doc.balanceSettings.equipment.enhance.flatStatsPerLevel.atk=2.25;doc.balanceSettings.equipment.enhance.flatStatsPerEquipmentLevel.atk=.1;applyBalanceConfig(doc,{persist:false});
+  const edited=gearBaseStats(restored),exported=exportableBalance().balanceSettings.equipment.enhance,tokenAfter=JSON.stringify(EmberwildTokens.effectsFor(token));
+  const invalid=structuredClone(doc);invalid.balanceSettings.equipment.enhance.flatStatsPerLevel.def=-1;let rejected=false;try{applyBalanceConfig(invalid,{persist:false});}catch{rejected=true;}
+  return {rows,B,afterLoad,preserved,edited,exported,tokenBefore,tokenAfter,rejected};
+ })()`);
+ assert.equal(out.rows.length,195);
+ for(const row of out.rows){for(const k of ['atk','hp','def'])assert.equal(row.total[k],row.B[k]>0?row.B[k]+Math.max(Math.round(row.B[k]*bonus[row.n]),Math.round(row.n*(flat[k]+growth[k]*(row.L-1)))):0,JSON.stringify(row));assert.deepEqual(row.cached,row.total);assert(row.stable);}
+ assert.equal(out.afterLoad.atk,out.B.atk+Math.max(Math.round(out.B.atk*1.3),10));assert(out.preserved);
+ assert.equal(out.edited.atk,out.B.atk+Math.max(Math.round(out.B.atk*1.3),23));assert.equal(out.exported.flatStatsPerLevel.atk,2.25);assert.equal(out.exported.flatStatsPerEquipmentLevel.atk,.1);
+ assert.equal(out.tokenAfter,out.tokenBefore);assert(out.rejected);assert.deepEqual(r.errors,[]);
 });

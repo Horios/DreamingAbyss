@@ -69,9 +69,9 @@
       "enhance": {
         "statPerLevel": 0.05,
         "flatStatsPerLevel": {
-          "atk": 0.5,
+          "atk": 1,
           "hp": 1,
-          "def": 0.2
+          "def": 0.35
         },
         "flatStatsPerEquipmentLevel": {
           "atk": 0.02,
@@ -219,20 +219,20 @@
     const difficulty=settings.difficulty.modes[mode]?.goldMultiplier??1;
     return Math.max(0,Math.floor(base*mult*difficulty));
   }
-  // Refinement adds fixed stats based only on the item's required level. T grade
-  // applies to the base first; it never multiplies these refinement gains.
-  function enhancedGearStats(base,plus,equipmentLevel,flat=defaults.settings.equipment.enhance.flatStatsPerLevel,growth=defaults.settings.equipment.enhance.flatStatsPerEquipmentLevel){
-    const levels=Math.max(0,Number(plus)||0),itemLevels=Math.max(0,(Number(equipmentLevel)||1)-1);
+  // Shared enhancement calculation: the percentage gain and the level-based floor
+  // compete; neither multiplies affixes, gems or the floor itself by the T grade.
+  function enhancedGearStats(base,plus,equipmentLevel,flat=defaults.settings.equipment.enhance.flatStatsPerLevel,growth=defaults.settings.equipment.enhance.flatStatsPerEquipmentLevel,baseBonus=0){
+    const n=Math.max(0,Math.floor(Number(plus)||0)),L=Math.max(1,Number(equipmentLevel)||1);
     return Object.fromEntries(['hp','atk','def'].map(k=>{
-      const value=Math.max(0,Number(base[k])||0),gain=(Number(flat[k])||0)+itemLevels*(Number(growth[k])||0);
-      return [k,value>0?value+levels*Math.max(1,Math.ceil(gain)):0];
+      const B=Math.max(0,Number(base?.[k])||0),percent=Math.round(B*Math.max(0,Number(baseBonus)||0)),floor=Math.round(n*((Number(flat?.[k])||0)+(Number(growth?.[k])||0)*(L-1)));
+      return [k,B>0?B+Math.max(percent,floor):0];
     }));
   }
   function gearStats(raw,effects,power,plus,equipmentLevel=1,flat,growth){
     const rounded=v=>Object.fromEntries(['hp','atk','def'].map(k=>[k,Math.max(0,Math.round(v[k]||0))]));
     const body=rounded({hp:raw.hp*(1+(effects.hp||0)/100),atk:raw.atk*(1+(effects.atk||0)/100),def:raw.def*(1+(effects.def||0)/100)});
     const graded=rounded(Object.fromEntries(['hp','atk','def'].map(k=>[k,body[k]*power])));
-    // v0.180: the game replaces api.enhancedGearStats with the percentage enhancement table (js/equipment/enhancement-rules.js).
+    // The runtime supplies the current table percentage through api.enhancedGearStats.
     const total=api.enhancedGearStats(graded,plus,equipmentLevel,flat,growth);
     const grade=Object.fromEntries(['hp','atk','def'].map(k=>[k,graded[k]-body[k]])),enhance=Object.fromEntries(['hp','atk','def'].map(k=>[k,total[k]-graded[k]]));
     return {raw:rounded(raw),body,grade,enhance,total};

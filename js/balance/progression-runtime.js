@@ -14,8 +14,8 @@
   balanceReference=function(){
     const out=referenceBase();out.balancePaths??={};out.legacySettings??={};
     Object.assign(out.balancePaths,{
-      'balanceSettings.equipment.enhance.flatStatsPerLevel':'LV1 裝備每次精煉固定增加的 atk/hp/def。只增加基底原有屬性，累計精煉等級後取整。',
-      'balanceSettings.equipment.enhance.flatStatsPerEquipmentLevel':'每增加 1 裝備需求等級，每次精煉再增加的固定 atk/hp/def；與 flatStatsPerLevel 相加。不受 T 級、基底數值或角色等級影響。',
+      'balanceSettings.equipment.enhance.flatStatsPerLevel':'LV1 裝備每 +1 的最低收益係數 atk/hp/def；round(強化等級 × (固定係數 + 裝等成長 × (需求等級 - 1))) 與 round(原始基礎能力 × 累計百分比) 取較大值，只增加原有屬性，信物維持百分比。',
+      'balanceSettings.equipment.enhance.flatStatsPerEquipmentLevel':'每多 1 裝備需求等級，最低收益每次強化的 atk/hp/def 成長係數；與 flatStatsPerLevel 相加，乘強化等級後四捨五入，和百分比收益取較大值。',
       'classes[].initialStats':'職業固定基礎能力（v0.161 起沒有角色等級成長）。',
       'balanceSettings.skills.mastery':'職業精通與武器／元素精通的經驗曲線（xpBase + L×xpLinear + L²×xpQuadratic）與上限 maxLevel；達上限後不再累積。',
       'balanceSettings.rewards.gold':'金幣採獨立曲線和各怪物種類倍率，不共用 EXP。',

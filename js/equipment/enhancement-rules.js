@@ -48,9 +48,12 @@
   const failText=f=>f===null?'—':f==='destroy'?'裝備損毀':'退至 +'+f;
   const pct=n=>Math.round(n*100)+'%';
 
-  // Base attack / HP / defense after enhancement: each base stat × (1 + cumulative bonus), rounded.
+  // Keep the greater of the cumulative percentage gain and the equipment-level floor.
   const P=globalThis.EmberwildProgression;
-  if(P)P.enhancedGearStats=function(base,plus){const m=1+bonusAt(Number(plus)||0);return Object.fromEntries(['hp','atk','def'].map(k=>{const v=Math.max(0,Number(base?.[k])||0);return [k,v>0?Math.round(v*m):0];}));};
+  const sharedEnhancedStats=P?.enhancedGearStats;
+  if(P)P.enhancedGearStats=function(base,plus,equipmentLevel=1,flat=settings().flatStatsPerLevel,growth=settings().flatStatsPerEquipmentLevel){
+    return sharedEnhancedStats(base,plus,equipmentLevel,flat,growth,bonusAt(Number(plus)||0));
+  };
 
   // v0.181: companion tokens follow the same table. Their attribute effects grow by the same cumulative bonus instead of
   // the former +5% per level (statPerLevel); special abilities keep their parameters.
@@ -109,11 +112,11 @@
     if(g.slot===ACCESSORY_SLOT)return '<p class="small enhance-locked">飾品無法強化。</p>';
     if(g.canEnhance===false)return '<p class="small enhance-locked">此裝備不可強化。</p>';
     const plus=g.plus||0,MAX=maxLevel();
-    if(plus>=MAX)return `<p class="gold">已達 +${MAX} 強化上限（基礎能力 +${pct(bonusAt(plus))}）。</p>`;
+    if(plus>=MAX)return `<p class="gold">已達 +${MAX} 強化上限（百分比加成 +${pct(bonusAt(plus))}，與最低收益取較高值）。</p>`;
     const target=plus+1,r=row(target),now=gearBaseStats(g),next=gearBaseStats({...g,plus:target});
     const gains=['atk','hp','def'].filter(k=>next[k]>now[k]).map(k=>`${{atk:'攻擊',hp:'生命',def:'防禦'}[k]} +${next[k]-now[k]}`).join(' / ')||'基礎數值較小，這一級四捨五入後沒有增加';
     const fail=r.fail===null?'':r.fail==='destroy'?`<p class="enhance-danger">失敗時裝備會損毀並消失（穿戴中與任務裝備也一樣），強化前會再次確認。</p>`:`<p class="small">失敗時：退至 +${r.fail}</p>`;
-    return `<p class="green">強化至 +${target}：基礎能力 +${pct(bonusAt(plus))} → +${pct(r.bonus)}，${gains}</p><p class="small">費用：${itemCostHTML(g)}${levelMultiplier(g)>1?'（裝等 '+gearRequiredLevel(g)+'，材料 ×'+levelMultiplier(g)+'）':''} · 成功率 ${pct(r.rate)}</p>${fail}<button class="${r.fail==='destroy'?'danger':'primary'}" onclick="enhance('${g.id}')" ${canEnhance(g)?'':'disabled'}>強化至 +${target}</button>`;
+    return `<p class="green">強化至 +${target}：基礎能力 +${pct(bonusAt(plus))} → +${pct(r.bonus)}（與最低收益取較高值），${gains}</p><p class="small">費用：${itemCostHTML(g)}${levelMultiplier(g)>1?'（裝等 '+gearRequiredLevel(g)+'，材料 ×'+levelMultiplier(g)+'）':''} · 成功率 ${pct(r.rate)}</p>${fail}<button class="${r.fail==='destroy'?'danger':'primary'}" onclick="enhance('${g.id}')" ${canEnhance(g)?'':'disabled'}>強化至 +${target}</button>`;
   }
   // Token forge: the attribute effects (not the special ability) grow by the table's cumulative bonus.
   function tokenControlsHTML(g){

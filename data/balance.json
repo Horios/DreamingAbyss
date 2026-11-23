@@ -9734,9 +9734,9 @@
         "maxLevel": 12,
         "statPerLevel": 0.05,
         "flatStatsPerLevel": {
-          "atk": 0.5,
+          "atk": 1,
           "hp": 1,
-          "def": 0.2
+          "def": 0.35
         },
         "flatStatsPerEquipmentLevel": {
           "atk": 0.02,

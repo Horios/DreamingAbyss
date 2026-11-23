@@ -56,14 +56,15 @@ test('+11/+12 failures destroy the item, worn or not, after a warning; declining
  r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');assert.equal(r.run(`!!findGear('${id}')`),false);
  assert.deepEqual(r.errors,[]);
 });
-test('accessories cannot be enhanced; base stats grow by the cumulative bonus only',()=>{
+test('accessories cannot be enhanced; existing base stats take the larger of percentage and minimum gains',()=>{
  const r=game();
  const acc=r.run(`(()=>{const g=gear(1,3,0,0);addGear(g);return g.id;})()`);
  assert.equal(r.run(`canEnhance(findGear('${acc}'))`),false);r.run(`enhance('${acc}')`);assert.equal(r.run(`findGear('${acc}').plus`),0);
  assert.match(r.run(`${E}.controlsHTML(findGear('${acc}'))`),/飾品無法強化/);
  const id=r.run('weapon()'),base=json(r,`gearBaseStats(findGear('${id}'))`);
  r.run(`roll=0;for(let i=0;i<9;i++)enhance('${id}')`);const at9=json(r,`gearBaseStats(findGear('${id}'))`);
- for(const k of ['atk','hp','def'])assert.equal(at9[k],base[k]>0?Math.round(base[k]*2):0,k+' doubles at +9 (100%)');
+ const cfg=json(r,'GAMEPLAY_SETTINGS.equipment.enhance');
+ for(const k of ['atk','hp','def'])assert.equal(at9[k],base[k]>0?base[k]+Math.max(base[k],Math.round(9*cfg.flatStatsPerLevel[k])):0,k+' takes the greater gain at +9');
  assert.deepEqual(r.errors,[]);
 });
 test('鍛鐵 and 粉塵 swapped drop sources and salvage amounts',()=>{
