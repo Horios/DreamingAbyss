@@ -32,7 +32,7 @@
       definitions.push(sk);classRules[job].initial.push({skillId:id,level:sk.requiredLevel});
     }
     for(const sk of definitions)if(sk.sources.some(s=>s.type==='advanced'))classRules[sk.jobs[0]].advanced.push({skillId:sk.id,level:Math.max(15,sk.requiredLevel??sk.level??1)});
-    const gems=[['atk','flat',[2,4,6]],['speed','flat',[1,2,3]],['crit','ratio',[.01,.02,.03]],['hp','flat',[10,20,30]],['def','flat',[1,2,3]]].map(([stat,unit,values],kind)=>({kind,base:{stat,unit,values}}));
+    const gems=[['atk','flat',[2,4,6]],['attackSpeedPct','percent',[1,2,3]],['crit','ratio',[.01,.02,.03]],['hp','flat',[10,20,30]],['def','flat',[1,2,3]]].map(([stat,unit,values],kind)=>({kind,base:{stat,unit,values}}));
     return addClearingSkills({version:VERSION,definitions,classRules,equipment:{formRules:[],socketBands:[{minLevel:1,maxLevel:10,weights:[.7,.3,0,0]},{minLevel:11,maxLevel:20,weights:[.35,.5,.15,0]},{minLevel:21,maxLevel:999,weights:[.1,.35,.35,.2]}],sourceRules:[{source:'starter',weights:[1,0,0,0]},{source:'boss',weights:[0,.3,.4,.3]}]},gems},d);
   }
   function clearingStatus(){return {"id":"holy-prison-mark","name":"神聖光牢","tags":[],"polarity":"debuff","dispellable":true,"duration":99,"permanent":true,"durationClock":"target","stackable":true,"uses":1,"removeOnTrigger":true,"modifiers":[],"control":null,"periodic":[],"triggers":[{"event":"targetTurnEnd","effect":"damage","power":0.5,"target":"enemies","element":"light","allowDeathChain":true,"chainMultiplier":1},{"event":"targetDeath","effect":"damage","power":0.3,"target":"enemies","element":"light","allowDeathChain":true,"chainMultiplier":1}]};}
@@ -68,6 +68,9 @@
       if(sk.eventPassive){const e=sk.eventPassive;if(sk.type!=='passive'||!['kill','enemyDeath'].includes(e.event)||e.event==='kill'&&(!finite(e.power,0,100)||!integer(e.maxAttacks,1,99))||e.event==='enemyDeath'&&(!integer(e.reduction,0,99)||!integer(e.cooldown,0,99)))fail('事件型被動設定無效：'+sk.id);}
       if(sk.systemEffect!==undefined&&!['taunt','guard','slow','regen','haste','bind'].includes(sk.systemEffect))fail('未知特殊效果：'+sk.id);
       if(sk.systemEffect&&(!integer(sk.duration,1,999)||!finite(sk.power,0,1)))fail('特殊效果持續時間或倍率無效：'+sk.id);
+      // v0.196: 'haste' grants attack speed percent points (18 = +18%); power is not read for it.
+      if(sk.systemEffect==='haste'&&(typeof sk.attackSpeedPct!=='number'||!Number.isFinite(sk.attackSpeedPct)||sk.attackSpeedPct<=0||sk.attackSpeedPct>1000))fail('攻擊速度加成必須是 0～1000 的百分點：'+sk.id);
+      if(sk.systemEffect!=='haste'&&sk.attackSpeedPct!==undefined)fail('只有攻速技能可以設定 attackSpeedPct：'+sk.id);
       for(const src of sk.sources)if(src.level!==undefined||src.masteryLevel!==undefined&&!integer(src.masteryLevel,0,100))fail('技能取得精通等級無效：'+sk.id);
       ids.set(sk.id,sk);positions.add(`${a.job}:${a.kind}:${a.index}`);
     }
@@ -97,7 +100,7 @@
     let end=0;for(const row of e.socketBands){if(!integer(row.minLevel,1,999)||row.minLevel!==end+1||!integer(row.maxLevel,row.minLevel,999)||!weights(row))fail('孔數等級區間必須連續且機率總和為 1');end=row.maxLevel;}if(end!==999)fail('孔數分布需涵蓋 LV1～999');
     for(const row of e.sourceRules)if(!['starter','boss','drop','shop','craft','legacy'].includes(row.source)||!weights(row))fail('來源孔數機率無效');
     if(!Array.isArray(s.gems)||s.gems.length!==5||new Set(s.gems.map(g=>g.kind)).size!==5)fail('寶石定義無效');
-    for(const g of s.gems)if(!integer(g.kind,0,4)||!['atk','hp','def','speed','crit'].includes(g.base?.stat)||!['flat','ratio'].includes(g.base?.unit)||!Array.isArray(g.base.values)||g.base.values.length!==3||g.base.values.some(v=>!finite(v,0,1e6))||Object.hasOwn(g,'skill')||Object.hasOwn(g,'cap'))fail('屬性寶石數值或階級無效');
+    for(const g of s.gems)if(!integer(g.kind,0,4)||!['atk','hp','def','attackSpeedPct','crit'].includes(g.base?.stat)||!(g.base.stat==='attackSpeedPct'?['percent']:['flat','ratio']).includes(g.base?.unit)||!Array.isArray(g.base.values)||g.base.values.length!==3||g.base.values.some(v=>!finite(v,0,1e6))||Object.hasOwn(g,'skill')||Object.hasOwn(g,'cap'))fail('屬性寶石數值或階級無效');
     for(const sk of s.definitions)for(const target of sk.induction?.targets||[])if(target.kind==='skill'&&!ids.has(target.skillId))fail('誘發技能引用不存在：'+target.skillId);
     return s;
   }
@@ -131,6 +134,7 @@
   // masteryLevel; skills keep it in requiredLevel (support skills in level). masteryGateVersion marks the conversion.
   const MASTERY_GATE_VERSION=1,toMastery=v=>Math.max(0,Math.floor(Number(v)||1)-1);
   function migrateMasteryGates(s){
+    if(s.masteryGateVersion===MASTERY_GATE_VERSION)migrateAttackSpeed(s);
     // Rows or sources written in the old shape after the conversion (an older editor, a test fixture) still carry `level`.
     if(s.masteryGateVersion===MASTERY_GATE_VERSION){for(const rule of s.classRules||[])for(const k of ['initial','advanced'])for(const row of rule[k]||[])if(row.level!==undefined&&row.masteryLevel===undefined){row.masteryLevel=toMastery(row.level);delete row.level;}for(const sk of s.definitions||[])for(const src of sk.sources||[])if(src.level!==undefined&&src.masteryLevel===undefined){src.masteryLevel=toMastery(src.level);delete src.level;}return s;}
     for(const sk of s.definitions){
@@ -139,7 +143,16 @@
       for(const src of sk.sources||[])if(src.level!==undefined){src.masteryLevel=toMastery(src.level);delete src.level;}
     }
     for(const rule of s.classRules)for(const k of ['initial','advanced'])for(const row of rule[k]||[])if(row.level!==undefined){row.masteryLevel=toMastery(row.level);delete row.level;}
-    s.masteryGateVersion=MASTERY_GATE_VERSION;return s;
+    s.masteryGateVersion=MASTERY_GATE_VERSION;return migrateAttackSpeed(s);
+  }
+  // v0.196 attack speed: speed points are gone. Documents written before it (an older editor or published file) carry the
+  // speed gem as {stat:'speed',unit:'flat'} and haste as an interval cut in power (0.15 = -15% interval). They convert
+  // once: the gem keeps its values as percent points (+1/+2/+3 -> +1%/+2%/+3%) and haste becomes the attack speed with the
+  // same frequency, rounded to a whole percent (0.15 -> 1/0.85-1 = 17.6% -> 18). Other shapes are left to validation.
+  function migrateAttackSpeed(s){
+    for(const g of s?.gems||[])if(g?.base?.stat==='speed'&&g.base.unit==='flat'){g.base.stat='attackSpeedPct';g.base.unit='percent';}
+    for(const sk of s?.definitions||[])if(sk?.systemEffect==='haste'&&sk.attackSpeedPct===undefined&&typeof sk.power==='number'&&sk.power>0&&sk.power<1){sk.attackSpeedPct=Math.round((1/(1-sk.power)-1)*100);sk.power=0;}
+    return s;
   }
   function normalizeDocument(input){const d=copy(input);d.skillSystem??=fromLegacy(d);if(!d.skillSystem.clearingSkillsVersion)addClearingSkills(d.skillSystem,d);migrateMasteryGates(d.skillSystem);return project(d);}
   function slots(system,job,advanced){return copy(system.classRules.find(r=>r.job===job)?.slots[advanced?'advanced':'first']||{active:3,proc:1,support:1});}
@@ -168,5 +181,5 @@
     const ids=new Set();for(const member of members)for(const g of member.bag||[]){if(ids.has(g.id))throw Error('重複裝備 ID：'+g.id);ids.add(g.id);gear(g,{legacy:true,source:'legacy',system});}
     d.skillSystemVersion=VERSION;return d;
   }
-  return {VERSION,MASTERY_GATE_VERSION,migrateMasteryGates,copy,adapters,adapterFor,types,sources,emptyConditions,fromLegacy,clearingStatus,addClearingSkills,validate,project,normalizeDocument,slots,gear,migrateSave};
+  return {VERSION,MASTERY_GATE_VERSION,migrateMasteryGates,migrateAttackSpeed,copy,adapters,adapterFor,types,sources,emptyConditions,fromLegacy,clearingStatus,addClearingSkills,validate,project,normalizeDocument,slots,gear,migrateSave};
 });

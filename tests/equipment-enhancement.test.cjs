@@ -40,7 +40,7 @@ test('actual enhancement, preview, combat stats and an existing +10 save use the
   assert.equal(out.plus,10);assert.equal(out.t,7);assert.equal(out.total.atk,Math.round(out.zero.atk*2.3),'base × 2.3 at +10');
   assert.equal(out.ledger.total.atk-out.ledgerBefore,out.total.atk-out.zero.atk);assert.deepEqual(out.zero,out.zero0);assert.ok(out.after-out.before>=out.total.atk-out.zero.atk);assert.equal(out.base,out.reloadedBase);
   assert.equal(out.ledger.rows.find(x=>x.label==='強化加成（+10）').stats.atk,out.total.atk-out.zero.atk);assert.match(out.html,/成功率/);assert.match(out.html,/強化表/);
-  for(const k of ['atk','hp','def','speed'])assert.equal(out.ledger.rows.reduce((n,row)=>n+row.stats[k],0),out.ledger.total[k]);
+  for(const k of ['atk','hp','def'])assert.equal(out.ledger.rows.reduce((n,row)=>n+row.stats[k],0),out.ledger.total[k]);
   assert.deepEqual(r.errors,[]);
 });
 
@@ -112,7 +112,7 @@ test('every published equipment form, starter weapon and BOSS slot has matching 
     for(const [,name,value] of line.matchAll(/(攻擊|生命|防禦) \+(\d+)/g))shown[{攻擊:'atk',生命:'hp',防禦:'def'}[name]]=Number(value);
     assert.equal(row.actualPlus,row.plus+1,label);assert.equal(row.fixed,true,label);
     for(const key of ['atk','hp','def']){assert.equal(shown[key],row.after[key]-row.before[key],label+' '+key);if(row.zero[key]===0)assert.equal(row.base[key],0,label+' no new '+key);}
-    assert.equal(row.after.speed,row.before.speed,label+' speed');
+    assert.equal(Object.hasOwn(row.after,'speed'),false,label+' no speed points in the ledger');
   }
   assert.deepEqual(r.errors,[]);
 });
@@ -130,7 +130,7 @@ test('all slots and T grades stay monotonic and additive; BOSS percentages apply
             const expected=B>0?B+Math.max(Math.round(B*rate),Math.round(plus*(cfg.flatStatsPerLevel[k]+cfg.flatStatsPerEquipmentLevel[k]*(gearRequiredLevel(g)-1)))):0;
             if(!Number.isSafeInteger(b.total[k])||b.total[k]!==b.body[k]+b.grade[k]+b.enhance[k]||(previous&&b.total[k]<previous[k])||b.total[k]!==expected)issues.push('growth '+[job,slot,tier,t,plus,k]);
           }
-          for(const k of ['atk','hp','def','speed'])if(ledger.total[k]!==ledger.rows.reduce((n,row)=>n+row.stats[k],0))issues.push('ledger');
+          for(const k of ['atk','hp','def'])if(ledger.total[k]!==ledger.rows.reduce((n,row)=>n+row.stats[k],0))issues.push('ledger');
           previous=b.total;
         }
         if(previousT&&['atk','hp','def'].some(k=>previous[k]<previousT[k]))issues.push('T');previousT=previous;

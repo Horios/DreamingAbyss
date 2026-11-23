@@ -8,7 +8,7 @@ const GEM_COLORS=['#ec5555','#51b878','#a57be4','#e9eef7','#559ff0'];
 const GEM_KINDS=GEM_NAMES.length;
 const GEMS=Array.from({length:GEM_KINDS*3},(_,id)=>{
  const kind=id%GEM_KINDS,tier=Math.floor(id/GEM_KINDS);
- const desc=['攻擊 +'+2*(tier+1),'速度 +'+(tier+1),'暴擊率 +'+(tier+1)+'%','生命 +'+10*(tier+1),'防禦 +'+(tier+1)][kind];
+ const desc=['攻擊 +'+2*(tier+1),'攻擊速度 +'+(tier+1)+'%','暴擊率 +'+(tier+1)+'%','生命 +'+10*(tier+1),'防禦 +'+(tier+1)][kind];
  return {name:GEM_NAMES[kind]+'・'+(tier+1)+'階',desc,icon:'',color:GEM_COLORS[kind],kind,tier:tier+1};
 });
 

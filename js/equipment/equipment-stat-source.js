@@ -5,7 +5,7 @@
    - Boss equipment never inherits a hidden normal-form effect.
    - Equipment max-MP / MP-regen effects and affixes are removed; legacy ones migrate to small attack bonuses.
 */
-const EQUIPMENT_FIXED_EFFECT_KEYS=new Set(['flatAttack','flatHp','flatDefense','gearAtkPct','gearHpPct','gearDefPct','attackPct','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamagePct','speed','allCooldownReduction','dropRateBonus','basicAdvanceNextRound','basicElement','elementDamagePct','elementResistPct','raceDamagePct','skillEffectPct','skillCooldownReduction']);
+const EQUIPMENT_FIXED_EFFECT_KEYS=new Set(['flatAttack','flatHp','flatDefense','gearAtkPct','gearHpPct','gearDefPct','attackPct','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamagePct','attackSpeedPct','allCooldownReduction','dropRateBonus','basicAttackSpeedStack','basicElement','elementDamagePct','elementResistPct','raceDamagePct','skillEffectPct','skillCooldownReduction']);
 const EQUIPMENT_EFFECT_ELEMENTS=new Set(['physical','fire','ice','wind','light','shadow']);
 const EQUIPMENT_EFFECT_RACES=new Set(['beast','plant','undead','construct','demon','spirit']);
 function normalizeFixedEquipmentEffect(raw){
@@ -140,7 +140,6 @@ stats=function(h=state){
   }
   if(totalAttackPct)v.atk*=1+totalAttackPct/100;
   v.crit=Math.min(GAME_BALANCE.combat.statCaps.crit,v.crit);v.pierce=Math.min(GAME_BALANCE.combat.statCaps.pierce,v.pierce);v.evasion=Math.min(GAME_BALANCE.combat.statCaps.evasion,v.evasion);v.lifesteal=Math.min(GAME_BALANCE.combat.statCaps.lifesteal,v.lifesteal);
-  v.speed=Math.round([102,108,116,96][h.job]+Math.min(5,(v.evasion||0)*10+(v.crit||0)*5));
   for(const k of ['hp','atk','def'])v[k]=Math.round(v[k]);
   return v;
 };
@@ -158,7 +157,7 @@ equipmentComparison=function(h,g,position=null){
   const afterHero={...h,equipped:[...h.equipped]};while(afterHero.equipped.length<5)afterHero.equipped.push(null);const positions=gearEquipPositions(g);let target=Number.isInteger(position)&&positions.includes(position)?position:positions.find(p=>!afterHero.equipped[p]);if(target===undefined)target=positions[0];afterHero.equipped=afterHero.equipped.map(id=>id===g.id?null:id);afterHero.equipped[target]=g.id;
   const compare=()=>{
   const before=stats(h),after=stats(afterHero),rows=[];
-  const labels={hp:'生命上限',atk:'攻擊力',def:'防禦力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷',speed:'速度'};
+  const labels={hp:'生命上限',atk:'攻擊力',def:'防禦力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷',attackSpeedPct:'攻擊速度（%）'};
   const percent=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
   function add(label,a,b,isPercent=false,lowerBetter=false){const factor=isPercent?100:1;a=Number(((a||0)*factor).toFixed(2));b=Number(((b||0)*factor).toFixed(2));if(a===b)return;const d=Number((b-a).toFixed(2));rows.push({label,before:a,after:b,delta:d,percent:isPercent,good:lowerBetter?d<0:d>0});}
   for(const [key,label] of Object.entries(labels))add(label,before[key],after[key],percent.has(key));
@@ -234,7 +233,7 @@ stats=function(h=state){
     for(const a0 of g.affix){const a=convertLegacyManaAffix(a0,g);if(a.type<=3){const key=['atk','hp','def','crit'][a.type];v[key]+=a.value/(key==='crit'?100:1);}else if(a.type>=6&&a.type<=9)v[{6:'critDamage',7:'pierce',8:'lifesteal',9:'evasion'}[a.type]]+=a.value/100;else if(a.type===12)v.elementDamage[a.element]=(v.elementDamage[a.element]||0)+a.value/100;else if(a.type===13)v.raceDamage[a.race]=(v.raceDamage[a.race]||0)+a.value/100;else if(a.type===14)v.resist[a.element]=(v.resist[a.element]||0)+a.value/100;else if(a.type===15)totalAttackPct+=a.value;}
   }
   if(totalAttackPct)v.atk*=1+totalAttackPct/100;v.crit=Math.min(GAME_BALANCE.combat.statCaps.crit,v.crit);v.pierce=Math.min(GAME_BALANCE.combat.statCaps.pierce,v.pierce);v.evasion=Math.min(GAME_BALANCE.combat.statCaps.evasion,v.evasion);v.lifesteal=Math.min(GAME_BALANCE.combat.statCaps.lifesteal,v.lifesteal);
-  const heroBase=GS('combat.speed.heroBase',[102,108,116,96]);v.speed=Math.round((heroBase[h.job]??100)+Math.min(GS('combat.speed.bonusCap',5),(v.evasion||0)*GS('combat.speed.evasionWeight',10)+(v.crit||0)*GS('combat.speed.critWeight',5)));for(const k of ['hp','atk','def'])v[k]=Math.round(v[k]);return v;
+  for(const k of ['hp','atk','def'])v[k]=Math.round(v[k]);return v;
 };solo.stats=stats;
 
 skillPower=function(i,h=state){const sk=CLASSES[h.job].skills[i],perLevel=Number.isFinite(sk?.[6]?.powerPerLevel)?sk[6].powerPerLevel:GS('skills.core.effectPerExtraLevel',.4);return (sk[4]+Math.max(0,(Number(h.skills[i])||0)-1)*perLevel)*(1+bonusFor(i,4,h)/100);};

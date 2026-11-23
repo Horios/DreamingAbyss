@@ -90,7 +90,7 @@ test('v0.172: the three forest monsters drop 凝膠護符／狼牙綴飾／纏�
   };
   startSelectedExploration();
   for(const e of foes){e.hp=e.maxhp=100000;e.atk=0;}
-  globalThis.forestCasts=casts;globalThis.baseSpeed=battleStats(state).speed;
+  globalThis.forestCasts=casts;globalThis.baseAttackSpeed=battleStats(state).attackSpeedPct;
   return {names,wanted,passive:__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('gel-recovery')),regen:__EMBERWILD_GEAR_REGEN_RATE(state),active:state.skillLoadout.active};
  })()`);
  assert.deepEqual(result.names,[['凝膠護符',3],['狼牙綴飾',3],['纏藤法杖',0]],'two accessories and a weapon');
@@ -101,8 +101,8 @@ test('v0.172: the three forest monsters drop 凝膠護符／狼牙綴飾／纏�
  assert.equal(result.passive,true);assert.equal(result.regen,1,'凝膠復原 restores 1 HP per second');
  for(let i=0;i<120;i++){r.advance(50);r.run('tick()');}
  assert.deepEqual(json(r,'[...new Set(forestCasts)].filter(id=>["living-core-renewal","wolf-double-bite"].includes(id)).sort()'),['living-core-renewal','wolf-double-bite']);
- const haste=json(r,'({speed:battleStats(state).speed,base:baseSpeed,until:effects.find(e=>e.kind==="skillHaste")?.until-partyClock})');
- assert(Math.abs(haste.speed-haste.base/0.85)<1e-9,'野狼怒吼 shortens the basic attack interval by 15%');assert(haste.until>0&&haste.until<=10);
+ const haste=json(r,'({pct:battleStats(state).attackSpeedPct,base:baseAttackSpeed,name:effects.find(e=>e.skill==="wolf-double-bite")?.name,until:effects.find(e=>e.skill==="wolf-double-bite")?.until-partyClock,timeline:EmberwildSecondsCombat.timeline.find(heroKey(state)).attackSpeedPct})');
+ assert.equal(haste.pct,haste.base+18,'野狼怒吼 grants 狼奔: attack speed +18%');assert.equal(haste.name,'狼奔');assert.equal(haste.timeline,haste.pct,'the battle timeline uses the new total');assert(haste.until>0&&haste.until<=10);
  r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');
  assert.deepEqual(json(r,'state.skillLoadout.active'),result.active);
  assert.deepEqual(r.errors,[]);

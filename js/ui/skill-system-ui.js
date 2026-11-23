@@ -90,10 +90,10 @@
  };
  globalThis.chooseSkillSlot=function(t,n,id){const h=party.members[0];return withHero(h,()=>{if(!configureSkill(t,n,id))return false;closeModal();return true;});};
  $('modal').addEventListener('close',()=>$('modal').classList.remove('skill-system-dialog','skill-slot-dialog','skill-catalog-dialog'));
- const statNames={atk:'攻擊',hp:'生命',def:'防禦',speed:'速度',crit:'暴擊'};
+ const statNames={atk:'攻擊',hp:'生命',def:'防禦',attackSpeedPct:'攻擊速度',crit:'暴擊'};
  function gemText(id){
   const {stat,unit,values}=S.system().gems.find(x=>x.kind===id%5).base,value=values[Math.floor(id/5)];
-  return statNames[stat]+' +'+(unit==='ratio'?Math.round(value*10000)/100+'%':value);
+  return statNames[stat]+' +'+(unit==='ratio'?Math.round(value*10000)/100+'%':unit==='percent'?value+'%':value);
  }
  let socketSelection=null;
  globalThis.selectEquipmentSocket=function(id,n){

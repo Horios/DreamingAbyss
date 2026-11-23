@@ -300,8 +300,8 @@
     {
       "kind": 1,
       "base": {
-        "stat": "speed",
-        "unit": "flat",
+        "stat": "attackSpeedPct",
+        "unit": "percent",
         "values": [
           1,
           2,

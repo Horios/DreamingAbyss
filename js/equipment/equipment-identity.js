@@ -10,11 +10,11 @@
   const POWER_ITEM_TYPE='gearTierReroll';
   const POWER_ITEM_ID='power_tier_reroll';
   const VALID_ELEMENTS=new Set(['physical','fire','ice','wind','light','shadow']);
-  const REGULAR_EFFECT_KEYS=new Set(['basicElement','basicAdvanceNextRound','flatHp','gearHpPct','hpPct','flatDefense','gearDefPct','defensePct','attackPct','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','allCooldownReduction','dropRateBonus']);
+  const REGULAR_EFFECT_KEYS=new Set(['basicElement','basicAttackSpeedStack','attackSpeedPct','flatHp','gearHpPct','hpPct','flatDefense','gearDefPct','defensePct','attackPct','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','allCooldownReduction','dropRateBonus']);
   const BOSS_EFFECT_KEYS=new Set([...REGULAR_EFFECT_KEYS,'gearAtkPct','gearHpPct','gearDefPct','bossDamagePct']);
   const EFFECT_LABELS={
-    flatAttack:'此裝備攻擊力',flatHp:'此裝備最大生命',flatDefense:'此裝備防禦',basicElement:'此武器攻擊屬性',basicAdvanceNextRound:'普攻後下回合前移',gearAtkPct:'此裝備基底攻擊力',gearHpPct:'此裝備基底生命',gearDefPct:'此裝備基底防禦',hpPct:'角色最大生命',defensePct:'角色總防禦',
-    attackPct:'角色總攻擊力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamagePct:'對 BOSS 傷害',speed:'速度',
+    flatAttack:'此裝備攻擊力',flatHp:'此裝備最大生命',flatDefense:'此裝備防禦',basicElement:'此武器攻擊屬性',basicAttackSpeedStack:'普攻後疾行',gearAtkPct:'此裝備基底攻擊力',gearHpPct:'此裝備基底生命',gearDefPct:'此裝備基底防禦',hpPct:'角色最大生命',defensePct:'角色總防禦',
+    attackPct:'角色總攻擊力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamagePct:'對 BOSS 傷害',attackSpeedPct:'攻擊速度',
     allCooldownReduction:'全主動／輔助技能冷卻',dropRateBonus:'掉寶率',elementDamagePct:'屬性傷害',elementResistPct:'屬性抗性',raceDamagePct:'種族增傷',skillEffectPct:'核心技能效果',skillCooldownReduction:'核心技能冷卻／觸發'
   };
   const LEGACY_BOSS_SERIES=['古木誓約','礦脈共鳴','暮沼咒印','永凍之誓','熔核意志','隕星遺產'];
@@ -36,7 +36,7 @@
     {id:'keen',name:'銳眼',tierMin:5,tierMax:10,weight:.7,slots:[0,2],effect:fx('crit',5)}
   ];
   const DEFAULT_SUFFIXES=[
-    {id:'traveler',name:'旅人',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicAdvanceNextRound',1)},
+    {id:'traveler',name:'旅人',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicAttackSpeedStack',3)},
     {id:'vanguard',name:'先鋒',tierMin:1,tierMax:10,weight:1,slots:[0,1,2],effect:fx('attackPct',4)},
     {id:'swift',name:'迅捷',tierMin:1,tierMax:10,weight:1,slots:[0,1,2],effect:fx('evasion',5)},
     {id:'eagleeye',name:'鷹眼',tierMin:2,tierMax:10,weight:1,slots:[0,2],effect:fx('crit',4)},
@@ -105,6 +105,8 @@
   }
   function normalizeEffect(src,allowed,def){
     const fallback=clone(def);
+    // v0.196: 旅人 used to advance the next action one step; it is now 疾行 (+3% attack speed per stack).
+    if(src?.key==='basicAdvanceNextRound'&&allowed.has('basicAttackSpeedStack'))return {key:'basicAttackSpeedStack',value:3};
     if(!src||typeof src!=='object'||Array.isArray(src)||!allowed.has(src.key))return fallback;
     const key=src.key;
     if(key==='basicElement'){
@@ -112,7 +114,8 @@
       return {key,value};
     }
     let min=-100,max=500;
-    if(key==='basicAdvanceNextRound'){min=1;max=5;}
+    if(key==='basicAttackSpeedStack'){min=0;max=100;}
+    if(key==='attackSpeedPct'){min=-90;max=100;}
     if(key==='allCooldownReduction'){min=0;max=5;}
     if(key==='dropRateBonus'||key==='bossDamagePct'){min=0;max=500;}
     return {key,value:finite(src.value,fallback.value,min,max)};
@@ -370,9 +373,9 @@
     if(!effect)return '無效果';if(effect.ruleEffect)return effectText(effect.ruleEffect);
     const key=effect.key,value=effect.value,label=EFFECT_LABELS[key]||key;
     if(key==='basicElement')return '此武器攻擊屬性：'+(ELEMENTS[value]||value);
-    if(key==='basicAdvanceNextRound')return '普攻後，下回合行動往前 '+Math.round(Number(value)||0)+' 格';
+    if(key==='basicAttackSpeedStack'){const r=basicStackRule();return '普攻後獲得「疾行」，每層攻擊速度 +'+Number(value)+'%，持續 '+r.durationSeconds+' 秒，最多 '+r.maxStacks+' 層';}
     if(key==='allCooldownReduction'||key==='skillCooldownReduction')return (key==='skillCooldownReduction'?'核心技能 '+((effect.skill??0)+1)+' ':'')+label+' '+cdText(key==='skillCooldownReduction'?'fixedSkill':'fixedAll',Number(value));
-    if(['flatAttack','flatHp','flatDefense','pierce','speed'].includes(key))return label+' '+(Number(value)>=0?'+':'')+Number(value);
+    if(['flatAttack','flatHp','flatDefense','pierce'].includes(key))return label+' '+(Number(value)>=0?'+':'')+Number(value);
     if(key==='elementDamagePct')return (ELEMENTS[effect.element]||effect.element)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
     if(key==='elementResistPct')return (ELEMENTS[effect.element]||effect.element)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
     if(key==='raceDamagePct')return '對'+(RACES[effect.race]||effect.race)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
@@ -455,7 +458,7 @@
     if(e.key==='flatAttack')v.atk+=n;
     else if(e.key==='flatHp')v.hp+=n;
     else if(e.key==='flatDefense')v.def+=n;
-    else if(e.key==='speed')attackBox.speed=(attackBox.speed||0)+n;
+    else if(e.key==='attackSpeedPct')attackBox.attackSpeedPct=(attackBox.attackSpeedPct||0)+n;
     else if(e.key==='elementDamagePct'&&e.element)v.elementDamage[e.element]=(v.elementDamage[e.element]||0)+n/100;
     else if(e.key==='elementResistPct'&&e.element)v.resist[e.element]=(v.resist[e.element]||0)+n/100;
     else if(e.key==='raceDamagePct'&&e.race)v.raceDamage[e.race]=(v.raceDamage[e.race]||0)+n/100;
@@ -474,7 +477,7 @@
   stats=function(h=state){
     const cls=typeof heroGrowthDefinition==='function'?heroGrowthDefinition(h):CLASSES[h.job],initial=typeof globalThis.classInitialStats==='function'?classInitialStats(cls,h.job):{hp:cls.hp,atk:cls.atk,def:cls.def,crit:h.job===2?GS('progression.baseCrit.archer',.17):GS('progression.baseCrit.default',.07),critDamage:GS('combat.baseCritDamage',1.5)},natural=EmberwildProgression.naturalStats({initialStats:initial}),mb=typeof globalThis.classMasteryBonus==='function'?classMasteryBonus(h):{hp:0,atk:0,def:0,crit:0},v={hp:natural.hp+mb.hp,atk:natural.atk+mb.atk,def:natural.def+mb.def,crit:initial.crit+mb.crit,critDamage:initial.critDamage,pierce:0,defenseIgnore:0,lifesteal:0,evasion:0,elementBonus:0,bossDamage:0,elementDamage:{},raceDamage:{},resist:{}};
     if(h.companionId!==undefined)for(const key of ['pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage'])v[key]=cls.initialStats?.[key]||0;
-    const attackBox={value:0,hp:0,defense:0};let fixedSpeed=0;
+    const attackBox={value:0,hp:0,defense:0};let attackSpeedPct=0;
     for(const g of equipment(h)){
       const base=gearBaseStats(g);v.atk+=base.atk;v.hp+=base.hp;v.def+=base.def;
       for(const e of identityEffectEntriesForGear(g)){
@@ -482,11 +485,11 @@
         if(e.key==='flatAttack')v.atk+=n;
         else if(e.key==='flatHp')v.hp+=n;
         else if(e.key==='flatDefense')v.def+=n;
-        else if(e.key==='speed')fixedSpeed+=n;
+        else if(e.key==='attackSpeedPct')attackSpeedPct+=n;
         else if(e.key==='elementDamagePct'&&e.element)v.elementDamage[e.element]=(v.elementDamage[e.element]||0)+n/100;
         else if(e.key==='elementResistPct'&&e.element)v.resist[e.element]=(v.resist[e.element]||0)+n/100;
         else if(e.key==='raceDamagePct'&&e.race)v.raceDamage[e.race]=(v.raceDamage[e.race]||0)+n/100;
-        else if(!['gearAtkPct','gearHpPct','gearDefPct','basicElement','basicAdvanceNextRound','allCooldownReduction','dropRateBonus','skillEffectPct','skillCooldownReduction'].includes(e.key))applyIdentityStatEffect(v,e,attackBox);
+        else if(!['gearAtkPct','gearHpPct','gearDefPct','basicElement','basicAttackSpeedStack','allCooldownReduction','dropRateBonus','skillEffectPct','skillCooldownReduction'].includes(e.key))applyIdentityStatEffect(v,e,attackBox);
       }
       for(const a0 of g.affix||[]){
         const a=convertLegacyManaAffix(a0,g);
@@ -504,14 +507,15 @@
     }
     const passives=globalThis.companionPassiveStatEffects?.(h)||[];
     for(const e of passives)applyIdentityStatEffect(v,e,attackBox);
-    fixedSpeed+=attackBox.speed||0;
+    attackSpeedPct+=attackBox.attackSpeedPct||0;
     if(attackBox.value)v.atk*=1+attackBox.value/100;
     if(attackBox.hp)v.hp*=1+attackBox.hp/100;
     if(attackBox.defense)v.def*=1+attackBox.defense/100;
     v.crit=Math.min(GAME_BALANCE.combat.statCaps.crit,v.crit);v.pierce=Math.min(GAME_BALANCE.combat.statCaps.pierce,v.pierce);v.defenseIgnore=Math.min(GAME_BALANCE.combat.statCaps.defenseIgnore??.75,v.defenseIgnore);v.evasion=Math.min(GAME_BALANCE.combat.statCaps.evasion,v.evasion);v.lifesteal=Math.min(GAME_BALANCE.combat.statCaps.lifesteal,v.lifesteal);
-    const heroBase=GS('combat.speed.heroBase',[102,108,116,96]);v.speed=Math.round((initial.speed??(heroBase[h.job]??100)+GS('combat.speed.heroPerLevel',.5))+Math.min(GS('combat.speed.bonusCap',5),(v.evasion||0)*GS('combat.speed.evasionWeight',10)+(v.crit||0)*GS('combat.speed.critWeight',5))+fixedSpeed);
+    // v0.196: no speed points; equipment fixed effects and companion passives add attack speed percent points.
+    v.attackSpeedPct=attackSpeedPct;
     for(const k of ['hp','atk','def'])v[k]=Math.round(v[k]);
-    if(passives.length){v.hp=Math.max(1,v.hp);v.atk=Math.max(0,v.atk);v.def=Math.max(0,v.def);v.speed=Math.max(1,v.speed);v.critDamage=Math.max(1,v.critDamage);}
+    if(passives.length){v.hp=Math.max(1,v.hp);v.atk=Math.max(0,v.atk);v.def=Math.max(0,v.def);v.critDamage=Math.max(1,v.critDamage);}
     return v;
   };
   solo.stats=stats;
@@ -522,22 +526,34 @@
     for(const g of ordered){const hit=identityEffectEntriesForGear(g).find(e=>e.key==='basicElement'&&VALID_ELEMENTS.has(e.value));if(hit)return hit.value;}
     return 'physical';
   };
-  function basicAdvanceSteps(h){return Math.max(0,Math.min(5,Math.round(effectNumberForHero(h,'basicAdvanceNextRound'))));}
+  // v0.196 疾行: each hero basic attack adds one stack (attack speed +value% per stack) for durationSeconds, up to maxStacks;
+  // another basic attack refreshes the duration. Several items with the effect do not add up: the largest value is used.
+  function basicStackRule(){return {durationSeconds:5,maxStacks:3,...(globalThis.EmberwildSecondsCombat?.config?.().attackSpeed?.basicStack||{})};}
+  function basicStackPct(h){return Math.max(0,...identityEffectsForHero(h).filter(e=>e.key==='basicAttackSpeedStack').map(e=>Number(e.value)||0));}
+  const BASIC_STACK_SKILL='traveler-basic-stack',BASIC_STACK_NAME='疾行';
+  // Legacy round order only: a hero proc 'advanceNextRound' moves the hero forward in the next round's order.
   const identityInitiativeOrderBase=initiativeOrder;
   initiativeOrder=function(){
     const order=identityInitiativeOrderBase();
     for(let i=1;i<order.length;i++){
       const u=order[i];if(u.side!=='hero')continue;
-      const h=u.actor,basic=h.basicAdvanceRound===round?basicAdvanceSteps(h):0,proc=h.procAdvanceRound===round?Math.max(0,Math.min(5,Number(h.procAdvanceSteps)||0)):0,steps=Math.min(5,basic+proc);
-      if(steps){const to=Math.max(0,i-steps);if(to!==i){order.splice(i,1);order.splice(to,0,u);}}
-      if(proc){delete h.procAdvanceRound;delete h.procAdvanceSteps;}
+      const h=u.actor,proc=h.procAdvanceRound===round?Math.max(0,Math.min(5,Number(h.procAdvanceSteps)||0)):0;
+      if(proc){const to=Math.max(0,i-proc);if(to!==i){order.splice(i,1);order.splice(to,0,u);}delete h.procAdvanceRound;delete h.procAdvanceSteps;}
     }
     return order;
   };
   const identityPerformHeroBasicBase=performHeroBasic;
-  performHeroBasic=function(h){const out=identityPerformHeroBasicBase(h),steps=basicAdvanceSteps(h);if(steps)h.basicAdvanceRound=round+1;else delete h.basicAdvanceRound;return out;};
+  performHeroBasic=function(h){
+    const out=identityPerformHeroBasicBase(h),pct=basicStackPct(h);
+    if(pct>0&&party&&h.hp>0){
+      const key=heroKey(h),r=basicStackRule(),old=effects.find(e=>e.target===key&&e.skill===BASIC_STACK_SKILL&&e.until>partyClock),stacks=Math.min(r.maxStacks,(old?.stacks||0)+1);
+      effects=effects.filter(e=>!(e.target===key&&e.skill===BASIC_STACK_SKILL));
+      effects.push({source:memberKey(h),skill:BASIC_STACK_SKILL,target:key,kind:'attackSpeedPct',value:stacks*pct,stacks,until:partyClock+r.durationSeconds,name:BASIC_STACK_NAME});
+    }
+    return out;
+  };
   const identityResetEncounterBase=resetEncounter;
-  resetEncounter=function(){for(const h of party?.members||[]){delete h.basicAdvanceRound;delete h.procAdvanceRound;delete h.procAdvanceSteps;delete h.nextActiveDamageBonus;}return identityResetEncounterBase();};
+  resetEncounter=function(){for(const h of party?.members||[]){delete h.procAdvanceRound;delete h.procAdvanceSteps;delete h.nextActiveDamageBonus;}return identityResetEncounterBase();};
 
   function fixedSkillEffectNumber(h,key,i){return identityEffectsForHero(h).filter(e=>e.key===key&&Number(e.skill)===Number(i)).reduce((n,e)=>n+(Number(e.value)||0),0);}
   const identitySkillPowerBase=skillPower;
@@ -559,12 +575,14 @@
   };
 
   function sourceDifficulty(g){return MODES[Math.max(0,Math.min(2,Number(g?.difficulty)||0))]?.name||'普通';}
-  const PANEL_KEYS=['atk','hp','def','speed'];
-  const FLAT_PANEL_KEYS={flatAttack:'atk',flatHp:'hp',flatDefense:'def',speed:'speed'};
+  const PANEL_KEYS=['atk','hp','def'];
+  const FLAT_PANEL_KEYS={flatAttack:'atk',flatHp:'hp',flatDefense:'def'};
   const PCT_PANEL_KEYS={gearAtkPct:'atk',gearHpPct:'hp',gearDefPct:'def'};
-  const emptyPanel=()=>({atk:0,hp:0,def:0,speed:0});
+  const emptyPanel=()=>({atk:0,hp:0,def:0});
+  // Attack speed percent is summed like the other effect totals, under its own plain numeric key (shared with gems).
+  const numericKey=e=>e.key==='attackSpeedPct'?'attackSpeedPct':[e.key,e.element||'',e.race||'',e.skill??''].join(':');
   function statText(v){
-    const labels={atk:'攻擊',hp:'生命',def:'防禦',speed:'速度'},parts=[];
+    const labels={atk:'攻擊',hp:'生命',def:'防禦'},parts=[];
     for(const k of PANEL_KEYS){const n=Math.round(Number(v?.[k])||0);if(n)parts.push(labels[k]+' '+(n>=0?'+':'')+n);}
     return parts.join(' / ')||'—';
   }
@@ -683,21 +701,20 @@
       // The existing skill formula multiplies its fixed and random bonus groups.
       if(e.key==='skillEffectPct')e.value=((1+e.fixedValue/100)*(1+e.affixValue/100)-1)*100;
       if(['allCooldownReduction','skillCooldownReduction'].includes(e.key))e.value=Math.max(0,Math.round(e.fixedValue))+e.affixValue;
-      if(e.key==='basicAdvanceNextRound')e.value=Math.max(0,Math.min(5,Math.round(e.value)));
       if(e.key!=='basicElement'){
         e.value=Number(e.value.toFixed(2));
         if(!e.value)continue;
       }
-      if(e.key!=='basicElement')numeric[[e.key,e.element||'',e.race||'',e.skill??''].join(':')]=e.value;
+      if(e.key!=='basicElement')numeric[numericKey(e)]=e.value;
       values.push(e.key==='skillProcChance'?'核心技能 '+((e.skill??0)+1)+' 觸發率 '+(e.value>=0?'+':'')+e.value+'%':e.key==='skillCooldownReduction'?'核心技能 '+((e.skill??0)+1)+' 冷卻 '+cdSummary({fixedSkill:Math.max(0,Math.round(e.fixedValue)),affixSkill:e.affixValue},e.value):e.key==='allCooldownReduction'?'全主動／輔助技能冷卻 '+cdSummary({fixedAll:Math.max(0,Math.round(e.fixedValue)),affixAll:e.affixValue},e.value):effectText(e));
     }
     const affixes=ledger.rows.filter(row=>row.affix).map(row=>({label:row.label.replace(' 加成',''),rule:row.rule,rank:row.affix.rank??0}));
     return {total:ledger.total,values,affixes,numeric};
   };
   globalThis.equipmentNumericFields=function(){
-    const fields=[{key:'atk',label:'攻擊'},{key:'def',label:'防禦'},{key:'hp',label:'生命'},{key:'speed',label:'速度'}];
+    const fields=[{key:'atk',label:'攻擊'},{key:'def',label:'防禦'},{key:'hp',label:'生命'},{key:'attackSpeedPct',label:'攻擊速度（%）'}];
     for(const [key,label] of Object.entries(EFFECT_LABELS)){
-      if(key==='basicElement'||FLAT_PANEL_KEYS[key]||PCT_PANEL_KEYS[key])continue;
+      if(key==='basicElement'||key==='attackSpeedPct'||FLAT_PANEL_KEYS[key]||PCT_PANEL_KEYS[key])continue;
       if(CHARACTER_EFFECT_KEYS.has(key)){fields.push({key,label:label+'加成（%）'});continue;}
       if(['elementDamagePct','elementResistPct'].includes(key)){for(const [target,name] of Object.entries(ELEMENTS))fields.push({key:[key,target,'',''].join(':'),label:name+' · '+label+'（%）'});}
       else if(key==='raceDamagePct'){for(const [target,name] of Object.entries(RACES))fields.push({key:[key,'',target,''].join(':'),label:name+' · '+label+'（%）'});}

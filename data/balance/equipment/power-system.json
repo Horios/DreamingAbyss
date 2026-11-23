@@ -353,8 +353,8 @@
         0
       ],
       "effect": {
-        "key": "basicAdvanceNextRound",
-        "value": 1
+        "key": "basicAttackSpeedStack",
+        "value": 3
       }
     },
     {

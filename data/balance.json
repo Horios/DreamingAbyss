@@ -3511,7 +3511,7 @@
         {
           "id": "wolf-double-bite-job0",
           "name": "野狼怒吼",
-          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+          "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -3543,7 +3543,8 @@
           ],
           "targetLimit": true,
           "effect": "shield",
-          "power": 0.15,
+          "power": 0,
+          "attackSpeedPct": 18,
           "cooldown": 30,
           "target": "self",
           "timing": {
@@ -4655,7 +4656,7 @@
         {
           "id": "wolf-double-bite-job1",
           "name": "野狼怒吼",
-          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+          "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -4687,7 +4688,8 @@
           ],
           "targetLimit": true,
           "effect": "shield",
-          "power": 0.15,
+          "power": 0,
+          "attackSpeedPct": 18,
           "cooldown": 30,
           "target": "self",
           "timing": {
@@ -5779,7 +5781,7 @@
         {
           "id": "wolf-double-bite-job2",
           "name": "野狼怒吼",
-          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+          "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -5811,7 +5813,8 @@
           ],
           "targetLimit": true,
           "effect": "shield",
-          "power": 0.15,
+          "power": 0,
+          "attackSpeedPct": 18,
           "cooldown": 30,
           "target": "self",
           "timing": {
@@ -7032,7 +7035,7 @@
         {
           "id": "wolf-double-bite-job3",
           "name": "野狼怒吼",
-          "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+          "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
@@ -7064,7 +7067,8 @@
           ],
           "targetLimit": true,
           "effect": "shield",
-          "power": 0.15,
+          "power": 0,
+          "attackSpeedPct": 18,
           "cooldown": 30,
           "target": "self",
           "timing": {
@@ -17333,16 +17337,6 @@
         "max": 5
       },
       "speed": {
-        "heroBase": [
-          102,
-          108,
-          116,
-          96
-        ],
-        "heroPerLevel": 0.5,
-        "bonusCap": 5,
-        "evasionWeight": 10,
-        "critWeight": 5,
         "enemyBase": 106,
         "enemyPerLevel": 0.5,
         "race": {
@@ -17396,17 +17390,21 @@
           },
           {
             "job": 1,
-            "baseIntervalSeconds": 2.8
+            "baseIntervalSeconds": 2.65
           },
           {
             "job": 2,
-            "baseIntervalSeconds": 1.6
+            "baseIntervalSeconds": 1.4
           },
           {
             "job": 3,
-            "baseIntervalSeconds": 2.5
+            "baseIntervalSeconds": 2.65
           }
         ],
+        "attackSpeed": {
+          "maxAttacksPerSecond": 1.5,
+          "minimumBonusPct": -90
+        },
         "groupWeights": [
           6,
           3,
@@ -24936,8 +24934,8 @@
           0
         ],
         "effect": {
-          "key": "basicAdvanceNextRound",
-          "value": 1
+          "key": "basicAttackSpeedStack",
+          "value": 3
         }
       },
       {
@@ -26475,7 +26473,6 @@
         "def": 8,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26489,7 +26486,6 @@
         "def": 1.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26539,7 +26535,6 @@
         "def": 8,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26553,7 +26548,6 @@
         "def": 1.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26604,7 +26598,6 @@
         "def": 8,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26618,7 +26611,6 @@
         "def": 1.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26669,7 +26661,6 @@
         "def": 8,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26683,7 +26674,6 @@
         "def": 1.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26733,7 +26723,6 @@
         "def": 9,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26747,7 +26736,6 @@
         "def": 1.35,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26796,7 +26784,6 @@
         "def": 9,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26810,7 +26797,6 @@
         "def": 1.35,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26860,7 +26846,6 @@
         "def": 9,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26874,7 +26859,6 @@
         "def": 1.35,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26924,7 +26908,6 @@
         "def": 9,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 102.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26938,7 +26921,6 @@
         "def": 1.35,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -26989,7 +26971,6 @@
         "def": 5,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 108.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27003,7 +26984,6 @@
         "def": 0.18,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27053,7 +27033,6 @@
         "def": 5,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 108.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27067,7 +27046,6 @@
         "def": 0.18,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27118,7 +27096,6 @@
         "def": 5,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 108.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27132,7 +27109,6 @@
         "def": 0.18,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27183,7 +27159,6 @@
         "def": 5,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 108.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27197,7 +27172,6 @@
         "def": 0.18,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27248,7 +27222,6 @@
         "def": 7,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 96.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27262,7 +27235,6 @@
         "def": 0.25,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27318,7 +27290,6 @@
         "def": 7,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 96.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27332,7 +27303,6 @@
         "def": 0.25,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27389,7 +27359,6 @@
         "def": 7,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 96.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27403,7 +27372,6 @@
         "def": 0.25,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27460,7 +27428,6 @@
         "def": 7,
         "crit": 0.07,
         "critDamage": 1.5,
-        "speed": 96.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27474,7 +27441,6 @@
         "def": 0.25,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27531,7 +27497,6 @@
         "def": 6,
         "crit": 0.17,
         "critDamage": 1.5,
-        "speed": 116.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27545,7 +27510,6 @@
         "def": 0.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27595,7 +27559,6 @@
         "def": 6,
         "crit": 0.17,
         "critDamage": 1.5,
-        "speed": 116.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27609,7 +27572,6 @@
         "def": 0.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27660,7 +27622,6 @@
         "def": 6,
         "crit": 0.17,
         "critDamage": 1.5,
-        "speed": 116.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27674,7 +27635,6 @@
         "def": 0.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27725,7 +27685,6 @@
         "def": 6,
         "crit": 0.17,
         "critDamage": 1.5,
-        "speed": 116.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -27739,7 +27698,6 @@
         "def": 0.2,
         "crit": 0,
         "critDamage": 0,
-        "speed": 0.5,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -28182,7 +28140,6 @@
         "def": 1,
         "crit": 100,
         "critDamage": 10,
-        "speed": 0.1,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -28190,77 +28147,77 @@
         "elementBonus": 0,
         "bossDamage": 0
       },
-      "maxBaseGapPercent": 18,
+      "maxBaseGapPercent": 20,
       "maxGrowthGapPercent": 13,
       "ranges": {
         "D": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "C": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "B": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "A": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "S": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "SS": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "SSS": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         }
       }
@@ -30566,7 +30523,7 @@
             "value": 2
           },
           {
-            "key": "speed",
+            "key": "attackSpeedPct",
             "value": 2
           },
           {
@@ -30664,7 +30621,7 @@
             "value": 2
           },
           {
-            "key": "speed",
+            "key": "attackSpeedPct",
             "value": 3
           },
           {
@@ -30864,7 +30821,7 @@
             "value": 6
           },
           {
-            "key": "speed",
+            "key": "attackSpeedPct",
             "value": 1
           }
         ],
@@ -32817,7 +32774,7 @@
       "kind": "gem",
       "key": "1",
       "iconType": "auto",
-      "description": "速度 +1",
+      "description": "攻擊速度 +1%",
       "color": "#49B976",
       "displayName": "疾風石・1階"
     },
@@ -33205,7 +33162,7 @@
       "kind": "gem",
       "key": "6",
       "iconType": "auto",
-      "description": "速度 +2",
+      "description": "攻擊速度 +2%",
       "color": "#49B976",
       "displayName": "疾風石・2階"
     },
@@ -33245,7 +33202,7 @@
       "kind": "gem",
       "key": "11",
       "iconType": "auto",
-      "description": "速度 +3",
+      "description": "攻擊速度 +3%",
       "color": "#49B976",
       "displayName": "疾風石・3階"
     },
@@ -45849,7 +45806,7 @@
       {
         "id": "wolf-double-bite",
         "name": "野狼怒吼",
-        "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+        "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
         "type": "active",
         "activation": "active",
         "jobs": [
@@ -45898,7 +45855,8 @@
         ],
         "targetLimit": true,
         "effect": "shield",
-        "power": 0.15,
+        "power": 0,
+        "attackSpeedPct": 18,
         "cooldown": 30,
         "target": "self",
         "timing": {
@@ -46417,8 +46375,8 @@
       {
         "kind": 1,
         "base": {
-          "stat": "speed",
-          "unit": "flat",
+          "stat": "attackSpeedPct",
+          "unit": "percent",
           "values": [
             1,
             2,

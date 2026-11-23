@@ -1462,3 +1462,27 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - 舊存檔：等級轉為 `mapAccess`（舊等級可進入的地圖）與 `party.legacySkillLevel`（舊等級已解鎖的技能維持可用），等級與經驗刪除、不換算精通；升級卷軸依賣價換成金幣；重複載入不重複發放。
 - 劇情／教學的「主角等級」條件改為「主角職業精通等級」（L→L−1）；支線與每日委託移除等級範圍與經驗獎勵。
 - 已發布平衡資料（data/balance 模組）同步遷移成 v0.161 格式：移除經驗曲線、等級上限、等級成長、等級差設定、任務等級範圍與經驗獎勵、職業每級成長、越級收益券金幣；技能門檻 L→L−1（`masteryGateVersion=1`）；地圖加入 `recommendedGearLevel`；新增 `skills.mastery.classBonus`、`progression.advance.masteryLevel`、`equipment.maxLevel`。
+
+## v0.196 攻擊速度百分比
+
+玩家角色與夥伴的「速度點數」移除，改用攻擊速度百分比。怪物的速度公式與敵方減速控制不變。
+
+- 公式集中在 `js/combat/attack-speed.js`（遊戲、離線結算、平衡器共用）：
+  - 總攻速＝所有 `attackSpeedPct` 來源加算（裝備固定效果、寶石、信物、夥伴被動、技能增益），單位是百分點，`1` 代表 +1%。
+  - 普攻間隔＝`max(2/3, 職業基礎間隔 ÷ (1 + 總攻速 / 100))`；最短間隔由 `combat.seconds.attackSpeed.maxAttacksPerSecond`（1.5）換算，公式常數是 `1/1.5`，時間軸使用向上取整的 666667 µs。
+  - 總攻速低於 `minimumBonusPct`（−90%）時以 −90% 計算；超過上限的攻速不轉換成其他能力。NaN、Infinity、字串會被拒絕。
+- 職業基礎間隔（`combat.seconds.classes[].baseIntervalSeconds`）：戰士 2.00、法師 2.65、弓箭手 1.40、牧師 2.65 秒。達上限所需攻速：+200%／+297.5%／+110%／+297.5%。
+- 時間軸（`js/combat/seconds-timeline.js`，快照版本 3）：定義帶 `attackSpeedPct` 的演員使用上述公式，帶 `speed` 的演員（怪物）維持原公式。`minimumActionIntervalSeconds`（0.3 秒）仍只用於技能與怪物。
+  - 攻速改變時 `setAttackSpeed` 依比例換算剩餘蓄力：新剩餘＝舊剩餘 × 新間隔 ÷ 舊間隔；不重設、不贈送普攻。
+  - 每次普攻記錄 `lastBasicAt`。任何改動普攻期限的操作（攻速變化、隊伍同步、`advanceBasic` 前移效果）都不會讓下一次普攻早於 `lastBasicAt + 666667 µs`。
+  - v1／v2 快照可還原；英雄仍是舊速度模式時，執行時在下一步以目前能力重建。
+- 資料與遷移（舊格式只轉換一次，重複執行不變）：
+  - 疾風石：`{stat:'attackSpeedPct',unit:'percent',values:[1,2,3]}`；舊 `{stat:'speed',unit:'flat'}` 轉為此格式。
+  - 野狼怒吼：`attackSpeedPct: 18`、`power: 0`，施放後獲得「狼奔」（效果種類 `attackSpeedPct`，10 秒，重新施放取代不疊加）。舊資料的 `power` 0.15 換算為 `round((1/(1−0.15)−1)×100) = 18`。
+  - 旅人後綴：`basicAttackSpeedStack: 3`，普攻後獲得「疾行」，每層 +3%，5 秒，最多 3 層，再次普攻刷新；多件裝備取最大值不重複疊加。舊 `basicAdvanceNextRound` 讀入時轉為此效果。
+  - 信物 `speed` 效果改名為 `attackSpeedPct`（數值不變）；存檔中已擁有信物的快照在 `EmberwildTokens.prepareSave` 改名。被動與消耗品的舊 `speed` 也讀為 `attackSpeedPct`。
+  - 夥伴 `initialStats.speed`／`growthPerLevel.speed`、`combat.speed.heroBase／heroPerLevel／bonusCap／evasionWeight／critWeight`、夥伴評級權重 `speed` 已刪除；舊資料的這些欄位在讀入時捨棄。
+- 保留的計時機制：怪物共用技能 `advanceNextRound`、舊版英雄觸發技能選項 `advanceNextRound`（目前沒有技能使用）經 `advanceBasic` 處理，受最短間隔保護；藤蔓纏繞（敵方普攻重新蓄力）不變。
+- 攻速不影響主動／輔助技能冷卻、施法時間、固定動作成本、MP 與獨立觸發冷卻；依賴普攻的觸發因普攻次數增加而自然增加。
+- 介面：角色頁、夥伴頁與戰鬥單位詳細資訊顯示「攻擊速度 +X%」、「普攻間隔 X.XXX 秒」、「普攻頻率 X.XXX 次／秒」，達上限時顯示封頂後的結果。裝備摘要、篩選與排序使用 `attackSpeedPct`。
+- 測試：`tests/attack-speed.test.cjs`。

@@ -105,7 +105,7 @@ jobs:
               tests/status-advanced.test.cjs tests/skill-effects.test.cjs tests/shop-rule-price-name.test.cjs
           - group: combat
             tests: >-
-              tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/seconds-encounter-cooldowns.test.cjs tests/skill-new-badge.test.cjs tests/mailbox-actions.test.cjs tests/continuous-exploration.test.cjs tests/recovery-healing.test.cjs
+              tests/attack-speed.test.cjs tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/seconds-encounter-cooldowns.test.cjs tests/skill-new-badge.test.cjs tests/mailbox-actions.test.cjs tests/continuous-exploration.test.cjs tests/recovery-healing.test.cjs
           # v0.110: files that ran in no CI job; each passed locally without the private balance editor.
           # Files that open Chromium through tests/runtime.cjs run in the browser job (it installs Playwright).
           - group: ui-and-catalogue

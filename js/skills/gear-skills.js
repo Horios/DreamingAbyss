@@ -1,6 +1,6 @@
 /* v0.172 gear skills of the forest monsters' exclusive gear.
-   - 野狼怒吼 (systemEffect 'haste'): the caster's basic attack interval is shortened by `power` (0.15 = 15%) for `duration`
-     seconds. The interval is base × reference speed ÷ speed, so the speed is divided by (1 − power).
+   - 野狼怒吼 (systemEffect 'haste', v0.196): the caster gains 狼奔, attack speed +`attackSpeedPct` percent points (18 = +18%)
+     for `duration` seconds. It is an effect of kind 'attackSpeedPct'; recasting replaces it, it never stacks with itself.
    - 藤蔓纏繞 (systemEffect 'bind'): a random living enemy has its basic attack charge reset to a full interval, once.
    - 凝膠復原 (passive effect key 'regenPerSecond'): while worn (or carried by a companion's token) restores a fixed amount of HP
      each second, in and out of battle. The HP changes through EmberwildBattleEffects.quiet, without a healing effect, because
@@ -13,7 +13,7 @@
 (()=>{
   'use strict';
   const S=()=>globalThis.__EMBERWILD_SKILLS;
-  const HASTE='skillHaste';
+  const HASTE='attackSpeedPct',HASTE_NAME='狼奔';
   function gearSkillIds(h){
     const out=new Set();if(!h)return out;
     for(const g of S()?.worn?.(h)||[])if(g?.skillId)out.add(g.skillId);
@@ -70,18 +70,20 @@
     const alive=foes.filter(e=>e.hp>0);if(!alive.length)return false;
     if(sk.systemEffect==='haste'){
       const key=heroKey(h);effects=effects.filter(e=>!(e.target===key&&e.kind===HASTE&&e.skill===sk.id));
-      effects.push({source:memberKey(h),skill:sk.id,target:key,kind:HASTE,value:sk.power,until:partyClock+sk.duration,name:sk.name});
-      note(characterName(h)+'・'+sk.name+'：普攻間隔縮短 '+Math.round(sk.power*100)+'%，持續 '+sk.duration+' 秒');
+      const pct=EmberwildAttackSpeed.checkPct(sk.attackSpeedPct);
+      effects.push({source:memberKey(h),skill:sk.id,target:key,kind:HASTE,value:pct,until:partyClock+sk.duration,name:HASTE_NAME});
+      note(characterName(h)+'・'+sk.name+'：獲得「'+HASTE_NAME+'」，攻擊速度 +'+pct+'%，持續 '+sk.duration+' 秒');
     }else{
       const e=alive[Math.floor(Math.random()*alive.length)];bind(e);
       note(characterName(h)+'・'+sk.name+' → '+(globalThis.combatEnemyName?.(e)||e.name)+' 被綑綁，普通攻擊重新蓄力');
     }
     return true;
   };
+  // Timed attack speed effects (狼奔, 疾行, statuses with an attackSpeedPct modifier) add to the permanent total.
   const statsBase=battleStats;
   battleStats=function(h){
-    const v=statsBase(h),haste=effectTotal(heroKey(h),HASTE);
-    if(haste>0&&Number.isFinite(v.speed))v.speed=v.speed/(1-Math.min(.9,haste));
+    const v=statsBase(h);if(!h||!Object.hasOwn(h,'job'))return v;
+    v.attackSpeedPct=(Number(v.attackSpeedPct)||0)+effectTotal(heroKey(h),HASTE);
     return v;
   };
   // Old saves: 凝膠護甲 dropped in v0.163–v0.169 carries 凝膠緩衝 (gel-guard, now disabled); it now carries 凝膠復原. The item keeps

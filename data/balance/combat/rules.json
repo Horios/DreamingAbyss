@@ -20,16 +20,6 @@
     "max": 5
   },
   "speed": {
-    "heroBase": [
-      102,
-      108,
-      116,
-      96
-    ],
-    "heroPerLevel": 0.5,
-    "bonusCap": 5,
-    "evasionWeight": 10,
-    "critWeight": 5,
     "enemyBase": 106,
     "enemyPerLevel": 0.5,
     "race": {
@@ -83,17 +73,21 @@
       },
       {
         "job": 1,
-        "baseIntervalSeconds": 2.8
+        "baseIntervalSeconds": 2.65
       },
       {
         "job": 2,
-        "baseIntervalSeconds": 1.6
+        "baseIntervalSeconds": 1.4
       },
       {
         "job": 3,
-        "baseIntervalSeconds": 2.5
+        "baseIntervalSeconds": 2.65
       }
     ],
+    "attackSpeed": {
+      "maxAttacksPerSecond": 1.5,
+      "minimumBonusPct": -90
+    },
     "groupWeights": [
       6,
       3,

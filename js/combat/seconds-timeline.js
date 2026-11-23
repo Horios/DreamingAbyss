@@ -8,7 +8,11 @@
   else root.EmberwildSecondsTimeline=api;
 })(globalThis,function(){
   'use strict';
-  const SCALE=1000000,VERSION=2;
+  const SCALE=1000000,VERSION=3;
+  // v0.196: player characters and companions (definitions with attackSpeedPct) use the shared attack speed rule;
+  // monsters (definitions with speed) keep base × referenceSpeed ÷ speed.
+  // The browser and the editor load attack-speed.js first; Node loads it next to this file (.cjs where the folder is ESM).
+  const AS=()=>{if(globalThis.EmberwildAttackSpeed)return globalThis.EmberwildAttackSpeed;if(typeof require==='function')for(const f of ['./attack-speed.js','./attack-speed.cjs']){try{const m=require(f);if(m&&m.intervalMicros)return m;if(globalThis.EmberwildAttackSpeed)return globalThis.EmberwildAttackSpeed;}catch{}}return fail('attack speed module missing');};
   const copy=x=>JSON.parse(JSON.stringify(x,(_key,value)=>{
     if(typeof value==='number'&&!Number.isFinite(value))fail('non-finite JSON value');
     return value;
@@ -42,22 +46,37 @@
     constructor(config,actors=[],handlers={}){
       this.config=copy(config);positiveTime(config.minimumActionIntervalSeconds,'minimumActionIntervalSeconds');
       number(config.referenceSpeed,'referenceSpeed',Number.MIN_VALUE);
+      if(config.attackSpeed!==undefined)AS().validate(config.attackSpeed);
       this.handlers=handlers;this.now=0;this.serial=0;this.actors=[];this.statuses=[];
       this.executing=false;this.triggering=new Set();
       for(const actor of actors)this.addActor(actor);
     }
-    interval(a){return positiveTime(Math.max(this.config.minimumActionIntervalSeconds,a.definition.baseIntervalSeconds*this.config.referenceSpeed/a.speed),'actor interval');}
+    player(a){return a.definition.attackSpeedPct!==undefined;}
+    interval(a){
+      if(this.player(a))return AS().intervalMicros(a.definition.baseIntervalSeconds,a.attackSpeedPct,this.config.attackSpeed);
+      return positiveTime(Math.max(this.config.minimumActionIntervalSeconds,a.definition.baseIntervalSeconds*this.config.referenceSpeed/a.speed),'actor interval');
+    }
+    minimumBasic(){return AS().minimumIntervalMicros(this.config.attackSpeed);}
+    // The attack speed cap is enforced on the event clock, not only in the interval: whatever moved the basic deadline
+    // (speed change, rescale, an advance effect), two basic attacks of one player actor are never closer than the minimum.
+    floorBasic(a){if(this.player(a)&&a.lastBasicAt!==null&&a.lastBasicAt!==undefined)a.basicAt=Math.max(a.basicAt,safeAdd(a.lastBasicAt,this.minimumBasic()));}
+    rescaleBasic(a,oldInterval){
+      a.basicAt=safeAdd(this.now,Math.max(0,Math.round((a.basicAt-this.now)*this.interval(a)/oldInterval)));
+      a.actionSpeedAt=safeAdd(this.now,Math.max(0,Math.round((a.actionSpeedAt-this.now)*this.interval(a)/oldInterval)));
+      a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);this.floorBasic(a);
+    }
     addActor(definition){
       if(this.executing)fail('cannot change roster inside event callback');
       const d=copy(definition);id(d.id,'actor id');
       if(this.actors.some(a=>a.definition.id===d.id))fail('duplicate actor id');
-      positiveTime(d.baseIntervalSeconds,'baseIntervalSeconds');number(d.speed,'speed',Number.MIN_VALUE);
+      positiveTime(d.baseIntervalSeconds,'baseIntervalSeconds');
+      if(d.attackSpeedPct!==undefined){AS().checkPct(d.attackSpeedPct);if(d.speed!==undefined)fail('player actor cannot carry speed');}else number(d.speed,'speed',Number.MIN_VALUE);
       number(d.maxMp,'maxMp');number(d.mp,'mp');number(d.mpRegenPerSecond,'mpRegenPerSecond');
       if(d.mp>d.maxMp)fail('MP exceeds maximum');
       if(!Array.isArray(d.skills))fail('skills missing');
       d.skills=d.skills.map(skillDefinition);for(const s of d.skills)if(s.type==='active')s.cooldownSeconds=Math.max(s.cooldownSeconds,this.config.minimumActionIntervalSeconds);
       if(new Set(d.skills.map(s=>s.id)).size!==d.skills.length)fail('duplicate skill id');
-      const a={definition:d,speed:d.speed,alive:true,mp:d.mp,mpAt:this.now,mpCostMultiplier:1,actionAt:this.now,actionSpeedAt:this.now,actionFixedAt:this.now,basicAt:0,casting:null,ready:Object.create(null),retryAt:Object.create(null),readyArchive:Object.create(null)};
+      const a={definition:d,speed:d.speed,attackSpeedPct:d.attackSpeedPct,lastBasicAt:null,alive:true,mp:d.mp,mpAt:this.now,mpCostMultiplier:1,actionAt:this.now,actionSpeedAt:this.now,actionFixedAt:this.now,basicAt:0,casting:null,ready:Object.create(null),retryAt:Object.create(null),readyArchive:Object.create(null)};
       a.basicAt=safeAdd(this.now,this.interval(a));
       for(const s of d.skills)a.ready[s.id]=safeAdd(this.now,time(s.initialReadyInSeconds??0));
       this.actors.push(a);return this.actor(d.id);
@@ -77,9 +96,8 @@
       const checked=new Timeline(this.config,definitions),old=new Map(this.actors.map(a=>[a.definition.id,a]));
       this.actors=checked.actors.map(fresh=>{
         const a=old.get(fresh.definition.id);if(!a){fresh.mpAt=this.now;fresh.actionAt=fresh.actionSpeedAt=fresh.actionFixedAt=this.now;fresh.basicAt=safeAdd(this.now,this.interval(fresh));for(const s of fresh.definition.skills)fresh.ready[s.id]=safeAdd(this.now,time(s.initialReadyInSeconds??0));return fresh;}
-        this.settleMana(a);const oldInterval=this.interval(a);a.definition=fresh.definition;a.speed=fresh.speed;a.mp=Math.min(a.mp,a.definition.maxMp);
-        a.basicAt=safeAdd(this.now,Math.max(0,Math.round((a.basicAt-this.now)*this.interval(a)/oldInterval)));
-        a.actionSpeedAt=safeAdd(this.now,Math.max(0,Math.round((a.actionSpeedAt-this.now)*this.interval(a)/oldInterval)));a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);
+        this.settleMana(a);const oldInterval=this.interval(a);a.definition=fresh.definition;a.speed=fresh.speed;a.attackSpeedPct=fresh.attackSpeedPct;a.lastBasicAt??=null;a.mp=Math.min(a.mp,a.definition.maxMp);
+        this.rescaleBasic(a,oldInterval);
         const allReady={...a.readyArchive,...a.ready},ready=Object.create(null);for(const s of a.definition.skills)ready[s.id]=allReady[s.id]??safeAdd(this.now,time(s.initialReadyInSeconds??0));a.readyArchive=Object.fromEntries(Object.entries(allReady).filter(([id,at])=>!Object.hasOwn(ready,id)&&at>this.now));a.ready=ready;a.retryAt=Object.fromEntries(Object.entries(a.retryAt||{}).filter(([id])=>Object.hasOwn(ready,id)));
         if(a.casting&&!a.definition.skills.some(s=>s.id===a.casting.skillId))a.casting=null;
         return a;
@@ -88,7 +106,7 @@
     }
     actor(actorId){
       const a=this.find(actorId);
-      return {id:actorId,alive:a.alive,speed:a.speed,mp:this.mana(a,this.now),maxMp:a.definition.maxMp,
+      return {id:actorId,alive:a.alive,speed:a.speed,attackSpeedPct:a.attackSpeedPct,mp:this.mana(a,this.now),maxMp:a.definition.maxMp,
         intervalSeconds:seconds(this.interval(a)),actionReadyInSeconds:seconds(Math.max(0,a.actionAt-this.now)),
         basicReadyInSeconds:seconds(Math.max(0,a.basicAt-this.now)),casting:a.casting?{skillId:a.casting.skillId,remainingSeconds:seconds(Math.max(0,a.casting.at-this.now))}:null,
         skills:a.definition.skills.map(s=>({...copy(s),readyInSeconds:seconds(Math.max(0,a.ready[s.id]-this.now))}))};
@@ -110,13 +128,21 @@
       for(const box of [a.ready,a.readyArchive])for(const key of Object.keys(box))box[key]=Math.max(this.now,box[key]-amount);
     }
     deferSkill(actorId,skillId,delaySeconds){const a=this.find(actorId);if(!Object.hasOwn(a.ready,skillId))fail('unknown skill');a.retryAt[skillId]=safeAdd(this.now,positiveTime(delaySeconds,'retry delay'));}
+    // Preserve the completed fraction of an in-progress basic attack charge: remaining × new interval ÷ old interval.
     setSpeed(actorId,value){
-      number(value,'speed',Number.MIN_VALUE);const a=this.find(actorId),old=this.interval(a);
-      a.speed=value;const next=this.interval(a);
-      // Preserve the completed fraction of an in-progress basic attack charge.
-      a.basicAt=safeAdd(this.now,Math.max(0,Math.round((a.basicAt-this.now)*next/old)));
-      a.actionSpeedAt=safeAdd(this.now,Math.max(0,Math.round((a.actionSpeedAt-this.now)*next/old)));
-      a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);
+      number(value,'speed',Number.MIN_VALUE);const a=this.find(actorId);if(this.player(a))fail('player actors use setAttackSpeed');
+      const old=this.interval(a);a.speed=value;this.rescaleBasic(a,old);
+    }
+    setAttackSpeed(actorId,value){
+      AS().checkPct(value);const a=this.find(actorId);if(!this.player(a))fail('monster actors use setSpeed');
+      if(value===a.attackSpeedPct)return;
+      const old=this.interval(a);a.attackSpeedPct=value;this.rescaleBasic(a,old);
+    }
+    // Moves the basic (and speed-scaled action) deadline earlier, never sooner than floorSeconds from now and, for a
+    // player actor, never sooner than the minimum interval after its previous basic attack.
+    advanceBasic(actorId,secondsEarlier,floorSeconds){
+      const a=this.find(actorId),amount=time(secondsEarlier,'advance'),floor=safeAdd(this.now,time(floorSeconds,'advance floor'));
+      a.basicAt=Math.max(floor,a.basicAt-amount);a.actionSpeedAt=Math.max(floor,a.actionSpeedAt-amount);a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);this.floorBasic(a);
     }
     context(){return {timeSeconds:seconds(this.now),timeline:this};}
     controlled(a){return this.statuses.some(s=>s.actorId===a.definition.id&&s.preventsAction);}
@@ -216,7 +242,7 @@
         if(cast)a.casting={skillId:skill.id,at:safeAdd(this.now,cast)};
         this.emit(cast?'castStart':'skill',{actorId:a.definition.id,skillId:skill.id});
       }else{
-        a.basicAt=safeAdd(this.now,this.interval(a));
+        a.lastBasicAt=this.now;a.basicAt=safeAdd(this.now,this.interval(a));
         this.emit('basic',{actorId:a.definition.id});
       }
     }
@@ -236,11 +262,13 @@
     snapshot(){return copy({version:VERSION,config:this.config,now:this.now,serial:this.serial,actors:this.actors,statuses:this.statuses});}
     static restore(snapshot,handlers={}){
       const s=copy(snapshot);
-      if(![1,VERSION].includes(s.version)||!Array.isArray(s.actors)||!Array.isArray(s.statuses)||!Number.isSafeInteger(s.now)||s.now<0||!Number.isSafeInteger(s.serial)||s.serial<0)fail('snapshot invalid');
+      if(![1,2,VERSION].includes(s.version)||!Array.isArray(s.actors)||!Array.isArray(s.statuses)||!Number.isSafeInteger(s.now)||s.now<0||!Number.isSafeInteger(s.serial)||s.serial<0)fail('snapshot invalid');
       const out=new Timeline(s.config,s.actors.map(a=>a.definition),handlers),ticks=(n,label)=>{if(!Number.isSafeInteger(n)||n<0)fail(label+' invalid');};
       for(const [i,a] of s.actors.entries()){
         const def=out.actors[i].definition;a.definition=def;
-        number(a.speed,'speed',Number.MIN_VALUE);number(a.mp,'mp');if(a.mp>def.maxMp||typeof a.alive!=='boolean')fail('actor snapshot invalid');
+        if(def.attackSpeedPct!==undefined){a.attackSpeedPct??=def.attackSpeedPct;AS().checkPct(a.attackSpeedPct);}else number(a.speed,'speed',Number.MIN_VALUE);
+        a.lastBasicAt??=null;if(a.lastBasicAt!==null&&(!Number.isSafeInteger(a.lastBasicAt)||a.lastBasicAt<0||a.lastBasicAt>s.now))fail('last basic clock invalid');
+        number(a.mp,'mp');if(a.mp>def.maxMp||typeof a.alive!=='boolean')fail('actor snapshot invalid');
         number(a.mpCostMultiplier,'mpCostMultiplier');
         for(const k of ['mpAt','actionAt','actionSpeedAt','actionFixedAt','basicAt'])ticks(a[k],k);
         if(a.actionAt!==Math.max(a.actionSpeedAt,a.actionFixedAt))fail('action lock invalid');

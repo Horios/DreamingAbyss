@@ -8,7 +8,6 @@
         "def": 1,
         "crit": 100,
         "critDamage": 10,
-        "speed": 0.1,
         "pierce": 0,
         "defenseIgnore": 0,
         "lifesteal": 0,
@@ -16,77 +15,77 @@
         "elementBonus": 0,
         "bossDamage": 0
       },
-      "maxBaseGapPercent": 18,
+      "maxBaseGapPercent": 20,
       "maxGrowthGapPercent": 13,
       "ranges": {
         "D": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "C": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "B": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "A": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "S": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "SS": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         },
         "SSS": {
           "base": {
-            "min": 67.84,
-            "max": 79.99
+            "min": 57,
+            "max": 68.34
           },
           "growth": {
-            "min": 7.37,
-            "max": 8.31
+            "min": 7.32,
+            "max": 8.26
           }
         }
       }
@@ -234,7 +233,7 @@
             "value": 2
           },
           {
-            "key": "speed",
+            "key": "attackSpeedPct",
             "value": 2
           },
           {
@@ -332,7 +331,7 @@
             "value": 2
           },
           {
-            "key": "speed",
+            "key": "attackSpeedPct",
             "value": 3
           },
           {
@@ -532,7 +531,7 @@
             "value": 6
           },
           {
-            "key": "speed",
+            "key": "attackSpeedPct",
             "value": 1
           }
         ],

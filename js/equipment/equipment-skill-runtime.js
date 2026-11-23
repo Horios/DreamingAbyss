@@ -25,7 +25,7 @@
   const out=summaryBase(g);
   for(const id of g.skillSockets?.gems||[]){
    if(id===null)continue;const d=rules().gems.find(x=>x.kind===id%5),tier=Math.floor(id/5);
-   const ratio=d.base.unit==='ratio',key=ratio&&d.base.stat!=='crit'?({atk:'attackPct',hp:'hpPct',def:'defensePct'}[d.base.stat]||d.base.stat):d.base.stat,v=d.base.values[tier]*(ratio?100:1);out.numeric[key]=(out.numeric[key]||0)+v;out.values.push(GEMS[id].name+'：'+({atk:'攻擊',hp:'生命',def:'防禦',crit:'暴擊率',speed:'速度'}[d.base.stat]||d.base.stat)+' +'+v+(ratio?'%':''));
+   const ratio=d.base.unit==='ratio',key=ratio&&d.base.stat!=='crit'?({atk:'attackPct',hp:'hpPct',def:'defensePct'}[d.base.stat]||d.base.stat):d.base.stat,v=d.base.values[tier]*(ratio?100:1);out.numeric[key]=(out.numeric[key]||0)+v;out.values.push(GEMS[id].name+'：'+({atk:'攻擊',hp:'生命',def:'防禦',crit:'暴擊率',attackSpeedPct:'攻擊速度'}[d.base.stat]||d.base.stat)+' +'+v+(ratio||d.base.unit==='percent'?'%':''));
   }
   return out;
  };

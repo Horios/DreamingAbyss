@@ -5,6 +5,8 @@
  const VERSION=1,copy=x=>JSON.parse(JSON.stringify(x)),round=n=>Math.round(n*1e6)/1e6;
  const finite=(v,min=0,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
  const fail=s=>{throw Error('秒數戰鬥設定：'+s);};
+ // The browser and the editor load attack-speed.js first; Node loads it next to this file (.cjs where the folder is ESM).
+ const AS=()=>{if(globalThis.EmberwildAttackSpeed)return globalThis.EmberwildAttackSpeed;if(typeof require==='function')for(const f of ['./attack-speed.js','./attack-speed.cjs']){try{const m=require(f);if(m&&m.intervalMicros)return m;if(globalThis.EmberwildAttackSpeed)return globalThis.EmberwildAttackSpeed;}catch{}}return fail('缺少攻擊速度模組');};
  const isActive=s=>s.type==='active'||s.type==='support';
  function assertJSON(input){JSON.stringify(input,(_k,v)=>{if(v===undefined||['function','bigint','symbol'].includes(typeof v)||typeof v==='number'&&!Number.isFinite(v))throw Error('不是合法 JSON 值');return v;});return input;}
  function defaults(doc){
@@ -13,7 +15,7 @@
    actionReferenceSeconds:actionReference,durationReferenceSeconds:reference,periodicIntervalSeconds:reference,triggerIntervalSeconds:actionReference,
    advanceStepSeconds:(p.actionIntervalMs||1500)/1000,encounterDelaySeconds:(p.actionIntervalMs||1500)/1000,healThreshold:.75,
    mana:{maxMp:100,regenPerSecond:round(100/(reference*10)),costMultiplier:1},
-   classes:[0,1,2,3].map(job=>({job,baseIntervalSeconds:actionReference})),
+   classes:[0,1,2,3].map(job=>({job,baseIntervalSeconds:actionReference})),attackSpeed:{...AS().DEFAULTS},
    groupWeights:[6,3,1],finalBoss:{enrageAfterSeconds:(combat.finalBoss?.enrageAfterTurn??45)*actionReference,specialIntervalSeconds:(combat.finalBoss?.specialEveryTurns||5)*actionReference},migration:{version:1,source:'actor-turns',resourceBudget:100,recoveryReferencePeriods:10}};
  }
  function timing(skill,job,config){
@@ -69,6 +71,8 @@
   c.finalBoss??={enrageAfterSeconds:(doc.balanceSettings.combat.finalBoss?.enrageAfterTurn??45)*c.actionReferenceSeconds,specialIntervalSeconds:(doc.balanceSettings.combat.finalBoss?.specialEveryTurns||5)*c.actionReferenceSeconds};
   c.advanceStepSeconds??=(doc.balanceSettings.combat.pacing?.actionIntervalMs||1500)/1000;
   c.actionModel??='independent';
+  // v0.196: player characters and companions use attack speed percent; the shared cap and the lowest effective bonus.
+  c.attackSpeed??={...AS().DEFAULTS};
   c.cooldownReduction??=defaultCooldownReduction();
   delete c.cooldownReduction.sources?.onCast;
   c.recovery??={hpFractionPerSecond:round((doc.balanceSettings.rewards?.postVictoryHeal??.12)/c.durationReferenceSeconds),mpRegenMultiplier:1,minimumHpRatio:1,minimumMpRatio:0};
@@ -90,6 +94,8 @@
   if(!c.recovery||!finite(c.recovery.hpFractionPerSecond)||!finite(c.recovery.mpRegenMultiplier)||!finite(c.recovery.minimumHpRatio,0,1)||!finite(c.recovery.minimumMpRatio,0,1))fail('脫戰恢復與遭遇門檻無效');
   if(c.cooldownReduction!==undefined)validateCooldownReduction(c.cooldownReduction);
   if(!c.mana||!finite(c.mana.maxMp,1)||!finite(c.mana.regenPerSecond)||!finite(c.mana.costMultiplier))fail('魔力預算無效');
+  if(!c.attackSpeed||typeof c.attackSpeed!=='object'||Array.isArray(c.attackSpeed)||Object.keys(c.attackSpeed).some(k=>!['maxAttacksPerSecond','minimumBonusPct'].includes(k)))fail('攻擊速度設定無效');
+  try{AS().validate(c.attackSpeed);}catch(e){fail(e.message);}
   if(!Array.isArray(c.classes)||c.classes.length!==4||new Set(c.classes.map(x=>x.job)).size!==4||c.classes.some(x=>!Number.isInteger(x.job)||x.job<0||x.job>3||!finite(x.baseIntervalSeconds,.000001,3600)))fail('職業間隔需各一筆');
   if(!Array.isArray(c.groupWeights)||c.groupWeights.length!==3||c.groupWeights.some(x=>!finite(x))||!c.groupWeights.some(x=>x>0))fail('群怪 3／4／5 隻權重無效');
   for(const s of doc.skillSystem?.definitions||[]){if(['mpCost','manaCost','cooldownSeconds','castSeconds','actionCostSeconds'].some(k=>Object.hasOwn(s,k)))fail(s.id+' 秒數／MP 欄位必須放在 timing');const t=s.timing;if(!t)fail(s.id+' 缺少時間設定');for(const k of ['cooldownSeconds','mpCost','castSeconds','actionCostSeconds','durationSeconds','bossDurationSeconds'])if(!finite(t[k]))fail(s.id+' '+k+' 無效');if(!finite(t.tickIntervalSeconds,.000001)||!Number.isSafeInteger(t.priority)||t.priority<0||t.priority>99||!['always','injured','missingEffect'].includes(t.condition))fail(s.id+' 條件／優先級無效');if(t.initialCooldownSeconds!==undefined&&!finite(t.initialCooldownSeconds,0,86400))fail(s.id+' initialCooldownSeconds 無效');if(t.minTargets!==undefined&&(!Number.isSafeInteger(t.minTargets)||t.minTargets<1||t.minTargets>99))fail(s.id+' 目標數門檻無效');if(t.requiredTargetStatusId!=null&&!doc.statusDefinitions?.some(x=>x.id===t.requiredTargetStatusId))fail(s.id+' 連動狀態不存在');if(!isActive(s)&&t.mpCost!==0)fail(s.id+' 被動／觸發技能不能新增耗魔');}

@@ -1542,7 +1542,7 @@
       {
         "id": "wolf-double-bite-job0",
         "name": "野狼怒吼",
-        "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+        "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
         "activation": "active",
         "usageScope": "character",
         "partnerId": null,
@@ -1574,7 +1574,8 @@
         ],
         "targetLimit": true,
         "effect": "shield",
-        "power": 0.15,
+        "power": 0,
+        "attackSpeedPct": 18,
         "cooldown": 30,
         "target": "self",
         "timing": {
@@ -2686,7 +2687,7 @@
       {
         "id": "wolf-double-bite-job1",
         "name": "野狼怒吼",
-        "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+        "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
         "activation": "active",
         "usageScope": "character",
         "partnerId": null,
@@ -2718,7 +2719,8 @@
         ],
         "targetLimit": true,
         "effect": "shield",
-        "power": 0.15,
+        "power": 0,
+        "attackSpeedPct": 18,
         "cooldown": 30,
         "target": "self",
         "timing": {
@@ -3810,7 +3812,7 @@
       {
         "id": "wolf-double-bite-job2",
         "name": "野狼怒吼",
-        "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+        "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
         "activation": "active",
         "usageScope": "character",
         "partnerId": null,
@@ -3842,7 +3844,8 @@
         ],
         "targetLimit": true,
         "effect": "shield",
-        "power": 0.15,
+        "power": 0,
+        "attackSpeedPct": 18,
         "cooldown": 30,
         "target": "self",
         "timing": {
@@ -5063,7 +5066,7 @@
       {
         "id": "wolf-double-bite-job3",
         "name": "野狼怒吼",
-        "description": "開場 3 秒後施放：自身普通攻擊間隔縮短 15%，持續 10 秒。",
+        "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
         "activation": "active",
         "usageScope": "character",
         "partnerId": null,
@@ -5095,7 +5098,8 @@
         ],
         "targetLimit": true,
         "effect": "shield",
-        "power": 0.15,
+        "power": 0,
+        "attackSpeedPct": 18,
         "cooldown": 30,
         "target": "self",
         "timing": {

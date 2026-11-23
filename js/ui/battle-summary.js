@@ -186,8 +186,10 @@
  }
  function showUnit(id,side){
   const d=globalThis.EmberwildSecondsCombat?.active?globalThis.EmberwildBattleSummary.inspect(id,side):inspect(id,side);if(!d)return false;
-  const statNames={atk:'攻擊力',def:'防禦力',speed:'速度',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷'},ratios=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
+  // v0.196: allies show attack speed percent with the resulting interval and frequency; enemies keep their speed.
+  const ally=d.side==='ally',statNames={atk:'攻擊力',def:'防禦力',...(ally?{}:{speed:'速度'}),crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷'},ratios=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
   const statRows=Object.entries(statNames).map(([k,n])=>[n,ratios.has(k)?pct(d.stats[k]):fmt(finite(d.stats[k]))]);
+  if(ally){const h=party?.members.find(x=>heroKey(x)===d.id);if(h&&typeof heroAttackSpeedSummary==='function'){const a=heroAttackSpeedSummary(h);statRows.splice(2,0,['攻擊速度',EmberwildAttackSpeed.formatPct(a.bonusPct)],['普攻間隔',a.intervalSeconds.toFixed(3)+' 秒'],['普攻頻率',a.attacksPerSecond.toFixed(3)+' 次／秒']);}}
   for(const [k,label,names] of [['elementDamage','屬性增傷',ELEMENTS],['resist','屬性抗性',ELEMENTS],['raceDamage','種族增傷',RACES]])for(const [target,value] of Object.entries(d.stats[k]||{}))statRows.push([(names[target]||target)+' · '+label,pct(value)]);
   const labels={active:'主動',proc:'普攻觸發',support:'輔助',passive:'被動'},polarity={buff:'增益',debuff:'減益',neutral:'狀態'};
   const modal=$('modal');modal.classList.add('battle-unit-dialog');

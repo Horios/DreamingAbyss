@@ -8,7 +8,7 @@
 (()=>{
   const COMPRESSION_VERSION=1;
   const SKILL_META_DEFAULTS={baseCritRate:0,baseCritDamage:1.5,defensePenetration:0,defenseIgnore:0};
-  const ITEM_STAT_KEYS=['hp','attack','defense','attackPct','critRate','critDamage','defensePenetration','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage','speed'];
+  const ITEM_STAT_KEYS=['hp','attack','defense','attackPct','critRate','critDamage','defensePenetration','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage','attackSpeedPct'];
   const clone=v=>JSON.parse(JSON.stringify(v));
 
   function ensureCompressionSettings(s){
@@ -58,6 +58,8 @@
   function normalizeStatEffects(raw){
     const out={};if(!raw||typeof raw!=='object'||Array.isArray(raw))return out;
     for(const key of ITEM_STAT_KEYS){const n=Number(raw[key]);if(Number.isFinite(n)&&n!==0)out[key]=n;}
+    // v0.196: a legacy fixed speed bonus on a consumable is read as attack speed percent points.
+    if(out.attackSpeedPct===undefined&&Number.isFinite(Number(raw.speed))&&Number(raw.speed)!==0)out.attackSpeedPct=Number(raw.speed);
     return out;
   }
   function compressDocument(doc){
@@ -119,7 +121,7 @@
   // Temporary item stats are applied after the permanent character/equipment calculation.
   const compressionStatsBase=stats;
   stats=function(h=state){
-    const v=compressionStatsBase(h),effects={};let attackPct=0,speed=0;
+    const v=compressionStatsBase(h),effects={};let attackPct=0,attackSpeedPct=0;
     for(const key of ['imbue','ward','elementTonic'])for(const buff of activeSupplies(h,key)){
       const src=normalizeStatEffects(buff.statEffects);
       for(const [k,n] of Object.entries(src))effects[k]=(effects[k]||0)+n;
@@ -127,14 +129,14 @@
     v.hp+=(effects.hp||0);v.atk+=(effects.attack||0);v.def+=(effects.defense||0);attackPct+=effects.attackPct||0;
     v.crit+=(effects.critRate||0)/100;v.critDamage+=(effects.critDamage||0)/100;
     v.pierce+=(effects.defensePenetration||0);v.defenseIgnore+=(effects.defenseIgnore||0)/100;
-    v.lifesteal+=(effects.lifesteal||0)/100;v.evasion+=(effects.evasion||0)/100;v.elementBonus+=(effects.elementBonus||0)/100;v.bossDamage+=(effects.bossDamage||0)/100;speed+=effects.speed||0;
+    v.lifesteal+=(effects.lifesteal||0)/100;v.evasion+=(effects.evasion||0)/100;v.elementBonus+=(effects.elementBonus||0)/100;v.bossDamage+=(effects.bossDamage||0)/100;attackSpeedPct+=effects.attackSpeedPct||0;
     if(attackPct)v.atk*=1+attackPct/100;
     v.crit=Math.min(GAME_BALANCE.combat.statCaps.crit,Math.max(0,v.crit));
     v.pierce=Math.min(GAME_BALANCE.combat.statCaps.pierce,Math.max(0,v.pierce));
     v.defenseIgnore=Math.min(GAME_BALANCE.combat.statCaps.defenseIgnore??.75,Math.max(0,v.defenseIgnore||0));
     v.lifesteal=Math.min(GAME_BALANCE.combat.statCaps.lifesteal,Math.max(0,v.lifesteal));
     v.evasion=Math.min(GAME_BALANCE.combat.statCaps.evasion,Math.max(0,v.evasion));
-    v.speed=Math.round((Number(v.speed)||0)+speed);
+    v.attackSpeedPct=(Number(v.attackSpeedPct)||0)+attackSpeedPct;
     for(const k of ['hp','atk','def'])v[k]=Math.max(0,Math.round(v[k]));
     return v;
   };
@@ -224,7 +226,7 @@
     render();toast('已使用'+item.name);return true;
   };
   function itemStatText(item){
-    const s=normalizeStatEffects(item?.statEffects),labels={hp:'生命',attack:'攻擊',defense:'防禦',attackPct:'總攻擊',critRate:'暴擊率',critDamage:'暴擊傷害',defensePenetration:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避',elementBonus:'全屬性增傷',bossDamage:'BOSS 傷害',speed:'速度'},percent=new Set(['attackPct','critRate','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
+    const s=normalizeStatEffects(item?.statEffects),labels={hp:'生命',attack:'攻擊',defense:'防禦',attackPct:'總攻擊',critRate:'暴擊率',critDamage:'暴擊傷害',defensePenetration:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避',elementBonus:'全屬性增傷',bossDamage:'BOSS 傷害',attackSpeedPct:'攻擊速度'},percent=new Set(['attackPct','critRate','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage','attackSpeedPct']);
     return Object.entries(s).map(([k,n])=>labels[k]+' '+(n>=0?'+':'')+n+(percent.has(k)?'%':'')).join('、');
   }
   const compressionSupplyDetailBase=supplyDetail;

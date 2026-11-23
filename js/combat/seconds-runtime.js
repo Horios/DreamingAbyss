@@ -27,13 +27,16 @@
   return {maxMp:Math.max(1,(h.mana?.maxMp??c.maxMp)+extras.reduce((n,x)=>n+(Number(x.maxMp)||0),0)),regen:Math.max(0,(h.mana?.regenPerSecond??c.regenPerSecond)+extras.reduce((n,x)=>n+(Number(x.regenPerSecond)||0),0)),cost:Math.max(0,(h.mana?.costMultiplier??c.costMultiplier)-extras.reduce((n,x)=>n+(Number(x.costReduction)||0),0))};
  }
  function skillCooldownSeconds(h,s){return reducedCooldown(h,s);}
+ // v0.196: the total attack speed bonus of a hero or companion (percent points), from the finished battle stats.
+ function heroAttackSpeedPct(h){return EmberwildAttackSpeed.checkPct(battleStats(h).attackSpeedPct??0);}
+ const engineConfig=()=>({minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed,attackSpeed:copy(config().attackSpeed)});
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
   const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i)),...(globalThis.__EMBERWILD_TOKEN_SKILL?.(x)?[S.byId(globalThis.__EMBERWILD_TOKEN_SKILL(x))]:[])].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
    (GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===x.monsterId)?.skillAssignments||[]).map(r=>skill(r.skillId)).filter(s=>s?.type==='active'&&!s.disabled&&x.lv>=(s.requiredLevel||0)+1&&sharedSkillScopeAllowsEnemy(s.usageScope||'character',x.kind));
   const skills=[...new Map(rows.map(s=>[s.id,s])).values()].map(s=>{const t=timing(s);return {id:s.id,type:'active',cooldownSeconds:hero?skillCooldownSeconds(x,s):t.cooldownSeconds,initialReadyInSeconds:Schema.initialCooldownSeconds(s.timing?s:{...s,timing:t}),castSeconds:t.castSeconds,actionCostSeconds:t.actionCostSeconds,mpCost:t.mpCost,priority:t.priority};});
   return {id:key(x),baseIntervalSeconds:hero?actorInterval(x):source.balanceSettings.monsters.catalog.find(m=>m.id===x.monsterId)?.timing.baseIntervalSeconds??config().actionReferenceSeconds,
-   speed:hero?battleStats(x).speed:combatSpeed(x),mp:Math.max(0,Math.min(m.maxMp,Number.isFinite(x.mp)?x.mp:m.maxMp)),maxMp:m.maxMp,mpRegenPerSecond:m.regen,skills};
+   ...(hero?{attackSpeedPct:heroAttackSpeedPct(x)}:{speed:combatSpeed(x)}),mp:Math.max(0,Math.min(m.maxMp,Number.isFinite(x.mp)?x.mp:m.maxMp)),maxMp:m.maxMp,mpRegenPerSecond:m.regen,skills};
  }
  // Out-of-combat healing (v0.068): during recovery a hero whose 戰鬥外治療 option is on may cast equipped heal or regen
  // skills on allies below the recovery HP target. Nothing else acts while no enemy is present.
@@ -65,12 +68,12 @@
  function ensure(){
   if(!party)return null;
   if(owner!==party){engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};}
-  if(!engine){engine=E.create({minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed},[],handlers);engine.now=Math.round(partyClock*1e6);}
+  if(!engine){engine=E.create(engineConfig(),[],handlers);engine.now=Math.round(partyClock*1e6);}
   return engine;
  }
  function syncRoster(){
   if(!ensure())return;
-  engine.config={minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed};
+  engine.config=engineConfig();
   engine.syncActors([...heroes(),...foes].map(definition));
   const retained=[...party.members,...foes].map(x=>key(x)+':');procReady=Object.fromEntries(Object.entries(procReady).filter(([id])=>retained.some(prefix=>id.startsWith(prefix))));
   for(const a of engine.actors){const x=unit(a.definition.id);a.alive=!!x&&x.hp>0;}
@@ -84,7 +87,8 @@
   for(const a of engine.actors){const x=unit(a.definition.id);if(!x)continue;
    if(x.hp<=0&&a.alive)engine.setAlive(a.definition.id,false);else if(x.hp>0&&!a.alive)engine.setAlive(a.definition.id,true);
    {const m=mana(x);if(a.definition.maxMp!==m.maxMp)engine.setMaxMp(key(x),m.maxMp);engine.setMpRegen(key(x),m.regen*(phase==='recovery'&&Object.hasOwn(x,'job')?config().recovery.mpRegenMultiplier:1)*Math.max(0,1+effectTotal(key(x),'mpRegen')));engine.setMpCostMultiplier(key(x),Math.max(0,m.cost-effectTotal(key(x),'mpCostReduction')));}
-   const speed=Object.hasOwn(x,'job')?battleStats(x).speed:combatSpeed(x);if(speed!==a.speed)engine.setSpeed(key(x),speed);
+   if(Object.hasOwn(x,'job')){if(engine.player(a)){const pct=heroAttackSpeedPct(x);if(pct!==a.attackSpeedPct)engine.setAttackSpeed(key(x),pct);}else needsRoster=true;}
+   else{const speed=combatSpeed(x);if(speed!==a.speed)engine.setSpeed(key(x),speed);}
    x.mp=engine.mana(a,engine.now); // same value as engine.actor(id).mp without copying the actor view
    if(Object.hasOwn(x,'job'))for(const s of a.definition.skills){const d=skill(s.id);(d.type==='support'?supportCooldowns:actorCooldowns)[memberKey(x)+'-'+adapter(x,d).index]=Math.max(0,(a.ready[s.id]-engine.now)/1e6);}
   }
@@ -210,7 +214,9 @@
    const s=engine.find(event.actorId).definition.skills.find(s=>s.id===event.skillId);if(s){if(castResolved(x,s))recordAction(event.actorId,Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x),skill(s.id).name);}
   }
   scheduleEffects(new Set(effects.filter(f=>f.secondsId)),null,null);scheduleControls();
-  for(const a of engine.actors){const u=unit(a.definition.id);if(!u)continue;const steps=(u.procAdvanceSteps||0)+(u.basicAdvanceRound?1:0)+(u.sharedAdvanceSteps||0);if(steps){const advance=steps*config().advanceStepSeconds*1e6;a.basicAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.basicAt-advance);a.actionSpeedAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.actionSpeedAt-advance);a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);for(const k of ['procAdvanceSteps','basicAdvanceRound','procAdvanceRound','sharedAdvanceSteps','sharedAdvanceRound'])delete u[k];}}
+  // Advance effects (enemy shared skill 'advanceNextRound', the legacy hero proc option) move the basic deadline through the
+  // timeline, which keeps a player actor's basic attacks at least the minimum interval apart.
+  for(const a of engine.actors){const u=unit(a.definition.id);if(!u)continue;const steps=(u.procAdvanceSteps||0)+(u.basicAdvanceRound?1:0)+(u.sharedAdvanceSteps||0);if(steps){engine.advanceBasic(a.definition.id,steps*config().advanceStepSeconds,config().minimumActionIntervalSeconds);for(const k of ['procAdvanceSteps','basicAdvanceRound','procAdvanceRound','sharedAdvanceSteps','sharedAdvanceRound'])delete u[k];}}
  }
  // During recovery a hero acts only when a heal/regen skill is ready, affordable and allowed right now (v0.093). Otherwise the
  // timeline offered its basic attack, beforeAction refused it and the hero was "blocked" every attack interval: the card
@@ -308,7 +314,7 @@
  }
  function pack(){if(!party)return null;ensure();syncResources();return {version:1,timeline:engine.snapshot(),uidSerial,serial,ended,phase,recoveryUntil,encounterStart,scheduledAt,procReady:copy(procReady)};}
  function restore(raw){engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;pendingRestore=raw;
-  if(raw){engine=E.restore(raw.timeline,handlers);serial=raw.serial;if(raw.uidSerial!==undefined)uidSerial=raw.uidSerial;ended=raw.ended;phase=raw.phase||"combat";recoveryUntil=raw.recoveryUntil||0;encounterStart=raw.encounterStart;scheduledAt=raw.scheduledAt??engine.now/1e6;needsRoster=false;procReady=copy(raw.procReady);partyClock=engine.now/1e6;syncResources();}
+  if(raw){engine=E.restore(raw.timeline,handlers);serial=raw.serial;if(raw.uidSerial!==undefined)uidSerial=raw.uidSerial;ended=raw.ended;phase=raw.phase||"combat";recoveryUntil=raw.recoveryUntil||0;encounterStart=raw.encounterStart;scheduledAt=raw.scheduledAt??engine.now/1e6;needsRoster=false;procReady=copy(raw.procReady);partyClock=engine.now/1e6;/* v0.196: a snapshot from before attack speed holds heroes in the old speed mode; rebuild them from current stats on the next step. */if(engine.actors.some(a=>!engine.player(a)&&party?.members.some(h=>key(h)===a.definition.id)))needsRoster=true;syncResources();}
  }
  function migrateLegacy(){
   if(!party)return;const before=partyClock,oldCds=copy(actorCooldowns),oldSupports=copy(supportCooldowns);partyClock=0;scheduledAt=0;round=0;combatRoundProgress=null;roundIterator=null;restore(null);ensure();syncRoster();

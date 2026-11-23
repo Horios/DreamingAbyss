@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 60,
+  "dataRevision": 62,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "c0fea43faa0c24b3fcf590da809e82530229327d83991f71f5096129c28de94a",
-    "bytes": 1267379
+    "sha256": "7d34e86ae62789ad4e4a8d4479e54f0ce2ff539cbaca9d93faa979883c5dcccd",
+    "bytes": 1266585
   },
   "layout": {
     "": [
@@ -246,9 +246,9 @@
       "file": "combat/rules.json",
       "source": "balanceSettings.combat",
       "present": true,
-      "version": 4,
-      "sha256": "3f5b79e4cb449d44272738e333bd70df61f9a980480eb916d824b8e974df997e",
-      "bytes": 2922,
+      "version": 5,
+      "sha256": "7b6494b8410d28ae0a325da4fb38b41dba847351fd8564ddc9511f32e1b60ccd",
+      "bytes": 2858,
       "dependsOn": [
         "characters/companion-settings",
         "combat/skills",
@@ -286,9 +286,9 @@
       "file": "combat/skills.json",
       "source": "skillSystem.definitions",
       "present": true,
-      "version": 7,
-      "sha256": "4e63777e58db5d9e410bffb8aa9335cce93d7608dd96a6007853770261eb5283",
-      "bytes": 248348,
+      "version": 8,
+      "sha256": "b6fce3b3d9e358dba17fd1160cb6bd8422eea4c4ec15db6db95fafaf61165cdb",
+      "bytes": 248381,
       "dependsOn": [
         "characters/classes",
         "characters/companions",
@@ -307,9 +307,9 @@
       "file": "combat/skill-system.json",
       "source": "skillSystem.*",
       "present": true,
-      "version": 7,
-      "sha256": "c694b16760ab1243778e6073c8026dee62a4835d095d6b91e6b7e4dd3d040067",
-      "bytes": 6559,
+      "version": 8,
+      "sha256": "5a22647948f9bb547e8264a0bb2de504c69629449a43a1846886a072ef557fce",
+      "bytes": 6571,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -338,9 +338,9 @@
       "file": "characters/classes.json",
       "source": "classes",
       "present": true,
-      "version": 6,
-      "sha256": "41b02965d6369b1282cad074c31d32e3f30826ad8cfad7b7ee4ef9433f8c8efb",
-      "bytes": 144785,
+      "version": 7,
+      "sha256": "17a4cc32cf4bcb29bfe7d04f69e8513d99e506ab1861a72c99988d3a5b24933c",
+      "bytes": 144933,
       "dependsOn": [
         "systems/quests",
         "world/maps"
@@ -388,9 +388,9 @@
       "file": "characters/companions.json",
       "source": "companions",
       "present": true,
-      "version": 2,
-      "sha256": "ed6997c614093d18939e99083aa531fdcb564691ea3881ca0f195c57ce3df056",
-      "bytes": 24604,
+      "version": 3,
+      "sha256": "8205187374f76412a2083d89f1d6022c4cc8744a4c94947c643722c316053181",
+      "bytes": 23768,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -418,9 +418,9 @@
       "file": "characters/companion-settings.json",
       "source": "companionSettings, companionTokens",
       "present": true,
-      "version": 1,
-      "sha256": "2ee1f4fbd34c9e0d8bc074e2041013c389a9367fa3415cd60002b81f609574a5",
-      "bytes": 13264,
+      "version": 3,
+      "sha256": "61220ad13e3f1c1845c12d31cbd05d4308e242e46eb9c8edcb0ee8cb6f9dac7d",
+      "bytes": 13248,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -465,8 +465,8 @@
       "file": "equipment/power-system.json",
       "source": "equipmentPowerSystem",
       "present": true,
-      "version": 1,
-      "sha256": "b461628dccd175a764aa4fc20ed90c1e588e5eb41579d5f4729316cf459e3b8f",
+      "version": 2,
+      "sha256": "f7e27c09b2f0da2a9873fd048336f0349f140ba1455f61620a8f4b40f0fe24e1",
       "bytes": 21167,
       "dependsOn": [],
       "validators": [
@@ -521,9 +521,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 7,
-      "sha256": "6b747b6a8c1ad6f21f20c19dc43caa630cadc9595f774a535a29f84a91f4e858",
-      "bytes": 49971,
+      "version": 8,
+      "sha256": "53cc3c249b6a1d630aa022aec430098c665631cb1a3872ef4f41ec7b96ad1387",
+      "bytes": 49992,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",

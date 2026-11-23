@@ -4,7 +4,7 @@
   // The bag always hides worn equipment; manage worn gear on the equipment page.
   const defaults=()=>({job:'all',slot:'all',quality:'all',tMin:'',tMax:'',levelMin:'',levelMax:'',locked:'all',stat:'',op:'gte',value:'',upper:'',affixType:'',affixSkill:'',affixElement:'',affixRace:'',affixRank:'',affixOp:'gte',affixValue:''});
   let filter=defaults(),sort='quality',direction='desc',multi=false,advanced=false,selected=new Set(),review=null;
-  const folds={filters:false,sort:false},commonSortFields=['atk','def','hp','speed','crit'];
+  const folds={filters:false,sort:false},commonSortFields=['atk','def','hp','attackSpeedPct','crit'];
   const T=()=>globalThis.__EMBERWILD_TEAM_EQUIPMENT;
   const fields=()=>globalThis.equipmentNumericFields().filter(f=>!/^skill(?:EffectPct|CooldownReduction|ProcChance):/.test(f.key));
   const affixTypes=[[0,'攻擊'],[1,'生命'],[2,'防禦'],[3,'暴擊率'],[4,'技能效果'],[5,'技能冷卻／觸發率'],[6,'暴擊傷害'],[7,'防禦穿透'],[8,'生命竊取'],[9,'閃避率'],[12,'屬性增傷'],[13,'種族增傷'],[14,'屬性抗性'],[15,'攻擊加成'],[16,'全技能冷卻'],[17,'掉落率'],[18,'防禦無視']];
@@ -107,7 +107,7 @@
   function controls(){const active=JSON.stringify(filter)!==JSON.stringify(defaults());return `<div class="gear-management-toolbar"><button onclick="toggleGearInventoryMulti()" aria-pressed="${multi}">${multi?'結束多選':'多選裝備'}</button><button type="button" class="gear-filter-button" onclick="openGearInventoryFilters()">裝備篩選${active?' · 已套用':''}</button></div>`;}
   globalThis.setGearInventoryAdvanced=value=>{advanced=!!value;};
   function item(row){
-    const g=row.g,worn=gearWearer(g.id),can=actionable(g),stats=Object.entries(row.stats).filter(([key,n])=>['atk','def','hp','speed'].includes(key)&&n).map(([key,n])=>({atk:'攻',def:'防',hp:'生命',speed:'速度'}[key])+' '+n).join(' · ');
+    const g=row.g,worn=gearWearer(g.id),can=actionable(g),stats=Object.entries(row.stats).filter(([key,n])=>['atk','def','hp','attackSpeedPct'].includes(key)&&n).map(([key,n])=>key==='attackSpeedPct'?'攻速 +'+n+'%':({atk:'攻',def:'防',hp:'生命'}[key])+' '+n).join(' · ');
     return `<article class="gear-management-row" data-gear-id="${g.id}">${multi?`<label class="gear-selection"><input type="checkbox" aria-label="選取 ${esc(equipmentDisplayName(g))}" ${selected.has(g.id)?'checked':''} ${can?'':'disabled'} onchange="toggleGearInventorySelected('${g.id}',this.checked)"></label>`:''}<div class="gear-management-item">${gearSlotHTML(g,{selected:g.id===inventorySelectedGearId,className:'inventory-list-item',onclick:`selectInventoryGear('${g.id}')`})}<div class="gear-management-meta"><span class="effect-quality-${gearQualityRank(g)}">${esc(AFFIX_RANK[gearQualityRank(g)])}</span> · 裝等 ${gearRequiredLevel(g)} · ${esc(gearWearableJobsText(g))}${worn?' · '+esc(characterName(worn))+'已裝備':''}<br>${esc(stats||'無面板屬性')}</div></div><button class="gear-lock" onclick="toggleGearLock('${g.id}')" aria-pressed="${!!g.locked}" aria-label="${g.locked?'解除鎖定':'鎖定'} ${esc(equipmentDisplayName(g))}">${g.locked?'已鎖定':'鎖定'}</button></article>`;
   }
   function quote(items,mode){

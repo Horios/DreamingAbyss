@@ -47,19 +47,19 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.equal(out.equipped.atk,Math.round((out.naked.atk+39)*1.1));
       assert.match(out.html,/角色總攻擊力 \+10%/);assert.doesNotMatch(out.html,/不套用|無效|不計算/);
     });
-    await t.test('Flat stats, speed and legacy affixes count once; percentages and combat effects remain active',async()=>{
+    await t.test('Flat stats, attack speed and legacy affixes count once; percentages and combat effects remain active',async()=>{
       const out=await r.page.evaluate(()=>{
-        ITEM_FORMS[0][0][0].fixedEffects=[{key:'flatAttack',value:20},{key:'flatHp',value:12},{key:'flatDefense',value:3},{key:'speed',value:4},{key:'bossDamagePct',value:15}];
+        ITEM_FORMS[0][0][0].fixedEffects=[{key:'flatAttack',value:20},{key:'flatHp',value:12},{key:'flatDefense',value:3},{key:'attackSpeedPct',value:4},{key:'bossDamagePct',value:15}];
         const h=__equipmentTestHero(),g=__equipmentTestGear({prefixId:'keen',suffixId:'fury',affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]}),naked=stats(h);
         h.bag=[g];h.equipped[0]=g.id;
         return {ledger:equipmentStatContributions(g),naked,equipped:stats(h),html:equipmentAttributeDetailsHTML(g),summary:equipmentTotalSummaryHTML(g)};
       });
-      assert.deepEqual(out.ledger.total,{atk:55,hp:12,def:3,speed:4});
+      assert.deepEqual(out.ledger.total,{atk:55,hp:12,def:3});
       assert.equal(out.equipped.atk,Math.round((out.naked.atk+55)*1.1));
       assert.equal(out.equipped.hp-out.naked.hp,12);assert.equal(out.equipped.def-out.naked.def,3);
       assert.ok(out.equipped.crit>out.naked.crit);assert.ok(out.equipped.critDamage>out.naked.critDamage);
-      assert.equal(out.equipped.bossDamage,.15);assert.ok(out.equipped.speed>=out.naked.speed+4);
-      for(const label of ['前綴加成','後綴加成','詞綴 2 加成'])assert.deepEqual(out.ledger.rows.find(x=>x.label===label).stats,{atk:0,hp:0,def:0,speed:0});
+      assert.equal(out.equipped.bossDamage,.15);assert.equal(out.equipped.attackSpeedPct,out.naked.attackSpeedPct+4);assert.match(out.summary,/攻擊速度 \+4%/);
+      for(const label of ['前綴加成','後綴加成','詞綴 2 加成'])assert.deepEqual(out.ledger.rows.find(x=>x.label===label).stats,{atk:0,hp:0,def:0});
       assert.match(out.summary,/角色總攻擊力 \+10%/);assert.doesNotMatch(out.html,/角色總攻擊力 \+10%/);
     });
     await t.test('The summary adds equipment-owned bonuses across base, named effects and random affixes',async()=>{
@@ -130,13 +130,13 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
     await t.test('Element, skill, cooldown and drop rules remain effective without becoming equipment attack',async()=>{
       const out=await r.page.evaluate(()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
-        ITEM_FORMS[0][0][0].fixedEffects=[{key:'skillEffectPct',value:20,skill:0},{key:'skillCooldownReduction',value:1,skill:0},{key:'basicElement',value:'fire'},{key:'basicAdvanceNextRound',value:1},{key:'dropRateBonus',value:10}];
+        ITEM_FORMS[0][0][0].fixedEffects=[{key:'skillEffectPct',value:20,skill:0},{key:'skillCooldownReduction',value:1,skill:0},{key:'basicElement',value:'fire'},{key:'basicAttackSpeedStack',value:3},{key:'dropRateBonus',value:10}];
         const h=__equipmentTestHero(),g=__equipmentTestGear({affix:[{type:4,rank:3,value:30,skill:0},{type:16,rank:3,value:1}]}),power=skillPower(0,h),cooldown=skillCooldown(0,h);
         h.bag=[g];h.equipped[0]=g.id;
         return {ledger:equipmentStatContributions(g),power,buffedPower:skillPower(0,h),cooldown,buffedCooldown:skillCooldown(0,h),element:weaponElement(h),drop:heroDropRateBonus(h)};
       });
-      assert.deepEqual(out.ledger.total,{atk:30,hp:0,def:0,speed:0});
-      for(const row of out.ledger.rows.filter(x=>x.effect||x.affix))assert.deepEqual(row.stats,{atk:0,hp:0,def:0,speed:0});
+      assert.deepEqual(out.ledger.total,{atk:30,hp:0,def:0});
+      for(const row of out.ledger.rows.filter(x=>x.effect||x.affix))assert.deepEqual(row.stats,{atk:0,hp:0,def:0});
       assert.equal(out.element,'fire');assert.equal(out.drop,.1);assert.ok(out.buffedPower>out.power);assert.ok(out.buffedCooldown<out.cooldown);
     });
     await t.test('Every source sums to the summary through rounding, power grades, enhancement and boss profiles',async()=>{
@@ -145,7 +145,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const issues=[];let checked=0;
         const check=g=>{
           const ledger=equipmentStatContributions(g);checked++;
-          for(const k of ['hp','atk','def','speed']){
+          for(const k of ['hp','atk','def']){
             if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('sum '+k);
             if(!Number.isSafeInteger(ledger.total[k])||ledger.rows.some(row=>!Number.isSafeInteger(row.stats[k])))issues.push('integer '+k);
           }
@@ -191,7 +191,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const ledger=equipmentStatContributions(gift),growth=ledger.rows.filter(x=>x.label.startsWith('成長加成'));
         // v0.161: starter growth followed the removed character level and no longer adds anything.
         if(growth.some(x=>x.stats.atk!==0))issues.push('growth');
-        for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('growth sum');
+        for(const k of ['hp','atk','def'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('growth sum');
         return {issues,checked};
       });assert.equal(out.checked,4);assert.deepEqual(out.issues,[]);
     });
@@ -275,7 +275,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
           await EmberwildOffline.settle(undefined,false);loadParty(structuredClone(raw));await EmberwildOffline.settle(undefined,false);const before=party.members.map(h=>stats(h)),packed=structuredClone(packParty());
           loadParty(packed);await EmberwildOffline.settle(undefined,false);
           if(JSON.stringify(party.members.map(h=>stats(h)))!==JSON.stringify(before))issues.push('stats '+state.lv);
-          for(const g of state.bag){const ledger=equipmentStatContributions(g);for(const k of ['hp','atk','def','speed'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('source '+g.id);}
+          for(const g of state.bag){const ledger=equipmentStatContributions(g);for(const k of ['hp','atk','def'])if(ledger.rows.reduce((n,row)=>n+row.stats[k],0)!==ledger.total[k])issues.push('source '+g.id);}
         }
         return issues;
       },legacy);

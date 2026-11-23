@@ -232,7 +232,7 @@
   if(h.tokenId||h.procSlots.some(x=>x!==null)||h.supportSlots.some(x=>x!==null)||h.skillLoadout?.active.some(id=>__EMBERWILD_SKILLS.byId(id)?.sources.some(s=>s.type==='equipment')))return 'special-skill';
   const simpleSkill=i=>{const sk=CLASSES[h.job].skills[i],m=sk?.[6];return /^class\d+-initial\d+$/.test(m?.id||'')&&['damage','tauntRage','shield','heal'].includes(sk[5])&&!m.onHitStatusId&&!m.statusId&&(!m.systemEffect||['taunt','guard','regen','slow'].includes(m.systemEffect))&&(m.commonEffectKeys||[]).every(k=>['target','hitCount'].includes(k));};
   if(h.active.some(i=>i!==null&&!simpleSkill(i)))return 'special-skill';
-  if(equipment(h).some(g=>itemForm(g)?.fixedEffects?.some(x=>['basicAdvanceNextRound'].includes(x.key))))return 'special-equipment';
+  if(equipment(h).some(g=>itemForm(g)?.fixedEffects?.some(x=>['basicAttackSpeedStack'].includes(x.key))))return 'special-equipment';
   if(api.ELEMENTAL_TYPES.some(k=>api.buffRows(h[k]).some(b=>b.remainingMs>0)))return 'elemental-supply';
   const rows=monsterCatalog().filter(m=>m.mapIndex===party.map&&m.enabled!==false&&m.kind==='normal');
   if(rows.some(m=>m.skillAssignments?.length))return 'enemy-skill';
