@@ -19,6 +19,26 @@
     catch(error){if(controller.signal.aborted)throw Error(label+'載入逾時，請檢查連線後重試');throw error;}
     finally{clearTimeout(timeout);controllers.delete(controller);}
   }
+  // These sheets position/hide the portrait's event, elite and effect layers.
+  // A failed stylesheet must not leave its SVGs in the normal card layout.
+  async function verifyBattleStyles(runtimeVersion){
+    const required=new Set(['seconds-battle.css','battle-summary.css','battle-effects.css']);
+    const links=Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter(link=>required.has(new URL(link.href,location.href).pathname.split('/').pop()));
+    await Promise.all(links.map(link=>{
+      if(link.sheet)return Promise.resolve();
+      return new Promise((resolve,reject)=>{
+        const name=new URL(link.href,location.href).pathname.split('/').pop();
+        const timeout=setTimeout(()=>finish(Error('戰鬥樣式載入逾時：'+name)),remaining(15000));
+        let settled=false;
+        function finish(error){if(settled)return;settled=true;clearTimeout(timeout);link.removeEventListener('load',loaded);link.removeEventListener('error',failed);if(error)reject(error);else resolve();}
+        const loaded=()=>finish(),failed=()=>finish(Error('戰鬥樣式載入失敗：'+name));
+        link.addEventListener('load',loaded);link.addEventListener('error',failed);
+        // The original request may already have failed before this loader ran.
+        // Retry the same link, preserving stylesheet order, with this build's key.
+        const url=new URL(link.href,location.href);url.searchParams.set('battle-build',runtimeVersion);link.href=url.href;
+      });
+    }));
+  }
   // Every module the manifest lists must be present in the integrated document, otherwise nothing starts.
   async function verifyModules(published,manifest){
     if(!manifest)return {state:'legacy',message:'此版本沒有模組清單，直接使用整合平衡資料'};
@@ -58,6 +78,8 @@
   }
   try{
     const build=await readJSON('data/build.json?build='+Date.now(),'版本資訊'),runtimeVersion=build.commit==='development'?String(Date.now()):build.commit;
+    update('正在確認戰鬥畫面樣式');
+    await verifyBattleStyles(runtimeVersion);
     // data/balance.json is generated from data/balance/<module>.json; the manifest lists the modules and the
     // integrated file's hash. A deployment without a manifest is a pre-module build and still loads.
     const [published,manifest]=await Promise.all([readJSON('data/balance.json?build='+runtimeVersion,'平衡資料',true),readJSON('data/balance/manifest.json?build='+runtimeVersion,'平衡模組清單',false,true)]);
