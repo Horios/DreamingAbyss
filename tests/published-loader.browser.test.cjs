@@ -63,6 +63,8 @@ test('a downloaded module throwing during execution stops boot instead of report
 test('a failed battle stylesheet is retried before boot; elite gems stay hidden and event labels stay positioned',async()=>{
   const r=await openRuntime(root);let requests=0;
   try{
+    // Use a cold URL: Blink may retain a parsed sheet from the initial successful boot.
+    await r.page.route('http://localhost/',route=>route.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/css\/battle-summary\.css\?[^"]+/, 'css/battle-summary.css?v=retry-probe')}));
     await r.page.route('http://localhost/css/battle-summary.css?*',route=>{
       requests++;return requests===1?route.fulfill({status:503,body:'temporary failure'}):route.fallback();
     });
@@ -81,6 +83,7 @@ test('persistent battle CSS failure shows reload instead of unpositioned effects
   const r=await openRuntime(root);
   try{
     await r.page.evaluate(()=>localStorage.setItem('emberwild-save-probe','preserve-this'));
+    await r.page.route('http://localhost/',route=>route.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/css\/battle-effects\.css\?[^"]+/, 'css/battle-effects.css?v=failure-probe')}));
     await r.page.route('http://localhost/css/battle-effects.css?*',route=>route.fulfill({status:503,body:'unavailable'}));
     await r.page.reload();assert.match(await r.page.locator('#app').innerText(),/戰鬥樣式載入失敗：battle-effects.css/);
     assert.equal(await r.page.evaluate(()=>globalThis.__EMBERWILD_BALANCE_READY===true),false);
