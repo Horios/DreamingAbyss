@@ -2,6 +2,10 @@
   "name": "emberwild-progression-checks",
   "private": true,
   "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node scripts/balance-modules.cjs check",
+    "lint": "node --check server.js && node --test tests/load-integrity.test.cjs",
     "test": "node --test --test-concurrency=4",
     "test:unit": "node --test tests/progression-model.test.cjs tests/element-potions.test.cjs",
     "test:integration": "node --test tests/equipment-details.test.cjs tests/shop-options.test.cjs tests/timed-boosts-journal.test.cjs tests/battle-journal-scroll.test.cjs tests/companions-roster.test.cjs",
@@ -38,5 +42,8 @@
   },
   "devDependencies": {
     "playwright": "1.62.1"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
   }
 }
