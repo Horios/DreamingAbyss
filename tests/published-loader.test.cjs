@@ -12,7 +12,7 @@ function harness({styles=[],badSchema=false,stallMetadata=false,executionFailure
     }return node;}
   }
   const app=new Node('app'),body=new Node('body'),head=new Node('head'),published={schema:'emberwild-balance-v1',schemaVersion:badSchema?99:1,items:[{cost:1}]};
-  const sheets=styles.map(({name,loaded=false})=>{const events=new Map();return {href:'https://emberwild.test/css/'+name+'?v=test',sheet:loaded?{}:null,addEventListener:(type,fn)=>events.set(type,fn),removeEventListener:type=>events.delete(type),emit(type){events.get(type)?.();}};});
+  const sheets=styles.map(({name,loaded=false,empty=false})=>{const events=new Map();return {href:'https://emberwild.test/css/'+name+'?v=test',sheet:loaded?{cssRules:[{}]}:empty?{cssRules:[]}:null,addEventListener:(type,fn)=>events.set(type,fn),removeEventListener:type=>events.delete(type),emit(type){events.get(type)?.();}};});
   const document={getElementById:()=>app,createElement:tag=>new Node(tag),body,head,querySelectorAll:selector=>selector==='link[rel="stylesheet"]'?sheets:['first.js','second.js','third.js'].map(file=>({getAttribute:()=>file}))};
   const emit=(type,event)=>{for(const fn of listeners.get(type)||[])fn(event);};
   const ctx=vm.createContext({state:null,party:null,BACKUP_KEY:'emberwild-save-v1-backup',VERIFIED_KEY:'emberwild-save-v1-verified',BATTLE_STATS_STORAGE_KEY:'emberwild-battle-statistics-v1',migrateWorldSave:data=>data,navigator:{locks:{request:(_name,callback)=>Promise.resolve().then(callback)}},document,URL,AbortController,Date,Promise,Error,Array,JSON,Map,Set,order:[],applied:[],loaded:[],toasts:[],__EMBERWILD_BOOT_SAVE_RAW:bootSave,
@@ -196,10 +196,10 @@ test('a deployment without a manifest still loads the integrated document (pre-m
 
 
 test('missing battle CSS is retried in place and must load before game modules execute',async()=>{
-  const h=harness({styles:[{name:'seconds-battle.css',loaded:true},{name:'battle-summary.css'},{name:'battle-effects.css'}]});
+  const h=harness({styles:[{name:'seconds-battle.css',loaded:true},{name:'battle-summary.css'},{name:'battle-effects.css',empty:true}]});
   await h.flush();assert.equal(h.links.length,0);assert.equal(h.scripts.length,0);
   assert.equal(new URL(h.sheets[0].href).searchParams.has('battle-build'),false,'loaded CSS keeps its URL and order');
-  for(const sheet of h.sheets.slice(1)){assert.equal(new URL(sheet.href).searchParams.get('battle-build'),'a'.repeat(40));sheet.sheet={};sheet.emit('load');}
+  for(const sheet of h.sheets.slice(1)){assert.equal(new URL(sheet.href).searchParams.get('battle-build'),'a'.repeat(40));sheet.sheet={cssRules:[{}]};sheet.emit('load');}
   await h.flush();for(const link of h.links)link.onload();await h.done;
   assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);assert.equal(h.scripts.length,3);assert.equal(h.timers.size,0);
 });
@@ -210,4 +210,9 @@ test('failed or stalled battle CSS never starts the malformed game and preserves
     assert.match(h.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,stalled?/戰鬥樣式載入逾時/:/戰鬥樣式載入失敗/);
     assert.equal(h.scripts.length,0);assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,undefined);assert.equal(h.values.get('emberwild-save-probe'),'unchanged');assert.equal(h.timers.size,0);
   }
+});
+
+test('an empty stylesheet after retry is rejected even if its load event fires',async()=>{
+  const h=harness({styles:[{name:'battle-summary.css',empty:true}]});await h.flush();h.sheets[0].emit('load');await h.done;
+  assert.match(h.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,/戰鬥樣式載入失敗/);assert.equal(h.scripts.length,0);assert.equal(h.timers.size,0);
 });

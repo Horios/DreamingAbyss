@@ -24,14 +24,15 @@
   async function verifyBattleStyles(runtimeVersion){
     const required=new Set(['seconds-battle.css','battle-summary.css','battle-effects.css']);
     const links=Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter(link=>required.has(new URL(link.href,location.href).pathname.split('/').pop()));
+    const loadedRules=link=>{try{return link.sheet?.cssRules.length>0;}catch{return false;}};
     await Promise.all(links.map(link=>{
-      if(link.sheet)return Promise.resolve();
+      if(loadedRules(link))return Promise.resolve();
       return new Promise((resolve,reject)=>{
         const name=new URL(link.href,location.href).pathname.split('/').pop();
         const timeout=setTimeout(()=>finish(Error('戰鬥樣式載入逾時：'+name)),remaining(15000));
         let settled=false;
         function finish(error){if(settled)return;settled=true;clearTimeout(timeout);link.removeEventListener('load',loaded);link.removeEventListener('error',failed);if(error)reject(error);else resolve();}
-        const loaded=()=>finish(),failed=()=>finish(Error('戰鬥樣式載入失敗：'+name));
+        const failed=()=>finish(Error('戰鬥樣式載入失敗：'+name)),loaded=()=>loadedRules(link)?finish():failed();
         link.addEventListener('load',loaded);link.addEventListener('error',failed);
         // The original request may already have failed before this loader ran.
         // Retry the same link, preserving stylesheet order, with this build's key.
