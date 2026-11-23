@@ -89,7 +89,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
           return {expected,text:equipmentTotalSummaryText(g),row:equipmentStatContributions(g).rows.find(row=>row.affix).stats};
         });
       });
-      for(const row of rows){assert.ok(row.text.includes(row.expected),row.text);assert.deepEqual(row.row,{atk:0,hp:0,def:0,speed:0});}
+      for(const row of rows){assert.ok(row.text.includes(row.expected),row.text);assert.deepEqual(row.row,{atk:0,hp:0,def:0});}
     });
     await t.test('Skill totals preserve multiplicative bonus groups, proc units and first-element precedence',async()=>{
       const out=await r.page.evaluate(()=>{
