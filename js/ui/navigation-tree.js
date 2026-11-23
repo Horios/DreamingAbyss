@@ -6,7 +6,7 @@
   const PAGES={
     battle:'荒野探索',statistics:'戰鬥統計',bestiary:'怪物圖鑑',shop:'商店',
     roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',
-    equipment:'背包',worn:'裝備與信物',forge:'裝備強化',bossCraft:'BOSS 製作',
+    equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',bossCraft:'BOSS 製作',
     'story-main':'主線','story-side':'支線','story-npc':'NPC 任務',quests:'委託',wishingLake:'許願湖',
     gather:'採集',alchemy:'煉金'
   };
@@ -15,7 +15,7 @@
     {id:'map',label:'探索',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計'],['bestiary','怪物圖鑑']]},
     {id:'adventure-config',label:'隊伍',expanded:false,pages:[['roster','隊伍編成']]},
     {id:'skills',label:'技能',expanded:false,pages:[['skills','技能']]},
-    {id:'gear',label:'裝備',expanded:false,pages:[['worn','裝備與信物'],['forge','裝備強化'],['bossCraft','BOSS 製作']]},
+    {id:'gear',label:'裝備',expanded:false,pages:[['worn','裝備與信物'],['forge','裝備工坊'],['bossCraft','BOSS 製作']]},
     {id:'bag',label:'背包',expanded:false,pages:[['equipment','背包']]},
     {id:'partners',label:'夥伴',expanded:false,pages:[['partnerRoster','夥伴名冊']]},
     {id:'character',label:'角色',expanded:false,pages:[['character','角色能力']]},

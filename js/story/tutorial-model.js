@@ -7,7 +7,7 @@
  const TYPES={guide:'操作引導',intro:'功能介紹',tip:'簡短提示',notice:'說明彈窗'};
  const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',life:'生活技能',alchemy:'煉金',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
  // Page identities are the game's fixed navigation ids (js/ui/navigation-tree.js); 'story' is the quest page.
- const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備強化',bossCraft:'BOSS 製作',story:'任務',quests:'委託',wishingLake:'許願湖',gather:'採集',alchemy:'煉金'};
+ const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',bossCraft:'BOSS 製作',story:'任務',quests:'委託',wishingLake:'許願湖',gather:'採集',alchemy:'煉金'};
  // Condition types the game can evaluate. key: what `key` names; count: whether `count` is used.
  const CONDITIONS={
   prologueDone:{label:'序幕已完成'},
@@ -85,15 +85,15 @@
   'character.stats':{label:'人物能力',page:'character'},
   'character.mastery':{label:'職業精通',page:'character'},
   'worn.tokens':{label:'夥伴信物',page:'worn'},
-  'worn.socketButton':{label:'有鑲嵌孔裝備的「鑲嵌」',page:'worn'},
+  'worn.socketButton':{label:'有鑲嵌孔裝備的「移到工坊」',page:'worn'},
   'worn.socketSlot':{label:'第一個鑲嵌孔',page:'worn'},
   'worn.gemChoices':{label:'可鑲嵌的寶石',page:'worn'},
   'worn.socketBadge':{label:'裝備名稱旁的孔位',page:'worn'},
   'worn.skillLink':{label:'「前往技能配置」',page:'worn'},
-  'forge.list':{label:'強化裝備清單',page:'forge'},
-  'forge.detail':{label:'強化詳情與數值',page:'forge'},
-  'forge.actions':{label:'強化與洗鍊按鈕',page:'forge'},
-  'forge.extraction':{label:'技能萃取區塊',page:'forge'},
+  'forge.list':{label:'工坊分類',page:'forge'},
+  'forge.detail':{label:'工坊中間的放入格',page:'forge'},
+  'forge.actions':{label:'目前裝備操作',page:'forge'},
+  'forge.extraction':{label:'信物萃取',page:'forge'},
   'boss.classTabs':{label:'BOSS 製作職業分頁',page:'bossCraft'},
   'boss.recipe':{label:'第一張 BOSS 配方',page:'bossCraft'},
   'story.tabs':{label:'任務分類分頁',page:'story'},
@@ -216,20 +216,19 @@
   makeModule({id:'socket_basics',title:'寶石鑲嵌',category:'equipment',description:'在裝備的鑲嵌孔放入寶石。第一次穿著有鑲嵌孔的裝備進入裝備與信物時開始。',
    trigger:{type:'pageEnter',page:'worn'},prerequisites:group([condition('prologueDone'),condition('socketGearWorn')]),steps:[
    step('badge','鑲嵌孔','裝備名稱旁的圓圈是鑲嵌孔。空心是空孔，有顏色的圓圈代表已放入的寶石。',{page:'worn',target:'worn.socketBadge'}),
-   step('open','打開鑲嵌','按「鑲嵌」打開這件裝備的鑲嵌孔。',{page:'worn',target:'worn.socketButton',advance:{type:'event',key:'socketsOpened'}}),
-   step('slot','選擇孔位','點選要放寶石的孔。',{page:'worn',target:'worn.socketSlot',advance:{type:'event',key:'socketSelected'}}),
-   step('gem','放入寶石','點一顆持有的寶石就會放進這個孔，提供屬性加成。拆除與替換都免費；出售或分解裝備時寶石會退回庫存。',{page:'worn',target:'worn.gemChoices'})
+   step('move','移到工坊鑲嵌','鑲嵌在裝備工坊進行。按「移到工坊」把這件裝備放進工坊，再選下方的「鑲嵌」。',{page:'worn',target:'worn.socketButton'}),
+   step('gem','放入寶石','在「鑲嵌」點選孔位，再點一顆持有的寶石放入，提供屬性加成。拆除與替換都免費；出售或分解裝備時寶石會退回庫存。',{page:'worn',target:'worn.socketButton'})
   ]}),
-  makeModule({id:'forge_basics',title:'裝備強化',category:'equipment',description:'強化、洗鍊與基底重鑄。第一次進入裝備強化時開始。',
+  makeModule({id:'forge_basics',title:'裝備工坊',category:'equipment',description:'強化、洗鍊、重鑄、鑲嵌與信物萃取。第一次進入裝備工坊時開始。',
    trigger:{type:'pageEnter',page:'forge'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('list','選擇裝備','先從清單選擇要強化的裝備，可以切換已穿戴與未穿戴。',{page:'forge',target:'forge.list'}),
-   step('detail','目前能力','右側顯示這件裝備的能力與強化後的變化。',{page:'forge',target:'forge.detail'}),
-   step('actions','強化與洗鍊','強化提高基礎能力；洗鍊重新抽取詞綴。兩者都會消耗金幣與材料。',{page:'forge',target:'forge.actions'})
+   step('list','選擇分類','裝備工坊分成武器、防具、飾品、信物四類。先選擇要處理的分類。',{page:'forge',target:'forge.list'}),
+   step('detail','放入物品','點擊中間的格子，從物品欄選擇要放入的物品，穿戴中的裝備也可以選。',{page:'forge',target:'forge.detail'}),
+   step('actions','可進行的操作','物品放入後，下方只會列出它可以進行的操作，例如強化、洗鍊、重鑄、鑲嵌或信物萃取。強化與洗鍊會消耗金幣與材料。',{page:'forge',target:'forge.actions'})
   ]}),
-  makeModule({id:'extraction_basics',title:'技能萃取',category:'equipment',description:'把技能裝備的技能轉移到夥伴信物。第一次進入裝備強化、看完強化教學後開始。',
+  makeModule({id:'extraction_basics',title:'信物萃取',category:'equipment',description:'把技能裝備的技能轉移到夥伴信物。第一次進入裝備工坊、看完工坊教學後開始。',
    trigger:{type:'pageEnter',page:'forge'},prerequisites:group([condition('prologueDone'),condition('tutorialDone','forge_basics')]),steps:[
-   step('panel','技能萃取','裝備強化頁下方的「技能萃取」可以把技能裝備的技能轉移到夥伴信物。',{page:'forge',target:'forge.extraction'}),
-   step('extract','萃取方式','在信物那一列按「萃取技能」，再選一件技能裝備。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。',{page:'forge',target:'forge.extraction'}),
+   step('panel','信物萃取','在「信物」分類放入夥伴信物，或放入帶有技能的裝備，下方會出現「信物萃取」。',{page:'forge',target:'forge.extraction'}),
+   step('extract','萃取方式','在「信物萃取」選擇要搭配的技能裝備或信物後按「萃取」。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。',{page:'forge',target:'forge.extraction'}),
    step('use','使用技能','夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。',{page:'forge',target:'forge.extraction'})
   ]}),
   makeModule({id:'boss_basics',title:'BOSS 製作',category:'equipment',description:'用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。',

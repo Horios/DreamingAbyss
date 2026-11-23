@@ -224,7 +224,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       const listName=r.page.locator('.gear-management-row[data-gear-id="equipment-test"] .inventory-list-item');
       const listText=await listName.innerText();assert.match(listText,/(^|\s)T7(\s|$)/);assert.match(listText,/\+10 /);
       assert.ok(await listName.evaluate(el=>el.scrollHeight<=el.clientHeight+1));
-      await r.page.evaluate(()=>openForge(state.bag[0].id));
+      await r.page.evaluate(()=>{openForge(state.bag[0].id);toggleWorkshopPicker(true);});
       assert.ok(await r.page.locator('.forge-gear-item .item-slot-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
     });
     await t.test('Inventory shows saved T tiers and has no pending equipment controls',async()=>{

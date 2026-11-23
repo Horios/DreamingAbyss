@@ -119,15 +119,6 @@
   const h=party.members[0],active=S.worn(h).some(item=>item.id===g.id)&&S.learned(h,sk);
   return html+`<section class="equipment-skill-description"><h3>裝備技能${active?' · 可配置':''}</h3><b class="equipment-skill-name">${esc(sk.name)} · ${labels[sk.type]}${usableBy(sk,h)?'':`（限${esc(skillJobsText(sk))}）`}</b>${usableBy(sk,h)?'':`<p class="small equipment-skill-limit">目前職業（${esc(CLASSES[h.job]?.name||'')}）無法啟用此裝備技能。</p>`}<p class="equipment-skill-effect">${esc(sk.description||detail(sk,h))}</p></section>`;
  };
- let wornSocketTarget=null;
- globalThis.toggleWornEquipmentSockets=function(id){
-  const g=findGear(id);if(!g?.skillSockets||!gearWearer(id))return false;
-  wornSocketTarget=wornSocketTarget===id?null:id;globalThis.__EMBERWILD_WORN_SOCKET_TARGET=()=>wornSocketTarget;
-  socketSelection=null;render();return true;
- };
- globalThis.wornEquipmentSocketPanel=function(g){
-  return g&&wornSocketTarget===g.id&&gearWearer(g.id)?`<div class="worn-socket-inline">${sockets(g)}</div>`:'';
- };
  globalThis.showWornEquipmentDetail=function(id){
   const g=findGear(id);if(!g||EmberwildTokens.isToken(g)||!gearWearer(id))return false;
   const modal=$('modal');
@@ -136,7 +127,7 @@
   return true;
  };
  const resetSocketSession=resetSession;
- resetSession=function(){wornSocketTarget=null;socketSelection=null;return resetSocketSession();};
+ resetSession=function(){socketSelection=null;return resetSocketSession();};
  const detailBase=inventoryGearDetail;inventoryGearDetail=function(g){return detailBase(g);};
  const slotBase=gearSlotHTML;gearSlotHTML=function(g,options){
   // v0.173: the worn page rows (contentOnly) are all worn, so they show the sockets in place of the worn checkmark.

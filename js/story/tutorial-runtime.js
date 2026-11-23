@@ -179,16 +179,16 @@
   'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):null;},
   'character.stats':()=>$q('main .page-owner-content .grid')||$q('main .page-owner-content'),
   'character.mastery':()=>$q('main .class-mastery-grid'),
-  'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick="toggleWornEquipmentSockets('${g.id}')"]`):null;},
+  'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick*="moveToWorkshop('${g.id}')"]`):null;},
   'worn.socketSlot':()=>$q('main .equipment-socket-editor .equipment-socket-slot'),
   'worn.gemChoices':()=>$q('main .equipment-socket-choices')||$q('main .equipment-socket-editor'),
   'worn.socketBadge':()=>$q('main .worn-socket-badge')?.closest('.worn-slot-choice')||null,
   'worn.tokens':()=>$q('main .companion-token-panel'),
   'worn.skillLink':()=>$q('main .inventory-wear-skill-link button')||$q('main [onclick="setTab(\'skills\')"]'),
-  'forge.list':()=>$q('main .forge-gear-pane')||$q('main .forge-gear-list'),
-  'forge.detail':()=>$q('main .forge-detail-pane .gear-detail-header')||$q('main .forge-detail-pane'),
-  'forge.actions':()=>$q('main [onclick^="enhance("]')?.parentElement||null,
-  'forge.extraction':()=>$q('main .forge-extraction'),
+  'forge.list':()=>$q('main .workshop-categories'),
+  'forge.detail':()=>$q('main .workshop-bench'),
+  'forge.actions':()=>$q('main .workshop-operations')||$q('main .workshop-bench'),
+  'forge.extraction':()=>$q('main [data-workshop-panel="extract"]:not([hidden]) .forge-extraction')||$q('main [data-workshop-action="extract"]')||$q('main [data-workshop-category="token"]'),
   'boss.classTabs':()=>$q('main .boss-class-tabs'),
   'boss.recipe':()=>$q('main .boss-recipe'),
   'story.tabs':()=>$q('main .game-subtabs'),
@@ -227,7 +227,7 @@
   wrap('openSkillSlot',{kind:'skillSlotOpened',after:out=>out!==false});
   wrap('chooseSkillSlot',{kind:'skillSlotted',after:out=>out===true});
   wrap('openSkillCatalog',{kind:'catalogOpened',after:out=>out!==false});
-  wrap('toggleWornEquipmentSockets',{kind:'socketsOpened',after:(out,before,id)=>out===true&&before!==id,before:()=>globalThis.__EMBERWILD_WORN_SOCKET_TARGET?.()});
+  wrap('setWorkshopAction',{kind:'socketsOpened',after:(out,before,action)=>out===true&&action==='socket'});
   wrap('setInventoryCategory',{kind:'itemsOpened',after:(out,before,value)=>value==='items'});
   wrap('openItemSlotDetails',{kind:'itemDetailsOpened',after:()=>!!document.getElementById('item-detail-dialog')?.open});
   wrap('useCompanionRecruitmentTicket',{kind:'ticketUsed',after:out=>out===true});

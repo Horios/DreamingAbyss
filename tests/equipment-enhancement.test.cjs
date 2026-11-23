@@ -50,7 +50,8 @@ test('forge shows the next level gains of the base attributes only, excluding af
     for(const level of [1,10,30])for(let slot=0;slot<4;slot++)for(const plus of [0,1,2,9]){
       const g=createEquipmentShopGear('equipment_lv1','job0-slot'+slot+'-form0');
       Object.assign(g,{equipmentLevel:level,plus,affix:[]});state.bag.push(g);openForge(g.id);
-      const section=()=>forgeView().split('<section class="forge-action"><h3>強化基礎能力</h3>')[1].split('</section>')[0];
+      // v0.194: the workshop offers no 強化 action for accessories; their text comes from the shared rules.
+      const section=()=>g.slot===3?(__EMBERWILD_WORKSHOP.actions(g).includes('enhance')?'offered':__EMBERWILD_ENHANCE.controlsHTML(g)):forgeView().split('<section class="forge-action"><h3>強化基礎能力</h3>')[1].split('</section>')[0];
       const clean=section();
       g.affix=[{type:0,value:999,rank:3},{type:12,element:'fire',value:15,rank:2}];
       const decorated=section(),before=gearBaseStats(g),total=equipmentTotalSummaryText(g);

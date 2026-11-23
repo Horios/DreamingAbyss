@@ -35,20 +35,21 @@ test('the caravan ticket brings 洛恩 through a spotlight guide in the bag; the
  }finally{await game.browser.close();}
 });
 
-test('skill extraction is on the forge page and no longer in the bag',async()=>{
+test('skill extraction is the workshop 信物萃取 action and no longer in the bag',async()=>{
  const game=await openRuntime(root),page=game.page;
  try{
   await begin(page);page.on('dialog',d=>d.accept());
   const ids=await page.evaluate(()=>{const doc=exportableBalance();let pos=null;doc.equipmentForms.forEach((jl,j)=>jl.forEach((sl,s)=>sl.forEach((f,i)=>{if(f.id==='vine-staff')pos={j,s,i};})));
    const g=gear(1,pos.s,0,pos.j);Object.assign(g,{formJob:pos.j,slot:pos.s,form:pos.i,job:0,skillId:doc.skillSystem.equipment.formRules.find(x=>x.formId==='vine-staff').skillId});addGear(g);
    const t=createCompanionToken(doc.companionTokens.catalog[0].id);addGear(t);save();return {g:g.id,t:t.id};});
-  await page.evaluate(()=>{closeModal();setTab('forge');});
-  const panel=page.locator('main .forge-extraction');await panel.waitFor();
-  assert.match(await panel.innerText(),/技能萃取[\s\S]*尚未萃取技能/);
-  await panel.locator(`[data-extract-token="${ids.t}"] button:has-text("萃取技能")`).click();
-  await page.click(`#modal [data-extract-gear="${ids.g}"] button:has-text("萃取")`);
+  // v0.194: extraction is the workshop's 信物萃取 action for a token on the bench.
+  await page.evaluate(id=>{closeModal();moveToWorkshop(id);},ids.t);
+  await page.click('main [data-workshop-action="extract"]');
+  const panel=page.locator('main [data-workshop-panel="extract"] .forge-extraction');await panel.waitFor();
+  assert.match(await panel.innerText(),/信物萃取[\s\S]*尚未萃取技能/);
+  await panel.locator(`[data-extract-gear="${ids.g}"] button:has-text("萃取")`).click();
   assert.equal(await page.evaluate(id=>findGear(id)?.extractedSkillId,ids.t),'living-core-renewal');assert.equal(await page.evaluate(id=>!!findGear(id),ids.g),false);
-  assert.match(await page.locator('main .forge-extraction').innerText(),/目前技能：/);
+  assert.match(await page.locator('main [data-workshop-panel="extract"] .forge-extraction').innerText(),/目前信物技能：/);
   // The bag's token details have no extraction button any more.
   await page.evaluate(()=>{setTab('equipment');setInventoryCategory('tokens');});
   assert.equal(await page.locator('main button:has-text("萃取技能")').count(),0);

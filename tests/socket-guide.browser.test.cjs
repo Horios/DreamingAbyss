@@ -24,13 +24,18 @@ test('worn rows show sockets instead of a checkmark; the socket guide plays once
   assert.equal(await charmRow.locator('.worn-socket-badge svg').count(),2,'two sockets beside the charm');
   // v0.176: the socket guide is a popup listing its steps; the sockets are still used from the page while it shows.
   await page.waitForFunction(()=>__EMBERWILD_TUTORIAL.status().tip?.id==='socket_basics');
-  assert.match(await page.locator('#tutorial-tip').innerText(),/鑲嵌孔[\s\S]*打開鑲嵌[\s\S]*選擇孔位[\s\S]*放入寶石/);
-  assert.equal(await page.locator('main [onclick^="toggleWornEquipmentSockets("]:not([disabled])').count(),1,'only gear with sockets offers 鑲嵌');await page.click('main [onclick^="toggleWornEquipmentSockets("]:not([disabled])');
-  await page.click('main .equipment-socket-editor .equipment-socket-slot >> nth=0');
-  await page.click('main .equipment-gem-choice >> nth=0');
-  assert.equal(await page.evaluate(()=>playerHero().bag.find(x=>x.storyRewardKey==='initiation_charm').skillSockets.gems[0]),0,'the gem went into the first socket');
+  assert.match(await page.locator('#tutorial-tip').innerText(),/鑲嵌孔[\s\S]*移到工坊鑲嵌[\s\S]*放入寶石/);
   await page.click('#tutorial-tip button:has-text("關閉")');
   assert.equal(await page.evaluate(()=>party.tutorials.records.socket_basics?.completed),true);
+  // v0.194: socketing moved to the workshop; the worn row sends the charm there.
+  const charmId=await page.evaluate(()=>playerHero().bag.find(x=>x.storyRewardKey==='initiation_charm').id);
+  await page.click(`main .worn-slot [onclick*="moveToWorkshop('${charmId}')"]`);
+  assert.equal(await page.evaluate(()=>tab),'forge');
+  await page.click('main [data-workshop-action="socket"]');
+  await page.click('main [data-workshop-panel="socket"] .equipment-socket-slot >> nth=0');
+  await page.click('main [data-workshop-panel="socket"] .equipment-gem-choice >> nth=0');
+  assert.equal(await page.evaluate(()=>playerHero().bag.find(x=>x.storyRewardKey==='initiation_charm').skillSockets.gems[0]),0,'the gem went into the first socket');
+  await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(300);
   // The filled socket shows its gem colour; the bag list keeps its checkmark.
   assert.notEqual(await charmRow.locator('.worn-socket-badge circle >> nth=0').getAttribute('fill'),'none');
   await page.evaluate(()=>{closeModal();setTab('battle');});await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(400);

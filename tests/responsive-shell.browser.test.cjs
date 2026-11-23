@@ -90,12 +90,12 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  assert.equal(await p.locator('.worn-candidate-pane').isVisible(),false);
  await p.locator('.worn-slot-choice').first().click();await idle();
  assert.equal(await p.evaluate(()=>currentDetailSheet()),'worn');
- assert.equal(await p.locator('.worn-candidate-pane>.sheet-actions>button').count(),4,'the slot actions are in the sheet');
- await p.locator('.worn-candidate-pane>.sheet-actions>button',{hasText:'強化'}).click();await idle();
- assert.equal(await p.evaluate(()=>tab),'forge');assert.equal(await p.evaluate(()=>currentDetailSheet()),'forge','強化 opens the forge detail');
- assert.equal(await p.locator('.forge-detail-pane').isVisible(),true);
- await p.locator('.sheet-close').click();assert.equal(await p.locator('.forge-detail-pane').isVisible(),false);
- await p.locator('.forge-gear-list .forge-gear-item').nth(1).click();await idle();assert.equal(await p.locator('.forge-detail-pane').isVisible(),true);
+ assert.equal(await p.locator('.worn-candidate-pane>.sheet-actions>button').count(),3,'the slot actions are in the sheet');
+ await p.locator('.worn-candidate-pane>.sheet-actions>button',{hasText:'移到工坊'}).click();await idle();
+ assert.equal(await p.evaluate(()=>tab),'forge');assert.equal(await p.evaluate(()=>currentDetailSheet()),'','the workshop is one column and opens no sheet');
+ assert.equal(await p.locator('.workshop-slot.filled').isVisible(),true,'移到工坊 puts the item on the bench');
+ assert.equal(await p.locator('.workshop-operations').isVisible(),true);
+ await p.evaluate(()=>setTab('worn'));await p.locator('.worn-slot-choice').first().click();await idle();assert.equal(await p.evaluate(()=>currentDetailSheet()),'worn');
  await p.evaluate(()=>setTab('character'));assert.equal(await p.evaluate(()=>currentDetailSheet()),'','changing page closes the sheet');
  // Mailbox
  await p.locator('#utilityButton-mailbox').click();

@@ -14,7 +14,7 @@ test('Item interfaces share one persisted icon-name or name-only list mode',asyn
     assert.equal(await p.locator('html').getAttribute('data-item-display'),'icon-name');
     for(const setup of [
       ()=>{setTab('equipment');setInventoryCategory('equipment');setGearInventoryFilter('worn','all');},/* v0.184: a new character's gear is all worn */
-      ()=>setTab('forge'),
+      ()=>{setTab('forge');toggleWorkshopPicker(true);},/* v0.194: the workshop lists items in its picker */
       ()=>setTab('shop'),
       ()=>setTab('lifeSkills')
     ]){

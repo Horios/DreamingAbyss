@@ -22,21 +22,21 @@ test('equipment sockets: horizontal icons, icon gem choices, stat gems and inven
    const h=playerHero(),g=gear(1,3,0,h.job);
    Object.assign(g,{id:'socket-ui',skillId:'tutorial_echo',skillSockets:{version:1,count:3,gems:[null,null,null]}});
    state.bag.push(g);h.gems=Array(15).fill(0);h.gems[0]=h.gems[1]=h.gems[12]=3;equipSharedGear(g.id,memberKey(h),3);
-   setTab('worn');toggleWornEquipmentSockets(g.id);
+   moveToWorkshop(g.id);setWorkshopAction('socket');
   });
   const editor=p.locator('[data-socket-equipment="socket-ui"]');
   assert.equal(await editor.locator('.equipment-socket-choices').count(),0);
   for(const width of [1280,390]){
    await p.setViewportSize({width,height:900});
    const boxes=await editor.locator('[data-equipment-socket]').evaluateAll(es=>es.map(e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,right:b.right};}));
-   assert.equal(boxes.length,3,'worn gear should show its three sockets in the equipment panel');assert(boxes.every(b=>b.y===boxes[0].y));assert(boxes[2].x>boxes[1].x&&boxes[1].x>boxes[0].x);
+   assert.equal(boxes.length,3,'workshop shows the three sockets of the placed gear');assert(boxes.every(b=>b.y===boxes[0].y));assert(boxes[2].x>boxes[1].x&&boxes[1].x>boxes[0].x);
    assert(boxes[2].right<=width,'socket row fits viewport');
    await editor.locator('[data-equipment-socket="0"]').click();
    await editor.locator('[data-equipment-gem]').first().waitFor({state:'visible'});
    assert.equal(await editor.locator('[data-equipment-gem] svg').count(),3);
    assert.equal(await editor.locator('[data-equipment-gem="14"]').count(),0);
    const withinViewport=await editor.evaluate(el=>{const b=el.getBoundingClientRect();return b.left>=-1&&b.right<=innerWidth+1;});
-   assert(withinViewport,'worn socket editor fits viewport');
+   assert(withinViewport,'workshop socket editor fits viewport');
    assert.equal(await editor.locator('.equipment-socket-list select').count(),0);
    assert.equal(await editor.locator('select').count(),0);
    await editor.locator('[data-equipment-gem="0"]').click();

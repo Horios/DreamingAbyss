@@ -137,9 +137,9 @@
       if(!findGear(g.id))return '';
       if(globalThis.EmberwildTokens?.isToken(g)){
         const h=gearWearer(g.id),list=party.members.filter(x=>EmberwildTokens.canEquip(g,x));
-        return `<div class="actions"><select id="item-detail-token-target" aria-label="信物穿戴對象">${list.map(x=>`<option value="${memberKey(x)}" ${h===x?'selected':''}>${esc(characterName(x))}</option>`).join('')}</select><button onclick="itemDetailsAction(()=>equipCompanionToken('${g.id}',Number(document.getElementById('item-detail-token-target').value)))" ${list.length?'':'disabled'}>穿戴</button>${h?`<button onclick="itemDetailsAction(()=>unequipCompanionToken(${memberKey(h)}))">卸下</button>`:''}<button onclick="closeItemDetails();openForge('${g.id}')">強化</button><button onclick="itemDetailsAction(()=>toggleGearLock('${g.id}'))">${g.locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="closeItemDetails();salvage('${g.id}')" ${h||g.locked?'disabled':''}>分解</button></div>`;
+        return `<div class="actions"><select id="item-detail-token-target" aria-label="信物穿戴對象">${list.map(x=>`<option value="${memberKey(x)}" ${h===x?'selected':''}>${esc(characterName(x))}</option>`).join('')}</select><button onclick="itemDetailsAction(()=>equipCompanionToken('${g.id}',Number(document.getElementById('item-detail-token-target').value)))" ${list.length?'':'disabled'}>穿戴</button>${h?`<button onclick="itemDetailsAction(()=>unequipCompanionToken(${memberKey(h)}))">卸下</button>`:''}<button onclick="closeItemDetails();moveToWorkshop('${g.id}')">移到工坊</button><button onclick="itemDetailsAction(()=>toggleGearLock('${g.id}'))">${g.locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="closeItemDetails();salvage('${g.id}')" ${h||g.locked?'disabled':''}>分解</button></div>`;
       }
-      return `<button onclick="closeItemDetails();openForge('${g.id}')">前往強化／洗鍊</button>`;
+      return `<button onclick="closeItemDetails();moveToWorkshop('${g.id}')">移到工坊</button>`;
     }
     const virtual=virtualItem(kind,key);if(virtual)return virtual.actions?.(ref)||'';
     const k=attr(JSON.stringify(key)),hero=memberKey(pageHero('equipment')||playerHero());

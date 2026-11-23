@@ -13,14 +13,19 @@ test('backpack wear entry preserves equipment until the canonical preview and ke
  assert.equal(r.run('tab'),'worn');assert.equal(r.run('JSON.stringify(state.equipped)===before'),true);assert.match(r.run('wornEquipmentView()'),/aria-label="穿戴流程說明"/);assert.equal(r.run('openWornWearHelp()'),true);assert.match(r.run('$("modal").innerHTML'),/已穿戴裝備下方的「詳情」/);r.run('closeModal()');assert.match(r.run('wornEquipmentView()'),/穿戴至飾品/);assert.match(r.run('inventoryGearDetail(g)'),/openInventoryWear/);
  r.run('previewEquip(g.id,memberKey(state),3)');assert.equal(r.run('JSON.stringify(state.equipped)===before'),true);assert.equal(r.run('$("modal").open'),true);r.run('confirmEquipComparison(g.id,memberKey(state),3)');assert.equal(r.run('state.equipped[3]'),r.run('g.id'));assert.deepEqual(r.errors,[]);
 });
-test('worn equipment owns socket editing and full detail, while backpack limits its actions',()=>{
+test('worn equipment and backpack send gear to the workshop, which owns socket editing',()=>{
  const r=game();r.run("globalThis.g=gear(1,3,0,0);g.skillSockets={version:1,count:1,gems:[null],firstMode:'base'};addGear(g);equipSharedGear(g.id,memberKey(state),3);setTab('worn');");
- assert.match(r.run('wornEquipmentView()'),/toggleWornEquipmentSockets/);
- assert.match(r.run('wornEquipmentView()'),/showWornEquipmentDetail/);
- assert.doesNotMatch(r.run('inventoryGearDetail(g)'),/equipment-socket-editor|openForge/);
- assert.match(r.run('inventoryGearDetail(g)'),/sellGear/);
- r.run('toggleWornEquipmentSockets(g.id)');
- assert.match(r.run('wornEquipmentView()'),/data-socket-equipment/);
+ const worn=r.run('wornEquipmentView()');
+ assert.match(worn,new RegExp(`moveToWorkshop\\('${r.run('g.id')}'\\)`));assert.match(worn,/移到工坊/);
+ assert.doesNotMatch(worn,/強化／洗鍊|toggleWornEquipmentSockets|>鑲嵌</);
+ assert.match(worn,/showWornEquipmentDetail/);
+ const bag=r.run('inventoryGearDetail(g)');
+ assert.doesNotMatch(bag,/equipment-socket-editor|onclick="enhance|onclick="reroll/);
+ assert.match(bag,/sellGear/);assert.match(bag,/moveToWorkshop\(/);
+ assert.equal(r.run('moveToWorkshop(g.id)'),true);assert.equal(r.run('tab'),'forge');
+ assert.deepEqual(JSON.parse(r.run('JSON.stringify(__EMBERWILD_WORKSHOP.actions(g))')).includes('socket'),true);
+ r.run("setWorkshopAction('socket')");
+ assert.match(r.run('forgeView()'),/data-socket-equipment/);
  assert.equal(r.run('showWornEquipmentDetail(g.id)'),true);
  assert.match(r.run('$("modal").innerHTML'),/裝備詳情|裝備能力/);
  assert.deepEqual(r.errors,[]);

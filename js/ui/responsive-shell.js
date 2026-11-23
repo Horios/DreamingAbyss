@@ -58,7 +58,6 @@
   const SHEETS={
     gear:{panel:'#app .inventory-detail-wrap',trigger:'.gear-management-row .inventory-list-item',title:'裝備詳情'},
     token:{panel:'#app .token-inventory-detail',trigger:'.token-management-row .token-inventory-row',title:'信物詳情'},
-    forge:{panel:'#app .forge-detail-pane',trigger:'.forge-gear-list .forge-gear-item',title:'強化與洗鍊'},
     worn:{panel:'#app .worn-candidate-pane',trigger:'.worn-slot-choice',title:'裝備欄位'},
     mail:{panel:'#modal .mailbox-detail',trigger:'.mailbox-list-item',title:'信件',back:'返回信件列表'}
   };
@@ -209,20 +208,20 @@
     for(const [key,config] of Object.entries(SHEETS))if(target.closest(config.trigger)){setSheet(key);return;}
     if(!sheet)return;
     const panel=document.querySelector(SHEETS[sheet].panel);
-    if(sheet==='worn'&&target.closest('.sheet-actions button[onclick*="toggleWornEquipmentSockets"]')){queueMicrotask(()=>setSheet(''));return;}
+    // v0.194: 移到工坊 leaves the worn page; the workshop is a single column on phones and uses no sheet.
+    if(sheet==='worn'&&target.closest('.sheet-actions button[onclick*="moveToWorkshop"]')){queueMicrotask(()=>setSheet(''));return;}
     if(panel?.contains(target)||target.closest('#modal,#toast,.sheet-head'))return;
     if(sheet!=='mail')setSheet('');
   },true);
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&sheet&&sheet!=='mail')setSheet('');});
   // Only leaving phone width closes a sheet; the change event can arrive after a sheet was just opened at the new width.
   phone.addEventListener('change',()=>{if(!phone.matches)setSheet('');syncPages();});
-  const sheetPage={gear:'equipment',token:'equipment',forge:'forge',worn:'worn'};
+  const sheetPage={gear:'equipment',token:'equipment',worn:'worn'};
   const tabBase=setTab;setTab=function(...args){if(sheet&&sheet!=='mail'&&sheetPage[sheet]!==args[0])setSheet('');return tabBase(...args);};
   const closeBase=closeModal;closeModal=function(...args){if(sheet==='mail')setSheet('');return closeBase(...args);};
   // Selecting an item (a tap, or a jump from another page that picks one) means its detail is wanted.
   if(typeof selectInventoryGear==='function'){const gearBase=selectInventoryGear;selectInventoryGear=function(...args){if(phone.matches)setSheet('gear');return gearBase(...args);};}
   if(typeof selectInventoryToken==='function'){const tokenBase=selectInventoryToken;selectInventoryToken=function(...args){if(phone.matches)setSheet('token');return tokenBase(...args);};}
-  if(typeof openForge==='function'){const forgeBase=openForge;openForge=function(...args){const out=forgeBase(...args);if(phone.matches)setSheet('forge');return out;};}
   const modal=document.getElementById('modal');
   if(modal)new MutationObserver(()=>{if(sheet==='mail')syncSheet();}).observe(modal,{childList:true});
   const renderBase=render;render=function(...args){const out=renderBase(...args);sync();syncPages();return out;};

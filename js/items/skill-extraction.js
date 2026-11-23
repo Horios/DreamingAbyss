@@ -31,13 +31,26 @@
     modal.innerHTML=`<h2>技能萃取</h2><p class="small">選擇一件技能裝備，把它的技能轉移到「${esc(equipmentDisplayName(t))}」。萃取後裝備會消失；夥伴穿戴這件信物即可使用該技能，不受職業限制，冷卻與 MP 消耗不變。</p>${current?`<p class="small">目前信物技能：${esc(current.name)}（萃取新技能會覆蓋）</p>`:''}<div class="skill-extraction-list">${rows.map(g=>{const sk=gearSkill(g);return `<article class="skill-extraction-row" data-extract-gear="${esc(g.id)}"><div><b>${equipmentNameHTML(g)}</b><p class="small">${esc(sk.name)}（${kindLabel(sk)}）· ${esc(sk.description||'')}</p></div><button type="button" onclick="extractSkillToToken('${esc(g.id)}','${esc(t.id)}')">萃取</button></article>`;}).join('')||'<p>背包裡沒有技能裝備。</p>'}</div><div class="actions"><button type="button" onclick="closeModal()">關閉</button></div>`;
     if(!modal.open)modal.showModal();return true;
   };
-  /* v0.178: extraction is done on the forge page (裝備強化). Each companion token gets a row with its current skill and a
+  /* v0.178: extraction was done on the forge page (裝備強化). Each companion token gets a row with its current skill and a
      button that opens the gear list above; the bag no longer has its own button. */
   function panelHTML(){
    const tokens=(state?.bag||[]).filter(isToken),gear=candidates().length;
    const rows=tokens.map(t=>{const sk=t.extractedSkillId&&S().byId(t.extractedSkillId),wearer=gearWearer(t.id);return `<article class="skill-extraction-row" data-extract-token="${esc(t.id)}"><div><b>${equipmentNameHTML(t)}</b><p class="small">${wearer?esc(characterName(wearer))+' 穿戴中 · ':''}${sk?'目前技能：'+esc(sk.name)+'（'+kindLabel(sk)+'）':'尚未萃取技能'}</p></div><button type="button" onclick="openSkillExtraction('${esc(t.id)}')" ${gear?'':'disabled'}>萃取技能</button></article>`;}).join('');
    return `<section class="panel forge-extraction" aria-label="技能萃取"><h2>技能萃取</h2><p class="small">把技能裝備的技能轉移到夥伴信物。萃取後裝備會消失；夥伴穿戴這件信物即可使用該技能，不受職業限制，冷卻與 MP 消耗不變。信物已有技能時，新的技能會覆蓋舊的。</p><p class="small">背包中的技能裝備：${gear} 件</p><div class="skill-extraction-list">${rows||'<p class="empty">尚未持有夥伴信物。</p>'}</div></section>`;
   }
-  const forgeBase=forgeView;forgeView=function(){return forgeBase()+panelHTML();};
-  globalThis.__EMBERWILD_SKILL_EXTRACTION={gearSkill,prefixFor,candidates,extract,panelHTML};
+  /* v0.194: the forge page became the equipment workshop (裝備工坊). Extraction is its 信物萃取 action: with a token on the
+     bench the action lists the skill gear to extract from; with skill gear on the bench it lists the tokens to extract into. */
+  function workshopHTML(item){
+   const intro='<p class="small">把技能裝備的技能轉移到夥伴信物。萃取後裝備會消失；夥伴穿戴這件信物即可使用該技能，不受職業限制，冷卻與 MP 消耗不變。信物已有技能時，新的技能會覆蓋舊的。</p>';
+   if(isToken(item)){
+    const current=item.extractedSkillId&&S().byId(item.extractedSkillId),rows=candidates();
+    const list=rows.map(g=>{const sk=gearSkill(g),wearer=gearWearer(g.id);return `<article class="skill-extraction-row" data-extract-gear="${esc(g.id)}"><div><b>${equipmentNameHTML(g)}</b><p class="small">${wearer?esc(characterName(wearer))+' 穿戴中 · ':''}技能：${esc(sk.name)}（${kindLabel(sk)}）</p></div><button type="button" onclick="extractSkillToToken('${esc(g.id)}','${esc(item.id)}')">萃取</button></article>`;}).join('');
+    return `<section class="forge-extraction" aria-label="信物萃取"><h3>信物萃取</h3>${intro}<p class="small">目前信物技能：${current?esc(current.name)+'（'+kindLabel(current)+'）':'尚未萃取技能'}</p><div class="skill-extraction-list">${list||'<p class="empty">物品欄沒有可萃取技能的裝備。</p>'}</div></section>`;
+   }
+   const sk=gearSkill(item);if(!sk)return '';
+   const tokens=(state?.bag||[]).filter(isToken);
+   const list=tokens.map(t=>{const own=t.extractedSkillId&&S().byId(t.extractedSkillId),wearer=gearWearer(t.id);return `<article class="skill-extraction-row" data-extract-token="${esc(t.id)}"><div><b>${equipmentNameHTML(t)}</b><p class="small">${wearer?esc(characterName(wearer))+' 穿戴中 · ':''}${own?'目前技能：'+esc(own.name)+'（'+kindLabel(own)+'）':'尚未萃取技能'}</p></div><button type="button" onclick="extractSkillToToken('${esc(item.id)}','${esc(t.id)}')">萃取到此信物</button></article>`;}).join('');
+   return `<section class="forge-extraction" aria-label="信物萃取"><h3>信物萃取</h3>${intro}<p class="small">這件裝備的技能：${esc(sk.name)}（${kindLabel(sk)}）</p><div class="skill-extraction-list">${list||'<p class="empty">尚未持有夥伴信物。</p>'}</div></section>`;
+  }
+  globalThis.__EMBERWILD_SKILL_EXTRACTION={gearSkill,prefixFor,candidates,extract,panelHTML,workshopHTML};
 })();

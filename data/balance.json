@@ -34703,7 +34703,7 @@
           },
           {
             "id": "forge",
-            "label": "裝備強化"
+            "label": "裝備工坊"
           },
           {
             "id": "bossCraft",
@@ -48239,9 +48239,9 @@
             }
           },
           {
-            "id": "open",
-            "title": "打開鑲嵌",
-            "text": "按「鑲嵌」打開這件裝備的鑲嵌孔。",
+            "id": "move",
+            "title": "移到工坊鑲嵌",
+            "text": "鑲嵌在裝備工坊進行。按「移到工坊」把這件裝備放進工坊，再選下方的「鑲嵌」。",
             "page": "worn",
             "target": "worn.socketButton",
             "placement": "auto",
@@ -48260,32 +48260,11 @@
             }
           },
           {
-            "id": "slot",
-            "title": "選擇孔位",
-            "text": "點選要放寶石的孔。",
-            "page": "worn",
-            "target": "worn.socketSlot",
-            "placement": "auto",
-            "advance": {
-              "type": "next"
-            },
-            "optional": false,
-            "requires": {
-              "mode": "all",
-              "conditions": []
-            },
-            "onReplay": "same",
-            "skipIf": {
-              "mode": "all",
-              "conditions": []
-            }
-          },
-          {
             "id": "gem",
             "title": "放入寶石",
-            "text": "點一顆持有的寶石就會放進這個孔，提供屬性加成。拆除與替換都免費；出售或分解裝備時寶石會退回庫存。",
+            "text": "在「鑲嵌」點選孔位，再點一顆持有的寶石放入，提供屬性加成。拆除與替換都免費；出售或分解裝備時寶石會退回庫存。",
             "page": "worn",
-            "target": "worn.gemChoices",
+            "target": "worn.socketButton",
             "placement": "auto",
             "advance": {
               "type": "next"
@@ -48313,12 +48292,12 @@
       },
       {
         "id": "forge_basics",
-        "title": "裝備強化",
+        "title": "裝備工坊",
         "category": "equipment",
         "type": "notice",
         "enabled": true,
         "implemented": true,
-        "description": "強化、洗鍊與基底重鑄。第一次進入裝備強化時開始。",
+        "description": "強化、洗鍊、重鑄、鑲嵌與信物萃取。第一次進入裝備工坊時開始。",
         "trigger": {
           "type": "pageEnter",
           "page": "forge",
@@ -48338,8 +48317,8 @@
         "steps": [
           {
             "id": "list",
-            "title": "選擇裝備",
-            "text": "先從清單選擇要強化的裝備，可以切換已穿戴與未穿戴。",
+            "title": "選擇分類",
+            "text": "裝備工坊分成武器、防具、飾品、信物四類。先選擇要處理的分類。",
             "page": "forge",
             "target": "forge.list",
             "placement": "auto",
@@ -48359,8 +48338,8 @@
           },
           {
             "id": "detail",
-            "title": "目前能力",
-            "text": "右側顯示這件裝備的能力與強化後的變化。",
+            "title": "放入物品",
+            "text": "點擊中間的格子，從物品欄選擇要放入的物品，穿戴中的裝備也可以選。",
             "page": "forge",
             "target": "forge.detail",
             "placement": "auto",
@@ -48380,8 +48359,8 @@
           },
           {
             "id": "actions",
-            "title": "強化與洗鍊",
-            "text": "強化提高基礎能力；洗鍊重新抽取詞綴。兩者都會消耗金幣與材料。",
+            "title": "可進行的操作",
+            "text": "物品放入後，下方只會列出它可以進行的操作，例如強化、洗鍊、重鑄、鑲嵌或信物萃取。強化與洗鍊會消耗金幣與材料。",
             "page": "forge",
             "target": "forge.actions",
             "placement": "auto",
@@ -48411,12 +48390,12 @@
       },
       {
         "id": "extraction_basics",
-        "title": "技能萃取",
+        "title": "信物萃取",
         "category": "equipment",
         "type": "notice",
         "enabled": true,
         "implemented": true,
-        "description": "把技能裝備的技能轉移到夥伴信物。第一次進入裝備強化、看完強化教學後開始。",
+        "description": "把技能裝備的技能轉移到夥伴信物。第一次進入裝備工坊、看完工坊教學後開始。",
         "trigger": {
           "type": "pageEnter",
           "page": "forge",
@@ -48441,8 +48420,8 @@
         "steps": [
           {
             "id": "panel",
-            "title": "技能萃取",
-            "text": "裝備強化頁下方的「技能萃取」可以把技能裝備的技能轉移到夥伴信物。",
+            "title": "信物萃取",
+            "text": "在「信物」分類放入夥伴信物，或放入帶有技能的裝備，下方會出現「信物萃取」。",
             "page": "forge",
             "target": "forge.extraction",
             "placement": "auto",
@@ -48463,7 +48442,7 @@
           {
             "id": "extract",
             "title": "萃取方式",
-            "text": "在信物那一列按「萃取技能」，再選一件技能裝備。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。",
+            "text": "在「信物萃取」選擇要搭配的技能裝備或信物後按「萃取」。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。",
             "page": "forge",
             "target": "forge.extraction",
             "placement": "auto",
