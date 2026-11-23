@@ -1,18 +1,5 @@
-/* One flash per stage, 200ms long, with a 300ms empty gap between stages. */
-.forge-enhance-layer{position:fixed;width:0;height:0;z-index:1400;pointer-events:none!important;animation:forge-enhance-lifetime var(--enhance-lifetime) linear both!important}
-.forge-enhance-layer *{pointer-events:none!important}
-.forge-enhance-flash{position:absolute;display:block;left:0;top:0;width:22px;height:22px;margin:-11px;color:#ffe38b;opacity:0;animation:forge-enhance-spark 200ms ease-out var(--enhance-delay) both!important;filter:drop-shadow(0 0 5px currentColor);background:radial-gradient(circle,#fffce6 0 12%,#ffe38b 30%,#ffc94d 55%,transparent 72%);clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%)}
-.forge-enhance-medium{width:44px;height:44px;margin:-22px;filter:drop-shadow(0 0 8px currentColor);clip-path:polygon(50% 0,60% 31%,85% 15%,69% 40%,100% 50%,69% 60%,85% 85%,60% 69%,50% 100%,40% 69%,15% 85%,31% 60%,0 50%,31% 40%,15% 15%,40% 31%)}
-.forge-enhance-large{width:74px;height:74px;margin:-37px;filter:drop-shadow(0 0 12px currentColor)}
-.forge-enhance-rainbow{width:94px;height:94px;margin:-47px;background:conic-gradient(#ff87b6,#ffd978,#9affae,#7eeaff,#a8a0ff,#ef99ff,#ff87b6);color:#e7bfff;filter:drop-shadow(0 0 10px #d1a2ff);clip-path:polygon(50% 0,60% 30%,85% 15%,70% 40%,100% 50%,70% 60%,85% 85%,60% 70%,50% 100%,40% 70%,15% 85%,30% 60%,0 50%,30% 40%,15% 15%,40% 30%)}
-.forge-enhance-mist{width:64px;height:36px;margin:-18px -32px;border-radius:50%;clip-path:none;background:radial-gradient(ellipse,#b6bbc4a8,#777e8c70 45%,transparent 72%);filter:blur(4px);animation:forge-enhance-mist 650ms ease-out both!important}
-.forge-enhance-mist::before,.forge-enhance-mist::after{content:"";position:absolute;width:42px;height:30px;top:-9px;left:-8px;border-radius:50%;background:radial-gradient(ellipse,#a1a5adb0,transparent 72%)}
-.forge-enhance-mist::after{left:30px;top:4px}
-.forge-enhance-explosion{width:64px;height:64px;margin:-32px;clip-path:none;border-radius:50%;background:radial-gradient(circle,#fff9de 0 8%,#ffcf7d 18%,#ed8c494d 38%,transparent 64%);filter:drop-shadow(0 0 5px #ffac70);animation:forge-enhance-explosion 450ms ease-out both!important}
-.forge-enhance-explosion::after{content:"";position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle at 15% 25%,#ffcb86 0 2px,transparent 3px),radial-gradient(circle at 85% 32%,#ffa76b 0 2px,transparent 3px),radial-gradient(circle at 70% 88%,#ffdba0 0 2px,transparent 3px)}
+/* Centered enhancement result, visible briefly without flashing. */
+.forge-enhance-layer{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(100vw - 32px);z-index:1400;pointer-events:none!important;font-size:clamp(28px,6vw,48px);font-weight:800;line-height:1.4;text-align:center;white-space:nowrap;text-shadow:0 2px 6px #000,0 0 12px #000;animation:forge-enhance-lifetime var(--enhance-lifetime) linear both!important}
+.forge-enhance-success{color:#65e891}
+.forge-enhance-failure{color:#ff6b6b}
 @keyframes forge-enhance-lifetime{from,to{opacity:1}}
-@keyframes forge-enhance-spark{0%,100%{opacity:0;transform:scale(.65)}35%{opacity:1;transform:scale(1)}75%{opacity:.65;transform:scale(1.15)}}
-@keyframes forge-enhance-mist{0%{opacity:0;transform:translateY(8px) scale(.7)}25%{opacity:.8}100%{opacity:0;transform:translateY(-12px) scale(1.4)}}
-@keyframes forge-enhance-explosion{0%{opacity:0;transform:scale(.2)}20%{opacity:1;transform:scale(.8)}60%{opacity:.55;transform:scale(1.1)}100%{opacity:0;transform:scale(1.35)}}
-@media(prefers-reduced-motion:reduce){.forge-enhance-flash{filter:none}.forge-enhance-small,.forge-enhance-medium,.forge-enhance-large,.forge-enhance-rainbow{animation-name:forge-enhance-soft!important}.forge-enhance-explosion{animation-name:forge-enhance-soft!important;animation-duration:450ms!important}.forge-enhance-mist{animation-name:forge-enhance-soft!important;animation-duration:650ms!important}}
-@keyframes forge-enhance-soft{0%,100%{opacity:0}50%{opacity:.7}}
