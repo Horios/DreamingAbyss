@@ -1586,3 +1586,16 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
   - 背包寶石詳細資訊：「分解 1 顆」「全部分解」，都會先顯示明細並確認。
   - 寶石分類「批次分解」：點選格子（整格）或「依等級」「全選」選取，確認後分解，完成或取消後離開批次模式。
 - 寶石掉落：73 條 `gemPool` 規則的 `chanceByDifficulty` 全部乘以 0.1（`data/balance/world/drops.json`），例如普通怪 3.3％／6.6％／11％ → 0.33％／0.66％／1.1％。
+
+## v0.214 技能頁拆分：技能配置／技能圖鑑／職業成長
+
+只改介面；技能資料、學習與解鎖、槽位數量、被動規則與戰鬥都沒有改變。新模組 `js/ui/skill-page.js`、`css/skill-page.css`（在 `inventory-grid.js` 之前、`tutorial-runtime.js` 之前載入）。
+
+- 技能頁分成三個子頁，預設為「技能配置」：
+  - 技能配置：職業、角色與職業精通等級；主動、觸發欄位以 SVG 圖示格子顯示（空欄位為新增圖示），被動列出啟用中的被動與「管理」入口（生效數／已學數）。主畫面不再顯示完整說明與數值。學會新技能的提示保留。戰鬥進行中顯示「配置變更於下一場戰鬥生效」（`EmberwildBattleConfiguration.pending()`）。
+  - 技能圖鑑：原本的圖鑑視窗改為子頁，可依取得狀態、技能類型、技能來源篩選；已取得排在前面，同組維持原本的解鎖順序；詳細資訊顯示解鎖需求，裝備技能未符合條件時提示需穿戴附帶裝備；已取得的主動、觸發技能可直接「放入技能槽」。`openSkillCatalog(id)` 改為切換到這個子頁。
+  - 職業成長：沿用 `class-mastery-tree.js` 的職業精通與職業技能清單。進階職業、轉職與固化被動尚未開放，不顯示占位按鈕。
+- 技能槽視窗（`openSkillSlot`）：左側技能槽、中間候選清單（圖示、名稱、來源、一行效果、是否已配置與所在槽位，學會的新技能標 NEW）、右側技能詳細資訊（`detailSections`，數值讀實際戰鬥資料）。每列的「裝入／移至此槽」直接套用 `configureSkill`。預設只列出已取得且符合條件的技能，可勾選「顯示未學技能」（偏好仍存在 `emberwild.skillSlotShowLocked`，預設改為不顯示）。
+- 被動管理（`openPassiveManager`）：列出已學被動，沿用 `setPassiveSkillEnabled` 啟用／停用；不限制數量、不改生效條件。
+- `skill-system-ui.js` 公開 `detailSections`、`icon`、`acquired`、`labels`、`sortedSkills`、`card` 等供新頁面使用。
+- 測試：新增 `tests/skill-page.test.cjs`。
