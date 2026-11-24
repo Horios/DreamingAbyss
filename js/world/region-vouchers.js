@@ -192,13 +192,13 @@
  // Rolls loot of the locked enemies with the existing rules into a scratch copy of the inventory, so the
  // results can be mailed instead of granted. The real inventory, bag and journal are restored untouched.
  function rollLoot(rolls){
-  const h=party.members[0],saved={ore:h.ore,dust:h.dust,potions:h.potions,gems:h.gems,materials:h.materials,healingPotions:h.healingPotions,consumables:h.consumables,bag:h.bag},claims=party.etherBossClaims,noteBase=note;
+  const h=party.members[0],saved={ore:h.ore,dust:h.dust,potions:h.potions,gems:[...h.gems],materials:{...h.materials},healingPotions:{...h.healingPotions},consumables:{...h.consumables},bag:h.bag},inventory=globalThis.EmberwildItems?.snapshot(),claims=party.etherBossClaims,noteBase=note;
   h.gems=[...h.gems];h.materials={...h.materials};h.healingPotions={...h.healingPotions};h.consumables={...h.consumables};h.bag=[];party.etherBossClaims=[...(claims||[])];
   const before=stock(h),items={};
   try{note=()=>{};withHero(h,()=>{for(const stack of rolls)for(const e of enemies(stack))rollEnemyItemLoot(e,{voucher:true});});
    const after=stock(h);for(const k in after){const d=(after[k]||0)-(before[k]||0);if(d>0)items[k]=d;}
    return {items,gear:h.bag.slice()};
-  }finally{note=noteBase;Object.assign(h,saved);party.etherBossClaims=claims;}
+  }finally{note=noteBase;Object.assign(h,saved);if(inventory)globalThis.EmberwildItems.restore(inventory);party.etherBossClaims=claims;}
  }
  // Per-ticket plan. v0.161: vouchers give no XP (character levels were removed) and have no over-level rule.
  function plan(requests){

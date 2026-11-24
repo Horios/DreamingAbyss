@@ -9,7 +9,7 @@ test('Chromium: combat previews show signed stat and unlearned-affix differences
   try{
     const setup=await p.evaluate(()=>{
       clearInterval(timer);start(1);closeModal();continueFromTitle();
-      const h=playerHero(),current=h.bag.find(g=>g.id===h.equipped[1]),next=gear(1,1,0,1);
+      const h=playerHero(),current=gear(1,1,0,1),next=gear(1,1,0,1);h.bag.push(current);h.equipped[1]=current.id;
       current.affix=[{type:2,rank:1,value:8},{type:9,rank:1,value:5}];
       next.affix=[{type:4,rank:1,value:18,skill:3}];next.plus=5;h.bag.push(next);
       const rows=equipmentComparison(h,next,1),equipped=[...h.equipped];

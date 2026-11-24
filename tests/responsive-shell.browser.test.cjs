@@ -3,7 +3,7 @@ const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
 async function setup(p){
  await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
- await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);for(let i=0;i<12;i++)state.bag.push(gear(1,i%4,i%4,0));save();});
+ await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);for(let i=0;i<12;i++)state.bag.push(gear(1,i%4,i%4,0));equipSharedGear(state.bag[0].id,memberKey(state),0);state.gems[0]=1;state.dust=1000;save();});
 }
 function showPage(id){if(id.startsWith('inventory:')){setTab('equipment');setInventoryCategory(id.split(':')[1]);}else if(id.startsWith('story:'))setStoryCategory(id.split(':')[1]);else{if(id==='equipment')setInventoryCategory('equipment');setTab(id);}}
 const pages=['battle','character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:items','inventory:tokens','worn','forge','bossCraft','shop','story','story:side','quests','gather','alchemy','statistics'];
@@ -382,8 +382,8 @@ test('Desktop: story NEW! follows the title; long action labels keep one line; w
  const story=await p.locator('.story-card>.row:first-child').first().evaluate(e=>{const h=e.querySelector('h2').getBoundingClientRect(),n=e.querySelector('.quest-new')?.getBoundingClientRect(),t=e.querySelector('.tag').getBoundingClientRect();return {gap:n?n.left-h.right:0,tagRight:Math.abs(t.right-e.getBoundingClientRect().right)};});
  assert(story.gap>=0&&story.gap<=16&&story.tagRight<=2,'NEW! next to the title, tag at the right '+JSON.stringify(story));
  await p.evaluate(()=>{setTab('equipment');setInventoryCategory('items');});
- const gem=await p.locator('button[onclick^="craftGem"]').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);return new Set([...range.getClientRects()].filter(x=>x.width>2).map(x=>Math.round(x.top))).size;});
- assert.equal(gem,1,'合成隨機寶石 stays on one line');
+ const gem=await p.locator('button[onclick^="openGemUpgrade("]').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);return new Set([...range.getClientRects()].filter(x=>x.width>2).map(x=>Math.round(x.top))).size;});
+ assert.equal(gem,1,'粉塵升級 stays on one line');
  await p.evaluate(()=>setTab('worn'));
  const fill=await p.locator('.worn-slot-choice').first().evaluate(e=>{const c=e.getBoundingClientRect(),s=e.querySelector('.item-slot').getBoundingClientRect();return c.right-s.right;});
  assert(fill<=24,'the item fills its slot box '+fill);

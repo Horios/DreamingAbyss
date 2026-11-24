@@ -192,6 +192,9 @@
   function merge(fromUid,toUid){const r=store();const st=M.stackByUid(r.store,fromUid),moved=M.merge(r.store,fromUid,toUid,capOf);if(st)refresh(r,st.item);return moved;}
   function split(uid,qty){const r=store();return M.split(r.store,uid,qty);}
   function stacks(){return store().store.stacks.map(st=>({...st,definition:definition(st.item)}));}
+  // Transaction snapshots retain every stack's uid, order and split, including standard layouts omitted from saves.
+  function snapshot(){return M.serialize(store().store);}
+  function restore(snapshot){const next=M.validateLayout(snapshot);if(!next)throw Error('背包快照無效');const r=store();r.store=next;refreshAll(r);}
   function wearer(g){return typeof gearWearer==='function'?gearWearer(g.id):null;}
   function gearBag(){if(typeof ensureSharedGear==='function')ensureSharedGear();return party?.sharedGear?.items||state?.bag||[];}
   function getGear(id){return gearBag().find(g=>g.id===id)||null;}
@@ -227,7 +230,7 @@
     const ids=new Set();for(const g of gearBag()){if(ids.has(g.id))problems.push('裝備識別碼重複 '+g.id);ids.add(g.id);}
     return problems;
   }
-  const api={VERSION:M.VERSION,audit,model:M,definition,gearDefinition,count,has,add,remove,removeMany,merge,split,stacks,getGear,createGear,addGear:addGearInstance,slots,byCategory,settings,
+  const api={VERSION:M.VERSION,audit,model:M,definition,gearDefinition,count,has,add,remove,removeMany,merge,split,stacks,snapshot,restore,getGear,createGear,addGear:addGearInstance,slots,byCategory,settings,
     ensure:ensureInventory,_debug:()=>parties.get(party)};
   globalThis.EmberwildItems=api;
   /* Existing bag page: show the computed slot usage next to the category tabs. Capacity is not enforced yet. */

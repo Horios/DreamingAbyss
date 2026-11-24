@@ -101,10 +101,10 @@ test('Deployed preview badge leaves utility buttons reachable at every viewport'
 test('Long mailbox lists preserve visible desktop detail and reachable mobile mail actions',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await setup(p);
- const saved=await p.evaluate(()=>{for(let i=0;i<30;i++)party.mailbox.messages.push({id:++party.mailbox.serial,rewardKey:'starter-0-'+(i+10),subject:'信件 '+i,body:'完整信件內容',at:Date.now()+i,read:true,claimed:true,attachments:[{type:'catalogue',kind:'item',key:'heal_small',quantity:1,name:'簡易治療藥水'}]});return save();});assert.equal(saved,true,'mail fixtures use the real validated save contract');
+ const saved=await p.evaluate(()=>{for(let i=0;i<30;i++)party.mailbox.messages.push({id:++party.mailbox.serial,rewardKey:'starter-0-'+(i+10),subject:'信件 '+i,body:'完整信件內容',at:Date.now()+i,read:true,claimed:true,attachments:[{type:'catalogue',kind:'item',key:'heal_small',quantity:1,name:'簡易治療藥水'}]});return {ok:save(),count:party.mailbox.messages.length};});assert.equal(saved.ok,true,'mail fixtures use the real validated save contract');
  for(const [width,height]of [[1366,768],[1024,768],[390,844],[320,568]]){
   await p.setViewportSize({width,height});await p.evaluate(()=>{closeModal();setTab('mailbox');});
-  assert.equal(await p.locator('.mailbox-list-item').count(),31,'all saved mail remains available');
+  assert.equal(await p.locator('.mailbox-list-item').count(),saved.count,'all saved mail remains available');
   const item=p.locator('.mailbox-list-item').last(),id=await item.getAttribute('data-mail-id');await item.click();
   const detail=p.locator('.mailbox-detail');await p.waitForFunction(id=>document.querySelector('.mailbox-detail')?.dataset.mailDetail===id,id);
   const visible=await detail.evaluate(e=>{const b=e.getBoundingClientRect(),m=e.closest('dialog').getBoundingClientRect();return b.top>=m.top&&b.top<m.bottom;});

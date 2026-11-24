@@ -100,7 +100,7 @@ test('battle rewards, salvage, enhancement, mail and quest rewards keep stacks w
 });
 test('offline settlement drops land in stacks and survive a reload without duplication',async()=>{
  const r=loadRuntime(root);r.ctx.seed=structuredClone(seed);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();state.ore=990;globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
+ r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();state.ore=990;GAMEPLAY_SETTINGS.drops.entries=GAMEPLAY_SETTINGS.drops.entries.filter(x=>x.type==='ore').map(x=>({...x,chanceByDifficulty:[1,1,1],quantityMin:20,quantityMax:20}));globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
  const before=r.run('state.ore+state.dust');r.advance(20*60*1000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false);
  assert(r.run('state.ore+state.dust')>before);audit(r);r.run('save()');
  const totals=json(r,'({ore:state.ore,dust:state.dust,gems:[...state.gems],materials:{...state.materials},stacks:EmberwildItems.stacks().map(s=>s.item+"×"+s.qty).sort()})');

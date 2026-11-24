@@ -24,11 +24,11 @@ test('five identities, three tiers, color mappings and reduced first-tier drop t
  const doc=JSON.parse(r.run('JSON.stringify(exportableBalance())'));
  const colors=['#EF5D5D','#49B976','#AE83EC','#E8EDF7','#64AAF0'];
  for(let id=0;id<15;id++)assert.equal(doc.inventoryIcons.find(x=>x.kind==='gem'&&x.key===String(id)).color,colors[id%5]);
- const drops=doc.balanceSettings.drops.entries.filter(x=>x.type==='gem');
+ const drops=doc.balanceSettings.drops.entries.filter(x=>x.type==='gemPool');
  // v0.181: gem drops +10%.
- assert.deepEqual(drops.find(x=>x.id==='gem_normal').chanceByDifficulty,[.033,.066,.11]);
- assert.deepEqual(drops.find(x=>x.id==='gem_elite').chanceByDifficulty,[.099,.187,.297]);
- assert.deepEqual(drops.find(x=>x.id==='gem_boss').chanceByDifficulty,[.297,.44,.605]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_normal').chanceByDifficulty,[.033,.066,.11]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_elite').chanceByDifficulty,[.099,.187,.297]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_boss').chanceByDifficulty,[.297,.44,.605]);
  assert.deepEqual(r.errors,[]);
 });
 
