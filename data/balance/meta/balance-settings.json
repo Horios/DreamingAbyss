@@ -1,4 +1,26 @@
 {
+  "inventory": {
+    "capacities": {
+      "equipment": 100,
+      "token": 100,
+      "gem": 100,
+      "material": 100,
+      "consumable": 100,
+      "special": 100
+    },
+    "stackLimits": {
+      "equipment": 1,
+      "token": 1,
+      "gem": 99,
+      "monsterMaterial": 999,
+      "enhancementMaterial": 999,
+      "material": 999,
+      "rareMaterial": 999,
+      "consumable": 99,
+      "special": 999,
+      "questItem": 999
+    }
+  },
   "meta": {
     "progressionCurveVersion": 2,
     "numericCompressionVersion": 1,

@@ -1486,3 +1486,30 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - 攻速不影響主動／輔助技能冷卻、施法時間、固定動作成本、MP 與獨立觸發冷卻；依賴普攻的觸發因普攻次數增加而自然增加。
 - 介面：角色頁、夥伴頁與戰鬥單位詳細資訊顯示「攻擊速度 +X%」、「普攻間隔 X.XXX 秒」、「普攻頻率 X.XXX 次／秒」，達上限時顯示封頂後的結果。裝備摘要、篩選與排序使用 `attackSpeedPct`。
 - 測試：`tests/attack-speed.test.cjs`。
+
+## v0.204 物品與背包系統重構：第一階段（統一物品資料、識別與堆疊）
+
+只建立物品資料結構與堆疊機制；沒有限制背包容量、沒有修改掉落率、裝備數值或背包介面設計。
+
+- 模型 `js/items/inventory-model.js`（`EmberwildInventory`，遊戲、測試與平衡器共用，不碰存檔與畫面）：
+  - 物品識別碼沿用 `inventoryIcons` 的 `kind:key`：`material:<名稱>`（`material:鍛鐵`＝`state.ore`、`material:粉塵`＝`state.dust`）、`gem:<索引>`、`item:<id>`。寶石階級與 BOSS 素材難度本來就是不同的鍵，名稱相同但識別碼不同的物品不會合併。
+  - 背包分成六個分頁，各自計算格數，預設各 100 格：裝備、信物、寶石、素材、消耗品、特殊。
+  - 分類（所屬分頁／預設堆疊上限）：裝備（裝備／1）、信物（信物／1，每件信物帶有個別快照，維持獨立實例）、寶石（寶石／99）、怪物專屬素材、裝備強化素材（鍛鐵、粉塵）、其他一般素材、稀有養成素材（以太鍛鐵、光輝碎塊）（以上皆為素材／999）、消耗品（消耗品／99，含 `升級卷軸`、收益券）、特殊道具（特殊／999，夥伴招募券）、任務道具（特殊／999，不占格）。
+  - 堆疊操作：`add`（先補滿同物品未滿的堆疊，再開新堆疊）、`remove`／`removeMany`（總量不足時完全不扣，跨堆疊從最後一組開始扣，歸零的堆疊移除）、`merge`（不超過上限、不同物品拒絕）、`split`（拆出的新堆疊放在原堆疊後面，總量不變）、`normalize`（上限調低時只重排超過上限的物品）、`slotUsage`、`serialize`／`validateLayout`／`reconcile`。
+- 執行期 `js/items/inventory-runtime.js`（`EmberwildItems`）：
+  - 每個隊伍一個堆疊庫存，存放所有可堆疊物品。原本的 `state.ore`、`state.dust`、`state.gems[i]`、`state.materials[k]`、`state.consumables[k]`、`party.members[0].healingPotions[k]` 改為這個庫存的介面：讀取回傳庫存總量，寫入經過堆疊規則；負數、小數或無效名稱直接拋出錯誤，數量不變。執行期沒有第二份數量資料，既有的掉落、商店、分解、強化、任務、信箱、離線結算與交易回復程式不需要改寫也無法繞過堆疊規則。
+  - 共用介面：`definition(id)`、`gearDefinition(g)`、`add`、`remove`、`removeMany`、`count`、`has`、`merge`、`split`、`stacks`、`createGear`、`addGear`（識別碼重複時拒絕）、`getGear`、`slots`、`byCategory`、`audit`（一致性檢查）。
+  - 裝備與信物仍是共用背包（`party.sharedGear`）中的獨立實例，各有唯一 `id`，永遠不堆疊；兩件完全相同的裝備仍是兩格。
+  - 夥伴招募券仍存在 `party.achievements.tickets`，屬特殊分頁，可透過同一介面查詢、新增、扣除，每種招募券以 `ceil(數量 / 上限)` 計格。
+  - 收益券（`party.regionVouchers`）每組帶有鎖定的快照數值，只有完全相同的收益券才合併，維持原本的帳本；格數以每組 `ceil(數量 / item:region-voucher 的上限)` 計算。
+  - `sharedItems.potions` 是舊欄位，`ensureSharedItems` 會立即把它併入治療藥水；本版未修改這個行為。
+- 背包格數：未穿戴的裝備與信物每件一格、每組堆疊一格、不占格的分類與物品不計、已穿戴裝備與已鑲嵌寶石不計。`slots()` 回傳六個分頁各自的 `used`、`capacity`、`free`、`over`；容量來自 `balanceSettings.inventory.capacities`，`enforced` 固定為 `false`，超過時照常取得物品。背包頁的分類按鈕下方列出六個分頁的格數。
+- 平衡資料：
+  - `balanceSettings.inventory`：六個分頁的 `capacities` 與各分類的 `stackLimits`（裝備與信物固定 1）。驗證在 `validateGameplaySettings`。
+  - `inventoryIcons[]` 的個別覆寫：`maxStack`（1～1000000000）、`stackable`（`false` 時上限為 1）、`occupiesSlot`（布林）。裝備與信物不可設定堆疊。驗證在 `EmberwildInventoryIcons.issues`。
+  - 套用新資料後，現有堆疊依新上限重排，總量不變。
+- 存檔：
+  - 既有的每項物品總量照舊寫在 `members[0]`（舊版存檔驗證不變），另外寫入 `inventory`（`{version:1,serial,stacks:[{uid,item,qty}]}`）保存堆疊排列，供之後的圖形化背包使用。
+  - 讀檔以總量為準：排列與總量一致的物品保留原本的 `uid` 與順序；不一致或排列損壞的物品依總量重新堆疊，不會因為排列資料而複製或遺失物品。沒有 `inventory` 的舊存檔依總量建立堆疊。舊版遊戲讀到新存檔會忽略 `inventory`，之後再由新版重建。
+  - 存檔鍵名未改變。
+- 測試：`tests/inventory-model.test.cjs`、`tests/inventory-runtime.test.cjs`。

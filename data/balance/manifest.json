@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 63,
+  "dataRevision": 64,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "01d62254aac6022a659c2140c75880d1857884f40c828c25e33e3117a6ab5316",
-    "bytes": 1266611
+    "sha256": "6ef3bd57eb728e784f7c9afa0414e66130d61f82eca75945b2baaadeb8636aae",
+    "bytes": 1267102
   },
   "layout": {
     "": [
@@ -54,6 +54,7 @@
       "rewards",
       "combat",
       "quests",
+      "inventory",
       "meta",
       "maps",
       "drops",
@@ -128,9 +129,9 @@
       "file": "meta/balance-settings.json",
       "source": "balanceSettings.*",
       "present": true,
-      "version": 1,
-      "sha256": "6a0aa6ed6945ae4ffe8f9b0a29d4ffc0da69a172e169dd00f29c51eb7840c6e5",
-      "bytes": 320,
+      "version": 4,
+      "sha256": "237fdb204e0579c161578c78de60b1f8143c48fb96f54f10326f084713e7570a",
+      "bytes": 767,
       "dependsOn": [],
       "validators": [
         "field-rules",

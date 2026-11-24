@@ -213,6 +213,14 @@
     if(equipment){const cfg=doc.balanceSettings?.equipment?.salvage||{};salvage.push({type:'ore',key:'鍛鐵',quantity:Math.max(0,Math.round(tier*((cfg.oreBasePerTier||0)+quality*(cfg.orePerQualityPerTier||0)+enhance*(cfg.orePerEnhancePerTier||0))))},{type:'dust',key:'粉塵',quantity:Math.max(0,Math.round((cfg.dustBase||0)+quality*(cfg.dustPerQuality||0)))});salvage.push(...(cfg.extraRewards||[]).filter(x=>x.quality===quality));}
     const rewards=override?.salvageRewards??salvage;return {sellPrice,salvage:rewards,canSell:override?.saleEnabled??(!['gem','skill'].includes(row.kind)&&!row.key.startsWith('companion-ticket-'))};
   }
+  function inventoryModel(){if(root.EmberwildInventory)return root.EmberwildInventory;try{return typeof require==='function'?require('../items/inventory-model.js'):null;}catch{return null;}}
+  function stackOverrideIssues(r){
+    const M=inventoryModel();if(M)return M.overrideIssues(r);
+    const id=r.kind+':'+r.key,errors=[];
+    if(r.maxStack!==undefined&&(!Number.isSafeInteger(r.maxStack)||r.maxStack<1||r.maxStack>1e9))errors.push('個別堆疊上限必須是 1～1000000000 的整數：'+id);
+    for(const k of ['stackable','occupiesSlot'])if(r[k]!==undefined&&typeof r[k]!=='boolean')errors.push(k+' 必須是布林值：'+id);
+    return errors;
+  }
   function issues(doc,library=root.__EMBERWILD_SKILL_ICONS){
     const paletteErrors=root.EmberwildIconColors?.issues(doc)||[];
     if(doc.inventoryIcons===undefined)return paletteErrors;
@@ -232,6 +240,8 @@
       if(r.saleEnabled!==undefined&&typeof r.saleEnabled!=='boolean')errors.push('販售資格必須是布林值：'+id);
       if(r.salvageRewards!==undefined){if(!['equipment','token'].includes(r.kind)||!Array.isArray(r.salvageRewards)||r.salvageRewards.length>20)errors.push('個別分解產物只能設於裝備／信物，最多 20 筆：'+id);else for(const x of r.salvageRewards)if(!x||!['ore','dust','material','item','potion','gem'].includes(x.type)||typeof x.key!=='string'||!Number.isSafeInteger(x.quantity)||x.quantity<1||x.quantity>999||x.type==='material'&&(!x.key.trim()||['__proto__','constructor','prototype'].includes(x.key))||x.type==='item'&&!customItemIds.has(x.key)||x.type==='gem'&&!['random','0','1','2'].includes(x.key))errors.push('個別分解產物名稱、數量或引用無效：'+id);}
       if(r.description!==undefined&&(typeof r.description!=='string'||r.description.length>2000))errors.push('道具圖示說明必須是最多 2000 字的文字：'+id);
+      // v0.204: per-item stack overrides (maxStack, stackable, occupiesSlot). Category defaults live in balanceSettings.inventory.
+      errors.push(...stackOverrideIssues(r));
       const type=r.iconType,valid=typeof type==='string'&&(type==='auto'||(type.startsWith('custom:')?custom.has(type.slice(7)):library?(type==='none'||library.hasIcon(type)):/^(?:lucide:)?[a-z][a-z0-9-]*$/.test(type)));
       if(!valid)errors.push('道具圖示引用不存在或無效的圖示：'+id);
     }
