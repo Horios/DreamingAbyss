@@ -13,8 +13,11 @@
   const chance=(rule,kind)=>effectiveDropChance(rule,{difficulty:party.difficulty||0,kind},0);
   const tier=c=>c>=.1?'常見':c>=.01?'少見':'稀有';
   function ruleName(r){
-    if(r.type==='gem')return r.key==='random'?'技能寶石':(GEMS[Number(r.key)]?.name||'技能寶石');
-    if(r.type==='ore')return '鍛鐵';if(r.type==='dust')return '粉塵';
+    if(r.type==='gem')return GEMS[Number(r.key)]?.name||'技能寶石';
+    if(r.type==='ore')return '鍛鐵';
+    // v0.206: the bestiary names the actual equipment of the monster's pool so players can look up sources.
+    if(r.type==='monsterGear')return (r.pool||[]).map(p=>{const k=String(p.key).split(':');return ITEM_FORMS?.[Number(k[1])]?.[Number(k[2])]?.[Number(k[3])]?.name;}).filter(Boolean);
+    if(r.type==='gemPool')return (r.pool||[]).map(p=>GEMS[Number(p.key)]?.name).filter(Boolean);
     if(r.type==='equipment'){const k=String(r.key||'').split(':');const f=ITEM_FORMS?.[Number(k[1])]?.[Number(k[2])]?.[Number(k[3])];return f?.name||r.name;}
     return String(r.name||r.key||'').replace(/（[^）]*）$/,'');
   }
@@ -22,10 +25,8 @@
     const foe={monsterId:m.id,kind,lv:Number(MAPS[m.mapIndex]?.max)||1,region:m.mapIndex,difficulty:party.difficulty||0,mat:m.material||m.mat};
     const groups={常見:[],少見:[],稀有:[]};
     const material=foe.mat;if(material&&kind!=='boss')groups['常見'].push(material);
-    const ore=GAMEPLAY_SETTINGS.rewards?.ore||{},factor=Math.max(0,Math.min(1,Number(ore.chanceFactor??1)));
-    const dustChance=(kind==='normal'?(ore.normalChanceByDifficulty?.[foe.difficulty]??1):1)*factor;
-    if(dustChance>0)groups[tier(dustChance)].push('粉塵');
-    for(const r of configuredDropRules(foe)){const c=chance(r,kind);if(c>0)groups[tier(c)].push(ruleName(r));}
+    // v0.206: monsters no longer drop 粉塵 directly.
+    for(const r of configuredDropRules(foe)){const c=chance(r,kind);if(c>0)groups[tier(c)].push(...[ruleName(r)].flat());}
     // Each item is listed once, in its most likely group.
     const seen=new Set();return Object.fromEntries(Object.entries(groups).map(([k,v])=>[k,unique(v).filter(x=>!seen.has(x)&&seen.add(x))]));
   }

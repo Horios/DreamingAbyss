@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 64,
+  "dataRevision": 65,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "6ef3bd57eb728e784f7c9afa0414e66130d61f82eca75945b2baaadeb8636aae",
-    "bytes": 1267102
+    "sha256": "57ec035f5d310ed01e5f492d7b8a29b36a188f91e9be93e69191b61af64184cb",
+    "bytes": 1425532
   },
   "layout": {
     "": [
@@ -213,9 +213,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 9,
-      "sha256": "514e7e5127ff3090d4821ad884431cce4878b0f17bc9230aadd707c5ed0719e6",
-      "bytes": 109219,
+      "version": 10,
+      "sha256": "b5dfc0b35b263cd29be79563ef4e9aa4db730bba026c42f3b52579189adb2fc7",
+      "bytes": 235575,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -272,9 +272,9 @@
       "file": "combat/skill-settings.json",
       "source": "balanceSettings.skills",
       "present": true,
-      "version": 5,
-      "sha256": "e3b8bd05390e6bde46fe2d1e65e5ffa998db5f0f206fddad36192ae79d115e55",
-      "bytes": 832,
+      "version": 6,
+      "sha256": "a430042f7f98ba05150369a500050333c24426543b7d2b3dd41c26f9c9292723",
+      "bytes": 939,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -482,9 +482,9 @@
       "file": "equipment/settings.json",
       "source": "balanceSettings.equipment",
       "present": true,
-      "version": 5,
-      "sha256": "1c339e3f21f7f843b1efdd93f80ead78ab32fedd6aa276d91f7d6ae7e254335e",
-      "bytes": 4476,
+      "version": 6,
+      "sha256": "d3afd1bc558a426adb6adeb0b0340341596ec3e7e70b467123f1e833e482e280",
+      "bytes": 8231,
       "dependsOn": [],
       "validators": [
         "field-rules",

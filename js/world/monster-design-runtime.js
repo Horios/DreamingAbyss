@@ -23,7 +23,7 @@
       else{
         const quality=GAMEPLAY_SETTINGS.rewards.equipmentQuality,rar=rng()<quality.rareChance?2:rng()<quality.fineConditionalChance?1:0;
         const jobs=(ref.form.wearableJobs||[ref.job]).filter(j=>Number.isInteger(j)&&CLASSES[j]),owner=jobs.includes(state.job)?state.job:jobs[0]??0;
-        g=gear(regionTier(e.region??state.map),ref.slot,rar,owner);g.formJob=ref.job;g.form=ref.index;g.name=gearName(g);modeAffixes(g,e.difficulty||0);
+        g=gear(regionTier(e.region??state.map),ref.slot,rar,owner);g.formJob=ref.job;g.form=ref.index;{const f=typeof itemForm==='function'?itemForm(g):null;if(f?.weaponType)g.weaponType=f.weaponType;}g.name=gearName(g);modeAffixes(g,e.difficulty||0);
       }
       addGear(g);
     }

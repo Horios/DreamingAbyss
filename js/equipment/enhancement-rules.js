@@ -35,6 +35,7 @@
       if(r.failure==='none'&&r.successRate<1)throw Error(at+'成功率低於 100% 時必須設定失敗結果');
       if(r.failure==='drop'&&(!Number.isInteger(r.failureLevel)||r.failureLevel<0||r.failureLevel>i))throw Error(at+'失敗後的等級必須介於 +0 與 +'+i);
       if(!Number.isFinite(r.baseBonus)||r.baseBonus<0||r.baseBonus>100)throw Error(at+'基礎能力加成無效');});
+    if(out.equipment.exclusiveEnhance&&out.equipment.exclusiveEnhance.quantityByLevel.length!==rows.length)throw Error('專屬素材消耗量的列數必須與強化表相同');
     return out;
   };
   const ACCESSORY_SLOT=3;
@@ -44,7 +45,14 @@
   const enhanceable=g=>!!g&&g.slot!==ACCESSORY_SLOT&&g.canEnhance!==false;
   // Cost multiplier from the item level (裝等): 1～5 ×1, 6～10 ×2, 11～15 ×3...
   const levelMultiplier=g=>Math.max(1,Math.ceil((Number(typeof gearRequiredLevel==='function'?gearRequiredLevel(g):g?.equipmentLevel)||1)/Math.max(1,Number(settings().costLevelStep)||5)));
-  const costOf=g=>{const r=row((g?.plus||0)+1),m=levelMultiplier(g);return {ore:(r?.cost.ore||0)*m,dust:(r?.cost.dust||0)*m,ether:(r?.cost.ether||0)*m};};
+  /* v0.206: monster-exclusive equipment (catalogue key form:4:* or a BOSS template boss:<region>) also spends the material
+     bound to it in balanceSettings.equipment.exclusiveEnhance.bindings, quantityByLevel[target-1] per attempt. */
+  const exclusiveKey=g=>!g||isToken(g)?null:g.boss!==undefined?'boss:'+g.boss:g.formJob===4&&Number.isInteger(g.form)?'form:4:'+g.slot+':'+g.form:null;
+  function exclusiveCost(g,target){
+    const key=exclusiveKey(g);if(!key)return null;const cfg=GAMEPLAY_SETTINGS.equipment?.exclusiveEnhance,b=cfg?.bindings?.find(x=>x.equipment===key);if(!b)return null;
+    return {material:b.material,monster:b.monster,quantity:Math.max(0,Math.floor(Number(cfg.quantityByLevel?.[target-1])||0))};
+  }
+  const costOf=g=>{const target=(g?.plus||0)+1,r=row(target),m=levelMultiplier(g),x=exclusiveCost(g,target);return {ore:(r?.cost.ore||0)*m,dust:(r?.cost.dust||0)*m,ether:(r?.cost.ether||0)*m,...(x&&x.quantity?{exclusive:x}:{})};};
   const failText=f=>f===null?'—':f==='destroy'?'裝備損毀':'退至 +'+f;
   const pct=n=>Math.round(n*100)+'%';
 
@@ -62,7 +70,7 @@
 
   upgradeMaterials=function(g){return costOf(g);};
   globalThis.upgradeMaterials=upgradeMaterials;
-  const have=c=>state.dust>=c.dust&&state.ore>=c.ore&&(state.materials['以太鍛鐵']||0)>=c.ether;
+  const have=c=>state.dust>=c.dust&&state.ore>=c.ore&&(state.materials['以太鍛鐵']||0)>=c.ether&&(!c.exclusive||(state.materials[c.exclusive.material]||0)>=c.exclusive.quantity);
   canEnhance=function(g){return enhanceable(g)&&(g.plus||0)<maxLevel()&&have(costOf(g));};
   globalThis.canEnhance=canEnhance;
 
@@ -84,14 +92,14 @@
     if(!have(c)){toast('材料不足：'+upgradeCostText(g));return false;}
     if(r.fail==='destroy'&&!confirm(`強化至 +${target} 的成功率為 ${pct(r.rate)}，失敗時「${equipmentDisplayName(g)}」會損毀並消失，無法復原${gearWearer(g.id)?(isToken(g)?'（穿戴中的信物也會損毀）':'（穿戴中的裝備也會損毀）'):''}。\n確定強化？`))return false;
     const T=globalThis.__EMBERWILD_TEAMS,M=globalThis.EmberwildTeams;T?.capture?.();
-    const snap={ore:state.ore,dust:state.dust,ether:state.materials['以太鍛鐵']||0,plus,bag:state.bag,members:party.members.map(x=>({equipped:[...(x.equipped||[])],tokenId:x.tokenId,hp:x.hp})),build:T&&M?M.copy(T.build()):null,gems:[...(playerHero().gems||[])],progress:party.progressStats?JSON.parse(JSON.stringify(party.progressStats)):null,board:JSON.parse(JSON.stringify(playerHero().board||null))};
-    state.dust-=c.dust;state.ore-=c.ore;if(c.ether)state.materials['以太鍛鐵']=snap.ether-c.ether;
+    const snap={ore:state.ore,dust:state.dust,ether:state.materials['以太鍛鐵']||0,exclusive:c.exclusive?state.materials[c.exclusive.material]||0:0,plus,bag:state.bag,members:party.members.map(x=>({equipped:[...(x.equipped||[])],tokenId:x.tokenId,hp:x.hp})),build:T&&M?M.copy(T.build()):null,gems:[...(playerHero().gems||[])],progress:party.progressStats?JSON.parse(JSON.stringify(party.progressStats)):null,board:JSON.parse(JSON.stringify(playerHero().board||null))};
+    state.dust-=c.dust;state.ore-=c.ore;if(c.ether)state.materials['以太鍛鐵']=snap.ether-c.ether;if(c.exclusive)state.materials[c.exclusive.material]=snap.exclusive-c.exclusive.quantity;
     const ok=Math.random()<r.rate;let result;
     if(ok){g.plus=target;result='success';globalThis.recordEnhancement?.(g.plus);}
     else if(r.fail==='destroy'){destroy(g);result='destroyed';}
     else{g.plus=r.fail;result='failed';}
     if(save()===false){
-      state.ore=snap.ore;state.dust=snap.dust;state.materials['以太鍛鐵']=snap.ether;if(!state.materials['以太鍛鐵']&&!snap.ether)delete state.materials['以太鍛鐵'];
+      state.ore=snap.ore;state.dust=snap.dust;state.materials['以太鍛鐵']=snap.ether;if(!state.materials['以太鍛鐵']&&!snap.ether)delete state.materials['以太鍛鐵'];if(c.exclusive)state.materials[c.exclusive.material]=snap.exclusive;
       g.plus=snap.plus;state.bag=snap.bag;party.members.forEach((x,i)=>{x.equipped=snap.members[i].equipped;x.tokenId=snap.members[i].tokenId;x.hp=snap.members[i].hp;});
       if(snap.build)party.buildSystem=snap.build;playerHero().gems=snap.gems;if(snap.progress)party.progressStats=snap.progress;playerHero().board=snap.board;
       return false;
@@ -130,5 +138,5 @@
     const cost=c=>[c.dust?'粉塵 ×'+c.dust:'',c.ore?'鍛鐵 ×'+c.ore:'',c.ether?'以太鍛鐵 ×'+c.ether:''].filter(Boolean).join('、');
     return `<p class="small">表中為裝等 1～${settings().costLevelStep||5} 的消耗；裝等每高 ${settings().costLevelStep||5} 級，材料增加 1 倍。</p><table class="enhance-table"><thead><tr><th>強化目標</th><th>每次消耗</th><th>成功率</th><th>失敗結果</th><th>基礎能力累計加成</th></tr></thead><tbody>${levels().map(tableRow).map((r,i)=>`<tr${r.fail==='destroy'?' class="enhance-danger-row"':''}><td>+${i+1}</td><td>${cost(r.cost)}</td><td>${pct(r.rate)}</td><td>${failText(r.fail)}</td><td>${pct(r.bonus)}</td></tr>`).join('')}</tbody></table>`;
   }
-  globalThis.__EMBERWILD_ENHANCE={get table(){return levels().map(tableRow);},get max(){return maxLevel();},row,bonusAt,costOf,levelMultiplier,enhanceable,controlsHTML,tableHTML,ACCESSORY_SLOT};
+  globalThis.__EMBERWILD_ENHANCE={get table(){return levels().map(tableRow);},get max(){return maxLevel();},row,bonusAt,costOf,exclusiveCost,exclusiveKey,levelMultiplier,enhanceable,controlsHTML,tableHTML,ACCESSORY_SLOT};
 })();

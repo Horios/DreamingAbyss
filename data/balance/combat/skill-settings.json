@@ -5,13 +5,20 @@
   },
   "support": {},
   "gems": {
-    "craftDust": 12,
     "effectMultiplier": 1.1,
     "cooldownReduction": 1,
     "cooldownProcBonus": 0.1,
     "hybridMultiplier": 1.05,
     "hybridProcBonus": 0.05,
-    "hybridActiveHealAttack": 0.1
+    "hybridActiveHealAttack": 0.1,
+    "dustUpgrade": {
+      "multiplier": 1.5,
+      "baseDustByTargetTier": [
+        0,
+        48,
+        540
+      ]
+    }
   },
   "mastery": {
     "xpBase": 8,

@@ -221,7 +221,7 @@
     data.starterPacks=clone(starterPacks);
     data.starterPackItems=clone(starterPackItems);
     data.notes=[...(data.notes||[]),
-      'starterPacks 只在建立第一名初始職業時寄至信箱；後續招募角色不會取得此禮包。',
+      'starterPacks 是序章中女神交付的新手武器（每職業 1 件），連同 starterPackItems 直接放入背包；建立角色時不另外給予裝備或禮包。',
       'starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects、prefixId、suffixId 與兩條固定 affixes。',
       '新手武器可強化，不可洗鍊或重鑄 T 階；growth 只允許依角色等級增加固定屬性。'
     ];
@@ -329,12 +329,7 @@
     style.id='starter-pack-runtime-style';
     style.textContent=`
       .starter-equipment-name{color:#55ff73!important;text-shadow:0 0 8px rgba(85,255,115,.22)}
-      .starter-pack-choice-notice{margin:10px 0;padding:10px 12px;border:1px solid rgba(85,255,115,.45);border-radius:8px;background:rgba(85,255,115,.07);color:#baffc4}
       .starter-growth-details{margin-top:8px;border-top:1px solid rgba(85,255,115,.22)}
-      .starter-gift-list{display:grid;gap:8px;max-height:min(54vh,520px);overflow:auto;margin:12px 0;padding-right:4px}
-      .starter-gift-item{padding:10px;border:1px solid var(--line);border-radius:8px}
-      .starter-gift-item>.row{gap:8px;align-items:baseline}
-      .starter-gift-item .equipment-attribute-details{margin-top:6px}
     `;
     document.head.appendChild(style);
   }
@@ -412,61 +407,14 @@
     return g;
   }
 
-  function prepareStarterPack(hero,job,options={}){
-    // Initial white gear is ordinary equipment, independent of the gift settings.
-    const oldEquipped=new Set((hero.equipped||[]).filter(Boolean));
-    hero.bag=(hero.bag||[]).filter(g=>!oldEquipped.has(g.id));
-    hero.equipped=[null,null,null,null,null];
-    for(const [position,slot] of [0,1,2,3,3].entries()){
-      const entry=defaultStarterEntry(job,slot,position);
-      // Prologue creation: no weapon and no second accessory. The goddess hands over the starter weapon and the charm (the story
-      // reward) in the gear lesson, so the player never holds an old and a new weapon at the same time.
-      if(options.prologue&&(position===0||position===4))continue;
-      const g=createStarterGear(job,position,{...entry,baseAttack:undefined});
-      delete g.starterPack;g.affix=[];
-      hero.bag.push(g);hero.equipped[position]=g.id;
-    }
-    hero.hp=stats(hero).hp;hero.shield=0;
-    if(options.prologue)return;
-    sendStarterPackMail(job,starterPackRows(job));
-  }
-  // The same contents the starter mail carries; the prologue delivers them directly as a quest gift.
+  // v0.206: the only starter equipment is the weapon (plus starterPackItems) the goddess hands over in the prologue.
+  // Characters no longer receive gear or a starter mail when they are created.
   function starterPackRows(job){
     const g=createStarterGear(job,0,starterPacks[job][0]);
     const names=new Map(EmberwildInventoryIcons.entries(exportableBalance()).map(r=>[r.id,r.name]));
     return [{type:'gear',gear:g,name:equipmentDisplayName(g),quantity:1},...starterPackItems[job].map(row=>({type:'catalogue',...clone(row),name:names.get(row.kind+':'+row.key)||row.key}))];
   }
-  let prologueCreation=false;
-  globalThis.__EMBERWILD_STARTER_PACK={rows:starterPackRows,asPrologue(action){prologueCreation=true;try{return action();}finally{prologueCreation=false;}}};
-
-  if(typeof requestHeroName==='function'){
-    const starterRequestHeroNameBase=requestHeroName;
-    requestHeroName=function(job,first=false){
-      const result=starterRequestHeroNameBase(job,first);
-      if(first){
-        const modal=$('modal'),input=modal?.querySelector?.('#new-hero-name');
-        if(input){
-          const notice=document.createElement('div');
-          notice.className='starter-pack-choice-notice';
-          notice.innerHTML=`<b>初始職業獎勵</b><br>角色內建最初級白板裝備；專屬新手武器與禮包道具會寄到信箱，請自行領取。`;
-          input.parentNode.insertBefore(notice,input);
-        }
-      }
-      return result;
-    };
-  }
-
-  const starterStartBase=start;
-  start=function(job){
-    const result=starterStartBase(job);
-    if(state&&party&&party.members?.length===1&&state.job===job){
-      prepareStarterPack(state,job,{prologue:prologueCreation});
-      save();
-      render();
-
-    }
-    return result;
-  };
+  globalThis.__EMBERWILD_STARTER_PACK={rows:starterPackRows,asPrologue(action){return action();}};
 
   for(const h of party?.members||[]){
     for(const g of h?.bag||[])if(g?.starterPack)normalizeExistingStarterMeta(g);

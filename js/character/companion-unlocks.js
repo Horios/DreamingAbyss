@@ -133,14 +133,7 @@
     if(row.kind==='item'&&row.key.startsWith('companion-ticket-'))return {type:'companionTicket',companionId:Number(row.key.slice(17)),quantity:row.quantity,name:row.name};
     return copy(row);
   }
-  globalThis.sendStarterPackMail=function(job,rows){
-    syncUnlocks();const mailbox=party.mailbox;
-    if(mailbox.messages.some(m=>m.rewardKey.startsWith('starter-')))return false;
-    const doc=exportableBalance(),attachments=rows.map(row=>row.type==='catalogue'?catalogueAttachment(row,job,doc):copy(row));
-    const parts=Math.ceil(attachments.length/6);
-    for(let i=0;i<parts;i++)mailbox.messages.push({id:++mailbox.serial,rewardKey:`starter-${job}-${i+1}`,subject:CLASSES[job].name+'新手禮包'+(parts>1?`（${i+1}/${parts}）`:''),body:'歡迎來到夢淵！初始裝已穿戴；領取附件後，可到背包自行換上新手武器。新手武器可強化，不可洗鍊詞綴或重鑄基底。',at:Date.now(),read:false,claimed:false,attachments:attachments.slice(i*6,i*6+6)});
-    return true;
-  };
+
   // `direct` delivers a list of attachments without a mail: no message, no save, and a failure throws so the caller's
   // transaction rolls back (the prologue hands over the starter pack this way).
   function claimMail(ids,direct=null){

@@ -1519,3 +1519,22 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - `structuredClone` 無法複製物品介面（Proxy）。`packParty` 輸出的 `members[].materials／gems／consumables／healingPotions` 改為一般物件複本；載入時剝除設計欄位的 `structuredClone(save)` 因此不再失敗。測試中直接 `structuredClone(state.materials)`／`state.gems` 的兩處改為展開複本。
 - 存檔的 `inventory` 只寫入排列與標準填法（上限、上限、…、餘數）不同的物品（例如拆分過的堆疊）；標準排列在載入時由總量重建。交易失敗回復後，存檔位元組與回復前相同。拆分過的自訂排列在交易回復時只保證總量，不保證逐堆疊相同。
 
+## v0.206 物品與背包重構第二階段：怪物掉落池、未鑑定裝備、地圖寶石、粉塵升級、專屬裝備強化素材
+
+建立在 v0.204／v0.205（統一物品堆疊與六分頁格數）之上。沒有限制背包容量，沒有重製背包介面。
+
+- 共用規則 `js/world/drop-rework-model.js`（`EmberwildDropRework`，遊戲、測試與平衡器共用），執行期 `js/world/drop-rework.js`（最後的包裝層之一，在 `apply-guard.js` 之前載入）。
+- 移除的掉落來源：共用隨機裝備（`gear`）、保證傳說詞條裝備（`gearLegendary`）、BOSS 通用額外裝備（`gear_boss`）、隨機屬性寶石（`gem` 且 `key:'random'`）、怪物治療藥水（`healing_heal_*`、舊 `potion`）、直接掉落粉塵（`dust`），以及每次擊殺的基礎粉塵（`rewards.ore`，含 `final-map.js` 的同一段）。舊平衡文件仍可載入：`migrateDocument` 在驗證前刪掉這些規則；驗證器不再接受這些類型。
+- 怪物一般裝備池（`type:'monsterGear'`）：每種怪物一條規則（普通與菁英各一條，BOSS 一條），`sources` 只有一個怪物 ID，`pool` 為 1～2 種一般裝備（`form:<職業>:<部位>:<索引>`）與權重。掉落率沿用原本的一般裝備率（普通 0.2%/0.27%/0.34%、菁英 0.6%/0.8%/1%、首領 20%/25%/30%）；一次成功只從池中選一件，加入第二種裝備不增加總產出。品質骰法與難度詞綴沿用原本一般裝備。覺醒（地圖 7～12）與上古（19～24）版本使用與原物種相同的裝備池。所有 28 種一般裝備都有來源。
+- 地圖寶石（`type:'gemPool'`）：每張地圖的普通與菁英怪只掉落一種寶石，BOSS 從三種寶石中依權重選一（地圖寶石 2、另兩種各 1；終焉王座三種各 1）。掉落率與數量沿用原本的寶石規則，寶石等級仍為 1 階。
+- 未鑑定裝備：怪物掉落規則（`rollConfiguredDrops`）發放的所有裝備都以未鑑定狀態進入背包，包含一般、怪物專屬與 BOSS 專屬裝備；信物不受影響。掉落當下已完成所有生成（裝備定義、等級、品質、能力、詞條、孔位、技能），`g.unidentified={version,slot,level,source:{monsterId,kind,difficulty,region,level},at}` 只是標記。
+  - 鑑定前只顯示「未鑑定＋部位」與裝等；戰報、背包、詳細資訊、掉落光柱都不顯示名稱、品質或專屬身分。不可穿戴、強化、洗鍊、重鑄、鑲嵌、販售、分解，也不會被一鍵分解、批次販售或批次選取帶走。
+  - `identifyGear(id)` 與 `identifyAllGear()` 共用同一個函式：刪除標記、保留實例 ID 與所有屬性、存檔；存檔失敗時全部恢復未鑑定。重複呼叫不會改變結果。背包頁上方有「一鍵鑑定」按鈕，結果以一則摘要顯示（各品質件數與專屬裝備件數）。鑑定不需要任何資源，也不改變格數。
+  - 圖示：沿用部位 SVG，加暗化與中央問號（`css/inventory-identify.css`），中性邊框。
+  - 教學的「新裝備」引導在裝備鑑定後才計入。
+  - 修正：怪物專屬裝備與怪物一般裝備在掉落時依選定的裝備定義設定 `weaponType`（原本要等重新讀檔才更正）。
+- 寶石：取消粉塵直接合成隨機寶石（`craftGem` 與 `skills.gems.craftDust` 已刪除）。煉金的同類寶石合成（5 個 1 階 → 2 階、10 個 2 階 → 3 階）不變。新增粉塵升級：選一顆寶石，消耗 `ceil(基準 × 倍率)` 粉塵升一階；設定在 `skills.gems.dustUpgrade`（`multiplier` 1.5，`baseDustByTargetTier` [0, 48, 540]，即 2 階 72、3 階 810 粉塵）。每次只升級堆疊中的一顆，寶石與粉塵同時扣除，不足時不扣；3 階不可再升。基準為待確認的提案值（見完成報告）。
+- 怪物專屬裝備強化：`equipment.exclusiveEnhance.bindings` 以裝備定義（`form:4:*` 或 BOSS 模板 `boss:<地圖>`）綁定專屬素材與來源怪物，`quantityByLevel`（12 列，對應強化表）為每次強化的消耗量（提案值 1,1,1,1,2,2,2,2,2,3,3,3）。強化的所有入口共用 `costOf`，素材在每次嘗試時消耗、存檔失敗時退回；不足時不執行也不扣除。飾品本來就不可強化。
+- 新手裝備：建立角色時不再給予任何裝備（`initial()` 的白板武器、`prepareStarterPack` 的護甲／副手／飾品、新手禮包信件 `sendStarterPackMail` 與建角提示都已刪除）。序章女神交付的新手武器（`starterPacks`）與啟程護符（劇情獎勵）保留。直接呼叫 `start(job)` 的角色沒有任何裝備。
+- 圖鑑列出怪物實際可能掉落的裝備與寶石名稱；不再列出粉塵。
+- 測試：`tests/drop-rework.test.cjs`。

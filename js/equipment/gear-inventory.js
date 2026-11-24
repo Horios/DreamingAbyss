@@ -23,7 +23,7 @@
     return null;
   }
   const owned=g=>!!gearWearer(g.id)||!!T()?.references(g.id).length;
-  const actionable=(g,mode)=>!!g&&!g.locked&&!owned(g)&&!inlineAffixDrafts.has(affixDraftKey(g))&&(mode!=='sell'||globalThis.__EMBERWILD_CAN_SELL_GEAR?.(g)!==false);
+  const actionable=(g,mode)=>!!g&&!g.unidentified&&!g.locked&&!owned(g)&&!inlineAffixDrafts.has(affixDraftKey(g))&&(mode!=='sell'||globalThis.__EMBERWILD_CAN_SELL_GEAR?.(g)!==false);
   const bound=(value,limit,lower)=>limit===''||Number.isFinite(Number(limit))&&(lower?value>=Number(limit):value<=Number(limit));
   function acquiredTime(g){
     if(g.acquiredAt!==undefined)return g.acquiredAt;
@@ -39,17 +39,20 @@
     state.bag.forEach((g,index)=>{
       if(EmberwildTokens.isToken(g))return;
       const t=Number.isInteger(g.powerTier)?g.powerTier:null,level=gearRequiredLevel(g),worn=wearers.has(g.id);
-      if(filter.job!=='all'&&!gearWearableJobs(g).includes(Number(filter.job))||filter.slot!=='all'&&g.slot!==Number(filter.slot)||filter.quality!=='all'&&gearQualityRank(g)!==Number(filter.quality)||filter.locked!=='all'&&!!g.locked!==(filter.locked==='yes')||worn)return;
+      // v0.206: unidentified gear shows only its slot and level; quality, affix and stat filters never match it and it sorts last.
+      const hidden=!!g.unidentified;
+      if(hidden&&(filter.job!=='all'||filter.quality!=='all'||filter.affixType||filter.stat&&filter.value!==''||filter.tMin!==''||filter.tMax!==''))return;
+      if(!hidden&&filter.job!=='all'&&!gearWearableJobs(g).includes(Number(filter.job))||filter.slot!=='all'&&g.slot!==Number(filter.slot)||!hidden&&filter.quality!=='all'&&gearQualityRank(g)!==Number(filter.quality)||filter.locked!=='all'&&!!g.locked!==(filter.locked==='yes')||worn)return;
       if((filter.tMin!==''||filter.tMax!=='')&&t===null||!bound(t,filter.tMin,true)||!bound(t,filter.tMax,false)||!bound(level,filter.levelMin,true)||!bound(level,filter.levelMax,false))return;
       if(filter.affixType){const affixes=matchingAffixes(g);if(!affixes.length||filter.affixValue!==''&&!affixes.some(a=>compare(Number(a.value),Number(filter.affixValue),filter.affixOp)))return;}
-      const stats=numeric(g);
+      const stats=hidden?{}:numeric(g);
       if(filter.stat&&keys.has(filter.stat)&&filter.value!==''){
         const n=stats[filter.stat],v=Number(filter.value),u=Number(filter.upper);
         if(!Number.isFinite(n)||n===0||!Number.isFinite(v))return;
         const ok={gt:()=>n>v,gte:()=>n>=v,eq:()=>n===v,lte:()=>n<=v,lt:()=>n<v,range:()=>filter.upper!==''&&Number.isFinite(u)&&n>=v&&n<=u}[filter.op];
         if(!ok||!ok())return;
       }
-      const value=sort==='acquired'?acquiredTime(g):sort==='level'?level:sort==='tier'?t:sort==='quality'?gearQualityRank(g):sort==='price'?equipmentSellPrice(g):stats[sort]===0?null:stats[sort];
+      const value=hidden&&!['acquired','level'].includes(sort)?null:sort==='acquired'?acquiredTime(g):sort==='level'?level:sort==='tier'?t:sort==='quality'?gearQualityRank(g):sort==='price'?equipmentSellPrice(g):stats[sort]===0?null:stats[sort];
       result.push({g,index,stats,value});
     });
     result.sort((a,b)=>{
