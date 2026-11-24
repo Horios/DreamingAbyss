@@ -1560,3 +1560,18 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - 夥伴招募券在「特殊」分類，畫面與劇情、教學文字的「背包 → 道具」改為「背包 → 特殊」（商店固定商品改為「背包 → 消耗品」）。教學模型 `js/story/tutorial-model.js` 的預設文字與標籤未改動（平衡器嵌入同一份檔案），實際使用的是 `data/balance/systems/tutorials.json`。
 - 為了重用既有元件新增的公開介面：`__EMBERWILD_ITEM_PRESENTATION`、`__EMBERWILD_TOKEN_INVENTORY.detail／actionable／multi`、`__EMBERWILD_GEAR_INVENTORY.multi`、`__EMBERWILD_GEAR_COMPARE`、`__EMBERWILD_BAG_GRID`。
 - 測試：新增 `tests/inventory-grid.browser.test.cjs`；更新依賴舊背包標記的測試。
+
+## v0.212 輔助技能併入主動技能
+
+刪除玩家端的輔助技能分類：原本的輔助技能改為主動技能，裝在主動技能槽。主動技能槽數量不變（沿用職業規則的 `slots.active`）；原本的輔助槽取消，沒有轉成主動槽。
+
+- 只改遊戲端。技能資料仍以 `type:'support'` 標示這批技能使用的效果引擎（`castSupport`、`supportCooldowns`、`supportSkills`），平衡器與資料格式不變，`classRules[].slots.*.support` 在遊戲中不再使用。
+- `js/skills/skill-system-runtime.js`：
+  - `slotType(sk)`：`support` 視為 `active`。設定槽位、候選清單、新技能提示與任務條件（`skillSlotted`）都以它判斷。
+  - 玩家的 `skillLoadout.support` 固定為空陣列；`configureSkill('support',…)` 一律拒絕，`slotSupport` 改為裝入主動槽。
+  - 投影到戰鬥欄位：`h.active` 是主動槽中的核心技能，`h.supportSlots` 是主動槽中的原輔助技能，兩者都以主動槽位置排列、其他位置為 `null`。秒數戰鬥本來就把兩者當成主動技能依各自優先度排程，施放與冷卻規則沒有改變。
+  - 夥伴的技能不受影響（由夥伴方案決定）。
+- 舊存檔：原本裝在輔助槽的技能一律卸下，技能仍為已取得，可重新裝進主動槽；隊伍方案同樣處理（`team-runtime.js` 的槽位換算以主動槽數量對齊 `supportSlots`）。
+- 畫面文字：技能頁、技能槽視窗、技能圖鑑、職業技能樹、戰鬥詳情、信物萃取、隊伍方案與詞綴說明中的「輔助」改為「主動」（例如「全主動技能冷卻」）。教學與劇情中描述三種技能槽的文字一併修改（`tutorials.json`、`story.json` 與 `tutorial-model.js` 預設值）。效果分類中的「輔助」（BUFF／DEBUFF 類型的展示分類）不屬於技能槽分類，維持原樣。
+- 測試：新增 `tests/support-merged-into-active.test.cjs`。
+- 修正 v0.211：`css/inventory-grid.css` 改為在 `visual-standard.css` 之前載入（`visual-standard.css` 必須是最後一個樣式表，回歸閘門 Saves · offline-lifecycle 的 `visual-standard.test.cjs` 因此失敗）。

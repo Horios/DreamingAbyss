@@ -15,7 +15,7 @@
   const EFFECT_LABELS={
     flatAttack:'此裝備攻擊力',flatHp:'此裝備最大生命',flatDefense:'此裝備防禦',basicElement:'此武器攻擊屬性',basicAttackSpeedStack:'普攻後疾行',gearAtkPct:'此裝備基底攻擊力',gearHpPct:'此裝備基底生命',gearDefPct:'此裝備基底防禦',hpPct:'角色最大生命',defensePct:'角色總防禦',
     attackPct:'角色總攻擊力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamagePct:'對 BOSS 傷害',attackSpeedPct:'攻擊速度',
-    allCooldownReduction:'全主動／輔助技能冷卻',dropRateBonus:'掉寶率',elementDamagePct:'屬性傷害',elementResistPct:'屬性抗性',raceDamagePct:'種族增傷',skillEffectPct:'核心技能效果',skillCooldownReduction:'核心技能冷卻／觸發'
+    allCooldownReduction:'全主動技能冷卻',dropRateBonus:'掉寶率',elementDamagePct:'屬性傷害',elementResistPct:'屬性抗性',raceDamagePct:'種族增傷',skillEffectPct:'核心技能效果',skillCooldownReduction:'核心技能冷卻／觸發'
   };
   const LEGACY_BOSS_SERIES=['古木誓約','礦脈共鳴','暮沼咒印','永凍之誓','熔核意志','隕星遺產'];
   const PARALLEL_BOSS_SERIES=['赤楓炎靈','潮汐巨像','白骨巫后','雷鳴獸王','聖所守護者','幽冥觀測者'];
@@ -652,7 +652,7 @@
         if([4,5].includes(a.type)){
           if(a.type===5&&skill?.[1]==='proc'){key='skillProcChance';value*=GAME_BALANCE.affixes.procChancePerPointPercent;}
           label=CLASSES[g.job??0].name+' · '+(skill?.[0]||'核心技能 '+((a.skill??0)+1))+' '+(a.type===4?'效果':key==='skillProcChance'?'觸發率':'冷卻縮短');
-        }else if(a.type===16)label='全主動／輔助技能冷卻縮短';
+        }else if(a.type===16)label='全主動技能冷卻縮短';
         if(a.element)label=(ELEMENTS[a.element]||a.element)+' '+label;
         if(a.race)label='對'+(RACES[a.race]||a.race)+' '+label;
         const id=[key,a.element||'',a.race||'',[4,5].includes(a.type)?g.job+':'+(a.skill??0):''].join(':');

@@ -30,7 +30,7 @@
  const wornReward=(h,key)=>__EMBERWILD_SKILLS.worn(h).find(g=>g.storyRewardKey===key);
  function value(c){const h=playerHero(),p=stats(),q=ensure(),sum=o=>Object.values(o||{}).reduce((a,b)=>a+b,0);switch(c.type){
   case 'gearWorn':return Number(!!wornReward(h,c.key));
-  case 'skillSlotted':{const S=__EMBERWILD_SKILLS,sk=S.byId(c.key);return Number(!!sk&&S.learned(h,sk)&&h.skillLoadout?.[sk.type]?.includes(sk.id)&&S.validCast(h,EmberwildSkillSystem.adapterFor(sk,h.job).index,sk.adapter.kind));}
+  case 'skillSlotted':{const S=__EMBERWILD_SKILLS,sk=S.byId(c.key);return Number(!!sk&&S.learned(h,sk)&&h.skillLoadout?.[S.slotType(sk)]?.includes(sk.id)&&S.validCast(h,EmberwildSkillSystem.adapterFor(sk,h.job).index,sk.adapter.kind));}
   case 'gearBaseGem':return Number(wornReward(h,c.key)?.skillSockets?.gems[c.slot]!=null);
   case 'encounter':return p.encounters[c.key]||0;
   case 'companions':return party.members.length-1;case 'party':return party.buildSystem?.plans?.find(x=>x.id===party.buildSystem.activeId)?.job===null?0:heroes().length;

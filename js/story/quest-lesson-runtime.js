@@ -24,7 +24,7 @@
   if(c.type==='report')return '完成了。按「回報」繼續下一段。';
   const g=c.type==='skillSlotted'?null:rewardGear(c.key),name=g?gearName(g):'任務裝備',sk=c.type==='skillSlotted'?globalThis.__EMBERWILD_SKILLS?.byId(c.key):null;
   if(c.type==='gearWorn')return '到「裝備與信物」點選飾品欄位，穿上'+name+'。';
-  if(c.type==='skillSlotted')return '點選'+({active:'主動',proc:'觸發',support:'輔助'}[sk?.type]||'')+'技能槽，裝入「'+(sk?.name||c.key)+'」。';
+  if(c.type==='skillSlotted')return '點選'+({active:'主動',proc:'觸發',support:'主動'}[sk?.type]||'')+'技能槽，裝入「'+(sk?.name||c.key)+'」。';
   const n=c.slot;
   return '在「裝備與信物」按'+name+'的「鑲嵌」，選第 '+(n+1)+' 孔，放入寶石。';
  }
@@ -38,9 +38,9 @@
    return {selector:`[onclick^="previewEquip('${g.id}'"]`,fallback:`[onclick="selectWornSlot(${memberKey(h)},${position})"]`};
   }
   if(c.type==='skillSlotted'){
-   const sk=globalThis.__EMBERWILD_SKILLS?.byId(c.key);if(!sk)return null;
-   if(open)return {dialog:true,selector:`[onclick^="chooseSkillSlot('${sk.type}',"][onclick*="'${sk.id}'"]`};
-   return {selector:`[onclick="openSkillSlot('${sk.type}',0)"]`};
+   const sk=globalThis.__EMBERWILD_SKILLS?.byId(c.key);if(!sk)return null;const type=globalThis.__EMBERWILD_SKILLS.slotType(sk);
+   if(open)return {dialog:true,selector:`[onclick^="chooseSkillSlot('${type}',"][onclick*="'${sk.id}'"]`};
+   return {selector:`[onclick="openSkillSlot('${type}',0)"]`};
   }
   if(!g)return null;const n=c.slot,editor=`[data-socket-equipment="${g.id}"]`;
   // Open the charm's socket editor, pick the socket, then a gem.

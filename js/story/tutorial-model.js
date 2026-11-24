@@ -63,7 +63,7 @@
   'skills.activeSlots':{label:'主動技能槽',page:'skills'},
   'skills.firstActiveSlot':{label:'第一個主動槽',page:'skills'},
   'skills.procSlots':{label:'觸發技能槽',page:'skills'},
-  'skills.supportSlots':{label:'輔助技能槽',page:'skills'},
+  'skills.supportSlots':{label:'輔助技能槽（已併入主動技能）',page:'skills'},
   'skills.slotChoice':{label:'技能槽視窗的「裝入技能」',page:'skills'},
   'shop.categories':{label:'商店分類按鈕',page:'shop'},
   'shop.fixed':{label:'商店固定商品',page:'shop'},
@@ -137,11 +137,11 @@
   ]}),
   makeModule({id:'skill_basics',title:'技能',category:'skills',description:'看懂技能頁的技能槽、技能圖鑑，以及戰鬥中技能的自動施放規則。第一次進入技能頁時開始。',
    trigger:{type:'pageEnter',page:'skills'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('slots','技能槽','技能頁分成主動、觸發與輔助三種技能槽。技能要裝進技能槽才會在戰鬥中使用。',{page:'skills',target:'skills.activeSlots'}),
+   step('slots','技能槽','技能頁分成主動與觸發兩種技能槽。技能要裝進技能槽才會在戰鬥中使用。',{page:'skills',target:'skills.activeSlots'}),
    step('catalog','技能圖鑑','「技能圖鑑」列出目前職業可以取得的技能、已取得的技能，以及取得的方式。',{page:'skills',target:'skills.catalog'}),
    step('active','主動技能','點選主動槽可以選擇或替換技能。',{page:'skills',target:'skills.firstActiveSlot',advance:{type:'event',key:'skillSlotOpened'},requires:group([condition('learnedActiveSkills','',1),condition('skillSlots','active',1)]),skipIf:group([condition('prologueLesson','skillLesson')])}),
    step('auto','自動施放','戰鬥中，主動槽的技能在冷卻結束且 MP 足夠時自動施放；有施放條件的技能要等條件成立。沒有可用的技能時角色會普攻。',{page:'skills',target:'skills.activeSlots'}),
-   step('others','觸發與輔助','觸發技能在普攻時依觸發率發動；輔助技能在戰鬥中同樣自動施放。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
+   step('others','觸發技能','觸發技能在普攻時依觸發率發動。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
   ]}),
   makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。第一次進入商店時開始。',
    trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone')]),steps:[

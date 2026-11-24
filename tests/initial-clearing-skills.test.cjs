@@ -86,7 +86,7 @@ test('all four clearing builds produce identical foreground and offline combat w
  }
 });
 test('lethal support effects finish death events and reduce the new support cooldown before their yield',()=>{
- const r=game(1);r.run(`__EMBERWILD_SKILLS.byId('job1-support0').timing.initialCooldownSeconds=0;targets(1000,1);state.acquiredSkillIds??=[];state.acquiredSkillIds.push('job1-support0');__EMBERWILD_SKILLS.refreshAll();configureSkill('support',0,'job1-support0');state.active=[];castSupport=(h,i)=>{foes[0].hp=0;return true;};running=true;initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];EmberwildSecondsCombat.step();`);
+ const r=game(1);r.run(`__EMBERWILD_SKILLS.byId('job1-support0').timing.initialCooldownSeconds=0;targets(1000,1);state.acquiredSkillIds??=[];state.acquiredSkillIds.push('job1-support0');__EMBERWILD_SKILLS.refreshAll();configureSkill('active',0,'job1-support0');/* v0.212: support skills use active slots */state.active=[];castSupport=(h,i)=>{foes[0].hp=0;return true;};running=true;initiativeOrder=()=>[{side:'hero',id:heroKey(state),actor:state}];EmberwildSecondsCombat.step();`);
  assert.equal(r.run('foes[0].__eventDeathHandled'),true);assert.equal(r.run('state.eventPassiveCooldowns["mage-mana-cycle"]'),6);
  assert.equal(r.run('supportCooldowns[memberKey(state)+"-0"]'),r.run('Math.max(.3,supportSkillCooldown(state,0)-3)'));
 });

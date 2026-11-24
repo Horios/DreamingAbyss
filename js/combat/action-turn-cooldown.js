@@ -24,12 +24,12 @@ GAME_BALANCE=normalizeRuntimeBalance(actionTurnMigratedSaved?.balance||GAME_BALA
 const actionTurnApplyBalanceConfigBase=applyBalanceConfig;
 applyBalanceConfig=function(input,options){return actionTurnApplyBalanceConfigBase(migrateActiveCooldownFloorDocument(input),options);};
 const actionTurnBalanceReferenceBase=balanceReference;
-balanceReference=function(){const r=actionTurnBalanceReferenceBase();r.affixTypes['16']='全主動／輔助技能冷卻減少（回合）';r.balancePaths['balance.affixes.extendedValues.allCooldownReduction']='新全技能冷卻詞條；只影響有冷卻的主動與輔助技能，單位為角色回合';r.units.cooldown='回合；冷卻 N 表示施放後需經過 N 次該角色自身行動，之後才能再次施放';return r;};
+balanceReference=function(){const r=actionTurnBalanceReferenceBase();r.affixTypes['16']='全主動技能冷卻減少（回合）';r.balancePaths['balance.affixes.extendedValues.allCooldownReduction']='新全技能冷卻詞條；只影響有冷卻的主動技能，單位為角色回合';r.units.cooldown='回合；冷卻 N 表示施放後需經過 N 次該角色自身行動，之後才能再次施放';return r;};
 EXTRA_AFFIX_NAMES[16]='全技能冷卻';
 rollAffixes=function(g){return oldAffixRoll(g).map(a=>{const cfg=GAME_BALANCE.affixes,key=balanceQualityKey(a.rank);if(Math.random()>cfg.extendedPoolChance)return a;const attackPct=Number(cfg.extendedValues.attackPercent[key])||0,allCd=Number(cfg.extendedValues.allCooldownReduction?.[key])||0;const specialTypes=[6,7,8,9,12,13,14,...(a.rank>=2&&attackPct>0?[15]:[]),...(allCd>0?[16]:[])],type=specialTypes[rand(specialTypes.length)];const value=type===16?allCd:type===15?attackPct:type===6?cfg.extendedValues.critDamage[key]:type===7?cfg.extendedValues.pierce[key]:type===8?cfg.extendedValues.lifesteal[key]:type===9?cfg.extendedValues.evasion[key]:type===12?cfg.extendedValues.elementDamage[key]:type===13?cfg.extendedValues.raceDamage[key]:cfg.extendedValues.resist[key];const result={type,rank:a.rank,value};if(type===12||type===14)result.element=['fire','ice','wind','light','shadow'][rand(5)];if(type===13)result.race=Object.keys(RACES)[rand(6)];return result;});};
 const actionTurnAffixLabelBase=affixLabel;
 affixLabel=function(a,g){
-  if(a?.type===16)return `全主動／輔助技能冷卻 ${globalThis.EmberwildSecondsCombat?.cooldownReductionText?.('affixAll',a.value)??'−'+a.value+' 回合'}`;
+  if(a?.type===16)return `全主動技能冷卻 ${globalThis.EmberwildSecondsCombat?.cooldownReductionText?.('affixAll',a.value)??'−'+a.value+' 回合'}`;
   if(a?.type===5){const sk=CLASSES[g?.job??state.job]?.skills?.[a.skill??0];if(sk?.[1]==='active')return `${sk[0]} 冷卻 −${a.value} 回合`;}
   return actionTurnAffixLabelBase(a,g);
 };
@@ -105,6 +105,6 @@ const actionTurnApplyGameplaySettingsBase=applyGameplaySettingsSideEffects;
 applyGameplaySettingsSideEffects=function(){actionTurnApplyGameplaySettingsBase();};
 applyGameplaySettingsSideEffects();
 const actionTurnGuideBase=guideView;
-guideView=function(){return `<section class="panel"><h2>行動回合冷卻</h2><p>主動與輔助技能的冷卻只在該角色自己的行動回合推進；冷卻 N 代表施放後要完整經過 N 次自身行動，之後才能再次施放。其他隊員與敵人行動不會扣除冷卻。</p><p>每個角色自己的行動中，輔助技能不消耗主要行動；輔助處理完後，最多只會施放 1 個可用主動技能，若沒有主動技能可施放才會普通攻擊。主動技能或普通攻擊一旦執行，就結束該角色本回合。</p><p>主動技能最低冷卻為 ${GAME_BALANCE.combat.minimumActiveCooldown} 回合；因此 1 回合冷卻時，至少會隔一個自己的行動回合才再次施放。裝備的全技能冷卻詞條與指定技能冷卻詞條可同時生效。</p></section>`+actionTurnGuideBase();};
+guideView=function(){return `<section class="panel"><h2>行動回合冷卻</h2><p>主動技能的冷卻只在該角色自己的行動回合推進；冷卻 N 代表施放後要完整經過 N 次自身行動，之後才能再次施放。其他隊員與敵人行動不會扣除冷卻。</p><p>每個角色自己的行動中，輔助技能不消耗主要行動；輔助處理完後，最多只會施放 1 個可用主動技能，若沒有主動技能可施放才會普通攻擊。主動技能或普通攻擊一旦執行，就結束該角色本回合。</p><p>主動技能最低冷卻為 ${GAME_BALANCE.combat.minimumActiveCooldown} 回合；因此 1 回合冷卻時，至少會隔一個自己的行動回合才再次施放。裝備的全技能冷卻詞條與指定技能冷卻詞條可同時生效。</p></section>`+actionTurnGuideBase();};
 try{GAMEPLAY_SETTINGS=normalizeGameplaySettings(GAMEPLAY_SETTINGS);globalThis.__EMBERWILD_GAMEPLAY_SETTINGS=GAMEPLAY_SETTINGS;applyGameplaySettingsSideEffects();}catch(e){console.warn('行動回合設定初始化失敗',e);}
 if(state&&party){resetEncounter();save();render();}

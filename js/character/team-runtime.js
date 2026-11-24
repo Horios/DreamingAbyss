@@ -144,10 +144,12 @@
       if(p.skillLoadout){
         const stage='advanced';
         const rule=d.skillSystem?.classRules?.find(r=>r.job===p.job)?.slots?.[stage];
+        // v0.212: support skills sit in active slots; supportSlots follows the active slot count and the plan has no
+        // support loadout of its own (skill-system-runtime.js).
         if(rule)for(const [type,field] of [['active','active'],['proc','procSlots'],['support','supportSlots']]){
-          const count=rule[type],slots=p[field],ids=p.skillLoadout[type];
+          const count=type==='support'?rule.active:rule[type],slots=p[field],ids=type==='support'?(p.skillLoadout.support=[]):p.skillLoadout[type];
           if(!Number.isInteger(count)||!Array.isArray(slots)||!Array.isArray(ids))throw Error('隊伍技能槽資料無效');
-          for(const entries of [slots,ids]){
+          for(const entries of type==='support'?[slots]:[slots,ids]){
             if(entries.slice(count).some(value=>value!==null))throw Error('新版技能槽不足以保留已配置技能');
             entries.length=Math.min(entries.length,count);
             while(entries.length<count)entries.push(null);
