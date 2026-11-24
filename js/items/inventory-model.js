@@ -186,7 +186,14 @@
     for(const t of Object.values(tabs))t.free=Math.max(0,t.capacity-t.used),t.over=Math.max(0,t.used-t.capacity);
     return {tabs,used:Object.values(tabs).reduce((n,t)=>n+t.used,0)};
   }
-  function serialize(store){return {version:VERSION,serial:store.serial,stacks:store.stacks.map(st=>({uid:st.uid,item:st.item,qty:st.qty}))};}
+  /* Only items whose stacks differ from the standard fill (cap, cap, …, rest) are written, e.g. after a split. The standard
+     layout is rebuilt from the item totals on load, so a rolled-back transaction or a reload writes identical bytes. */
+  function isStandard(store,id,capOf){const sizes=stackOrder(store,id).map(st=>st.qty),want=stackSizes(sizes.reduce((n,q)=>n+q,0),capChecked(capOf,id));return sizes.length===want.length&&sizes.every((q,i)=>q===want[i]);}
+  function serialize(store,capOf){
+    const custom=capOf?new Set(items(store).filter(id=>!isStandard(store,id,capOf))):null;
+    const stacks=store.stacks.filter(st=>!custom||custom.has(st.item)).map(st=>({uid:st.uid,item:st.item,qty:st.qty}));
+    return {version:VERSION,serial:custom?stacks.reduce((n,st)=>Math.max(n,Number(st.uid.slice(1))),0):store.serial,stacks};
+  }
   /* Saved layouts are structurally validated here; quantities are reconciled against item totals by the runtime. */
   function validateLayout(raw){
     if(raw===undefined||raw===null)return null;
@@ -217,6 +224,6 @@
   function stackSizes(qty,cap){checkQty(qty);const out=[];while(qty>0){out.push(Math.min(cap,qty));qty-=Math.min(cap,qty);}return out;}
 
   const api={VERSION,TABS,CATEGORIES,DEFAULT_SETTINGS,MAX_STACK,parseId,itemId,validId,classify,normalizeSettings,settingsIssues,overrideIssues,definition,instanceDefinition,
-    createStore,total,items,stacksOf,add,remove,removeMany,setTotal,merge,split,normalize,slotUsage,serialize,validateLayout,reconcile,sortBySavedOrder,stackByUid,stackSizes};
+    createStore,total,items,stacksOf,isStandard,add,remove,removeMany,setTotal,merge,split,normalize,slotUsage,serialize,validateLayout,reconcile,sortBySavedOrder,stackByUid,stackSizes};
   root.EmberwildInventory=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

@@ -55,6 +55,7 @@ test('classification and definitions follow category defaults with per-item over
 test('layout round trip keeps uids and order; reconcile rebuilds only mismatched items; normalize splits over-cap stacks',()=>{
  const s=M.createStore();M.add(s,'material:鍛鐵',1500,capOf);M.add(s,'gem:0',10,capOf);M.split(s,s.stacks[0].uid,100);
  const raw=JSON.parse(JSON.stringify(M.serialize(s))),layout=M.validateLayout(raw);assert.deepEqual(M.serialize(layout),raw);
+ const compact=M.serialize(s,capOf);assert.deepEqual(compact.stacks.map(x=>x.item),['material:鍛鐵','material:鍛鐵','material:鍛鐵'],'only non-standard items are written');
  const r=M.createStore();M.reconcile(r,layout,'material:鍛鐵',1500,capOf);M.reconcile(r,layout,'gem:0',12,capOf);M.sortBySavedOrder(r,layout);
  assert.deepEqual(r.stacks.filter(x=>x.item==='material:鍛鐵').map(x=>x.uid),raw.stacks.filter(x=>x.item==='material:鍛鐵').map(x=>x.uid));assert.equal(M.total(r,'gem:0'),12);
  assert.throws(()=>M.validateLayout({...raw,stacks:[...raw.stacks,raw.stacks[0]]}),/無效/);assert.throws(()=>M.validateLayout({...raw,stacks:[{uid:'s1',item:'equipment:x',qty:1}]}),/無效/);

@@ -1513,3 +1513,9 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
   - 讀檔以總量為準：排列與總量一致的物品保留原本的 `uid` 與順序；不一致或排列損壞的物品依總量重新堆疊，不會因為排列資料而複製或遺失物品。沒有 `inventory` 的舊存檔依總量建立堆疊。舊版遊戲讀到新存檔會忽略 `inventory`，之後再由新版重建。
   - 存檔鍵名未改變。
 - 測試：`tests/inventory-model.test.cjs`、`tests/inventory-runtime.test.cjs`。
+
+### v0.205 修正（第一階段 CI）
+
+- `structuredClone` 無法複製物品介面（Proxy）。`packParty` 輸出的 `members[].materials／gems／consumables／healingPotions` 改為一般物件複本；載入時剝除設計欄位的 `structuredClone(save)` 因此不再失敗。測試中直接 `structuredClone(state.materials)`／`state.gems` 的兩處改為展開複本。
+- 存檔的 `inventory` 只寫入排列與標準填法（上限、上限、…、餘數）不同的物品（例如拆分過的堆疊）；標準排列在載入時由總量重建。交易失敗回復後，存檔位元組與回復前相同。拆分過的自訂排列在交易回復時只保證總量，不保證逐堆疊相同。
+

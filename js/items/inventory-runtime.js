@@ -138,7 +138,16 @@
 
   /* ---------- save ---------- */
   const basePack=packParty;
-  packParty=function(...args){const out=basePack.apply(this,args);const r=party&&ensureInventory();if(out&&r)out.inventory=M.serialize(r.store);return out;};
+  /* Saved data must be plain (structuredClone cannot copy the facades): the per-item totals are written as plain copies. */
+  const plain=v=>Array.isArray(v)?[...v]:v&&typeof v==='object'?{...v}:v;
+  packParty=function(...args){
+    const out=basePack.apply(this,args);const r=party&&ensureInventory();
+    if(out&&r){
+      if(Array.isArray(out.members))out.members=out.members.map(h=>{if(!h||typeof h!=='object')return h;const row={...h};for(const k of ['materials','gems','consumables','healingPotions'])if(k in row)row[k]=plain(row[k]);return row;});
+      out.inventory=M.serialize(r.store,capOf);
+    }
+    return out;
+  };
   const baseValidate=validateParty;
   validateParty=function(data,...args){
     const out=baseValidate.call(this,data,...args);

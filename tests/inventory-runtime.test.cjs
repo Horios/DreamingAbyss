@@ -58,10 +58,13 @@ test('save layout round trip keeps stack uids, splits and order; totals stay aut
  // Cold boot from localStorage.
  const r2=loadRuntime(root,'index.html',Object.fromEntries(r.values));r2.run('selectSaveSlot(1)');assert.equal(r2.run('state.ore'),1500);assert.deepEqual(json(r2,"EmberwildItems.stacks().filter(s=>s.item==='material:鍛鐵').map(s=>s.qty)"),[899,100,501]);assert.deepEqual(json(r2,'EmberwildItems.audit()'),[]);
  // A layout claiming more than the totals cannot duplicate items; a broken layout is rebuilt from totals.
- const stale=structuredClone(saved);stale.inventory.stacks.find(s=>s.item==='material:鍛鐵').qty=999;r.ctx.stale=stale;r.run('loadParty(stale)');assert.equal(r.run('state.ore'),1500);assert.deepEqual(json(r,"sizes('material:鍛鐵')"),[999,501]);assert.deepEqual(json(r,"sizes('gem:2')"),[10]);audit(r);
+ assert.equal(saved.inventory.stacks.filter(s=>s.item==='gem:2').length,0,'standard layouts are not written');
+ const stale=structuredClone(saved);stale.inventory.stacks.find(s=>s.item==='material:鍛鐵').qty=999;r.ctx.stale=stale;r.run('loadParty(stale)');assert.equal(r.run('state.ore'),1500);assert.equal(r.run('state.ore'),1500);assert.deepEqual(json(r,"sizes('gem:2')"),[10]);audit(r);
  const broken=structuredClone(saved);broken.inventory.stacks.push(broken.inventory.stacks[0]);r.ctx.broken=broken;r.run('loadParty(broken)');assert.equal(r.run('state.ore'),1500);audit(r);
  // Old saves (no layout) load and build stacks from totals.
  const old=structuredClone(saved);delete old.inventory;r.ctx.old=old;r.run('loadParty(old)');assert.deepEqual(json(r,"sizes('material:鍛鐵')"),[999,501]);audit(r);
+ // With standard layouts a rolled-back change writes the same bytes as before (custom split layouts are not restored stack by stack).
+ r.run('globalThis.b0=JSON.stringify(packParty());globalThis.rs=save;save=()=>false;state.gems[2]-=1;sellMaterial("鍛鐵",1);save=rs;state.gems[2]+=1');assert.equal(r.run('JSON.stringify(packParty())'),r.run('b0'));
  assert.deepEqual(r.errors,[]);
 });
 test('balance stack limits and per-item overrides apply to new and existing stacks without changing totals',()=>{
@@ -98,7 +101,7 @@ test('offline settlement drops land in stacks and survive a reload without dupli
  r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();state.ore=990;globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
  const before=r.run('state.ore+state.dust');r.advance(20*60*1000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false);
  assert(r.run('state.ore+state.dust')>before);audit(r);r.run('save()');
- const totals=json(r,'({ore:state.ore,dust:state.dust,gems:[...state.gems],materials:{...state.materials},stacks:EmberwildItems.stacks().map(s=>[s.uid,s.item,s.qty])})');
+ const totals=json(r,'({ore:state.ore,dust:state.dust,gems:[...state.gems],materials:{...state.materials},stacks:EmberwildItems.stacks().map(s=>s.item+"×"+s.qty).sort()})');
  const r2=loadRuntime(root,'index.html',Object.fromEntries(r.values));r2.run('selectSaveSlot(1)');
- assert.deepEqual(json(r2,'({ore:state.ore,dust:state.dust,gems:[...state.gems],materials:{...state.materials},stacks:EmberwildItems.stacks().map(s=>[s.uid,s.item,s.qty])})'),totals);assert.deepEqual(json(r2,'EmberwildItems.audit()'),[]);
+ assert.deepEqual(json(r2,'({ore:state.ore,dust:state.dust,gems:[...state.gems],materials:{...state.materials},stacks:EmberwildItems.stacks().map(s=>s.item+"×"+s.qty).sort()})'),totals);assert.deepEqual(json(r2,'EmberwildItems.audit()'),[]);
 });

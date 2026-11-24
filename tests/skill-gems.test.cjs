@@ -73,7 +73,7 @@ test('legacy three-kind gems refund from shared skill instances once and survive
   b.permanent.gemInstances={'old-red':0,'old-green':1,'old-resonance':2};
   const plan=b.plans[0];plan.sockets[0]='old-resonance';plan.sockets[2]='old-green';plan.sockets[4]='old-red';
   const converted=migrateLegacyGemSave(raw),valid=validateParty(raw);
-  loadParty(raw);const first=structuredClone(state.gems);save();loadParty(structuredClone(packParty()));
+  loadParty(raw);const first=[...state.gems];save();loadParty(structuredClone(packParty()));
   return {converted:converted.buildSystem.permanent.gemInstances,valid:valid.members[0].gems,first,again:state.gems,sockets:state.sockets,instances:party.buildSystem.permanent.gemInstances,rawStock:raw.members[0].gems,rawInstances:raw.buildSystem.permanent.gemInstances};
  })()`);
  assert.deepEqual(out.converted,{'old-red':0,'old-green':2,'old-resonance':3});
