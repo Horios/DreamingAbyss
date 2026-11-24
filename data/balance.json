@@ -9690,6 +9690,13 @@
             48,
             540
           ]
+        },
+        "dustSalvage": {
+          "dustByTier": [
+            10,
+            50,
+            300
+          ]
         }
       },
       "mastery": {
@@ -28906,9 +28913,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map0_mob0",
@@ -28934,9 +28941,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map0_mob0",
@@ -28963,9 +28970,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map0_boss"
@@ -28997,9 +29004,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map1_mob0",
@@ -29025,9 +29032,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map1_mob0",
@@ -29054,9 +29061,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map1_boss"
@@ -29088,9 +29095,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map2_mob0",
@@ -29116,9 +29123,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map2_mob0",
@@ -29145,9 +29152,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map2_boss"
@@ -29179,9 +29186,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map3_mob0",
@@ -29207,9 +29214,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map3_mob0",
@@ -29236,9 +29243,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map3_boss"
@@ -29270,9 +29277,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map4_mob0",
@@ -29298,9 +29305,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map4_mob0",
@@ -29327,9 +29334,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map4_boss"
@@ -29361,9 +29368,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map5_mob0",
@@ -29389,9 +29396,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map5_mob0",
@@ -29418,9 +29425,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map5_boss"
@@ -29453,9 +29460,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map6_boss"
@@ -29487,9 +29494,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map7_mob0",
@@ -29515,9 +29522,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map7_mob0",
@@ -29544,9 +29551,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map7_boss"
@@ -29578,9 +29585,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map8_mob0",
@@ -29606,9 +29613,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map8_mob0",
@@ -29635,9 +29642,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map8_boss"
@@ -29669,9 +29676,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map9_mob0",
@@ -29697,9 +29704,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map9_mob0",
@@ -29726,9 +29733,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map9_boss"
@@ -29760,9 +29767,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map10_mob0",
@@ -29788,9 +29795,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map10_mob0",
@@ -29817,9 +29824,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map10_boss"
@@ -29851,9 +29858,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map11_mob0",
@@ -29879,9 +29886,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map11_mob0",
@@ -29908,9 +29915,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map11_boss"
@@ -29942,9 +29949,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map12_mob0",
@@ -29970,9 +29977,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map12_mob0",
@@ -29999,9 +30006,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map12_boss"
@@ -30033,9 +30040,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map13_mob0",
@@ -30062,9 +30069,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map13_mob0",
@@ -30092,9 +30099,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map13_boss"
@@ -30126,9 +30133,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map14_mob0",
@@ -30155,9 +30162,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map14_mob0",
@@ -30185,9 +30192,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map14_boss"
@@ -30219,9 +30226,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map15_mob0",
@@ -30248,9 +30255,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map15_mob0",
@@ -30278,9 +30285,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map15_boss"
@@ -30312,9 +30319,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map16_mob0",
@@ -30341,9 +30348,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map16_mob0",
@@ -30371,9 +30378,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map16_boss"
@@ -30405,9 +30412,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map17_mob0",
@@ -30434,9 +30441,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map17_mob0",
@@ -30464,9 +30471,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map17_boss"
@@ -30498,9 +30505,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map18_mob0",
@@ -30527,9 +30534,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map18_mob0",
@@ -30557,9 +30564,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map18_boss"
@@ -30591,9 +30598,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map19_mob0",
@@ -30620,9 +30627,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map19_mob0",
@@ -30650,9 +30657,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map19_boss"
@@ -30684,9 +30691,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map20_mob0",
@@ -30713,9 +30720,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map20_mob0",
@@ -30743,9 +30750,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map20_boss"
@@ -30777,9 +30784,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map21_mob0",
@@ -30806,9 +30813,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map21_mob0",
@@ -30836,9 +30843,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map21_boss"
@@ -30870,9 +30877,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map22_mob0",
@@ -30899,9 +30906,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map22_mob0",
@@ -30929,9 +30936,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map22_boss"
@@ -30963,9 +30970,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map23_mob0",
@@ -30992,9 +30999,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map23_mob0",
@@ -31022,9 +31029,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map23_boss"
@@ -31056,9 +31063,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.033,
-            0.066,
-            0.11
+            0.0033,
+            0.0066,
+            0.011
           ],
           "sources": [
             "map24_mob0",
@@ -31085,9 +31092,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.099,
-            0.187,
-            0.297
+            0.0099,
+            0.0187,
+            0.0297
           ],
           "sources": [
             "map24_mob0",
@@ -31115,9 +31122,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.297,
-            0.44,
-            0.605
+            0.0297,
+            0.044,
+            0.0605
           ],
           "sources": [
             "map24_boss"

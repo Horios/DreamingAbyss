@@ -68,6 +68,12 @@
     const b=settings?.baseDustByTargetTier;if(!Array.isArray(b)||b.length!==3||b.some(n=>!Number.isFinite(n)||n<0||n>1e9))out.push('寶石粉塵升級成本基準必須是 3 個非負數');
     return out;
   }
-  const api={NEW_TYPES,OBSOLETE_TYPES,isObsolete,migrateEntries,migrateDocument,parseForm,ruleIssues,pick,exclusiveIssues,gemUpgradeCost,gemUpgradeIssues};
+  /* v0.213 gem salvage: one gem of tier t (1-based) gives dustByTier[t-1] gem dust. */
+  function gemSalvageDust(settings,tier){const n=Number(settings?.dustByTier?.[tier-1]);return Number.isSafeInteger(n)&&n>=0?n:null;}
+  function gemSalvageIssues(settings){
+    if(settings===undefined)return [];const b=settings?.dustByTier;
+    return !Array.isArray(b)||b.length!==3||b.some(n=>!Number.isSafeInteger(n)||n<0||n>1e9)?['寶石分解粉塵必須是 3 個非負整數']:[];
+  }
+  const api={NEW_TYPES,OBSOLETE_TYPES,isObsolete,migrateEntries,migrateDocument,parseForm,ruleIssues,pick,exclusiveIssues,gemUpgradeCost,gemUpgradeIssues,gemSalvageDust,gemSalvageIssues};
   root.EmberwildDropRework=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

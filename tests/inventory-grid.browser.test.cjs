@@ -121,3 +121,63 @@ test('grid bag survives save and reload with stacks and selection fallback',asyn
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
+test('v0.213: 種類 sorts gear by part; batch pick selects listed, actionable items by part and rarity',async()=>{
+ const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
+ try{
+  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;
+   for(let i=0;i<16;i++){const g=gear(1+(i%3),(i*3)%4,i%4,0);g.id='pick-'+i;if(i===5)g.locked=true;if(i===6)g.unidentified={slot:g.slot,level:3};addGear(g);}
+   setTab('equipment');setInventoryCategory('equipment');});
+  await p.clock.resume();
+  await p.getByLabel('排序',{exact:true}).selectOption('kind');
+  await p.waitForFunction(()=>{const s=[...document.querySelectorAll('.bag-cell[data-bag-ref]')].map(c=>{const g=findGear(c.dataset.bagRef.slice(2));return g.unidentified?.slot??g.slot;});return s.length===16&&s.every((v,i)=>!i||s[i-1]<=v);});
+  await p.getByRole('button',{name:'批次選取'}).click();await p.locator('.bag-grid.is-batch').waitFor();
+  await p.getByLabel('依部位',{exact:true}).selectOption('0');await p.getByLabel('依稀有度',{exact:true}).selectOption('1');
+  await p.getByRole('button',{name:'選取符合條件'}).click();
+  const want=await p.evaluate(()=>state.bag.filter(g=>g.id.startsWith('pick-')&&!g.unidentified&&!g.locked&&!gearWearer(g.id)&&g.slot===0&&gearQualityRank(g)===1).map(g=>g.id).sort());
+  await p.waitForFunction(n=>__EMBERWILD_GEAR_INVENTORY.selection().length===n,want.length);
+  assert.deepEqual(await p.evaluate(()=>__EMBERWILD_GEAR_INVENTORY.selection().sort()),want);
+  // Only rarity: every listed actionable gear of that rarity; locked and unidentified gear never join.
+  await p.getByLabel('依部位',{exact:true}).selectOption('all');await p.getByRole('button',{name:'選取符合條件'}).click();
+  await p.waitForFunction(()=>__EMBERWILD_GEAR_INVENTORY.selection().every(id=>gearQualityRank(findGear(id))===1));
+  const sel=await p.evaluate(()=>__EMBERWILD_GEAR_INVENTORY.selection());
+  assert(!sel.includes('pick-5')&&!sel.includes('pick-6'));
+  assert.equal(sel.length,await p.evaluate(()=>state.bag.filter(g=>!g.unidentified&&!g.locked&&!gearWearer(g.id)&&!EmberwildTokens.isToken(g)&&gearQualityRank(g)===1).length));
+  // The existing review flow sells exactly the picked set.
+  await p.locator('.bag-batch').getByRole('button',{name:'批次出售'}).click();
+  await p.locator('#modal').getByRole('button',{name:'確認出售'}).click();
+  await p.waitForFunction(ids=>ids.every(id=>!findGear(id)),sel);
+  assert.equal(await p.evaluate(()=>!!findGear('pick-5')&&!!findGear('pick-6')),true);
+  assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
+test('v0.213: gems salvage into dust by tier from the detail pane and in batch, with confirmation and rollback',async()=>{
+ const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
+ try{
+  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;
+   state.gems[0]=3;state.gems[5]=2;state.gems[10]=1;state.dust=0;setTab('equipment');setInventoryCategory('gems');});
+  await p.clock.resume();
+  const each=await p.evaluate(()=>GAMEPLAY_SETTINGS.skills.gems.dustSalvage.dustByTier);
+  assert.deepEqual(each,[10,50,300]);
+  // Single: select the tier-1 stack, salvage one with confirmation.
+  await p.locator('.bag-cell[aria-label^="'+await p.evaluate(()=>GEMS[0].name)+'"]').click();
+  await p.locator('.bag-detail').getByRole('button',{name:/^分解 1 顆/}).click();
+  assert.match(await p.locator('#modal').innerText(),/共分解 1 顆寶石，獲得 10 寶石粉塵/);
+  await p.locator('#modal').getByRole('button',{name:'確認分解'}).click();
+  await p.waitForFunction(()=>state.gems[0]===2&&state.dust===10);
+  // A failed save rolls everything back.
+  await p.evaluate(()=>{globalThis.realSave=save;save=()=>false;salvageGems({0:2});save=realSave;});
+  assert.deepEqual(await p.evaluate(()=>[state.gems[0],state.dust]),[2,10]);
+  // Batch by tier: tier 2 only, then everything.
+  await p.getByRole('button',{name:'批次分解'}).click();await p.locator('.bag-grid.is-batch').waitFor();
+  await p.getByLabel('依等級',{exact:true}).selectOption('2');await p.getByRole('button',{name:'選取符合條件'}).click();
+  await p.waitForFunction(()=>/已選 2 顆 · 100 粉塵/.test(document.querySelector('.bag-batch b')?.textContent));
+  await p.getByRole('button',{name:'全選'}).click();
+  await p.waitForFunction(()=>/已選 5 顆 · 420 粉塵/.test(document.querySelector('.bag-batch b')?.textContent));
+  await p.locator('.bag-batch').getByRole('button',{name:'批次分解'}).click();
+  assert.match(await p.locator('#modal').innerText(),/共分解 5 顆寶石，獲得 420 寶石粉塵/);
+  await p.locator('#modal').getByRole('button',{name:'確認分解'}).click();
+  await p.waitForFunction(()=>state.gems.every(n=>!n)&&state.dust===430&&!document.querySelector('.bag-grid.is-batch'));
+  assert.equal(await p.evaluate(()=>EmberwildItems.audit().length),0);
+  assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

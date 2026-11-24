@@ -87,6 +87,8 @@
   globalThis.toggleGearInventorySelected=function(id,checked){const g=findGear(id);if(!multi||!g||!actionable(g)||!rows().some(r=>r.g.id===id))return false;if(checked)selected.add(id);else selected.delete(id);redraw();return true;};
   globalThis.selectVisibleGear=function(){if(!multi)return;selected=new Set(rows().map(r=>r.g).filter(g=>actionable(g)).map(g=>g.id));redraw();};
   globalThis.clearSelectedGear=function(){selected.clear();redraw();};
+  // v0.213 grid bag: pick by part or rarity. Only listed, actionable gear is taken; the review flow is unchanged.
+  globalThis.setGearInventorySelection=function(ids){if(!multi)return 0;const listed=new Set(rows().map(r=>r.g.id));selected=new Set([...ids].filter(id=>listed.has(id)&&actionable(findGear(id))));redraw();return selected.size;};
   const choose=(key,label,options)=>`<label>${label}<select aria-label="${label}" onchange="setGearInventoryFilter('${key}',this.value)">${options.map(([value,text])=>`<option value="${esc(String(value))}" ${String(value)===filter[key]?'selected':''}>${esc(text)}</option>`).join('')}</select></label>`;
   const input=(key,label)=>{
     const limit=inputLimits(key),disabled=['value','upper'].includes(key)&&!filter.stat||key==='affixValue'&&!filter.affixType;

@@ -206,6 +206,7 @@
   globalThis.toggleTokenSelected=(id,checked)=>{if(!tokenMulti||!tokenActionable(findGear(id))||!tokenRows().some(r=>r.g.id===id))return false;if(checked)tokenSelected.add(id);else tokenSelected.delete(id);tokenRedraw();return true;};
   globalThis.selectVisibleTokens=()=>{if(!tokenMulti)return;tokenSelected=new Set(tokenRows().map(r=>r.g).filter(g=>tokenActionable(g)).map(g=>g.id));tokenRedraw();};
   globalThis.clearSelectedTokens=()=>{tokenSelected.clear();tokenRedraw();};
+  globalThis.setTokenSelection=ids=>{if(!tokenMulti)return 0;const listed=new Set(tokenRows().map(r=>r.g.id));tokenSelected=new Set([...ids].filter(id=>listed.has(id)&&tokenActionable(findGear(id))));tokenRedraw();return tokenSelected.size;};
   function tokenBatchReview(mode){
     const items=tokenRows().map(r=>r.g).filter(g=>tokenSelected.has(g.id)&&tokenActionable(g,mode)),quote=__EMBERWILD_GEAR_INVENTORY.quote(items,mode),ids=items.map(g=>g.id);
     return {mode,ids,quote,signature:JSON.stringify([ids,quote])};

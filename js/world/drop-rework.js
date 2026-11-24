@@ -26,7 +26,7 @@
       // The binding list is a free-length list of objects; the shape merge keeps only default rows, so it is copied here.
       const raw=src?.equipment?.exclusiveEnhance;
       out.equipment.exclusiveEnhance={quantityByLevel:[...out.equipment.exclusiveEnhance.quantityByLevel],bindings:clone(Array.isArray(raw?.bindings)?raw.bindings:settingsDefaults().bindings)};
-      const errors=[...D.exclusiveIssues(out.equipment.exclusiveEnhance),...D.gemUpgradeIssues(out.skills?.gems?.dustUpgrade)];
+      const errors=[...D.exclusiveIssues(out.equipment.exclusiveEnhance),...D.gemUpgradeIssues(out.skills?.gems?.dustUpgrade),...D.gemSalvageIssues(out.skills?.gems?.dustSalvage)];
       if(errors.length)throw Error(errors.join('\n'));
       return out;
     };
@@ -134,6 +134,38 @@
     return {gem:i,target,cost,have:state.dust,count:state.gems[i]||0,max:false,ok:cost!==null&&(state.gems[i]||0)>0&&state.dust>=cost};
   }
   globalThis.gemUpgradeQuote=gemUpgradeQuote;
+  /* ---------- gem salvage (v0.213): gems in the bag become gem dust; all or nothing, rolled back on a failed save ---------- */
+  const salvageSettings=()=>GAMEPLAY_SETTINGS.skills?.gems?.dustSalvage;
+  function gemSalvageQuote(counts){
+    const rows=[];let dust=0,gems=0;
+    for(const [k,v] of Object.entries(counts||{})){
+      const i=Number(k),n=Number(v),g=GEMS[i];if(!g||!Number.isSafeInteger(n)||n<1)continue;
+      const each=D.gemSalvageDust(salvageSettings(),g.tier);if(each===null)return null;
+      rows.push({gem:i,name:g.name,count:n,have:state.gems[i]||0,dust:each*n});dust+=each*n;gems+=n;
+    }
+    return {rows,dust,gems,ok:rows.length>0&&rows.every(r=>r.count<=r.have)};
+  }
+  globalThis.gemSalvageQuote=gemSalvageQuote;
+  globalThis.salvageGems=function(counts){
+    const q=gemSalvageQuote(counts);if(!q||!q.ok){toast('寶石數量不足或設定無效');return false;}
+    const items=globalThis.EmberwildItems,cost=Object.fromEntries(q.rows.map(r=>['gem:'+r.gem,r.count]));
+    if(!items.removeMany(cost)){toast('寶石數量不足');return false;}
+    items.add('material:粉塵',q.dust);
+    if(save()===false){items.remove('material:粉塵',q.dust);for(const [id,n] of Object.entries(cost))items.add(id,n);toast('無法儲存，分解未完成');return false;}
+    closeModal();render();toast(`分解 ${q.gems} 顆寶石，獲得 ${q.dust} 寶石粉塵`);return q;
+  };
+  let pendingGemSalvage=null;
+  globalThis.openGemSalvage=function(counts){
+    const q=gemSalvageQuote(counts);if(!q||!q.rows.length){toast('沒有可分解的寶石');return false;}
+    pendingGemSalvage={counts:{...counts},signature:JSON.stringify(q)};
+    $('modal').innerHTML=`<h2>確認分解寶石</h2><table class="gem-upgrade-table"><tbody>${q.rows.map(r=>`<tr><th>${esc(r.name)}</th><td>${r.count} 顆 → ${r.dust} 粉塵</td></tr>`).join('')}</tbody></table><p>共分解 ${q.gems} 顆寶石，獲得 ${q.dust} 寶石粉塵。分解後無法復原。</p><div class="actions"><button class="danger" onclick="confirmGemSalvage()" ${q.ok?'':'disabled'}>確認分解</button><button onclick="closeModal()">取消</button></div>`;
+    if(!$('modal').open)$('modal').showModal();return true;
+  };
+  globalThis.confirmGemSalvage=function(){
+    const p=pendingGemSalvage;pendingGemSalvage=null;if(!p)return false;
+    const q=gemSalvageQuote(p.counts);if(JSON.stringify(q)!==p.signature){toast('寶石數量已變更，請重新確認');return openGemSalvage(p.counts);}
+    return salvageGems(p.counts);
+  };
   globalThis.upgradeGemWithDust=function(i){
     i=Number(i);const q=gemUpgradeQuote(i);if(!q)return false;
     if(q.max){toast('已是最高等級的寶石');return false;}

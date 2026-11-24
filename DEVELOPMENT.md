@@ -1575,3 +1575,14 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - 畫面文字：技能頁、技能槽視窗、技能圖鑑、職業技能樹、戰鬥詳情、信物萃取、隊伍方案與詞綴說明中的「輔助」改為「主動」（例如「全主動技能冷卻」）。教學與劇情中描述三種技能槽的文字一併修改（`tutorials.json`、`story.json` 與 `tutorial-model.js` 預設值）。效果分類中的「輔助」（BUFF／DEBUFF 類型的展示分類）不屬於技能槽分類，維持原樣。
 - 測試：新增 `tests/support-merged-into-active.test.cjs`。
 - 修正 v0.211：`css/inventory-grid.css` 改為在 `visual-standard.css` 之前載入（`visual-standard.css` 必須是最後一個樣式表，回歸閘門 Saves · offline-lifecycle 的 `visual-standard.test.cjs` 因此失敗）。
+
+## v0.213 背包：種類排序、依部位／稀有度批次選取、寶石分解；寶石掉落降為 1/10
+
+- 裝備與信物分類的排序新增「種類」：裝備依部位、武器類型、裝備定義排列，信物依信物種類；原本選擇的排序保留為同種類內的順序。
+- 批次選取（裝備、信物）新增「依部位」「依稀有度」與「選取符合條件」：選取目前清單中符合條件且可操作的道具，鎖定、已穿戴、隊伍配置使用中、未鑑定與待確認洗鍊的道具不會被選入；之後沿用既有的批次出售／分解明細與確認。
+- 寶石分解（新功能）：
+  - 數值在平衡資料 `skills.gems.dustSalvage.dustByTier`（`data/balance/combat/skill-settings.json`），預設 1 階 10、2 階 50、3 階 300 寶石粉塵；遊戲預設值同步寫在 `js/balance/gameplay-defaults.js`。驗證：3 個非負整數。平衡器尚未加入此欄位（使用者決定先只放遊戲資料），平衡器發布的文件沒有這個欄位時沿用預設值。
+  - `js/world/drop-rework.js`：`gemSalvageQuote`、`salvageGems`（全有或全無，存檔失敗時寶石與粉塵恢復原狀）、`openGemSalvage`／`confirmGemSalvage`（確認前重新計算，數量改變時要求重新確認）。
+  - 背包寶石詳細資訊：「分解 1 顆」「全部分解」，都會先顯示明細並確認。
+  - 寶石分類「批次分解」：點選格子（整格）或「依等級」「全選」選取，確認後分解，完成或取消後離開批次模式。
+- 寶石掉落：73 條 `gemPool` 規則的 `chanceByDifficulty` 全部乘以 0.1（`data/balance/world/drops.json`），例如普通怪 3.3％／6.6％／11％ → 0.33％／0.66％／1.1％。
