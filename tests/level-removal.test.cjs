@@ -60,7 +60,8 @@ test('there is no second class: former second-class skills unlock at their maste
  assert.deepEqual(learned(),[],'not before their mastery level');
  r.run(`setClassMasteryLevel(${top},playerHero());for(const k of Object.keys(playerHero().mastery||{}))playerHero().mastery[k]=100000;__EMBERWILD_SKILL_REFRESH();`);
  assert.deepEqual(learned(),rows.map(x=>x.skillId).sort(),'unlocked by mastery alone');
- assert.deepEqual(json(r,'__EMBERWILD_SKILLS.slotCounts(playerHero())'),json(r,'__EMBERWILD_SKILLS.system().classRules[0].slots.advanced'),'every slot is available');
+ // v0.212: support skills use active slots, so the support engine field follows the active slot count.
+ assert.deepEqual(json(r,'__EMBERWILD_SKILLS.slotCounts(playerHero())'),(s=>({active:s.active,proc:s.proc,support:s.active}))(json(r,'__EMBERWILD_SKILLS.system().classRules[0].slots.advanced')),'every slot is available');
  const s=json(r,'(()=>{const h=playerHero(),a=stats(h);h.advanced=true;const b=stats(h);h.advanced=false;return {a,b};})()');
  assert.deepEqual([s.b.hp,s.b.atk,s.b.def],[s.a.hp,s.a.atk,s.a.def],'an old advanced flag adds nothing');
  const c=json(r,`(()=>{const id=EmberwildCompanions.defaultPlans.find(p=>p.job!==playerHero().job).id;party.companionUnlocks??={};globalThis.companionUnlocked=()=>true;recruitCompanion(id);const h=partyMember(id);const before=classMasteryLevel(h);__EMBERWILD_COMPANION_MASTERY_GAIN(h,100000);return {before,after:classMasteryLevel(h),xp:h.companionMastery.xp,max:__EMBERWILD_MASTERY.masteryMaxXp(),lv:h.lv,player:classMasteryLevel(playerHero())};})()`);

@@ -8,8 +8,10 @@ const modal=r=>r.run("$('modal').innerHTML");
 test('slot tabs list every slot and switch the right pane; unlearned skills can be hidden and shown again',()=>{
  const r=game();r.run("openSkillSlot('active',1)");let html=modal(r);
  assert.match(html,/<nav class="skill-slot-tabs"/);for(const t of ['active:0','active:1','active:2','proc:0'])assert.match(html,new RegExp(`data-slot-tab="${t}"`));
- assert.match(html,/data-slot-tab="active:1" aria-pressed="true"/);const locked=(html.match(/skill-locked/g)||[]).length;assert(locked>0,'unlearned skills are shown by default');
- r.run("toggleSkillSlotLocked('active',1,false)");html=modal(r);assert.doesNotMatch(html,/skill-locked/);assert.match(html,/已隱藏 \d+ 個未學技能/);assert.match(html,/data-slot-tab="active:1" aria-pressed="true"/);
+ assert.match(html,/data-slot-tab="active:1" aria-pressed="true"/);// v0.214: only learned skills by default; unlearned ones can be shown.
+ assert.doesNotMatch(html,/skill-locked/);assert.match(html,/已隱藏 \d+ 個未學技能/);
+ r.run("toggleSkillSlotLocked('active',1,true)");html=modal(r);assert((html.match(/skill-locked/g)||[]).length>0);
+ r.run("toggleSkillSlotLocked('active',1,false)");html=modal(r);assert.doesNotMatch(html,/skill-locked/);assert.match(html,/data-slot-tab="active:1" aria-pressed="true"/);
  // v0.212: support skills are active skills; there is no support slot.
  assert.equal(r.run("openSkillSlot('support',0)"),false);r.run("openSkillSlot('active',0)");assert.doesNotMatch(modal(r),/輔助槽|data-slot-tab="support:/);
  r.run("toggleSkillSlotLocked('active',0,true)");assert.match(modal(r),/type="checkbox" checked/);

@@ -1603,3 +1603,7 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 ## v0.215 測試：寶石掉落率基準更新
 
 只改測試。`tests/elite-drop-rates.test.cjs` 與 `tests/skill-gems.test.cjs` 的寶石掉落率基準改為 v0.213 的 1/10 數值。`tests/loot-effects.browser.test.cjs` 的「勝利後立即入帳」在 v0.210 原始版本就失敗，不屬於這次修改。
+
+## v0.216 測試：技能頁拆分與輔助槽移除的測試更新
+
+只改測試，配合 v0.212 與 v0.214：技能圖鑑改為子頁（`tab` 角色、`data-skill-pick`）、職業技能清單在「職業成長」、技能槽格子（`skill-cell`）、技能槽視窗預設只列出已學技能且未學技能沒有裝入按鈕、玩家沒有輔助槽（`supportSlots` 長度跟隨主動槽）。`tests/skill-icons.browser.test.cjs` 的四個平衡器相關子測試在 v0.210 原始版本就失敗。

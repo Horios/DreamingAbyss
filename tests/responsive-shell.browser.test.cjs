@@ -194,8 +194,9 @@ test('Phone second pass: two-column stats, compact empty skill slots, one-row qu
  await p.evaluate(()=>setTab('character'));
  const stats=await p.locator('.stat-grid>span').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(stats[0],stats[1],'two stats share a row');
  await p.evaluate(()=>setTab('skills'));
- const slots=await p.locator('.skill-system-slot').evaluateAll(es=>es.map(e=>({h:e.getBoundingClientRect().height,filled:!!e.querySelector('.skill-slot-name')})));
- assert(slots.some(s=>!s.filled)&&slots.filter(s=>!s.filled).every(s=>s.h>=44&&s.h<=60),'empty slots are one row '+JSON.stringify(slots));
+ // v0.214: slots are compact icon cells; an empty cell keeps a 44px+ tap area.
+ const slots=await p.locator('.skill-cell[data-skill-slot]').evaluateAll(es=>es.map(e=>({h:e.querySelector('.skill-cell-art').getBoundingClientRect().height,filled:!e.classList.contains('is-empty')})));
+ assert(slots.some(s=>!s.filled)&&slots.every(s=>s.h>=44&&s.h<=64),'compact slot cells '+JSON.stringify(slots));
  await p.evaluate(()=>setStoryCategory('side'));
  assert.equal(new Set(await p.locator('.quest-filter>button').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)))).size,1,'quest filter is one row');
  await p.evaluate(()=>setTab('roster'));

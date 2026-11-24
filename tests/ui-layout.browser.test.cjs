@@ -70,10 +70,11 @@ test('Utility dialogs keep readable scroll regions and skill catalog names wrap 
    if(id==='achievements')assert.equal(await p.locator('.achievement-list').evaluate(e=>getComputedStyle(e).overflowY),'visible');
    await p.evaluate(()=>closeModal());
   }
-  await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
+  // v0.214: 技能圖鑑 is a sub-page of the skills page.
+  await p.evaluate(()=>setTab('skills'));await p.getByRole('tab',{name:'技能圖鑑',exact:true}).click();await p.locator('[data-skill-page-view="catalog"]').waitFor();
   const name=p.locator('.skill-catalog-text b').first();await name.evaluate(e=>e.textContent='長技能名稱'.repeat(12));
   const b=await name.evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth,white:getComputedStyle(e).whiteSpace}));assert(b.scroll<=b.width+1);assert.equal(b.white,'normal');
-  await p.evaluate(()=>closeModal());
+  await p.evaluate(()=>setSkillPage('loadout'));
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}

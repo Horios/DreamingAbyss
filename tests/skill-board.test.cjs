@@ -7,21 +7,23 @@ const html=r=>r.elements.get('app').innerHTML,modal=r=>r.elements.get('modal').i
 const slot=(r,key)=>html(r).match(new RegExp(`data-skill-slot="${key}"[\\s\\S]*?</button>`))[0];
 test('Player skills show canonical slots with SVG icons; the catalog sorts learned first then by level and details show one skill',()=>{
  const r=game();
- assert.deepEqual([...html(r).matchAll(/data-skill-slot="([^"]+)"/g)].map(x=>x[1]),['active:0','active:1','active:2','proc:0','proc:1','support:0','support:1']);
- assert.match(slot(r,'active:0'),/<svg[\s\S]*<b>[^<]+<\/b>/);assert.match(slot(r,'active:1'),/選擇技能/);
+ assert.deepEqual([...html(r).matchAll(/data-skill-slot="([^"]+)"/g)].map(x=>x[1]),['active:0','active:1','active:2','proc:0','proc:1']);/* v0.212: no support slots */
+ assert.match(slot(r,'active:0'),/<svg[\s\S]*skill-cell-name">[^<]+</);assert.match(slot(r,'active:1'),/空欄位/);
  assert.equal(r.run('openSkillCatalog()'),true);
- // v0.092: the catalog lists every skill on the left (data-skill-pick) and details the selected one on the right.
- const order=r.run(`JSON.stringify([...$('modal').innerHTML.matchAll(/data-skill-pick="([^"]+)"/g)].map(x=>{const sk=__EMBERWILD_SKILLS.byId(x[1]);return [__EMBERWILD_SKILLS.learned(playerHero(),sk)?0:1,sk.requiredLevel??sk.level??1];}))`);
+ // v0.214: the catalog is a sub-page listing every skill on the left (data-skill-pick) and the selected one on the right.
+ const order=r.run(`JSON.stringify([...$('app').innerHTML.matchAll(/data-skill-pick="([^"]+)"/g)].map(x=>{const sk=__EMBERWILD_SKILLS.byId(x[1]);return [__EMBERWILD_SKILLS.learned(playerHero(),sk)?0:1,sk.requiredLevel??sk.level??1];}))`);
  const rows=JSON.parse(order);assert(rows.length>1);assert(rows.some(x=>x[0]===0)&&rows.some(x=>x[0]===1));
  assert.deepEqual(rows,[...rows].sort((a,b)=>a[0]-b[0]||a[1]-b[1]));
- assert(!/chooseSkillSlot|configureSkill/.test(modal(r)),'the catalog is read-only');
+ assert(!/chooseSkillSlot|configureSkill/.test(html(r)),'the catalog only links to the slot dialog');
  r.run('closeModal()');assert.equal(r.run("showSkillInformation('class0-initial0')"),true);
  assert.equal((modal(r).match(/class="skill-candidate/g)||[]).length,1);assert.match(modal(r),/data-skill-id="class0-initial0"/);
  assert.equal(r.run("showSkillInformation('missing-skill')"),false);assert.deepEqual(r.errors,[]);
 });
 test('Learning by level and equipping refresh the slot view while keeping real team state',()=>{
  const r=game();assert.equal(r.run("__EMBERWILD_SKILLS.learned(playerHero(),__EMBERWILD_SKILLS.byId('class0-initial1'))"),false);
- r.run("openSkillSlot('active',1)");assert.match(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)" disabled/);
+ // v0.214: unlearned skills are hidden by default; when shown they have no equip button.
+ r.run("openSkillSlot('active',1)");assert.doesNotMatch(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)/);
+ r.run("toggleSkillSlotLocked('active',1,true)");assert.match(modal(r),/data-skill-id="class0-initial1"/);assert.doesNotMatch(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)/);
  r.run("closeModal();setClassMasteryLevel(2,playerHero());save();openSkillSlot('active',1)");assert.match(modal(r),/chooseSkillSlot\('active',1,'class0-initial1'\)"(?! disabled)/);
  assert.equal(r.run("chooseSkillSlot('active',1,'class0-initial1')"),true);assert.equal(r.run("$('modal').open"),false);
  assert.deepEqual(JSON.parse(r.run('JSON.stringify(playerHero().skillLoadout.active)')),['class0-initial0','class0-initial1',null]);
