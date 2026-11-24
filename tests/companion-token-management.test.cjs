@@ -33,7 +33,8 @@ test('token filters combine name, job, quality, enhancement, lock, worn and live
  r.run(`clearTokenFilters();toggleGearLock(a.id);setTokenFilter('locked','yes');`);assert.deepEqual(json(r,'__EMBERWILD_TOKEN_INVENTORY.rows().map(r=>r.g.id)'),['token-a']);
  r.run(`clearTokenFilters();setTokenSort('enhance');`);assert.deepEqual(json(r,'__EMBERWILD_TOKEN_INVENTORY.rows().map(r=>r.g.id)'),['token-c','token-a','token-b']);r.run('toggleTokenDirection()');assert.deepEqual(json(r,'__EMBERWILD_TOKEN_INVENTORY.rows().map(r=>r.g.id)'),['token-b','token-a','token-c']);
  r.run(`setTokenFilter('stat','atk');setTokenFilter('op','range');setTokenFilter('value','1');setTokenFilter('upper','100');`);assert(r.run('__EMBERWILD_TOKEN_INVENTORY.rows().length')>0);assert(r.run('__EMBERWILD_TOKEN_INVENTORY.rows().every(r=>r.stats.atk>=1&&r.stats.atk<=100)'));
- assert.match(r.run('equipmentView()'),/屬性數值篩選/);assert.deepEqual(r.errors,[]);
+ // v0.211 grid bag: the token tab keeps only sort and quality; the filter functions above remain the data layer.
+ r.run("setInventoryCategory('tokens')");assert.match(r.run('equipmentView()'),/aria-label="品質"/);assert.deepEqual(r.errors,[]);
 });
 test('token select-all keeps gear, locks, wearer and saved plans; sale revalidates and grants once',()=>{
  const r=inventory();r.run(`globalThis.a=fixture('sell-a'),b=fixture('sell-b'),locked=fixture('locked'),worn=fixture('worn'),plan=fixture('plan');locked.locked=true;equipCompanionToken(worn.id,10);copyTeamPlan();party.buildSystem.plans[1].tokens[10]=plan.id;toggleTokenMulti();selectVisibleTokens();`);
@@ -54,7 +55,8 @@ test('token chance tracks ordinary equipment for normal/elite/boss in all diffic
  assert(out.normal>0);assert(Math.abs(out.normal-out.rows[0].expected)<1e-10);assert(out.boosted>out.normal);assert.equal(out.boosted,out.boostedExpected,'apply the boost to each independent equipment roll before combining their probabilities');assert.equal(out.attenuated,out.boosted,'no level-gap attenuation since v0.161');assert.equal(out.boundary,0);assert.equal(out.disabled,0);assert.deepEqual(r.errors,[]);
 });
 test('token backpack uses three columns and selects persistent details without opening an item dialog',()=>{
- const r=inventory();r.run(`globalThis.a=fixture('detail-a','berserk'),b=fixture('detail-b','guardian');selectInventoryToken(b.id);`);const html=r.run('equipmentView()');
- assert.match(html,/token-inventory-layout/);assert.match(html,/aria-label="信物詳細說明"/);assert.match(html,/token-inventory-detail[^]*?守護信物/);assert.match(html,/onclick="selectInventoryToken\('detail-b'\)"/);assert.doesNotMatch(html,/openItemSlotDetails/);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);
- const fs=require('node:fs'),css=fs.readFileSync(path.join(root,'css/companion-tokens.css'),'utf8');assert.match(css,/\.token-management-panel \.token-inventory-list\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);assert.match(css,/@media\(max-width:1100px\)/);assert.deepEqual(r.errors,[]);
+ const r=inventory();r.run(`globalThis.a=fixture('detail-a','berserk'),b=fixture('detail-b','guardian');setInventoryCategory('tokens');selectInventoryToken(b.id);`);const html=r.run('equipmentView()');
+ // v0.211 grid bag: tokens are grid slots; the selected token's detail stays in the bag's detail pane.
+ assert.match(html,/class="bag-grid"/);assert.match(html,/aria-label="道具詳細資訊"/);assert.match(html,/bag-detail[^]*?守護信物/);assert.match(html,/data-bag-ref="g:detail-b"[^>]*aria-pressed="true"/);assert.doesNotMatch(html,/openItemSlotDetails/);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);
+ assert.deepEqual(r.errors,[]);
 });

@@ -24,11 +24,11 @@ test('three real form/download/file-import/reload cycles retain material prices 
    await g.page.evaluate(()=>{closeModal();setTab('options');});
    await require('./runtime.cjs').importBalanceFile(g.page,'audit-balance-'+cycle+'.json',buffer);
    await g.page.waitForFunction(price=>materialSellPrice('紅色草')===price,price);
-   // Materials are sold from the bag's item details (全部賣出).
+   // v0.211: materials are sold from the bag's detail pane (全部賣出) after selecting the grid slot.
    const before=await g.page.evaluate(()=>{closeModal();state.materials['紅色草']=2;setTab('equipment');setInventoryCategory('materials');render();return state.gold;});
-   await g.page.locator('[data-item-kind="material"][data-item-key="紅色草"]').first().click();
-   await g.page.locator('#item-detail-dialog').getByRole('button',{name:'全部賣出',exact:true}).click();
-   assert.equal(await g.page.evaluate(()=>state.gold),before+2*price);assert.equal(await g.page.evaluate(()=>materialCount('紅色草')),0);
+   await g.page.locator('.bag-cell[aria-label^="紅色草 ×"]').first().click();
+   await g.page.locator('.bag-detail').getByRole('button',{name:'全部賣出',exact:true}).click();
+   await g.page.waitForFunction(gold=>state.gold===gold,before+2*price);assert.equal(await g.page.evaluate(()=>materialCount('紅色草')),0);
    await g.page.reload();await g.page.evaluate(()=>{continueFromTitle();closeModal();clearInterval(timer);});
    assert.equal(await g.page.evaluate(()=>materialSellPrice('紅色草')),price);
    const roundtrip=await g.page.evaluate(()=>exportableBalance());

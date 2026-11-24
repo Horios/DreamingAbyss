@@ -221,9 +221,12 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.ok(await detail.evaluate(el=>el.scrollWidth<=el.clientWidth+1));
       assert.ok(await r.page.locator('#modal .equipment-total-summary').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
       await r.page.setViewportSize({width:1280,height:800});await r.page.evaluate(()=>{closeModal();setTab('equipment');setInventoryCategory('equipment');});
-      const listName=r.page.locator('.gear-management-row[data-gear-id="equipment-test"] .inventory-list-item');
-      const listText=await listName.innerText();assert.match(listText,/(^|\s)T7(\s|$)/);assert.match(listText,/\+10 /);
-      assert.ok(await listName.evaluate(el=>el.scrollHeight<=el.clientHeight+1));
+      // v0.211 grid bag: the slot shows the enhancement badge; T and the full name are in the detail pane.
+      const cell=r.page.locator('.bag-cell[data-bag-ref="g:equipment-test"]');
+      assert.equal(await cell.locator('.bag-cell-tl').innerText(),'+10');
+      assert.ok(await cell.evaluate(el=>el.scrollHeight<=el.clientHeight+1&&el.scrollWidth<=el.clientWidth+1));
+      await r.page.evaluate(()=>bagCellClick('g:equipment-test'));
+      assert.match(await r.page.locator('.bag-detail').innerText(),/(^|\s|·)T7(\s|$)/);
       await r.page.evaluate(()=>{openForge(state.bag[0].id);toggleWorkshopPicker(true);});
       assert.ok(await r.page.locator('.forge-gear-item .item-slot-name').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1));
     });

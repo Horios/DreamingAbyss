@@ -521,7 +521,7 @@
         {
           "id": "fixed",
           "title": "商品",
-          "text": "每件商品標示數量與價格，按「購買」後材料放進庫存、道具放進背包的「道具」分類。",
+          "text": "每件商品標示數量與價格，按「購買」後物品放進背包對應的分類。",
           "page": "shop",
           "target": "shop.fixed",
           "placement": "auto",
@@ -941,8 +941,8 @@
       "steps": [
         {
           "id": "items",
-          "title": "道具分類",
-          "text": "按「道具」切換到道具清單。夥伴招募券放在「票券」。",
+          "title": "特殊分類",
+          "text": "按「特殊」切換到特殊道具。夥伴招募券放在這個分類。",
           "page": "equipment",
           "target": "bag.itemsCategory",
           "placement": "auto",
@@ -1027,7 +1027,7 @@
         "type": "pageEnter",
         "page": "equipment",
         "notify": true,
-        "notifyText": "取得「夥伴招募券 - 洛恩」，到背包 → 道具使用。"
+        "notifyText": "取得「夥伴招募券 - 洛恩」，到背包 → 特殊使用。"
       },
       "prerequisites": {
         "mode": "all",
@@ -1047,8 +1047,8 @@
       "steps": [
         {
           "id": "items",
-          "title": "道具分類",
-          "text": "按「道具」切換到道具清單。夥伴招募券放在「票券」。",
+          "title": "特殊分類",
+          "text": "按「特殊」切換到特殊道具。夥伴招募券放在這個分類。",
           "page": "equipment",
           "target": "bag.itemsCategory",
           "placement": "auto",
@@ -1268,7 +1268,7 @@
         {
           "id": "plans",
           "title": "隊伍方案",
-          "text": "隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 道具）。",
+          "text": "隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 特殊）。",
           "page": "roster",
           "target": "roster.plans",
           "placement": "auto",
@@ -1345,7 +1345,7 @@
         {
           "id": "recruit",
           "title": "更多夥伴",
-          "text": "新夥伴要使用夥伴招募券加入：到背包 → 道具，點選招募券後按「使用招募券」。",
+          "text": "新夥伴要使用夥伴招募券加入：到背包 → 特殊，點選招募券後按「使用招募券」。",
           "page": "partnerRoster",
           "target": "",
           "placement": "auto",

@@ -79,8 +79,8 @@
   'roster.plans':{label:'隊伍方案',page:'roster'},
   'roster.list':{label:'上陣與後備名單',page:'roster'},
   'partners.list':{label:'夥伴名冊清單',page:'partnerRoster'},
-  'bag.itemsCategory':{label:'背包的「道具」分類',page:'equipment'},
-  'bag.companionTicket':{label:'道具中的夥伴招募券',page:'equipment'},
+  'bag.itemsCategory':{label:'背包的「特殊」分類',page:'equipment'},
+  'bag.companionTicket':{label:'特殊分類中的夥伴招募券',page:'equipment'},
   'items.useTicket':{label:'招募券詳細資料的「使用招募券」',page:'equipment'},
   'character.stats':{label:'人物能力',page:'character'},
   'character.mastery':{label:'職業精通',page:'character'},
@@ -146,7 +146,7 @@
   makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。第一次進入商店時開始。',
    trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone')]),steps:[
    step('categories','商品分類','上方按鈕切換商品分類。',{page:'shop',target:'shop.categories'}),
-   step('fixed','商品','每件商品標示數量與價格，按「購買」後材料放進庫存、道具放進背包的「道具」分類。',{page:'shop',target:'shop.fixed'}),
+   step('fixed','商品','每件商品標示數量與價格，按「購買」後物品放進背包對應的分類。',{page:'shop',target:'shop.fixed'}),
    step('random','限時商品','這一區的商品會定期更換，也可以花金幣手動刷新。',{page:'shop',target:'shop.random'})
   ]}),
   makeModule({id:'quest_basics',title:'委託',category:'quests',description:'每日委託的接取與交付。第一次進入委託時開始。',
@@ -174,13 +174,13 @@
   // v0.178: companions join by their ticket. The onboarding hands out the priest's; the caravan story hands out 洛恩's.
   makeModule({id:'onboarding_helper',title:'招募牧師',category:'companions',description:'新手引導：在背包使用「夥伴招募券 - 艾琳」，讓牧師艾琳加入隊伍。',
    trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','helper')]),skippable:false,steps:[
-   step('items','道具分類','按「道具」切換到道具清單。夥伴招募券放在「票券」。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
    step('ticket','夥伴招募券','點選「夥伴招募券 - 艾琳」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
    step('use','使用招募券','艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源與治療強化。按「使用招募券」，艾琳就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
   ]}),
   makeModule({id:'recruit_lorne',title:'招募戰士',category:'companions',description:'完成商隊事件後取得「夥伴招募券 - 洛恩」，在背包使用讓戰士洛恩加入隊伍。',
-   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 道具使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
-   step('items','道具分類','按「道具」切換到道具清單。夥伴招募券放在「票券」。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 特殊使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
+   step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
    step('ticket','夥伴招募券','點選「夥伴招募券 - 洛恩」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
    step('use','使用招募券','洛恩是戰士，專注劍術輸出，技能有裂地斬、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
   ]}),
@@ -194,12 +194,12 @@
   makeModule({id:'roster_basics',title:'隊伍編成',category:'companions',description:'隊伍方案、上陣與後備的調整。第一次進入隊伍編成時開始。',
    trigger:{type:'pageEnter',page:'roster'},prerequisites:group([condition('prologueDone')]),steps:[
    step('list','上陣名單','最多三人上陣。點「移至後備」或「上陣」調整出戰的成員，請先停止探索再調整。',{page:'roster',target:'roster.list'}),
-   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 道具）。',{page:'roster',target:'roster.plans'})
+   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 特殊）。',{page:'roster',target:'roster.plans'})
   ]}),
   makeModule({id:'partner_basics',title:'夥伴名冊',category:'companions',description:'查看每位夥伴的能力、技能與信物。新手引導結束後第一次進入夥伴名冊時開始。',
    trigger:{type:'pageEnter',page:'partnerRoster'},prerequisites:group([condition('prologueDone')]),steps:[
    step('list','夥伴資料','點選夥伴可以查看能力、技能與信物。夥伴依固定走向自動成長，職業精通等級會解鎖夥伴技能。',{page:'partnerRoster',target:'partners.list'}),
-   step('recruit','更多夥伴','新夥伴要使用夥伴招募券加入：到背包 → 道具，點選招募券後按「使用招募券」。',{page:'partnerRoster'})
+   step('recruit','更多夥伴','新夥伴要使用夥伴招募券加入：到背包 → 特殊，點選招募券後按「使用招募券」。',{page:'partnerRoster'})
   ]}),
   makeModule({id:'character_basics',title:'角色能力',category:'character',description:'人物能力與職業、武器、元素精通。第一次進入角色能力時開始。',
    trigger:{type:'pageEnter',page:'character'},prerequisites:group([condition('prologueDone')]),steps:[

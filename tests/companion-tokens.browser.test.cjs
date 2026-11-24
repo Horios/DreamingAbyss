@@ -9,7 +9,7 @@ test('Chromium: token UI, normal player equipment, enhancement, reserves and rea
   await p.locator('[data-token-owner="10"]').getByRole('button',{name:'更換信物',exact:true}).click();await p.locator('[data-token-id="'+ids[0]+'"]').click();assert.equal(await p.evaluate(()=>partyMember(10).tokenId),ids[0]);
   await p.locator('[data-token-owner="10"]').getByRole('button',{name:'更換信物',exact:true}).click();assert.match(await p.locator('#modal').innerText(),/換裝比較/);await p.locator('[data-token-id="'+ids[1]+'"]').click();assert.equal(await p.evaluate(()=>partyMember(10).tokenId),ids[1]);
   await p.locator('[data-token-owner="10"]').getByRole('button',{name:'卸下',exact:true}).click();assert.equal(await p.evaluate(()=>partyMember(10).tokenId),null);
-  await p.evaluate(()=>setTab('equipment'));await p.getByRole('button',{name:'信物',exact:true}).click();await p.getByRole('heading',{name:'夥伴信物',exact:true}).waitFor();
+  await p.evaluate(()=>setTab('equipment'));await p.locator('[data-bag-tab="tokens"]').click();await p.locator('.bag-panel[data-bag-category="tokens"]').waitFor();/* v0.211 grid bag */
   // The bag lists tokens as item slots; equipping happens in 裝備與信物.
   assert.deepEqual(await p.locator('main [data-item-kind="token"]').evaluateAll(n=>n.map(e=>e.dataset.itemKey).sort()),['arcane','berserk']);
   await p.evaluate(()=>setTab('worn'));await p.locator('[data-token-owner="12"]').getByRole('button',{name:'更換信物',exact:true}).click();await p.locator('[data-token-id="'+ids[0]+'"]').click();assert.equal(await p.evaluate(()=>partyMember(12).tokenId),ids[0]);

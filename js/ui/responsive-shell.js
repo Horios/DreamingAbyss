@@ -56,7 +56,7 @@
      bottom navigation. The pane is the page's own element (shown with CSS), so its content, ids and handlers are unchanged. */
   const phone=matchMedia('(max-width:700px)');
   const SHEETS={
-    gear:{panel:'#app .inventory-detail-wrap',trigger:'.gear-management-row .inventory-list-item',title:'裝備詳情'},
+    gear:{panel:'#app .inventory-detail-wrap',trigger:'.gear-management-row .inventory-list-item,.bag-grid:not(.is-batch) .bag-cell[data-bag-ref]',title:'道具詳情'},
     token:{panel:'#app .token-inventory-detail',trigger:'.token-management-row .token-inventory-row',title:'信物詳情'},
     worn:{panel:'#app .worn-candidate-pane',trigger:'.worn-slot-choice',title:'裝備欄位'},
     mail:{panel:'#modal .mailbox-detail',trigger:'.mailbox-list-item',title:'信件',back:'返回信件列表'}
@@ -195,6 +195,8 @@
     pane.dataset.key=key;
     try{pane.innerHTML='<h3>與目前穿戴比較</h3>'+compareHTML(g);}catch(error){console.warn(error);pane.remove();}
   }
+  // v0.211 grid bag: the detail pane shows the same comparison in a fold on every width.
+  globalThis.__EMBERWILD_GEAR_COMPARE=g=>compareHTML(g);
   wide.addEventListener('change',()=>syncWideCompare());
   function syncPages(){syncJournalToggle();syncSheet(true);syncIntros();syncRecipes();syncWideCompare();syncTokenFilters();syncBossRegions();syncCreationTabs();}
   globalThis.toggleTokenFilters=function(){const open=document.body.classList.toggle('token-filters-open');const b=document.querySelector('.token-filter-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起篩選':'信物篩選';}return open;};
@@ -221,7 +223,8 @@
   const closeBase=closeModal;closeModal=function(...args){if(sheet==='mail')setSheet('');return closeBase(...args);};
   // Selecting an item (a tap, or a jump from another page that picks one) means its detail is wanted.
   if(typeof selectInventoryGear==='function'){const gearBase=selectInventoryGear;selectInventoryGear=function(...args){if(phone.matches)setSheet('gear');return gearBase(...args);};}
-  if(typeof selectInventoryToken==='function'){const tokenBase=selectInventoryToken;selectInventoryToken=function(...args){if(phone.matches)setSheet('token');return tokenBase(...args);};}
+  // v0.211 grid bag: tokens share the bag's detail pane, so they open the same sheet.
+  if(typeof selectInventoryToken==='function'){const tokenBase=selectInventoryToken;selectInventoryToken=function(...args){if(phone.matches)setSheet(document.querySelector('#app .bag-detail')?'gear':'token');return tokenBase(...args);};}
   const modal=document.getElementById('modal');
   if(modal)new MutationObserver(()=>{if(sheet==='mail')syncSheet();}).observe(modal,{childList:true});
   const renderBase=render;render=function(...args){const out=renderBase(...args);sync();syncPages();return out;};

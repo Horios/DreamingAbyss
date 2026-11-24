@@ -113,7 +113,7 @@
   if(party&&!globalThis.__EMBERWILD_TITLE?.open()&&R()?.done&&!party.story.flags.onboarding_story_notice){
    if(S().transaction(()=>{party.story.flags.onboarding_story_notice=true;}))toast('主線任務已有「商隊事件」，可自行開始；也可繼續自由探索。');
   }
-  if(party?.story?.flags?.caravan_warrior_notice){if(S().transaction(()=>{delete party.story.flags.caravan_warrior_notice;}))toast('獲得夥伴招募券 - 洛恩，到背包 → 道具使用');}
+  if(party?.story?.flags?.caravan_warrior_notice){if(S().transaction(()=>{delete party.story.flags.caravan_warrior_notice;}))toast('獲得夥伴招募券 - 洛恩，到背包 → 特殊使用');}
  }
  // The ordinary battle must actually finish; killing the first enemy in a group is insufficient.
  function practiceWon(){if(runningGuide()&&stage()==='practice'&&!party.story.flags.onboarding_battle&&foes.length&&foes.every(e=>e.hp<=0)&&!party.questChallenge){if(S().transaction(()=>{party.story.flags.onboarding_battle=true;}))render();}}

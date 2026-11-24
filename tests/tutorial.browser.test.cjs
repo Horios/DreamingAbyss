@@ -59,7 +59,7 @@ test('a step inside a dialog marks its control with a ring and the card joins th
   await page.click('[data-tutorial-notice="equipment_basics"] button:has-text("前往")');
   await page.click('#tutorial-card button:has-text("下一步")');
   const id=await page.evaluate(()=>playerHero().bag.find(g=>g.acquiredAt).id);
-  await page.click(`.inline-equipment-list [onclick*="selectInventoryGear('${id}')"]`);
+  await page.click(`.bag-grid .bag-cell[data-bag-ref="g:${id}"]`);/* v0.211 grid bag */
   await page.click(`main [onclick*="openInventoryWear('${id}')"]`);await page.click(`main [onclick^="previewEquip('${id}'"]`);
   assert.equal(await page.evaluate(()=>document.getElementById('modal').open),true,'the comparison dialog opened');
   await page.waitForFunction(()=>document.querySelector('#modal .tutorial-ring'));

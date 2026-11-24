@@ -50,7 +50,7 @@ test('Shared item hover descriptions survive journal scrolling and redraws until
       document.querySelector('#item-hover-test-fixture')?.remove();
       setTab('equipment');setInventoryCategory('tokens');
     });
-    const liveToken=page.locator('main .token-inventory-row[data-item-kind]').first();
+    const liveToken=page.locator('main .bag-cell[data-item-kind]').first();/* v0.211 grid bag slot */
     await liveToken.waitFor();
     await liveToken.hover();
     assert.equal(await tooltip.isVisible(),true);

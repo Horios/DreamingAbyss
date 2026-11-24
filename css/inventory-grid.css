@@ -1,0 +1,76 @@
+/* v0.211 grid bag: square slots, tab icons, one detail pane (bottom sheet on phones). Colours come from the theme and the
+   existing quality variables (item-slots.css), so every theme and the rarity colours stay consistent. */
+#app .bag-panel{display:flex;flex-direction:column;gap:10px;min-width:0;--bag-cell:58px}
+#app .bag-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;padding:0 0 8px;border-bottom:1px solid var(--line)}
+#app .bag-tab{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:4px 10px;border-radius:6px;font-size:13px;background:transparent;border:1px solid transparent;color:var(--muted)}
+#app .bag-tab svg{width:16px;height:16px;flex:none}
+#app .bag-tab small{font-size:11px;opacity:.75}
+#app .bag-tab.is-active{color:var(--text);border-color:var(--line);background:var(--inset,rgba(255,255,255,.05))}
+#app .bag-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+#app .bag-meta{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#app .bag-usage{font-size:13px;color:var(--muted)}#app .bag-usage b{font-size:16px;color:var(--text)}
+#app .bag-usage.is-over b{color:var(--danger,#e07a6a)}
+#app .bag-usage-note{opacity:.7}
+#app .bag-gold{font-size:12px;color:var(--gold)}
+#app .bag-actions,#app .bag-batch,#app .bag-filters{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+#app .bag-actions button,#app .bag-batch button,#app .bag-filters button{min-height:32px;padding:4px 10px;font-size:13px}
+#app .bag-filters{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px}
+#app .bag-field{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+#app .bag-field select,#app .bag-field input{min-height:30px;font-size:13px}
+#app .bag-field input{width:64px}
+#app .bag-batch b{font-size:13px}
+#app .bag-filter-toggle.is-active{border-color:var(--gold);color:var(--gold)}
+#app .bag-filter-note{margin:0}
+#app .bag-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,38%);gap:12px;align-items:start;min-width:0}
+#app .bag-grid-pane{min-width:0;max-height:calc(100dvh - 230px);min-height:240px;overflow-y:auto;overflow-x:hidden;padding:2px;box-sizing:border-box}
+#app .bag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--bag-cell),1fr));gap:5px;min-width:0}
+#app .bag-cell{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;width:100%;min-width:0;min-height:0;padding:0;margin:0;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;background:var(--panel,#17221c);color:var(--text);cursor:pointer;overflow:hidden}
+#app .bag-cell[class*="item-quality-"]{border-color:var(--item-quality-color);border-width:2px}
+#app .bag-cell.is-empty{cursor:default;background:var(--inset,rgba(255,255,255,.02));border-color:color-mix(in srgb,var(--line) 55%,transparent);opacity:.55}
+#app .bag-cell.is-selected{outline:2px solid var(--gold);outline-offset:1px}
+#app .bag-cell.is-picked{outline:2px solid var(--gold);outline-offset:1px;background:color-mix(in srgb,var(--gold) 16%,var(--panel,#17221c))}
+#app .bag-cell.is-picked::after{content:"✓";position:absolute;top:1px;right:3px;font:800 12px/1 system-ui,sans-serif;color:var(--gold)}
+#app .bag-cell.is-disabled{opacity:.35;cursor:not-allowed}
+#app .bag-cell-art{display:flex;align-items:center;justify-content:center;width:62%;height:62%;pointer-events:none}
+#app .bag-cell-art svg{width:100%;height:100%;max-width:34px;max-height:34px}
+#app .bag-cell.is-unidentified{border-color:var(--line)!important;background:var(--panel-2,rgba(255,255,255,.04))}
+#app .bag-cell-unknown{position:relative}
+#app .bag-cell-unknown svg{filter:brightness(.42) saturate(.2)}
+#app .bag-cell-q{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 20px/1 system-ui,sans-serif;color:#f4f1e6;text-shadow:0 0 3px #000,0 0 6px #000}
+#app .bag-cell-tl,#app .bag-cell-tr,#app .bag-cell-br{position:absolute;pointer-events:none;line-height:1}
+#app .bag-cell-tl{top:2px;left:3px;font:700 11px/1 system-ui,sans-serif;color:var(--gold);text-shadow:0 0 2px #000,0 0 3px #000}
+#app .bag-cell-tr{top:2px;right:2px;color:var(--muted)}
+#app .bag-lock svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6}
+#app .bag-cell-br{right:2px;bottom:2px}
+#app .bag-count{padding:1px 3px;border-radius:3px;background:rgba(0,0,0,.6);color:#fff;font:700 11px/1.15 system-ui,sans-serif}
+#app .bag-tier{color:#e8d9a8}
+#app .bag-sockets{display:flex;gap:1px;color:var(--muted)}
+#app .bag-sockets svg{display:block;width:9px;height:9px}
+#app .bag-detail{min-width:0;max-height:calc(100dvh - 230px);overflow-y:auto;overflow-x:hidden;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--inset,transparent);box-sizing:border-box}
+#app .bag-detail-empty{color:var(--muted);font-size:13px}
+#app .bag-detail-art svg{width:40px;height:40px}
+#app .bag-detail h3{margin:6px 0}
+#app .bag-detail .actions{flex-wrap:wrap}
+#app .bag-panel .bag-detail .actions>button{white-space:nowrap!important;width:auto!important;min-width:0}
+#app .bag-compare{margin-top:12px}
+#app .bag-compare summary{cursor:pointer;font-weight:600}
+#app .bag-compare .equip-delta-table{width:100%;font-size:var(--fs-sm,12px);border-collapse:collapse}
+#app .bag-compare .equip-delta-table th,#app .bag-compare .equip-delta-table td{padding:3px 4px;text-align:right;border-bottom:1px solid var(--line)}
+#app .bag-compare .equip-delta-table th:first-child,#app .bag-compare .equip-delta-table td:first-child{text-align:left}
+#app .bag-layout.has-compare{grid-template-columns:minmax(0,1fr) minmax(280px,30%) minmax(260px,26%)}
+#app .bag-compare-pane{max-height:calc(100dvh - 230px);box-sizing:border-box}
+#app .bag-compare-pane .equip-delta-table{width:100%;font-size:var(--fs-sm,12px);border-collapse:collapse}
+@media(max-width:1100px){#app .bag-layout{grid-template-columns:minmax(0,1fr) minmax(240px,42%)}}
+@media(max-width:700px){
+  #app .bag-panel{--bag-cell:52px}
+  #app .bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px}
+  #app .bag-tab{flex-direction:column;justify-content:center;gap:2px;min-width:0;min-height:48px;padding:4px 2px;font-size:12px;line-height:1.1}
+  #app .bag-tab small{display:none}
+  #app .bag-layout{display:block}
+  #app .bag-grid-pane{max-height:none;min-height:0;overflow:visible}
+  #app .bag-actions button,#app .bag-batch button,#app .bag-filters button,#app .bag-field select{min-height:44px}
+  #app .bag-field input{min-height:44px}
+  #app .bag-compare summary{min-height:44px;display:flex;align-items:center}
+  #app .bag-cell-tl,#app .bag-count,#app .bag-usage-note,#app .bag-gold,#app .bag-field{font-size:12px}
+  #app .bag-batch{position:sticky;top:0;z-index:3;padding:6px 0;background:var(--panel)}
+}

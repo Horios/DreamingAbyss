@@ -257,7 +257,7 @@
   }
   const tokenReset=resetSession;
   resetSession=function(){const out=tokenReset();tokenFilter=tokenDefaults();tokenSort='quality';tokenDirection='desc';tokenMulti=false;tokenAdvanced=false;tokenSelected.clear();tokenReview=null;tokenDetailId=null;return out;};
-  globalThis.__EMBERWILD_TOKEN_INVENTORY={rows:tokenRows,selection:()=>[...tokenSelected],review:()=>tokenReview};
+  globalThis.__EMBERWILD_TOKEN_INVENTORY={rows:tokenRows,selection:()=>[...tokenSelected],review:()=>tokenReview,detail:tokenInventoryDetail,actionable:g=>tokenActionable(g),multi:()=>tokenMulti};
   const baseTabs=inventoryTabs;
   inventoryTabs=function(){return baseTabs().replace('</div>',`<button onclick="setInventoryCategory('tokens')" class="${inventoryCategory==='tokens'?'primary':''}">信物</button></div>`);};
   const baseCategory=setInventoryCategory;

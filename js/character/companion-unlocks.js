@@ -30,7 +30,7 @@
         if(c.type==='initial')progress.unlocked.push(p.id);
         else if(EXTRA_TICKET_SOURCES&&c.type==='achievement'&&!a.rewardCompanions.includes(p.id)&&c.achievementIds.some(id=>completed.has(id))){
           a.rewardCompanions.push(p.id);
-          if(!a.tickets[p.id]&&!mailbox.messages.some(m=>m.rewardKey==='companion-'+p.id)){const achievement=catalog().find(x=>c.achievementIds.includes(x.id)&&completed.has(x.id));mailbox.serial++;mailbox.messages.push({id:mailbox.serial,rewardKey:'companion-'+p.id,subject:'夥伴招募券 - '+p.name+'（成就獎勵）',body:`已達成「${achievement?.name||'指定成就'}」。請領取附件，夥伴招募券 - ${p.name}將存入背包 → 道具，使用後${p.name}直接加入隊伍。`,at:Date.now(),read:false,claimed:false,attachments:[{type:'companionTicket',companionId:p.id,quantity:1,name:p.name+'招募券'}]});}
+          if(!a.tickets[p.id]&&!mailbox.messages.some(m=>m.rewardKey==='companion-'+p.id)){const achievement=catalog().find(x=>c.achievementIds.includes(x.id)&&completed.has(x.id));mailbox.serial++;mailbox.messages.push({id:mailbox.serial,rewardKey:'companion-'+p.id,subject:'夥伴招募券 - '+p.name+'（成就獎勵）',body:`已達成「${achievement?.name||'指定成就'}」。請領取附件，夥伴招募券 - ${p.name}將存入背包 → 特殊，使用後${p.name}直接加入隊伍。`,at:Date.now(),read:false,claimed:false,attachments:[{type:'companionTicket',companionId:p.id,quantity:1,name:p.name+'招募券'}]});}
         }
       }
       if(cache){cache.achievementOwner=party;cache.achievementKey=key;}
@@ -42,7 +42,7 @@
   globalThis.companionTicketCount=function(id){syncUnlocks();return party?.achievements?.tickets[id]||0;};
   globalThis.__EMBERWILD_EXTRA_TICKET_SOURCES=()=>EXTRA_TICKET_SOURCES;
   globalThis.companionUnlockText=function(p){
-    syncUnlocks();if(companionUnlocked(p.id))return '已解鎖，可招募';if(companionTicketCount(p.id))return '已持有夥伴招募券，請到背包 → 道具使用';if(companionPendingMail(p.id))return '招募券已寄到信箱，請領取附件';
+    syncUnlocks();if(companionUnlocked(p.id))return '已解鎖，可招募';if(companionTicketCount(p.id))return '已持有夥伴招募券，請到背包 → 特殊使用';if(companionPendingMail(p.id))return '招募券已寄到信箱，請領取附件';
     const c=p.unlockCondition;
     if(c.type==='achievement'){const names=new Map(catalog().map(x=>[x.id,x.name]));return '達成任一成就會寄送招募券：'+c.achievementIds.map(id=>names.get(id)||id).join('、');}
     return c.type==='ticket'?`購買商店隨機刷出的「${p.name}招募券」，到背包使用後解鎖`:'初始開放';
@@ -73,7 +73,7 @@
     }
     const out=baseReward(e);syncUnlocks();globalThis.__EMBERWILD_TEAMS?.refreshUnlocks?.();if(a.completed.length>before||party.mailbox.serial>beforeMail)save();return out;
   };
-  /* v0.178: there is no recruiting page. A companion joins only by using its ticket from the bag (背包 → 道具): the ticket
+  /* v0.178: there is no recruiting page. A companion joins only by using its ticket from the bag (背包 → 特殊): the ticket
      is spent and the companion joins at once. A ticket for a companion already in the party turns into gold. The story
      hands out the first two tickets (艾琳 at the start, 洛恩 after the caravan story); grantCompanionTicket adds one. */
   globalThis.companionTicketName=id=>'夥伴招募券 - '+((plans().find(p=>p.id===id)||party?.companionProfiles?.[id])?.name||'夥伴');

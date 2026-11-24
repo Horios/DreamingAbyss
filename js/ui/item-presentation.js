@@ -26,7 +26,7 @@
     return true;
   };
   globalThis.itemDisplayOptionsView=function(){
-    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">統一套用於背包、商店、信箱、強化、製作與生活技能等道具清單。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
+    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">套用於商店、信箱、強化、製作與生活技能等道具清單。背包固定使用圖示格子。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
   };
   addEventListener('storage',event=>{
     if(event.key!==displayStorageKey&&event.key!==null)return;
@@ -151,6 +151,8 @@
     if(kind==='item'&&definition(kind,key))return `<div class="actions"><button onclick="closeItemDetails();useInventoryItem(${k},${hero})">${isHealPotion(definition(kind,key))?'自動喝水設定':key==='power_tier_reroll'?'前往強化':'使用'}</button><input id="item-detail-quantity" type="number" min="1" value="1" max="${__EMBERWILD_INVENTORY_STOCK.count(key)}" aria-label="賣出數量"><button onclick="itemDetailsAction(()=>sellInventoryItem(${k},document.getElementById('item-detail-quantity').value))">賣出</button><button onclick="itemDetailsAction(()=>sellInventoryItem(${k},__EMBERWILD_INVENTORY_STOCK.count(${k})))">全部賣出</button></div>`;
     return '';
   }
+  // v0.211 grid bag: the bag's detail pane reuses the same icon, information and actions as the item dialog.
+  globalThis.__EMBERWILD_ITEM_PRESENTATION={icon,info,controls,name};
   function dialog(){let d=document.getElementById('item-detail-dialog');if(!d){d=document.createElement('dialog');d.id='item-detail-dialog';document.body.appendChild(d);}return d;}
   function renderDetail(){const d=dialog();if(selection)d.innerHTML=`<div class="item-detail-top"><span class="item-detail-art">${icon(selection.kind,selection.key,selection.g)}</span><button onclick="closeItemDetails()" aria-label="關閉道具詳細資料">關閉</button></div>${info(selection)}${controls(selection)}`;}
   globalThis.openItemSlotDetails=function(node){const ref=refFromNode(node);if(ref.context!=='inventory'||!ref.kind)return false;selection=ref;hideTooltip();renderDetail();const d=dialog();if(!d.open)d.showModal();};

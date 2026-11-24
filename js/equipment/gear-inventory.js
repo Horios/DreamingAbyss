@@ -160,6 +160,6 @@
   const reset=resetSession;resetSession=function(){const out=reset();wearTarget=null;filter=defaults();sort='quality';direction='desc';multi=false;folds.filters=false;folds.sort=false;advanced=false;selected.clear();review=null;return out;};
   const validate=validateParty;validateParty=data=>validate(EmberwildGearInventory.prepareSave(data));
   // The canonical addGear overflow path salvages excess drops; a full bag does not halt exploration.
-  globalThis.__EMBERWILD_GEAR_INVENTORY={rows,filters:()=>({...filter}),sort:()=>({key:sort,direction}),selection:()=>[...selected],actionable,quote,review:()=>review,limits:inputLimits,folds:()=>({...folds})};
+  globalThis.__EMBERWILD_GEAR_INVENTORY={multi:()=>multi,rows,filters:()=>({...filter}),sort:()=>({key:sort,direction}),selection:()=>[...selected],actionable,quote,review:()=>review,limits:inputLimits,folds:()=>({...folds})};
 })();
 

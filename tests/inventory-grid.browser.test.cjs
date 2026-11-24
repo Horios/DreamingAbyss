@@ -1,0 +1,123 @@
+'use strict';
+/* v0.211 grid bag: six tabs, slot usage from the inventory model, gear cell badges, unidentified gear stays hidden,
+   identification, batch selection and protection, selection kept across drops and redraws, phone sheet, large bags. */
+const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
+const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
+test('grid bag shows six tabs, badges, hides unidentified gear and keeps selection by identity',async()=>{
+ const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
+ try{
+  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;
+   const a=gear(2,0,2,0);a.plus=5;a.skillSockets={version:1,count:3,gems:[0,null,null]};a.locked=true;addGear(a);globalThis.lockedGear=a;
+   const b=gear(2,1,1,0);addGear(b);globalThis.freeGear=b;
+   const c=gear(3,0,3,0);c.plus=7;c.skillSockets={version:1,count:2,gems:[1,2]};c.unidentified={slot:0,level:9};addGear(c);globalThis.hiddenGear=c;
+   state.gems[0]=5;state.gems[6]=12;state.materials['紅色草']=30;party.achievements.tickets={10:2};
+   setTab('equipment');setInventoryCategory('equipment');});
+  await p.clock.resume();
+  await p.setViewportSize({width:1440,height:900});
+  assert.deepEqual(await p.locator('.bag-tab').allInnerTexts().then(t=>t.map(x=>x.replace(/\d+/g,'').trim())),['裝備','素材','寶石','消耗品','信物','特殊']);
+  // Slot usage comes from the inventory model of each tab.
+  for(const [id,tab] of [['equipment','equipment'],['materials','material'],['gems','gem'],['items','consumable'],['tokens','token'],['special','special']]){
+   await p.evaluate(id=>setInventoryCategory(id),id);
+   const [shown,expected,cells]=await p.evaluate(tab=>{const u=EmberwildItems.slots().tabs[tab];return [document.querySelector('.bag-usage').textContent,u.used+'／'+u.capacity,document.querySelectorAll('.bag-cell').length];},tab);
+   assert.equal(shown,expected,id);
+   assert(cells>=100,id+' shows empty cells up to the capacity');
+  }
+  await p.evaluate(()=>setInventoryCategory('gems'));
+  assert.equal(await p.locator('.bag-cell[data-bag-ref^="s:"]').count(),2);
+  assert.equal(await p.locator('.bag-cell[data-bag-ref^="s:"] .bag-tier').first().textContent(),'1階');
+  await p.evaluate(()=>setInventoryCategory('special'));
+  assert.equal(await p.locator('.bag-cell[data-bag-ref^="t:10:"]').count(),1);
+  await p.locator('.bag-cell[data-bag-ref^="t:10:"]').click();
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.dataset.bagRef.startsWith('t:10:'));
+  await p.locator('.bag-detail').getByRole('button',{name:'使用招募券'}).waitFor();
+
+  await p.evaluate(()=>setInventoryCategory('equipment'));
+  const locked=p.locator(`.bag-cell[data-bag-ref="g:${await p.evaluate(()=>lockedGear.id)}"]`);
+  assert.equal(await locked.locator('.bag-cell-tl').textContent(),'+5');
+  assert.equal(await locked.locator('.bag-sockets svg').count(),3);
+  assert.match(await locked.locator('.bag-sockets').getAttribute('aria-label'),/第 1 孔：赤焰石・1階、第 2 孔：空孔/);
+  assert.equal(await locked.locator('.bag-lock').count(),1);
+  // Unidentified: question mark, no enhancement, sockets, quality colour or real name.
+  const hidden=p.locator(`.bag-cell[data-bag-ref="g:${await p.evaluate(()=>hiddenGear.id)}"]`);
+  assert.equal(await hidden.locator('.bag-cell-q').textContent(),'?');
+  assert.equal(await hidden.locator('.bag-cell-tl,.bag-sockets').count(),0);
+  assert.doesNotMatch(await hidden.getAttribute('class'),/item-quality-/);
+  assert.doesNotMatch(await hidden.getAttribute('aria-label'),new RegExp(await p.evaluate(()=>equipmentDisplayName({...hiddenGear,unidentified:undefined}).replace(/[+]/g,'\\+'))));
+  await hidden.click();
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.dataset.bagRef==='g:'+hiddenGear.id);
+  assert.match(await p.locator('.bag-detail').innerText(),/未鑑定/);
+  assert.equal(await p.locator('.bag-detail').getByRole('button',{name:'穿戴'}).count(),0);
+  // Identify all: the button count and the cell change, the slot count stays.
+  const before=await p.evaluate(()=>EmberwildItems.slots().tabs.equipment.used);
+  await p.getByRole('button',{name:/^全部鑑定/}).click();
+  await p.waitForFunction(()=>!hiddenGear.unidentified&&document.querySelector(`.bag-cell[data-bag-ref="g:${hiddenGear.id}"] .bag-cell-tl`));
+  assert.equal(await hidden.locator('.bag-cell-tl').textContent(),'+7');
+  assert.equal(await p.evaluate(()=>EmberwildItems.slots().tabs.equipment.used),before);
+  // Selection is kept by gear id across a drop and a redraw.
+  await p.locator(`.bag-cell[data-bag-ref="g:${await p.evaluate(()=>freeGear.id)}"]`).click();
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.dataset.bagRef==='g:'+freeGear.id);
+  await p.evaluate(()=>{for(let i=0;i<5;i++)addGear(gear(1,i%4,3,0));render();});
+  assert.equal(await p.evaluate(()=>document.querySelector('.bag-cell.is-selected')?.dataset.bagRef),'g:'+await p.evaluate(()=>freeGear.id));
+  // Batch selection: protected items cannot be picked; leaving the mode clears it.
+  await p.getByRole('button',{name:'批次選取'}).click();
+  await p.locator('.bag-grid.is-batch').waitFor();
+  assert.equal(await locked.getAttribute('aria-disabled'),'true');
+  await locked.click({force:true});
+  assert.deepEqual(await p.evaluate(()=>__EMBERWILD_GEAR_INVENTORY.selection()),[]);
+  await p.locator(`.bag-cell[data-bag-ref="g:${await p.evaluate(()=>freeGear.id)}"]`).click();
+  await p.waitForFunction(()=>/已選 1 件/.test(document.querySelector('.bag-batch b')?.textContent));
+  await p.locator('.bag-batch').getByRole('button',{name:'批次出售'}).click();
+  await p.locator('#modal').getByRole('button',{name:'確認出售'}).click();
+  await p.waitForFunction(()=>!findGear(freeGear.id)&&!document.querySelector('.bag-grid.is-batch'));
+  assert.equal(await p.evaluate(()=>!!findGear(freeGear.id)),false);
+  assert.equal(await p.evaluate(()=>__EMBERWILD_GEAR_INVENTORY.multi()),false);
+  assert.equal(await p.evaluate(()=>!!findGear(lockedGear.id)),true);
+  // Filters change the view only.
+  const total=await p.evaluate(()=>EmberwildItems.slots().tabs.equipment.used);
+  await p.getByRole('button',{name:/^篩選/}).click();
+  await p.getByLabel('部位',{exact:true}).selectOption('1');
+  await p.waitForFunction(()=>!document.querySelector('.bag-cell.is-empty'));
+  assert(await p.evaluate(()=>[...document.querySelectorAll('.bag-cell[data-bag-ref]')].every(c=>findGear(c.dataset.bagRef.slice(2)).slot===1)));
+  assert.equal(await p.locator('.bag-cell.is-empty').count(),0);
+  assert.equal(await p.evaluate(()=>EmberwildItems.slots().tabs.equipment.used),total);
+  await p.getByRole('button',{name:'清除篩選'}).click();
+  // Phone: no horizontal scroll, a tap opens the detail sheet with the actions.
+  for(const width of [390,320]){
+   await p.setViewportSize({width,height:860});
+   for(const id of ['equipment','materials','gems','items','tokens','special']){await p.evaluate(id=>setInventoryCategory(id),id);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),id+' '+width);}
+  }
+  await p.evaluate(()=>setInventoryCategory('equipment'));
+  await locked.click();
+  await p.waitForFunction(()=>document.body.dataset.sheet==='gear'&&document.querySelector('.bag-cell.is-selected')?.dataset.bagRef==='g:'+lockedGear.id);
+  await p.locator('.inventory-detail-wrap').getByRole('button',{name:'解除鎖定'}).click();
+  await p.waitForFunction(()=>!lockedGear.locked);
+  assert.equal(await p.evaluate(()=>lockedGear.locked),false);
+  await p.evaluate(()=>closeDetailSheet());
+  // Large bag: 600 items render quickly.
+  await p.setViewportSize({width:1440,height:900});
+  const ms=await p.evaluate(()=>{for(let i=0;i<600;i++)state.bag.push(gear(1+(i%5),i%4,i%4,0));const t=performance.now();for(let i=0;i<5;i++)render();return (performance.now()-t)/5;});
+  assert(ms<400,'render took '+ms+' ms');
+  assert.equal(await p.locator('.bag-cell[data-bag-ref]').count(),await p.evaluate(()=>__EMBERWILD_GEAR_INVENTORY.rows().length));
+  assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});
+test('grid bag survives save and reload with stacks and selection fallback',async()=>{
+ const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
+ try{
+  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;state.materials['紅色草']=1500;addGear(gear(2,0,2,0));save();setTab('equipment');setInventoryCategory('materials');});
+  await p.clock.resume();
+  const cells=await p.evaluate(()=>[...document.querySelectorAll('.bag-cell[data-bag-ref^="s:"]')].map(c=>c.getAttribute('aria-label')));
+  assert(cells.some(t=>/紅色草 ×999/.test(t))&&cells.some(t=>/紅色草 ×501/.test(t)),JSON.stringify(cells));
+  // Selecting a stack that then empties falls back to another stack of the same item.
+  await p.locator('.bag-cell[aria-label="紅色草 ×501"]').click();
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.getAttribute('aria-label')==='紅色草 ×501');
+  await p.evaluate(()=>{state.materials['紅色草']=999;render();});
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.getAttribute('aria-label')==='紅色草 ×999');
+  const before=await p.evaluate(()=>JSON.stringify([EmberwildItems.slots().tabs,state.bag.map(g=>g.id)]));
+  await p.reload();
+  await p.evaluate(()=>{selectSaveSlot(1);continueFromTitle();clearInterval(timer);running=false;setTab('equipment');setInventoryCategory('materials');});
+  assert.equal(await p.evaluate(()=>JSON.stringify([EmberwildItems.slots().tabs,state.bag.map(g=>g.id)])),before);
+  assert.equal(await p.locator('.bag-usage').textContent(),await p.evaluate(()=>{const u=EmberwildItems.slots().tabs.material;return u.used+'／'+u.capacity;}));
+  assert.deepEqual(r.errors,[]);
+ }finally{await r.browser.close();}
+});

@@ -45,13 +45,15 @@ test('Long reading content and expanded rosters use the page scroll; inventory s
   const story=await p.evaluate(()=>{const m=document.querySelector('main');m.scrollTop=m.scrollHeight;const last=m.querySelector('.story-list').lastElementChild;return {bottom:last.getBoundingClientRect().bottom,end:m.getBoundingClientRect().bottom,overflow:m.scrollWidth-m.clientWidth};});
   assert(story.bottom<=story.end+1);assert(story.overflow<=1);
   await p.evaluate(()=>setTab('equipment'));
-  assert.equal(await p.locator('.page-owner-content').evaluate(e=>getComputedStyle(e).overflowY),'visible','inventory has no owner-panel scroll around the list');
-  const list=p.locator('.inventory-list-scroll'),item=list.locator('.gear-management-row').nth(3).locator('.item-slot');
-  await item.scrollIntoViewIfNeeded();const before=await list.evaluate(e=>e.scrollTop);await item.click();
+  // v0.211 grid bag: selecting a slot keeps the grid's (desktop) or the page's (phone) scroll position.
+  const pane=p.locator('.bag-grid-pane'),item=pane.locator('.bag-cell[data-bag-ref]').nth(60),main=p.locator('.layout>main');
+  await item.scrollIntoViewIfNeeded();const before=[await pane.evaluate(e=>e.scrollTop),await main.evaluate(e=>e.scrollTop)];await item.click();
   await p.waitForFunction(()=>!isEmberwildUIInteracting());
-  assert(Math.abs(await list.evaluate(e=>e.scrollTop)-before)<=1,'selecting gear keeps the list position at '+width+' (before '+before+', after '+await list.evaluate(e=>e.scrollTop)+')');
-  const panes=await p.locator('.inventory-master-detail').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.inventory-master-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
-  if(width<=700)assert.equal(panes.stack,'flex');else assert(panes.detail>=panes.list);
+  const after=[await pane.evaluate(e=>e.scrollTop),await main.evaluate(e=>e.scrollTop)];
+  assert(Math.abs(after[0]-before[0])<=1&&Math.abs(after[1]-before[1])<=1,'selecting gear keeps the scroll position at '+width+' '+JSON.stringify({before,after}));
+  if(width<=700)await p.evaluate(()=>closeDetailSheet());
+  const panes=await p.locator('.bag-layout').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.bag-grid-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
+  if(width<=700)assert.equal(panes.stack,'block');else assert(panes.detail>=panes.list);
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}

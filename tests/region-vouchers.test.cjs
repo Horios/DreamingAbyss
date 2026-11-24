@@ -49,8 +49,8 @@ test('claimed tickets become inventory items with a short description; using the
  assert.equal(r.run(`claimMailboxAttachments(${voucherMail(r)[0].id})`),true);const stack=json(r,'party.regionVouchers.stacks[0]');assert.equal(stack.count,16);
  assert.equal(stack.levelMax,r.run('MAPS[0].max'));assert.equal(stack.gold,Math.max(0,stack.baseGold-stack.potionCost));
  r.run('inventoryCategory="items";setTab("equipment")');const html=r.elements.get('app').innerHTML;
- // A standard item slot in the ticket block, separate from potions and gems.
- assert.match(html,/data-inventory-group="tickets"[\s\S]*data-voucher-stack="v1"[\s\S]*class="item-slot[^"]*"[^>]*data-item-key="region-voucher:v1"[^>]*aria-label="無名密林 30 分鐘收益券 ×16"[\s\S]*data-inventory-group="potions"[\s\S]*目前裝備藥水：/);
+ // v0.211 grid bag: one slot of the 消耗品 tab per voucher stack (the potion status sits in the tab's toolbar).
+ assert.match(html,/目前藥水效果：[\s\S]*class="bag-cell[^"]*" data-bag-ref="v:v1:0" data-item-kind="item" data-item-key="region-voucher:v1"[^>]*aria-label="無名密林 30 分鐘收益券 ×16"/);
  assert.match(html,/data-item-key="region-voucher:v1"[\s\S]*?<svg/,'the ticket uses an SVG icon');
  const virtual=json(r,`(()=>{const v=__EMBERWILD_VIRTUAL_ITEM('region-voucher:v1');return {name:v.name,glyph:v.glyph,description:v.description,detail:v.detail(),actions:v.actions()};})()`);
  assert.equal(virtual.glyph,'ticket');assert.match(virtual.description,/使用時計算金幣與道具，收益寄到信箱/);assert(!/經驗 \d|金幣 \d/.test(virtual.description+virtual.detail),'the item shows no earnings until used');

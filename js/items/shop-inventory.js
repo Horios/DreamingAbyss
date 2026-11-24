@@ -165,7 +165,7 @@
     else if(shopCategory==='life')section=globalThis.lifeShopMaterialsView?.()||'<div class="shop-empty">生活技能材料尚未載入。</div>';
     else if(shopCategory==='fixed'){
       const fixed=SHOP_SETTINGS.fixedOffers.entries.filter(x=>x.enabled).map(rule=>productRow(fixedOffer(rule),rule,false)).join('');
-      section=`<section class="shop-section shop-fixed-section"><div class="shop-section-head"><h2>固定商品</h2><span class="small">購買後進入共用背包；使用請到「背包 → 道具」。</span></div><div class="shop-product-grid">${fixed||'<div class="shop-empty">目前沒有上架固定商品。</div>'}</div></section>`;
+      section=`<section class="shop-section shop-fixed-section"><div class="shop-section-head"><h2>固定商品</h2><span class="small">購買後進入共用背包；使用請到「背包 → 消耗品」。</span></div><div class="shop-product-grid">${fixed||'<div class="shop-empty">目前沒有上架固定商品。</div>'}</div></section>`;
     }else section=`<section class="shop-section shop-random-section"><div class="shop-section-head"><h2>隨機商品</h2><div class="shop-refresh-meta"><span>第 ${party.market.serial} 批</span><span>今日已刷新 <b>${rc}</b> 次</span><span>每日 0 點重置刷新價格</span></div><div class="actions"><button onclick="refreshMarket()" ${state.gold<cost||!hasRandomRules()?'disabled':''}>刷新 · ${cost} 金幣</button></div></div><div class="shop-product-grid">${marketCards()}</div></section>`;
     return heading('SUPPLIES / 全隊共用','商店')+tabs+`<div class="shop-catalog-scroll" data-shop-category="${shopCategory}">${section}</div>`;
   };

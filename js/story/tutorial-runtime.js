@@ -138,6 +138,7 @@
  const shown=(...sels)=>sels.map(s=>$q(s)).find(el=>el&&el.getBoundingClientRect?.().height>0)||null;
  const main=()=>$q('#app .layout>main')||$q('#app');
  function newestGearRow(){
+  const grid=$q('.bag-grid');if(grid){const g=allGear().filter(normalGear).sort((a,b)=>(b.acquiredAt||0)-(a.acquiredAt||0))[0];return (g&&grid.querySelector(`.bag-cell[data-bag-ref="g:${g.id}"]`))||grid.querySelector('.bag-cell[data-bag-ref]');}
   const list=$q('.inline-equipment-list');if(!list)return null;
   const g=allGear().filter(normalGear).sort((a,b)=>(b.acquiredAt||0)-(a.acquiredAt||0))[0];
   return g?[...list.querySelectorAll('.gear-management-row')].find(r=>r.querySelector(`[onclick*="selectInventoryGear('${g.id}')"]`))||null:list.querySelector('.gear-management-row');
@@ -149,8 +150,8 @@
   'battle.start':()=>$q('main [onclick="startSelectedExploration()"]')||$q('main .seconds-adventure-toolbar [onclick="toggleBattle()"]'),
   'battle.allies':()=>$q('main .seconds-side-ally')||$q('main .party-combat'),
   'battle.enemies':()=>$q('main .seconds-side-enemy'),
-  'bag.categories':()=>$q('main [onclick^="setInventoryCategory"]')?.parentElement||null,
-  'bag.list':()=>$q('main .inline-equipment-list'),
+  'bag.categories':()=>$q('main .bag-tabs')||$q('main [onclick^="setInventoryCategory"]')?.parentElement||null,
+  'bag.list':()=>$q('main .bag-grid')||$q('main .inline-equipment-list'),
   'bag.newGear':newestGearRow,
   'bag.wearButton':()=>$q('main [onclick*="openInventoryWear("]'),
   'worn.slots':()=>$q('main [onclick^="selectWornSlot("]')?.parentElement?.parentElement||null,
@@ -168,16 +169,16 @@
   'quests.board':()=>$q('main .quest-design-card')?.parentElement||null,
   'quests.start':()=>$q('main [onclick^="startDailyCommission("]')||$q('main [onclick^="claimBoard("]'),
   'header.options':()=>document.getElementById('utilityButton-options'),
-  'bag.starterGear':()=>{const h=hero(),g=(h?.bag||[]).filter(x=>x.starterPack&&!(h.equipped||[]).includes(x.id)).sort((a,b)=>(a.slot||0)-(b.slot||0))[0];return g?$q(`main [onclick*="selectInventoryGear('${g.id}')"]`):null;},
+  'bag.starterGear':()=>{const h=hero(),g=(h?.bag||[]).filter(x=>x.starterPack&&!(h.equipped||[]).includes(x.id)).sort((a,b)=>(a.slot||0)-(b.slot||0))[0];return g?$q(`main .bag-cell[data-bag-ref="g:${g.id}"]`)||$q(`main [onclick*="selectInventoryGear('${g.id}')"]`):null;},
   'stats.summary':()=>$q('main .statistics-summary'),
   'stats.combat':()=>$q('main .statistics-combat-data'),
   'stats.drops':()=>$q('main .statistics-layout'),
   'roster.plans':()=>$q('main .team-plan-panel'),
   'roster.list':()=>$q('main .roster-page .roster-list'),
   'partners.list':()=>$q('main .partner-owned-list'),
-  'bag.itemsCategory':()=>$q(`main [onclick="setInventoryCategory('items')"]`),
-  'bag.companionTicket':()=>{const id=ticketFor();return $q(id===null?'main [data-companion-ticket] .item-slot':`main [data-companion-ticket="${id}"] .item-slot`);},
-  'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):null;},
+  'bag.itemsCategory':()=>$q(`main [data-bag-tab="special"]`)||$q(`main [onclick="setInventoryCategory('items')"]`),
+  'bag.companionTicket':()=>{const id=ticketFor();return $q(id===null?'main .bag-cell[data-bag-ref^="t:"]':`main .bag-cell[data-bag-ref^="t:${id}:"]`)||$q(id===null?'main [data-companion-ticket] .item-slot':`main [data-companion-ticket="${id}"] .item-slot`);},
+  'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):$q('main .bag-detail [onclick*="useCompanionRecruitmentTicket("]');},
   'character.stats':()=>$q('main .page-owner-content .grid')||$q('main .page-owner-content'),
   'character.mastery':()=>$q('main .class-mastery-grid'),
   'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick*="moveToWorkshop('${g.id}')"]`):null;},
@@ -229,7 +230,8 @@
   wrap('chooseSkillSlot',{kind:'skillSlotted',after:out=>out===true});
   wrap('openSkillCatalog',{kind:'catalogOpened',after:out=>out!==false});
   wrap('setWorkshopAction',{kind:'socketsOpened',after:(out,before,action)=>out===true&&action==='socket'});
-  wrap('setInventoryCategory',{kind:'itemsOpened',after:(out,before,value)=>value==='items'});
+  wrap('setInventoryCategory',{kind:'itemsOpened',after:(out,before,value)=>value==='items'||value==='special'});
+  wrap('bagCellClick',{kind:'itemDetailsOpened',after:(out,before,ref)=>out===true&&/^[stv]:/.test(String(ref))});
   wrap('openItemSlotDetails',{kind:'itemDetailsOpened',after:()=>!!document.getElementById('item-detail-dialog')?.open});
   wrap('useCompanionRecruitmentTicket',{kind:'ticketUsed',after:out=>out===true});
   wrap('selectEquipmentSocket',{kind:'socketSelected',after:out=>out===true});
