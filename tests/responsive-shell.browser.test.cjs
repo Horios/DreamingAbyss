@@ -97,7 +97,8 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  assert.equal(await p.locator('.workshop-operations').isVisible(),true);
  await p.evaluate(()=>setTab('worn'));await p.locator('.worn-slot-choice').first().click();await idle();assert.equal(await p.evaluate(()=>currentDetailSheet()),'worn');
  await p.evaluate(()=>setTab('character'));assert.equal(await p.evaluate(()=>currentDetailSheet()),'','changing page closes the sheet');
- // Mailbox
+ // Mailbox: a new character starts with an empty mailbox, so seed one message solely for this sheet interaction test.
+ await p.evaluate(()=>{const mailbox=party.mailbox;mailbox.messages.push({id:++mailbox.serial,subject:'手機信箱介面測試',body:'測試開啟與關閉信件',at:Date.now(),read:false,claimed:true,attachments:[]});save();});
  await p.locator('#utilityButton-mailbox').click();
  const dialog=await p.locator('#modal').boundingBox();assert(dialog.width===390&&dialog.height===844,'utility dialogs fill the phone screen');
  assert.equal(await p.locator('#modal .mailbox-detail').isVisible(),false);
