@@ -1599,3 +1599,7 @@ v0.158 推送後，部署前的瀏覽器工作有 2 項失敗（`responsive-shel
 - 被動管理（`openPassiveManager`）：列出已學被動，沿用 `setPassiveSkillEnabled` 啟用／停用；不限制數量、不改生效條件。
 - `skill-system-ui.js` 公開 `detailSections`、`icon`、`acquired`、`labels`、`sortedSkills`、`card` 等供新頁面使用。
 - 測試：新增 `tests/skill-page.test.cjs`。
+
+## v0.215 測試：寶石掉落率基準更新
+
+只改測試。`tests/elite-drop-rates.test.cjs` 與 `tests/skill-gems.test.cjs` 的寶石掉落率基準改為 v0.213 的 1/10 數值。`tests/loot-effects.browser.test.cjs` 的「勝利後立即入帳」在 v0.210 原始版本就失敗，不屬於這次修改。
