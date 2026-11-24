@@ -107,9 +107,6 @@ function rollConfiguredDrops(e,rng=Math.random){
 // first-BOSS ether claim, which is not a repeatable idle reward.
 function rollEnemyItemLoot(e,{voucher=false}={}){
   const mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards;
-  // v0.180: 鍛鐵 and 粉塵 swapped drop sources. The per-kill base material (settings rewards.ore) now gives 粉塵; the drop
-  // rules that gave 粉塵 now give 鍛鐵 (data/balance/world/drops.json).
-  // v0.180: rewards.ore.chanceFactor (0.7) lowers the chance of the per-kill base material for every kind, elites and bosses included.
   // v0.206: monsters no longer drop 粉塵 directly. The former per-kill base material (rewards.ore) is not granted.
   rollConfiguredDrops(e);
   const firstBossClaim=(e.kind==='boss'||e.kind==='final')&&!(party?.etherBossClaims||[]).includes((e.region??party?.map)+':'+(e.difficulty||0));

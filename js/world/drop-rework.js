@@ -90,7 +90,7 @@
   const byId=id=>typeof findGear==='function'?findGear(id):null;
   if(typeof eligibleWearers==='function'){const base=eligibleWearers;eligibleWearers=function(g,...args){return hidden(g)?[]:base.call(this,g,...args);};}
   const guard=(name,pick=args=>byId(args[0]))=>{const base=globalThis[name];if(typeof base!=='function')return;globalThis[name]=function(...args){return hidden(pick(args))?refuse():base.apply(this,args);};};
-  for(const name of ['equipSharedGear','previewEquip','enhance','reroll','salvage','sellGear','moveToWorkshop','socketEquipmentGem','rerollEquipmentPowerTier','openInventoryWear','extractGearSkill','toggleGearLock'])guard(name);
+  for(const name of ['equipSharedGear','previewEquip','enhance','reroll','salvage','sellGear','moveToWorkshop','socketEquipmentGem','rerollEquipmentPowerTier','openInventoryWear','extractGearSkill'])guard(name);
   if(typeof canEnhance==='function'){const base=canEnhance;canEnhance=function(g,...args){return !hidden(g)&&base.call(this,g,...args);};globalThis.canEnhance=canEnhance;}
   /* Bulk sale and salvage never include unidentified gear: they are set aside for the call and put back in place. */
   function withoutUnidentified(fn){

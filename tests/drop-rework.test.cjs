@@ -100,7 +100,7 @@ test('old balance documents load: obsolete drop rules are removed before validat
  assert.throws(()=>r.run('applyBalanceConfig(d,{persist:false})'),/1～2 種/);
 });
 test('new characters receive no gear; the prologue still hands over the starter weapon and the charm',()=>{
- const r=game();assert.equal(r.run('state.bag.length'),0);assert.deepEqual(json(r,'state.equipped'),[null,null,null,null,null]);assert.equal(r.run('party.mailbox.messages.filter(m=>/新手禮包/.test(m.subject)).length'),0);
+ const r=loadRuntime(root,'index.html',{},undefined,{bareStart:true});r.ctx.seed=structuredClone(seed);r.run('applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();');assert.equal(r.run('state.bag.length'),0);assert.deepEqual(json(r,'state.equipped'),[null,null,null,null,null]);assert.equal(r.run('party.mailbox.messages.filter(m=>/新手禮包/.test(m.subject)).length'),0);
  assert.equal(r.run('typeof sendStarterPackMail'),'undefined');
  const rows=json(r,'__EMBERWILD_STARTER_PACK.rows(0).map(x=>({type:x.type,starter:!!x.gear?.starterPack}))');assert.equal(rows[0].type,'gear');assert(rows[0].starter);
 });

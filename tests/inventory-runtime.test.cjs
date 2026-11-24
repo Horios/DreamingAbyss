@@ -6,7 +6,9 @@ function game(){
  r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();
   globalThis.fixture=(id,job=0,slot=0)=>{const g=createEquipmentShopGear('equipment_lv1','job'+job+'-slot'+slot+'-form0');g.id=id;return g;};
   globalThis.sizes=id=>EmberwildItems.stacks().filter(s=>s.item===id).map(s=>s.qty);
-  globalThis.clearStackables=()=>{state.ore=0;state.dust=0;state.gems=Array(GEMS.length).fill(0);state.materials={};state.consumables={};party.members[0].healingPotions={};};`);
+  globalThis.clearStackables=()=>{state.ore=0;state.dust=0;state.gems=Array(GEMS.length).fill(0);state.materials={};state.consumables={};party.members[0].healingPotions={};};
+  /* v0.206: characters start without gear; wear one weapon so worn-gear rules are exercised. */
+  if(!state.equipped[0]){const w=fixture('worn-weapon');state.bag.push(w);equipSharedGear('worn-weapon',memberKey(state),0);}`);
  return r;
 }
 const audit=r=>assert.deepEqual(json(r,'EmberwildItems.audit()'),[]);
