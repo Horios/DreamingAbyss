@@ -53,7 +53,7 @@ test('a step inside a dialog marks its control with a ring and the card joins th
  try{
   await page.setViewportSize({width:1280,height:800});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
-  await page.evaluate(()=>{start(0);party.tutorials.auto=true;render();});await page.waitForSelector('#tutorial-card:not([hidden])');await page.click('#tutorial-card button:has-text("跳過教學")');
+  await page.evaluate(()=>{start(0);{const g=gear(1,0,0,0);state.bag.push(g);state.equipped[0]=g.id;}party.tutorials.auto=true;render();});await page.waitForSelector('#tutorial-card:not([hidden])');await page.click('#tutorial-card button:has-text("跳過教學")');
   await page.evaluate(()=>{const h=playerHero();const g=gear(1,0,1,h.job);addGear(g);render();});
   await page.waitForSelector('[data-tutorial-notice="equipment_basics"]');
   await page.click('[data-tutorial-notice="equipment_basics"] button:has-text("前往")');

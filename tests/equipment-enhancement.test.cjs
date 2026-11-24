@@ -82,8 +82,9 @@ test('every published equipment form, starter weapon and BOSS slot has matching 
   const r=game(),out=json(r,`(()=>{${sure}
     const rows=[],fixtures=[];
     for(let job=0;job<4;job++){
-      start(job);closeModal();claimMailboxAttachments(1);Math.random=()=>0;
-      fixtures.push(...state.bag.map(g=>structuredClone(g)));
+      start(job);closeModal();Math.random=()=>0;
+      // v0.206: characters start without gear; the starter weapon is the one the prologue hands over.
+      fixtures.push(structuredClone(__EMBERWILD_STARTER_PACK.rows(job)[0].gear));
       for(let slot=0;slot<3;slot++)for(let form=0;form<ITEM_FORMS[job][slot].length;form++){
         const g=gear(2,slot,0,job);Object.assign(g,{formJob:job,form,prefixId:'',suffixId:'',affix:[]});delete g.baseSnapshot;fixtures.push(g);
       }
@@ -94,7 +95,7 @@ test('every published equipment form, starter weapon and BOSS slot has matching 
     for(const fixture of enhanceable){
       const g=structuredClone(fixture);g.id='refinement-fixture';g.plus=0;
       state.bag.splice(0,state.bag.length,...originalBag,g);forgeSelection=g.id;
-      state.ore=100000;state.dust=100000;state.materials['以太鍛鐵']=10000;
+      state.ore=100000;state.dust=100000;state.materials['以太鍛鐵']=10000;for(const b of GAMEPLAY_SETTINGS.equipment.exclusiveEnhance.bindings)state.materials[b.material]=10000;
       const fixed=JSON.stringify({affix:g.affix,prefix:g.prefixId,suffix:g.suffixId}),base=gearStatBreakdown(g).total;
       for(let plus=0;plus<RULES.enhanceMax;plus++){
         const before=equipmentStatContributions(g).total;

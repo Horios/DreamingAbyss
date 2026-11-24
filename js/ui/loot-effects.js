@@ -52,12 +52,12 @@
   for(const node of nodes){if(node.dataset.page!=='equipment'&&(!group||node.dataset.navGroup!==group))continue;const r=rect(node);if(r)return {x:Math.max(18,Math.min(innerWidth-18,r.left+r.width/2)),y:Math.max(18,Math.min(innerHeight-18,r.top+r.height/2)),node};}
   return {x:innerWidth-28,y:Math.max(50,innerHeight-85),node:null};
  }
- function itemRank(item){return item.gear?gearQualityRank(item.gear):item.kind==='material'&&(item.key==='以太鍛鐵'||item.key==='光輝碎塊')?3:0;}
+ function itemRank(item){return item.gear?(item.gear.unidentified?0:gearQualityRank(item.gear)):item.kind==='material'&&(item.key==='以太鍛鐵'||item.key==='光輝碎塊')?3:0;}
  function palette(item){
   const g=item.gear,rank=itemRank(item);
   // These are the existing rare crafting material inventory keys, not matches on display names.
   const rare=item.kind==='material'&&(item.key==='以太鍛鐵'||item.key==='光輝碎塊');
-  const sample=document.createElement('span');sample.className=g?equipmentNameClass(g):'loot-rarity-'+(rare?3:0);
+  const sample=document.createElement('span');sample.className=g?(g.unidentified?'loot-rarity-0':equipmentNameClass(g)):'loot-rarity-'+(rare?3:0);
   if(g)sample.innerHTML=equipmentNameHTML(g);
   const definition=item.kind==='item'?__EMBERWILD_INVENTORY_STOCK.item(item.key):null;
   const style=textRarityStyleById(definition?.textStyleId);

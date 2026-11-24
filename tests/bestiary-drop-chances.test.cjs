@@ -11,9 +11,6 @@ function view({factor=.7,normal=.05,difficulty=0}={}){
 test('bestiary excludes zero-chance drops at the selected difficulty',()=>{
  assert.doesNotMatch(view(),/限定素材/);assert.match(view({difficulty:1}),/限定素材/);assert.match(view(),/稀有素材/);
 });
-test('dust uses the normal base chance times factor; bosses also list their dust',()=>{
- const html=view(),normal=html.split('<article')[1],boss=html.split('<article')[2];
- assert.match(normal,/<b>少見<\/b>粉塵/);assert.match(boss,/<b>常見<\/b>粉塵/);
- assert.doesNotMatch(view({factor:0}),/粉塵/);
- assert.match(view({normal:.01}).split('<article')[1],/<b>稀有<\/b>粉塵/);
+test('v0.206: monsters no longer drop 粉塵, so the bestiary never lists it',()=>{
+ assert.doesNotMatch(view(),/粉塵/);assert.doesNotMatch(view({factor:1,normal:1}),/粉塵/);
 });

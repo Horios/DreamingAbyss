@@ -3,7 +3,7 @@ const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
 async function game(options={}){
  const r=await openRuntime(root,'index.html',{},options);
- await r.page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);});
+ await r.page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);const g=gear(1,0,0,0);state.bag.push(g);state.equipped[0]=g.id;save();});
  await r.page.waitForTimeout(50);await r.page.evaluate(()=>closeModal());return r;
 }
 test('Idle notification refreshes do not mutate unchanged UI; saves coalesce and supply status updates once per second',async()=>{

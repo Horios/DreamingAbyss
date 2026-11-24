@@ -70,22 +70,19 @@ test('accessories cannot be enhanced; existing base stats take the larger of per
 test('鍛鐵 and 粉塵 swapped drop sources and salvage amounts',()=>{
  const r=game();
  assert.deepEqual(json(r,"exportableBalance().balanceSettings.drops.entries.filter(e=>/^cultivation_dust_/.test(e.id)).map(e=>[e.type,e.name])"),[['ore','鍛鐵'],['ore','鍛鐵']],'the rules that dropped 粉塵 drop 鍛鐵');
- // A normal kill gives the base material as 粉塵 now.
+ // v0.206: monsters no longer give 粉塵 (the former per-kill base material is removed).
  r.run("state.ore=0;state.dust=0;roll=0;globalThis.e=makeEnemy(0,playerHero(),()=>.5);e.kind='normal';rollEnemyItemLoot(e)");
- assert(r.run('state.dust')>0,'per-kill base material is 粉塵');
+ assert.equal(r.run('state.dust'),0,'no per-kill 粉塵');
  // Salvage: the larger tier amount is 粉塵.
  const plan=json(r,"(()=>{const g=gear(3,0,1,0);return salvageRewardPlan(g);})()");
  const ore=plan.find(x=>x.type==='ore').quantity,dust=plan.find(x=>x.type==='dust').quantity;assert(dust>ore,'粉塵 '+dust+' > 鍛鐵 '+ore);
  assert.deepEqual(r.errors,[]);
 });
-test('鍛鐵 and 粉塵 drop 30% less often: the per-kill chance factor and the 鍛鐵 rules',()=>{
+test('鍛鐵 rules keep their rates; v0.206 removed the per-kill 粉塵 and its settings',()=>{
  const r=game();
- assert.equal(r.run('GAMEPLAY_SETTINGS.rewards.ore.chanceFactor'),0.7);
+ assert.equal(r.run('GAMEPLAY_SETTINGS.rewards.ore===undefined'),true);
  assert.deepEqual(json(r,"exportableBalance().balanceSettings.drops.entries.filter(e=>/^cultivation_dust_/.test(e.id)).map(e=>e.chanceByDifficulty)"),[[0.0063,0.0091,0.0112],[0.049,0.063,0.077]]);
- // An elite always gave the base material before; with a roll above 0.7 it gives none now.
- r.run("state.dust=0;roll=.75;globalThis.e2=makeEnemy(0,playerHero(),()=>.5);e2.kind='elite';rollEnemyItemLoot(e2)");assert.equal(r.run('state.dust'),0);
- r.run("roll=.5;globalThis.e3=makeEnemy(0,playerHero(),()=>.5);e3.kind='elite';rollEnemyItemLoot(e3)");assert(r.run('state.dust')>0);
- assert.throws(()=>r.run('{const d=exportableBalance();d.balanceSettings.rewards.ore.chanceFactor=1.5;applyBalanceConfig(d,{persist:false});}'),/0~1/);
+ r.run("state.dust=0;for(const roll of [0,.5,.99]){const e=makeEnemy(0,playerHero(),()=>.5);e.kind='elite';Math.random=()=>roll;rollEnemyItemLoot(e);}");assert.equal(r.run('state.dust'),0);
  assert.deepEqual(r.errors,[]);
 });
 test('the offline receipt lists enhancement materials apart from the region materials',async()=>{

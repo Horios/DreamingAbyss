@@ -24,11 +24,11 @@ test('five identities, three tiers, color mappings and reduced first-tier drop t
  const doc=JSON.parse(r.run('JSON.stringify(exportableBalance())'));
  const colors=['#EF5D5D','#49B976','#AE83EC','#E8EDF7','#64AAF0'];
  for(let id=0;id<15;id++)assert.equal(doc.inventoryIcons.find(x=>x.kind==='gem'&&x.key===String(id)).color,colors[id%5]);
- const drops=doc.balanceSettings.drops.entries.filter(x=>x.type==='gem');
+ const drops=doc.balanceSettings.drops.entries.filter(x=>x.type==='gemPool');
  // v0.181: gem drops +10%.
- assert.deepEqual(drops.find(x=>x.id==='gem_normal').chanceByDifficulty,[.033,.066,.11]);
- assert.deepEqual(drops.find(x=>x.id==='gem_elite').chanceByDifficulty,[.099,.187,.297]);
- assert.deepEqual(drops.find(x=>x.id==='gem_boss').chanceByDifficulty,[.297,.44,.605]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_normal').chanceByDifficulty,[.033,.066,.11]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_elite').chanceByDifficulty,[.099,.187,.297]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_boss').chanceByDifficulty,[.297,.44,.605]);
  assert.deepEqual(r.errors,[]);
 });
 
@@ -73,7 +73,7 @@ test('legacy three-kind gems refund from shared skill instances once and survive
   b.permanent.gemInstances={'old-red':0,'old-green':1,'old-resonance':2};
   const plan=b.plans[0];plan.sockets[0]='old-resonance';plan.sockets[2]='old-green';plan.sockets[4]='old-red';
   const converted=migrateLegacyGemSave(raw),valid=validateParty(raw);
-  loadParty(raw);const first=structuredClone(state.gems);save();loadParty(structuredClone(packParty()));
+  loadParty(raw);const first=[...state.gems];save();loadParty(structuredClone(packParty()));
   return {converted:converted.buildSystem.permanent.gemInstances,valid:valid.members[0].gems,first,again:state.gems,sockets:state.sockets,instances:party.buildSystem.permanent.gemInstances,rawStock:raw.members[0].gems,rawInstances:raw.buildSystem.permanent.gemInstances};
  })()`);
  assert.deepEqual(out.converted,{'old-red':0,'old-green':2,'old-resonance':3});

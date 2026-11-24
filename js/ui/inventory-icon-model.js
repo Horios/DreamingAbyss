@@ -57,9 +57,10 @@
       const label=r.name||r.key;
       if(r.type==='sourceMaterial')for(const m of targets)if(m.material)source('material',m.material,'monster',m.name+' · '+label,'balanceSettings:drops');
       if(['material','item','ore','dust','token','equipment'].includes(r.type))source(['ore','dust'].includes(r.type)?'material':r.type,r.type==='ore'?'鍛鐵':r.type==='dust'?'粉塵':r.key,'monster',label,'balanceSettings:drops');
-      if(r.type==='gem')for(let i=0;i<3;i++)if(r.key==='random'||String(i)===r.key)source('gem',i,'monster',label,'balanceSettings:drops');
-      if(r.type==='potion'){const item=(doc.items||[]).find(x=>x.id==='heal_standard')||(doc.items||[]).find(x=>x.type==='healPotion');if(item)source('item',item.id,'monster',label,'balanceSettings:drops');}
-      if(['gear','gearLegendary','bossGear'].includes(r.type))for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined&&!row.exclusive)source('equipment',row.key,'monster',label,'balanceSettings:drops');
+      if(r.type==='gem')source('gem',Number(r.key),'monster',label,'balanceSettings:drops');
+      if(r.type==='gemPool')for(const p of r.pool||[])source('gem',Number(p.key),'monster',label,'balanceSettings:drops');
+      if(r.type==='monsterGear')for(const p of r.pool||[]){const m=String(p.key).match(/^form:(\d+):(\d+):(\d+)$/);if(m)source('equipment','form:'+m[1]+':'+m[2]+':'+m[3],'monster',label,'balanceSettings:drops');}
+      if(r.type==='bossGear')for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined&&!row.exclusive)source('equipment',row.key,'monster',label,'balanceSettings:drops');
     }
     if(doc.companionTokens?.drop?.enabled!==false)for(const t of doc.companionTokens?.catalog||[])if(t.drop?.enabled!==false)source('token',t.id,'monster','信物掉落設定','companionTokens');
     for(const row of out)row.categoryPath=(doc.inventoryIcons||[]).find(x=>x.kind===row.kind&&String(x.key)===row.key)?.categoryPath||categoryPath(doc,row);
@@ -155,9 +156,10 @@
         grant('equipment',r.key,m.name+' · '+({normal:'普通怪',elite:'菁英怪',boss:'首領',final:'終局首領'}[kind]||kind),{region:m.mapIndex,monsterId:m.id});
       }
       else if(['material','item','ore','dust','token'].includes(r.type))grant(['ore','dust'].includes(r.type)?'material':r.type,r.type==='ore'?'鍛鐵':r.type==='dust'?'粉塵':r.key,r.name||r.key);
-      else if(r.type==='gem')for(let g=0;g<3;g++)if(r.key==='random'||String(g)===r.key)grant('gem',g,r.name);
-      else if(r.type==='potion'){const item=doc.items?.find(x=>x.id==='heal_standard')||doc.items?.find(x=>x.type==='healPotion');if(item)grant('item',item.id,r.name);}
-      else if(['gear','gearLegendary','bossGear'].includes(r.type))for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined&&!row.exclusive)grant('equipment',row.key,r.name);
+      else if(r.type==='gem')grant('gem',Number(r.key),r.name);
+      else if(r.type==='gemPool')for(const p of r.pool||[])grant('gem',Number(p.key),r.name);
+      else if(r.type==='monsterGear')for(const p of r.pool||[])grant('equipment',p.key,r.name);
+      else if(r.type==='bossGear')for(const row of out.filter(x=>x.kind==='equipment'))if(r.type==='bossGear'?row.region!==undefined&&targets.some(m=>m.mapIndex===row.region):row.index!==undefined&&!row.exclusive)grant('equipment',row.key,r.name);
     }
     for(const row of out){
       if(row.kind==='equipment'&&row.region!==undefined){
@@ -176,7 +178,7 @@
     for(const [i,r]of (doc.inventoryIcons||[]).entries())for(const [j,x]of (r.salvageRewards||[]).entries()){const key=x.type==='ore'?'鍛鐵':x.type==='dust'?'粉塵':x.key,kind=['ore','dust'].includes(x.type)?'material':x.type;add(kind,key,'salvage',(byId.get(r.kind+':'+r.key)?.name||r.key)+' 個別分解','inventoryIcons','inventoryIcons.'+i+'.salvageRewards.'+j,{quantity:x.quantity,refId:r.kind+':'+r.key});}
     for(const key of ['鍛鐵','粉塵'])add('material',key,'salvage','裝備與信物基本分解','balanceSettings:equipment','balanceSettings.equipment.salvage');
     for(const [key,label,path]of [['鍛鐵','裝備強化','equipment.enhance'],['以太鍛鐵','高階裝備強化','equipment.enhance'],['粉塵','強化／洗鍊／寶石合成','equipment.enhance'],['光輝碎塊','保留詞條洗鍊','equipment.salvage']])use('material',key,'upgrade',label,'balanceSettings:equipment','balanceSettings.'+path);
-    use('material','粉塵','craft','屬性寶石合成','balanceSettings:skills','balanceSettings.skills.gems',{quantity:doc.balanceSettings?.skills?.gems?.craftDust});
+    use('material','粉塵','craft','寶石粉塵升級','balanceSettings:skills','balanceSettings.skills.gems.dustUpgrade',{});
     const rewards=(r,label,path)=>{if(!r)return;for(const [kind,key,n]of [['material','鍛鐵',r.ore],['material','粉塵',r.dust],...((r.materials||[]).map(x=>['material',x.key,x.quantity])),...((r.items||[]).map(x=>['item',x.key,x.quantity])),...((r.potions||[]).map(x=>['item',x.key,x.quantity])),...((r.gemCounts||[]).map((n,i)=>['gem',String(i),n]))])if(n>0)add(kind,key,'quest',label,path.includes('.daily.')?'dailyQuests':'sideQuests',path,{quantity:n});if(r.randomGems>0)for(let g=0;g<5;g++)add('gem',g,'quest',label,path.includes('.daily.')?'dailyQuests':'sideQuests',path,{quantity:r.randomGems});};
     for(const [kind,quests]of [['daily',doc.balanceSettings?.quests?.design?.daily?.entries||[]],['side',doc.balanceSettings?.quests?.design?.side||[]]])for(const [i,q]of quests.entries()){
       const path='balanceSettings.quests.design.'+(kind==='daily'?'daily.entries.':'side.')+i;rewards(q.rewards,q.title,path+'.rewards');for(const o of q.objectives||[])if(o.type==='material'){const keys=o.key==='@currentMap'?monsters.filter(m=>m.kind==='normal').map(m=>m.material):[o.key];for(const key of keys)use('material',key,'quest',q.title,path.includes('.daily.')?'dailyQuests':'sideQuests',path,{quantity:o.quantity,quantityMax:o.quantityMax,refId:q.id});}
@@ -213,6 +215,14 @@
     if(equipment){const cfg=doc.balanceSettings?.equipment?.salvage||{};salvage.push({type:'ore',key:'鍛鐵',quantity:Math.max(0,Math.round(tier*((cfg.oreBasePerTier||0)+quality*(cfg.orePerQualityPerTier||0)+enhance*(cfg.orePerEnhancePerTier||0))))},{type:'dust',key:'粉塵',quantity:Math.max(0,Math.round((cfg.dustBase||0)+quality*(cfg.dustPerQuality||0)))});salvage.push(...(cfg.extraRewards||[]).filter(x=>x.quality===quality));}
     const rewards=override?.salvageRewards??salvage;return {sellPrice,salvage:rewards,canSell:override?.saleEnabled??(!['gem','skill'].includes(row.kind)&&!row.key.startsWith('companion-ticket-'))};
   }
+  function inventoryModel(){if(root.EmberwildInventory)return root.EmberwildInventory;try{return typeof require==='function'?require('../items/inventory-model.js'):null;}catch{return null;}}
+  function stackOverrideIssues(r){
+    const M=inventoryModel();if(M)return M.overrideIssues(r);
+    const id=r.kind+':'+r.key,errors=[];
+    if(r.maxStack!==undefined&&(!Number.isSafeInteger(r.maxStack)||r.maxStack<1||r.maxStack>1e9))errors.push('個別堆疊上限必須是 1～1000000000 的整數：'+id);
+    for(const k of ['stackable','occupiesSlot'])if(r[k]!==undefined&&typeof r[k]!=='boolean')errors.push(k+' 必須是布林值：'+id);
+    return errors;
+  }
   function issues(doc,library=root.__EMBERWILD_SKILL_ICONS){
     const paletteErrors=root.EmberwildIconColors?.issues(doc)||[];
     if(doc.inventoryIcons===undefined)return paletteErrors;
@@ -232,6 +242,8 @@
       if(r.saleEnabled!==undefined&&typeof r.saleEnabled!=='boolean')errors.push('販售資格必須是布林值：'+id);
       if(r.salvageRewards!==undefined){if(!['equipment','token'].includes(r.kind)||!Array.isArray(r.salvageRewards)||r.salvageRewards.length>20)errors.push('個別分解產物只能設於裝備／信物，最多 20 筆：'+id);else for(const x of r.salvageRewards)if(!x||!['ore','dust','material','item','potion','gem'].includes(x.type)||typeof x.key!=='string'||!Number.isSafeInteger(x.quantity)||x.quantity<1||x.quantity>999||x.type==='material'&&(!x.key.trim()||['__proto__','constructor','prototype'].includes(x.key))||x.type==='item'&&!customItemIds.has(x.key)||x.type==='gem'&&!['random','0','1','2'].includes(x.key))errors.push('個別分解產物名稱、數量或引用無效：'+id);}
       if(r.description!==undefined&&(typeof r.description!=='string'||r.description.length>2000))errors.push('道具圖示說明必須是最多 2000 字的文字：'+id);
+      // v0.204: per-item stack overrides (maxStack, stackable, occupiesSlot). Category defaults live in balanceSettings.inventory.
+      errors.push(...stackOverrideIssues(r));
       const type=r.iconType,valid=typeof type==='string'&&(type==='auto'||(type.startsWith('custom:')?custom.has(type.slice(7)):library?(type==='none'||library.hasIcon(type)):/^(?:lucide:)?[a-z][a-z0-9-]*$/.test(type)));
       if(!valid)errors.push('道具圖示引用不存在或無效的圖示：'+id);
     }

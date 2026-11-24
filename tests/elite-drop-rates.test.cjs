@@ -13,9 +13,9 @@ test('the published balance carries the v0.181 elite and drop rates',()=>{
  assert(chances.length>=20);assert(chances.every(c=>c===0||c===.06),JSON.stringify([...new Set(chances)]));
  near(bs.rewards.equipment?.rareChance??JSON.parse(JSON.stringify(bs.rewards).match(/"rareChance":([0-9.]+)/)[1]),0.242,'rareChance');
  const drop=id=>bs.drops.entries.find(e=>e.id===id).chanceByDifficulty;
- assert.deepEqual(drop('gear_legendary'),[0.00066,0.00176,0.00352]);assert.deepEqual(drop('gem_normal'),[0.033,0.066,0.11]);
- assert.deepEqual(drop('gem_elite'),[0.099,0.187,0.297]);assert.deepEqual(drop('gem_boss'),[0.297,0.44,0.605]);
- assert.deepEqual(drop('gear_legendary_normal'),[0.0000066,0.0000132,0.000022]);assert.deepEqual(drop('gear_legendary_elite'),[0.0000088,0.0000198,0.0000396]);
+ // v0.206: the shared legendary and random gem pools are gone; the map gem pools keep the former gem rates.
+ for(const id of ['gear_legendary','gear_legendary_normal','gear_legendary_elite','gem_normal','gem_elite','gem_boss'])assert(!bs.drops.entries.some(e=>e.id===id),id);
+ assert.deepEqual(drop('gem_map0_normal'),[0.033,0.066,0.11]);assert.deepEqual(drop('gem_map0_elite'),[0.099,0.187,0.297]);assert.deepEqual(drop('gem_map0_boss'),[0.297,0.44,0.605]);
  assert.deepEqual(bs.difficulty.modes.map(m=>m.legendaryGearChance),[0.00066,0.00176,0.00352]);assert.deepEqual(bs.difficulty.modes[0].gemChance,[0.044,0.132,0.385]);
  assert.deepEqual(r.errors,[]);
 });

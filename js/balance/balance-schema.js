@@ -18,12 +18,12 @@ function validateMonsterDropDynamicInput(input){
   if(drops!==undefined){
     if(!Array.isArray(drops))throw Error('掉落表必須是陣列');
     if(!Array.isArray(cat)||!cat.length)throw Error('掉落表需要有效怪物設計清單');
-    const monsterById=new Map(cat.map(m=>[m.id,m])),dropIds=new Set(),types=new Set(['sourceMaterial','material','ore','dust','gem','potion','item','gear','gearLegendary','bossGear','equipment','token']),encKinds=new Set(['normal','elite','boss','final']);
+    const monsterById=new Map(cat.map(m=>[m.id,m])),dropIds=new Set(),types=new Set(['sourceMaterial','material','ore','gem','item','bossGear','equipment','token','monsterGear','gemPool']),encKinds=new Set(['normal','elite','boss','final']);
     for(const [i,d] of drops.entries()){
       if(!d||typeof d.id!=='string'||!/^[a-zA-Z0-9_-]{1,120}$/.test(d.id)||dropIds.has(d.id))throw Error('掉落規則 ID 無效或重複：'+i);dropIds.add(d.id);
-      if(typeof d.name!=='string'||!d.name.trim()||typeof d.enabled!=='boolean'||!types.has(d.type)||!Array.isArray(d.kinds)||!d.kinds.length||d.kinds.some(k=>!encKinds.has(k))||!Array.isArray(d.chanceByDifficulty)||d.chanceByDifficulty.length!==3||d.chanceByDifficulty.some(v=>!Number.isFinite(v)||v<0||v>1)||!Number.isInteger(d.quantityMin)||!Number.isInteger(d.quantityMax)||d.quantityMin<1||d.quantityMax<d.quantityMin||d.quantityMax>999||!Array.isArray(d.sources)||!d.sources.length||d.sources.some(id=>!monsterById.has(id)))throw Error('掉落規則資料無效：'+d.id);
+      if(typeof d.name!=='string'||!d.name.trim()||typeof d.enabled!=='boolean'||!types.has(d.type)||!Array.isArray(d.kinds)||!d.kinds.length||d.kinds.some(k=>!encKinds.has(k))||!Array.isArray(d.chanceByDifficulty)||d.chanceByDifficulty.length!==3||d.chanceByDifficulty.some(v=>!Number.isFinite(v)||v<0||v>1)||!Number.isInteger(d.quantityMin)||!Number.isInteger(d.quantityMax)||d.quantityMin<1||d.quantityMax<d.quantityMin||d.quantityMax>999||!Array.isArray(d.sources)||!d.sources.length||d.sources.some(id=>!monsterById.has(id)))throw Error('掉落規則資料無效：'+d.id);{const poolIssues=EmberwildDropRework.ruleIssues(d,{formExists:ref=>!!(typeof ITEM_FORMS!=='undefined'?ITEM_FORMS:[])[ref.job]?.[ref.slot]?.[ref.index]});if(poolIssues.length)throw Error(poolIssues.join('；'));}
       if(d.type==='material'&&(typeof d.key!=='string'||!d.key.trim()))throw Error('材料掉落需要材料名稱：'+d.id);
-      if(d.type==='gem'&&d.key!=='random'&&![0,1,2,'0','1','2'].includes(d.key))throw Error('寶石掉落 key 需為 random/0/1/2：'+d.id);
+      if(d.type==='gem'&&![0,1,2,3,4,'0','1','2','3','4'].includes(d.key))throw Error('寶石掉落 key 需為指定寶石 0～4（隨機寶石掉落已移除，請改用地圖寶石池）：'+d.id);
       if(d.type==='item'&&Array.isArray(input.items)&&!input.items.some(x=>x.id===d.key))throw Error('商店道具掉落 key 無效：'+d.id);
       const ruleKinds=new Set(d.kinds);
       for(const id of d.sources){

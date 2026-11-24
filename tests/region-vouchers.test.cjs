@@ -80,11 +80,11 @@ test('claimed tickets become inventory items with a short description; using the
 test('used tickets roll drops through the existing per-enemy loot rules without touching the real inventory',async()=>{
  const r=await ready(sampled());await offlineVouchers(r,4*3600000);r.run(`acknowledgeOfflineExploration();claimAllMailboxAttachments();running=false;`);
  const stack=json(r,'party.regionVouchers.stacks[0]');
- r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};`);
- const inv=r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions})');
+ r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};EmberwildItems.add('material:紅色草',10);{const s=EmberwildItems.stacks().find(s=>s.item==='material:紅色草');EmberwildItems.split(s.uid,3);}`);
+ const inv=r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions,layout:EmberwildItems.snapshot()})');
  const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:8}])`);const expected=Object.values(stack.enemies).reduce((a,b)=>a+b,0)*8;
  assert(Math.abs(r.run('__calls')-expected)<=Object.keys(stack.enemies).length*8,'one loot roll per locked enemy');
- assert.equal(r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions})'),inv,'rolls happen in a scratch inventory');
+ assert.equal(r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions,layout:EmberwildItems.snapshot()})'),inv,'rolls happen in a scratch inventory');
  assert.equal(t.xp,0);assert(Object.keys(t.items).length>0);
  const goods=mails(r,'items').flatMap(m=>m.attachments);assert(goods.every(a=>['catalogue','gear'].includes(a.type)));assert.equal(goods.filter(a=>a.type==='gear').length,t.gear);
  assert.equal(goods.filter(a=>a.type==='catalogue').reduce((n,a)=>n+a.quantity,0),Object.values(t.items).reduce((a,b)=>a+b,0));
@@ -115,7 +115,7 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  assert.deepEqual(json(r,'EmberwildRegionVouchers.normalize({version:1,serial:3,remainders:{"0:0":99999999,"6:0":5,"x":1},stacks:[{id:"v1",count:0},{id:"bad"}],history:[]})'),{version:1,serial:3,remainders:{'0:0':30*MIN-1},stacks:[],history:[]});
  // v0.161: maps carry a recommended gear level (default: the map's max level) instead of an over-level voucher price.
  assert.equal(r.run('worldMapConfig(1).recommendedGearLevel'),r.run('MAPS[1].max'));assert.equal(r.run('worldMapConfig(1).overlevelVoucherGold'),undefined);
- assert.match(r.run('party.mailbox.messages.find(m=>m.rewardKey.startsWith("starter-")).body'),/初始裝已穿戴/);
+ assert.equal(r.run('party.mailbox.messages.some(m=>m.rewardKey.startsWith("starter-"))'),false,'creation no longer sends starter mail');
  assert.deepEqual(r.errors,[]);
 });
 test('ticket length and potion charging come from balance settings; invalid values are rejected',async()=>{

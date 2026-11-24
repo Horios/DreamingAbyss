@@ -1,9 +1,11 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {loadRuntime:loadBase}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {installLegacyStarterMail}=require('./legacy-starter-mail-fixture.cjs');
+const loadRuntime=(...args)=>installLegacyStarterMail(loadBase(...args));
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 function game(edit){const r=loadRuntime(root),d=json(r,'exportableBalance()');if(edit)edit(d);r.ctx.doc=d;r.run('applyBalanceConfig(doc);selectSaveSlot(1);start(0);closeModal()');return r;}
 
-test('all classes start with five ordinary white items; only the weapon is mailed and claiming never equips it',()=>{
+test('mail fixtures for all classes retain a starter weapon; claiming never equips it',()=>{
  for(let job=0;job<4;job++){
   const r=game();if(job)r.run(`start(${job});closeModal()`);
   assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('state.bag.every(g=>!g.starterPack&&g.tier===1&&g.powerTier===1&&g.plus===0&&g.affix.length===0&&!g.prefixId&&!g.suffixId)'),true);
@@ -34,11 +36,11 @@ test('all catalogue kinds are mailed in chunks of at most six and land in their 
  assert.equal(r.run('new Set(state.bag.map(g=>g.id)).size===state.bag.length'),true);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
 });
 test('failed saves, a full bag and stock overflow retain every attachment and roll back all inventory changes',()=>{
- const r=game(d=>d.starterPackItems[0]=[{kind:'material',key:'紅色草',quantity:3}]);
- const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
+ const r=game(d=>{d.starterPackItems[0]=[{kind:'material',key:'紅色草',quantity:3}];d.balanceSettings.inventory.stackLimits.material=1e9;});
+ r.run("EmberwildItems.add('material:紅色草',10);const split=EmberwildItems.stacks().find(s=>s.item==='material:紅色草');EmberwildItems.split(split.uid,3);");const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
  r.run('save=()=>{throw Error("disk")};');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
- r.run('save=realSave;while(state.bag.length<RULES.bagCapacity)state.bag.push(gear(1,1,0,0));');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
- r.run('state.bag=state.bag.slice(0,5);state.materials["紅色草"]=1e9;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
+ r.run('save=realSave;GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
+ r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=720;state.bag=state.bag.slice(0,5);state.materials["紅色草"]=1e9;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
  r.run('state.materials["紅色草"]=0;globalThis.saveCalls=0;save=(...args)=>{if(++saveCalls>1)throw Error("duplicate save");return realSave(...args);};');
  assert.equal(r.run('claimMailboxAttachments(1)'),true);assert.equal(r.run('saveCalls'),1);assert.equal(r.run('claimAllMailboxAttachments()'),false);assert.equal(r.run('saveCalls'),1);
 });

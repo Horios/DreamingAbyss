@@ -433,7 +433,7 @@
  }
  globalThis.changeOfflineGearPage=function(delta){renderedReceipt=null;gearPage=Math.max(0,Math.min(Math.ceil((clock()?.receipt?.gear.length||1)/30)-1,gearPage+delta));showReceipt();};
  // v0.115: the receipt shows the same gear detail as the backpack (stats and abilities, not only the source breakdown).
- globalThis.showOfflineGear=function(i){const g=clock()?.receipt?.gear[i];if(!g)return;$('modal').innerHTML='<h2>'+equipmentNameHTML(g)+'</h2><div class="offline-gear-detail">'+(globalThis.gearInfoHTML?.(g).replace(/^<h3>[\s\S]*?<\/h3>/,'')||equipmentAttributeDetailsHTML(g))+'</div><button onclick="closeModal()">關閉</button>';$('modal').showModal();};
+ globalThis.showOfflineGear=function(i){const g=clock()?.receipt?.gear[i];if(!g)return;$('modal').innerHTML='<h2>'+equipmentNameHTML(g)+'</h2><div class="offline-gear-detail">'+(g.unidentified&&globalThis.unidentifiedGearDetailHTML?globalThis.unidentifiedGearDetailHTML(g):(globalThis.gearInfoHTML?.(g).replace(/^<h3>[\s\S]*?<\/h3>/,'')||equipmentAttributeDetailsHTML(g)))+'</div><button onclick="closeModal()">關閉</button>';$('modal').showModal();};
  globalThis.acknowledgeOfflineExploration=function(){
   const c=clock();if(job||failed||!c?.receipt?.complete||globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
   const previous=copy(c);c.receipt=null;promote();

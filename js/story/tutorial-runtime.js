@@ -69,7 +69,8 @@
 
  // ---------- conditions ----------
  const hero=()=>party?.members?.[0]||null;
- const normalGear=g=>!!g&&!g.starterPack&&!g.storyRewardKey&&!globalThis.EmberwildTokens?.isToken?.(g);
+ // v0.206: unidentified gear counts once it is identified (it cannot be inspected or worn before).
+ const normalGear=g=>!!g&&!g.unidentified&&!g.starterPack&&!g.storyRewardKey&&!globalThis.EmberwildTokens?.isToken?.(g);
  const allGear=()=>party?.sharedGear?.items||hero()?.bag||[];
  const prologueRunning=()=>!!STORY()?.prologueRunning?.()||!!PRO()?.active?.();
  // v0.173: only the name and class screens hold tutorials back; the onboarding tasks after them play their own guides.
@@ -315,7 +316,7 @@
  function trackGear(){
   if(!party)return false;const ids=allGear().map(g=>g.id);
   if(knownOwner!==party||!known){known=new Set(ids);knownOwner=party;return false;}
-  let n=0;for(const g of allGear())if(!known.has(g.id)){known.add(g.id);if(normalGear(g)&&g.acquiredAt!==undefined)n++;}
+  let n=0;for(const g of allGear())if(!known.has(g.id)&&!g.unidentified){known.add(g.id);if(normalGear(g)&&g.acquiredAt!==undefined)n++;}
   if(n){const t=ensure();t.events.gearAcquired=Math.min(1e9,(t.events.gearAcquired||0)+n);}return n>0;
  }
  // v0.198: count gear when it enters the bag, so the counter is part of the same save as the gear (an offline checkpoint

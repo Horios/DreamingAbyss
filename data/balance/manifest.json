@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 63,
+  "dataRevision": 66,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "01d62254aac6022a659c2140c75880d1857884f40c828c25e33e3117a6ab5316",
-    "bytes": 1266611
+    "sha256": "81d05093959fc908f5d0dd25e1a7077e9c1af3a8a010d8a7972e2c46056f802c",
+    "bytes": 1425307
   },
   "layout": {
     "": [
@@ -54,6 +54,7 @@
       "rewards",
       "combat",
       "quests",
+      "inventory",
       "meta",
       "maps",
       "drops",
@@ -128,9 +129,9 @@
       "file": "meta/balance-settings.json",
       "source": "balanceSettings.*",
       "present": true,
-      "version": 1,
-      "sha256": "6a0aa6ed6945ae4ffe8f9b0a29d4ffc0da69a172e169dd00f29c51eb7840c6e5",
-      "bytes": 320,
+      "version": 4,
+      "sha256": "237fdb204e0579c161578c78de60b1f8143c48fb96f54f10326f084713e7570a",
+      "bytes": 767,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -212,9 +213,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 9,
-      "sha256": "514e7e5127ff3090d4821ad884431cce4878b0f17bc9230aadd707c5ed0719e6",
-      "bytes": 109219,
+      "version": 10,
+      "sha256": "b5dfc0b35b263cd29be79563ef4e9aa4db730bba026c42f3b52579189adb2fc7",
+      "bytes": 235575,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -271,9 +272,9 @@
       "file": "combat/skill-settings.json",
       "source": "balanceSettings.skills",
       "present": true,
-      "version": 5,
-      "sha256": "e3b8bd05390e6bde46fe2d1e65e5ffa998db5f0f206fddad36192ae79d115e55",
-      "bytes": 832,
+      "version": 6,
+      "sha256": "a430042f7f98ba05150369a500050333c24426543b7d2b3dd41c26f9c9292723",
+      "bytes": 939,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -481,9 +482,9 @@
       "file": "equipment/settings.json",
       "source": "balanceSettings.equipment",
       "present": true,
-      "version": 5,
-      "sha256": "1c339e3f21f7f843b1efdd93f80ead78ab32fedd6aa276d91f7d6ae7e254335e",
-      "bytes": 4476,
+      "version": 6,
+      "sha256": "d3afd1bc558a426adb6adeb0b0340341596ec3e7e70b467123f1e833e482e280",
+      "bytes": 8231,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -587,9 +588,9 @@
       "file": "systems/rewards.json",
       "source": "balanceSettings.rewards",
       "present": true,
-      "version": 4,
-      "sha256": "a6e6570451dcf8dfa0b6d408695a6458c83d6b9f5194e69cec16d3de5525c05f",
-      "bytes": 1141,
+      "version": 5,
+      "sha256": "b43ead484ca81128dc4051627da2d23113bc8a3e9c406df6f27efd023aa6c441",
+      "bytes": 956,
       "dependsOn": [],
       "validators": [
         "field-rules",

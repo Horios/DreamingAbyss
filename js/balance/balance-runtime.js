@@ -15,7 +15,7 @@ rewardGroupKill=function(e){
     h.gems.forEach((n,i)=>addExpeditionLoot(GEMS[i].name,n-before.gems[i]));
     for(const [name,n] of Object.entries(h.materials))addExpeditionLoot(name,n-(before.materials[name]||0));
     const replaced=replay&&h.bag!==bag?new Set((bag||[]).slice(0,tail).map(g=>g.id)):null;
-    for(const gearItem of replay&&h.bag===bag?h.bag.slice(tail):h.bag)if(replay?(!replaced||!replaced.has(gearItem.id)):!before.gear.has(gearItem.id))addExpeditionLoot(equipmentDisplayName(gearItem),1,typeof gearQualityRank==='function'?gearQualityRank(gearItem):Math.max(0,Math.min(3,Number(gearItem.rar)||0)));
+    for(const gearItem of replay&&h.bag===bag?h.bag.slice(tail):h.bag)if(replay?(!replaced||!replaced.has(gearItem.id)):!before.gear.has(gearItem.id))addExpeditionLoot(equipmentDisplayName(gearItem),1,gearItem.unidentified?0:typeof gearQualityRank==='function'?gearQualityRank(gearItem):Math.max(0,Math.min(3,Number(gearItem.rar)||0)));
   }
   return result;
 };

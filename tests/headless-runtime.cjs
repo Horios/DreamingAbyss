@@ -42,6 +42,18 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
   // Individual module execution remains capped at 10s.
   // Mirror the loader's final domain apply and late-validator save restoration.
   vm.runInContext(`{const raw=typeof balanceSourceText==='function'?balanceSourceText():null;if(raw||globalThis.__HEADLESS_PUBLISHED_BALANCE)applyBalanceConfig(raw?JSON.parse(raw):globalThis.__HEADLESS_PUBLISHED_BALANCE,{persist:false});const boot=globalThis.__EMBERWILD_TEAM_BOOT_RAW||globalThis.__EMBERWILD_BOOT_SAVE_RAW;if(boot){try{loadParty(JSON.parse(boot));globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;}catch(error){party=null;state=null;running=false;globalThis.__EMBERWILD_BOOT_SAVE_ERROR=String(error.message||error);if(typeof backToTitle==='function')backToTitle();else render();}}}`,ctx,{filename:'headless-published-loader',timeout:options.bootstrapTimeoutMs||30000});
+  // v0.206: the game no longer equips anything when a character is created. Most tests create their character with a direct
+  // start(job) and were written for the former white starting set, so the harness equips that set on a direct start
+  // (not on the prologue path). Tests of character creation pass {bareStart:true} to see the game's own behavior.
+  if(entry==='index.html'&&!options.bareStart)vm.runInContext(`{const __start=start,SP=globalThis.__EMBERWILD_STARTER_PACK;let __prologue=false;
+    if(SP?.asPrologue){const base=SP.asPrologue;SP.asPrologue=function(action){__prologue=true;try{return base.call(this,action);}finally{__prologue=false;}};}
+    start=function(...args){const out=__start.apply(this,args);
+      if(!__prologue&&state&&party&&party.members?.length===1&&!(state.equipped||[]).some(Boolean)){
+        for(const [position,slot] of [0,1,2,3,3].entries()){const g=gear(1,slot,0,state.job);g.formJob=state.job;g.form=0;const f=typeof itemForm==='function'?itemForm(g):null;if(f?.weaponType)g.weaponType=f.weaponType;
+          Object.assign(g,{rar:0,plus:0,affix:[],powerTier:1,prefixId:'',suffixId:''});globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.generate?.(g,{source:'starter',force:true});g.name=gearName(g);
+          state.bag.push(g);state.equipped[position]=g.id;}
+        state.hp=stats(state).hp;save();}
+      return out;};}`,ctx,{filename:'headless-starting-set'});
   return {ctx,elements,errors,warnings,values,dispatch:(type,target='window',event={})=>{for(const fn of listeners[target].get(type)||[])fn({...event,type});},run:code=>vm.runInContext(code,ctx),advance:ms=>{now+=ms;},get now(){return now;}};
 }
 module.exports={loadRuntime};

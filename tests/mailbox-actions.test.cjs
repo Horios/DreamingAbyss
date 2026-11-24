@@ -1,10 +1,12 @@
 // v0.076: 已讀全部 and 刪除已讀及已領取信件; unread mail shows a red dot; unread, unclaimed or locked mail is never deleted.
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {loadRuntime:loadBase}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {installLegacyStarterMail}=require('./legacy-starter-mail-fixture.cjs');
+const loadRuntime=(...args)=>installLegacyStarterMail(loadBase(...args));
 const json=(r,x)=>JSON.parse(r.run('JSON.stringify('+x+')'));
 test('read-all clears the dots, deleting removes only read and claimed mail, and nothing is resent',()=>{
  const r=loadRuntime(root);r.ctx.confirm=()=>true;r.run('selectSaveSlot(1);start(1);closeModal();clearInterval(timer);');
- const total=r.run('party.mailbox.messages.length');assert(total>=1,'the starter pack mail exists');
+ const total=r.run('party.mailbox.messages.length');assert(total>=1,'the explicit attachment fixture exists');
  let html=r.run('mailboxView()');assert.match(html,/mail-dot/);assert.doesNotMatch(html,/NEW|未讀 · 待領取/);assert.match(html,/已讀全部/);assert.match(html,/刪除已讀及已領取信件/);
  assert.equal(r.run('markAllMailRead()'),true);assert.equal(r.run('party.mailbox.messages.every(m=>m.read)'),true);
  html=r.run('mailboxView()');assert.doesNotMatch(html,/mail-dot/,'read mail has no dot');
@@ -35,7 +37,7 @@ test('locked mail survives 刪除已讀及已領取信件 and reload; unlocking 
 test('a mail with attachments shows its first attachment icon before the title; a mail without attachments does not',()=>{
  const r=loadRuntime(root);r.run('selectSaveSlot(1);start(1);closeModal();clearInterval(timer);');
  const html=r.run('mailboxView()'),m=json(r,'party.mailbox.messages.map(m=>({id:m.id,n:m.attachments?.length||0,subject:m.subject}))');
- const withAtt=m.find(x=>x.n>0);assert(withAtt,'starter pack has attachments');
+ const withAtt=m.find(x=>x.n>0);assert(withAtt,'the explicit mail fixture has attachments');
  const item=html.split('mailbox-list-item').find(s=>s.includes(withAtt.subject));
  assert.match(item,/<b><span class="mail-title-icon" aria-hidden="true"><svg/,'icon comes first inside the title');
  assert.equal(r.run(`mailAttachmentIcon(${withAtt.id},0)`),r.run(`mailAttachmentIcon(${withAtt.id})`));

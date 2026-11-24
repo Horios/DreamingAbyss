@@ -1,0 +1,86 @@
+[
+  {
+    "job": 0,
+    "lv": 1,
+    "v": {
+      "hp": 56,
+      "atk": 28,
+      "def": 9,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0.06,
+      "elementBonus": 0,
+      "bossDamage": 0,
+      "elementDamage": {},
+      "raceDamage": {},
+      "resist": {},
+      "attackSpeedPct": 0
+    }
+  },
+  {
+    "job": 1,
+    "lv": 1,
+    "v": {
+      "hp": 46,
+      "atk": 30,
+      "def": 6,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0.06,
+      "elementBonus": 0.08,
+      "bossDamage": 0,
+      "elementDamage": {},
+      "raceDamage": {},
+      "resist": {},
+      "attackSpeedPct": 0
+    }
+  },
+  {
+    "job": 2,
+    "lv": 1,
+    "v": {
+      "hp": 49,
+      "atk": 28,
+      "def": 7,
+      "crit": 0.17,
+      "critDamage": 1.7999999999999998,
+      "pierce": 8,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0.08,
+      "elementBonus": 0,
+      "bossDamage": 0,
+      "elementDamage": {},
+      "raceDamage": {},
+      "resist": {},
+      "attackSpeedPct": 0
+    }
+  },
+  {
+    "job": 3,
+    "lv": 1,
+    "v": {
+      "hp": 54,
+      "atk": 28,
+      "def": 8,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0.08,
+      "bossDamage": 0,
+      "elementDamage": {},
+      "raceDamage": {},
+      "resist": {},
+      "attackSpeedPct": 0
+    }
+  }
+]

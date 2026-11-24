@@ -58,7 +58,7 @@ test('Redraws replace the skills scroll region but restore its position through 
 test('Legacy skill gem sockets are refused and the physical gem inventory survives a reload unchanged',()=>{
  const r=game();r.run('playerHero().gems=[1,1,1];save();render()');
  for(const type of [0,1,2])assert.equal(r.run(`socket(0,${type})`),false);
- assert.deepEqual(JSON.parse(r.run('JSON.stringify(playerHero().gems)')),[1,1,1]);assert.equal(r.run('playerHero().sockets.every(x=>x===null)'),true);
+ assert.deepEqual(JSON.parse(r.run('JSON.stringify(playerHero().gems)')),[1,1,1,...Array(12).fill(0)]);assert.equal(r.run('playerHero().sockets.every(x=>x===null)'),true);
  assert(!/data-team-gem=|鑲嵌槽：/.test(html(r)),'the skills page has no per-skill gem slot');
  const cold=loadRuntime(root,'index.html',Object.fromEntries(r.values));cold.run("continueFromTitle();closeModal();setTab('skills')");
  assert.deepEqual(JSON.parse(cold.run('JSON.stringify(playerHero().gems.slice(0,3))')),[1,1,1]);assert.equal(cold.run('playerHero().gems.reduce((a,b)=>a+b,0)'),3,'loading pads higher gem tiers with zero');assert.equal(cold.run('playerHero().sockets.every(x=>x===null)'),true);
