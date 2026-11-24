@@ -45,7 +45,7 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
   // v0.206: the game no longer equips anything when a character is created. Most tests create their character with a direct
   // start(job) and were written for the former white starting set, so the harness equips that set on a direct start
   // (not on the prologue path). Tests of character creation pass {bareStart:true} to see the game's own behavior.
-  if(!options.bareStart)vm.runInContext(`{const __start=start,SP=globalThis.__EMBERWILD_STARTER_PACK;let __prologue=false;
+  if(entry==='index.html'&&!options.bareStart)vm.runInContext(`{const __start=start,SP=globalThis.__EMBERWILD_STARTER_PACK;let __prologue=false;
     if(SP?.asPrologue){const base=SP.asPrologue;SP.asPrologue=function(action){__prologue=true;try{return base.call(this,action);}finally{__prologue=false;}};}
     start=function(...args){const out=__start.apply(this,args);
       if(!__prologue&&state&&party&&party.members?.length===1&&!(state.equipped||[]).some(Boolean)){

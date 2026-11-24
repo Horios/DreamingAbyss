@@ -1,6 +1,8 @@
 name: Regression gate
 
 on:
+  push:
+    branches: [feature/inventory-drop-rework]
   workflow_call:
   workflow_dispatch:
 
@@ -91,6 +93,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - group: inventory-drop-rework
+            tests: >-
+              tests/drop-rework.test.cjs tests/inventory-model.test.cjs tests/inventory-runtime.test.cjs tests/companion-tokens.test.cjs
           - group: modules-and-gear
             tests: >-
               tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/gear-overflow.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs

@@ -3,7 +3,7 @@ const {loadRuntime}=require('./headless-runtime.cjs'),seed=require('../data/bala
 const D=require('../js/world/drop-rework-model.js');
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 function game(){
- const r=loadRuntime(root);r.ctx.seed=structuredClone(seed);
+ const r=loadRuntime(root,'index.html',{},undefined,{bareStart:true});r.ctx.seed=structuredClone(seed);
  r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();
   globalThis.seq=12345;Math.random=()=>{seq=(Math.imul(seq,1664525)+1013904223)>>>0;return seq/4294967296;};
   globalThis.always=()=>{GAMEPLAY_SETTINGS.drops.entries=GAMEPLAY_SETTINGS.drops.entries.map(x=>({...x,chanceByDifficulty:[1,1,1]}));};

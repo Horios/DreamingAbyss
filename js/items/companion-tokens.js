@@ -71,7 +71,7 @@
   function tokenDropChance(e){
     // Match ordinary equipment rules for this monster/kind/difficulty, including
     // timed boosts and level-gap attenuation; keep token pool eligibility below.
-    const rules=configuredDropRules(e).filter(r=>['gear','equipment'].includes(r.type));
+    const rules=configuredDropRules(e).filter(r=>['gear','equipment','monsterGear'].includes(r.type));
     return 1-rules.reduce((miss,r)=>miss*(1-effectiveDropChance(r,e)),1);
   }
   function rollTokens(e,rng=Math.random){
