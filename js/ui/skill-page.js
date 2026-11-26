@@ -9,7 +9,8 @@
   const TYPE={active:'主動',proc:'觸發',passive:'被動'};
   const SOURCE={class:'職業',advanced:'職業',quest:'任務',equipment:'裝備',companion:'夥伴'};
   let page='loadout',catalogSelected=null,catalogFilter={state:'all',type:'all',source:'all'};
-  let slotShowLocked=false;try{slotShowLocked=localStorage.getItem('emberwild.skillSlotShowLocked')==='1';}catch{}
+  // Unlearned skills are shown by default (the choice is remembered), as in the earlier slot dialog.
+  let slotShowLocked=true;try{slotShowLocked=localStorage.getItem('emberwild.skillSlotShowLocked')!=='0';}catch{}
   let slotPreview=null;
   const attr=v=>esc(String(v??''));
   const svg=(glyph,size=20)=>globalThis.__EMBERWILD_SKILL_ICONS?.svgFor('lucide:'+glyph,[],{size})||'';

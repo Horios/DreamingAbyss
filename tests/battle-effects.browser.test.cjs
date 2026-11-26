@@ -163,6 +163,7 @@ test('mage blasts retain cast and lethal HP stages across twenty encounters with
  try{
   await p.evaluate(()=>{
    globalThis.blastSeed=8723;Math.random=()=>{blastSeed=(Math.imul(blastSeed,1664525)+1013904223)>>>0;return blastSeed/4294967296;};selectSaveSlot(1);start(1);closeModal();
+   /* v0.215: a lone hero meets one monster; the blast audit needs groups. */EmberwildSecondsCombat.encounterSize=()=>3;
    globalThis.blastAudit={casts:[],impacts:[],battles:0};
    const cast=castPartySkill;castPartySkill=function(h,i,...args){const before=foes.filter(e=>e.hp>0).map(e=>({id:e.id,hp:e.hp})),out=cast(h,i,...args);if(h.job===1&&CLASSES[h.job]?.skills?.[i]?.[0]==='魔爆'&&out!==false)blastAudit.casts.push({at:performance.now(),targets:before.filter(b=>foes.find(e=>e.id===b.id)?.hp<b.hp).map(b=>b.id),attempted:before.length,dead:foes.filter(e=>e.hp<=0).map(e=>e.id)});return out;};
    const finish=EmberwildBattleSummary.finish;EmberwildBattleSummary.finish=function(result){if(result==='victory')blastAudit.battles++;return finish(result);};

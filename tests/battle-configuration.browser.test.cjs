@@ -13,13 +13,14 @@ test('new and legacy priests can acquire, equip, reload and cast holy prison thr
    const prison=p.locator('[data-skill-id="priest-holy-prison"]');
    assert(await prison.isVisible());
    if(!old){
-    assert(await prison.getByRole('button').isDisabled());
+    // v0.214 slot dialog: an unlearned skill shows 未解鎖 instead of a slot button.
+    assert.equal(await prison.getByRole('button',{name:'裝入',exact:true}).count(),0);assert.match(await prison.innerText(),/未解鎖/);
     await p.getByRole('button',{name:'關閉',exact:true}).click();
     await p.evaluate(()=>{setClassMasteryLevel(2);save();render();});
     await p.locator('[data-skill-slot="active:0"]').click();
    }
-   assert.equal(await prison.getByRole('button').isDisabled(),false);
-   await prison.getByRole('button',{name:'裝入技能',exact:true}).click();
+   assert.equal(await prison.getByRole('button',{name:'裝入',exact:true}).count(),1);
+   await prison.getByRole('button',{name:'裝入',exact:true}).click();
    await p.clock.runFor(50);
    assert.equal(await p.evaluate(()=>playerHero().skillLoadout.active[0]),'priest-holy-prison',old?'legacy priest':'new priest');
    await p.reload();await p.evaluate(()=>clearInterval(timer));
@@ -36,18 +37,20 @@ test('skill previews, catalog and passive switches work on desktop/mobile and pe
   await p.evaluate(async()=>{selectSaveSlot(1);start(2);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);setTab('skills');});
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:900});await p.locator('[data-skill-slot="active:0"]').click();
-   const rain=p.locator('[data-skill-id="archer-arrow-rain"]');assert(await rain.isVisible());assert(await rain.getByRole('button').isDisabled());assert.match(await rain.innerText(),/職業精通 Lv2/);
-   assert.equal(await p.locator('[data-skill-id="job2-core4"]').count(),1,'v0.168: former second-class skills are listed (locked)');assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
-   await p.getByRole('button',{name:'關閉',exact:true}).click();await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
-   /* v0.092: the catalog lists skills on the left and details the clicked one on the right */assert(await p.locator('[data-skill-pick="job2-core4"]').isVisible());assert.equal(await p.locator('[data-skill-pick^="partner"]').count(),0);await p.locator('[data-skill-pick="tutorial_echo"]').click();assert.match(await p.locator('.skill-catalog-detail [data-skill-id="tutorial_echo"]').innerText(),/解鎖條件\s*裝備附帶/);
-   assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.getByRole('button',{name:'關閉',exact:true}).click();
+   const rain=p.locator('.skill-pick[data-skill-id="archer-arrow-rain"]');assert(await rain.isVisible());assert.equal(await rain.getByRole('button',{name:'裝入',exact:true}).count(),0);await rain.locator('.skill-pick-main').click();assert.match(await p.locator('#modal .skill-missing').innerText(),/職業精通 Lv2/);
+   assert.equal(await p.locator('.skill-pick[data-skill-id="job2-core4"]').count(),1,'v0.168: former second-class skills are listed (locked)');assert(await p.locator('#modal').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
+   await p.getByRole('button',{name:'關閉',exact:true}).click();await p.getByRole('tab',{name:'技能圖鑑',exact:true}).click();await p.clock.runFor(50);
+   /* v0.092: the catalog lists skills on the left and details the clicked one on the right (v0.214: a page of the skill tab) */assert(await p.locator('[data-skill-pick="job2-core4"]').isVisible());assert.equal(await p.locator('[data-skill-pick^="partner"]').count(),0);await p.locator('[data-skill-pick="tutorial_echo"]').click();await p.clock.runFor(50);assert.match(await p.locator('.skill-catalog-detail [data-skill-id="tutorial_echo"]').innerText(),/解鎖條件\s*裝備附帶/);
+   assert(await p.locator('[data-skill-page-view="catalog"]').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.getByRole('tab',{name:'技能配置',exact:true}).click();await p.clock.runFor(50);
   }
   await p.evaluate(()=>{setClassMasteryLevel(2);save();render();});await p.locator('[data-skill-slot="active:0"]').click();
-  await p.locator('[data-skill-id="archer-arrow-rain"]').getByRole('button',{name:'裝入技能',exact:true}).click();assert.equal(await p.evaluate(()=>state.skillLoadout.active[0]),'archer-arrow-rain');
+  await p.locator('.skill-pick[data-skill-id="archer-arrow-rain"]').getByRole('button',{name:'裝入',exact:true}).click();assert.equal(await p.evaluate(()=>state.skillLoadout.active[0]),'archer-arrow-rain');
   // Pointer release queues rendering on a timer; the test clock is paused.
   await p.clock.runFor(50);
   const status=await p.evaluate(()=>{const switched=changePlayerClass(0);/* v0.161: each class has its own mastery; the new class needs mastery 2 for its clearing skill */if(switched)setClassMasteryLevel(2);const started=switched&&startSelectedExploration();running=false;setTab('skills');globalThis.battleBefore=EmberwildBattleConfiguration.pack();return {switched,started,job:state.job,level:classMasteryLevel(state),learned:__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId('warrior-cleave-chain')),tab};});
   assert.equal(status.switched,true,JSON.stringify(status));assert.equal(status.job,0,JSON.stringify(status));assert.equal(status.learned,true,JSON.stringify(status));
+  // v0.214: passives are toggled in the 管理被動技能 dialog of the skill page.
+  await p.getByRole('button',{name:'管理被動技能'}).click();await p.clock.runFor(50);
   const passive=p.locator('[data-passive-id="warrior-cleave-chain"]');await passive.getByRole('switch').click();await p.clock.runFor(50);assert.equal(await passive.getByRole('switch').getAttribute('aria-checked'),'false');
   assert.equal(await p.evaluate(()=>state.passiveEnabled['warrior-cleave-chain']),false);assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>state.passiveEnabled['warrior-cleave-chain'])),true);
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
@@ -68,7 +71,7 @@ test('equipment skill source and skill slot remain clickable during an active en
   });
   assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.pending()),true);
   const slot=p.locator('[data-skill-slot="proc:0"]');assert.equal(await slot.isDisabled(),false);await slot.click();
-  await p.locator('[data-skill-id="job1-core2"]').getByRole('button',{name:'裝入技能',exact:true}).click();
+  await p.locator('[data-skill-id="job1-core2"]').getByRole('button',{name:'裝入',exact:true}).click();
   assert.equal(await p.evaluate(()=>playerHero().skillLoadout.proc[0]),'job1-core2');
   assert.equal(await p.evaluate(()=>EmberwildBattleConfiguration.combat(()=>playerHero().skillLoadout.proc[0])),null);
   await p.evaluate(()=>{spawnGroup();running=false;});
