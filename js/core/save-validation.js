@@ -12,15 +12,23 @@ function slimFormRef(id){if(typeof ITEM_FORMS==='undefined')return null;for(let 
 function slimEquipmentTarget(g,wearerJob){
  if(!g||typeof g!=='object'||g.boss!==undefined||g.tokenId!==undefined||g.devWeaponTypeOverride||!Number.isInteger(g.form)||!Number.isInteger(g.slot))return null;
  const group=Number.isInteger(g.formJob)?g.formJob:Number(g.job);if(!Number.isInteger(group)||group<0||group>3)return null;
+ // Only gear whose stored index no longer names a template (or names a different template than the one it was made from)
+ // is moved; templates added later at new indexes are left alone.
+ const current=typeof ITEM_FORMS!=='undefined'?ITEM_FORMS[group]?.[g.slot]?.[g.form]:null;
  if(g.slot===1){
-  const id=SLIM_ARMOR_BY_CLASS[group],ref=slimFormRef(id);
-  if(Number.isInteger(wearerJob)&&ref&&Array.isArray(ref.form.wearableJobs)&&!ref.form.wearableJobs.includes(wearerJob))return SLIM_ARMOR_BY_CLASS[wearerJob]||id;
-  return id;
+  if(!current)return SLIM_ARMOR_BY_CLASS[group];
+  const jobs=Array.isArray(current.wearableJobs)?current.wearableJobs:null;
+  return Number.isInteger(wearerJob)&&jobs&&!jobs.includes(wearerJob)?SLIM_ARMOR_BY_CLASS[wearerJob]||null:null;
  }
  if(g.slot!==0)return null;
- if(group===0)return g.form===2||g.form===1&&g.weaponType==='axe'?'job0-slot0-form2':'job0-slot0-form0';
- if(group===1)return g.form===2||g.form===1&&g.weaponType==='grimoire'?'job1-slot0-form2':'job1-slot0-form0';
- if(group===2)return g.form===1?'job2-slot0-form1':'job2-slot0-form0';
+ if(current){
+  // Index 1 of the warrior and mage weapons was 穿甲槍／霜紋杖 before v0.215 and is the axe／水晶球 now.
+  if((group===0||group===1)&&g.form===1&&g.weaponType!==current.weaponType)return group===0?'job0-slot0-form0':'job1-slot0-form0';
+  return null;
+ }
+ if(group===0)return g.form===2?'job0-slot0-form2':'job0-slot0-form0';
+ if(group===1)return g.form===2?'job1-slot0-form2':'job1-slot0-form0';
+ if(group===2)return 'job2-slot0-form0';
  return 'job3-slot0-form0';
 }
 function migrateSlimEquipmentForms(list,{wearerJob=null,worn=null}={}){
@@ -37,6 +45,11 @@ function migrateSlimEquipmentForms(list,{wearerJob=null,worn=null}={}){
  return list;
 }
 globalThis.migrateSlimEquipmentForms=migrateSlimEquipmentForms;
+// The armor template a class wears in the slim catalogue ({group,index}), or null when another catalogue is loaded.
+globalThis.slimArmorFor=function(job){
+ if(typeof ITEM_FORMS==='undefined')return null;const forms=ITEM_FORMS.flat(2);if(forms.some(f=>SLIM_REMOVED_FORM_IDS.has(f?.id)))return null;
+ const ref=slimFormRef(SLIM_ARMOR_BY_CLASS[job]);return ref?{group:ref.group,index:ref.index}:null;
+};
 function migrateLegacyEquipmentSlotsInSave(s){
  if(!s||!Array.isArray(s.bag))return s;
  migrateSlimEquipmentForms(s.bag,{wearerJob:Number.isInteger(s.job)?s.job:null,worn:s.equipped});

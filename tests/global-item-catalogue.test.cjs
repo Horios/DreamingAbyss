@@ -5,8 +5,9 @@ function apply(r,icons,edit=()=>{}){const d=JSON.parse(r.run('JSON.stringify(exp
 const plain=v=>JSON.parse(JSON.stringify(v));
 // Counts follow the reviewed data: speed tickets (v0.023) and 紅色草泥 were retired; gems are 5 types × 3 tiers.
 // v0.178: +20 companion tickets (every companion can have one).
-test('reviewed detailed hierarchy contains all 365 definitions including 48 difficulty material keys without duplicate stock',()=>{
- const rows=M.entries(published).filter(x=>x.kind!=='skill');assert.equal(rows.length,365);assert.equal(new Set(rows.map(r=>r.id)).size,365);assert.equal(new Set(rows.map(r=>r.categoryPath.join('|'))).size,46,'the companion tickets add one category');
+test('reviewed detailed hierarchy contains all 355 definitions including 48 difficulty material keys without duplicate stock',()=>{
+ const rows=M.entries(published).filter(x=>x.kind!=='skill');// v0.215: 10 general equipment templates were removed (365→355); the renamed 木戒指／手鍊／布袍 no longer form the 指環／念珠／祭袍 categories (46→43).
+ assert.equal(rows.length,355);assert.equal(new Set(rows.map(r=>r.id)).size,355);assert.equal(new Set(rows.map(r=>r.categoryPath.join('|'))).size,43,'the companion tickets add one category');
  assert.deepEqual(rows.find(r=>r.id==='material:清水').categoryPath,['素材','製作材料','煉金與加工材料','液體']);assert.deepEqual(rows.find(r=>r.id==='item:heal_small').categoryPath,['消耗品','藥水','治療藥水']);assert.deepEqual(rows.find(r=>r.id==='token:berserk').categoryPath.slice(0,2),['裝備','夥伴信物']);
  for(const [key,monster] of [['form:4:3:2','苔原史萊姆'],['form:4:3:1','林間野狼'],['form:4:0:0','迷路樹精']]){
   const row=rows.find(r=>r.key===key),sources=row.sourceDetails.filter(s=>s.type==='monster');
@@ -22,7 +23,8 @@ test('combined hierarchy, source, use, weapon, region, state, text and numeric s
  assert.deepEqual(M.query(published,{hierarchy:['素材'],sources:['gather'],search:'紅色 草',use:'alchemy'}).map(r=>r.key),['紅色草']);assert(M.query(published,{sources:['alchemy']}).every(r=>!['紅色草','清水','藥水瓶'].includes(r.key)));
  assert(M.query(published,{hierarchy:['裝備'],job:'1',slot:'1',weapon:'axe'}).every(r=>r.slot===0&&r.jobs.includes(0)&&r.weaponTypes.includes('axe')));
  const sorted=M.query(published,{hierarchy:['消耗品'],sort:'price',direction:'desc'}).map(r=>M.economics(published,r).sellPrice);assert.deepEqual(sorted,[...sorted].sort((a,b)=>b-a));
- assert.equal(M.query(published,{status:'warning'}).length,2);assert.deepEqual(M.query(published,{status:'unsaleable'}).map(r=>r.kind).sort(),[...Array(15).fill('gem'),...Array(20).fill('item')],'only the 15 gem tiers and the 20 companion tickets are unsaleable');assert(M.query(published,{status:'unsaleable'}).filter(r=>r.kind==='item').every(r=>r.key.startsWith('companion-ticket-')));
+ // v0.215: the two name/weapon-type warnings belonged to the removed 穿甲槍 and 淨化槌.
+ assert.equal(M.query(published,{status:'warning'}).length,0);assert.deepEqual(M.query(published,{status:'unsaleable'}).map(r=>r.kind).sort(),[...Array(15).fill('gem'),...Array(20).fill('item')],'only the 15 gem tiers and the 20 companion tickets are unsaleable');assert(M.query(published,{status:'unsaleable'}).filter(r=>r.kind==='item').every(r=>r.key.startsWith('companion-ticket-')));
  const d=structuredClone(published);d.inventoryIcons.push({kind:'material',key:'紅色草',iconType:'auto',categoryPath:['素材','自訂製作材料'],tags:['藥草'],displayName:'治療葉'});assert.equal(M.query(d,{hierarchy:['素材','自訂製作材料'],search:'治療葉 藥草',status:'custom'}).length,1);
 });
 test('material, consumable and gear sale eligibility and individual gear price affect actual transactions',()=>{

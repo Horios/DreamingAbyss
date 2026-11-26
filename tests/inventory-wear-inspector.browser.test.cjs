@@ -29,7 +29,7 @@ test('backpack sort, modal filters and guided wear work on desktop and mobile; b
   if(await p.locator('#modal').isVisible())await p.locator('#modal').getByRole('button',{name:'確認穿戴',exact:true}).click();
   assert.equal(await p.evaluate(()=>state.equipped.includes(charm.id)),true);
   await p.getByRole('button',{name:'啟用與配置「追擊」',exact:true}).click();
-  await p.locator('[data-skill-slot="proc:0"]').click();await p.locator('[data-skill-id="tutorial_echo"]').getByRole('button',{name:'裝入技能'}).click();
+  await p.locator('[data-skill-slot="proc:0"]').click();await p.locator('[data-skill-id="tutorial_echo"]').getByRole('button',{name:'裝入',exact:true}).click();
   assert.equal(await p.evaluate(()=>state.skillLoadout.proc.includes('tutorial_echo')),true);
   await p.evaluate(()=>{setTab('battle');spawnGroup();const base=foes[0];foes=[{...base,id:'inspect-one',name:'同名測試',hp:13,maxhp:80},{...base,id:'inspect-two',name:'同名測試',hp:0,maxhp:120}];enemy=foes[0];effects.push({target:'inspect-one',kind:'weaken',value:.2,until:partyClock+2,name:'測試衰弱'});render();});
   for(const width of [1440,390,320]){

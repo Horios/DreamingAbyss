@@ -17,6 +17,9 @@ test('25-minute real-time and offline replay earn identical rewards at the fixed
   for(const r of [visible,offline])r.run(`nextActionAt=Date.now()+${interval};save();`);
   const before=json(offline,'({kills:state.totalKills,gold:state.gold,gear:state.bag.length})');
   for(let t=0;t<span;t+=interval){visible.advance(interval);visible.run('tick()');}
+  // A foreground tick presents a limited number of impacts and leaves due events for the next tick; with one-monster
+  // encounters (a lone hero since v0.215) that backlog can fall on the comparison instant. Catch up to the same wall time.
+  await visible.run('EmberwildOffline.settle(undefined,false)');
   await settle(offline,span);
   assert.deepEqual(result(offline),result(visible),'online/offline state must agree at '+rate+'x');
   const receipt=json(offline,'party.offlineExploration.receipt');
