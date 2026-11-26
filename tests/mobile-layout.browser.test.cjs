@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const pages=['battle','statistics','shop','guide','roster','partnerRoster','character','skills','equipment','worn','forge','crafting','quests','story'];
-const navPages=[['battle','battle'],['statistics','statistics'],['shop','shop'],['roster','roster'],['partnerRoster','partnerRoster'],['character','character'],['skills','skills'],['equipment','equipment'],['worn','worn'],['forge','forge'],['crafting','crafting'],['story-main','story'],['story-side','story'],['story-npc','story'],['quests','quests'],['gather','gather'],['alchemy','alchemy']];
+const navPages=[['battle','battle'],['statistics','statistics'],['shop','shop'],['roster','roster'],['partnerRoster','partnerRoster'],['character','character'],['skills','skills'],['equipment','equipment'],['worn','worn'],['forge','forge'],['crafting','crafting'],['story-main','story'],['story-side','story'],['story-npc','story'],['quests','quests']];
 async function start(page){
  await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
  await page.waitForTimeout(60);await page.evaluate(()=>closeModal());

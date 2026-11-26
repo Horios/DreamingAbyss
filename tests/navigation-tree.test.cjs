@@ -5,17 +5,17 @@ const json=(runtime,code)=>JSON.parse(runtime.run('JSON.stringify('+code+')'));
 
 test('navigation defaults group every page once in the top menu categories',()=>{
   const runtime=loadRuntime(root),design=json(runtime,'EmberwildNavigation.design');
-  assert.deepEqual(design.groups.map(group=>group.label),['探索','隊伍','技能','裝備','背包','夥伴','角色','任務','商店','生活']);
+  assert.deepEqual(design.groups.map(group=>group.label),['探索','隊伍','技能','裝備','背包','夥伴','角色','任務','商店','製作']);
   assert(design.groups.every(group=>group.expanded===false));
   assert.deepEqual(design.groups.find(group=>group.id==='missions').pages.map(page=>page.label),['主線','支線','NPC 任務','委託','許願湖']);
-  assert.deepEqual(design.groups.find(group=>group.id==='life').pages.map(page=>page.label),['採集','煉金']);
+  assert.deepEqual(design.groups.find(group=>group.id==='crafting').pages.map(page=>page.label),['製作']);
   const pageIds=design.groups.flatMap(group=>group.pages.map(page=>page.id));
   assert.equal(new Set(pageIds).size,pageIds.length);
   assert.deepEqual(pageIds.sort(),Object.keys(json(runtime,'EmberwildNavigation.PAGES')).sort());
   assert.deepEqual(runtime.errors,[]);
 });
 
-test('tree navigation renders virtual story categories and independent gathering and alchemy pages',()=>{
+test('tree navigation renders virtual story categories and independent crafting page',()=>{
   const runtime=loadRuntime(root);runtime.run('selectSaveSlot(1);start(0);closeModal()');
   const html=runtime.elements.get('app').innerHTML;
   assert.match(html,/data-nav-group="map" data-page="battle"/);
@@ -25,8 +25,7 @@ test('tree navigation renders virtual story categories and independent gathering
   const story=runtime.elements.get('app').innerHTML;
   assert.match(story,/class="game-menu-item active" data-nav-group="missions" data-page="story-side"/);
   assert.match(story,/data-subpage="story-main"[^]*data-subpage="story-side" class="active"[^]*data-subpage="story-npc"[^]*data-subpage="quests"/);
-  runtime.run("setTab('gather')");assert.match(runtime.elements.get('app').innerHTML,/<h1>採集<\/h1>/);assert.doesNotMatch(runtime.elements.get('app').innerHTML,/id="life-alchemy"/);
-  runtime.run("setTab('alchemy')");assert.match(runtime.elements.get('app').innerHTML,/<h1>煉金<\/h1>/);assert.doesNotMatch(runtime.elements.get('app').innerHTML,/id="life-gather"/);
+  runtime.run("setTab('crafting')");assert.match(runtime.elements.get('app').innerHTML,/<h1>素材製作<\/h1>/);assert.match(runtime.elements.get('app').innerHTML,/BOSS 裝備製作/);
   assert.deepEqual(runtime.errors,[]);
 });
 
@@ -36,11 +35,11 @@ test('top menu has one button per category, is not draggable, and uses designer-
   runtime.run('selectSaveSlot(1);start(0);closeModal()');
   const html=runtime.elements.get('app').innerHTML;
   const groups=[...html.matchAll(/<button type="button" class="game-menu-item[^"]*" data-nav-group="([^"]+)"/g)];
-  assert.deepEqual(groups.map(match=>match[1]),['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life']);
+  assert.deepEqual(groups.map(match=>match[1]),['map','adventure-config','skills','gear','bag','partners','character','missions','shop','crafting']);
   assert(!html.includes('<details class="game-nav-group'));
   assert(!html.includes('game-nav-drag')&&!html.includes('data-nav-drag')&&!html.includes('draggable="true"'));
-  const order=['map','adventure-config','skills','gear','bag','partners','character','missions','shop','life'];assert.deepEqual(json(runtime,'EmberwildNavigation.order'),order);
-  runtime.values.set('emberwild-navigation-group-order-v1',JSON.stringify(['life','missions','map','shop']));
+  const order=['map','adventure-config','skills','gear','bag','partners','character','missions','shop','crafting'];assert.deepEqual(json(runtime,'EmberwildNavigation.order'),order);
+  runtime.values.set('emberwild-navigation-group-order-v1',JSON.stringify(['crafting','missions','map','shop']));
   const reloaded=loadRuntime(root,'index.html',Object.fromEntries(runtime.values));
   assert.deepEqual(json(reloaded,'EmberwildNavigation.order'),order);
   assert.equal(reloaded.run('typeof EmberwildNavigation.moveGroup'),'undefined');
@@ -90,13 +89,13 @@ test('adventure guide describes current systems without migration or development
 test('balance navigation changes round-trip and malformed page lists are rejected atomically',()=>{
   const runtime=loadRuntime(root),before=json(runtime,'exportableBalance()'),custom=structuredClone(before);
   custom.navigation.groups[0].label='冒險總覽';
-  const life=custom.navigation.groups.find(group=>group.id==='life');
-  life.pages.reverse();
+  const missions=custom.navigation.groups.find(group=>group.id==='missions');
+  missions.pages.reverse();
   runtime.ctx.custom=custom;runtime.run('applyBalanceConfig(custom,{persist:true})');
   assert.equal(json(runtime,'exportableBalance().navigation').groups[0].label,'冒險總覽');
-  assert.match(runtime.run("gameNavigationHTML('alchemy')"),/冒險總覽/);
-  const tabs=runtime.run("gameSubtabsHTML('alchemy')");assert(tabs.indexOf('data-subpage="alchemy"')>=0&&tabs.indexOf('data-subpage="alchemy"')<tabs.indexOf('data-subpage="gather"'));
-  const bad=structuredClone(custom);bad.navigation.groups.find(group=>group.id==='life').pages.pop();runtime.ctx.bad=bad;
+  assert.match(runtime.run("gameNavigationHTML('story-main')"),/冒險總覽/);
+  const tabs=runtime.run("gameSubtabsHTML('story')");assert(tabs.indexOf('data-subpage="wishingLake"')>=0&&tabs.indexOf('data-subpage="wishingLake"')<tabs.indexOf('data-subpage="quests"'));
+  const bad=structuredClone(custom);bad.navigation.groups.find(group=>group.id==='missions').pages.pop();runtime.ctx.bad=bad;
   assert.throws(()=>runtime.run('applyBalanceConfig(bad)'),/導覽列表缺少頁籤/);
   assert.deepEqual(json(runtime,'exportableBalance().navigation'),custom.navigation);
   assert.deepEqual(runtime.errors,[]);

@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../DreamingAbyss-BalanceEditor');
 const M=require('../js/world/quest-design-model.js'),json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 function game(time){const r=loadRuntime(root,'index.html',{},time);r.run('selectSaveSlot(1);start(0);closeModal();recruitCompanion(10);closeModal()');return r;}
 function apply(r,d){r.ctx.doc=d;assert.notEqual(r.run('applyBalanceConfig(doc)'),false);}
@@ -12,12 +12,12 @@ test('game and standalone editor embed the exact same contract and migrate the o
  const source=fs.readFileSync(path.join(root,'js/world/quest-design-model.js'),'utf8').trim(),html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8');
  assert.equal(html.match(/<script id="quest-design-model-v1">([\s\S]*?)<\/script>/)[1].trim(),source);
  const d=M.defaults({board:{taskBase:12,taskRandomRange:4,goldPerTier:999},side:[{required:9,gold:444,ore:22,gem:3}]});
- assert.deepEqual(d.side.map(q=>q.id),['wolves','witch','stars']);assert.equal(d.side[0].objectives[0].quantity,9);assert.equal(d.side[0].rewards.gold,444);assert.equal(d.daily.entries.length,7);assert.equal(d.daily.version,2);assert.deepEqual(M.issues(d),[]);
+ assert.deepEqual(d.side.map(q=>q.id),['wolves','witch','stars']);assert.equal(d.side[0].objectives[0].quantity,9);assert.equal(d.side[0].rewards.gold,444);assert.equal(d.daily.entries.length,5);assert.equal(d.daily.version,2);assert.deepEqual(M.issues(d),[]);
 });
 
 test('daily pool applies eligibility and weights, freezes resolved objectives and rewards, and survives cold reload',()=>{
  let r=game(Date.parse('2026-10-12T15:59:59Z'));
- configure(r,d=>{const a=M.entry('daily_custom','煉金與採集補給');a.objectives=[M.objective('material','光輝碎塊',3),M.objective('potion','heal_small',2),M.objective('totalKills','',5)];a.rewards={...M.reward(),gold:123,ore:7,dust:4,gemCounts:[1,2,3],materials:[{key:'古木年輪',quantity:2}]};d.daily.entries=[a,{...M.entry('disabled','停用'),enabled:false},{...M.entry('wrongmap','地圖不符'),mapIndices:[5]}];/* daily claims also draw a random bonus material; pin it to one the test does not count */d.daily.materialRewards=[{key:'以太鍛鐵',min:1,max:1}];});
+ configure(r,d=>{const a=M.entry('daily_custom','委託補給');a.objectives=[M.objective('material','光輝碎塊',3),M.objective('potion','heal_small',2),M.objective('totalKills','',5)];a.rewards={...M.reward(),gold:123,ore:7,dust:4,gemCounts:[1,2,3],materials:[{key:'古木年輪',quantity:2}]};d.daily.entries=[a,{...M.entry('disabled','停用'),enabled:false},{...M.entry('wrongmap','地圖不符'),mapIndices:[5]}];/* daily claims also draw a random bonus material; pin it to one the test does not count */d.daily.materialRewards=[{key:'以太鍛鐵',min:1,max:1}];});
  r.advance(1000);assert.equal(r.run('ensureBoard()'),true);const q=configuredTask(r);assert.equal(q.templateId,'daily_custom');assert.equal(q.rewards.gold,123);assert.equal(q.objectives.length,3);const frozen=diffBoard(r);
  configure(r,d=>{d.daily.entries[0].title='明日的新名稱';d.daily.entries[0].rewards.gold=999;d.daily.entries[0].objectives[0].quantity=9;d.daily.entries[0].objectives[0].quantityMax=9;});assert.equal(diffBoard(r),frozen);
  fill(r,q);r.run('startDailyCommission(playerHero().board.tasks[0].id);playerHero().totalKills=5');const before=json(r,'({gold:state.gold,ore:state.ore,gems:state.gems})');assert.equal(r.run('questReadyCount()'),1);assert.equal(r.run('claimBoard(playerHero().board.tasks[0].id)'),true);assert.equal(r.run('state.gold'),before.gold+123);assert.equal(r.run('state.materials["光輝碎塊"]'),7);assert.equal(r.run("healPotionCount('heal_small')"),7);assert.equal(r.run('state.totalKills'),5);/* gemCounts [1,2,3] reward the first three gem types; the other gem types are unchanged */assert.deepEqual(json(r,'state.gems'),before.gems.map((n,i)=>n+(i<3?i+1:0)));

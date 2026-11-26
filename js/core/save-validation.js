@@ -166,6 +166,7 @@ function validateSave(input,{companion=false}={}) {
   if(legacy)delete s.board;
   migrate(s);
   const b=s.board,questIds=new Set();
+  if(b?.dailyVersion===1&&Array.isArray(b.tasks)){const kept=b.tasks.filter(q=>!REMOVED_CRAFT_MATERIALS.has(q?.mat));if(kept.length!==b.tasks.length){b.tasks=kept;if(!kept.length)b.designVersion=1;}}
   if(!object(b)||!int(b.next,0,8.64e15)||!int(b.serial)||!Array.isArray(b.tasks)||b.tasks.length>12||!EmberwildCommissions.validBoard(b))fail('委託看板無效');
   for(const q of b.tasks) {
     if(q.designVersion===1){

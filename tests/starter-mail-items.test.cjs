@@ -58,7 +58,6 @@ test('six attachment slots use SVG; inventory keeps detail actions; references a
 });
 test('shop uses an inventory-style slot grid and item details stay scoped to their source',()=>{
  const r=game();r.run('state.materials["古木年輪"]=3');let shop=r.run('shopView()');assert.match(shop,/class="shop-product-grid"/);assert.match(shop,/data-item-context="shop"/);assert.match(shop,/class="shop-product-stock">庫存<br><b>\d+/);assert.match(shop,/class="shop-product-label">[^<]+/);assert.doesNotMatch(shop,/class="shop-product-meta"/);
- r.run('setShopCategory("life")');shop=r.run('shopView()');assert.match(shop,/class="shop-product-stock">庫存<br><b>3<\/b>/);assert.match(shop,/class="shop-product-label">古木年輪<\/small>/);
  const slot=r.run(`itemSlotHTML('item','heal_small',{context:'shop',count:3,detailLabel:'商品數量',price:99,shopType:'fixed',shopId:'fixed-heal-small'})`);
  assert.match(slot,/商品數量 3/);assert.match(slot,/99 金幣/);assert.match(slot,/buyFixedShopOffer/);assert.doesNotMatch(slot,/openItemSlotDetails/);
  assert.equal(r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"光輝碎塊",itemContext:"reference"}})'),false);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);assert.deepEqual(r.errors,[]);
