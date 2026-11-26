@@ -16,8 +16,24 @@
    advanceStepSeconds:(p.actionIntervalMs||1500)/1000,encounterDelaySeconds:(p.actionIntervalMs||1500)/1000,healThreshold:.75,
    mana:{maxMp:100,regenPerSecond:round(100/(reference*10)),costMultiplier:1},
    classes:[0,1,2,3].map(job=>({job,baseIntervalSeconds:actionReference})),attackSpeed:{...AS().DEFAULTS},
-   groupWeights:[6,3,1],finalBoss:{enrageAfterSeconds:(combat.finalBoss?.enrageAfterTurn??45)*actionReference,specialIntervalSeconds:(combat.finalBoss?.specialEveryTurns||5)*actionReference},migration:{version:1,source:'actor-turns',resourceBudget:100,recoveryReferencePeriods:10}};
+   encounterByTeamSize:copy(DEFAULT_TEAM_ENCOUNTERS),finalBoss:{enrageAfterSeconds:(combat.finalBoss?.enrageAfterTurn??45)*actionReference,specialIntervalSeconds:(combat.finalBoss?.specialEveryTurns||5)*actionReference},migration:{version:1,source:'actor-turns',resourceBudget:100,recoveryReferencePeriods:10}};
  }
+ // v0.215: the number of monsters of a normal encounter depends on the number of deployed characters (1–3).
+ // Each team size lists {count, weight}; one encounter draws one count by weight. Replaces groupWeights (3／4／5 for every team).
+ const DEFAULT_TEAM_ENCOUNTERS={'1':[{count:1,weight:100}],'2':[{count:2,weight:90},{count:3,weight:10}],'3':[{count:3,weight:50},{count:4,weight:30},{count:5,weight:20}]};
+ const MAX_ENCOUNTER_SIZE=5;
+ function validateTeamEncounters(t){
+  if(!t||typeof t!=='object'||Array.isArray(t)||Object.keys(t).sort().join()!=='1,2,3')fail('遇敵數量設定必須包含 1／2／3 人隊伍');
+  for(const size of ['1','2','3']){const rows=t[size],seen=new Set();
+   if(!Array.isArray(rows)||!rows.length||rows.length>MAX_ENCOUNTER_SIZE)fail(size+' 人隊伍的遇敵數量設定無效');
+   for(const r of rows){if(!r||!Number.isInteger(r.count)||r.count<1||r.count>MAX_ENCOUNTER_SIZE||seen.has(r.count)||!finite(r.weight,0,1e9))fail(size+' 人隊伍的遇敵數量或權重無效');seen.add(r.count);}
+   if(!rows.some(r=>r.weight>0))fail(size+' 人隊伍至少要有一個大於 0 的權重');}
+ }
+ function encounterCount(table,teamSize,random=Math.random){
+  const rows=(table||DEFAULT_TEAM_ENCOUNTERS)[String(Math.max(1,Math.min(3,Math.round(Number(teamSize)||1))))]||DEFAULT_TEAM_ENCOUNTERS['1'],total=rows.reduce((n,r)=>n+Math.max(0,r.weight),0);
+  let pick=random()*total;for(const r of rows){if((pick-=Math.max(0,r.weight))<0)return r.count;}return rows[rows.length-1].count;
+ }
+ function encounterRange(table,teamSize){const rows=(table||DEFAULT_TEAM_ENCOUNTERS)[String(Math.max(1,Math.min(3,Math.round(Number(teamSize)||1))))]||[],counts=rows.filter(r=>r.weight>0).map(r=>r.count);return counts.length?{min:Math.min(...counts),max:Math.max(...counts)}:{min:1,max:1};}
  function timing(skill,job,config){
   const interval=config.classes.find(c=>c.job===job)?.baseIntervalSeconds||config.actionReferenceSeconds;
   const active=isActive(skill),power=Math.abs(Number(skill.power??skill.value)||1),area=skill.target==='enemies'||skill.target==='allies'||Number(skill.maxTargets)>1;
@@ -60,7 +76,7 @@
  const COOLDOWN_REDUCTION_SOURCES=['affixAll','affixSkill','fixedAll','fixedSkill','enemyDeath'];
  const COOLDOWN_REDUCTION_LABELS={affixAll:'裝備詞條：全技能冷卻（每點）',affixSkill:'裝備詞條：指定技能冷卻（每點）',fixedAll:'裝備固定效果／信物：全技能冷卻（每點）',fixedSkill:'裝備固定效果：指定技能冷卻（每點）',enemyDeath:'敵人死亡被動：縮減目前冷卻（每點）'};
  function defaultCooldownReduction(){return {diminishing:{thresholdSeconds:5,factor:.5,minimumSeconds:2},sources:Object.fromEntries(COOLDOWN_REDUCTION_SOURCES.map(k=>[k,{mode:'flat',value:3}]))};}
- function cooldownReductionTotals(points,cfg){let percent=0,flat=0;for(const k of COOLDOWN_REDUCTION_SOURCES){const n=Number(points?.[k])||0,r=cfg.sources[k];if(!n||!r)continue;if(r.mode==='percent')percent+=n*r.value;else flat+=n*r.value;}return {percent,flat};}
+ function cooldownReductionTotals(points,cfg){let percent=0,flat=0;for(const k of COOLDOWN_REDUCTION_SOURCES){const n=Number(points?.[k])||0,r=cfg.sources[k];if(!n||!r)continue;if(r.mode==='percent')percent+=n*r.value;else flat+=n*r.value;}percent+=Math.max(0,Number(points?.directPercent)||0);return {percent,flat};}
  function finalizeCooldown(base,raw,cfg,minimumInterval=0){if(!(raw<base))return base;const d=cfg.diminishing,start=Math.min(base,d.thresholdSeconds),diminished=raw>=start?raw:start-(start-raw)*d.factor;return round(Math.max(diminished,Math.min(base,d.minimumSeconds),Math.min(base,minimumInterval)));}
  function applyCooldownReduction(base,points,cfg,minimumInterval=0){const {percent,flat}=cooldownReductionTotals(points,cfg);return finalizeCooldown(base,base*(1-Math.min(100,percent)/100)-flat,cfg,minimumInterval);}
  function cooldownReductionText(source,points,cfg){const r=cfg.sources[source],n=round((Number(points)||0)*r.value);return r.mode==='percent'?'−'+n+'%':'−'+n+' 秒';}
@@ -74,6 +90,7 @@
   // v0.196: player characters and companions use attack speed percent; the shared cap and the lowest effective bonus.
   c.attackSpeed??={...AS().DEFAULTS};
   c.cooldownReduction??=defaultCooldownReduction();
+  c.encounterByTeamSize??=copy(DEFAULT_TEAM_ENCOUNTERS);delete c.groupWeights;
   delete c.cooldownReduction.sources?.onCast;
   c.recovery??={hpFractionPerSecond:round((doc.balanceSettings.rewards?.postVictoryHeal??.12)/c.durationReferenceSeconds),mpRegenMultiplier:1,minimumHpRatio:1,minimumMpRatio:0};
   doc.balanceSettings.combat.seconds=c;doc.balanceSettings.meta.combatTimingVersion=VERSION;doc.balanceSettings.meta.independentActionsVersion=1;doc.balanceSettings.meta.continuousExplorationVersion=1;
@@ -97,7 +114,7 @@
   if(!c.attackSpeed||typeof c.attackSpeed!=='object'||Array.isArray(c.attackSpeed)||Object.keys(c.attackSpeed).some(k=>!['maxAttacksPerSecond','minimumBonusPct'].includes(k)))fail('攻擊速度設定無效');
   try{AS().validate(c.attackSpeed);}catch(e){fail(e.message);}
   if(!Array.isArray(c.classes)||c.classes.length!==4||new Set(c.classes.map(x=>x.job)).size!==4||c.classes.some(x=>!Number.isInteger(x.job)||x.job<0||x.job>3||!finite(x.baseIntervalSeconds,.000001,3600)))fail('職業間隔需各一筆');
-  if(!Array.isArray(c.groupWeights)||c.groupWeights.length!==3||c.groupWeights.some(x=>!finite(x))||!c.groupWeights.some(x=>x>0))fail('群怪 3／4／5 隻權重無效');
+  validateTeamEncounters(c.encounterByTeamSize);
   for(const s of doc.skillSystem?.definitions||[]){if(['mpCost','manaCost','cooldownSeconds','castSeconds','actionCostSeconds'].some(k=>Object.hasOwn(s,k)))fail(s.id+' 秒數／MP 欄位必須放在 timing');const t=s.timing;if(!t)fail(s.id+' 缺少時間設定');for(const k of ['cooldownSeconds','mpCost','castSeconds','actionCostSeconds','durationSeconds','bossDurationSeconds'])if(!finite(t[k]))fail(s.id+' '+k+' 無效');if(!finite(t.tickIntervalSeconds,.000001)||!Number.isSafeInteger(t.priority)||t.priority<0||t.priority>99||!['always','injured','missingEffect'].includes(t.condition))fail(s.id+' 條件／優先級無效');if(t.initialCooldownSeconds!==undefined&&!finite(t.initialCooldownSeconds,0,86400))fail(s.id+' initialCooldownSeconds 無效');if(t.minTargets!==undefined&&(!Number.isSafeInteger(t.minTargets)||t.minTargets<1||t.minTargets>99))fail(s.id+' 目標數門檻無效');if(t.requiredTargetStatusId!=null&&!doc.statusDefinitions?.some(x=>x.id===t.requiredTargetStatusId))fail(s.id+' 連動狀態不存在');if(!isActive(s)&&t.mpCost!==0)fail(s.id+' 被動／觸發技能不能新增耗魔');}
   for(const s of doc.statusDefinitions||[]){const t=s.timing;if(!t||(t.durationSeconds!==null&&!finite(t.durationSeconds,.000001))||!finite(t.periodicIntervalSeconds,.000001)||!finite(t.triggerIntervalSeconds,.000001))fail(s.id+' 狀態秒數無效');if(t.bossControlDurationSeconds!==undefined&&!finite(t.bossControlDurationSeconds))fail(s.id+' BOSS 控制秒數無效');}
   for(const m of doc.balanceSettings.monsters?.catalog||[]){const t=m.timing;if(!finite(t?.baseIntervalSeconds,.000001,3600))fail(m.id+' 怪物間隔無效');for(const [k,min] of [['maxMp',1],['regenPerSecond',0],['costMultiplier',0]])if(t[k]!==undefined&&!finite(t[k],min))fail(m.id+' 怪物魔力設定無效');}
@@ -127,5 +144,5 @@
   for(const t of out.companionTokens?.catalog||[]){const v=d.companionTokens.catalog.find(x=>x.id===t.id);if(v?.ability?.timing)t.ability.timing=copy(v.ability.timing);}
   return out;
  }
- return {VERSION,copy,assertJSON,defaults,timing,normalize,validate,validateImport,legacy,attach,INITIAL_ROLES,initialCooldownRole,defaultInitialCooldownSeconds,initialCooldownSeconds,COOLDOWN_REDUCTION_SOURCES,COOLDOWN_REDUCTION_LABELS,defaultCooldownReduction,cooldownReductionTotals,finalizeCooldown,applyCooldownReduction,cooldownReductionText};
+ return {DEFAULT_TEAM_ENCOUNTERS,encounterCount,encounterRange,validateTeamEncounters,VERSION,copy,assertJSON,defaults,timing,normalize,validate,validateImport,legacy,attach,INITIAL_ROLES,initialCooldownRole,defaultInitialCooldownSeconds,initialCooldownSeconds,COOLDOWN_REDUCTION_SOURCES,COOLDOWN_REDUCTION_LABELS,defaultCooldownReduction,cooldownReductionTotals,finalizeCooldown,applyCooldownReduction,cooldownReductionText};
 });

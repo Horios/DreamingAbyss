@@ -95,8 +95,9 @@ test('v0.172: the three forest monsters drop 凝膠護符／狼牙綴飾／纏�
  })()`);
  assert.deepEqual(result.names,[['凝膠護符',3],['狼牙綴飾',3],['纏藤法杖',0]],'two accessories and a weapon');
  for(const [normal,elite] of result.wanted){
-  assert.deepEqual(normal,[.0004,.0005,.0006]);
-  assert.deepEqual(elite,[.0012,.0015,.0018]);
+  // Gear drop rates were cut to 1/3 of the v0.172 rates.
+  assert.deepEqual(normal,[.000133333,.000166667,.0002]);
+  assert.deepEqual(elite,[.0004,.0005,.0006]);
  }
  assert.equal(result.passive,true);assert.equal(result.regen,1,'凝膠復原 restores 1 HP per second');
  for(let i=0;i<120;i++){r.advance(50);r.run('tick()');}

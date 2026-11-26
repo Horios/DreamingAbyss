@@ -1,8 +1,7 @@
 
 /* Equipment identity v2.
-   Normal gear: prefix + suffix + base + internal power tier.
+   Normal gear: base + internal power tier (v0.215: the prefix/suffix system was removed).
    - Player base ratings describe only powerTier; enhancement and effect quality are separate.
-   - Prefix/suffix each carry one explicit gameplay effect.
    Boss gear: one exclusive profile supplies three fixed effects alongside rerollable affixes.
 */
 (()=>{
@@ -15,41 +14,12 @@
   const EFFECT_LABELS={
     flatAttack:'此裝備攻擊力',flatHp:'此裝備最大生命',flatDefense:'此裝備防禦',basicElement:'此武器攻擊屬性',basicAttackSpeedStack:'普攻後疾行',gearAtkPct:'此裝備基底攻擊力',gearHpPct:'此裝備基底生命',gearDefPct:'此裝備基底防禦',hpPct:'角色最大生命',defensePct:'角色總防禦',
     attackPct:'角色總攻擊力',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamagePct:'對 BOSS 傷害',attackSpeedPct:'攻擊速度',
-    allCooldownReduction:'全主動技能冷卻',dropRateBonus:'掉寶率',elementDamagePct:'屬性傷害',elementResistPct:'屬性抗性',raceDamagePct:'種族增傷',skillEffectPct:'核心技能效果',skillCooldownReduction:'核心技能冷卻／觸發'
+    allCooldownReduction:'全主動技能冷卻',dropRateBonus:'掉寶率',elementDamagePct:'屬性傷害',elementResistPct:'屬性抗性',raceDamagePct:'種族增傷',skillEffectPct:'核心技能效果',skillCooldownReduction:'核心技能冷卻／觸發',skillDamagePct:'技能傷害',cooldownPct:'技能冷卻'
   };
   const LEGACY_BOSS_SERIES=['古木誓約','礦脈共鳴','暮沼咒印','永凍之誓','熔核意志','隕星遺產'];
   const PARALLEL_BOSS_SERIES=['赤楓炎靈','潮汐巨像','白骨巫后','雷鳴獸王','聖所守護者','幽冥觀測者'];
 
   function fx(key,value){return {key,value};}
-  const DEFAULT_PREFIXES=[
-    {id:'redmaple',name:'赤楓',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicElement','fire')},
-    {id:'frostcarved',name:'霜刻',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicElement','ice')},
-    {id:'verdant',name:'翠影',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicElement','wind')},
-    {id:'radiant',name:'聖輝',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicElement','light')},
-    {id:'nether',name:'幽冥',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicElement','shadow')},
-    {id:'piercing',name:'穿甲',tierMin:1,tierMax:10,weight:1,slots:[0,1,2],effect:fx('pierce',6)},
-    {id:'bloodbound',name:'血契',tierMin:3,tierMax:10,weight:.8,slots:[0],effect:fx('lifesteal',3)},
-    {id:'starfall',name:'星隕',tierMin:3,tierMax:10,weight:.9,slots:[0,2],effect:fx('critDamage',12)},
-    {id:'echoing',name:'回響',tierMin:4,tierMax:10,weight:.65,slots:[0,1,2],effect:fx('allCooldownReduction',1)},
-    {id:'seeker',name:'尋珍',tierMin:4,tierMax:10,weight:.7,slots:[0,1,2],effect:fx('dropRateBonus',8)},
-    {id:'arcane',name:'秘能',tierMin:5,tierMax:10,weight:.7,slots:[0,1,2],effect:fx('elementBonus',8)},
-    {id:'keen',name:'銳眼',tierMin:5,tierMax:10,weight:.7,slots:[0,2],effect:fx('crit',5)}
-  ];
-  const DEFAULT_SUFFIXES=[
-    {id:'traveler',name:'旅人',tierMin:1,tierMax:10,weight:1,slots:[0],effect:fx('basicAttackSpeedStack',3)},
-    {id:'vanguard',name:'先鋒',tierMin:1,tierMax:10,weight:1,slots:[0,1,2],effect:fx('attackPct',4)},
-    {id:'swift',name:'迅捷',tierMin:1,tierMax:10,weight:1,slots:[0,1,2],effect:fx('evasion',5)},
-    {id:'eagleeye',name:'鷹眼',tierMin:2,tierMax:10,weight:1,slots:[0,2],effect:fx('crit',4)},
-    {id:'breaker',name:'破城',tierMin:2,tierMax:10,weight:.9,slots:[0,2],effect:fx('pierce',6)},
-    {id:'leeching',name:'汲血',tierMin:3,tierMax:10,weight:.75,slots:[0],effect:fx('lifesteal',3)},
-    {id:'resonant',name:'共鳴',tierMin:3,tierMax:10,weight:.75,slots:[0,1,2],effect:fx('elementBonus',7)},
-    {id:'quickcast',name:'疾詠',tierMin:4,tierMax:10,weight:.6,slots:[0,1,2],effect:fx('allCooldownReduction',1)},
-    {id:'hunter',name:'獵手',tierMin:4,tierMax:10,weight:.7,slots:[0,1,2],effect:fx('dropRateBonus',7)},
-    {id:'fury',name:'狂擊',tierMin:5,tierMax:10,weight:.7,slots:[0,2],effect:fx('critDamage',12)},
-    {id:'assault',name:'強襲',tierMin:5,tierMax:10,weight:.65,slots:[0,1,2],effect:fx('attackPct',5)},
-    {id:'phantom',name:'幻步',tierMin:5,tierMax:10,weight:.65,slots:[0,1,2],effect:fx('evasion',6)}
-  ];
-
   const FAMILY_BOSS_EFFECTS=[
     [fx('gearAtkPct',10),fx('lifesteal',4),fx('bossDamagePct',8)],
     [fx('gearDefPct',12),fx('pierce',8),fx('allCooldownReduction',1)],
@@ -81,8 +51,6 @@
   ];
   const DEFAULT_POWER={
     schemaVersion:4,
-    prefixes:DEFAULT_PREFIXES,
-    suffixes:DEFAULT_SUFFIXES,
     bossAffixes:DEFAULT_BOSS_AFFIXES,
     strength:{
       multipliers:[.8,.85,.9,.95,1,1.04,1.08,1.12,1.16,1.2],
@@ -98,11 +66,6 @@
   };
 
   function finite(v,d,min=-Infinity,max=Infinity){v=Number(v);return Number.isFinite(v)?Math.max(min,Math.min(max,v)):d;}
-  function normalizeSlots(v,def=[0,1,2,3],legacy=false){
-    const out=Array.isArray(v)?[...new Set(v.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<=3))]:clone(def);
-    if(legacy&&out.includes(2)&&!out.includes(3))out.push(3);
-    return out.length?out:clone(def);
-  }
   function normalizeEffect(src,allowed,def){
     const fallback=clone(def);
     // v0.196: 旅人 used to advance the next action one step; it is now 疾行 (+3% attack speed per stack).
@@ -119,35 +82,6 @@
     if(key==='allCooldownReduction'){min=0;max=5;}
     if(key==='dropRateBonus'||key==='bossDamagePct'){min=0;max=500;}
     return {key,value:finite(src.value,fallback.value,min,max)};
-  }
-  function normalizeAffixChances(src,legacyWeight,tierMin,tierMax){
-    const fallback=finite(legacyWeight,0,0,100),has=Array.isArray(src);
-    return Array.from({length:10},(_,i)=>{
-      const tier=i+1,def=tier>=tierMin&&tier<=tierMax?fallback:0;
-      return finite(has?src[i]:def,def,0,100);
-    });
-  }
-  function affixChanceAtTier(x,tier){
-    if(!x||tier<1||tier>10)return 0;
-    const v=Array.isArray(x.chanceByTier)?x.chanceByTier[tier-1]:x.weight;
-    return finite(v,0,0,100);
-  }
-  function normalizeAffixRows(rows,defaults,legacySlots=false){
-    if(!Array.isArray(rows)||!rows.some(x=>x&&x.effect))rows=clone(defaults);
-    const seen=new Set();
-    const out=[];
-    for(let i=0;i<rows.length;i++){
-      const x=rows[i]&&typeof rows[i]==='object'?rows[i]:{};
-      const d=defaults[i%defaults.length];
-      let id=typeof x.id==='string'&&/^[A-Za-z0-9_-]{1,80}$/.test(x.id)?x.id:d.id+'_'+(i+1);
-      if(seen.has(id))id=id+'_'+(i+1);seen.add(id);
-      const tierMin=Math.max(1,Math.min(10,Math.round(finite(x.tierMin,d.tierMin,1,10))));
-      const tierMax=Math.max(tierMin,Math.min(10,Math.round(finite(x.tierMax,d.tierMax,tierMin,10))));
-      const weight=finite(x.weight,d.weight,0,100);
-      const chanceByTier=normalizeAffixChances(x.chanceByTier,weight,tierMin,tierMax);
-      out.push({id,name:typeof x.name==='string'&&x.name.trim()?x.name.trim():d.name,tierMin,tierMax,weight,chanceByTier,slots:normalizeSlots(x.slots,d.slots,legacySlots),effect:normalizeEffect(x.effect,REGULAR_EFFECT_KEYS,d.effect)});
-    }
-    return out.length?out:clone(defaults);
   }
   function normalizeBossAffixes(rows,legacySeries){
     const byId=new Map((Array.isArray(rows)?rows:[]).filter(Boolean).map(x=>[x.id,x]));
@@ -171,10 +105,9 @@
   }
   function normalizePower(src){
     src=src&&typeof src==='object'&&!Array.isArray(src)?src:{};
-    const legacySlots=Number(src.schemaVersion||0)<4,out=clone(DEFAULT_POWER);
+    const out=clone(DEFAULT_POWER);
     out.schemaVersion=4;
-    out.prefixes=normalizeAffixRows(src.prefixes,DEFAULT_PREFIXES,legacySlots);
-    out.suffixes=normalizeAffixRows(src.suffixes,DEFAULT_SUFFIXES,legacySlots);
+    // v0.215: prefixes / suffixes of older documents are dropped.
     out.bossAffixes=normalizeBossAffixes(src.bossAffixes,src.seriesPrefixes);
     const st=src.strength&&typeof src.strength==='object'?src.strength:{};
     out.strength.multipliers=Array.from({length:10},(_,i)=>finite(st.multipliers?.[i],DEFAULT_POWER.strength.multipliers[i],.01,100));
@@ -236,19 +169,6 @@
     for(const key of ['multipliers','bossMultipliers','legacyMultipliers'])if(st?.[key]!==undefined&&(!Array.isArray(st[key])||st[key].length!==10||st[key].some(v=>!Number.isFinite(v)||v<=0||v>100)))throw Error('T 級倍率無效：'+key);
     if(st?.weightsByDifficulty!==undefined&&(!Array.isArray(st.weightsByDifficulty)||st.weightsByDifficulty.length!==3||st.weightsByDifficulty.some(row=>!Array.isArray(row)||row.length!==10||row.some(v=>!Number.isFinite(v)||v<0)||!row.some(v=>v>0))))throw Error('T 級權重無效');
     const p=normalizePower(raw);
-    const checkRows=(rows,label)=>{
-      const ids=new Set();
-      for(const x of rows){
-        if(ids.has(x.id))throw Error(label+' ID 重複：'+x.id);ids.add(x.id);
-        if(!x.name||!x.slots.length||x.tierMin<1||x.tierMax>10||x.tierMax<x.tierMin||!Array.isArray(x.chanceByTier)||x.chanceByTier.length!==10||x.chanceByTier.some(v=>!Number.isFinite(v)||v<0||v>100))throw Error(label+'資料無效：'+x.id);
-        if(!REGULAR_EFFECT_KEYS.has(x.effect.key))throw Error(label+'效果無效：'+x.id);
-      }
-      for(let tier=1;tier<=10;tier++)for(let slot=0;slot<4;slot++){
-        const total=rows.filter(x=>tier>=x.tierMin&&tier<=x.tierMax&&x.slots.includes(slot)).reduce((n,x)=>n+affixChanceAtTier(x,tier),0);
-        if(total>100+1e-9)throw Error(label+' T'+tier+' '+['武器','護甲','副手','飾品'][slot]+'機率合計超過 100%');
-      }
-    };
-    checkRows(p.prefixes,'前綴');checkRows(p.suffixes,'後綴');
     if(p.bossAffixes.length!==DEFAULT_BOSS_AFFIXES.length)throw Error('BOSS 專屬詞綴資料不完整');
     for(const x of p.bossAffixes){
       if(!Array.isArray(x.effects)||x.effects.length!==3)throw Error('BOSS 專屬詞綴必須正好 3 條：'+x.id);
@@ -266,13 +186,12 @@
       out.equipmentPowerSystem=clone(EQUIPMENT_POWER);
       if(Array.isArray(out.items)&&!out.items.some(x=>x.id===POWER_ITEM_ID))out.items.push(rerollItemData());
       out._reference??={};out._reference.equipmentIdentity={
-        naming:'一般裝備名稱 = 前綴 + 後綴 + 基底；前綴或後綴可為空；BOSS 裝備只使用 BOSS 專屬名稱。',
-        stats:'一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算；前後綴不提供 raw ATK/HP/DEF。',
-        affixChance:'prefixes / suffixes 的 chanceByTier[0..9] 分別代表 T1～T10 的實際百分比機率（0~100）；同一 T 級與部位合計不足 100% 時，剩餘機率為無該類詞綴。舊版 weight 只作匯入相容。',
-        boss:'BOSS 裝備不抽前後綴，保留三條專屬效果及兩個可洗鍊隨機詞綴。',
+        naming:'一般裝備名稱 = 基底名稱；BOSS 裝備只使用 BOSS 專屬名稱。v0.215 起沒有前綴／後綴。',
+        stats:'一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算。',
+        boss:'BOSS 裝備保留三條專屬效果及兩個可洗鍊隨機詞綴。',
         effects:[...BOSS_EFFECT_KEYS]
       };
-      out.notes=[...(out.notes||[]),'equipmentPowerSystem schemaVersion=4：prefixes / suffixes 各一條效果；chanceByTier[0..9] 分別控制 T1～T10 實際百分比機率，舊版 weight 會自動轉入有效 T 級。','同一 T 級與部位的前綴／後綴機率池各自以 100% 為上限；不足 100% 的剩餘機率會生成無前綴／無後綴裝備。','一般裝備 raw ATK/HP/DEF 不受前後綴影響；由 equipmentForms 基底、T 階級與既有強化計算。','BOSS 專屬裝備不抽前後綴；三條專屬效果保留，隨機詞綴可洗鍊。'];
+      out.notes=[...(out.notes||[]),'equipmentPowerSystem schemaVersion=4：v0.215 起沒有 prefixes / suffixes（前後綴系統已移除，舊文件的這兩個欄位會被忽略）。']; 
       return out;
     };
   }
@@ -302,12 +221,7 @@
     validateBalanceConfig=function(input){const copy=clone(input);copy.equipmentPowerSystem=validatePowerInput(copy.equipmentPowerSystem);return identityValidateBalanceBase(copy);};
   }
 
-  function prefixById(id){return EQUIPMENT_POWER.prefixes.find(x=>x.id===id)||null;}
-  function suffixById(id){return EQUIPMENT_POWER.suffixes.find(x=>x.id===id)||null;}
-  function eligibleRows(rows,tier,slot){return rows.filter(x=>tier>=x.tierMin&&tier<=x.tierMax&&affixChanceAtTier(x,tier)>0&&x.slots.includes(slot));}
-  function deterministicRow(rows,tier,slot,offset=0){const eligible=eligibleRows(rows,tier,slot);return eligible.length?eligible[(Math.max(1,Number(tier)||1)+slot+offset)%eligible.length]:null;}
   function rollWeighted(rows){const total=rows.reduce((n,x)=>n+Math.max(0,Number(x.weight)||0),0);if(total<=0)return rows[0]||null;let r=Math.random()*total;for(const x of rows){r-=Math.max(0,Number(x.weight)||0);if(r<=0)return x;}return rows.at(-1)||null;}
-  function rollNamedAffix(rows,tier,slot){const eligible=eligibleRows(rows,tier,slot);let r=Math.random()*100;for(const x of eligible){r-=affixChanceAtTier(x,tier);if(r<0)return x;}return null;}
   function bossProfileId(g){const group=MAPS[g?.region]?.parallel?'parallel':'legacy',family=Math.max(0,Math.min(5,Number(g?.boss)||0)),high=(Number(g?.tier)||1)>6;return group+'_'+(high?'high':'low')+'_'+family;}
   function bossProfileForGear(g){if(!g||g.boss===undefined)return null;const id=bossProfileId(g);return EQUIPMENT_POWER.bossAffixes.find(x=>x.id===id)||DEFAULT_BOSS_AFFIXES.find(x=>x.id===id)||null;}
   function strengthAnchor(mode){return mode===2?10:mode===1?5:1;}
@@ -331,13 +245,10 @@
     if(!g||typeof g!=='object'||g.slot===undefined)return g;
     const sourceMode=mode===null?Math.max(0,Math.min(2,Number(g.difficulty)||0)):Math.max(0,Math.min(2,Number(mode)||0));
     if(freshPower||!Number.isInteger(g.powerTier)||g.powerTier<1||g.powerTier>10)g.powerTier=freshPower?rollStrengthTier(sourceMode):strengthAnchor(sourceMode);
-    const tier=Math.max(1,Math.min(10,Number(g.powerTier)||strengthAnchor(sourceMode))),slot=Math.max(0,Math.min(2,Number(g.slot)||0));
-    if(g.boss===undefined){
-      const hasPrefix=Object.prototype.hasOwnProperty.call(g,'prefixId'),hasSuffix=Object.prototype.hasOwnProperty.call(g,'suffixId');
-      if(freshNames||!hasPrefix||(g.prefixId!==''&&(!prefixById(g.prefixId)||!prefixById(g.prefixId).slots.includes(slot))))g.prefixId=(freshNames?rollNamedAffix(EQUIPMENT_POWER.prefixes,tier,slot):deterministicRow(EQUIPMENT_POWER.prefixes,tier,slot,0))?.id||'';
-      if(freshNames||!hasSuffix||(g.suffixId!==''&&(!suffixById(g.suffixId)||!suffixById(g.suffixId).slots.includes(slot))))g.suffixId=(freshNames?rollNamedAffix(EQUIPMENT_POWER.suffixes,tier,slot):deterministicRow(EQUIPMENT_POWER.suffixes,tier,slot,3))?.id||'';
-    }else{
-      g.prefixId='';g.suffixId='';if(!Array.isArray(g.affix))g.affix=[];
+    // v0.215: the prefix/suffix system was removed; owned gear drops its old names and effects.
+    delete g.prefixId;delete g.suffixId;
+    if(g.boss!==undefined){
+      if(!Array.isArray(g.affix))g.affix=[];
       g.bossQualityRank=Math.max(2,Math.min(3,Number(GS('equipment.boss.affixRankByDifficulty',[2,2,3])[g.difficulty||0])||2));
     }
     return g;
@@ -361,10 +272,7 @@
       if(g.baseRuleVersion===1&&key)return {key:{atk:'flatAttack',hp:'flatHp',def:'flatDefense'}[key],value:Math.round((g.baseSnapshot?.base[key]||0)*e.value/100),ruleEffect:e,source:'boss'};
       return {...e,source:'boss'};
     });
-    const out=baseEffectEntries(g),p=prefixById(g.prefixId),s=suffixById(g.suffixId);
-    if(p?.effect)out.push({...p.effect,source:'prefix'});
-    if(s?.effect)out.push({...s.effect,source:'suffix'});
-    return out;
+    return baseEffectEntries(g);
   }
   function identityEffectsForHero(h){return equipment(h).flatMap(identityEffectEntriesForGear);}
   function effectNumberForHero(h,key){return identityEffectsForHero(h).filter(e=>e.key===key).reduce((n,e)=>n+(Number(e.value)||0),0);}
@@ -379,6 +287,10 @@
     if(key==='elementDamagePct')return (ELEMENTS[effect.element]||effect.element)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
     if(key==='elementResistPct')return (ELEMENTS[effect.element]||effect.element)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
     if(key==='raceDamagePct')return '對'+(RACES[effect.race]||effect.race)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
+    // v0.215 weapon base effects use the weapon wording: 技能傷害＋5%、技能冷卻－5%、防禦力＋5%.
+    if(key==='skillDamagePct')return '技能傷害'+(Number(value)>=0?'＋':'－')+Math.abs(Number(value))+'%';
+    if(key==='cooldownPct')return '技能冷卻'+(Number(value)>=0?'－':'＋')+Math.abs(Number(value))+'%';
+    if(key==='defensePct'&&effect.source==='base')return '防禦力'+(Number(value)>=0?'＋':'－')+Math.abs(Number(value))+'%';
     if(key==='skillEffectPct')return '核心技能 '+((effect.skill??0)+1)+' '+label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
     return label+' '+(Number(value)>=0?'+':'')+Number(value)+'%';
   }
@@ -399,7 +311,7 @@
     ensureGearIdentityMeta(g);
     const body=g.boss===undefined?(baseFormForGear(g)?.name||CLASS_GEAR[g.job??state?.job??0]?.[g.slot]||'裝備'):(CLASS_GEAR[g.job??state?.job??0]?.[g.slot]||'裝備');
     if(g.boss!==undefined)return (bossProfileForGear(g)?.name||'BOSS專屬')+body;
-    return (prefixById(g.prefixId)?.name||'')+(suffixById(g.suffixId)?.name||'')+body;
+    return body;
   };
   equipmentDisplayName=function(g){if(!g||g.slot===undefined)return identityEquipmentDisplayBase(g);ensureGearIdentityMeta(g);return '+'+(g.plus||0)+' '+gearName(g);};
   const identityNameHTMLBase=equipmentNameHTML;
@@ -418,7 +330,13 @@
   gearQualityRank=function(g){return EmberwildTokens.isToken(g)?g.rar:tokenQualityBase(g);};
 
   bossPower=function(){return 1;};
-  function rawTierStats(g){if(g?.baseSnapshot&&!g.starterPack)return {...g.baseSnapshot.raw};const tier=(Number.isInteger(g?.equipmentLevel)?1+(g.equipmentLevel-GS('equipment.requiredLevel.base',1))/GS('equipment.requiredLevel.perTier',5):Math.max(1,Number(g?.tier)||1))+(g?.boss!==undefined&&g.baseRuleVersion!==1?EQUIPMENT_POWER.strength.legacyBossLevelBonus/GS('equipment.requiredLevel.perTier',5):0),atkPer=g.slot===2?GS('equipment.baseStats.offhandAttackPerTier',GS('equipment.baseStats.accessoryAttackPerTier',4)):GS('equipment.baseStats.accessoryAttackPerTier',4),hpPer=g.slot===2?GS('equipment.baseStats.offhandHpPerTier',GS('equipment.baseStats.accessoryHpPerTier',20)):GS('equipment.baseStats.accessoryHpPerTier',20);const raw={atk:g.slot===0?(Number.isFinite(g.starterPack?.baseAttack)?g.starterPack.baseAttack:tier*GS('equipment.baseStats.weaponAttackPerTier',11)):[2,3].includes(g.slot)?tier*atkPer:0,hp:g.slot===1?tier*GS('equipment.baseStats.armorHpPerTier',45):[2,3].includes(g.slot)?tier*hpPer:0,def:g.slot===1?tier*GS('equipment.baseStats.armorDefensePerTier',4):0};if(g.boss!==undefined&&g.baseRuleVersion===1){const form=ITEM_FORMS[g.job]?.[g.slot]?.[0];for(const [key,fx] of [['atk','gearAtkPct'],['hp','gearHpPct'],['def','gearDefPct']])raw[key]=Math.round(raw[key]*(1+(form?.fixedEffects||[]).filter(e=>e.key===fx).reduce((n,e)=>n+Number(e.value||0),0)/100));}return raw;}
+  /* BOSS bases (baseRuleVersion 1) used to read the base percents of the class's first standard form of the slot. v0.215
+     slimmed and changed those forms, so the percents they had then are kept here and BOSS equipment keeps its base. */
+  const BOSS_BASE_FORM_PCT=[[{"atk":5},{"hp":15,"def":25},{"atk":20},{"hp":30}],[{"atk":15},{},{"atk":15},{"hp":10}],[{"atk":15},{"def":10},{},{"atk":10}],[{"atk":10},{"hp":15},{"atk":10},{"hp":25}]];
+  function rawTierStats(g){if(g?.baseSnapshot&&!g.starterPack)return {...g.baseSnapshot.raw};const tier=(Number.isInteger(g?.equipmentLevel)?1+(g.equipmentLevel-GS('equipment.requiredLevel.base',1))/GS('equipment.requiredLevel.perTier',5):Math.max(1,Number(g?.tier)||1))+(g?.boss!==undefined&&g.baseRuleVersion!==1?EQUIPMENT_POWER.strength.legacyBossLevelBonus/GS('equipment.requiredLevel.perTier',5):0),atkPer=g.slot===2?GS('equipment.baseStats.offhandAttackPerTier',GS('equipment.baseStats.accessoryAttackPerTier',4)):GS('equipment.baseStats.accessoryAttackPerTier',4),hpPer=g.slot===2?GS('equipment.baseStats.offhandHpPerTier',GS('equipment.baseStats.accessoryHpPerTier',20)):GS('equipment.baseStats.accessoryHpPerTier',20);const raw={atk:g.slot===0?(Number.isFinite(g.starterPack?.baseAttack)?g.starterPack.baseAttack:tier*GS('equipment.baseStats.weaponAttackPerTier',11)):[2,3].includes(g.slot)?tier*atkPer:0,hp:g.slot===1?tier*GS('equipment.baseStats.armorHpPerTier',45):[2,3].includes(g.slot)?tier*hpPer:0,def:g.slot===1?tier*GS('equipment.baseStats.armorDefensePerTier',4):0};
+    // v0.215: an off-hand template with baseStat 'defense' (皮盾) has the armor defense per tier instead of attack.
+    if(g.boss===undefined&&g.slot===2&&baseFormForGear(g)?.baseStat==='defense'){raw.atk=0;raw.def=tier*GS('equipment.baseStats.armorDefensePerTier',4);}
+    if(g.boss!==undefined&&g.baseRuleVersion===1){const pct=BOSS_BASE_FORM_PCT[g.job]?.[g.slot]||{};for(const key of ['atk','hp','def'])raw[key]=Math.round(raw[key]*(1+(Number(pct[key])||0)/100));}return raw;}
   function baseStatPct(g,key){
     const effects=identityEffectEntriesForGear(g);
     return effects.filter(e=>e.key===key).reduce((n,e)=>n+(Number(e.value)||0),0);
@@ -429,8 +347,8 @@
   }
   function gearStatBreakdown(g){
     const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE,rows=cache?(cache.gearStats??=new WeakMap()):null,hit=rows?.get(g);
-    if(hit&&hit.plus===g.plus&&hit.base===g.baseSnapshot&&hit.power===g.powerTier&&hit.prefix===g.prefixId&&hit.suffix===g.suffixId)return hit.value;
-    if(EmberwildTokens.isToken(g)){const zero={atk:0,hp:0,def:0};return {raw:{...zero},body:{...zero},grade:{...zero},enhance:{...zero},total:{...zero},mult:g.qualityMultipliers[g.rar],powerTier:1,prefix:null,suffix:null,bossProfile:null};}
+    if(hit&&hit.plus===g.plus&&hit.base===g.baseSnapshot&&hit.power===g.powerTier)return hit.value;
+    if(EmberwildTokens.isToken(g)){const zero={atk:0,hp:0,def:0};return {raw:{...zero},body:{...zero},grade:{...zero},enhance:{...zero},total:{...zero},mult:g.qualityMultipliers[g.rar],powerTier:1,bossProfile:null};}
     ensureGearIdentityMeta(g);
     const mult=g.starterPack?Number(EQUIPMENT_POWER.strength.legacyMultipliers[(g.powerTier||1)-1])||1:strengthMultiplier(g);
     const raw=rawTierStats(g);
@@ -443,8 +361,8 @@
       const b=g.baseSnapshot,total=enhancedBaseStats(g,b.base);
       integers={raw:{...b.raw},body:{...b.body},grade:Object.fromEntries(['hp','atk','def'].map(k=>[k,b.base[k]-b.body[k]])),enhance:Object.fromEntries(['hp','atk','def'].map(k=>[k,total[k]-b.base[k]])),total};
     }
-    const value={...integers,mult,powerTier:g.powerTier||1,prefix:prefixById(g.prefixId),suffix:suffixById(g.suffixId),bossProfile:bossProfileForGear(g)};
-    rows?.set(g,{plus:g.plus,base:g.baseSnapshot,power:g.powerTier,prefix:g.prefixId,suffix:g.suffixId,value});return value;
+    const value={...integers,mult,powerTier:g.powerTier||1,bossProfile:bossProfileForGear(g)};
+    rows?.set(g,{plus:g.plus,base:g.baseSnapshot,power:g.powerTier,value});return value;
   }
   globalThis.gearStatBreakdown=gearStatBreakdown;
   // v0.094: take the base snapshot when a drop enters the bag, as wishing-lake rewards already do. Before, it was taken on
@@ -489,7 +407,7 @@
         else if(e.key==='elementDamagePct'&&e.element)v.elementDamage[e.element]=(v.elementDamage[e.element]||0)+n/100;
         else if(e.key==='elementResistPct'&&e.element)v.resist[e.element]=(v.resist[e.element]||0)+n/100;
         else if(e.key==='raceDamagePct'&&e.race)v.raceDamage[e.race]=(v.raceDamage[e.race]||0)+n/100;
-        else if(!['gearAtkPct','gearHpPct','gearDefPct','basicElement','basicAttackSpeedStack','allCooldownReduction','dropRateBonus','skillEffectPct','skillCooldownReduction'].includes(e.key))applyIdentityStatEffect(v,e,attackBox);
+        else if(!['gearAtkPct','gearHpPct','gearDefPct','basicElement','basicAttackSpeedStack','allCooldownReduction','dropRateBonus','skillEffectPct','skillCooldownReduction','skillDamagePct','cooldownPct'].includes(e.key))applyIdentityStatEffect(v,e,attackBox);
       }
       for(const a0 of g.affix||[]){
         const a=convertLegacyManaAffix(a0,g);
@@ -608,7 +526,6 @@
         add('成長加成 '+(i+1),effectText(e)+'／級 · '+growth.range+' · 已成長 '+growth.levels+' 級',active);
       });
     }
-    for(const [label,named] of [['前綴加成',b.prefix],['後綴加成',b.suffix]])add(label,named?named.name+' · '+effectText(named.effect):'',named?.effect);
     const affixes=Array.isArray(g.affix)?g.affix:[];
     for(let i=0;i<Math.max(2,affixes.length);i++){
       const a=affixes[i]?convertLegacyManaAffix(affixes[i],g):null;
@@ -670,9 +587,29 @@
   };
   // Equipment-owned bonuses are totals in their own units, never an estimate of
   // character attack or combat power. Keep random-affix rules available above.
+  /* v0.215 weapon base: every general weapon template states its base in one block, in this order and wording:
+     攻擊力：<this item's attack> / 攻擊速度：<attacks per second of the wearing class with this weapon's base speed> 次／秒
+     / 技能傷害＋X% / 技能冷卻－X% / 防禦力＋X% (only the ones the template has). */
+  const WEAPON_BASE_TEXT_KEYS=['skillDamagePct','cooldownPct','defensePct'];
+  const WEAPON_BASE_SUMMARY_KEYS=new Set(['attackSpeedPct','skillDamagePct','cooldownPct']);
+  function weaponBaseForm(g){
+    if(!g||g.boss!==undefined||EmberwildTokens.isToken(g)||Number(g.slot)!==0)return null;
+    const form=baseFormForGear(g);return form&&equipmentFormGroup(g)<CLASSES.length?form:null;
+  }
+  globalThis.weaponBaseLines=function(g){
+    const form=weaponBaseForm(g);if(!form)return [];
+    const effects=baseEffectEntries(g),sum=key=>effects.filter(e=>e.key===key).reduce((n,e)=>n+(Number(e.value)||0),0);
+    const job=(form.wearableJobs||[])[0]??Number(g.job)??0;
+    const sec=globalThis.EmberwildSecondsCombat?.config?.()||GAMEPLAY_SETTINGS.combat?.seconds;
+    const base=sec?.classes?.find(c=>c.job===job)?.baseIntervalSeconds??EmberwildAttackSpeed.CLASS_INTERVALS[job]??2;
+    const rate=EmberwildAttackSpeed.attacksPerSecond(base,sum('attackSpeedPct'),sec?.attackSpeed);
+    const lines=['攻擊力：'+globalThis.equipmentStatContributions(g).total.atk,'攻擊速度：'+Number(rate.toFixed(3))+' 次／秒'];
+    for(const key of WEAPON_BASE_TEXT_KEYS){const n=sum(key);if(n)lines.push(effectText({key,value:n,source:'base'}));}
+    return lines;
+  };
   globalThis.equipmentAbilitySummary=function(g){
-    const ledger=globalThis.equipmentStatContributions(g),effects=new Map();
-    const addEffect=(effect,random=false)=>{
+    const ledger=globalThis.equipmentStatContributions(g),effects=new Map(),weapon=!!weaponBaseForm(g);
+    const addEffect=(effect,random=false,base=false)=>{
       if(!effect||CHARACTER_EFFECT_KEYS.has(effect.key)||PCT_PANEL_KEYS[effect.key]||FLAT_PANEL_KEYS[effect.key])return;
       const e={...effect};
       if(e.key==='skillCooldownReduction'&&CLASSES[g.job??0]?.skills?.[e.skill??0]?.[1]==='proc'){
@@ -684,11 +621,11 @@
         if(!effects.has('basicElement'))effects.set('basicElement',e);
         return;
       }
-      if(!effects.has(id))effects.set(id,{...e,value:0,fixedValue:0,affixValue:0});
+      if(!effects.has(id))effects.set(id,{...e,value:0,fixedValue:0,affixValue:0,baseValue:0});
       const total=effects.get(id),n=Number(e.value)||0;
-      total.value+=n;total[random?'affixValue':'fixedValue']+=n;
+      total.value+=n;total[random?'affixValue':'fixedValue']+=n;if(base)total.baseValue+=n;
     };
-    for(const row of ledger.rows)if(row.effect)addEffect(row.effect);
+    for(const row of ledger.rows)if(row.effect)addEffect(row.effect,false,weapon&&row.label.startsWith('基底效果'));
     for(const row of ledger.rows){
       const a=row.affix;if(!a)continue;
       const key=AFFIX_EFFECT_KEYS[a.type]||(a.type===4?'skillEffectPct':a.type===5?'skillCooldownReduction':'');
@@ -696,7 +633,8 @@
     }
     const numeric={...ledger.total};
     for(const row of ledger.rows){const e=row.effect||(row.affix?.type===15?{key:'attackPct',value:row.affix.value}:null);if(e&&CHARACTER_EFFECT_KEYS.has(e.key))numeric[e.key]=(numeric[e.key]||0)+(Number(e.value)||0);}
-    const values=statText(ledger.total)==='—'?[]:statText(ledger.total).split(' / ');
+    // A weapon states its attack in the weapon base block (攻擊力：N), so the panel attack is not listed again.
+    const values=(statText(ledger.total)==='—'?[]:statText(ledger.total).split(' / ')).filter(v=>!(weapon&&/^攻擊 /.test(v)));
     for(const e of effects.values()){
       // The existing skill formula multiplies its fixed and random bonus groups.
       if(e.key==='skillEffectPct')e.value=((1+e.fixedValue/100)*(1+e.affixValue/100)-1)*100;
@@ -706,6 +644,8 @@
         if(!e.value)continue;
       }
       if(e.key!=='basicElement')numeric[numericKey(e)]=e.value;
+      // The weapon base block already states these base values; list only what other sources add.
+      if(weapon&&WEAPON_BASE_SUMMARY_KEYS.has(e.key)&&e.baseValue){const rest=Number((e.value-e.baseValue).toFixed(2));if(!rest)continue;values.push(effectText({...e,value:rest}));continue;}
       values.push(e.key==='skillProcChance'?'核心技能 '+((e.skill??0)+1)+' 觸發率 '+(e.value>=0?'+':'')+e.value+'%':e.key==='skillCooldownReduction'?'核心技能 '+((e.skill??0)+1)+' 冷卻 '+cdSummary({fixedSkill:Math.max(0,Math.round(e.fixedValue)),affixSkill:e.affixValue},e.value):e.key==='allCooldownReduction'?'全主動／輔助技能冷卻 '+cdSummary({fixedAll:Math.max(0,Math.round(e.fixedValue)),affixAll:e.affixValue},e.value):effectText(e));
     }
     const affixes=ledger.rows.filter(row=>row.affix).map(row=>({label:row.label.replace(' 加成',''),rule:row.rule,rank:row.affix.rank??0}));
@@ -726,12 +666,13 @@
     }
     return fields;
   };
-  globalThis.equipmentTotalSummaryText=function(g){return globalThis.equipmentAbilitySummary(g).values.join(' / ')||'—';};
+  globalThis.equipmentTotalSummaryText=function(g){return [...globalThis.weaponBaseLines(g),...globalThis.equipmentAbilitySummary(g).values].join(' / ')||'—';};
   globalThis.equipmentTotalSummaryHTML=function(g){
-    const summary=globalThis.equipmentAbilitySummary(g);
-    const values='<span class="equipment-summary-values">'+(summary.values.length?summary.values.map(value=>'<span>'+esc(value)+'</span>').join(''):'—')+'</span>';
+    const summary=globalThis.equipmentAbilitySummary(g),base=globalThis.weaponBaseLines(g);
+    const weaponBase=base.length?'<span class="equipment-weapon-base">'+base.map(line=>'<span>'+esc(line)+'</span>').join('')+'</span>':'';
+    const values=weaponBase&&!summary.values.length?'':'<span class="equipment-summary-values">'+(summary.values.length?summary.values.map(value=>'<span>'+esc(value)+'</span>').join(''):'—')+'</span>';
     const affixes=summary.affixes.length?'<span class="equipment-summary-affixes">'+summary.affixes.map(a=>'<span class="equipment-summary-affix effect-quality-'+a.rank+'"><b>'+esc(a.label)+'</b> '+esc(a.rule)+'</span>').join('')+'</span>':'';
-    return values+affixes;
+    return weaponBase+values+affixes;
   };
   globalThis.equipmentAttributeDetailsHTML=function(g,options={}){
     if(!g)return '';
@@ -758,7 +699,6 @@
     const out=[];if(!g)return out;
     if(g.boss!==undefined){for(const e of bossProfileForGear(g)?.effects||[])out.push(effectText(e));return out;}
     for(const e of baseEffectEntries(g))out.push(effectText(e));
-    const p=prefixById(g.prefixId),s=suffixById(g.suffixId);if(p)out.push('前綴 '+p.name+'：'+effectText(p.effect));if(s)out.push('後綴 '+s.name+'：'+effectText(s.effect));
     return out;
   };
   gearDesc=function(g){return globalThis.equipmentTotalSummaryText(g);};
@@ -800,7 +740,7 @@
   try{
     const raw=balanceSourceText();
     if(raw){const saved=JSON.parse(raw);if(saved?.equipmentPowerSystem)applyBalanceConfig(saved,{persist:false});}
-  }catch(e){console.warn('裝備前綴／後綴設定載入失敗，使用內建設定',e);}
+  }catch(e){console.warn('裝備強度設定載入失敗，使用內建設定',e);}
 
   syncRerollItem();normalizeAllGearIdentity();
   // Rehydrate the original bytes once all save validators and migrations exist.
@@ -816,6 +756,6 @@
     for(const candidate of candidates){try{loadParty(migrateWorldSave(JSON.parse(candidate.raw)));normalizeAllGearIdentity();normalizeEquippedWearability();globalThis.__EMBERWILD_PRE_CONTROL_SAVE_RAW=candidate.raw;if(candidate.label==='備份存檔'){globalThis.__EMBERWILD_RECOVERED_BACKUP_SESSION=true;if(candidates[0]?.label==='主要存檔')globalThis.__EMBERWILD_UNREADABLE_PRIMARY_RAW=candidates[0].raw;}if(candidate.label==='備份存檔'&&(!globalThis.__EMBERWILD_BALANCE_SOURCE||globalThis.__EMBERWILD_BALANCE_READY))toast('主要存檔無法載入，已自動恢復上一份備份');break;}catch(e){state=null;party=null;console.warn(candidate.label+'最終載入失敗',e);if(candidate.label==='主要存檔'&&String(e?.message||e).startsWith('裝備類型無效：'))break;}}
   }
   saveReady=true;
-  window.__EMBERWILD_EQUIPMENT_IDENTITY={schemaVersion:2,effectKeys:[...BOSS_EFFECT_KEYS],prefixes:()=>clone(EQUIPMENT_POWER.prefixes),suffixes:()=>clone(EQUIPMENT_POWER.suffixes),bossAffixes:()=>clone(EQUIPMENT_POWER.bossAffixes),effectText};
+  window.__EMBERWILD_EQUIPMENT_IDENTITY={schemaVersion:2,effectKeys:[...BOSS_EFFECT_KEYS],bossAffixes:()=>clone(EQUIPMENT_POWER.bossAffixes),effectText};
   if(state){save();render();}
 })();

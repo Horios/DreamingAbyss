@@ -3870,9 +3870,9 @@
         "boss"
       ],
       "chanceByDifficulty": [
-        0.06,
-        0.1,
-        0.15
+        0.02,
+        0.0333333,
+        0.05
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -3914,9 +3914,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.0004,
-        0.0004,
-        0.0004
+        0.0002,
+        0.0002,
+        0.0002
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4018,9 +4018,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.008,
-        0.008,
-        0.008
+        0.004,
+        0.004,
+        0.004
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4268,9 +4268,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.0004,
-        0.0005,
-        0.0006
+        0.000133333,
+        0.000166667,
+        0.0002
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4288,9 +4288,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.0012,
-        0.0015,
-        0.0018
+        0.0004,
+        0.0005,
+        0.0006
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4308,9 +4308,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.0004,
-        0.0005,
-        0.0006
+        0.000133333,
+        0.000166667,
+        0.0002
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4328,9 +4328,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.0012,
-        0.0015,
-        0.0018
+        0.0004,
+        0.0005,
+        0.0006
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4348,9 +4348,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.0004,
-        0.0005,
-        0.0006
+        0.000133333,
+        0.000166667,
+        0.0002
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4368,9 +4368,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.0012,
-        0.0015,
-        0.0018
+        0.0004,
+        0.0005,
+        0.0006
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4388,9 +4388,9 @@
         "boss"
       ],
       "chanceByDifficulty": [
-        0.05,
-        0.08,
-        0.12
+        0.0166667,
+        0.0266667,
+        0.04
       ],
       "quantityMin": 1,
       "quantityMax": 1,
@@ -4410,16 +4410,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map0_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -4440,16 +4440,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map0_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -4470,16 +4470,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map0_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
@@ -4500,16 +4500,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map0_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
@@ -4530,16 +4530,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map0_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -4560,16 +4560,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map0_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -4591,9 +4591,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map0_boss"
@@ -4621,16 +4621,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map1_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         },
         {
@@ -4651,16 +4651,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map1_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         },
         {
@@ -4681,16 +4681,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map1_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -4711,16 +4711,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map1_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -4741,20 +4741,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map1_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -4771,20 +4771,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map1_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -4802,16 +4802,16 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map1_boss"
       ],
       "pool": [
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         },
         {
@@ -4832,16 +4832,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map2_mob0"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
@@ -4862,16 +4862,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map2_mob0"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
@@ -4892,16 +4892,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map2_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
@@ -4922,16 +4922,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map2_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
@@ -4952,9 +4952,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map2_mob2"
@@ -4965,7 +4965,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -4982,9 +4982,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map2_mob2"
@@ -4995,7 +4995,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -5013,9 +5013,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map2_boss"
@@ -5026,7 +5026,7 @@
           "weight": 1
         },
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         }
       ]
@@ -5043,9 +5043,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map3_mob0"
@@ -5073,9 +5073,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map3_mob0"
@@ -5103,16 +5103,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map3_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
@@ -5133,16 +5133,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map3_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
@@ -5163,9 +5163,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map3_mob2"
@@ -5176,7 +5176,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -5193,9 +5193,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map3_mob2"
@@ -5206,7 +5206,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -5224,16 +5224,16 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map3_boss"
       ],
       "pool": [
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
@@ -5254,9 +5254,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map4_mob0"
@@ -5284,9 +5284,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map4_mob0"
@@ -5314,20 +5314,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map4_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -5344,20 +5344,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map4_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -5374,16 +5374,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map4_mob2"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -5404,16 +5404,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map4_mob2"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -5435,9 +5435,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map4_boss"
@@ -5465,9 +5465,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map5_mob0"
@@ -5495,9 +5495,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map5_mob0"
@@ -5525,9 +5525,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map5_mob1"
@@ -5538,7 +5538,7 @@
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -5555,9 +5555,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map5_mob1"
@@ -5568,7 +5568,7 @@
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -5585,16 +5585,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map5_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -5615,16 +5615,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map5_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -5646,16 +5646,16 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map5_boss"
       ],
       "pool": [
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         },
         {
@@ -5677,9 +5677,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map6_boss"
@@ -5690,7 +5690,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         }
       ]
@@ -5707,16 +5707,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map7_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -5737,16 +5737,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map7_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -5767,16 +5767,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map7_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
@@ -5797,16 +5797,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map7_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
@@ -5827,16 +5827,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map7_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -5857,16 +5857,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map7_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -5888,9 +5888,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map7_boss"
@@ -5918,16 +5918,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map8_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         },
         {
@@ -5948,16 +5948,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map8_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         },
         {
@@ -5978,16 +5978,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map8_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -6008,16 +6008,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map8_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -6038,20 +6038,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map8_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -6068,20 +6068,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map8_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -6099,16 +6099,16 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map8_boss"
       ],
       "pool": [
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         },
         {
@@ -6129,16 +6129,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map9_mob0"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
@@ -6159,16 +6159,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map9_mob0"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
@@ -6189,16 +6189,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map9_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
@@ -6219,16 +6219,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map9_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
@@ -6249,9 +6249,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map9_mob2"
@@ -6262,7 +6262,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -6279,9 +6279,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map9_mob2"
@@ -6292,7 +6292,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -6310,9 +6310,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map9_boss"
@@ -6323,7 +6323,7 @@
           "weight": 1
         },
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         }
       ]
@@ -6340,9 +6340,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map10_mob0"
@@ -6370,9 +6370,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map10_mob0"
@@ -6400,16 +6400,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map10_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
@@ -6430,16 +6430,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map10_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
@@ -6460,9 +6460,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map10_mob2"
@@ -6473,7 +6473,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -6490,9 +6490,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map10_mob2"
@@ -6503,7 +6503,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -6521,16 +6521,16 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map10_boss"
       ],
       "pool": [
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
@@ -6551,9 +6551,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map11_mob0"
@@ -6581,9 +6581,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map11_mob0"
@@ -6611,20 +6611,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map11_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -6641,20 +6641,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map11_mob1"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -6671,16 +6671,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map11_mob2"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -6701,16 +6701,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map11_mob2"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -6732,9 +6732,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map11_boss"
@@ -6762,9 +6762,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map12_mob0"
@@ -6792,9 +6792,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map12_mob0"
@@ -6822,9 +6822,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map12_mob1"
@@ -6835,7 +6835,7 @@
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -6852,9 +6852,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map12_mob1"
@@ -6865,7 +6865,7 @@
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -6882,16 +6882,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map12_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -6912,16 +6912,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map12_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -6943,16 +6943,16 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map12_boss"
       ],
       "pool": [
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         },
         {
@@ -6973,9 +6973,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map13_mob0"
@@ -7003,9 +7003,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map13_mob0"
@@ -7033,9 +7033,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map13_mob1"
@@ -7063,9 +7063,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map13_mob1"
@@ -7093,20 +7093,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map13_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -7123,20 +7123,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map13_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -7153,9 +7153,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map13_mob3"
@@ -7183,9 +7183,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map13_mob3"
@@ -7214,9 +7214,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map13_boss"
@@ -7244,20 +7244,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map14_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -7274,20 +7274,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map14_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -7304,20 +7304,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map14_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -7334,20 +7334,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map14_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -7364,20 +7364,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map14_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -7394,20 +7394,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map14_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -7424,20 +7424,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map14_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         }
       ]
@@ -7454,20 +7454,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map14_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         }
       ]
@@ -7485,9 +7485,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map14_boss"
@@ -7515,20 +7515,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map15_mob0"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -7545,20 +7545,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map15_mob0"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -7575,20 +7575,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map15_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         }
       ]
@@ -7605,20 +7605,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map15_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         }
       ]
@@ -7635,9 +7635,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map15_mob2"
@@ -7665,9 +7665,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map15_mob2"
@@ -7695,9 +7695,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map15_mob3"
@@ -7725,9 +7725,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map15_mob3"
@@ -7756,9 +7756,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map15_boss"
@@ -7786,9 +7786,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map16_mob0"
@@ -7816,9 +7816,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map16_mob0"
@@ -7846,16 +7846,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map16_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -7876,16 +7876,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map16_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -7906,9 +7906,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map16_mob2"
@@ -7936,9 +7936,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map16_mob2"
@@ -7966,9 +7966,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map16_mob3"
@@ -7979,7 +7979,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         }
       ]
@@ -7996,9 +7996,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map16_mob3"
@@ -8009,7 +8009,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         }
       ]
@@ -8027,20 +8027,20 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map16_boss"
       ],
       "pool": [
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -8057,16 +8057,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map17_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -8087,16 +8087,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map17_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -8117,9 +8117,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map17_mob1"
@@ -8147,9 +8147,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map17_mob1"
@@ -8177,20 +8177,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map17_mob2"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -8207,20 +8207,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map17_mob2"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -8237,16 +8237,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map17_mob3"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -8267,16 +8267,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map17_mob3"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -8298,9 +8298,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map17_boss"
@@ -8311,7 +8311,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -8328,9 +8328,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map18_mob0"
@@ -8358,9 +8358,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map18_mob0"
@@ -8388,20 +8388,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map18_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         }
       ]
@@ -8418,20 +8418,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map18_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         }
       ]
@@ -8448,9 +8448,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map18_mob2"
@@ -8461,7 +8461,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -8478,9 +8478,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map18_mob2"
@@ -8491,7 +8491,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -8508,16 +8508,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map18_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -8538,16 +8538,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map18_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -8569,9 +8569,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map18_boss"
@@ -8599,9 +8599,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map19_mob0"
@@ -8629,9 +8629,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map19_mob0"
@@ -8659,9 +8659,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map19_mob1"
@@ -8689,9 +8689,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map19_mob1"
@@ -8719,20 +8719,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map19_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -8749,20 +8749,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map19_mob2"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -8779,9 +8779,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map19_mob3"
@@ -8809,9 +8809,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map19_mob3"
@@ -8840,9 +8840,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map19_boss"
@@ -8870,20 +8870,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map20_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -8900,20 +8900,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map20_mob0"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -8930,20 +8930,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map20_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -8960,20 +8960,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map20_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -8990,20 +8990,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map20_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -9020,20 +9020,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map20_mob2"
       ],
       "pool": [
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         },
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -9050,20 +9050,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map20_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         }
       ]
@@ -9080,20 +9080,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map20_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         }
       ]
@@ -9111,9 +9111,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map20_boss"
@@ -9141,20 +9141,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map21_mob0"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -9171,20 +9171,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map21_mob0"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         }
       ]
@@ -9201,20 +9201,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map21_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         }
       ]
@@ -9231,20 +9231,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map21_mob1"
       ],
       "pool": [
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         },
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         }
       ]
@@ -9261,9 +9261,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map21_mob2"
@@ -9291,9 +9291,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map21_mob2"
@@ -9321,9 +9321,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map21_mob3"
@@ -9351,9 +9351,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map21_mob3"
@@ -9382,9 +9382,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map21_boss"
@@ -9412,9 +9412,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map22_mob0"
@@ -9442,9 +9442,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map22_mob0"
@@ -9472,16 +9472,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map22_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -9502,16 +9502,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map22_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:0:2",
+          "key": "form:1:0:1",
           "weight": 1
         },
         {
@@ -9532,9 +9532,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map22_mob2"
@@ -9562,9 +9562,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map22_mob2"
@@ -9592,9 +9592,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map22_mob3"
@@ -9605,7 +9605,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         }
       ]
@@ -9622,9 +9622,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map22_mob3"
@@ -9635,7 +9635,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         }
       ]
@@ -9653,20 +9653,20 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map22_boss"
       ],
       "pool": [
         {
-          "key": "form:0:0:1",
+          "key": "form:0:0:0",
           "weight": 1
         },
         {
-          "key": "form:3:1:0",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -9683,16 +9683,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map23_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -9713,16 +9713,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map23_mob0"
       ],
       "pool": [
         {
-          "key": "form:3:0:2",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -9743,9 +9743,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map23_mob1"
@@ -9773,9 +9773,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map23_mob1"
@@ -9803,20 +9803,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map23_mob2"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -9833,20 +9833,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map23_mob2"
       ],
       "pool": [
         {
-          "key": "form:2:0:2",
+          "key": "form:2:0:0",
           "weight": 1
         },
         {
-          "key": "form:2:1:1",
+          "key": "form:2:1:0",
           "weight": 1
         }
       ]
@@ -9863,16 +9863,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map23_mob3"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -9893,16 +9893,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map23_mob3"
       ],
       "pool": [
         {
-          "key": "form:0:1:1",
+          "key": "form:0:1:0",
           "weight": 1
         },
         {
@@ -9924,9 +9924,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map23_boss"
@@ -9937,7 +9937,7 @@
           "weight": 1
         },
         {
-          "key": "form:3:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         }
       ]
@@ -9954,9 +9954,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map24_mob0"
@@ -9984,9 +9984,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map24_mob0"
@@ -10014,20 +10014,20 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map24_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         }
       ]
@@ -10044,20 +10044,20 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map24_mob1"
       ],
       "pool": [
         {
-          "key": "form:1:1:1",
+          "key": "form:1:1:0",
           "weight": 1
         },
         {
-          "key": "form:1:0:1",
+          "key": "form:1:0:0",
           "weight": 1
         }
       ]
@@ -10074,9 +10074,9 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map24_mob2"
@@ -10087,7 +10087,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -10104,9 +10104,9 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map24_mob2"
@@ -10117,7 +10117,7 @@
           "weight": 1
         },
         {
-          "key": "form:0:0:2",
+          "key": "form:0:0:1",
           "weight": 1
         }
       ]
@@ -10134,16 +10134,16 @@
         "normal"
       ],
       "chanceByDifficulty": [
-        0.002,
-        0.0027,
-        0.0034
+        0.000666667,
+        0.0009,
+        0.00113333
       ],
       "sources": [
         "map24_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -10164,16 +10164,16 @@
         "elite"
       ],
       "chanceByDifficulty": [
-        0.006,
-        0.008,
-        0.01
+        0.002,
+        0.00266667,
+        0.00333333
       ],
       "sources": [
         "map24_mob3"
       ],
       "pool": [
         {
-          "key": "form:3:0:1",
+          "key": "form:3:0:0",
           "weight": 1
         },
         {
@@ -10195,9 +10195,9 @@
         "final"
       ],
       "chanceByDifficulty": [
-        0.2,
-        0.25,
-        0.3
+        0.0666667,
+        0.0833333,
+        0.1
       ],
       "sources": [
         "map24_boss"

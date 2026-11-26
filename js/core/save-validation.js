@@ -1,7 +1,45 @@
 'use strict';
 // Extracted from core-game.js without changing exported globals or validation rules.
+// v0.215 general equipment slimming: saved gear refers to its form by index. Old weapons/armors whose form was removed,
+// and weapons whose index moved, are pointed at the kept template of the same class, slot and weapon type. Index 1 of
+// the warrior and mage weapons is ambiguous (old 穿甲槍／霜紋杖 or the new axe／grimoire), so it is told apart by the
+// stored weaponType. Armor follows its class group (the priest group uses 布袍); armor a member is wearing moves to the
+// armor of that member's class when the group's armor no longer fits it. Repeated runs leave migrated gear unchanged.
+// Runs only when the loaded catalogue is the slim one; target indexes are looked up by form id.
+const SLIM_REMOVED_FORM_IDS=new Set(['job0-slot0-form1','job0-slot1-form1','job1-slot0-form1','job1-slot1-form1','job2-slot0-form2','job2-slot1-form1','job3-slot0-form1','job3-slot0-form2','job3-slot1-form0','job3-slot1-form1']);
+const SLIM_ARMOR_BY_CLASS=['job0-slot1-form0','job1-slot1-form0','job2-slot1-form0','job1-slot1-form0'];
+function slimFormRef(id){if(typeof ITEM_FORMS==='undefined')return null;for(let group=0;group<ITEM_FORMS.length;group++)for(let slot=0;slot<(ITEM_FORMS[group]||[]).length;slot++){const index=(ITEM_FORMS[group][slot]||[]).findIndex(f=>f?.id===id);if(index>=0)return {group,slot,index,form:ITEM_FORMS[group][slot][index]};}return null;}
+function slimEquipmentTarget(g,wearerJob){
+ if(!g||typeof g!=='object'||g.boss!==undefined||g.tokenId!==undefined||g.devWeaponTypeOverride||!Number.isInteger(g.form)||!Number.isInteger(g.slot))return null;
+ const group=Number.isInteger(g.formJob)?g.formJob:Number(g.job);if(!Number.isInteger(group)||group<0||group>3)return null;
+ if(g.slot===1){
+  const id=SLIM_ARMOR_BY_CLASS[group],ref=slimFormRef(id);
+  if(Number.isInteger(wearerJob)&&ref&&Array.isArray(ref.form.wearableJobs)&&!ref.form.wearableJobs.includes(wearerJob))return SLIM_ARMOR_BY_CLASS[wearerJob]||id;
+  return id;
+ }
+ if(g.slot!==0)return null;
+ if(group===0)return g.form===2||g.form===1&&g.weaponType==='axe'?'job0-slot0-form2':'job0-slot0-form0';
+ if(group===1)return g.form===2||g.form===1&&g.weaponType==='grimoire'?'job1-slot0-form2':'job1-slot0-form0';
+ if(group===2)return g.form===1?'job2-slot0-form1':'job2-slot0-form0';
+ return 'job3-slot0-form0';
+}
+function migrateSlimEquipmentForms(list,{wearerJob=null,worn=null}={}){
+ if(!Array.isArray(list)||typeof ITEM_FORMS==='undefined')return list;
+ const forms=ITEM_FORMS.flat(2);if(forms.some(f=>SLIM_REMOVED_FORM_IDS.has(f?.id))||!forms.some(f=>f?.id==='job0-slot0-form2'))return list;
+ const wornIds=new Set(Array.isArray(worn)?worn.filter(Boolean):[]);
+ for(const g of list){
+  const id=slimEquipmentTarget(g,wornIds.has(g?.id)?wearerJob:null);if(!id)continue;
+  const ref=slimFormRef(id);if(!ref)continue;
+  if(g.formJob===ref.group&&g.form===ref.index)continue;
+  g.formJob=ref.group;g.form=ref.index;
+  if(ref.slot===0&&ref.form.weaponType)g.weaponType=ref.form.weaponType;
+ }
+ return list;
+}
+globalThis.migrateSlimEquipmentForms=migrateSlimEquipmentForms;
 function migrateLegacyEquipmentSlotsInSave(s){
  if(!s||!Array.isArray(s.bag))return s;
+ migrateSlimEquipmentForms(s.bag,{wearerJob:Number.isInteger(s.job)?s.job:null,worn:s.equipped});
  const movedToAccessory=new Set();
  for(const g of s.bag){
   if(g?.boss!==undefined){

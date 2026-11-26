@@ -66,10 +66,8 @@
  }
  initiativeView=()=>'';
  const base=battleView;battleView=function(){
-  const mode=party.huntingMode||'group',current=party.currentHuntingMode||mode;
   let html=replaceField(base());
   html=html.replace(/<p class="small combat-rule">[\s\S]*?<\/p>/,'<p class="small combat-rule">各單位依秒數獨立行動；角色自動依條件與優先級施放技能。普攻與技能獨立計時；技能依裝備順序施放並消耗 MP。</p>');
-  html=html.replace(/群怪 · 3～6 隻/g,current==='single'?'單怪 · 1 隻':'群怪 · 3～5 隻');
   const special=!!(party.questChallenge||party.bossChallenge?.active),category=globalThis.selectedExplorationCategory?.()||'explore',locked=special||category!=='explore',lockNote=special?'目前在'+(party.questChallenge?'任務':'BOSS')+'關卡，依關卡規則生成敵人':'BOSS／任務關卡依關卡規則生成敵人';
   const r=C.thresholds(),control=`<details class="seconds-recovery-settings" open><summary>遭遇前恢復</summary><div><label>隊伍最低 HP <input aria-label="下一場最低 HP" type="number" min="0" max="100" step="1" value="${Math.round(r.minimumHpRatio*100)}" onchange="setRecoveryThresholds(Number(this.value)/100,EmberwildSecondsCombat.thresholds().minimumMpRatio)">%</label><label>隊伍最低 MP <input aria-label="下一場最低 MP" type="number" min="0" max="100" step="1" value="${Math.round(r.minimumMpRatio*100)}" onchange="setRecoveryThresholds(EmberwildSecondsCombat.thresholds().minimumHpRatio,Number(this.value)/100)">%</label><small>一般探索勝利後持續恢復，全部上陣成員達到門檻再出發。冷卻與狀態持續計時；特殊關卡依入場規則。</small><button type="button" onclick="openHealingSettings()">${svg('flask-conical')} 自動藥水</button></div></details><p class="small seconds-mode-note">每場遭遇 3～5 隻敵人（3 隻最常見）· BOSS／任務關卡依關卡規則生成敵人</p>`;
   html=html.includes('<div class="exploration-categories"')?html.replace('<div class="exploration-categories"',control+'<div class="exploration-categories"'):html.replace('<div class="control-grid">','<div class="control-grid">'+control);

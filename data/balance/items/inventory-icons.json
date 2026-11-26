@@ -37,19 +37,7 @@
   },
   {
     "kind": "equipment",
-    "key": "form:0:0:2",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
     "key": "form:0:1:0",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:0:1:1",
     "iconType": "auto",
     "description": ""
   },
@@ -79,19 +67,7 @@
   },
   {
     "kind": "equipment",
-    "key": "form:1:0:2",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
     "key": "form:1:1:0",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:1:1:1",
     "iconType": "auto",
     "description": ""
   },
@@ -121,19 +97,7 @@
   },
   {
     "kind": "equipment",
-    "key": "form:2:0:2",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
     "key": "form:2:1:0",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:2:1:1",
     "iconType": "auto",
     "description": ""
   },
@@ -152,30 +116,6 @@
   {
     "kind": "equipment",
     "key": "form:3:0:0",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:3:0:1",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:3:0:2",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:3:1:0",
-    "iconType": "auto",
-    "description": ""
-  },
-  {
-    "kind": "equipment",
-    "key": "form:3:1:1",
     "iconType": "auto",
     "description": ""
   },

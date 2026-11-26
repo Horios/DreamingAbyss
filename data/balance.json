@@ -221,10 +221,9 @@
     },
     "affixPoolRule": "詞條品質仍由 qualityChance 決定；決定品質後，只會從對應裝備種類＋詞條稀有度的 poolBySlotRank 抽取。每個池的 chance 合計必須固定為 100%；舊版 weight 會在匯入時按比例轉換為 chance。",
     "equipmentIdentity": {
-      "naming": "一般裝備名稱 = 前綴 + 後綴 + 基底；前綴或後綴可為空；BOSS 裝備只使用 BOSS 專屬名稱。",
-      "stats": "一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算；前後綴不提供 raw ATK/HP/DEF。",
-      "affixChance": "prefixes / suffixes 的 chanceByTier[0..9] 分別代表 T1～T10 的實際百分比機率（0~100）；同一 T 級與部位合計不足 100% 時，剩餘機率為無該類詞綴。舊版 weight 只作匯入相容。",
-      "boss": "BOSS 專屬裝備沒有前後綴與隨機洗鍊詞條；bossAffixes 每筆固定 3 條效果。",
+      "naming": "一般裝備名稱 = 基底名稱；BOSS 裝備只使用 BOSS 專屬名稱。v0.215 起沒有前綴／後綴。",
+      "stats": "一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算。",
+      "boss": "BOSS 專屬裝備沒有隨機洗鍊詞條；bossAffixes 每筆固定 3 條效果。",
       "effects": [
         "basicElement",
         "basicAttackSpeedStack",
@@ -278,9 +277,6 @@
     "items 中 type=healPotion 為治療藥水；healAmount 使用固定 HP，shopAvailable / requiredVip 控制商店資格，cooldown 使用回合。治療藥水沒有手動使用按鈕，只會依角色自動喝藥設定觸發。",
     "輔助 DEBUFF 新機制：followup=受擊時以施放者攻擊力%造成可設定屬性的追打，會套用防禦、屬性克制與目標減傷；dotAttack=目標行動前受到施放者攻擊力%的固定傷害；dotMaxHp=目標行動前受到自身最大生命%的固定傷害；damageAmp=受到攻擊時該次傷害增加%。",
     "dotAttack / dotMaxHp 為直接固定傷害，不受防禦、抗性、增傷、減傷、暴擊、屬性克制影響。followup 為獨立追打，會使用角色暴率／暴傷並疊加輔助技能自身 baseCritRate / baseCritDamage / defensePenetration / defenseIgnore；防禦順序為破甲→防禦無視→固定防穿，且不再次套用 damageAmp / vulnerable。",
-    "equipmentPowerSystem schemaVersion=4：prefixes / suffixes 各一條效果；chanceByTier[0..9] 分別控制 T1～T10 實際百分比機率，舊版 weight 會自動轉入有效 T 級。",
-    "同一 T 級與部位的前綴／後綴機率池各自以 100% 為上限；不足 100% 的剩餘機率會生成無前綴／無後綴裝備。",
-    "一般裝備 raw ATK/HP/DEF 不受前後綴影響；由 equipmentForms 基底、T 階級與既有強化計算。",
     "傷害公式：先套防禦降低，再套百分比防禦無視，最後扣固定防禦穿透；係數位於 balanceSettings.combat.damageFormula。",
     "技能可設定 baseCritRate / baseCritDamage / defensePenetration / defenseIgnore；角色本身的暴擊與裝備效果仍會疊加。",
     "商店道具 statEffects 可在效果持續期間提供主屬性與衍生副屬性。",
@@ -295,7 +291,7 @@
     "狀態 uses > 0 時代表可觸發次數；stackable 控制同一狀態能否在同一目標並存。damageSpread 於單體傷害技能成功施放時觸發並消耗 1 次。",
     "statusTarget=rankedAllies/rankedEnemies 時，以 statusTargetStat 排序；statusTargetOrder 可選 highest/lowest；statusTargetIncludeSelf 控制我方排序是否包含施術者。",
     "starterPacks 只在建立第一名初始職業時發放；後續招募角色不會取得此禮包。",
-    "starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects、prefixId、suffixId 與兩條固定 affixes。",
+    "starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects 與兩條固定 affixes（v0.215 起沒有前綴／後綴，舊文件的 prefixId、suffixId 會被忽略）。",
     "新手裝備不可在遊戲內強化、洗鍊或重鑄 T 階；growth 只允許依角色等級增加固定屬性。",
     "textStyles 以 id 定義顯示樣式；equipmentForms / equipmentPowerSystem.bossAffixes / items 的 textStyleId 選擇套用。省略或空字串時使用原有外觀，既有存檔不會儲存樣式副本。",
     "companions 每位角色使用單一 name 與獨立技能池；core/support 為夥伴專屬技能，達到需求精通後自動學會；active/proc 依順序配置，可個別啟用或禁用並保存。passives 引用該夥伴的 passiveDefinitions，達到 requiredLevel 且啟用後常駐生效、不占技能槽。",
@@ -308,10 +304,7 @@
     "supportSkills[].duration 單位為戰鬥回合；其數值原本實際就是依 partyClock 回合推進，因此舊數值直接保留。",
     "附魔 items[].duration 為角色出戰回合；ward / elementTonic 使用 durationMinutes（現實分鐘）與 effectPercent（百分比），duration=0。舊版依 1× 每回合最短時間遷移一次。",
     "dotAttack / dotMaxHp 為直接固定傷害，不受防禦、抗性、增傷、減傷、暴擊、屬性克制影響。followup 為獨立追打，會受到防禦、屬性克制與目標減傷影響，但不暴擊，也不再次套用 damageAmp / vulnerable。",
-    "equipmentPowerSystem schemaVersion=4：prefixes / suffixes 各固定一條效果；chanceByTier[0..9] 分別代表 T1～T10 的實際百分比機率；舊版 weight 會自動轉入有效 T 級。",
-    "同一 T 級與部位的前綴／後綴機率池各自以 100% 為上限；不足 100% 的剩餘機率代表無前綴／無後綴。",
-    "一般裝備 raw ATK/HP/DEF 由 equipmentForms 基底與 T 階級決定；前後綴不提供 raw 基礎數值。",
-    "BOSS 專屬裝備沒有前後綴與隨機洗鍊詞條；bossAffixes 三條可使用前綴／後綴／基底效果及 bossDamagePct。",
+    "BOSS 專屬裝備沒有隨機洗鍊詞條；bossAffixes 三條可使用基底效果及 bossDamagePct。",
     "randomOffers.entries：selection=weighted 使用抽選權重；selection=extra 使用每批出現率，重鑄石也由此控制。",
     "商品 type=item 的 key 引用 items[].id；unitPrice=null 沿用道具基本單價。名稱、說明留空時沿用道具資料。",
     "mastery / requiredMastery / requiredMasteryLevel / weaponTypes 為技能培養、學習與武器條件；requiredMasteryLevel 限制為 0～100。",
@@ -8680,54 +8673,32 @@
       [
         {
           "id": "job0-slot0-form0",
-          "name": "闊刃劍",
+          "name": "長劍",
           "wearableJobs": [
             0
           ],
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 5
-            },
-            {
-              "key": "critDamage",
-              "value": 10
-            }
-          ],
-          "weaponType": "sword"
-        },
-        {
-          "id": "job0-slot0-form1",
-          "name": "穿甲槍",
-          "wearableJobs": [
-            0
-          ],
-          "fixedEffects": [
-            {
-              "key": "gearAtkPct",
-              "value": -5
-            },
-            {
-              "key": "pierce",
-              "value": 12
+              "key": "flatAttack",
+              "value": 0
             }
           ],
           "weaponType": "sword"
         },
         {
           "id": "job0-slot0-form2",
-          "name": "汲血斧",
+          "name": "巨斧",
           "wearableJobs": [
             0
           ],
           "fixedEffects": [
             {
               "key": "gearAtkPct",
-              "value": 8
+              "value": 10
             },
             {
-              "key": "lifesteal",
-              "value": 3
+              "key": "attackSpeedPct",
+              "value": -10
             }
           ],
           "weaponType": "axe"
@@ -8736,45 +8707,14 @@
       [
         {
           "id": "job0-slot1-form0",
-          "name": "重型板甲",
+          "name": "鐵甲",
           "wearableJobs": [
-            0,
-            1,
-            2,
-            3
+            0
           ],
           "fixedEffects": [
             {
-              "key": "gearHpPct",
-              "value": 15
-            },
-            {
-              "key": "gearDefPct",
-              "value": 25
-            }
-          ]
-        },
-        {
-          "id": "job0-slot1-form1",
-          "name": "決鬥鎧",
-          "wearableJobs": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "gearHpPct",
-              "value": -10
-            },
-            {
-              "key": "gearDefPct",
-              "value": -10
-            },
-            {
-              "key": "evasion",
-              "value": 6
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -8782,33 +8722,33 @@
       [
         {
           "id": "job0-slot2-form0",
-          "name": "征戰旗",
+          "name": "皮盾",
           "wearableJobs": [
             0
           ],
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 20
+              "key": "flatAttack",
+              "value": 0
             }
-          ]
+          ],
+          "baseStat": "defense"
         }
       ],
       [
         {
           "id": "job0-slot3-form0",
-          "name": "守誓印",
+          "name": "木腕甲",
           "wearableJobs": [
-            0
+            0,
+            1,
+            2,
+            3
           ],
           "fixedEffects": [
             {
-              "key": "attackPct",
-              "value": 2
-            },
-            {
-              "key": "gearHpPct",
-              "value": 30
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -8818,33 +8758,11 @@
       [
         {
           "id": "job1-slot0-form0",
-          "name": "炎晶杖",
+          "name": "木杖",
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 15
-            },
-            {
-              "key": "basicElement",
-              "value": "fire"
-            }
-          ],
-          "wearableJobs": [
-            1
-          ],
-          "weaponType": "staff"
-        },
-        {
-          "id": "job1-slot0-form1",
-          "name": "霜紋杖",
-          "fixedEffects": [
-            {
-              "key": "attackPct",
-              "value": 3
-            },
-            {
-              "key": "basicElement",
-              "value": "ice"
+              "key": "skillDamagePct",
+              "value": 5
             }
           ],
           "wearableJobs": [
@@ -8854,19 +8772,11 @@
         },
         {
           "id": "job1-slot0-form2",
-          "name": "疾風法器",
+          "name": "水晶球",
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": -5
-            },
-            {
-              "key": "attackPct",
-              "value": 2
-            },
-            {
-              "key": "basicElement",
-              "value": "wind"
+              "key": "cooldownPct",
+              "value": 5
             }
           ],
           "wearableJobs": [
@@ -8878,37 +8788,15 @@
       [
         {
           "id": "job1-slot1-form0",
-          "name": "秘法袍",
+          "name": "布袍",
           "wearableJobs": [
-            0,
             1,
-            2,
             3
           ],
           "fixedEffects": [
             {
-              "key": "attackPct",
-              "value": 4
-            }
-          ]
-        },
-        {
-          "id": "job1-slot1-form1",
-          "name": "月影袍",
-          "wearableJobs": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "gearHpPct",
-              "value": -10
-            },
-            {
-              "key": "evasion",
-              "value": 6
+              "key": "gearDefPct",
+              "value": -20
             }
           ]
         }
@@ -8916,18 +8804,14 @@
       [
         {
           "id": "job1-slot2-form0",
-          "name": "元素魔典",
+          "name": "法書",
           "wearableJobs": [
             1
           ],
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 15
-            },
-            {
-              "key": "elementBonus",
-              "value": 8
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -8935,18 +8819,17 @@
       [
         {
           "id": "job1-slot3-form0",
-          "name": "回響符環",
+          "name": "硬木符印",
           "wearableJobs": [
-            1
+            0,
+            1,
+            2,
+            3
           ],
           "fixedEffects": [
             {
-              "key": "attackPct",
-              "value": 2
-            },
-            {
-              "key": "gearHpPct",
-              "value": 10
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -8956,97 +8839,48 @@
       [
         {
           "id": "job2-slot0-form0",
-          "name": "狙擊長弓",
+          "name": "長弓",
           "wearableJobs": [
             2
           ],
           "fixedEffects": [
             {
               "key": "gearAtkPct",
-              "value": 15
+              "value": 10
             },
             {
-              "key": "critDamage",
-              "value": 12
+              "key": "attackSpeedPct",
+              "value": -10
             }
           ],
           "weaponType": "bow"
         },
         {
           "id": "job2-slot0-form1",
-          "name": "穿雲弩",
+          "name": "手弩",
           "wearableJobs": [
             2
           ],
           "fixedEffects": [
             {
-              "key": "pierce",
-              "value": 12
+              "key": "attackSpeedPct",
+              "value": 10
             }
           ],
           "weaponType": "crossbow"
-        },
-        {
-          "id": "job2-slot0-form2",
-          "name": "風羽短弓",
-          "fixedEffects": [
-            {
-              "key": "gearAtkPct",
-              "value": -5
-            },
-            {
-              "key": "evasion",
-              "value": 4
-            },
-            {
-              "key": "basicElement",
-              "value": "wind"
-            }
-          ],
-          "wearableJobs": [
-            2
-          ],
-          "weaponType": "bow"
         }
       ],
       [
         {
           "id": "job2-slot1-form0",
-          "name": "獵手皮甲",
+          "name": "皮衣",
           "wearableJobs": [
-            0,
-            1,
-            2,
-            3
+            2
           ],
           "fixedEffects": [
             {
               "key": "gearDefPct",
-              "value": 10
-            }
-          ]
-        },
-        {
-          "id": "job2-slot1-form1",
-          "name": "輕羽衣",
-          "wearableJobs": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "gearHpPct",
               "value": -10
-            },
-            {
-              "key": "gearDefPct",
-              "value": -10
-            },
-            {
-              "key": "evasion",
-              "value": 8
             }
           ]
         }
@@ -9054,14 +8888,14 @@
       [
         {
           "id": "job2-slot2-form0",
-          "name": "破甲箭袋",
+          "name": "皮箭袋",
           "wearableJobs": [
             2
           ],
           "fixedEffects": [
             {
-              "key": "pierce",
-              "value": 8
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -9069,18 +8903,17 @@
       [
         {
           "id": "job2-slot3-form0",
-          "name": "鷹眼指環",
+          "name": "木戒指",
           "wearableJobs": [
-            2
+            0,
+            1,
+            2,
+            3
           ],
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 10
-            },
-            {
-              "key": "critDamage",
-              "value": 15
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -9090,108 +8923,31 @@
       [
         {
           "id": "job3-slot0-form0",
-          "name": "晨光權杖",
+          "name": "權杖",
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 10
-            },
-            {
-              "key": "basicElement",
-              "value": "light"
-            }
-          ],
-          "wearableJobs": [
-            3
-          ],
-          "weaponType": "holyStaff"
-        },
-        {
-          "id": "job3-slot0-form1",
-          "name": "淨化槌",
-          "wearableJobs": [
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "pierce",
-              "value": 10
-            }
-          ],
-          "weaponType": "holyStaff"
-        },
-        {
-          "id": "job3-slot0-form2",
-          "name": "祈禱法杖",
-          "wearableJobs": [
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "attackPct",
+              "key": "defensePct",
               "value": 5
-            },
-            {
-              "key": "gearAtkPct",
-              "value": -5
             }
+          ],
+          "wearableJobs": [
+            3
           ],
           "weaponType": "holyStaff"
         }
       ],
-      [
-        {
-          "id": "job3-slot1-form0",
-          "name": "祝禱聖衣",
-          "wearableJobs": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "attackPct",
-              "value": 3
-            },
-            {
-              "key": "gearHpPct",
-              "value": 15
-            }
-          ]
-        },
-        {
-          "id": "job3-slot1-form1",
-          "name": "守護祭袍",
-          "wearableJobs": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "fixedEffects": [
-            {
-              "key": "gearDefPct",
-              "value": 20
-            }
-          ]
-        }
-      ],
+      [],
       [
         {
           "id": "job3-slot2-form0",
-          "name": "聖光徽記",
+          "name": "聖徽",
           "wearableJobs": [
             3
           ],
           "fixedEffects": [
             {
-              "key": "gearAtkPct",
-              "value": 10
-            },
-            {
-              "key": "elementBonus",
-              "value": 8
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -9199,18 +8955,17 @@
       [
         {
           "id": "job3-slot3-form0",
-          "name": "生命念珠",
+          "name": "手鍊",
           "wearableJobs": [
+            0,
+            1,
+            2,
             3
           ],
           "fixedEffects": [
             {
-              "key": "attackPct",
-              "value": 2
-            },
-            {
-              "key": "gearHpPct",
-              "value": 25
+              "key": "flatAttack",
+              "value": 0
             }
           ]
         }
@@ -17578,11 +17333,38 @@
           "maxAttacksPerSecond": 1.5,
           "minimumBonusPct": -90
         },
-        "groupWeights": [
-          6,
-          3,
-          1
-        ],
+        "encounterByTeamSize": {
+          "1": [
+            {
+              "count": 1,
+              "weight": 100
+            }
+          ],
+          "2": [
+            {
+              "count": 2,
+              "weight": 90
+            },
+            {
+              "count": 3,
+              "weight": 10
+            }
+          ],
+          "3": [
+            {
+              "count": 3,
+              "weight": 50
+            },
+            {
+              "count": 4,
+              "weight": 30
+            },
+            {
+              "count": 5,
+              "weight": 20
+            }
+          ]
+        },
         "migration": {
           "version": 1,
           "source": "actor-turns",
@@ -22558,9 +22340,9 @@
             "boss"
           ],
           "chanceByDifficulty": [
-            0.06,
-            0.1,
-            0.15
+            0.02,
+            0.0333333,
+            0.05
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22602,9 +22384,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.0004,
-            0.0004,
-            0.0004
+            0.0002,
+            0.0002,
+            0.0002
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22706,9 +22488,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.008,
-            0.008,
-            0.008
+            0.004,
+            0.004,
+            0.004
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22956,9 +22738,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.0004,
-            0.0005,
-            0.0006
+            0.000133333,
+            0.000166667,
+            0.0002
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22976,9 +22758,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.0012,
-            0.0015,
-            0.0018
+            0.0004,
+            0.0005,
+            0.0006
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -22996,9 +22778,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.0004,
-            0.0005,
-            0.0006
+            0.000133333,
+            0.000166667,
+            0.0002
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23016,9 +22798,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.0012,
-            0.0015,
-            0.0018
+            0.0004,
+            0.0005,
+            0.0006
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23036,9 +22818,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.0004,
-            0.0005,
-            0.0006
+            0.000133333,
+            0.000166667,
+            0.0002
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23056,9 +22838,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.0012,
-            0.0015,
-            0.0018
+            0.0004,
+            0.0005,
+            0.0006
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23076,9 +22858,9 @@
             "boss"
           ],
           "chanceByDifficulty": [
-            0.05,
-            0.08,
-            0.12
+            0.0166667,
+            0.0266667,
+            0.04
           ],
           "quantityMin": 1,
           "quantityMax": 1,
@@ -23098,16 +22880,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map0_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -23128,16 +22910,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map0_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -23158,16 +22940,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map0_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
@@ -23188,16 +22970,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map0_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
@@ -23218,16 +23000,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map0_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -23248,16 +23030,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map0_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -23279,9 +23061,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map0_boss"
@@ -23309,16 +23091,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map1_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             },
             {
@@ -23339,16 +23121,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map1_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             },
             {
@@ -23369,16 +23151,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map1_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -23399,16 +23181,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map1_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -23429,20 +23211,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map1_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -23459,20 +23241,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map1_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -23490,16 +23272,16 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map1_boss"
           ],
           "pool": [
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             },
             {
@@ -23520,16 +23302,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map2_mob0"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
@@ -23550,16 +23332,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map2_mob0"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
@@ -23580,16 +23362,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map2_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
@@ -23610,16 +23392,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map2_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
@@ -23640,9 +23422,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map2_mob2"
@@ -23653,7 +23435,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -23670,9 +23452,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map2_mob2"
@@ -23683,7 +23465,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -23701,9 +23483,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map2_boss"
@@ -23714,7 +23496,7 @@
               "weight": 1
             },
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             }
           ]
@@ -23731,9 +23513,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map3_mob0"
@@ -23761,9 +23543,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map3_mob0"
@@ -23791,16 +23573,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map3_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
@@ -23821,16 +23603,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map3_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
@@ -23851,9 +23633,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map3_mob2"
@@ -23864,7 +23646,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -23881,9 +23663,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map3_mob2"
@@ -23894,7 +23676,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -23912,16 +23694,16 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map3_boss"
           ],
           "pool": [
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
@@ -23942,9 +23724,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map4_mob0"
@@ -23972,9 +23754,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map4_mob0"
@@ -24002,20 +23784,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map4_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -24032,20 +23814,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map4_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -24062,16 +23844,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map4_mob2"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -24092,16 +23874,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map4_mob2"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -24123,9 +23905,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map4_boss"
@@ -24153,9 +23935,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map5_mob0"
@@ -24183,9 +23965,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map5_mob0"
@@ -24213,9 +23995,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map5_mob1"
@@ -24226,7 +24008,7 @@
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -24243,9 +24025,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map5_mob1"
@@ -24256,7 +24038,7 @@
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -24273,16 +24055,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map5_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -24303,16 +24085,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map5_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -24334,16 +24116,16 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map5_boss"
           ],
           "pool": [
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             },
             {
@@ -24365,9 +24147,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map6_boss"
@@ -24378,7 +24160,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             }
           ]
@@ -24395,16 +24177,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map7_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -24425,16 +24207,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map7_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -24455,16 +24237,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map7_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
@@ -24485,16 +24267,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map7_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
@@ -24515,16 +24297,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map7_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -24545,16 +24327,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map7_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -24576,9 +24358,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map7_boss"
@@ -24606,16 +24388,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map8_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             },
             {
@@ -24636,16 +24418,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map8_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             },
             {
@@ -24666,16 +24448,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map8_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -24696,16 +24478,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map8_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -24726,20 +24508,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map8_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -24756,20 +24538,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map8_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -24787,16 +24569,16 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map8_boss"
           ],
           "pool": [
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             },
             {
@@ -24817,16 +24599,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map9_mob0"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
@@ -24847,16 +24629,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map9_mob0"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
@@ -24877,16 +24659,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map9_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
@@ -24907,16 +24689,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map9_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
@@ -24937,9 +24719,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map9_mob2"
@@ -24950,7 +24732,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -24967,9 +24749,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map9_mob2"
@@ -24980,7 +24762,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -24998,9 +24780,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map9_boss"
@@ -25011,7 +24793,7 @@
               "weight": 1
             },
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             }
           ]
@@ -25028,9 +24810,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map10_mob0"
@@ -25058,9 +24840,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map10_mob0"
@@ -25088,16 +24870,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map10_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
@@ -25118,16 +24900,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map10_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
@@ -25148,9 +24930,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map10_mob2"
@@ -25161,7 +24943,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -25178,9 +24960,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map10_mob2"
@@ -25191,7 +24973,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -25209,16 +24991,16 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map10_boss"
           ],
           "pool": [
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
@@ -25239,9 +25021,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map11_mob0"
@@ -25269,9 +25051,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map11_mob0"
@@ -25299,20 +25081,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map11_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -25329,20 +25111,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map11_mob1"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -25359,16 +25141,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map11_mob2"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -25389,16 +25171,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map11_mob2"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -25420,9 +25202,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map11_boss"
@@ -25450,9 +25232,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map12_mob0"
@@ -25480,9 +25262,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map12_mob0"
@@ -25510,9 +25292,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map12_mob1"
@@ -25523,7 +25305,7 @@
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -25540,9 +25322,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map12_mob1"
@@ -25553,7 +25335,7 @@
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -25570,16 +25352,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map12_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -25600,16 +25382,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map12_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -25631,16 +25413,16 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map12_boss"
           ],
           "pool": [
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             },
             {
@@ -25661,9 +25443,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map13_mob0"
@@ -25691,9 +25473,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map13_mob0"
@@ -25721,9 +25503,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map13_mob1"
@@ -25751,9 +25533,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map13_mob1"
@@ -25781,20 +25563,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map13_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -25811,20 +25593,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map13_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -25841,9 +25623,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map13_mob3"
@@ -25871,9 +25653,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map13_mob3"
@@ -25902,9 +25684,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map13_boss"
@@ -25932,20 +25714,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map14_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -25962,20 +25744,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map14_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -25992,20 +25774,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map14_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -26022,20 +25804,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map14_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -26052,20 +25834,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map14_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -26082,20 +25864,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map14_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -26112,20 +25894,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map14_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             }
           ]
@@ -26142,20 +25924,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map14_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             }
           ]
@@ -26173,9 +25955,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map14_boss"
@@ -26203,20 +25985,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map15_mob0"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -26233,20 +26015,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map15_mob0"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -26263,20 +26045,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map15_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             }
           ]
@@ -26293,20 +26075,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map15_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             }
           ]
@@ -26323,9 +26105,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map15_mob2"
@@ -26353,9 +26135,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map15_mob2"
@@ -26383,9 +26165,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map15_mob3"
@@ -26413,9 +26195,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map15_mob3"
@@ -26444,9 +26226,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map15_boss"
@@ -26474,9 +26256,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map16_mob0"
@@ -26504,9 +26286,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map16_mob0"
@@ -26534,16 +26316,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map16_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -26564,16 +26346,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map16_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -26594,9 +26376,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map16_mob2"
@@ -26624,9 +26406,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map16_mob2"
@@ -26654,9 +26436,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map16_mob3"
@@ -26667,7 +26449,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             }
           ]
@@ -26684,9 +26466,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map16_mob3"
@@ -26697,7 +26479,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             }
           ]
@@ -26715,20 +26497,20 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map16_boss"
           ],
           "pool": [
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -26745,16 +26527,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map17_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -26775,16 +26557,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map17_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -26805,9 +26587,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map17_mob1"
@@ -26835,9 +26617,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map17_mob1"
@@ -26865,20 +26647,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map17_mob2"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -26895,20 +26677,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map17_mob2"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -26925,16 +26707,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map17_mob3"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -26955,16 +26737,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map17_mob3"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -26986,9 +26768,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map17_boss"
@@ -26999,7 +26781,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -27016,9 +26798,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map18_mob0"
@@ -27046,9 +26828,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map18_mob0"
@@ -27076,20 +26858,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map18_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             }
           ]
@@ -27106,20 +26888,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map18_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             }
           ]
@@ -27136,9 +26918,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map18_mob2"
@@ -27149,7 +26931,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -27166,9 +26948,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map18_mob2"
@@ -27179,7 +26961,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -27196,16 +26978,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map18_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -27226,16 +27008,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map18_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -27257,9 +27039,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map18_boss"
@@ -27287,9 +27069,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map19_mob0"
@@ -27317,9 +27099,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map19_mob0"
@@ -27347,9 +27129,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map19_mob1"
@@ -27377,9 +27159,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map19_mob1"
@@ -27407,20 +27189,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map19_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -27437,20 +27219,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map19_mob2"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -27467,9 +27249,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map19_mob3"
@@ -27497,9 +27279,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map19_mob3"
@@ -27528,9 +27310,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map19_boss"
@@ -27558,20 +27340,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map20_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -27588,20 +27370,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map20_mob0"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -27618,20 +27400,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map20_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -27648,20 +27430,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map20_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -27678,20 +27460,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map20_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -27708,20 +27490,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map20_mob2"
           ],
           "pool": [
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             },
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -27738,20 +27520,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map20_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             }
           ]
@@ -27768,20 +27550,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map20_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             }
           ]
@@ -27799,9 +27581,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map20_boss"
@@ -27829,20 +27611,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map21_mob0"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -27859,20 +27641,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map21_mob0"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             }
           ]
@@ -27889,20 +27671,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map21_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             }
           ]
@@ -27919,20 +27701,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map21_mob1"
           ],
           "pool": [
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             },
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             }
           ]
@@ -27949,9 +27731,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map21_mob2"
@@ -27979,9 +27761,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map21_mob2"
@@ -28009,9 +27791,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map21_mob3"
@@ -28039,9 +27821,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map21_mob3"
@@ -28070,9 +27852,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map21_boss"
@@ -28100,9 +27882,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map22_mob0"
@@ -28130,9 +27912,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map22_mob0"
@@ -28160,16 +27942,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map22_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -28190,16 +27972,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map22_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:0:2",
+              "key": "form:1:0:1",
               "weight": 1
             },
             {
@@ -28220,9 +28002,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map22_mob2"
@@ -28250,9 +28032,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map22_mob2"
@@ -28280,9 +28062,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map22_mob3"
@@ -28293,7 +28075,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             }
           ]
@@ -28310,9 +28092,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map22_mob3"
@@ -28323,7 +28105,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             }
           ]
@@ -28341,20 +28123,20 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map22_boss"
           ],
           "pool": [
             {
-              "key": "form:0:0:1",
+              "key": "form:0:0:0",
               "weight": 1
             },
             {
-              "key": "form:3:1:0",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -28371,16 +28153,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map23_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -28401,16 +28183,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map23_mob0"
           ],
           "pool": [
             {
-              "key": "form:3:0:2",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -28431,9 +28213,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map23_mob1"
@@ -28461,9 +28243,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map23_mob1"
@@ -28491,20 +28273,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map23_mob2"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -28521,20 +28303,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map23_mob2"
           ],
           "pool": [
             {
-              "key": "form:2:0:2",
+              "key": "form:2:0:0",
               "weight": 1
             },
             {
-              "key": "form:2:1:1",
+              "key": "form:2:1:0",
               "weight": 1
             }
           ]
@@ -28551,16 +28333,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map23_mob3"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -28581,16 +28363,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map23_mob3"
           ],
           "pool": [
             {
-              "key": "form:0:1:1",
+              "key": "form:0:1:0",
               "weight": 1
             },
             {
@@ -28612,9 +28394,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map23_boss"
@@ -28625,7 +28407,7 @@
               "weight": 1
             },
             {
-              "key": "form:3:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             }
           ]
@@ -28642,9 +28424,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map24_mob0"
@@ -28672,9 +28454,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map24_mob0"
@@ -28702,20 +28484,20 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map24_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             }
           ]
@@ -28732,20 +28514,20 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map24_mob1"
           ],
           "pool": [
             {
-              "key": "form:1:1:1",
+              "key": "form:1:1:0",
               "weight": 1
             },
             {
-              "key": "form:1:0:1",
+              "key": "form:1:0:0",
               "weight": 1
             }
           ]
@@ -28762,9 +28544,9 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map24_mob2"
@@ -28775,7 +28557,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -28792,9 +28574,9 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map24_mob2"
@@ -28805,7 +28587,7 @@
               "weight": 1
             },
             {
-              "key": "form:0:0:2",
+              "key": "form:0:0:1",
               "weight": 1
             }
           ]
@@ -28822,16 +28604,16 @@
             "normal"
           ],
           "chanceByDifficulty": [
-            0.002,
-            0.0027,
-            0.0034
+            0.000666667,
+            0.0009,
+            0.00113333
           ],
           "sources": [
             "map24_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -28852,16 +28634,16 @@
             "elite"
           ],
           "chanceByDifficulty": [
-            0.006,
-            0.008,
-            0.01
+            0.002,
+            0.00266667,
+            0.00333333
           ],
           "sources": [
             "map24_mob3"
           ],
           "pool": [
             {
-              "key": "form:3:0:1",
+              "key": "form:3:0:0",
               "weight": 1
             },
             {
@@ -28883,9 +28665,9 @@
             "final"
           ],
           "chanceByDifficulty": [
-            0.2,
-            0.25,
-            0.3
+            0.0666667,
+            0.0833333,
+            0.1
           ],
           "sources": [
             "map24_boss"
@@ -31654,677 +31436,6 @@
   },
   "equipmentPowerSystem": {
     "schemaVersion": 4,
-    "prefixes": [
-      {
-        "id": "redmaple",
-        "name": "赤楓",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "basicElement",
-          "value": "fire"
-        }
-      },
-      {
-        "id": "frostcarved",
-        "name": "霜刻",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "basicElement",
-          "value": "ice"
-        }
-      },
-      {
-        "id": "verdant",
-        "name": "翠影",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "basicElement",
-          "value": "wind"
-        }
-      },
-      {
-        "id": "radiant",
-        "name": "聖輝",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "basicElement",
-          "value": "light"
-        }
-      },
-      {
-        "id": "nether",
-        "name": "幽冥",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "basicElement",
-          "value": "shadow"
-        }
-      },
-      {
-        "id": "piercing",
-        "name": "穿甲",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "pierce",
-          "value": 3.6
-        }
-      },
-      {
-        "id": "bloodbound",
-        "name": "血契",
-        "tierMin": 3,
-        "tierMax": 10,
-        "weight": 0.8,
-        "chanceByTier": [
-          0,
-          0,
-          0.8,
-          0.8,
-          0.8,
-          0.8,
-          0.8,
-          0.8,
-          0.8,
-          0.8
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "lifesteal",
-          "value": 3
-        }
-      },
-      {
-        "id": "starfall",
-        "name": "星隕",
-        "tierMin": 3,
-        "tierMax": 10,
-        "weight": 0.9,
-        "chanceByTier": [
-          0,
-          0,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9
-        ],
-        "slots": [
-          0,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "critDamage",
-          "value": 12
-        }
-      },
-      {
-        "id": "echoing",
-        "name": "回響",
-        "tierMin": 4,
-        "tierMax": 10,
-        "weight": 0.65,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "allCooldownReduction",
-          "value": 1
-        }
-      },
-      {
-        "id": "seeker",
-        "name": "尋珍",
-        "tierMin": 4,
-        "tierMax": 10,
-        "weight": 0.7,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "dropRateBonus",
-          "value": 8
-        }
-      },
-      {
-        "id": "arcane",
-        "name": "秘能",
-        "tierMin": 5,
-        "tierMax": 10,
-        "weight": 0.7,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "elementBonus",
-          "value": 8
-        }
-      },
-      {
-        "id": "keen",
-        "name": "銳眼",
-        "tierMin": 5,
-        "tierMax": 10,
-        "weight": 0.7,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7
-        ],
-        "slots": [
-          0,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "crit",
-          "value": 5
-        }
-      }
-    ],
-    "suffixes": [
-      {
-        "id": "traveler",
-        "name": "旅人",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "basicAttackSpeedStack",
-          "value": 3
-        }
-      },
-      {
-        "id": "vanguard",
-        "name": "先鋒",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "attackPct",
-          "value": 4
-        }
-      },
-      {
-        "id": "swift",
-        "name": "迅捷",
-        "tierMin": 1,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "evasion",
-          "value": 5
-        }
-      },
-      {
-        "id": "eagleeye",
-        "name": "鷹眼",
-        "tierMin": 2,
-        "tierMax": 10,
-        "weight": 1,
-        "chanceByTier": [
-          0,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
-        ],
-        "slots": [
-          0,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "crit",
-          "value": 4
-        }
-      },
-      {
-        "id": "breaker",
-        "name": "破城",
-        "tierMin": 2,
-        "tierMax": 10,
-        "weight": 0.9,
-        "chanceByTier": [
-          0,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9,
-          0.9
-        ],
-        "slots": [
-          0,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "pierce",
-          "value": 3.6
-        }
-      },
-      {
-        "id": "leeching",
-        "name": "汲血",
-        "tierMin": 3,
-        "tierMax": 10,
-        "weight": 0.75,
-        "chanceByTier": [
-          0,
-          0,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75
-        ],
-        "slots": [
-          0
-        ],
-        "effect": {
-          "key": "lifesteal",
-          "value": 3
-        }
-      },
-      {
-        "id": "resonant",
-        "name": "共鳴",
-        "tierMin": 3,
-        "tierMax": 10,
-        "weight": 0.75,
-        "chanceByTier": [
-          0,
-          0,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75,
-          0.75
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "elementBonus",
-          "value": 7
-        }
-      },
-      {
-        "id": "quickcast",
-        "name": "疾詠",
-        "tierMin": 4,
-        "tierMax": 10,
-        "weight": 0.6,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0.6,
-          0.6,
-          0.6,
-          0.6,
-          0.6,
-          0.6,
-          0.6
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "allCooldownReduction",
-          "value": 1
-        }
-      },
-      {
-        "id": "hunter",
-        "name": "獵手",
-        "tierMin": 4,
-        "tierMax": 10,
-        "weight": 0.7,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "dropRateBonus",
-          "value": 7
-        }
-      },
-      {
-        "id": "fury",
-        "name": "狂擊",
-        "tierMin": 5,
-        "tierMax": 10,
-        "weight": 0.7,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7,
-          0.7
-        ],
-        "slots": [
-          0,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "critDamage",
-          "value": 12
-        }
-      },
-      {
-        "id": "assault",
-        "name": "強襲",
-        "tierMin": 5,
-        "tierMax": 10,
-        "weight": 0.65,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "attackPct",
-          "value": 5
-        }
-      },
-      {
-        "id": "phantom",
-        "name": "幻步",
-        "tierMin": 5,
-        "tierMax": 10,
-        "weight": 0.65,
-        "chanceByTier": [
-          0,
-          0,
-          0,
-          0,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65,
-          0.65
-        ],
-        "slots": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "effect": {
-          "key": "evasion",
-          "value": 6
-        }
-      }
-    ],
     "bossAffixes": [
       {
         "id": "legacy_low_0",
@@ -33111,8 +32222,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33131,8 +32240,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33151,8 +32258,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33171,8 +32276,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33191,8 +32294,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33213,8 +32314,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33233,8 +32332,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33253,8 +32350,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33273,8 +32368,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33293,8 +32386,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33315,8 +32406,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33335,8 +32424,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33355,8 +32442,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33375,8 +32460,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33395,8 +32478,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33417,8 +32498,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33431,14 +32510,12 @@
         }
       },
       {
-        "group": 3,
+        "group": 1,
         "slot": 1,
         "form": 0,
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33457,8 +32534,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33477,8 +32552,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -33497,8 +32570,6 @@
         "powerTier": 1,
         "plus": 0,
         "fixedEffects": null,
-        "prefixId": "",
-        "suffixId": "",
         "affixes": [
           null,
           null
@@ -35606,15 +34677,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 90,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -35626,15 +34688,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 80,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 80,
             "quantity": 1,
@@ -35669,15 +34722,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 90,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -35689,15 +34733,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 80,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 80,
             "quantity": 1,
@@ -35741,26 +34776,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 90,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 80,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 80,
             "quantity": 1,
@@ -35790,42 +34807,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 90,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 90,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 90,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 80,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 80,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -35873,15 +34854,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 3200,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -35893,15 +34865,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 2800,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 2800,
             "quantity": 1,
@@ -35936,15 +34899,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 3200,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -35956,15 +34910,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 2800,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 2800,
             "quantity": 1,
@@ -36008,26 +34953,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 3200,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 2800,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 2800,
             "quantity": 1,
@@ -36057,42 +34984,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 3200,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 3200,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 3200,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 2800,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 2800,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -36140,15 +35031,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 9000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -36160,15 +35042,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 8000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 8000,
             "quantity": 1,
@@ -36203,15 +35076,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 9000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -36223,15 +35087,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 8000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 8000,
             "quantity": 1,
@@ -36275,26 +35130,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 9000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 8000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 8000,
             "quantity": 1,
@@ -36324,42 +35161,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 9000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 9000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 9000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 8000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 8000,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -36407,15 +35208,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 16000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -36427,15 +35219,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 14000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 14000,
             "quantity": 1,
@@ -36470,15 +35253,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 16000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -36490,15 +35264,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 14000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 14000,
             "quantity": 1,
@@ -36542,26 +35307,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 16000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 14000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 14000,
             "quantity": 1,
@@ -36591,42 +35338,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 16000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 16000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 16000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 14000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 14000,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -36674,15 +35385,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 24000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -36694,15 +35396,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 21000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 21000,
             "quantity": 1,
@@ -36737,15 +35430,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 24000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -36757,15 +35441,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 21000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 21000,
             "quantity": 1,
@@ -36809,26 +35484,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 24000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 21000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 21000,
             "quantity": 1,
@@ -36858,42 +35515,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 24000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 24000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 24000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 21000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 21000,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -36941,15 +35562,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 34000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -36961,15 +35573,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 30000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 30000,
             "quantity": 1,
@@ -37004,15 +35607,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 34000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -37024,15 +35618,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 30000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 30000,
             "quantity": 1,
@@ -37076,26 +35661,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 34000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 30000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 30000,
             "quantity": 1,
@@ -37125,42 +35692,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 34000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 34000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 34000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 30000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 30000,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -37208,15 +35739,6 @@
             "canReroll": true
           },
           {
-            "id": "job0-slot0-form1",
-            "formId": "job0-slot0-form1",
-            "job": 0,
-            "unitPrice": 46000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job0-slot0-form2",
             "formId": "job0-slot0-form2",
             "job": 0,
@@ -37228,15 +35750,6 @@
           {
             "id": "job0-slot1-form0",
             "formId": "job0-slot1-form0",
-            "job": 0,
-            "unitPrice": 40000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job0-slot1-form1",
-            "formId": "job0-slot1-form1",
             "job": 0,
             "unitPrice": 40000,
             "quantity": 1,
@@ -37271,15 +35784,6 @@
             "canReroll": true
           },
           {
-            "id": "job1-slot0-form1",
-            "formId": "job1-slot0-form1",
-            "job": 1,
-            "unitPrice": 46000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job1-slot0-form2",
             "formId": "job1-slot0-form2",
             "job": 1,
@@ -37291,15 +35795,6 @@
           {
             "id": "job1-slot1-form0",
             "formId": "job1-slot1-form0",
-            "job": 1,
-            "unitPrice": 40000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job1-slot1-form1",
-            "formId": "job1-slot1-form1",
             "job": 1,
             "unitPrice": 40000,
             "quantity": 1,
@@ -37343,26 +35838,8 @@
             "canReroll": true
           },
           {
-            "id": "job2-slot0-form2",
-            "formId": "job2-slot0-form2",
-            "job": 2,
-            "unitPrice": 46000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
             "id": "job2-slot1-form0",
             "formId": "job2-slot1-form0",
-            "job": 2,
-            "unitPrice": 40000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job2-slot1-form1",
-            "formId": "job2-slot1-form1",
             "job": 2,
             "unitPrice": 40000,
             "quantity": 1,
@@ -37392,42 +35869,6 @@
             "formId": "job3-slot0-form0",
             "job": 3,
             "unitPrice": 46000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form1",
-            "formId": "job3-slot0-form1",
-            "job": 3,
-            "unitPrice": 46000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot0-form2",
-            "formId": "job3-slot0-form2",
-            "job": 3,
-            "unitPrice": 46000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form0",
-            "formId": "job3-slot1-form0",
-            "job": 3,
-            "unitPrice": 40000,
-            "quantity": 1,
-            "canEnhance": true,
-            "canReroll": true
-          },
-          {
-            "id": "job3-slot1-form1",
-            "formId": "job3-slot1-form1",
-            "job": 3,
-            "unitPrice": 40000,
             "quantity": 1,
             "canEnhance": true,
             "canReroll": true
@@ -38107,19 +36548,7 @@
     },
     {
       "kind": "equipment",
-      "key": "form:0:0:2",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
       "key": "form:0:1:0",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:0:1:1",
       "iconType": "auto",
       "description": ""
     },
@@ -38149,19 +36578,7 @@
     },
     {
       "kind": "equipment",
-      "key": "form:1:0:2",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
       "key": "form:1:1:0",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:1:1:1",
       "iconType": "auto",
       "description": ""
     },
@@ -38191,19 +36608,7 @@
     },
     {
       "kind": "equipment",
-      "key": "form:2:0:2",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
       "key": "form:2:1:0",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:2:1:1",
       "iconType": "auto",
       "description": ""
     },
@@ -38222,30 +36627,6 @@
     {
       "kind": "equipment",
       "key": "form:3:0:0",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:3:0:1",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:3:0:2",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:3:1:0",
-      "iconType": "auto",
-      "description": ""
-    },
-    {
-      "kind": "equipment",
-      "key": "form:3:1:1",
       "iconType": "auto",
       "description": ""
     },

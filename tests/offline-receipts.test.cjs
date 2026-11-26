@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};party.huntingMode="group";startSelectedExploration();save();`);return r;}
+function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;}
 async function settle(r,ms=0){r.advance(ms);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false);}
 function hidden(r,value){r.ctx.document.hidden=value;r.ctx.document.visibilityState=value?'hidden':'visible';r.dispatch('visibilitychange','document');}
 function rewardState(r){return json(r,'({gold:state.gold,xp:state.xp,lv:state.lv,kills:state.totalKills,bag:state.bag,materials:state.materials,at:party.offlineExploration.lastAt})');}
