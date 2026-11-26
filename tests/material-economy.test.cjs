@@ -4,6 +4,7 @@ function game(){const r=loadRuntime(root);r.ctx.doc=d;r.run('applyBalanceConfig(
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 test('every map gives recommended gear level ×20 dust per 720 defeated monsters, and map 0 gives six iron',()=>{
  for(const [i,m] of d.balanceSettings.maps.catalog.entries()){const y=M.expected(d,i);assert(Math.abs(y.dust-m.recommendedGearLevel*20)<1e-9,m.name);for(const rule of d.balanceSettings.drops.entries.filter(x=>x.id.startsWith('base_dust_map'+i+'_')))assert(rule.independent&&rule.chanceByDifficulty.every(x=>x>=0&&x<=1));}
+ const legacy={...d,lifeSkills:{obsolete:true}},Document=require('../js/balance/balance-document.js');assert(!Object.hasOwn(Document.migrate(legacy,d),'lifeSkills'));
  const y=M.expected(d,0);assert(Math.abs(y.ore-6)<1e-10);assert.equal(y.eliteShare,.06);
  const edited=structuredClone(d);edited.balanceSettings.maps.catalog[0].recommendedGearLevel=60;edited.balanceSettings.maps.catalog[0].eliteChance=.25;M.calibrateDust(edited);assert(Math.abs(M.expected(edited,0).dust-1200)<1e-8);
 });
