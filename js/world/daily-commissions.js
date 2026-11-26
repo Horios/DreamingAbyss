@@ -1,7 +1,9 @@
 /* Account quests: five immutable daily choices at Taipei midnight; four claims per day. */
 (()=>{
   const C=EmberwildCommissions,M=EmberwildQuestDesign,copy=M.copy;
-  const current=b=>b?.dailyVersion===2&&b.day>=C.day(Date.now())&&C.validBoard(b);
+  const retiredTask=q=>!q.done&&(q.objectives||[]).some(o=>REMOVED_CRAFT_MATERIALS.has(o.key));
+  const retiredBonus=q=>(q.rewards?.materials||[]).some(x=>REMOVED_CRAFT_MATERIALS.has(x.key));
+  const current=b=>b?.dailyVersion===2&&b.day>=C.day(Date.now())&&C.validBoard(b)&&!b.tasks.some(q=>retiredTask(q)||retiredBonus(q));
   const design=()=>GAMEPLAY_SETTINGS.quests.design;
   const context=()=>({map:party.map,claimed:playerHero().claimed});
   const itemName=id=>SHOP.find(i=>i.id===id)?.name||id;
@@ -51,7 +53,7 @@
   }
   ensureBoard=function(){
     if(!party||!state)return false;ensureAccountQuests();const h=playerHero();if(current(h.board))return true;
-    const old=h.board;try{h.board=generate();if(old?.dailyVersion===1&&old.day===h.board.day&&old.tasks[0]){const previous=copy(old.tasks[0]);if(previous.designVersion!==1)Object.assign(previous,legacyTask(previous),{designVersion:1,templateId:'legacy_daily',title:previous.mat+'募集',description:'更新前接取的每日委託。'});previous.started=true;h.board.tasks=[previous,...h.board.tasks.filter(q=>q.templateId!==previous.templateId)].slice(0,5);}if(save()!==true)throw Error('儲存失敗');return true;}catch(e){h.board=old;return false;}
+    const old=h.board;try{h.board=generate();if(old?.dailyVersion===2&&old.day===h.board.day&&C.validBoard(old)){const kept=old.tasks.filter(q=>!retiredTask(q)).map(q=>{const row=copy(q);row.rewards.materials=row.rewards.materials.filter(x=>!REMOVED_CRAFT_MATERIALS.has(x.key));return row;});h.board.tasks=[...kept,...h.board.tasks.filter(q=>!kept.some(x=>x.templateId===q.templateId))].slice(0,5);h.board.bonusClaimed=old.bonusClaimed;}if(old?.dailyVersion===1&&old.day===h.board.day&&old.tasks[0]){const previous=copy(old.tasks[0]);if(previous.designVersion!==1)Object.assign(previous,legacyTask(previous),{designVersion:1,templateId:'legacy_daily',title:previous.mat+'募集',description:'更新前接取的每日委託。'});previous.started=true;h.board.tasks=[previous,...h.board.tasks.filter(q=>q.templateId!==previous.templateId)].slice(0,5);}if(save()!==true)throw Error('儲存失敗');return true;}catch(e){h.board=old;return false;}
   };
   buildBoard=function(){return ensureBoard();};
   refreshBoard=confirmRefresh=function(){toast('每天五項選四項完成，台灣時間 00:00 更新');return false;};

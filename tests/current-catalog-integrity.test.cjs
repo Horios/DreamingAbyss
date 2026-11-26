@@ -7,7 +7,7 @@ test('published materials and daily tasks do not retain retired recipes or unobt
  const gathered=new Set();
  const monsterMaterials=new Set((d.balanceSettings.monsters.catalog||[]).map(x=>x.material).filter(Boolean));
  const crafted=new Set(['以太鍛鐵']);
- const builtIn=new Set(['鍛鐵','粉塵','以太鍛鐵','光輝碎塊']);
+ const builtIn=new Set(['鍛鐵','粉塵','以太鍛鐵','光輝碎塊','寶石粉塵']);
  const available=new Set([...gathered,...monsterMaterials,...crafted,...builtIn]);
  for(const r of d.balanceSettings.economy.materialPrices||[]){
   if(r.key==='升級卷軸')continue;

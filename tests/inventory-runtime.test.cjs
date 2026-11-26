@@ -70,12 +70,12 @@ test('save layout round trip keeps stack uids, splits and order; totals stay aut
  assert.deepEqual(r.errors,[]);
 });
 test('balance stack limits and per-item overrides apply to new and existing stacks without changing totals',()=>{
- const r=game();r.run('clearStackables();state.ore=1500;state.materials["紅色草"]=50;');
- r.run(`globalThis.doc=exportableBalance();doc.balanceSettings.inventory.stackLimits.enhancementMaterial=400;doc.inventoryIcons.push({id:'material:紅色草x',kind:'material',key:'紅色草x',iconType:'auto'});const row=doc.inventoryIcons.find(x=>x.kind==='material'&&x.key==='紅色草');row.maxStack=20;row.occupiesSlot=false;applyBalanceConfig(doc,{persist:false});`);
- assert.deepEqual(json(r,"sizes('material:鍛鐵')"),[400,400,400,300]);assert.equal(r.run('state.ore'),1500);assert.deepEqual(json(r,"sizes('material:紅色草')"),[20,20,10]);
- assert.equal(r.run("EmberwildItems.definition('material:紅色草').occupiesSlot"),false);assert.equal(r.run('EmberwildItems.slots().tabs.material.used'),4);audit(r);
+ const r=game();r.run('clearStackables();state.ore=1500;state.materials["光輝碎塊"]=50;');
+ r.run(`globalThis.doc=exportableBalance();doc.balanceSettings.inventory.stackLimits.enhancementMaterial=400;doc.inventoryIcons.push({id:'material:光輝碎塊x',kind:'material',key:'光輝碎塊x',iconType:'auto'});const row=doc.inventoryIcons.find(x=>x.kind==='material'&&x.key==='光輝碎塊');row.maxStack=20;row.occupiesSlot=false;applyBalanceConfig(doc,{persist:false});`);
+ assert.deepEqual(json(r,"sizes('material:鍛鐵')"),[400,400,400,300]);assert.equal(r.run('state.ore'),1500);assert.deepEqual(json(r,"sizes('material:光輝碎塊')"),[20,20,10]);
+ assert.equal(r.run("EmberwildItems.definition('material:光輝碎塊').occupiesSlot"),false);assert.equal(r.run('EmberwildItems.slots().tabs.material.used'),4);audit(r);
  r.run("doc.balanceSettings.inventory.stackLimits.equipment=2");assert.throws(()=>r.run('applyBalanceConfig(doc,{persist:false})'),/不可堆疊/);assert.equal(r.run('state.ore'),1500);
- r.run("doc.balanceSettings.inventory.stackLimits.equipment=1;doc.inventoryIcons.find(x=>x.kind==='material'&&x.key==='紅色草').maxStack=0");assert.throws(()=>r.run('applyBalanceConfig(doc,{persist:false})'),/堆疊上限/);
+ r.run("doc.balanceSettings.inventory.stackLimits.equipment=1;doc.inventoryIcons.find(x=>x.kind==='material'&&x.key==='光輝碎塊').maxStack=0");assert.throws(()=>r.run('applyBalanceConfig(doc,{persist:false})'),/堆疊上限/);
 });
 test('shop purchase and sale, material sale, failed-save rollbacks and gem sockets keep the store consistent',()=>{
  const r=game();r.run('clearStackables();state.gold=100000;state.materials["蛇鱗"]=1200;');

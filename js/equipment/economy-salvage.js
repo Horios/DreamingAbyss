@@ -9,7 +9,7 @@
     for(const d of (GAMEPLAY_SETTINGS_DEFAULTS?.drops?.entries||[]))if(d?.type==='material'&&d.key)set.add(d.key);
     return [...set];
   };
-  const defaultMaterialPrice=k=>k==='鍛鐵'?1:k==='粉塵'?2:k==='以太鍛鐵'?15:k==='光輝碎塊'?20:k==='升級卷軸'?25:1;
+  const defaultMaterialPrice=k=>k==='鍛鐵'?1:['粉塵','寶石粉塵'].includes(k)?2:k==='以太鍛鐵'?15:k==='光輝碎塊'?20:k==='升級卷軸'?25:1;
   GAMEPLAY_SETTINGS_DEFAULTS.economy ??={};
   GAMEPLAY_SETTINGS_DEFAULTS.economy.equipmentSellPriceByQuality ??=DEFAULT_GEAR_SELL.slice();
   GAMEPLAY_SETTINGS_DEFAULTS.economy.materialDefaultSellPrice ??=1;
@@ -167,7 +167,7 @@
   function sellMaterialFromControl(btn){const box=btn.closest('[data-material]'),input=box.querySelector('input');sellMaterial(box.dataset.material,input.value);}
   function sellAllMaterialFromControl(btn){const box=btn.closest('[data-material]');sellMaterial(box.dataset.material,materialCount(box.dataset.material));}
   globalThis.sellMaterial=sellMaterial;globalThis.sellMaterialFromControl=sellMaterialFromControl;globalThis.sellAllMaterialFromControl=sellAllMaterialFromControl;
-  const ENHANCE_MATERIALS=new Set(['鍛鐵','粉塵','以太鍛鐵','光輝碎塊']);
+  const ENHANCE_MATERIALS=new Set(['鍛鐵','粉塵','寶石粉塵','以太鍛鐵','光輝碎塊']);
   let commonMaterialRegion='all',commonMaterialSort='region';
   function materialRegions(){
     const out=new Map(),catalog=new Map(monsterCatalog().map(m=>[m.id,m]));

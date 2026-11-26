@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 77,
+  "dataRevision": 78,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "a3a8b3e53a3b2e3a03b0dea886b1166382bbc3f53bc21d02196e629267c73e42",
-    "bytes": 1407856
+    "sha256": "c31b8505eaa917ad67e61e40c1319ac759f3c8e0a2f982809157897e72f41b8a",
+    "bytes": 1408164
   },
   "layout": {
     "": [
@@ -521,9 +521,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 12,
-      "sha256": "a419cab970df58b1d8a7a24b757427504a2dae359cff4fbe27afad71e66decdc",
-      "bytes": 48024,
+      "version": 13,
+      "sha256": "2bf0bb38cc9d50f38320f21037452472789235235227034622335add4e033f3e",
+      "bytes": 48239,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",
@@ -572,9 +572,9 @@
       "file": "systems/economy.json",
       "source": "balanceSettings.economy",
       "present": true,
-      "version": 3,
-      "sha256": "e5ef12cd277d9f0eef9f1d990f7926603b76a2c856fe7f767c88b27aa7446586",
-      "bytes": 7580,
+      "version": 4,
+      "sha256": "b31ec5703dc47e489693c10073a8b462931499fc2e379b5fcc8e66ab0efc5cb4",
+      "bytes": 7643,
       "dependsOn": [],
       "validators": [
         "field-rules",

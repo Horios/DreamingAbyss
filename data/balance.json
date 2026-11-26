@@ -32536,6 +32536,10 @@
         {
           "key": "上古冥視之瞳",
           "sellPrice": 2
+        },
+        {
+          "key": "寶石粉塵",
+          "sellPrice": 2
         }
       ]
     }
@@ -39703,6 +39707,13 @@
       "key": "form:4:3:2",
       "iconType": "auto",
       "description": ""
+    },
+    {
+      "kind": "material",
+      "key": "寶石粉塵",
+      "iconType": "lucide:gem",
+      "description": "分解寶石取得，專供寶石升級；與裝備強化粉塵分開計算。",
+      "saleEnabled": true
     }
   ],
   "iconColorTemplates": [

@@ -36,12 +36,12 @@ test('all catalogue kinds are mailed in chunks of at most six and land in their 
  assert.equal(r.run('new Set(state.bag.map(g=>g.id)).size===state.bag.length'),true);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
 });
 test('failed saves, a full bag and stock overflow retain every attachment and roll back all inventory changes',()=>{
- const r=game(d=>{d.starterPackItems[0]=[{kind:'material',key:'紅色草',quantity:3}];d.balanceSettings.inventory.stackLimits.material=1e9;});
- r.run("EmberwildItems.add('material:紅色草',10);const split=EmberwildItems.stacks().find(s=>s.item==='material:紅色草');EmberwildItems.split(split.uid,3);");const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
+ const r=game(d=>{d.starterPackItems[0]=[{kind:'material',key:'光輝碎塊',quantity:3}];d.balanceSettings.inventory.stackLimits.material=1e9;});
+ r.run("EmberwildItems.add('material:光輝碎塊',10);const split=EmberwildItems.stacks().find(s=>s.item==='material:光輝碎塊');EmberwildItems.split(split.uid,3);");const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
  r.run('save=()=>{throw Error("disk")};');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
  r.run('save=realSave;GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
- r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=720;state.bag=state.bag.slice(0,5);state.materials["紅色草"]=1e9;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
- r.run('state.materials["紅色草"]=0;globalThis.saveCalls=0;save=(...args)=>{if(++saveCalls>1)throw Error("duplicate save");return realSave(...args);};');
+ r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=720;state.bag=state.bag.slice(0,5);state.materials["光輝碎塊"]=1e9;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
+ r.run('state.materials["光輝碎塊"]=0;globalThis.saveCalls=0;save=(...args)=>{if(++saveCalls>1)throw Error("duplicate save");return realSave(...args);};');
  assert.equal(r.run('claimMailboxAttachments(1)'),true);assert.equal(r.run('saveCalls'),1);assert.equal(r.run('claimAllMailboxAttachments()'),false);assert.equal(r.run('saveCalls'),1);
 });
 test('pending/claimed mail survives cold reload and no gifts are sent again on loading an existing save',async()=>{
@@ -50,18 +50,18 @@ test('pending/claimed mail survives cold reload and no gifts are sent again on l
 });
 test('six attachment slots use SVG; inventory keeps detail actions; references and mail stay non-modal',()=>{
  const r=game();assert.equal((r.run('mailboxView()').match(/class="item-slot /g)||[]).length,6);assert.match(r.run('mailboxView()'),/data-item-mail="1"/);
- r.run('claimMailboxAttachments(1);state.materials["紅色草"]=3;state.consumables.imbue_fire=2;state.gems[0]=1;continueFromTitle()');
+ r.run('claimMailboxAttachments(1);state.materials["光輝碎塊"]=3;state.consumables.imbue_fire=2;state.gems[0]=1;continueFromTitle()');
  for(const view of ['inventoryGearListItem(state.bag[0],true)','forgeView()','accountMaterialsView()','accountItemsView()','craftingView()','shopView()'])assert.match(r.run(view),/<svg/);
  const html=r.run('inventoryGearListItem(state.bag[0],true)');assert.match(html,/selectInventoryGear/);assert.doesNotMatch(html,/inventory-list-name|inventory-list-meta/);
- r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"紅色草",itemContext:"inventory"}})');assert.match(r.elements.get('item-detail-dialog').innerHTML,/紅色草/);assert.match(r.elements.get('item-detail-dialog').innerHTML,/sellMaterial/);
- r.run('openUtilityPanel("mailbox");globalThis.mailHTML=$("modal").innerHTML;openItemSlotDetails({dataset:{itemMail:"1",itemIndex:"0"}})');assert.equal(r.run('$("modal").innerHTML'),r.run('mailHTML'));assert.match(r.elements.get('item-detail-dialog').innerHTML,/紅色草/);assert.deepEqual(r.errors,[]);
+ r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"光輝碎塊",itemContext:"inventory"}})');assert.match(r.elements.get('item-detail-dialog').innerHTML,/光輝碎塊/);assert.match(r.elements.get('item-detail-dialog').innerHTML,/sellMaterial/);
+ r.run('openUtilityPanel("mailbox");globalThis.mailHTML=$("modal").innerHTML;openItemSlotDetails({dataset:{itemMail:"1",itemIndex:"0"}})');assert.equal(r.run('$("modal").innerHTML'),r.run('mailHTML'));assert.match(r.elements.get('item-detail-dialog').innerHTML,/光輝碎塊/);assert.deepEqual(r.errors,[]);
 });
 test('shop uses an inventory-style slot grid and item details stay scoped to their source',()=>{
- const r=game();r.run('state.materials["清水"]=3');let shop=r.run('shopView()');assert.match(shop,/class="shop-product-grid"/);assert.match(shop,/data-item-context="shop"/);assert.match(shop,/class="shop-product-stock">庫存<br><b>\d+/);assert.match(shop,/class="shop-product-label">[^<]+/);assert.doesNotMatch(shop,/class="shop-product-meta"/);
- r.run('setShopCategory("life")');shop=r.run('shopView()');assert.match(shop,/class="shop-product-stock">庫存<br><b>3<\/b>/);assert.match(shop,/class="shop-product-label">清水<\/small>/);
+ const r=game();r.run('state.materials["古木年輪"]=3');let shop=r.run('shopView()');assert.match(shop,/class="shop-product-grid"/);assert.match(shop,/data-item-context="shop"/);assert.match(shop,/class="shop-product-stock">庫存<br><b>\d+/);assert.match(shop,/class="shop-product-label">[^<]+/);assert.doesNotMatch(shop,/class="shop-product-meta"/);
+ r.run('setShopCategory("life")');shop=r.run('shopView()');assert.match(shop,/class="shop-product-stock">庫存<br><b>3<\/b>/);assert.match(shop,/class="shop-product-label">古木年輪<\/small>/);
  const slot=r.run(`itemSlotHTML('item','heal_small',{context:'shop',count:3,detailLabel:'商品數量',price:99,shopType:'fixed',shopId:'fixed-heal-small'})`);
  assert.match(slot,/商品數量 3/);assert.match(slot,/99 金幣/);assert.match(slot,/buyFixedShopOffer/);assert.doesNotMatch(slot,/openItemSlotDetails/);
- assert.equal(r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"紅色草",itemContext:"reference"}})'),false);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);assert.deepEqual(r.errors,[]);
+ assert.equal(r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"光輝碎塊",itemContext:"reference"}})'),false);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);assert.deepEqual(r.errors,[]);
 });
 test('inline shop purchase uses the original offer and updates its sold state without a detail dialog',()=>{
  const r=game();r.run('state.gold=1e6;shopView();globalThis.o=party.market.offers.find(x=>!x.sold&&!String(x.ruleId).startsWith("companion-recruit-"));globalThis.before=state.gold;buyMarketOffer(o.id)');

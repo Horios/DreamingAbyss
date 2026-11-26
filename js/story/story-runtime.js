@@ -13,6 +13,7 @@
   for(const f of [q.flags,q.unlocks])if(Object.values(f).some(v=>typeof v!=='boolean'))throw Error('任務解鎖格式無效');
   for(const k of Object.keys(freshStats()))if(p[k]===undefined)p[k]=freshStats()[k];
   for(const k of ['encounters','visits','explore','acquired'])if(!p[k]||Array.isArray(p[k])||typeof p[k]!=='object'||Object.values(p[k]).some(n=>!Number.isSafeInteger(n)||n<0))throw Error('永久統計格式無效');
+  if(p.acquired&&typeof p.acquired==='object')for(const key of REMOVED_CRAFT_MATERIALS)delete p.acquired['material:'+key];
   for(const k of ['enhance','enhanceLevel'])if(!Number.isSafeInteger(p[k])||p[k]<0)throw Error('永久統計數值無效');return {story:q,progressStats:p};
  }
  function migrateStats(account){const p=freshStats(),h=account.members?.[0];if(!h)return p;p.visits[String(account.map??0)]=1;p.enhance=(h.bag||[]).reduce((n,g)=>n+(g.plus||0),0);p.enhanceLevel=Math.max(0,...(h.bag||[]).map(g=>g.plus||0));

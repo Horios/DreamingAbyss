@@ -26,7 +26,7 @@
   function healIds(){try{return new Set((typeof healPotionItems==='function'?healPotionItems():[]).map(x=>x.id));}catch{return new Set();}}
   function itemName(p){
     if(p.kind==='gem')return GEMS?.[Number(p.key)]?.name||('寶石 '+p.key);
-    if(p.kind==='material')return p.key==='粉塵'?'寶石粉塵':p.key;
+    if(p.kind==='material')return p.key;
     const shop=(typeof SHOP!=='undefined'?SHOP:[]).find(x=>x.id===p.key);if(shop)return shop.name;
     const t=p.key.match(/^companion-ticket-(\d+)$/);return t?'夥伴招募券':p.key;
   }

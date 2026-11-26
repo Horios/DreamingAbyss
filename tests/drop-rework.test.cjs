@@ -76,10 +76,10 @@ test('BOSS gem pool picks from three gems by weight; normal/elite drops follow t
 test('gem dust upgrade: ceil(base × 1.5), one gem of the stack, all or nothing, not above tier 3; dust gem craft is gone',()=>{
  const r=game();assert.equal(r.run('typeof craftGem'),'undefined');assert.doesNotMatch(r.run('accountGemsView()'),/合成隨機寶石/);
  assert.equal(D.gemUpgradeCost({multiplier:1.5,baseDustByTargetTier:[0,10,25]},2),15);assert.equal(D.gemUpgradeCost({multiplier:1.5,baseDustByTargetTier:[0,25,50]},2),38);
- r.run('state.gems.fill(0);state.gems[2]=3;state.dust=71');
- assert.equal(r.run('gemUpgradeQuote(2).cost'),72);assert.equal(r.run('upgradeGemWithDust(2)'),false);assert.equal(r.run('state.gems[2]'),3);assert.equal(r.run('state.dust'),71);
- r.run('state.dust=72');assert.equal(r.run('upgradeGemWithDust(2)'),true);assert.deepEqual([r.run('state.gems[2]'),r.run('state.gems[7]'),r.run('state.dust')],[2,1,0]);
- r.run('state.gems[12]=1;state.dust=99999');assert.equal(r.run('upgradeGemWithDust(12)'),false);assert.equal(r.run('state.gems[12]'),1);
+ r.run('state.gems.fill(0);state.gems[2]=3;state.materials.寶石粉塵=71');
+ assert.equal(r.run('gemUpgradeQuote(2).cost'),72);assert.equal(r.run('upgradeGemWithDust(2)'),false);assert.equal(r.run('state.gems[2]'),3);assert.equal(r.run('(state.materials.寶石粉塵||0)'),71);
+ r.run('state.materials.寶石粉塵=72');assert.equal(r.run('upgradeGemWithDust(2)'),true);assert.deepEqual([r.run('state.gems[2]'),r.run('state.gems[7]'),r.run('(state.materials.寶石粉塵||0)')],[2,1,0]);
+ r.run('state.gems[12]=1;state.materials.寶石粉塵=99999');assert.equal(r.run('upgradeGemWithDust(12)'),false);assert.equal(r.run('state.gems[12]'),1);
  assert.equal(r.run('gemUpgradeQuote(7).cost'),810);assert.match(r.run('openGemUpgrade(2);$("modal").innerHTML'),/1 階 → 2 階[^]*暴擊率 \+1% → 暴擊率 \+2%/);
  assert.deepEqual(json(r,'EmberwildItems.audit()'),[]);
 });

@@ -116,11 +116,11 @@ test('returning to the title and continuing in the same page cannot open offline
 test('offline receipt shows the real names of consumed items and omits the clock warning',async()=>{
  const r=game();await settle(r,60000);
  assert(r.run('party.offlineExploration.receipt?.complete'));
- r.run('party.offlineExploration.receipt.consumed={"item:heal_small":2,"material:紅色草":4,"item:legacy-potion":1};changeOfflineGearPage(0)');
+ r.run('party.offlineExploration.receipt.consumed={"item:heal_small":2,"material:光輝碎塊":4,"item:legacy-potion":1};changeOfflineGearPage(0)');
  const html=r.elements.get('offline-settlement').innerHTML;
  assert.match(html,/道具消耗/);
  assert.match(html,/簡易治療藥水/);
- assert.match(html,/紅色草/);
+ assert.match(html,/光輝碎塊/);
  assert.match(html,/舊版治療藥水/);
  assert.doesNotMatch(html,/item:heal_small|item:legacy-potion|改時鐘作弊/);
 });

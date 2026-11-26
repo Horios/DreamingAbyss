@@ -31,6 +31,7 @@
   const x=copy(raw),bad=m=>{throw Error('教學存檔格式無效：'+m);};
   if(!x||typeof x!=='object'||Array.isArray(x)||x.version!==1)bad('版本');
   for(const k of ['records','pages','events'])if(!x[k]||typeof x[k]!=='object'||Array.isArray(x[k]))bad(k);
+  if(x.pages.bossCraft===1)x.pages.crafting=1;for(const key of ['gather','alchemy','lifeSkills','bossCraft'])delete x.pages[key];for(const key of ['gather_basics','alchemy_basics'])delete x.records[key];
   if(x.auto!==undefined&&typeof x.auto!=='boolean')bad('auto');
   for(const k of Object.keys(x))if(!['version','auto','records','pages','events'].includes(k))bad(k);
   for(const [id,r] of Object.entries(x.records)){

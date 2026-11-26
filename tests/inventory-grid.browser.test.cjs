@@ -10,7 +10,7 @@ test('grid bag shows six tabs, badges, hides unidentified gear and keeps selecti
    const a=gear(2,0,2,0);a.plus=5;a.skillSockets={version:1,count:3,gems:[0,null,null]};a.locked=true;addGear(a);globalThis.lockedGear=a;
    const b=gear(2,1,1,0);addGear(b);globalThis.freeGear=b;
    const c=gear(3,0,3,0);c.plus=7;c.skillSockets={version:1,count:2,gems:[1,2]};c.unidentified={slot:0,level:9};addGear(c);globalThis.hiddenGear=c;
-   state.gems[0]=5;state.gems[6]=12;state.materials['紅色草']=30;party.achievements.tickets={10:2};
+   state.gems[0]=5;state.gems[6]=12;state.materials['遠古碎片']=30;party.achievements.tickets={10:2};
    setTab('equipment');setInventoryCategory('equipment');});
   await p.clock.resume();
   await p.setViewportSize({width:1440,height:900});
@@ -104,15 +104,15 @@ test('grid bag shows six tabs, badges, hides unidentified gear and keeps selecti
 test('grid bag survives save and reload with stacks and selection fallback',async()=>{
  const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
  try{
-  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;state.materials['紅色草']=1500;addGear(gear(2,0,2,0));save();setTab('equipment');setInventoryCategory('materials');});
+  await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;state.materials['遠古碎片']=1500;addGear(gear(2,0,2,0));save();setTab('equipment');setInventoryCategory('materials');});
   await p.clock.resume();
   const cells=await p.evaluate(()=>[...document.querySelectorAll('.bag-cell[data-bag-ref^="s:"]')].map(c=>c.getAttribute('aria-label')));
-  assert(cells.some(t=>/紅色草 ×999/.test(t))&&cells.some(t=>/紅色草 ×501/.test(t)),JSON.stringify(cells));
+  assert(cells.some(t=>/遠古碎片 ×999/.test(t))&&cells.some(t=>/遠古碎片 ×501/.test(t)),JSON.stringify(cells));
   // Selecting a stack that then empties falls back to another stack of the same item.
-  await p.locator('.bag-cell[aria-label="紅色草 ×501"]').click();
-  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.getAttribute('aria-label')==='紅色草 ×501');
-  await p.evaluate(()=>{state.materials['紅色草']=999;render();});
-  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.getAttribute('aria-label')==='紅色草 ×999');
+  await p.locator('.bag-cell[aria-label="遠古碎片 ×501"]').click();
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.getAttribute('aria-label')==='遠古碎片 ×501');
+  await p.evaluate(()=>{state.materials['遠古碎片']=999;render();});
+  await p.waitForFunction(()=>document.querySelector('.bag-cell.is-selected')?.getAttribute('aria-label')==='遠古碎片 ×999');
   const before=await p.evaluate(()=>JSON.stringify([EmberwildItems.slots().tabs,state.bag.map(g=>g.id)]));
   await p.reload();
   await p.evaluate(()=>{selectSaveSlot(1);continueFromTitle();clearInterval(timer);running=false;setTab('equipment');setInventoryCategory('materials');});
@@ -154,7 +154,7 @@ test('v0.213: gems salvage into dust by tier from the detail pane and in batch, 
  const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-27T02:00:00Z')}),p=r.page;
  try{
   await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;
-   state.gems[0]=3;state.gems[5]=2;state.gems[10]=1;state.dust=0;setTab('equipment');setInventoryCategory('gems');});
+   state.gems[0]=3;state.gems[5]=2;state.gems[10]=1;state.materials.寶石粉塵=0;setTab('equipment');setInventoryCategory('gems');});
   await p.clock.resume();
   const each=await p.evaluate(()=>GAMEPLAY_SETTINGS.skills.gems.dustSalvage.dustByTier);
   assert.deepEqual(each,[10,50,300]);
@@ -163,20 +163,20 @@ test('v0.213: gems salvage into dust by tier from the detail pane and in batch, 
   await p.locator('.bag-detail').getByRole('button',{name:/^分解 1 顆/}).click();
   assert.match(await p.locator('#modal').innerText(),/共分解 1 顆寶石，獲得 10 寶石粉塵/);
   await p.locator('#modal').getByRole('button',{name:'確認分解'}).click();
-  await p.waitForFunction(()=>state.gems[0]===2&&state.dust===10);
+  await p.waitForFunction(()=>state.gems[0]===2&&state.materials.寶石粉塵===10);
   // A failed save rolls everything back.
   await p.evaluate(()=>{globalThis.realSave=save;save=()=>false;salvageGems({0:2});save=realSave;});
-  assert.deepEqual(await p.evaluate(()=>[state.gems[0],state.dust]),[2,10]);
+  assert.deepEqual(await p.evaluate(()=>[state.gems[0],state.materials.寶石粉塵]),[2,10]);
   // Batch by tier: tier 2 only, then everything.
   await p.getByRole('button',{name:'批次分解'}).click();await p.locator('.bag-grid.is-batch').waitFor();
   await p.getByLabel('依等級',{exact:true}).selectOption('2');await p.getByRole('button',{name:'選取符合條件'}).click();
-  await p.waitForFunction(()=>/已選 2 顆 · 100 粉塵/.test(document.querySelector('.bag-batch b')?.textContent));
+  await p.waitForFunction(()=>/已選 2 顆 · 100 寶石粉塵/.test(document.querySelector('.bag-batch b')?.textContent));
   await p.getByRole('button',{name:'全選'}).click();
-  await p.waitForFunction(()=>/已選 5 顆 · 420 粉塵/.test(document.querySelector('.bag-batch b')?.textContent));
+  await p.waitForFunction(()=>/已選 5 顆 · 420 寶石粉塵/.test(document.querySelector('.bag-batch b')?.textContent));
   await p.locator('.bag-batch').getByRole('button',{name:'批次分解'}).click();
   assert.match(await p.locator('#modal').innerText(),/共分解 5 顆寶石，獲得 420 寶石粉塵/);
   await p.locator('#modal').getByRole('button',{name:'確認分解'}).click();
-  await p.waitForFunction(()=>state.gems.every(n=>!n)&&state.dust===430&&!document.querySelector('.bag-grid.is-batch'));
+  await p.waitForFunction(()=>state.gems.every(n=>!n)&&state.materials.寶石粉塵===430&&!document.querySelector('.bag-grid.is-batch'));
   assert.equal(await p.evaluate(()=>EmberwildItems.audit().length),0);
   assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
