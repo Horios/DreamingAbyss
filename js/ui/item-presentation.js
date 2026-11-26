@@ -26,7 +26,7 @@
     return true;
   };
   globalThis.itemDisplayOptionsView=function(){
-    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">套用於商店、信箱、強化、製作與生活技能等道具清單。背包固定使用圖示格子。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
+    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">套用於商店、信箱、強化與製作等道具清單。背包固定使用圖示格子。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
   };
   addEventListener('storage',event=>{
     if(event.key!==displayStorageKey&&event.key!==null)return;
