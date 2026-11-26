@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 66,
+  "dataRevision": 67,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "81d05093959fc908f5d0dd25e1a7077e9c1af3a8a010d8a7972e2c46056f802c",
-    "bytes": 1425307
+    "sha256": "9eac61f1e33cdbfb919ca94a1bd2578b596231ea9ea7cfd694cef6d9f5241c16",
+    "bytes": 1427611
   },
   "layout": {
     "": [
@@ -213,9 +213,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 10,
-      "sha256": "b5dfc0b35b263cd29be79563ef4e9aa4db730bba026c42f3b52579189adb2fc7",
-      "bytes": 235575,
+      "version": 11,
+      "sha256": "10e1d4f374aab9e2c5329f97a8791141325cee78559aff01f3c5b38bb56d862f",
+      "bytes": 237879,
       "dependsOn": [
         "items/items",
         "world/monsters"
