@@ -26,9 +26,10 @@ test('five identities, three tiers, color mappings and reduced first-tier drop t
  for(let id=0;id<15;id++)assert.equal(doc.inventoryIcons.find(x=>x.kind==='gem'&&x.key===String(id)).color,colors[id%5]);
  const drops=doc.balanceSettings.drops.entries.filter(x=>x.type==='gemPool');
  // v0.181: gem drops +10%.
- assert.deepEqual(drops.find(x=>x.id==='gem_map0_normal').chanceByDifficulty,[.033,.066,.11]);
- assert.deepEqual(drops.find(x=>x.id==='gem_map0_elite').chanceByDifficulty,[.099,.187,.297]);
- assert.deepEqual(drops.find(x=>x.id==='gem_map0_boss').chanceByDifficulty,[.297,.44,.605]);
+ // Map gem pools were cut to 1/10 of the former rates.
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_normal').chanceByDifficulty,[.0033,.0066,.011]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_elite').chanceByDifficulty,[.0099,.0187,.0297]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_boss').chanceByDifficulty,[.0297,.044,.0605]);
  assert.deepEqual(r.errors,[]);
 });
 
