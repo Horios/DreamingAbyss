@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 function game(pref='full'){
  const r=loadRuntime(root,'index.html',{'emberwild-battle-effects':pref});
- r.run(`globalThis.fxSeed=8723;Math.random=()=>{fxSeed=(Math.imul(fxSeed,1664525)+1013904223)>>>0;return fxSeed/4294967296;};selectSaveSlot(1);start(0);closeModal();party.huntingMode='group';startSelectedExploration();running=true;party.huntingMode='group';spawnGroup();foes=foes.slice(0,3);foes.forEach((e,i)=>{e.name='同名怪物';e.hp=e.maxhp=10000;e.shield=0;e.id='fx-'+i;});enemy=foes[0];for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();`);return r;
+ r.run(`globalThis.fxSeed=8723;Math.random=()=>{fxSeed=(Math.imul(fxSeed,1664525)+1013904223)>>>0;return fxSeed/4294967296;};selectSaveSlot(1);start(0);closeModal();startSelectedExploration();running=true;/* v0.211: a lone hero meets one monster; these checks need three. */EmberwildSecondsCombat.encounterSize=()=>3;spawnGroup();foes=foes.slice(0,3);foes.forEach((e,i)=>{e.name='同名怪物';e.hp=e.maxhp=10000;e.shield=0;e.id='fx-'+i;});enemy=foes[0];for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();`);return r;
 }
 function capture(r,code){r.run('EmberwildBattleEffects.begin();'+code+';EmberwildBattleEffects.end();');return JSON.parse(r.run('JSON.stringify(EmberwildBattleEffects.pendingEvents)'));}
 test('resolved physical/fire/ice hits and AoE use instance IDs, without touching other same-name targets',()=>{

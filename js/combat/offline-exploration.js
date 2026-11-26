@@ -79,7 +79,7 @@
   function finite(v){if(typeof v==='number'&&!Number.isFinite(v))throw Error('離線存檔包含無效數值');if(v&&typeof v==='object')for(const x of Object.values(v))finite(x);}finite(c);
   return migrate(c);
  }
- validateParty=function(raw){const c=validate(raw?.offlineExploration,raw?.members),p=baseValidate(raw);if(c)p.offlineExploration=c;return p;};
+ validateParty=function(raw){const c=validate(raw?.offlineExploration,raw?.members),p=baseValidate(raw);if(c){for(const r of [c.receipt,c.pendingReceipt])if(Array.isArray(r?.gear))globalThis.migrateSlimEquipmentForms?.(r.gear);p.offlineExploration=c;}return p;};
  loadParty=function(raw){
   if(job&&!restoring)throw Error('離線結算進行中，請完成後再讀取存檔');
   restoring=true;try{const out=baseLoad(raw);const c=ensure();hydrate(c);failed=false;lastCheck=nowReal();renderedReceipt=null;return out;}finally{restoring=false;}

@@ -219,10 +219,9 @@
   },
   "affixPoolRule": "詞條品質仍由 qualityChance 決定；決定品質後，只會從對應裝備種類＋詞條稀有度的 poolBySlotRank 抽取。每個池的 chance 合計必須固定為 100%；舊版 weight 會在匯入時按比例轉換為 chance。",
   "equipmentIdentity": {
-    "naming": "一般裝備名稱 = 前綴 + 後綴 + 基底；前綴或後綴可為空；BOSS 裝備只使用 BOSS 專屬名稱。",
-    "stats": "一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算；前後綴不提供 raw ATK/HP/DEF。",
-    "affixChance": "prefixes / suffixes 的 chanceByTier[0..9] 分別代表 T1～T10 的實際百分比機率（0~100）；同一 T 級與部位合計不足 100% 時，剩餘機率為無該類詞綴。舊版 weight 只作匯入相容。",
-    "boss": "BOSS 專屬裝備沒有前後綴與隨機洗鍊詞條；bossAffixes 每筆固定 3 條效果。",
+    "naming": "一般裝備名稱 = 基底名稱；BOSS 裝備只使用 BOSS 專屬名稱。v0.211 起沒有前綴／後綴。",
+    "stats": "一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算。",
+    "boss": "BOSS 專屬裝備沒有隨機洗鍊詞條；bossAffixes 每筆固定 3 條效果。",
     "effects": [
       "basicElement",
       "basicAttackSpeedStack",

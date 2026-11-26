@@ -12,7 +12,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
     await r.page.evaluate(()=>{
       clearInterval(timer);
       globalThis.__equipmentDefaults=exportableBalance();
-      globalThis.__equipmentTestGear=(extra={})=>({id:'equipment-test',job:0,slot:0,tier:10,formJob:0,form:0,powerTier:1,plus:0,rar:0,difficulty:0,prefixId:'',suffixId:'',affix:[],...extra});
+      globalThis.__equipmentTestGear=(extra={})=>({id:'equipment-test',job:0,slot:0,tier:10,formJob:0,form:0,powerTier:1,plus:0,rar:0,difficulty:0,affix:[],...extra});
       globalThis.__equipmentTestHero=()=>{
         closeModal();state=initial(0);setClassMasteryLevel(59);state.won=true;state.bag=[];state.equipped=[null,null,null,null,null];
         party=createParty(state);party.cleared=true;syncParty();
@@ -26,7 +26,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       const rows=await r.page.evaluate(()=>Array.from({length:10},(_,i)=>{
         const g=__equipmentTestGear({powerTier:i+1});
         const rating=equipmentBaseRating(g);
-        g.plus=15;g.affix=[{type:0,rank:3,value:30}];g.prefixId='radiant';g.suffixId='vanguard';
+        g.plus=15;g.affix=[{type:0,rank:3,value:30}];
         return [rating,equipmentBaseRating(g),equipmentBaseRating({...g,tier:1,starterPack:{}}),equipmentBaseRatingHTML(g)];
       }));
       assert.deepEqual(rows.map(x=>x[0]),['D','D','C','C','B','B','A','S','SS','SSS']);
@@ -40,7 +40,8 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const ledger=equipmentStatContributions(g),equipped=stats(h);
         return {ledger,summary:equipmentTotalSummaryText(g),naked,equipped,html:equipmentAttributeDetailsHTML(g)};
       });
-      assert.equal(out.summary,'攻擊 +39');assert.equal(out.ledger.total.atk,39);
+      // v0.211: a weapon states its attack and attack speed in the weapon base block.
+      assert.equal(out.summary,'攻擊力：39 / 攻擊速度：0.5 次／秒');assert.equal(out.ledger.total.atk,39);
       assert.equal(out.ledger.rows.find(x=>x.label==='基底數值').stats.atk,30);
       assert.equal(out.ledger.rows.find(x=>x.label==='基底效果 1').stats.atk,9);
       assert.equal(out.ledger.rows.find(x=>x.label==='基底效果 2').stats.atk,0);
@@ -50,33 +51,34 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
     await t.test('Flat stats, attack speed and legacy affixes count once; percentages and combat effects remain active',async()=>{
       const out=await r.page.evaluate(()=>{
         ITEM_FORMS[0][0][0].fixedEffects=[{key:'flatAttack',value:20},{key:'flatHp',value:12},{key:'flatDefense',value:3},{key:'attackSpeedPct',value:4},{key:'bossDamagePct',value:15}];
-        const h=__equipmentTestHero(),g=__equipmentTestGear({prefixId:'keen',suffixId:'fury',affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]}),naked=stats(h);
+        const h=__equipmentTestHero(),g=__equipmentTestGear({affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]}),naked=stats(h);
         h.bag=[g];h.equipped[0]=g.id;
         return {ledger:equipmentStatContributions(g),naked,equipped:stats(h),html:equipmentAttributeDetailsHTML(g),summary:equipmentTotalSummaryHTML(g)};
       });
       assert.deepEqual(out.ledger.total,{atk:55,hp:12,def:3});
       assert.equal(out.equipped.atk,Math.round((out.naked.atk+55)*1.1));
       assert.equal(out.equipped.hp-out.naked.hp,12);assert.equal(out.equipped.def-out.naked.def,3);
-      assert.ok(out.equipped.crit>out.naked.crit);assert.ok(out.equipped.critDamage>out.naked.critDamage);
-      assert.equal(out.equipped.bossDamage,.15);assert.equal(out.equipped.attackSpeedPct,out.naked.attackSpeedPct+4);assert.match(out.summary,/攻擊速度 \+4%/);
-      for(const label of ['前綴加成','後綴加成','詞綴 2 加成'])assert.deepEqual(out.ledger.rows.find(x=>x.label===label).stats,{atk:0,hp:0,def:0});
+      assert.equal(out.equipped.bossDamage,.15);assert.equal(out.equipped.attackSpeedPct,out.naked.attackSpeedPct+4);assert.match(out.summary,/攻擊速度：0\.52 次／秒/);
+      assert.deepEqual(out.ledger.rows.find(x=>x.label==='詞綴 2 加成').stats,{atk:0,hp:0,def:0});
+      // v0.211: the prefix/suffix system was removed.
+      assert(!out.ledger.rows.some(x=>/前綴|後綴/.test(x.label)));
       assert.match(out.summary,/角色總攻擊力 \+10%/);assert.doesNotMatch(out.html,/角色總攻擊力 \+10%/);
     });
-    await t.test('The summary adds equipment-owned bonuses across base, named effects and random affixes',async()=>{
+    await t.test('The summary adds equipment-owned bonuses across base effects and random affixes',async()=>{
       const out=await r.page.evaluate(()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         ITEM_FORMS[0][0][0].fixedEffects=[{key:'crit',value:5},{key:'critDamage',value:10},{key:'attackPct',value:10}];
-        const h=__equipmentTestHero(),g=__equipmentTestGear({prefixId:'keen',suffixId:'eagleeye',affix:[{type:3,rank:3,value:3},{type:6,rank:2,value:8}]}),before=stats(h);
+        const h=__equipmentTestHero(),g=__equipmentTestGear({affix:[{type:3,rank:3,value:3},{type:6,rank:2,value:8}]}),before=stats(h);
         h.bag=[g];h.equipped[0]=g.id;
         return {summary:equipmentAbilitySummary(g),text:equipmentTotalSummaryText(g),html:equipmentAttributeDetailsHTML(g),before,after:stats(h)};
       });
       assert.equal(out.summary.total.atk,30);
-      assert.match(out.text,/暴擊率 \+17%/);assert.match(out.text,/暴擊傷害 \+18%/);
+      assert.match(out.text,/暴擊率 \+8%/);assert.match(out.text,/暴擊傷害 \+18%/);
       assert.doesNotMatch(out.text,/角色總攻擊力/);
-      assert.ok(Math.abs(out.after.crit-out.before.crit-.17)<1e-9);
+      assert.ok(Math.abs(out.after.crit-out.before.crit-.08)<1e-9);
       assert.ok(Math.abs(out.after.critDamage-out.before.critDamage-.18)<1e-9);
       assert.equal(out.after.atk,Math.round((out.before.atk+30)*1.1));
-      assert.match(out.html,/銳眼 · 暴擊率 \+5%/);assert.match(out.html,/鷹眼 · 暴擊率 \+4%/);
+      assert.doesNotMatch(out.html,/前綴|後綴|銳眼|鷹眼/);
       assert.doesNotMatch(out.html,/\[傳說\]|\[稀有\]/);
     });
     await t.test('Every supported non-panel affix uses the same ability and units in the upper total',async()=>{
@@ -95,12 +97,12 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       const out=await r.page.evaluate(()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});
         ITEM_FORMS[0][0][0].fixedEffects=[{key:'skillEffectPct',value:20,skill:0},{key:'skillCooldownReduction',value:1,skill:0},{key:'basicElement',value:'fire'},{key:'bossDamagePct',value:15},{key:'elementBonus',value:8}];
-        const h=__equipmentTestHero(),g=__equipmentTestGear({prefixId:'frostcarved',affix:[{type:4,rank:3,value:30,skill:0},{type:5,rank:3,value:1,skill:0}]}),before=skillPower(0,h);
+        const h=__equipmentTestHero(),g=__equipmentTestGear({affix:[{type:4,rank:3,value:30,skill:0},{type:5,rank:3,value:1,skill:0}]}),before=skillPower(0,h);
         h.bag=[g];h.equipped[0]=g.id;
         const text=equipmentTotalSummaryText(g),after=skillPower(0,h),element=weaponElement(h);
         const i=CLASSES[0].skills.findIndex(sk=>sk[1]==='proc');
         ITEM_FORMS[0][0][0].fixedEffects=[{key:'skillCooldownReduction',value:1,skill:i}];
-        g.affix=[{type:5,rank:3,value:2,skill:i}];g.prefixId='';
+        g.affix=[{type:5,rank:3,value:2,skill:i}];
         return {before,after,element,text,proc:equipmentTotalSummaryText(g),procExpected:'核心技能 '+(i+1)+' 觸發率 +'+3*GAME_BALANCE.affixes.procChancePerPointPercent+'%'};
       });
       assert.ok(Math.abs(out.after/out.before-1.56)<1e-9);
@@ -111,21 +113,15 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.match(out.text,/此武器攻擊屬性：火/);assert.doesNotMatch(out.text,/普通攻擊改為冰屬性/);assert.equal(out.element,'fire');
       assert.ok(out.proc.includes(out.procExpected),out.proc);
     });
-    await t.test('Supported prefix/suffix equipment percentages feed the actual game calculation',async()=>{
+    await t.test('v0.211: the prefix/suffix system is gone; old named gear keeps only its base and random affixes',async()=>{
       const out=await r.page.evaluate(()=>{
-        const doc=structuredClone(__equipmentDefaults);
-        doc.equipmentPowerSystem.prefixes.find(x=>x.id==='piercing').effect={key:'gearHpPct',value:25};
-        doc.equipmentPowerSystem.suffixes.find(x=>x.id==='vanguard').effect={key:'gearDefPct',value:20};
-        applyBalanceConfig(doc,{persist:false});
-        ITEM_FORMS[0][1][0].fixedEffects=[{key:'flatAttack',value:0}];
-        const h=__equipmentTestHero(),g=__equipmentTestGear({slot:1,prefixId:'piercing',suffixId:'vanguard'}),before=stats(h);
-        h.bag=[g];h.equipped[1]=g.id;
-        return {ledger:equipmentStatContributions(g),before,after:stats(h),raw:gearStatBreakdown(g).raw};
+        applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});__equipmentTestHero();
+        const g=__equipmentTestGear({slot:1,prefixId:'piercing',suffixId:'vanguard'});const name=gearName(g);
+        return {name,prefix:g.prefixId,suffix:g.suffixId,power:Object.keys(exportableBalance().equipmentPowerSystem),rows:equipmentStatContributions(g).rows.map(x=>x.label)};
       });
-      assert.equal(out.ledger.total.hp,100);assert.equal(out.ledger.total.def,24);
-      assert.equal(out.after.hp-out.before.hp,100);assert.equal(out.after.def-out.before.def,24);
-      assert.equal(out.ledger.rows.find(x=>x.label==='前綴加成').stats.hp,20);
-      assert.equal(out.ledger.rows.find(x=>x.label==='後綴加成').stats.def,4);
+      assert.equal(out.prefix,undefined);assert.equal(out.suffix,undefined);assert.doesNotMatch(out.name,/穿甲|先鋒/);
+      assert(!out.power.includes('prefixes')&&!out.power.includes('suffixes'),out.power.join());
+      assert(!out.rows.some(x=>/前綴|後綴/.test(x)),out.rows.join());
     });
     await t.test('Element, skill, cooldown and drop rules remain effective without becoming equipment attack',async()=>{
       const out=await r.page.evaluate(()=>{
@@ -199,7 +195,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       await r.page.evaluate(()=>{
         applyBalanceConfig(structuredClone(__equipmentDefaults),{persist:false});__equipmentTestHero();
         ITEM_FORMS[0][0][0].fixedEffects=[{key:'flatAttack',value:0}];
-        const g=__equipmentTestGear({powerTier:7,plus:10,prefixId:'keen',suffixId:'fury',affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]});state.bag.push(g);
+        const g=__equipmentTestGear({powerTier:7,plus:10,affix:[{type:0,rank:3,value:5},{type:15,rank:3,value:10}]});state.bag.push(g);
         document.getElementById('modal').innerHTML=inventoryGearDetail(g);document.getElementById('modal').showModal();
       });
       const detail=r.page.locator('#modal .equipment-attribute-details');
@@ -207,12 +203,11 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       assert.equal(await r.page.locator('#modal .equipment-base-rating').innerText(),'基底評級：A');
       assert.equal(await r.page.locator('#modal .equipment-summary-affix').count(),2);
       assert.equal(await r.page.locator('#modal .equipment-summary-affix').first().isVisible(),true);
-      assert.match(await r.page.locator('#modal .equipment-total-summary').innerText(),/暴擊率 \+5%[\s\S]*暴擊傷害 \+12%[\s\S]*\[傳說\] 攻擊 \+5[\s\S]*角色總攻擊力 \+10%/);
+      assert.match(await r.page.locator('#modal .equipment-total-summary').innerText(),/\[傳說\] 攻擊 \+5[\s\S]*角色總攻擊力 \+10%/);
       await detail.locator('summary').click();
       assert.equal(await r.page.locator('#modal .equipment-attribute-rule').first().isVisible(),true);
       const rows=await r.page.locator('#modal .equipment-attribute-line').evaluateAll(rows=>rows.map(row=>({label:row.querySelector('b').textContent,value:row.querySelector('.equipment-source-value').textContent})));
-      assert.equal(rows.find(x=>x.label==='前綴加成').value,'銳眼 · 暴擊率 +5%');
-      assert.equal(rows.find(x=>x.label==='後綴加成').value,'狂擊 · 暴擊傷害 +12%');
+      assert(!rows.some(x=>/前綴|後綴/.test(x.label)));
       assert.equal(rows.find(x=>x.label==='詞綴 1 加成').value,'攻擊 +5');
       assert.equal(rows.find(x=>x.label==='詞綴 2 加成').value,'—');
       assert.doesNotMatch(await detail.innerText(),/\[傳說\]|角色總攻擊力 \+10%/);

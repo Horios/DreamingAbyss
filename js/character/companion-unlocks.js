@@ -50,6 +50,7 @@
   const baseValidate=validateParty;
   validateParty=function(raw){const progress=validateProgress(raw?.companionUnlocks),achievements=A.migrate(raw?.achievements,progress),out=baseValidate(raw);out.companionUnlocks=progress;out.achievements=achievements;out.mailbox=A.validateMailbox(raw?.mailbox);
     for(const m of out.mailbox.messages)for(const item of m.attachments)if(item.type==='gear'){
+      globalThis.migrateSlimEquipmentForms?.([item.gear]);
       solo.validateSave({...copy(out.members[0]),bag:[copy(item.gear)],equipped:Array(5).fill(null)},{companion:true});
       const meta=item.gear.starterPack;
       if(meta&&(meta.baseAttack!==undefined&&(!Number.isFinite(meta.baseAttack)||meta.baseAttack<0||meta.baseAttack>10000)))throw Error('信箱武器基礎攻擊無效');
@@ -120,7 +121,7 @@
       else {
         const jobs=gearWearableJobs({job:ref.job,formJob:ref.job,slot:ref.slot,form:ref.index});
         g=gear(1,ref.slot,0,jobs.includes(job)?job:jobs[0]??0);
-        Object.assign(g,{formJob:ref.job,form:ref.index,powerTier:1,prefixId:'',suffixId:'',affix:[],plus:0});
+        Object.assign(g,{formJob:ref.job,form:ref.index,powerTier:1,affix:[],plus:0});
         if(ref.form.weaponType)g.weaponType=ref.form.weaponType;
         g.name=gearName(g);
       }

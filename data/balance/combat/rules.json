@@ -88,11 +88,38 @@
       "maxAttacksPerSecond": 1.5,
       "minimumBonusPct": -90
     },
-    "groupWeights": [
-      6,
-      3,
-      1
-    ],
+    "encounterByTeamSize": {
+      "1": [
+        {
+          "count": 1,
+          "weight": 100
+        }
+      ],
+      "2": [
+        {
+          "count": 2,
+          "weight": 90
+        },
+        {
+          "count": 3,
+          "weight": 10
+        }
+      ],
+      "3": [
+        {
+          "count": 3,
+          "weight": 50
+        },
+        {
+          "count": 4,
+          "weight": 30
+        },
+        {
+          "count": 5,
+          "weight": 20
+        }
+      ]
+    },
     "migration": {
       "version": 1,
       "source": "actor-turns",

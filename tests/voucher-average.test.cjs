@@ -9,7 +9,7 @@ const MIN=60000,HOUR=60*MIN;
 function game(averageMinutes){
  const doc=JSON.parse(JSON.stringify(seed));if(averageMinutes)doc.balanceSettings.rewards.regionVouchers.averageMinutes=averageMinutes;
  const r=loadRuntime(root);r.ctx.seed=doc;r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();party.huntingMode='single';globalThis.rngState=4242;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;
+ r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=4242;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;
 }
 async function away(r,ms){r.advance(ms);r.run('globalThis.__job=EmberwildOffline.settle();globalThis.__note=0;1');
  while(r.run('EmberwildOffline.busy')){await new Promise(res=>setImmediate(res));if(r.run("/offline-voucher-average/.test(document.getElementById('offline-settlement').innerHTML)"))r.run('__note++');}

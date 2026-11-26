@@ -73,8 +73,6 @@
   'shopSettings.fixedOffers.entries':{id:'id',label:'固定商品',keys:['id']},
   'companionTokens.catalog':{id:'id',label:'信物',keys:['id']},
   'lifeSkills.gathering':{id:'id',label:'採集',keys:['id']},
-  'equipmentPowerSystem.prefixes':{id:'id',label:'前綴',keys:['id']},
-  'equipmentPowerSystem.suffixes':{id:'id',label:'後綴',keys:['id']},
   'equipmentPowerSystem.bossAffixes':{id:'id',label:'BOSS 詞綴',keys:['id']}
  };
  const RECORD_PATHS=Object.keys(RECORDS).map(p=>p.split('.')).sort((a,b)=>b.length-a.length);

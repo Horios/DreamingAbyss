@@ -46,8 +46,6 @@
       powerTier:1,
       plus:0,
       fixedEffects:null,
-      prefixId:'',
-      suffixId:'',
       affixes:[null,null],
       growth:defaultGrowth()
     };
@@ -87,18 +85,6 @@
     const stopLevel=Number.isInteger(Number(src.maxLevel))?Number(src.maxLevel):maxLevel;
     if(startLevel<1||startLevel>maxLevel||stopLevel<startLevel||stopLevel>maxLevel)throw Error('新手禮包成長等級範圍無效');
     return {enabled,startLevel,maxLevel:stopLevel,effects:normalizeStarterEffects(src.effects,job,{growth:true})};
-  }
-
-  function namedAffixRows(power,kind){
-    return Array.isArray(power?.[kind==='prefix'?'prefixes':'suffixes'])?power[kind==='prefix'?'prefixes':'suffixes']:[];
-  }
-
-  function normalizeNamedAffix(id,kind,slot,power){
-    if(id===undefined||id===null||id==='')return '';
-    if(typeof id!=='string')throw Error(`新手禮包${kind==='prefix'?'前綴':'後綴'} ID 無效`);
-    const row=namedAffixRows(power,kind).find(x=>x?.id===id);
-    if(!row||!Array.isArray(row.slots)||!row.slots.includes(slot))throw Error(`新手禮包${kind==='prefix'?'前綴':'後綴'}無效：${id}`);
-    return id;
   }
 
   function affixPoolRow(balance,slot,rank,type){
@@ -160,8 +146,6 @@
       powerTier,
       plus,
       fixedEffects:normalizeStarterEffects(raw?.fixedEffects,job,{allowNull:true}),
-      prefixId:normalizeNamedAffix(raw?.prefixId,'prefix',slot,data?.equipmentPowerSystem||globalThis.__EMBERWILD_EQUIPMENT_POWER),
-      suffixId:normalizeNamedAffix(raw?.suffixId,'suffix',slot,data?.equipmentPowerSystem||globalThis.__EMBERWILD_EQUIPMENT_POWER),
       affixes:normalizeStarterAffixes(raw?.affixes,job,slot,data?.balance||GAME_BALANCE),
       growth:normalizeGrowth(raw?.growth,job)
     };
@@ -222,7 +206,7 @@
     data.starterPackItems=clone(starterPackItems);
     data.notes=[...(data.notes||[]),
       'starterPacks 是序章中女神交付的新手武器（每職業 1 件），連同 starterPackItems 直接放入背包；建立角色時不另外給予裝備或禮包。',
-      'starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects、prefixId、suffixId 與兩條固定 affixes。',
+      'starterPacks 每件可設定固定 T 階、初始 plus、fixedEffects 與兩條固定 affixes（v0.211 起沒有前綴／後綴，舊文件的 prefixId、suffixId 會被忽略）。',
       '新手武器可強化，不可洗鍊或重鑄 T 階；growth 只允許依角色等級增加固定屬性。'
     ];
     return data;
@@ -389,8 +373,6 @@
     g.affix=(entry.affixes||[]).filter(Boolean).map(clone);
     g.difficulty=0;
     g.powerTier=entry.powerTier;
-    g.prefixId=entry.prefixId||'';
-    g.suffixId=entry.suffixId||'';
     g.starterPack={
       version:3,
       job,

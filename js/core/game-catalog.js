@@ -48,11 +48,14 @@ const SIDE_REGIONS=[
 ];
 const HIGH_REGION_NAMES=['炎晶裂谷','深海祭壇','亡者王庭','風暴浮島','聖光禁林','日蝕深淵'];
 
+// v0.211: one template per slot and class (warrior, mage and archer keep one weapon per weapon type; mage and priest share
+// 布袍; accessories are worn by every class). Weapons and the two lighter armors carry their base difference; 皮盾 has
+// defense instead of attack (baseStat). weaponType comes from mastery-core's name table.
 const ITEM_FORMS=[
- [[{name:'闊刃劍',atk:1.2,critDamage:10},{name:'穿甲槍',atk:.95,pierce:12},{name:'汲血斧',atk:1.08,lifesteal:3}], [{name:'重型板甲',hp:1.15,def:1.25},{name:'決鬥鎧',hp:.9,def:.9,evasion:6}], [{name:'征戰旗',atk:1.2},{name:'守誓印',hp:1.3,exclusive:{attackPct:2}}]],
- [[{name:'炎晶杖',fixedEffects:[{key:'gearAtkPct',value:15},{key:'basicElement',value:'fire'}]},{name:'霜紋杖',fixedEffects:[{key:'attackPct',value:3},{key:'basicElement',value:'ice'}]},{name:'疾風法器',fixedEffects:[{key:'gearAtkPct',value:-5},{key:'attackPct',value:2},{key:'basicElement',value:'wind'}]}], [{name:'秘法袍',hp:1,exclusive:{attackPct:4}},{name:'月影袍',hp:.9,def:1,evasion:6}], [{name:'元素魔典',atk:1.15,elementBonus:8},{name:'回響符環',hp:1.1,exclusive:{attackPct:2}}]],
- [[{name:'狙擊長弓',atk:1.15,critDamage:12},{name:'穿雲弩',atk:1,pierce:12},{name:'風羽短弓',fixedEffects:[{key:'gearAtkPct',value:-5},{key:'evasion',value:4},{key:'basicElement',value:'wind'}]}], [{name:'獵手皮甲',hp:1,def:1.1},{name:'輕羽衣',hp:.9,def:.9,evasion:8}], [{name:'破甲箭袋',atk:1,pierce:8},{name:'鷹眼指環',atk:1.1,critDamage:15}]],
- [[{name:'晨光權杖',fixedEffects:[{key:'gearAtkPct',value:10},{key:'basicElement',value:'light'}]},{name:'淨化槌',atk:1,pierce:10},{name:'祈禱法杖',atk:.95,exclusive:{attackPct:5}}], [{name:'祝禱聖衣',hp:1.15,exclusive:{attackPct:3}},{name:'守護祭袍',hp:1,def:1.2}], [{name:'聖光徽記',atk:1.1,elementBonus:8},{name:'生命念珠',hp:1.25,exclusive:{attackPct:2}}]]
+ [[{id:'job0-slot0-form0',name:'長劍',fixedEffects:[{key:'flatAttack',value:0}]},{id:'job0-slot0-form2',name:'巨斧',fixedEffects:[{key:'gearAtkPct',value:10},{key:'attackSpeedPct',value:-10}]}], [{id:'job0-slot1-form0',name:'鐵甲',fixedEffects:[{key:'flatAttack',value:0}],wearableJobs:[0]}], [{id:'job0-slot2-form0',name:'皮盾',fixedEffects:[{key:'flatAttack',value:0}],baseStat:'defense'}], [{id:'job0-slot3-form0',name:'木腕甲',fixedEffects:[{key:'flatAttack',value:0}],wearableJobs:[0,1,2,3]}]],
+ [[{id:'job1-slot0-form0',name:'木杖',fixedEffects:[{key:'skillDamagePct',value:5}]},{id:'job1-slot0-form2',name:'水晶球',fixedEffects:[{key:'cooldownPct',value:5}]}], [{id:'job1-slot1-form0',name:'布袍',fixedEffects:[{key:'gearDefPct',value:-20}],wearableJobs:[1,3]}], [{id:'job1-slot2-form0',name:'法書',fixedEffects:[{key:'flatAttack',value:0}]}], [{id:'job1-slot3-form0',name:'硬木符印',fixedEffects:[{key:'flatAttack',value:0}],wearableJobs:[0,1,2,3]}]],
+ [[{id:'job2-slot0-form0',name:'長弓',fixedEffects:[{key:'gearAtkPct',value:10},{key:'attackSpeedPct',value:-10}]},{id:'job2-slot0-form1',name:'手弩',fixedEffects:[{key:'attackSpeedPct',value:10}]}], [{id:'job2-slot1-form0',name:'皮衣',fixedEffects:[{key:'gearDefPct',value:-10}],wearableJobs:[2]}], [{id:'job2-slot2-form0',name:'皮箭袋',fixedEffects:[{key:'flatAttack',value:0}]}], [{id:'job2-slot3-form0',name:'木戒指',fixedEffects:[{key:'flatAttack',value:0}],wearableJobs:[0,1,2,3]}]],
+ [[{id:'job3-slot0-form0',name:'權杖',fixedEffects:[{key:'defensePct',value:5}]}], [], [{id:'job3-slot2-form0',name:'聖徽',fixedEffects:[{key:'flatAttack',value:0}]}], [{id:'job3-slot3-form0',name:'手鍊',fixedEffects:[{key:'flatAttack',value:0}],wearableJobs:[0,1,2,3]}]]
 ];
 const EQUIP_POSITION_NAMES=['武器','護甲','副手','飾品 1','飾品 2'];
 

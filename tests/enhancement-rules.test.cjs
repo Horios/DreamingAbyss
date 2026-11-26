@@ -87,7 +87,7 @@ test('鍛鐵 rules keep their rates; v0.206 removed the per-kill 粉塵 and its 
 });
 test('the offline receipt lists enhancement materials apart from the region materials',async()=>{
  const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`selectSaveSlot(1);start(0);closeModal();globalThis.rngState=7;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};party.huntingMode='single';startSelectedExploration();save();`);
+ r.run(`selectSaveSlot(1);start(0);closeModal();globalThis.rngState=7;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
  r.advance(2*3600000);await r.run('EmberwildOffline.settle()');
  const html=r.run("document.getElementById('offline-settlement').innerHTML"),items=json(r,'party.offlineExploration.receipt.items');
  const enh=Object.keys(items).filter(k=>/^material:(鍛鐵|粉塵|以太鍛鐵)$/.test(k)&&items[k]>0),region=Object.keys(items).filter(k=>k.startsWith('material:')&&!enh.includes(k)&&items[k]>0);

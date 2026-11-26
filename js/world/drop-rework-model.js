@@ -40,6 +40,19 @@
     if(r.type==='monsterGear'&&r.sources?.length!==1)out.push('怪物一般裝備池只能對應一種怪物：'+r.id);
     return out;
   }
+  /* v0.211 class weights inside a monster gear pool. Weapons, armor and off-hands the player's current class can wear
+     weigh 70%, the others 10% (each other class); the pool keeps its forms, its total drop rate and the share of its
+     accessories (worn by every class), so only pools with two class gear entries change. formOf(ref) returns the form. */
+  const CLASS_WEIGHTS=Object.freeze({own:70,other:10});
+  function formWearable(form,ref,job){const jobs=Array.isArray(form?.wearableJobs)?form.wearableJobs:ref.slot===1?[0,1,2,3]:[ref.job];return jobs.includes(job);}
+  function classWeightedPool(pool,{job,formOf,weights=CLASS_WEIGHTS}={}){
+    if(!Array.isArray(pool)||!Number.isInteger(job)||typeof formOf!=='function')return pool;
+    const rows=pool.map(p=>{const ref=parseForm(p.key),form=ref&&formOf(ref);return {p,ref,form,classed:!!(ref&&form&&ref.slot!==3)};});
+    const classed=rows.filter(r=>r.classed);if(classed.length<2)return pool;
+    const before=classed.reduce((n,r)=>n+r.p.weight,0),scaled=classed.map(r=>r.p.weight*(formWearable(r.form,r.ref,job)?weights.own:weights.other)),after=scaled.reduce((n,w)=>n+w,0);
+    if(!(after>0))return pool;
+    let k=0;return rows.map(r=>r.classed?{key:r.p.key,weight:scaled[k++]*before/after}:{key:r.p.key,weight:r.p.weight});
+  }
   function pick(pool,rng=Math.random){
     const total=pool.reduce((n,p)=>n+p.weight,0);let x=rng()*total;
     for(const p of pool){x-=p.weight;if(x<0)return p;}
@@ -68,6 +81,6 @@
     const b=settings?.baseDustByTargetTier;if(!Array.isArray(b)||b.length!==3||b.some(n=>!Number.isFinite(n)||n<0||n>1e9))out.push('寶石粉塵升級成本基準必須是 3 個非負數');
     return out;
   }
-  const api={NEW_TYPES,OBSOLETE_TYPES,isObsolete,migrateEntries,migrateDocument,parseForm,ruleIssues,pick,exclusiveIssues,gemUpgradeCost,gemUpgradeIssues};
+  const api={NEW_TYPES,OBSOLETE_TYPES,isObsolete,migrateEntries,migrateDocument,parseForm,ruleIssues,CLASS_WEIGHTS,classWeightedPool,pick,exclusiveIssues,gemUpgradeCost,gemUpgradeIssues};
   root.EmberwildDropRework=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);
