@@ -2,7 +2,7 @@ name: Regression gate
 
 on:
   push:
-    branches: [feature/inventory-drop-rework, claude/vibrant-turing-g3ccrm]
+    branches: [feature/material-economy-crafting, feature/inventory-drop-rework, claude/vibrant-turing-g3ccrm]
   workflow_call:
   workflow_dispatch:
 
@@ -95,7 +95,7 @@ jobs:
         include:
           - group: inventory-drop-rework
             tests: >-
-              tests/drop-rework.test.cjs tests/inventory-model.test.cjs tests/inventory-runtime.test.cjs tests/companion-tokens.test.cjs
+              tests/material-economy.test.cjs tests/drop-rework.test.cjs tests/inventory-model.test.cjs tests/inventory-runtime.test.cjs tests/companion-tokens.test.cjs
           - group: modules-and-gear
             tests: >-
               tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/gear-overflow.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs
@@ -196,7 +196,7 @@ jobs:
       - name: Verify actual browser boot and mobile navigation
         env:
           EMBERWILD_PACE_REALTIME: '1'
-        run: node --test --test-concurrency=1 tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/prologue.browser.test.cjs tests/chapter1.browser.test.cjs tests/tutorial.browser.test.cjs tests/story-window.browser.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/text-overrides.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/responsive-shell.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/inventory-grid.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
+        run: node --test --test-concurrency=1 tests/material-economy.browser.test.cjs tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/prologue.browser.test.cjs tests/chapter1.browser.test.cjs tests/tutorial.browser.test.cjs tests/story-window.browser.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/text-overrides.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/responsive-shell.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/inventory-grid.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
 
       - name: Capture baseline and current UI review
         if: contains(github.event.head_commit.message, '[ui-review]')
@@ -226,3 +226,18 @@ jobs:
           node-version: '20'
       - name: Verify one version increment from previous commit
         run: node scripts/check-preview-version.cjs
+
+  material-economy:
+    name: Material economy and crafting acceptance
+    if: github.ref == 'refs/heads/feature/material-economy-crafting'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node --test tests/material-economy.test.cjs
+      - run: node --test --test-concurrency=1 tests/material-economy.browser.test.cjs

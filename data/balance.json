@@ -9671,11 +9671,6 @@
         ]
       },
       "salvage": {
-        "oreBasePerTier": 3,
-        "orePerQualityPerTier": 2,
-        "orePerEnhancePerTier": 1,
-        "dustBase": 1,
-        "dustPerQuality": 1,
         "extraRewards": []
       },
       "lootOwnerSameJobChance": 0.75,
@@ -17642,44 +17637,6 @@
               }
             },
             {
-              "id": "daily_herb",
-              "title": "紅色草募集",
-              "description": "完成日常委託，協助營地補給。",
-              "enabled": true,
-              "weight": 1,
-              "mapIndices": [],
-              "prerequisites": [],
-              "objectives": [
-                {
-                  "type": "material",
-                  "key": "紅色草",
-                  "quantity": 8,
-                  "quantityMax": 12,
-                  "perTier": 0,
-                  "consume": true
-                }
-              ],
-              "rewards": {
-                "gold": 0,
-                "goldPerTier": 0,
-                "ore": 0,
-                "orePerTier": 0,
-                "dust": 0,
-                "randomGems": 0,
-                "gemCounts": [
-                  0,
-                  0,
-                  0
-                ],
-                "materials": [],
-                "potions": [],
-                "items": [],
-                "gear": [],
-                "choice": "all",
-                "gearChance": 0.5
-              }
-            },
-            {
               "id": "daily_potion",
               "title": "營地治療補給",
               "description": "完成日常委託，協助營地補給。",
@@ -17728,11 +17685,6 @@
               "key": "粉塵",
               "min": 3,
               "max": 6
-            },
-            {
-              "key": "紅色草",
-              "min": 4,
-              "max": 8
             }
           ]
         },
@@ -22539,9 +22491,6 @@
           "quantityMin": 1,
           "quantityMax": 1,
           "sources": [
-            "map0_mob0",
-            "map0_mob1",
-            "map0_mob2",
             "map1_mob0",
             "map1_mob1",
             "map1_mob2",
@@ -22623,7 +22572,8 @@
             "map24_mob1",
             "map24_mob2",
             "map24_mob3"
-          ]
+          ],
+          "independent": true
         },
         {
           "id": "cultivation_dust_elite",
@@ -22642,9 +22592,6 @@
           "quantityMin": 1,
           "quantityMax": 2,
           "sources": [
-            "map0_mob0",
-            "map0_mob1",
-            "map0_mob2",
             "map1_mob0",
             "map1_mob1",
             "map1_mob2",
@@ -22726,7 +22673,8 @@
             "map24_mob1",
             "map24_mob2",
             "map24_mob3"
-          ]
+          ],
+          "independent": true
         },
         {
           "id": "gel-armor-normal",
@@ -30925,6 +30873,1201 @@
               "weight": 1
             }
           ]
+        },
+        {
+          "id": "cultivation_dust_normal_map0",
+          "name": "鍛鐵",
+          "enabled": true,
+          "type": "ore",
+          "key": "",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.005081300813008131,
+            0.007339656729900633,
+            0.00903342366757001
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob0",
+            "map0_mob1",
+            "map0_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "cultivation_dust_elite_map0",
+          "name": "鍛鐵",
+          "enabled": true,
+          "type": "ore",
+          "key": "",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.03952122854561879,
+            0.05081300813008131,
+            0.062104787714543815
+          ],
+          "quantityMin": 1,
+          "quantityMax": 2,
+          "sources": [
+            "map0_mob0",
+            "map0_mob1",
+            "map0_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map0_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.1240079365079365,
+            0.17361111111111108,
+            0.2232142857142857
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob0",
+            "map0_mob1",
+            "map0_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map0_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238095,
+            0.5208333333333333,
+            0.6696428571428571
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map0_mob0",
+            "map0_mob1",
+            "map0_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map1_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.248015873015873,
+            0.34722222222222215,
+            0.4464285714285714
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map1_mob0",
+            "map1_mob1",
+            "map1_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map1_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238095,
+            0.5208333333333333,
+            0.6696428571428571
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map1_mob0",
+            "map1_mob1",
+            "map1_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map2_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238095,
+            0.5208333333333333,
+            0.6696428571428571
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map2_mob0",
+            "map2_mob1",
+            "map2_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map2_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238095,
+            0.5208333333333331,
+            0.6696428571428571
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map2_mob0",
+            "map2_mob1",
+            "map2_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map3_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.496031746031746,
+            0.6944444444444443,
+            0.8928571428571428
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map3_mob0",
+            "map3_mob1",
+            "map3_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map3_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.496031746031746,
+            0.6944444444444443,
+            0.8928571428571428
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map3_mob0",
+            "map3_mob1",
+            "map3_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map4_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3100198412698412,
+            0.4340277777777777,
+            0.5580357142857142
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map4_mob0",
+            "map4_mob1",
+            "map4_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map4_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.46502976190476186,
+            0.6510416666666665,
+            0.8370535714285714
+          ],
+          "quantityMin": 4,
+          "quantityMax": 4,
+          "sources": [
+            "map4_mob0",
+            "map4_mob1",
+            "map4_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map5_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238095,
+            0.5208333333333333,
+            0.6696428571428571
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map5_mob0",
+            "map5_mob1",
+            "map5_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map5_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.44642857142857134,
+            0.6249999999999998,
+            0.8035714285714285
+          ],
+          "quantityMin": 5,
+          "quantityMax": 5,
+          "sources": [
+            "map5_mob0",
+            "map5_mob1",
+            "map5_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map6_final",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "final"
+          ],
+          "chanceByDifficulty": [
+            0.5555555555555556,
+            0.7777777777777778,
+            1
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map6_boss"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map7_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.43402777777777773,
+            0.6076388888888888,
+            0.7812499999999999
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map7_mob0",
+            "map7_mob1",
+            "map7_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map7_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.5208333333333333,
+            0.7291666666666666,
+            0.9375
+          ],
+          "quantityMin": 5,
+          "quantityMax": 5,
+          "sources": [
+            "map7_mob0",
+            "map7_mob1",
+            "map7_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map8_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.496031746031746,
+            0.6944444444444443,
+            0.8928571428571428
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map8_mob0",
+            "map8_mob1",
+            "map8_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map8_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.496031746031746,
+            0.6944444444444443,
+            0.8928571428571428
+          ],
+          "quantityMin": 6,
+          "quantityMax": 6,
+          "sources": [
+            "map8_mob0",
+            "map8_mob1",
+            "map8_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map9_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238095,
+            0.5208333333333331,
+            0.6696428571428571
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map9_mob0",
+            "map9_mob1",
+            "map9_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map9_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.4783163265306122,
+            0.669642857142857,
+            0.8609693877551019
+          ],
+          "quantityMin": 7,
+          "quantityMax": 7,
+          "sources": [
+            "map9_mob0",
+            "map9_mob1",
+            "map9_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map10_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.4133597883597883,
+            0.5787037037037036,
+            0.744047619047619
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map10_mob0",
+            "map10_mob1",
+            "map10_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map10_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.5314625850340136,
+            0.7440476190476188,
+            0.9566326530612245
+          ],
+          "quantityMin": 7,
+          "quantityMax": 7,
+          "sources": [
+            "map10_mob0",
+            "map10_mob1",
+            "map10_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map11_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.45469576719576715,
+            0.636574074074074,
+            0.8184523809523809
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map11_mob0",
+            "map11_mob1",
+            "map11_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map11_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.511532738095238,
+            0.7161458333333331,
+            0.9207589285714285
+          ],
+          "quantityMin": 8,
+          "quantityMax": 8,
+          "sources": [
+            "map11_mob0",
+            "map11_mob1",
+            "map11_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map12_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.496031746031746,
+            0.6944444444444443,
+            0.8928571428571428
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map12_mob0",
+            "map12_mob1",
+            "map12_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map12_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.49603174603174593,
+            0.6944444444444442,
+            0.8928571428571428
+          ],
+          "quantityMin": 9,
+          "quantityMax": 9,
+          "sources": [
+            "map12_mob0",
+            "map12_mob1",
+            "map12_mob2"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map13_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.12400793650793653,
+            0.17361111111111113,
+            0.22321428571428575
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map13_mob0",
+            "map13_mob1",
+            "map13_mob2",
+            "map13_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map13_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238096,
+            0.5208333333333334,
+            0.6696428571428573
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map13_mob0",
+            "map13_mob1",
+            "map13_mob2",
+            "map13_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map14_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.24801587301587305,
+            0.34722222222222227,
+            0.4464285714285715
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map14_mob0",
+            "map14_mob1",
+            "map14_mob2",
+            "map14_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map14_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238096,
+            0.5208333333333334,
+            0.6696428571428573
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map14_mob0",
+            "map14_mob1",
+            "map14_mob2",
+            "map14_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map15_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238096,
+            0.5208333333333334,
+            0.6696428571428573
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map15_mob0",
+            "map15_mob1",
+            "map15_mob2",
+            "map15_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map15_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238096,
+            0.5208333333333334,
+            0.6696428571428573
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map15_mob0",
+            "map15_mob1",
+            "map15_mob2",
+            "map15_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map16_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.4960317460317461,
+            0.6944444444444445,
+            0.892857142857143
+          ],
+          "quantityMin": 1,
+          "quantityMax": 1,
+          "sources": [
+            "map16_mob0",
+            "map16_mob1",
+            "map16_mob2",
+            "map16_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map16_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.4960317460317461,
+            0.6944444444444445,
+            0.8928571428571431
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map16_mob0",
+            "map16_mob1",
+            "map16_mob2",
+            "map16_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map17_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3100198412698413,
+            0.4340277777777778,
+            0.5580357142857143
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map17_mob0",
+            "map17_mob1",
+            "map17_mob2",
+            "map17_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map17_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.4650297619047619,
+            0.6510416666666666,
+            0.8370535714285715
+          ],
+          "quantityMin": 4,
+          "quantityMax": 4,
+          "sources": [
+            "map17_mob0",
+            "map17_mob1",
+            "map17_mob2",
+            "map17_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map18_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.3720238095238096,
+            0.5208333333333334,
+            0.6696428571428573
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map18_mob0",
+            "map18_mob1",
+            "map18_mob2",
+            "map18_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map18_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.4464285714285715,
+            0.6250000000000001,
+            0.8035714285714288
+          ],
+          "quantityMin": 5,
+          "quantityMax": 5,
+          "sources": [
+            "map18_mob0",
+            "map18_mob1",
+            "map18_mob2",
+            "map18_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map19_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.4340277777777778,
+            0.6076388888888888,
+            0.78125
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map19_mob0",
+            "map19_mob1",
+            "map19_mob2",
+            "map19_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map19_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.5208333333333334,
+            0.7291666666666667,
+            0.9375000000000002
+          ],
+          "quantityMin": 5,
+          "quantityMax": 5,
+          "sources": [
+            "map19_mob0",
+            "map19_mob1",
+            "map19_mob2",
+            "map19_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map20_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.4960317460317461,
+            0.6944444444444445,
+            0.892857142857143
+          ],
+          "quantityMin": 2,
+          "quantityMax": 2,
+          "sources": [
+            "map20_mob0",
+            "map20_mob1",
+            "map20_mob2",
+            "map20_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map20_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.4960317460317461,
+            0.6944444444444445,
+            0.8928571428571431
+          ],
+          "quantityMin": 6,
+          "quantityMax": 6,
+          "sources": [
+            "map20_mob0",
+            "map20_mob1",
+            "map20_mob2",
+            "map20_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map21_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.37202380952380953,
+            0.5208333333333334,
+            0.6696428571428572
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map21_mob0",
+            "map21_mob1",
+            "map21_mob2",
+            "map21_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map21_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.47831632653061223,
+            0.669642857142857,
+            0.860969387755102
+          ],
+          "quantityMin": 7,
+          "quantityMax": 7,
+          "sources": [
+            "map21_mob0",
+            "map21_mob1",
+            "map21_mob2",
+            "map21_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map22_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.41335978835978837,
+            0.5787037037037037,
+            0.7440476190476191
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map22_mob0",
+            "map22_mob1",
+            "map22_mob2",
+            "map22_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map22_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.5314625850340137,
+            0.744047619047619,
+            0.9566326530612246
+          ],
+          "quantityMin": 7,
+          "quantityMax": 7,
+          "sources": [
+            "map22_mob0",
+            "map22_mob1",
+            "map22_mob2",
+            "map22_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map23_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.4546957671957672,
+            0.6365740740740741,
+            0.8184523809523809
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map23_mob0",
+            "map23_mob1",
+            "map23_mob2",
+            "map23_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map23_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.5115327380952381,
+            0.7161458333333334,
+            0.9207589285714287
+          ],
+          "quantityMin": 8,
+          "quantityMax": 8,
+          "sources": [
+            "map23_mob0",
+            "map23_mob1",
+            "map23_mob2",
+            "map23_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map24_normal",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "normal"
+          ],
+          "chanceByDifficulty": [
+            0.4960317460317461,
+            0.6944444444444445,
+            0.8928571428571431
+          ],
+          "quantityMin": 3,
+          "quantityMax": 3,
+          "sources": [
+            "map24_mob0",
+            "map24_mob1",
+            "map24_mob2",
+            "map24_mob3"
+          ],
+          "independent": true
+        },
+        {
+          "id": "base_dust_map24_elite",
+          "name": "粉塵",
+          "enabled": true,
+          "type": "material",
+          "key": "粉塵",
+          "kinds": [
+            "elite"
+          ],
+          "chanceByDifficulty": [
+            0.49603174603174616,
+            0.6944444444444445,
+            0.8928571428571431
+          ],
+          "quantityMin": 9,
+          "quantityMax": 9,
+          "sources": [
+            "map24_mob0",
+            "map24_mob1",
+            "map24_mob2",
+            "map24_mob3"
+          ],
+          "independent": true
         }
       ]
     },
@@ -30957,22 +32100,6 @@
         {
           "key": "升級卷軸",
           "sellPrice": 25
-        },
-        {
-          "key": "紅色草",
-          "sellPrice": 0
-        },
-        {
-          "key": "小蟲",
-          "sellPrice": 0
-        },
-        {
-          "key": "藥水瓶",
-          "sellPrice": 0
-        },
-        {
-          "key": "清水",
-          "sellPrice": 0
         },
         {
           "key": "黏稠凝膠",
@@ -36425,115 +37552,7 @@
     "maxPlans": 6
   },
   "schemaVersion": 1,
-  "lifeSkills": {
-    "materialBuyPrices": {
-      "清水": 1,
-      "藥水瓶": 1
-    },
-    "gathering": [
-      {
-        "id": "herb",
-        "name": "紅色草",
-        "periodMs": 5000,
-        "chance": 1,
-        "quantity": 1,
-        "output": "紅色草",
-        "outputType": "material",
-        "bonusDrops": [
-          {
-            "output": "小蟲",
-            "outputType": "material",
-            "quantity": 1,
-            "chance": 0.05
-          }
-        ]
-      },
-      {
-        "name": "藍色草",
-        "periodMs": 5000,
-        "chance": 1,
-        "quantity": 1,
-        "output": "藍色草",
-        "outputType": "material",
-        "id": "gather_1",
-        "bonusDrops": [
-          {
-            "output": "小蟲",
-            "outputType": "material",
-            "chance": 0.05,
-            "quantity": 1
-          }
-        ]
-      }
-    ],
-    "recipes": {
-      "alchemy": {
-        "name": "煉製簡易治療藥水",
-        "inputs": [
-          [
-            "清水",
-            1
-          ],
-          [
-            "藥水瓶",
-            1
-          ],
-          [
-            "紅色草",
-            1
-          ]
-        ],
-        "output": "heal_small",
-        "outputType": "item",
-        "periodMs": 5000,
-        "chance": 1,
-        "quantity": 1
-      },
-      "dust_to_iron": {
-        "name": "以太凝聚",
-        "periodMs": 5000,
-        "chance": 0.8,
-        "quantity": 1,
-        "output": "以太鍛鐵",
-        "outputType": "material",
-        "inputs": [
-          [
-            "粉塵",
-            10
-          ],
-          [
-            "鍛鐵",
-            1
-          ]
-        ]
-      }
-    }
-  },
   "inventoryIcons": [
-    {
-      "iconType": "auto",
-      "id": "material:紅色草",
-      "kind": "material",
-      "key": "紅色草",
-      "colorTemplateId": "color_1",
-      "description": "採集後可與清水、藥水瓶直接煉製簡易治療藥水。"
-    },
-    {
-      "id": "material:藍色草",
-      "kind": "material",
-      "key": "藍色草",
-      "iconType": "custom:icon_2",
-      "colorTemplateId": "color_3",
-      "description": "探索途中收集的製作素材。"
-    },
-    {
-      "iconType": "auto",
-      "id": "material:小蟲",
-      "kind": "material",
-      "key": "小蟲",
-      "colorTemplateId": "color_2",
-      "description": "尚無用途。"
-    },
     {
       "kind": "equipment",
       "key": "form:0:0:0",
@@ -37536,7 +38555,8 @@
       "kind": "material",
       "key": "粉塵",
       "iconType": "auto",
-      "description": "裝備強化、洗鍊與寶石合成材料。"
+      "description": "基礎裝備強化與以太鍛鐵製作材料，不可販售。",
+      "saleEnabled": false
     },
     {
       "kind": "material",
@@ -37549,18 +38569,6 @@
       "key": "光輝碎塊",
       "iconType": "auto",
       "description": "洗鍊時用於保留指定詞條。"
-    },
-    {
-      "kind": "material",
-      "key": "清水",
-      "iconType": "auto",
-      "description": "製作簡易治療藥水的煉金材料，每份配方消耗 1 份。"
-    },
-    {
-      "kind": "material",
-      "key": "藥水瓶",
-      "iconType": "auto",
-      "description": "製作簡易治療藥水的空瓶，每份配方消耗 1 個。"
     },
     {
       "kind": "material",
@@ -38982,7 +39990,7 @@
         "name": "商店任務線",
         "type": "npc",
         "npc": "商人",
-        "description": "解救商人並協助準備補給，取得永久銅級 VIP 資格。",
+        "description": "解救商人並協助收集材料，取得永久銅級 VIP 資格。",
         "enabled": true,
         "hidden": false,
         "unlock": {
@@ -39071,7 +40079,7 @@
               "items": []
             },
             "effects": [],
-            "next": "gather",
+            "next": "vip",
             "branches": [],
             "choices": [],
             "guides": [
@@ -39080,104 +40088,15 @@
             ]
           },
           {
-            "id": "gather",
-            "name": "親手採集",
-            "speaker": "商人",
-            "description": "請用採集系統取得 3 株紅色草；以往採集的紀錄也計入。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "商人",
-                "text": "請用採集系統取得 3 株紅色草；以往採集的紀錄也計入。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "gatherItem",
-                  "key": "紅色草",
-                  "count": 3,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "gather",
-                  "key": "",
-                  "count": 3,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "delivery",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "gather"
-            ]
-          },
-          {
-            "id": "delivery",
-            "name": "準備補給",
-            "speaker": "商人",
-            "description": "請確認持有紅色草，並完成一次煉製簡易治療藥水。你可以在商店買到清水與藥水瓶。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "商人",
-                "text": "請確認持有紅色草，並完成一次煉製簡易治療藥水。你可以在商店買到清水與藥水瓶。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "stock",
-                  "key": "紅色草",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "recipe",
-                  "key": "alchemy",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 20,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "vip",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "alchemy",
-              "shop"
-            ]
-          },
-          {
             "id": "vip",
             "name": "商人的謝禮",
             "speaker": "商人",
-            "description": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折，並解鎖煉金自動購買基礎材料。",
+            "description": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折。",
             "dialogue": [
               {
                 "kind": "npc",
                 "speaker": "商人",
-                "text": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折，並解鎖煉金自動購買基礎材料。"
+                "text": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折。"
               }
             ],
             "conditions": {
@@ -40115,10 +41034,6 @@
           {
             "id": "forge",
             "label": "裝備工坊"
-          },
-          {
-            "id": "bossCraft",
-            "label": "BOSS 製作"
           }
         ]
       },
@@ -40194,17 +41109,13 @@
         ]
       },
       {
-        "id": "life",
-        "label": "生活",
+        "id": "crafting",
+        "label": "製作",
         "expanded": false,
         "pages": [
           {
-            "id": "gather",
-            "label": "採集"
-          },
-          {
-            "id": "alchemy",
-            "label": "煉金"
+            "id": "crafting",
+            "label": "製作"
           }
         ]
       }
@@ -51953,28 +52864,6 @@
         "max": 50,
         "poolId": "daily",
         "specialTrigger": ""
-      },
-      {
-        "id": "herb",
-        "kind": "material",
-        "key": "紅色草",
-        "enabled": true,
-        "quantityMode": "fixed",
-        "min": 20,
-        "max": 20,
-        "poolId": "daily",
-        "specialTrigger": ""
-      },
-      {
-        "id": "bug",
-        "kind": "material",
-        "key": "小蟲",
-        "enabled": true,
-        "quantityMode": "fixed",
-        "min": 10,
-        "max": 10,
-        "poolId": "daily",
-        "specialTrigger": ""
       }
     ],
     "pools": [
@@ -52011,18 +52900,6 @@
             "max": 12,
             "enabled": true,
             "weight": 30,
-            "minMapId": "map0",
-            "allowAhead": false
-          },
-          {
-            "id": "herb",
-            "type": "item",
-            "kind": "material",
-            "key": "紅色草",
-            "min": 10,
-            "max": 20,
-            "enabled": true,
-            "weight": 20,
             "minMapId": "map0",
             "allowAhead": false
           },
@@ -53913,7 +54790,7 @@
         "description": "用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。",
         "trigger": {
           "type": "pageEnter",
-          "page": "bossCraft",
+          "page": "crafting",
           "notify": false,
           "notifyText": ""
         },
@@ -53932,7 +54809,7 @@
             "id": "classes",
             "title": "職業分頁",
             "text": "切換職業查看該職業可以製作的首領裝備。",
-            "page": "bossCraft",
+            "page": "crafting",
             "target": "boss.classTabs",
             "placement": "auto",
             "advance": {
@@ -53953,7 +54830,7 @@
             "id": "recipe",
             "title": "首領配方",
             "text": "每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。",
-            "page": "bossCraft",
+            "page": "crafting",
             "target": "boss.recipe",
             "placement": "auto",
             "advance": {
@@ -54180,182 +55057,14 @@
         "interrupt": "end",
         "revision": 1,
         "reprompt": false
-      },
-      {
-        "id": "gather_basics",
-        "title": "採集",
-        "category": "life",
-        "type": "notice",
-        "enabled": true,
-        "implemented": true,
-        "description": "選擇採集對象並持續取得材料。第一次進入採集時開始。",
-        "trigger": {
-          "type": "pageEnter",
-          "page": "gather",
-          "notify": false,
-          "notifyText": ""
-        },
-        "prerequisites": {
-          "mode": "all",
-          "conditions": [
-            {
-              "type": "prologueDone",
-              "key": "",
-              "count": 1
-            }
-          ]
-        },
-        "steps": [
-          {
-            "id": "target",
-            "title": "採集對象",
-            "text": "選擇要採集的材料，下方會顯示每次採集的時間與機率。",
-            "page": "gather",
-            "target": "gather.target",
-            "placement": "auto",
-            "advance": {
-              "type": "next"
-            },
-            "optional": false,
-            "requires": {
-              "mode": "all",
-              "conditions": []
-            },
-            "onReplay": "same",
-            "skipIf": {
-              "mode": "all",
-              "conditions": []
-            }
-          },
-          {
-            "id": "start",
-            "title": "開始採集",
-            "text": "採集會持續進行，切換頁面或同時探索都不會中斷。",
-            "page": "gather",
-            "target": "gather.start",
-            "placement": "auto",
-            "advance": {
-              "type": "next"
-            },
-            "optional": false,
-            "requires": {
-              "mode": "all",
-              "conditions": []
-            },
-            "onReplay": "same",
-            "skipIf": {
-              "mode": "all",
-              "conditions": []
-            }
-          },
-          {
-            "id": "stock",
-            "title": "材料庫存",
-            "text": "採集到的材料全隊共用，可以在這裡查看與篩選。",
-            "page": "gather",
-            "target": "life.stock",
-            "placement": "auto",
-            "advance": {
-              "type": "next"
-            },
-            "optional": false,
-            "requires": {
-              "mode": "all",
-              "conditions": []
-            },
-            "onReplay": "same",
-            "skipIf": {
-              "mode": "all",
-              "conditions": []
-            }
-          }
-        ],
-        "completion": {
-          "type": "steps"
-        },
-        "replayable": true,
-        "skippable": true,
-        "interrupt": "pause",
-        "revision": 1,
-        "reprompt": false
-      },
-      {
-        "id": "alchemy_basics",
-        "title": "煉金",
-        "category": "alchemy",
-        "type": "notice",
-        "enabled": true,
-        "implemented": true,
-        "description": "用材料煉製藥水與寶石。第一次進入煉金時開始。",
-        "trigger": {
-          "type": "pageEnter",
-          "page": "alchemy",
-          "notify": false,
-          "notifyText": ""
-        },
-        "prerequisites": {
-          "mode": "all",
-          "conditions": [
-            {
-              "type": "prologueDone",
-              "key": "",
-              "count": 1
-            }
-          ]
-        },
-        "steps": [
-          {
-            "id": "recipe",
-            "title": "煉金配方",
-            "text": "每個配方列出需要的材料、持有數量與產物。",
-            "page": "alchemy",
-            "target": "alchemy.recipe",
-            "placement": "auto",
-            "advance": {
-              "type": "next"
-            },
-            "optional": false,
-            "requires": {
-              "mode": "all",
-              "conditions": []
-            },
-            "onReplay": "same",
-            "skipIf": {
-              "mode": "all",
-              "conditions": []
-            }
-          },
-          {
-            "id": "start",
-            "title": "開始煉金",
-            "text": "材料足夠時按「開始煉金」。每次完成才扣材料，材料不足時自動停止。",
-            "page": "alchemy",
-            "target": "alchemy.start",
-            "placement": "auto",
-            "advance": {
-              "type": "next"
-            },
-            "optional": false,
-            "requires": {
-              "mode": "all",
-              "conditions": []
-            },
-            "onReplay": "same",
-            "skipIf": {
-              "mode": "all",
-              "conditions": []
-            }
-          }
-        ],
-        "completion": {
-          "type": "steps"
-        },
-        "replayable": true,
-        "skippable": true,
-        "interrupt": "pause",
-        "revision": 1,
-        "reprompt": false
       }
     ]
+  },
+  "crafting": {
+    "etherIron": {
+      "dust": 100,
+      "ore": 3,
+      "quantity": 1
+    }
   }
 }

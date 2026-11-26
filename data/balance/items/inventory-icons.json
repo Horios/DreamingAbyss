@@ -1,29 +1,5 @@
 [
   {
-    "iconType": "auto",
-    "id": "material:紅色草",
-    "kind": "material",
-    "key": "紅色草",
-    "colorTemplateId": "color_1",
-    "description": "採集後可與清水、藥水瓶直接煉製簡易治療藥水。"
-  },
-  {
-    "id": "material:藍色草",
-    "kind": "material",
-    "key": "藍色草",
-    "iconType": "custom:icon_2",
-    "colorTemplateId": "color_3",
-    "description": "探索途中收集的製作素材。"
-  },
-  {
-    "iconType": "auto",
-    "id": "material:小蟲",
-    "kind": "material",
-    "key": "小蟲",
-    "colorTemplateId": "color_2",
-    "description": "尚無用途。"
-  },
-  {
     "kind": "equipment",
     "key": "form:0:0:0",
     "iconType": "auto",
@@ -1025,7 +1001,8 @@
     "kind": "material",
     "key": "粉塵",
     "iconType": "auto",
-    "description": "裝備強化、洗鍊與寶石合成材料。"
+    "description": "基礎裝備強化與以太鍛鐵製作材料，不可販售。",
+    "saleEnabled": false
   },
   {
     "kind": "material",
@@ -1038,18 +1015,6 @@
     "key": "光輝碎塊",
     "iconType": "auto",
     "description": "洗鍊時用於保留指定詞條。"
-  },
-  {
-    "kind": "material",
-    "key": "清水",
-    "iconType": "auto",
-    "description": "製作簡易治療藥水的煉金材料，每份配方消耗 1 份。"
-  },
-  {
-    "kind": "material",
-    "key": "藥水瓶",
-    "iconType": "auto",
-    "description": "製作簡易治療藥水的空瓶，每份配方消耗 1 個。"
   },
   {
     "kind": "material",

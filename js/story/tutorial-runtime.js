@@ -19,7 +19,7 @@
  // v0.173 added a guide for every system page. A save from before then has already used the pages it visited, so those
  // guides count as done (legacy) once; pages it never opened still get theirs. The marker record keeps this to one pass.
  const TOURS_MARK='system_tours_v173';
- const TOUR_IDS=['statistics_basics','roster_basics','partner_basics','character_basics','worn_basics','forge_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ const TOUR_IDS=['statistics_basics','roster_basics','partner_basics','character_basics','worn_basics','forge_basics','boss_basics','story_basics','wishing_basics'];
  function migrateTours(t){
   if(!t||t.records[TOURS_MARK])return false;
   for(const id of TOUR_IDS){const m=design.modules.find(x=>x.id===id);if(m&&!t.records[id]&&t.pages[m.trigger.page])t.records[id]={triggered:true,completed:true,skipped:false,step:-1,revision:m.revision,legacy:true};}
@@ -199,11 +199,6 @@
   'lake.panel':()=>$q('#modal .lake-panel h1')||$q('#modal .lake-panel'),
   'lake.offerings':()=>shown('#modal .lake-offerings','#modal .lake-panel'),
   'lake.confirm':()=>shown('#modal .lake-confirm','#modal .lake-result','#modal .lake-panel'),
-  'gather.target':()=>$q('main .life-gather-selector'),
-  'gather.start':()=>$q('main [onclick="startLifeGathering()"]')?.parentElement||null,
-  'life.stock':()=>$q('main .life-stock>summary')||$q('main .life-stock'),
-  'alchemy.recipe':()=>$q('main .life-recipe'),
-  'alchemy.start':()=>$q('main .life-recipe [onclick^="startLifeWork("]')?.parentElement||null
  };
  // A control marked data-tutorial-target="id" wins over the built-in lookup, so a redesigned screen can keep its target.
  function resolve(id){

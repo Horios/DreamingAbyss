@@ -4,12 +4,12 @@
   const QUALITY_NAMES=(typeof AFFIX_RANK!=='undefined'?AFFIX_RANK:['普通','精良','稀有','傳說']);
   const DEFAULT_GEAR_SELL=[2,6,18,45];
   const defaultMaterialKeys=()=>{
-    const set=new Set(['鍛鐵','粉塵','以太鍛鐵','光輝碎塊','升級卷軸','紅色草','紅色草泥','小蟲','藥水瓶','清水']);
+    const set=new Set(['鍛鐵','粉塵','以太鍛鐵','光輝碎塊','升級卷軸']);
     for(const m of (GAMEPLAY_SETTINGS_DEFAULTS?.monsters?.catalog||[]))if(m?.material)set.add(m.material);
     for(const d of (GAMEPLAY_SETTINGS_DEFAULTS?.drops?.entries||[]))if(d?.type==='material'&&d.key)set.add(d.key);
     return [...set];
   };
-  const defaultMaterialPrice=k=>['紅色草','紅色草泥','小蟲','藥水瓶','清水'].includes(k)?0:k==='鍛鐵'?1:k==='粉塵'?2:k==='以太鍛鐵'?15:k==='光輝碎塊'?20:k==='升級卷軸'?25:1;
+  const defaultMaterialPrice=k=>k==='鍛鐵'?1:k==='粉塵'?2:k==='以太鍛鐵'?15:k==='光輝碎塊'?20:k==='升級卷軸'?25:1;
   GAMEPLAY_SETTINGS_DEFAULTS.economy ??={};
   GAMEPLAY_SETTINGS_DEFAULTS.economy.equipmentSellPriceByQuality ??=DEFAULT_GEAR_SELL.slice();
   GAMEPLAY_SETTINGS_DEFAULTS.economy.materialDefaultSellPrice ??=1;
@@ -51,11 +51,11 @@
       if(!row||typeof row.key!=='string'||!row.key.trim()||materialKeys.has(row.key)||!Number.isFinite(row.sellPrice)||row.sellPrice<0)throw Error('材料販售價格資料無效：'+i);
       materialKeys.add(row.key);
     }
-    const extras=cfg.equipment?.salvage?.extraRewards,types=new Set(['ore','dust','material','potion','item','gem']);
+    const extras=cfg.equipment?.salvage?.extraRewards,types=new Set(['material','potion','item','gem']);
     if(!Array.isArray(extras))throw Error('分解額外產物必須是陣列');
     for(const [i,r] of extras.entries()){
       if(!r||!Number.isInteger(r.quality)||r.quality<0||r.quality>3||!types.has(r.type)||!Number.isInteger(r.quantity)||r.quantity<1||r.quantity>999)throw Error('分解額外產物資料無效：'+i);
-      if(r.type==='material'&&(typeof r.key!=='string'||!r.key.trim()))throw Error('分解材料產物需要材料名稱：'+i);
+      if(r.type==='material'&&(typeof r.key!=='string'||!r.key.trim()||['粉塵','鍛鐵'].includes(r.key)))throw Error('分解材料產物需要材料名稱：'+i);
       if(r.type==='item'&&!SHOP.some(x=>x.id===r.key))throw Error('分解產物指定的商店道具不存在：'+i);
       if(r.type==='gem'&&r.key!=='random'&&![0,1,2,'0','1','2'].includes(r.key))throw Error('分解寶石 key 需為 random/0/1/2：'+i);
     }
@@ -96,7 +96,7 @@
   const economyClone=v=>JSON.parse(JSON.stringify(v));
   function economySettings(){return GAMEPLAY_SETTINGS.economy;}
   function equipmentSellPrice(g){const identity=globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY?.(g),custom=identity&&globalThis.__EMBERWILD_ITEM_DETAILS?.(identity.kind,identity.key)?.sellPrice;if(custom!==undefined)return custom;const q=Math.max(0,Math.min(3,gearQualityRank(g)));return Math.max(0,Math.round(Number(economySettings().equipmentSellPriceByQuality[q])||0));}
-  function materialSellPrice(key){const custom=globalThis.__EMBERWILD_ITEM_DETAILS?.(key==='升級卷軸'?'item':'material',key==='升級卷軸'?'level_scroll':key)?.sellPrice;if(custom!==undefined)return custom;const e=economySettings(),row=(e.materialPrices||[]).find(x=>x.key===key);return Math.max(0,Math.round(Number(row?.sellPrice??(['紅色草','紅色草泥','小蟲','藥水瓶','清水'].includes(key)?defaultMaterialPrice(key):e.materialDefaultSellPrice))||0));}
+  function materialSellPrice(key){const custom=globalThis.__EMBERWILD_ITEM_DETAILS?.(key==='升級卷軸'?'item':'material',key==='升級卷軸'?'level_scroll':key)?.sellPrice;if(custom!==undefined)return custom;const e=economySettings(),row=(e.materialPrices||[]).find(x=>x.key===key);return Math.max(0,Math.round(Number(row?.sellPrice??e.materialDefaultSellPrice)||0));}
   function itemSellPrice(id){const custom=globalThis.__EMBERWILD_ITEM_DETAILS?.('item',id)?.sellPrice;if(custom!==undefined)return custom;if(id==='__potion__')return Math.max(0,Math.round(Number(economySettings().potionSellPrice)||0));const item=SHOP.find(x=>x.id===id);return Math.max(0,Math.round(Number(item?.sellPrice)||0));}
   globalThis.equipmentSellPrice=equipmentSellPrice;globalThis.materialSellPrice=materialSellPrice;globalThis.itemSellPrice=itemSellPrice;
 
@@ -118,9 +118,9 @@
   }
   function salvageRewardPlan(g,includeEnhance=true){
     const identity=globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY?.(g),custom=identity&&globalThis.__EMBERWILD_ITEM_DETAILS?.(identity.kind,identity.key)?.salvageRewards;
-    if(custom!==undefined)return custom.map(x=>({...x}));
-    const r=update12SalvageRewards(g,includeEnhance);
-    return [{type:'ore',key:'',quantity:r.ore},{type:'dust',key:'',quantity:r.dust},...salvageExtraRules(g).map(x=>({...x}))];
+    if(EmberwildTokens.isToken(g)&&custom!==undefined)return custom.map(x=>({...x}));
+    const r=update12SalvageRewards(g,includeEnhance),others=(custom??salvageExtraRules(g)).filter(x=>!['ore','dust'].includes(x.type)&&!(x.type==='material'&&['鍛鐵','粉塵'].includes(x.key)));
+    return [{type:'ore',key:'',quantity:r.ore},{type:'dust',key:'',quantity:r.dust},...others.map(x=>({...x}))];
   }
   function grantSalvageRewards(g,includeEnhance=true){
     const plan=salvageRewardPlan(g,includeEnhance);for(const x of plan)grantEconomyReward(x.type,x.key,x.quantity);
@@ -163,11 +163,10 @@
   const economyBulkSalvageBase=bulkSalvageControls;
   bulkSalvageControls=function(){return economyBulkSalvageBase()+`<div class="actions bulk-sell-actions">${QUALITY_NAMES.map((name,q)=>`<button onclick="sellAllGearByQuality(${q})">販售所有${name}</button>`).join('')}</div>`;};
 
-  function sellMaterial(key,qty){if(globalThis.__EMBERWILD_CAN_SELL?.(key==='升級卷軸'?'item':'material',key==='升級卷軸'?'level_scroll':key)===false)return toast('此素材不可販售');const have=materialCount(key),n=Math.max(0,Math.min(have,Math.floor(Number(qty)||0)));if(n<1)return toast('請輸入要販售的數量');const unit=materialSellPrice(key),gold=state.gold;if(!Number.isSafeInteger(unit*n)||gold+unit*n>1e12)return toast('金幣已達上限，素材已保留');setMaterialCount(key,have-n);state.gold+=unit*n;if(!save()){setMaterialCount(key,have);state.gold=gold;return;}render();toast(`已販售 ${key} ×${n}，獲得 ${unit*n} 金幣`);}
+  function sellMaterial(key,qty){if(key==='粉塵')return toast('此素材不可販售');if(globalThis.__EMBERWILD_CAN_SELL?.(key==='升級卷軸'?'item':'material',key==='升級卷軸'?'level_scroll':key)===false)return toast('此素材不可販售');const have=materialCount(key),n=Math.max(0,Math.min(have,Math.floor(Number(qty)||0)));if(n<1)return toast('請輸入要販售的數量');const unit=materialSellPrice(key),gold=state.gold;if(!Number.isSafeInteger(unit*n)||gold+unit*n>1e12)return toast('金幣已達上限，素材已保留');setMaterialCount(key,have-n);state.gold+=unit*n;if(!save()){setMaterialCount(key,have);state.gold=gold;return;}render();toast(`已販售 ${key} ×${n}，獲得 ${unit*n} 金幣`);}
   function sellMaterialFromControl(btn){const box=btn.closest('[data-material]'),input=box.querySelector('input');sellMaterial(box.dataset.material,input.value);}
   function sellAllMaterialFromControl(btn){const box=btn.closest('[data-material]');sellMaterial(box.dataset.material,materialCount(box.dataset.material));}
   globalThis.sellMaterial=sellMaterial;globalThis.sellMaterialFromControl=sellMaterialFromControl;globalThis.sellAllMaterialFromControl=sellAllMaterialFromControl;
-  const ALCHEMY_MATERIALS=new Set(['紅色草','紅色草泥','藥水瓶','清水']);
   const ENHANCE_MATERIALS=new Set(['鍛鐵','粉塵','以太鍛鐵','光輝碎塊']);
   let commonMaterialRegion='all',commonMaterialSort='region';
   function materialRegions(){
@@ -192,13 +191,13 @@
     const names=[...ENHANCE_MATERIALS,...Object.keys(state.materials)],seen=new Set(),entries=[];
     for(const name of names){if(name==='升級卷軸'||seen.has(name))continue;seen.add(name);const n=materialCount(name);if(n>0||['鍛鐵','粉塵','以太鍛鐵'].includes(name))entries.push({name,n});}
     const sources=materialRegions(),regions=name=>[...(sources.get(name)||[])].sort((a,b)=>a-b);
-    const sourceText=name=>{const maps=regions(name);return maps.length?maps.map(i=>MAPS[i].name).join('、'):name==='小蟲'?'採集取得':'非地區來源／未指定';};
+    const sourceText=name=>{const maps=regions(name);return maps.length?maps.map(i=>MAPS[i].name).join('、'):'非地區來源／未指定';};
     function row({name,n},group){return `<div class="account-sell-row account-material-row icon-only-row">${itemSlotHTML('material',name,{count:n,extra:sourceText(name),context:'inventory'})}</div>`;}
 
     const controls=`<div class="material-region-controls"><label>取得地區 <select aria-label="共用材料取得地區" onchange="setCommonMaterialRegion(this.value)"><option value="all" ${commonMaterialRegion==='all'?'selected':''}>全部地區</option><option value="multiple" ${commonMaterialRegion==='multiple'?'selected':''}>跨地區掉落</option><option value="other" ${commonMaterialRegion==='other'?'selected':''}>非地區來源／未指定</option>${MAPS.map((m,i)=>`<option value="${i}" ${commonMaterialRegion===String(i)?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label><label>排序 <select aria-label="共用材料排序" onchange="setCommonMaterialSort(this.value)">${[['region','取得地區'],['name','名稱'],['quantity','數量']].map(([key,label])=>`<option value="${key}" ${commonMaterialSort===key?'selected':''}>${label}</option>`).join('')}</select></label></div>`;
-    const groups=[['common','共用材料'],['alchemy','煉金材料'],['enhance','強化材料']];
+    const groups=[['common','共用材料'],['enhance','強化材料']];
     return heading('MATERIALS / 帳號共用','材料庫存')+`<div class="account-material-groups">${groups.map(([group,title])=>{
-      let list=entries.filter(({name})=>group==='alchemy'?ALCHEMY_MATERIALS.has(name):group==='enhance'?ENHANCE_MATERIALS.has(name):!ALCHEMY_MATERIALS.has(name)&&!ENHANCE_MATERIALS.has(name));
+      let list=entries.filter(({name})=>group==='enhance'?ENHANCE_MATERIALS.has(name):!ENHANCE_MATERIALS.has(name));
       if(group==='common'){
         list=list.filter(({name})=>commonMaterialRegion==='all'||commonMaterialRegion==='other'&&!regions(name).length||commonMaterialRegion==='multiple'&&regions(name).length>1||regions(name).includes(Number(commonMaterialRegion)));
         list.sort((a,b)=>(commonMaterialSort==='region'?(regions(a.name)[0]??Infinity)-(regions(b.name)[0]??Infinity):commonMaterialSort==='quantity'?b.n-a.n:0)||a.name.localeCompare(b.name,'zh-Hant'));

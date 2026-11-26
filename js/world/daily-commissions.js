@@ -45,7 +45,7 @@
     while(pool.length&&board.tasks.length<5){const q=M.weighted(pool);pool.splice(pool.indexOf(q),1);
       const objectives=resolveObjectives(q,mi),rewards=resolveRewards(q.rewards,mi),o=objectives[0],g=rewards.gear[0],rewardPool=d.daily.materialRewards,pick=rewardPool[rand(rewardPool.length)];
       const amount=pick.min+rand(pick.max-pick.min+1);if(pick.key==='鍛鐵')rewards.ore+=amount;else if(pick.key==='粉塵')rewards.dust+=amount;else {const old=rewards.materials.find(x=>x.key===pick.key);if(old)old.quantity+=amount;else rewards.materials.push({key:pick.key,quantity:amount});}
-      const source=o.type==='potion'?'potion':o.type==='material'?(o.key==='紅色草'?'gather':o.key==='紅色草泥'?'alchemy':'monster'):'design';
+      const source=o.type==='potion'?'potion':o.type==='material'?'monster':'design';
       board.tasks.push({id:uid(),designVersion:1,templateId:q.id,title:q.title,description:q.description,objectives,rewards,map:mi,mat:o.type==='potion'?itemName(o.key):String(o.key),n:o.quantity,source,...(o.type==='potion'?{item:o.key}:{}),kind:g?'gear':'gem',gem:rand(3),slot:g?.slot??0,rar:g?.rar??2,job:g?.job??0,done:false,started:false});
     }return board;
   }

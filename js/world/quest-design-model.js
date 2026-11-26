@@ -5,18 +5,18 @@
   const int=(v,min=0,max=1e9)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
   const text=(v,max=80)=>typeof v==='string'&&v.trim().length>0&&v.length<=max&&!/[<>\u0000-\u001f]/.test(v)&&!['__proto__','constructor','prototype'].includes(v);
   const reward=()=>({gold:0,goldPerTier:0,ore:0,orePerTier:0,dust:0,randomGems:0,gemCounts:[0,0,0],materials:[],potions:[],items:[],gear:[],choice:'all',gearChance:.5});
-  const objective=(type='material',key='紅色草',quantity=1)=>({type,key,quantity,quantityMax:quantity,perTier:0,consume:['material','potion','item'].includes(type)});
+  const objective=(type='material',key='黏稠凝膠',quantity=1)=>({type,key,quantity,quantityMax:quantity,perTier:0,consume:['material','potion','item'].includes(type)});
   const entry=(id,title)=>({id,title,description:'',enabled:true,weight:1,mapIndices:[],prerequisites:[],objectives:[objective()],rewards:reward()});
   function defaults(legacy={}){
     const side=[['wolves','縫補獵人的披肩','林間野狼的狼牙，是獵人交換皮革的憑證。','完整狼牙',5,300,20],['witch','淨化沼澤','採集女巫符印，協助營地研究暮色詛咒。','女巫符印',2,800,55],['stars','鍛造師的最後一課','取得星隕監視者的稜鏡，準備迎戰噬日者。','星隕稜鏡',3,2000,120]].map(([id,title,description,key,n,gold,ore],i)=>{
       const old=legacy.side?.[i]||{},q=entry(id,title);q.description=description;q.objectives=[objective('material',key,Math.round(old.required??n))];q.rewards={...reward(),gold:Math.round(old.gold??gold),ore:Math.round(old.ore??ore),randomGems:Math.round(old.gem??1)};return q;
     });
     const make=(id,title,type,key,n,max=n)=>{const q=entry(id,title);q.objectives=[{...objective(type,key,n),quantityMax:max}];q.rewards=reward();q.description=['salvage','enhance'].includes(type)?'開始任務後進行裝備作業，協助營地整備。':'完成日常委託，協助營地補給。';return q;};
-    const expanded=[make('daily_hunt','附近怪物討伐','nearKill','@nearLevel',12,20),make('daily_salvage','裝備回收作業','salvage','',3,5),make('daily_enhance','裝備強化作業','enhance','',1,2),make('daily_explore','探索物資募集','material','@currentMap',6,10),make('daily_herb','紅色草募集','material','紅色草',8,12),make('daily_paste','紅色草泥募集','material','紅色草泥',3,5),make('daily_potion','營地治療補給','potion','heal_small',2,3)];
+    const expanded=[make('daily_hunt','附近怪物討伐','nearKill','@nearLevel',12,20),make('daily_salvage','裝備回收作業','salvage','',3,5),make('daily_enhance','裝備強化作業','enhance','',1,2),make('daily_explore','探索物資募集','material','@currentMap',6,10),make('daily_potion','營地治療補給','potion','heal_small',2,3)];
     return {version:1,daily:{version:2,enabled:true,entries:expanded,materialRewards:materialRewards()},side};
   }
-  function materialRewards(){return [{key:'鍛鐵',min:4,max:8},{key:'粉塵',min:3,max:6},{key:'紅色草',min:4,max:8},{key:'紅色草泥',min:2,max:4}];}
-  function migrate(d){const out=copy(d);if(!out||!out.daily||!Array.isArray(out.daily.entries))return out;if(out.daily.version!==2){const def=defaults();const builtin=new Set(['daily_explore','daily_herb','daily_paste','daily_potion']);out.daily.entries=[...def.daily.entries,...out.daily.entries.filter(q=>!builtin.has(q.id))];out.daily.version=2;out.daily.materialRewards=materialRewards();}
+  function materialRewards(){return [{key:'鍛鐵',min:4,max:8},{key:'粉塵',min:3,max:6}];}
+  function migrate(d){const out=copy(d);if(!out||!out.daily||!Array.isArray(out.daily.entries))return out;if(out.daily.version!==2){const def=defaults();const builtin=new Set(['daily_explore','daily_potion']);out.daily.entries=[...def.daily.entries,...out.daily.entries.filter(q=>!builtin.has(q.id))];out.daily.version=2;out.daily.materialRewards=materialRewards();}
     // v0.161: no character level, so quests have no level range, level objectives or XP rewards.
     for(const q of [...out.daily.entries,...(Array.isArray(out.side)?out.side:[])]){if(!q||typeof q!=='object')continue;delete q.minLevel;delete q.maxLevel;if(q.rewards&&typeof q.rewards==='object')delete q.rewards.xp;if(Array.isArray(q.objectives))q.objectives=q.objectives.filter(o=>o?.type!=='level');}
     return out;}

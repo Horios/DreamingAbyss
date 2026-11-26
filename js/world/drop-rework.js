@@ -188,7 +188,7 @@
     accountGemsView=function(...args){
       const html=base.apply(this,args);
       const rows=GEMS.map((g,i)=>({g,i})).filter(({i})=>(state.gems[i]||0)>0).map(({g,i})=>{const q=gemUpgradeQuote(i);return `<li data-gem-upgrade="${i}"><span>${esc(g.name)} ×${state.gems[i]}</span>${q.max?'<span class="small">最高等級</span>':`<button type="button" onclick="openGemUpgrade(${i})">粉塵升級 · ${q.cost} 粉塵</button>`}</li>`;}).join('');
-      return html+`<section class="panel gem-dust-upgrade"><h3>寶石粉塵升級</h3><p class="small">消耗寶石粉塵，將 1 顆寶石直接提升一個等級。同類寶石合成仍在煉金進行。</p><ul class="gem-upgrade-list">${rows||'<li class="empty">目前沒有可升級的寶石。</li>'}</ul></section>`;
+      return html+`<section class="panel gem-dust-upgrade"><h3>寶石粉塵升級</h3><p class="small">消耗寶石粉塵，將 1 顆寶石直接提升一個等級。</p><ul class="gem-upgrade-list">${rows||'<li class="empty">目前沒有可升級的寶石。</li>'}</ul></section>`;
     };
   }
 })();

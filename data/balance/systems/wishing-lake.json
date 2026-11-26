@@ -74,28 +74,6 @@
       "max": 50,
       "poolId": "daily",
       "specialTrigger": ""
-    },
-    {
-      "id": "herb",
-      "kind": "material",
-      "key": "紅色草",
-      "enabled": true,
-      "quantityMode": "fixed",
-      "min": 20,
-      "max": 20,
-      "poolId": "daily",
-      "specialTrigger": ""
-    },
-    {
-      "id": "bug",
-      "kind": "material",
-      "key": "小蟲",
-      "enabled": true,
-      "quantityMode": "fixed",
-      "min": 10,
-      "max": 10,
-      "poolId": "daily",
-      "specialTrigger": ""
     }
   ],
   "pools": [
@@ -132,18 +110,6 @@
           "max": 12,
           "enabled": true,
           "weight": 30,
-          "minMapId": "map0",
-          "allowAhead": false
-        },
-        {
-          "id": "herb",
-          "type": "item",
-          "kind": "material",
-          "key": "紅色草",
-          "min": 10,
-          "max": 20,
-          "enabled": true,
-          "weight": 20,
           "minMapId": "map0",
           "allowAhead": false
         },

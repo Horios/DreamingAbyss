@@ -10,7 +10,7 @@ test('BOSS recipes browse every class without selecting companions or changing t
   const r=game();
   const out=json(r,`(()=>{
     const before=JSON.stringify(packParty().buildSystem),player=playerHero();
-    selectPageHero('bossCraft',12);selectHero(12);
+    selectPageHero('crafting',12);selectHero(12);
     const pages=CLASSES.map((c,j)=>{setBossCraftClass(j);return bossCraftView();});
     return {pages,before,after:JSON.stringify(packParty().buildSystem),job:player.job,selected:party.selected};
   })()`);

@@ -83,7 +83,7 @@ function configuredDropDescription(row,kind,mapIndex){
 function randomQuantity(rule,rng=Math.random){const lo=Math.max(1,Math.floor(rule.quantityMin||1)),hi=Math.max(lo,Math.floor(rule.quantityMax||lo));return lo+Math.floor(rng()*(hi-lo+1));}
 function grantConfiguredDrop(rule,e,rng=Math.random){
   const qty=randomQuantity(rule,rng),mode=e.difficulty||0,mi=e.region??state.map,tier=regionTier(mi),r=GAMEPLAY_SETTINGS.rewards;
-  if(rule.type==='sourceMaterial'||rule.type==='material'){const key=rule.type==='sourceMaterial'?(e.kind==='boss'?(mode?'【'+['普通','困難','地獄'][mode]+'】':'')+e.mat:e.mat):rule.key;state.materials[key]=(state.materials[key]||0)+qty;note('獲得 '+key+' ×'+qty,'item');return {name:key,count:qty};}
+  if(rule.type==='sourceMaterial'||rule.type==='material'){const key=rule.type==='sourceMaterial'?(e.kind==='boss'?(mode?'【'+['普通','困難','地獄'][mode]+'】':'')+e.mat:e.mat):rule.key;if(key==='粉塵')state.dust+=qty;else if(key==='鍛鐵')state.ore+=qty;else state.materials[key]=(state.materials[key]||0)+qty;note('獲得 '+key+' ×'+qty,'item');return {name:key,count:qty};}
   if(rule.type==='ore'){state.ore+=qty;note('獲得 鍛鐵 ×'+qty,'item');return {name:'鍛鐵',count:qty};}
   if(rule.type==='item'){const item=SHOP.find(x=>x.id===rule.key);if(!item)return null;if(typeof isHealPotion==='function'&&isHealPotion(item)&&typeof healPotionCount==='function'&&typeof setHealPotionCount==='function')setHealPotionCount(item.id,healPotionCount(item.id)+qty);else{state.consumables??={};state.consumables[item.id]=(state.consumables[item.id]||0)+qty;}note('獲得 '+item.name+' ×'+qty,'item');return {name:item.name,count:qty};}
   if(rule.type==='gem'){const i=Math.max(0,Math.min(GEMS.length-1,Number(rule.key)||0));state.gems[i]+=qty;note('獲得 '+GEMS[i].name+(qty>1?' ×'+qty:''),'item');return {name:GEMS[i].name,count:qty};}
@@ -109,7 +109,7 @@ function rollConfiguredDrops(e,rng=Math.random){
 // first-BOSS ether claim, which is not a repeatable idle reward.
 function rollEnemyItemLoot(e,{voucher=false}={}){
   const mode=e.difficulty||0,d=MODES[mode],mi=e.region??state.map,tier=regionTier(mi),kindIndex=e.kind==='normal'?0:e.kind==='elite'?1:2,r=GAMEPLAY_SETTINGS.rewards;
-  // v0.206: monsters no longer drop 粉塵 directly. The former per-kill base material (rewards.ore) is not granted.
+  // All repeatable material loot uses configured rules; no fixed per-kill material grant.
   rollConfiguredDrops(e);
   const firstBossClaim=(e.kind==='boss'||e.kind==='final')&&!(party?.etherBossClaims||[]).includes((e.region??party?.map)+':'+(e.difficulty||0));
   if(!voucher||!firstBossClaim)awardEther(e);

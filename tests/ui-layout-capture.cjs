@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright'),{openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..'),out=path.resolve('ui-layout-review'),baseline=process.env.UI_LAYOUT_BASELINE;
 const sizes=[[1920,1080],[1366,768],[1024,768],[768,1024],[390,844],[320,568],[844,390]];
-const pages=['character','roster','partnerRoster','skills','equipment','inventory-materials','inventory-items','inventory-tokens','worn','forge','bossCraft','shop','story','story-side','story-npc','quests','gather','alchemy','statistics','battle'];
+const pages=['character','roster','partnerRoster','skills','equipment','inventory-materials','inventory-items','inventory-tokens','worn','forge','crafting','shop','story','story-side','story-npc','quests','statistics','battle'];
 const pairs=[['character',1366],['equipment',1366],['skills',1366],['battle',1366],['equipment',390]],images=new Map(),metrics=[];
 fs.mkdirSync(out,{recursive:true});
 async function phase(dir,name){

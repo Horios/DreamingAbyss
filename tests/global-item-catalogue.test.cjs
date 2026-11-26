@@ -43,12 +43,7 @@ test('gem prices distinguish disabled sales from zero-price sales and preserve s
  apply(r,[{kind:'gem',key:'0',iconType:'auto',sellPrice:17,saleEnabled:true,displayName:'紅色技能石'}]);assert.match(r.run('accountGemsView()'),/紅色技能石/);assert.equal(r.run('sellCatalogueGem(0,2)'),true);assert.equal(r.run('state.gems[0]'),1);assert.equal(r.run('state.gold'),gold+34);
  r.run('globalThis.originalSave=save;save=()=>false;');assert.equal(r.run('sellCatalogueGem(0,1)'),false);assert.equal(r.run('state.gems[0]'),1);assert.equal(r.run('state.gold'),gold+34);r.run('save=originalSave;state.gold=1e12;');assert.equal(r.run('sellCatalogueGem(0,1)'),false);assert.equal(r.run('state.gems[0]'),1);
 });
-test('ore and dust can be bought and consumed in alchemy using shared resource stock and survive reload',()=>{
- const r=game();apply(r,[],d=>{d.lifeSkills.materialBuyPrices.鍛鐵=2;d.lifeSkills.materialBuyPrices.粉塵=3;d.lifeSkills.recipes.mix={name:'資源配方',inputs:[['鍛鐵',2],['粉塵',1],['黏稠凝膠',1],['紅色草泥',1]],output:'試驗合金',outputType:'material',periodMs:1000,chance:1,quantity:1};});
- const oldOre=r.run('state.ore');assert.equal(r.run('buyLifeMaterial("鍛鐵",2)'),true);assert.equal(r.run('state.ore'),oldOre+2);assert.equal(r.run('Object.hasOwn(state.materials,"鍛鐵")'),false);
- r.run('state.ore=4;state.dust=2;state.materials["黏稠凝膠"]=2;state.materials["紅色草泥"]=2;startLifeWork("mix");');r.advance(1000);r.run('tickLifeSkills();');assert.equal(r.run('state.ore'),2);assert.equal(r.run('state.dust'),1);assert.equal(r.run('materialCount("試驗合金")'),1);
- const saved=Object.fromEntries(r.values),reload=loadRuntime(root,'index.html',saved);assert.equal(reload.run('party.members[0].ore'),2);assert.equal(reload.run('party.members[0].dust'),1);assert.equal(reload.run('party.members[0].materials["試驗合金"]'),1);assert.deepEqual(r.errors,[]);
-});
+
 test('invalid metadata, dangling salvage item references and incompatible values reject before replacing data',()=>{
  const r=game(),before=r.run('JSON.stringify(exportableBalance())');for(const patch of [{sellPrice:-1},{saleEnabled:'yes'},{categoryPath:['素材']},{tags:Array(21).fill('x')},{salvageRewards:[{type:'item',key:'missing',quantity:1}]},{salvageRewards:[{type:'material',key:'__proto__',quantity:1}]}]){assert.throws(()=>apply(r,[{kind:'equipment',key:'form:0:0:0',iconType:'auto',...patch}]));assert.equal(r.run('JSON.stringify(exportableBalance())'),before);}
 });

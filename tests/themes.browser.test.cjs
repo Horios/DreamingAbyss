@@ -43,7 +43,7 @@ test('Appearance switches in Options without restarting combat or mutating saves
     await p.getByRole('button',{name:'關閉彈窗',exact:true}).click();
     for(const id of ['ember','forest','paper']){
       await p.evaluate(id=>setUITheme(id),id);
-      for(const tab of ['battle','roster','partnerRoster','character','skills','equipment','worn','forge','bossCraft','quests','shop','lifeSkills','guide','statistics']){
+      for(const tab of ['battle','roster','partnerRoster','character','skills','equipment','worn','forge','crafting','quests','shop','crafting','guide','statistics']){
         await p.evaluate(tab=>setTab(tab),tab);
         assert(await p.locator('main').evaluate(e=>e.scrollWidth<=e.clientWidth+1),id+' '+tab+' mobile overflow');
         if(id==='paper'){

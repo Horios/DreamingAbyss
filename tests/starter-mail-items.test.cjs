@@ -51,7 +51,7 @@ test('pending/claimed mail survives cold reload and no gifts are sent again on l
 test('six attachment slots use SVG; inventory keeps detail actions; references and mail stay non-modal',()=>{
  const r=game();assert.equal((r.run('mailboxView()').match(/class="item-slot /g)||[]).length,6);assert.match(r.run('mailboxView()'),/data-item-mail="1"/);
  r.run('claimMailboxAttachments(1);state.materials["紅色草"]=3;state.consumables.imbue_fire=2;state.gems[0]=1;continueFromTitle()');
- for(const view of ['inventoryGearListItem(state.bag[0],true)','forgeView()','accountMaterialsView()','accountItemsView()','lifeSkillsView()','shopView()'])assert.match(r.run(view),/<svg/);
+ for(const view of ['inventoryGearListItem(state.bag[0],true)','forgeView()','accountMaterialsView()','accountItemsView()','craftingView()','shopView()'])assert.match(r.run(view),/<svg/);
  const html=r.run('inventoryGearListItem(state.bag[0],true)');assert.match(html,/selectInventoryGear/);assert.doesNotMatch(html,/inventory-list-name|inventory-list-meta/);
  r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"紅色草",itemContext:"inventory"}})');assert.match(r.elements.get('item-detail-dialog').innerHTML,/紅色草/);assert.match(r.elements.get('item-detail-dialog').innerHTML,/sellMaterial/);
  r.run('openUtilityPanel("mailbox");globalThis.mailHTML=$("modal").innerHTML;openItemSlotDetails({dataset:{itemMail:"1",itemIndex:"0"}})');assert.equal(r.run('$("modal").innerHTML'),r.run('mailHTML'));assert.match(r.elements.get('item-detail-dialog').innerHTML,/紅色草/);assert.deepEqual(r.errors,[]);

@@ -1862,7 +1862,7 @@
       "description": "用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。",
       "trigger": {
         "type": "pageEnter",
-        "page": "bossCraft",
+        "page": "crafting",
         "notify": false,
         "notifyText": ""
       },
@@ -1881,7 +1881,7 @@
           "id": "classes",
           "title": "職業分頁",
           "text": "切換職業查看該職業可以製作的首領裝備。",
-          "page": "bossCraft",
+          "page": "crafting",
           "target": "boss.classTabs",
           "placement": "auto",
           "advance": {
@@ -1902,7 +1902,7 @@
           "id": "recipe",
           "title": "首領配方",
           "text": "每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。",
-          "page": "bossCraft",
+          "page": "crafting",
           "target": "boss.recipe",
           "placement": "auto",
           "advance": {
@@ -2127,181 +2127,6 @@
       "replayable": true,
       "skippable": true,
       "interrupt": "end",
-      "revision": 1,
-      "reprompt": false
-    },
-    {
-      "id": "gather_basics",
-      "title": "採集",
-      "category": "life",
-      "type": "notice",
-      "enabled": true,
-      "implemented": true,
-      "description": "選擇採集對象並持續取得材料。第一次進入採集時開始。",
-      "trigger": {
-        "type": "pageEnter",
-        "page": "gather",
-        "notify": false,
-        "notifyText": ""
-      },
-      "prerequisites": {
-        "mode": "all",
-        "conditions": [
-          {
-            "type": "prologueDone",
-            "key": "",
-            "count": 1
-          }
-        ]
-      },
-      "steps": [
-        {
-          "id": "target",
-          "title": "採集對象",
-          "text": "選擇要採集的材料，下方會顯示每次採集的時間與機率。",
-          "page": "gather",
-          "target": "gather.target",
-          "placement": "auto",
-          "advance": {
-            "type": "next"
-          },
-          "optional": false,
-          "requires": {
-            "mode": "all",
-            "conditions": []
-          },
-          "onReplay": "same",
-          "skipIf": {
-            "mode": "all",
-            "conditions": []
-          }
-        },
-        {
-          "id": "start",
-          "title": "開始採集",
-          "text": "採集會持續進行，切換頁面或同時探索都不會中斷。",
-          "page": "gather",
-          "target": "gather.start",
-          "placement": "auto",
-          "advance": {
-            "type": "next"
-          },
-          "optional": false,
-          "requires": {
-            "mode": "all",
-            "conditions": []
-          },
-          "onReplay": "same",
-          "skipIf": {
-            "mode": "all",
-            "conditions": []
-          }
-        },
-        {
-          "id": "stock",
-          "title": "材料庫存",
-          "text": "採集到的材料全隊共用，可以在這裡查看與篩選。",
-          "page": "gather",
-          "target": "life.stock",
-          "placement": "auto",
-          "advance": {
-            "type": "next"
-          },
-          "optional": false,
-          "requires": {
-            "mode": "all",
-            "conditions": []
-          },
-          "onReplay": "same",
-          "skipIf": {
-            "mode": "all",
-            "conditions": []
-          }
-        }
-      ],
-      "completion": {
-        "type": "steps"
-      },
-      "replayable": true,
-      "skippable": true,
-      "interrupt": "pause",
-      "revision": 1,
-      "reprompt": false
-    },
-    {
-      "id": "alchemy_basics",
-      "title": "煉金",
-      "category": "alchemy",
-      "type": "notice",
-      "enabled": true,
-      "implemented": true,
-      "description": "用材料煉製藥水與寶石。第一次進入煉金時開始。",
-      "trigger": {
-        "type": "pageEnter",
-        "page": "alchemy",
-        "notify": false,
-        "notifyText": ""
-      },
-      "prerequisites": {
-        "mode": "all",
-        "conditions": [
-          {
-            "type": "prologueDone",
-            "key": "",
-            "count": 1
-          }
-        ]
-      },
-      "steps": [
-        {
-          "id": "recipe",
-          "title": "煉金配方",
-          "text": "每個配方列出需要的材料、持有數量與產物。",
-          "page": "alchemy",
-          "target": "alchemy.recipe",
-          "placement": "auto",
-          "advance": {
-            "type": "next"
-          },
-          "optional": false,
-          "requires": {
-            "mode": "all",
-            "conditions": []
-          },
-          "onReplay": "same",
-          "skipIf": {
-            "mode": "all",
-            "conditions": []
-          }
-        },
-        {
-          "id": "start",
-          "title": "開始煉金",
-          "text": "材料足夠時按「開始煉金」。每次完成才扣材料，材料不足時自動停止。",
-          "page": "alchemy",
-          "target": "alchemy.start",
-          "placement": "auto",
-          "advance": {
-            "type": "next"
-          },
-          "optional": false,
-          "requires": {
-            "mode": "all",
-            "conditions": []
-          },
-          "onReplay": "same",
-          "skipIf": {
-            "mode": "all",
-            "conditions": []
-          }
-        }
-      ],
-      "completion": {
-        "type": "steps"
-      },
-      "replayable": true,
-      "skippable": true,
-      "interrupt": "pause",
       "revision": 1,
       "reprompt": false
     }

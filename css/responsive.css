@@ -227,11 +227,6 @@
   #app .boss-reading-page .boss-recipe>.recipe-cost{grid-column:1/-1;margin:0;gap:6px 10px;align-items:center}
   #app .boss-reading-page .boss-recipe>button{grid-column:1/-1}
 
-  /* Alchemy recipes: ingredients sit two to a row. */
-  #app .life-recipe .recipe-item-line{gap:6px;margin:8px 0}
-  #app .life-recipe .recipe-item-line>.recipe-input,#app .life-recipe .recipe-item-line>.item-slot{flex:1 1 calc(50% - 20px);min-width:120px}
-  #app .life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
-
   /* Title screen: 刪除 shares the slot's row. Character creation: one class at a time, picked from tabs. */
   #app .save-slot{grid-template-columns:minmax(0,1fr) auto;align-items:stretch}
   #app .save-slot-delete{align-self:stretch;min-height:44px;padding:6px 10px}
@@ -298,7 +293,7 @@
 @media(min-width:901px) and (max-width:1100px){#app>.layout>main .forge-layout{display:block;height:auto}#app>.layout>main .forge-preview,#app>.layout>main .forge-controls{max-height:none}}
 
 /* ── v0.125 Second pass on phone pages ───────────────────────────────────── */
-.intro-clamp-toggle,.life-recipe-toggle{display:none}
+.intro-clamp-toggle{display:none}
 @media(max-width:700px){
   /* Character stats: two per row. */
   #app>.layout>main .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
@@ -318,17 +313,6 @@
   #app>.layout>main .intro-clamp:not(.intro-open)>p:first-of-type,#app>.layout>main p.intro-clamp:not(.intro-open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
   #app>.layout>main .intro-clamp:not(.intro-open)>p:not(:first-of-type){display:none}
   #app>.layout>main .intro-clamp-toggle{display:inline-flex;align-items:center;min-height:44px;margin:2px 0 0;padding:2px 8px;font-size:var(--fs-xs);color:var(--gold);background:transparent;border:0;box-shadow:none}
-  /* Alchemy recipes: a row with the name and 開始 until opened. */
-  #app .life-recipe{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 8px}
-  #app .life-recipe>*{grid-column:1/-1;margin-top:0;margin-bottom:0}
-  #app .life-recipe>.life-action-title{grid-column:1;cursor:pointer}
-  #app .life-recipe>.life-recipe-toggle{display:inline-flex;grid-column:2;grid-row:1;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:4px 10px;font-size:var(--fs-xs)}
-  #app .life-recipe>button:not(.life-recipe-toggle){grid-column:3;grid-row:1;white-space:nowrap}
-  #app .life-recipe.recipe-folded>.recipe-item-line,#app .life-recipe.recipe-folded>p{display:none}
-  /* Material stock: two per row. */
-  #app .life-materials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-  #app .life-materials>.life-stock-row{justify-self:stretch;width:auto;max-width:none;min-width:0;margin:0;padding:6px}
-  #app .life-materials>.life-stock-row .item-slot{width:100%;max-width:none;min-width:0}
   #app>.layout>main .intro-clamp:not(.intro-open)>p.small:first-of-type{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 }
 
@@ -356,10 +340,10 @@
 /* ── v0.127 Desktop third pass ───────────────────────────────────────────── */
 @media(min-width:901px){
   /* Material and stock lists fill the width instead of one narrow column. */
-  #app>.layout>main .account-sell-list,#app .life-materials{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));justify-items:stretch;gap:8px;align-items:start}
+  #app>.layout>main .account-sell-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));justify-items:stretch;gap:8px;align-items:start}
   #app>.layout>main .account-sell-list>.empty{grid-column:1/-1;justify-self:start}
-  #app>.layout>main .account-sell-list>*,#app .life-materials>*{width:auto;max-width:none;min-width:0;margin:0}
-  #app>.layout>main .account-sell-list .item-slot,#app .life-materials .item-slot{width:100%;max-width:none;min-width:0}
+  #app>.layout>main .account-sell-list>*{width:auto;max-width:none;min-width:0;margin:0}
+  #app>.layout>main .account-sell-list .item-slot{width:100%;max-width:none;min-width:0}
   /* BOSS recipe cost: the ingredient takes the row; 持有 and the gold cost stay on one line each. */
   #app .boss-reading-page .recipe-cost{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px}
   #app .boss-reading-page .recipe-cost>span:first-child{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap}
@@ -454,7 +438,7 @@
   #app .shop-product-row:not(:has(>.shop-product-visual)) .shop-inline-actions>input{width:64px}
 }
 
-/* ── v0.133 Desktop: narrow windows, alchemy ─────────────────────────────── */
+/* ── v0.133 Desktop: narrow windows ─────────────────────────────── */
 @media(min-width:901px){
   /* The folded report strip reads clearly. */
   body.journal-collapsed #globalBattleJournal>.journal-collapse-toggle{font-size:var(--fs-sm);font-weight:700;line-height:1.5;padding:10px calc(50% - .5em)!important}
@@ -468,13 +452,6 @@
 
 /* Alchemy on desktop: recipes sit two to a row (the page was one recipe per row, about 2900px tall at 1366). */
 @media(min-width:901px){
-  #app #life-alchemy{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;align-items:start}
-  #app #life-alchemy>*{grid-column:1/-1;margin:0}
-  #app #life-alchemy>.life-recipe{grid-column:auto;height:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
-  #app #life-alchemy>.life-recipe .recipe-item-line{gap:6px;margin:8px 0}
-  #app #life-alchemy>.life-recipe .recipe-item-line>.recipe-input,#app #life-alchemy>.life-recipe .recipe-item-line>.item-slot{flex:1 1 calc(50% - 24px);min-width:150px}
-  #app #life-alchemy>.life-recipe .recipe-item-line .item-slot{width:100%;max-width:none;min-width:0}
-  #app #life-alchemy>.life-recipe>p.small{margin:4px 0}
 }
 
 /* ── v0.134 Desktop: statistics charts, character creation ───────────────── */

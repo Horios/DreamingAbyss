@@ -54,10 +54,6 @@
         {
           "id": "forge",
           "label": "裝備工坊"
-        },
-        {
-          "id": "bossCraft",
-          "label": "BOSS 製作"
         }
       ]
     },
@@ -133,17 +129,13 @@
       ]
     },
     {
-      "id": "life",
-      "label": "生活",
+      "id": "crafting",
+      "label": "製作",
       "expanded": false,
       "pages": [
         {
-          "id": "gather",
-          "label": "採集"
-        },
-        {
-          "id": "alchemy",
-          "label": "煉金"
+          "id": "crafting",
+          "label": "製作"
         }
       ]
     }

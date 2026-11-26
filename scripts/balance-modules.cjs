@@ -92,7 +92,7 @@ const PATTERNS={
  'characters/classes':/[.\b]classes\[|\.classes\b|growthPerLevel/,'characters/support-skills':/supportSkills/,'characters/progression':/balanceSettings\.progression|xpCurve|levelCaps/,'characters/companions':/\.companions\b|recruitCompanion/,'characters/passives':/passiveDefinitions/,'characters/companion-settings':/companionTokens|companionSettings/,
  'equipment/forms':/equipmentForms/,'equipment/affix-pools':/balance\.affixes|poolBySlotRank/,'equipment/power-system':/equipmentPowerSystem/,'equipment/settings':/balanceSettings\.equipment/,
  'items/items':/\.items\b|healPotion/,'items/inventory-icons':/inventoryIcons/,'items/starter-packs':/starterPack/,
- 'systems/economy':/balanceSettings\.economy|materialPrices/,'systems/rewards':/balanceSettings\.rewards|regionVouchers/,'systems/quests':/balanceSettings\.quests|quests\.design/,'systems/story':/\.story\b|EmberwildStory/,'systems/shop':/shopSettings/,'systems/life-skills':/lifeSkills/,'systems/wishing-lake':/wishingLake/
+ 'systems/economy':/balanceSettings\.economy|materialPrices/,'systems/rewards':/balanceSettings\.rewards|regionVouchers/,'systems/quests':/balanceSettings\.quests|quests\.design/,'systems/story':/\.story\b|EmberwildStory/,'systems/shop':/shopSettings/,'systems/crafting':/crafting/,'systems/wishing-lake':/wishingLake/
 };
 // Tests the regression gate runs (headless vs browser), parsed from the workflow so the two lists cannot drift.
 function gateTests(){

@@ -165,7 +165,7 @@
   }
   function stackDetail(t,e){
     const p=P(),ref={kind:e.kind,key:e.key,context:'inventory',quantity:e.total??e.qty};
-    if(e.kind==='material'){const maps=[...(globalThis.inventoryMaterialRegions?.().get(e.key)||[])].sort((a,b)=>a-b);ref.extra='取得地區：'+(maps.length?maps.map(i=>MAPS[i].name).join('、'):e.key==='小蟲'?'採集取得':'非地區來源／未指定');}
+    if(e.kind==='material'){const maps=[...(globalThis.inventoryMaterialRegions?.().get(e.key)||[])].sort((a,b)=>a-b);ref.extra='取得地區：'+(maps.length?maps.map(i=>MAPS[i].name).join('、'):'非地區來源／未指定');}
     let body=p.info(ref),actions=p.controls(ref);
     if(e.kind==='gem'){
       const i=Number(e.key),q=globalThis.gemUpgradeQuote?.(i),have=state.gems[i]||0,one=globalThis.gemSalvageQuote?.({[i]:1});
