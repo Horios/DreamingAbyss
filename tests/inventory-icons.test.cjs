@@ -9,7 +9,7 @@ test('all existing icon-bearing inventory categories and gathering inputs/output
  for(const id of ['item:level_scroll','item:companion-ticket-'+doc.companions[0].id,'gem:0','gem:1','gem:2',...['鍛鐵','粉塵','以太鍛鐵','光輝碎塊'].map(k=>'material:'+k)])assert(ids.has(id),id);
  assert.equal(M.fallback('item','speed4_30m',{type:'timedBoost'}),'lucide:ticket');
 });
-test('icon choices reach actual inventory, shop, gathering and gem rendering and survive JSON/save reload',()=>{
+test('icon choices reach actual inventory, shop, crafting and gem rendering and survive JSON/save reload',()=>{
  const r=loadRuntime(root);r.ctx.published=published;r.run('applyBalanceConfig(published,{persist:false});selectSaveSlot(1);start(1);closeModal();');
  r.run('applyBalanceConfig(exportableBalance(),{persist:false});');const before=r.run('JSON.stringify(packParty())');
  r.run(`globalThis.doc=exportableBalance();doc.skillIcons.push({id:'fixture-item',name:'素材圖示',layers:[{kind:'icon',icon:'lucide:leaf',x:0,y:0,scale:1,rotation:0}]});doc.inventoryIcons=[
@@ -20,7 +20,7 @@ test('icon choices reach actual inventory, shop, gathering and gem rendering and
  for(const [expr,icon] of [["inventoryItemIcon(SHOP.find(x=>x.id==='imbue_fire'))",'lucide:flame'],["inventoryShopOfferIcon({kind:'item',key:'imbue_fire'})",'lucide:flame'],["inventoryMaterialIcon('以太鍛鐵')",'custom:fixture-item'],['inventoryGemIcon(0)','lucide:star']]){
   assert(r.run(expr).includes(r.run(`__EMBERWILD_SKILL_ICONS.svgFor('${icon}',exportableBalance().skillIcons,{size:26})`)),expr);
  }
- assert(r.run('craftingView()').includes(r.run("__EMBERWILD_SKILL_ICONS.svgFor('custom:fixture-item',exportableBalance().skillIcons,{size:26})")));
+ const customPath=r.run("__EMBERWILD_SKILL_ICONS.svgFor('custom:fixture-item',exportableBalance().skillIcons,{size:26})").match(/<path[^>]*d="([^"]+)"/)[1];assert(r.run('craftingView()').includes(customPath),'crafting uses the configured icon at its own display size');
  const exported=JSON.parse(r.run('JSON.stringify(exportableBalance())'));
  const reload=loadRuntime(root,'index.html',Object.fromEntries(r.values));
  assert.deepEqual(JSON.parse(reload.run('JSON.stringify(exportableBalance().inventoryIcons)')),exported.inventoryIcons);
