@@ -70,7 +70,8 @@ test('collapsed parent reminders show N before numbers and aggregate counts',()=
 
 test('quest details show NEW! text rather than N',()=>{
   const runtime=loadRuntime(root);
-  runtime.run('selectSaveSlot(1);start(0);closeModal()');
+  // v0.226: the intro quest left the main story; the merchant's NPC quest is the unstarted one at the start.
+  runtime.run("selectSaveSlot(1);start(0);closeModal();setStoryCategory('npc')");
   assert(runtime.run('storyView()').includes('class="quest-new quest-new-detail" aria-label="有未開始任務">NEW!</span>'));
   assert(runtime.run('questView()').includes('class="quest-new quest-new-detail" aria-label="有未開始任務">NEW!</span>'));
   assert.deepEqual(runtime.errors,[]);
