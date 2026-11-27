@@ -1690,3 +1690,7 @@ v0.211～v0.214 是手動觸發部署，沒有通過 CI；v0.215 合併後 CI �
   - 纏藤（`boss-entangle`，新效果 `resetBasic`）：每 10 秒（初始 10 秒）讓一名隨機存活角色的普攻秒數重新計算（秒數時間軸 `resetBasic`）。
   - 兩個效果加入核心技能效果驗證與怪物可施放效果清單（`core-game.js`、`shared-skill-runtime.js`）。平衡器尚未認得這兩個效果。
   - 測試：`tests/boss-map0-skills.test.cjs`。
+
+## v0.227 CI 測試清單
+
+- `test-skill-gems.yml` 的 skill-loadouts 群組改跑 `tests/onboarding-lessons.test.cjs` 與 `tests/boss-map0-skills.test.cjs`（取代 v0.226 刪除的 `tests/skill-equipment-tutorial.test.cjs`）。遊戲內容與 v0.226 相同。
