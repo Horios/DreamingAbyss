@@ -1,7 +1,8 @@
 // v0.142: the shared story window. Headless checks of the views and of what skipping does to the story state.
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),M=require('../js/story/story-model.js');
-function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
+const regionFixture=require('./fixtures/story-region-chain.json');
+function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.ctx.regionFixture=structuredClone(regionFixture);r.run('globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
 const view=r=>r.json('__EMBERWILD_STORY.dialogueView()');
 
 test('skippable is decided by the quest data: never the prologue, and any quest can opt out',()=>{
@@ -26,15 +27,15 @@ test('skipping a read-only stage completes it once, exactly like finishing it; u
  // The next stage has objectives that are not met: skipping only stops the reading.
  r.run("readStory('skill_equipment_intro')");assert.equal(r.run('skipStoryDialogue()'),true);assert.equal(view(r),null);assert.deepEqual(r.json('party.story.quests.skill_equipment_intro.completed'),['equipment_gift']);
  // A stage that ends in a choice stops at the choice.
- r.run("globalThis.d=exportableBalance();globalThis.q=d.story.quests.find(q=>q.id==='two_regions');q.stages[0].conditions.conditions=[];q.stages[0].choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:q.stages[0].next,nextQuests:[]},{id:'b',text:'選項乙',conditions:{mode:'all',conditions:[]},effects:[],next:q.stages[0].next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('two_regions')");
- assert.equal(r.run('skipStoryDialogue()'),true);const v=view(r);assert.equal(v.line,null);assert.match(v.body,/選項甲[\s\S]*選項乙/);assert.deepEqual(r.json('party.story.quests.two_regions.completed'),[],'no choice was made for the player');
+ r.run("globalThis.d=exportableBalance();globalThis.q=d.story.quests.find(q=>q.id==='test_region_chain');q.stages[0].conditions.conditions=[];q.stages[0].choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:q.stages[0].next,nextQuests:[]},{id:'b',text:'選項乙',conditions:{mode:'all',conditions:[]},effects:[],next:q.stages[0].next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('test_region_chain')");
+ assert.equal(r.run('skipStoryDialogue()'),true);const v=view(r);assert.equal(v.line,null);assert.match(v.body,/選項甲[\s\S]*選項乙/);assert.deepEqual(r.json('party.story.quests.test_region_chain.completed'),[],'no choice was made for the player');
  // A quest marked as not skippable refuses, by data.
  r.run("endStoryDialogue();d.story.quests.find(q=>q.id==='shop_rescue').skippable=false;applyBalanceConfig(d,{persist:false});readStory('shop_rescue')");
  assert.equal(view(r).skip,null);assert.equal(r.run('skipStoryDialogue()'),false);assert.equal(r.run('storyWindowSkip(true)'),false);assert.notEqual(view(r).line,null,'still on its first line');assert.deepEqual(r.errors,[]);
 });
 
 test('the prologue offers no skip and refuses every skip route',()=>{
- const r=loadRuntime(root);r.run('selectSaveSlot(1)');
+ const r=loadRuntime(root);r.ctx.regionFixture=structuredClone(regionFixture);r.run('globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1)');
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'creation');const html=r.run("$('prologue-layer').innerHTML");
  assert.doesNotMatch(html,/data-story-skip/);assert.doesNotMatch(html,/data-story-all/);assert.doesNotMatch(html,/data-story-summary/);assert.match(html,/data-story-speed/);
  assert.equal(r.run('storyWindowSkip()'),false);assert.equal(r.run('storyWindowSkip(true)'),false);assert.equal(r.run('skipStoryDialogue()'),false);
@@ -58,10 +59,10 @@ test('continuing an ordinary scene preserves its dialogue and grants its reward 
 });
 
 test('summary stops at a choice without making it or granting its reward',()=>{
- const r=game();r.run(`const d=exportableBalance(),q=d.story.quests.find(q=>q.id==='two_regions'),s=q.stages[0];s.conditions.conditions=[];s.rewards.gold=37;s.choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('two_regions')`);
+ const r=game();r.run(`const d=exportableBalance(),q=d.story.quests.find(q=>q.id==='test_region_chain'),s=q.stages[0];s.conditions.conditions=[];s.rewards.gold=37;s.choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('test_region_chain')`);
  const gold=r.run('playerHero().gold');assert.equal(r.run('storyWindowSummarize()'),true);
  assert.equal(view(r).line,null);assert.match(view(r).body,/選項甲/);assert.equal(r.run('playerHero().gold'),gold);
- assert.deepEqual(r.json('party.story.quests.two_regions.completed'),[]);assert.equal(r.run('storyWindowSummarize()'),false);assert.deepEqual(r.errors,[]);
+ assert.deepEqual(r.json('party.story.quests.test_region_chain.completed'),[]);assert.equal(r.run('storyWindowSummarize()'),false);assert.deepEqual(r.errors,[]);
 });
 test('summary advances rewards through the existing transaction once and stops before a task',()=>{
  const r=game();r.run("readStory('skill_equipment_intro')");assert.equal(r.run('storyWindowSummarize()'),true);

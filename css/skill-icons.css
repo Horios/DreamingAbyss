@@ -7,3 +7,9 @@
 @keyframes ew-icon-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.emberwild-icon .ew-icon-motion{animation:none!important;transform:none!important;clip-path:none!important}}
 @media(forced-colors:active){.emberwild-icon{color:CanvasText!important}.emberwild-icon g{color:CanvasText!important;filter:none!important}}
+/* v0.225 named skill glyphs: colour by slot type */
+.skill-icon-glyph.icon-named{display:inline-grid;place-items:center}
+.skill-icon-glyph.icon-named.tone-active{color:#7fb6ff}
+.skill-icon-glyph.icon-named.tone-proc{color:#e0a458}
+.skill-icon-glyph.icon-named.tone-support{color:#b48cff}
+.skill-icon-glyph.icon-named.tone-passive{color:#7fd19b}

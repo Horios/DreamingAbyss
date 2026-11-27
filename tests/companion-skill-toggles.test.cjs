@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 test('Five visible initial companions; hidden entries cannot be acquired',()=>{
  const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();');const doc=json(r,'exportableBalance()');

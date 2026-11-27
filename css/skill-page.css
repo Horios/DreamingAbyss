@@ -70,3 +70,16 @@
 @media(max-width:700px){#app .skill-page .skill-catalog-page{display:flex!important;flex-direction:column}#app .skill-page .skill-catalog-page .skill-catalog-list{max-height:none!important;overflow:visible!important}}
 #app .skill-page .skill-catalog-page .skill-catalog-item{width:100%;box-sizing:border-box}
 @media(max-width:700px){#app .skill-page .skill-catalog-page .skill-catalog-detail{order:-1}}
+/* v0.225 loadout: clear buttons and the list of learned skills waiting for a slot */
+.skill-cell-wrap{position:relative;display:inline-block}
+.skill-cell-clear{position:absolute;top:-6px;right:-6px;width:20px;height:20px;min-height:0;padding:0;border-radius:50%;font-size:13px;line-height:18px;background:#2a2430;border:1px solid var(--line);color:var(--muted,#bbb)}
+.skill-cell-clear:hover{color:#ff8a8a;border-color:#ff8a8a}
+.skill-row-label small{display:block;font-size:11px;opacity:.7;font-weight:400}
+.skill-available{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+.skill-available h3{margin:0 0 8px;font-size:14px}
+.skill-available h3 small{opacity:.7;font-weight:400}
+.skill-available-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.skill-available-item{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:4px;background:#1d1a24}
+.skill-available-item .skill-pick-text{flex:1;min-width:0;display:grid}
+.skill-available-item .skill-pick-text small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8}
+.skill-available-item button{flex:0 0 auto}

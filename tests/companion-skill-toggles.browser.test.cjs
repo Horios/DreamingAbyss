@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('Chromium: roster has no retired skill toggles; unlock levels, designer visibility and unlock rules reach the game',async()=>{
  const g=await openRuntime(root),e=await openRuntime(editorRoot,'balance-editor.html');const page=g.page;page.setDefaultTimeout(10000);
  try{

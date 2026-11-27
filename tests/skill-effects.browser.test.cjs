@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {openRuntime}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('Chromium: effect controls, status classification, reference protection, companion pages and real JSON download/import',async()=>{
  const e=await openRuntime(editorRoot,'balance-editor.html'),g=await openRuntime(root);const p=e.page;p.setDefaultTimeout(10000);let dialogs=[];p.on('dialog',async d=>{dialogs.push(d.message());await d.accept();});
  const navigate=async sec=>{const button=p.locator('[data-sec="'+sec+'"]');if(!await button.isVisible())await p.locator('.nav-group').filter({has:button}).locator('summary').click();await button.click();};

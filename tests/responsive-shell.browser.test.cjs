@@ -350,11 +350,12 @@ test('Desktop rosters: member buttons sit side by side; closed partner sections 
  const buttons=await p.locator('.roster-player-row .roster-member-actions>button').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)));
  assert(buttons.length===2&&buttons[0]===buttons[1],'移至後備 and 改名 share a line '+buttons);
  await p.evaluate(()=>setTab('partnerRoster'));
- const row=p.locator('.companion-roster-details').first();
- const closed=await row.evaluate(e=>[...e.children].map(c=>Math.round(c.getBoundingClientRect().top)));assert.equal(closed[0],closed[1],'closed sections share a row');
- await row.locator('.companion-roster-ability>summary').click();
- const open=await row.evaluate(e=>{const [a,s]=e.children;return {full:Math.abs(a.getBoundingClientRect().width-e.getBoundingClientRect().width)<=1,below:s.getBoundingClientRect().top>=a.getBoundingClientRect().bottom-1};});
- assert(open.full&&open.below,'an opened section takes the full width '+JSON.stringify(open));
+ // v0.225: each companion is one collapsible entry; opening it shows abilities and skills side by side.
+ const entry=p.locator('.companion-roster-entry').first();
+ assert.equal(await entry.evaluate(e=>e.open),false,'entries start collapsed');
+ await entry.locator('summary .member-identity').click();
+ const open=await entry.evaluate(e=>{const d=e.querySelector('.companion-roster-details'),[a,s]=d.children;return {open:e.open,side:Math.abs(a.getBoundingClientRect().top-s.getBoundingClientRect().top)<=1};});
+ assert(open.open&&open.side,'an opened entry shows both sections '+JSON.stringify(open));
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });

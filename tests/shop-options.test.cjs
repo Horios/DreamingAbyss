@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
-const balanceRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const balanceRoot=require('./runtime.cjs').balanceRoot(root);
 
 async function gameRuntime(preview=false){
   const runtime=await openRuntime(root);

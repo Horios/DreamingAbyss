@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const {openRuntime}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..'),balanceRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),balanceRoot=require('./runtime.cjs').balanceRoot(root);
 const startTime=new Date('2026-10-01T01:00:00Z');
 
 test('Timed consumables, independent reward sources, real clocks and classified journal',async t=>{

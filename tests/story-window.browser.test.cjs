@@ -1,9 +1,10 @@
 // Scene transcripts: automatic reading, in-window interaction, task boundaries and responsive controls.
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
-async function quest(page){await page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);setTab('story');});}
+const regionFixture=require('./fixtures/story-region-chain.json');
+async function quest(page){await page.evaluate(q=>{const d=exportableBalance();d.story.quests.push(q);applyBalanceConfig(d,{persist:false});},regionFixture);await page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);setTab('story');});}
 async function fixture(page,text='第一句。'){
- await page.evaluate(text=>{const d=exportableBalance(),q=d.story.quests.find(q=>q.id==='two_regions'),s=q.stages[0];s.conditions.conditions=[];s.dialogue=[{speaker:'巡查員',kind:'npc',text},{speaker:'巡查員',kind:'npc',text:'第二句。'}];s.choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]},{id:'b',text:'選項乙',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('two_regions');window.originalStoryWindow=document.querySelector('.story-window');},text);
+ await page.evaluate(text=>{const d=exportableBalance(),q=d.story.quests.find(q=>q.id==='test_region_chain'),s=q.stages[0];s.conditions.conditions=[];s.dialogue=[{speaker:'巡查員',kind:'npc',text},{speaker:'巡查員',kind:'npc',text:'第二句。'}];s.choices=[{id:'a',text:'選項甲',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]},{id:'b',text:'選項乙',conditions:{mode:'all',conditions:[]},effects:[],next:s.next,nextQuests:[]}];applyBalanceConfig(d,{persist:false});readStory('test_region_chain');window.originalStoryWindow=document.querySelector('.story-window');},text);
 }
 test('lines automatically accumulate and stop at choices in the same mounted window; speed uses the header SVG',async()=>{
  const g=await openRuntime(root),p=g.page;try{
@@ -15,10 +16,10 @@ test('lines automatically accumulate and stop at choices in the same mounted win
   assert.equal(await p.locator('.story-window-head svg').count(),1);
   assert.equal(await p.locator('.story-window-controls [data-story-speed]').count(),0);
   await p.evaluate(()=>render());assert.equal(await p.locator('[data-story-history]').count(),2,'periodic renders do not duplicate text');
-  assert.deepEqual(await p.evaluate(()=>party.story.quests.two_regions.completed),[],'no automatic choice');
+  assert.deepEqual(await p.evaluate(()=>party.story.quests.test_region_chain.completed),[],'no automatic choice');
   await p.click('.story-window-choices button:has-text("選項甲")');
   assert.equal(await p.evaluate(()=>originalStoryWindow===document.querySelector('.story-window')),true,'choice does not close the window');
-  assert.equal(await p.evaluate(()=>party.story.quests.two_regions.choices[Object.keys(party.story.quests.two_regions.choices)[0]]),'a');
+  assert.equal(await p.evaluate(()=>party.story.quests.test_region_chain.choices[Object.keys(party.story.quests.test_region_chain.choices)[0]]),'a');
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
 });
