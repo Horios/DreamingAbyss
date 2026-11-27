@@ -11,12 +11,12 @@ test('an older save keeps using the pages it visited; unvisited system pages sti
  const r2=open();r2.run('selectSaveSlot(1);loadParty('+JSON.stringify(pack)+');clearInterval(timer);render()');
  const rec=r2.json('party.tutorials.records');
  assert.equal(rec.forge_basics?.completed,true);assert.equal(rec.forge_basics.legacy,true);
- assert.equal(rec.alchemy_basics,undefined,'never opened: its guide stays available');
+ assert.equal(rec.boss_basics,undefined,'never opened: its guide stays available');
  assert.equal(rec.system_tours_v173?.completed,true);
  // The marker keeps it to one pass: a page visited later is not marked done by a reload.
- const again=r2.json(`(()=>{party.tutorials.pages.alchemy=1;return packParty();})()`);
+ const again=r2.json(`(()=>{party.tutorials.pages.crafting=1;return packParty();})()`);
  const r3=open();r3.run('selectSaveSlot(1);loadParty('+JSON.stringify(again)+');clearInterval(timer);render()');
- assert.equal(r3.json('party.tutorials.records.alchemy_basics??null'),null);
+ assert.equal(r3.json('party.tutorials.records.boss_basics??null'),null);
  assert.deepEqual(r.errors,[]);assert.deepEqual(r2.errors,[]);assert.deepEqual(r3.errors,[]);
 });
 

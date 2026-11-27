@@ -476,7 +476,6 @@
      if(c.offlineWindow&&c.lastAt<requestedAt)skipUncreditedTime(requestedAt);
     }while(c.lastAt<requestedAt);
     // A throttled tick takes this async path; do not starve online life jobs.
-    internal=true;try{globalThis.emberwildLifeHeartbeat?.();}finally{internal=false;}
     if(show){showProgress('正在完成收益與存檔');await new Promise(resolve=>setTimeout(resolve,0));}if(jobOffline&&!document.hidden)promote();c.offlineWindow=null;commit();metrics.totalMs=performance.now()-settlementStarted;lastRendered=actionSerial;render();showReceipt();
     if(!c.receipt)document.getElementById('offline-settlement').hidden=true;
    }catch(e){rollback(String(e.message||e));}
@@ -505,7 +504,7 @@
   if(failed||atTitle()||globalThis.__EMBERWILD_SAVE_OWNER===false)return;
   const now=nowReal();if(now-lastCheck<(document.hidden?1000:50))return;lastCheck=now;sync(now);
   if(!job&&!document.hidden){
-   if(now-lastHeartbeat>=1000){lastHeartbeat=now;globalThis.emberwildLifeHeartbeat?.();__EMBERWILD_TIMED_BOOST_TEST.refreshJournalRealtime();}
+   if(now-lastHeartbeat>=1000){lastHeartbeat=now;__EMBERWILD_TIMED_BOOST_TEST.refreshJournalRealtime();}
    if(lastRendered!==actionSerial){
     // save()/UI sync can resolve an action before tick presents it. Its wait
     // must survive a delayed publication or a slow render, rather than already
@@ -525,14 +524,14 @@
  for(const name of [
   'toggleBattle','stopTeamExploration','restartExploration','startSelectedExploration','startBossChallenge','startQuestEncounter','leaveBossChallenge',
   'chooseMap','changeDifficulty','setEncounterMode','returnToTitle','setTimedBoostEnabled','useSupply','closeModal',
-  'buyFixedShopOffer','buyMarketOffer','buyHealingPotion','buySupply','buyLifeMaterial','sellInventoryItem',
+  'buyFixedShopOffer','buyMarketOffer','buyHealingPotion','buySupply','craftEtherIron','sellInventoryItem',
   'setHeroAutoPotion','setHeroAutoPotionThreshold','setHeroAutoPotionItem','potion',
   'enhance','reroll','autoReroll','acceptAffix','resolveInlineAffix','rerollEquipmentPowerTier','socket',
   'salvage','salvageAll','sellGear','sellAllGearByQuality','confirmMassSalvage','confirmGearInventoryBatch','confirmTokenBatch','sellMaterial','sellCatalogueGem',
   'startDailyCommission','claimBoard','startSideQuest','claimQuest','completeStoryStage','claimMailboxAttachments','claimAllMailboxAttachments','useLevelScroll'
  ]){
   // Mail claims commit attachments and claim flags atomically, including rollback.
-  const savesOwnState=['claimMailboxAttachments','claimAllMailboxAttachments'].includes(name),base=globalThis[name];if(typeof base!=='function')continue;
+  const savesOwnState=['claimMailboxAttachments','claimAllMailboxAttachments','craftEtherIron'].includes(name),base=globalThis[name];if(typeof base!=='function')continue;
   globalThis[name]=function(...args){if(!stepping){if(globalThis.__EMBERWILD_SAVE_OWNER===false)return false;sync();if(job||failed)return false;}const wasRunning=running,wasEncounter=foes.length;const out=base.apply(this,args);if(!stepping){if(!wasRunning&&running&&!wasEncounter)ensure().startedAt=nowReal();sync();if(!savesOwnState)save();if(atTitle()){document.getElementById('offline-settlement').hidden=true;renderedReceipt=null;}}return out;};
  }
  const continueBase=continueFromTitle;

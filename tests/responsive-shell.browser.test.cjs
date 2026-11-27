@@ -6,7 +6,7 @@ async function setup(p){
  await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);for(let i=0;i<12;i++)state.bag.push(gear(1,i%4,i%4,0));equipSharedGear(state.bag[0].id,memberKey(state),0);state.gems[0]=1;state.dust=1000;save();});
 }
 function showPage(id){if(id.startsWith('inventory:')){setTab('equipment');setInventoryCategory(id.split(':')[1]);}else if(id.startsWith('story:'))setStoryCategory(id.split(':')[1]);else{if(id==='equipment')setInventoryCategory('equipment');setTab(id);}}
-const pages=['battle','character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:gems','inventory:items','inventory:tokens','inventory:special','worn','forge','bossCraft','shop','story','story:side','quests','gather','alchemy','statistics'];
+const pages=['battle','character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:gems','inventory:items','inventory:tokens','inventory:special','worn','forge','crafting','shop','story','story:side','quests','statistics'];
 
 test('Phone pages keep text at 12px or more and tappable controls at 44px or more',async()=>{
  const r=await openRuntime(root),p=r.page;
@@ -127,7 +127,7 @@ test('Phone BOSS crafting shows one region at a time; shop rows are one line eac
  await p.evaluate(()=>selectSaveSlot(1));
  assert.equal(await p.locator('#app>.start').isVisible(),false,'the prologue replaces the old class screen');
  await setup(p);
- await p.evaluate(()=>setTab('bossCraft'));
+ await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
  const regions=await p.locator('.boss-region-filter select option').count();assert(regions>2);
  const shown=await p.locator('.boss-recipe:visible .tag').allInnerTexts();assert(shown.length>0&&new Set(shown).size===1,'one region shown');
  assert.equal(shown[0],await p.evaluate(()=>MAPS[party.map].name));
@@ -138,7 +138,7 @@ test('Phone BOSS crafting shows one region at a time; shop rows are one line eac
  await p.evaluate(()=>setTab('shop'));
  const row=await p.locator('.shop-product-row').first().evaluate(e=>{const button=e.querySelector('.shop-inline-actions button').getBoundingClientRect(),slot=e.querySelector('.item-slot').getBoundingClientRect();return {height:e.getBoundingClientRect().height,beside:button.left>=slot.right-1};});
  assert(row.height<=110&&row.beside,'shop row '+JSON.stringify(row));
- await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>setTab('bossCraft'));
+ await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
  assert.equal(await p.locator('.boss-region-filter').count(),0);assert.equal(await p.locator('.boss-recipe:visible').count(),await p.locator('.boss-recipe').count());
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
@@ -188,7 +188,7 @@ test('Navigation rail on desktop, tablet and sideways phones; the report column 
  }finally{await r.browser.close();}
 });
 
-test('Phone second pass: two-column stats, compact empty skill slots, one-row quest filter, folded explanations and alchemy recipes',async()=>{
+test('Phone second pass: two-column stats, compact empty skill slots, one-row quest filter',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:390,height:844});await setup(p);
  await p.evaluate(()=>setTab('character'));
@@ -202,20 +202,7 @@ test('Phone second pass: two-column stats, compact empty skill slots, one-row qu
  assert.equal(new Set(await p.locator('.quest-filter>button').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)))).size,1,'quest filter is one row');
  await p.evaluate(()=>setTab('roster'));
  const row=await p.locator('.roster-row').nth(1).evaluate(e=>{const a=e.querySelector('.roster-member-actions').getBoundingClientRect(),n=e.querySelector('.member-identity').getBoundingClientRect();return a.left>=n.left+60&&a.top<n.bottom+30;});assert(row,'member actions sit beside the name');
- await p.evaluate(()=>setTab('alchemy'));
- const intro=p.locator('.life-rules.intro-clamp');assert.equal(await intro.count(),1);
- const before=await intro.evaluate(e=>e.getBoundingClientRect().height);
- await p.locator('.intro-clamp-toggle').first().click();const opened=await intro.evaluate(e=>e.getBoundingClientRect().height);assert(opened>before,'explanation opens');
- await p.evaluate(()=>render());assert.equal(await p.locator('.life-rules').evaluate(e=>e.classList.contains('intro-open')),true,'it stays open through a redraw');
- const recipe=p.locator('.life-recipe').first();
- assert.equal(await recipe.locator('.recipe-item-line').isVisible(),false);assert(await recipe.evaluate(e=>e.getBoundingClientRect().height)<=96,'folded recipe is one row');
- assert.equal(await recipe.locator('button:not(.life-recipe-toggle)').isVisible(),true,'開始 stays reachable while folded');
- await recipe.locator('.life-recipe-toggle').click();assert.equal(await recipe.locator('.recipe-item-line').isVisible(),true);
- await p.evaluate(()=>render());assert.equal(await p.locator('.life-recipe').first().locator('.recipe-item-line').isVisible(),true,'an opened recipe survives a redraw');
- const stock=await p.locator('.life-materials>.life-stock-row').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(stock[0],stock[1],'stock is two per row');
- await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>render());
- assert.equal(await p.locator('.life-recipe-toggle').count(),0);assert.equal(await p.locator('.life-recipe').first().locator('.recipe-item-line').isVisible(),true);assert.equal(await p.locator('.intro-clamp-toggle:visible').count(),0);
- assert.deepEqual(r.errors,[]);
+
  }finally{await r.browser.close();}
 });
 
@@ -240,10 +227,7 @@ test('Desktop third pass: material lists fill the width, BOSS costs stay on one 
  // v0.211 grid bag: square slots fill the grid's width, several per row.
  const mat=await p.locator('.bag-grid').evaluate(e=>{const items=[...e.children].map(c=>c.getBoundingClientRect());const top=Math.round(items[0].top),row=items.filter(b=>Math.round(b.top)===top);return {perRow:row.length,square:Math.abs(items[0].width-items[0].height)<=1,fill:row.at(-1).right/e.getBoundingClientRect().right};});
  assert(mat.perRow>=6&&mat.square&&mat.fill>0.97,'material slots share rows and fill the grid '+JSON.stringify(mat));
- await p.evaluate(()=>setTab('gather'));
- const stock=await p.locator('.life-materials>*').evaluateAll(es=>es.slice(0,3).map(e=>({top:Math.round(e.getBoundingClientRect().top),w:e.getBoundingClientRect().width})));
- assert(stock[0].top===stock[1].top&&stock[0].w>=220,'stock '+JSON.stringify(stock));
- await p.evaluate(()=>setTab('bossCraft'));
+ await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
  const cost=await p.locator('.boss-recipe .recipe-cost').first().evaluate(e=>{const [a,b]=e.children;return {held:a.getBoundingClientRect().height,gold:b.getBoundingClientRect().height};});
  assert(cost.held<=60&&cost.gold<=30,'cost lines '+JSON.stringify(cost));
  await p.evaluate(()=>{setTab('equipment');setInventoryCategory('tokens');});
@@ -326,7 +310,7 @@ test('Narrow desktop (1024px): three allies share one row and five narrow enemy 
  }finally{await r.browser.close();}
 });
 
-test('Narrow desktop folds the report column by default until the player chooses; backpack list widens; alchemy recipes use two columns',async()=>{
+test('Narrow desktop folds the report column by default until the player chooses; backpack list widens',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:1024,height:768});await setup(p);
  await p.evaluate(()=>{try{localStorage.removeItem('dreamingAbyss.journalCollapsed');}catch{}});await p.reload();await p.evaluate(()=>selectSaveSlot(1));await p.waitForFunction(()=>!!state&&!!document.querySelector('.journal-collapse-toggle'));
@@ -345,10 +329,7 @@ test('Narrow desktop folds the report column by default until the player chooses
  await p.waitForFunction(()=>!isEmberwildUIInteracting()&&!!document.querySelector('.bag-grid-pane .bag-cell[data-bag-ref]'));
  const list=await p.evaluate(()=>{const m=document.querySelector('.bag-grid-pane').getBoundingClientRect(),g=document.querySelector('.bag-layout').getBoundingClientRect(),c=document.querySelector('.bag-cell[data-bag-ref]').getBoundingClientRect();return {share:m.width/g.width,cell:c.width};});
  assert(list.share>=0.45&&list.cell>=44,'backpack grid '+JSON.stringify(list));
- await p.evaluate(()=>setTab('alchemy'));
- const recipes=await p.locator('#life-alchemy>.life-recipe').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));
- assert.equal(recipes[0],recipes[1],'two recipes share a row');
- assert.deepEqual(r.errors,[]);
+
  }finally{await r.browser.close();}
 });
 

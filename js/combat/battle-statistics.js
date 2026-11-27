@@ -77,7 +77,7 @@ function battleStatLootSnapshot(){
 }
 function collectBattleStatLootDiff(before,after){
   if(!before||!after)return;
-  addBattleStatDrop('鍛鐵',after.ore-before.ore);addBattleStatDrop('寶石粉塵',after.dust-before.dust);addBattleStatDrop('治療藥水',after.potions-before.potions);
+  addBattleStatDrop('鍛鐵',after.ore-before.ore);addBattleStatDrop('粉塵',after.dust-before.dust);addBattleStatDrop('治療藥水',after.potions-before.potions);
   for(const [id,n] of Object.entries(after.healingPotions||{})){const item=SHOP.find(x=>x.id===id);if(item)addBattleStatDrop(item.name,n-(before.healingPotions?.[id]||0));}
   after.gems.forEach((n,i)=>addBattleStatDrop(GEMS[i].name,n-before.gems[i]));
   for(const [name,n] of Object.entries(after.materials))addBattleStatDrop(name,n-(before.materials[name]||0));

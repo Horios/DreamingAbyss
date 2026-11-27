@@ -2,8 +2,8 @@
 (function(root){
  'use strict';
  const copy=x=>JSON.parse(JSON.stringify(x));
- const TYPES={gearWorn:'穿戴指定裝備',skillSlotted:'配置技能至合法槽位',gearBaseGem:'指定孔基礎能力生效',encounter:'任務關卡通關',companions:'招募夥伴數',party:'上陣人數',region:'解鎖地區',visit:'到達地區',explore:'地區擊殺進度',kill:'指定怪物擊殺',kills:'任意怪物擊殺',boss:'指定地區 BOSS',bosses:'任意 BOSS',stock:'持有道具',acquired:'累積取得道具',gatherItem:'採集指定素材',gather:'採集次數',recipe:'完成指定配方',alchemy:'煉金次數',enhance:'強化次數',enhanceLevel:'裝備最高強化',classMastery:'主角職業精通等級',quest:'完成任務',stage:'完成階段',flag:'任務 Flag',unlock:'永久解鎖'};
- const GUIDES={battle:'前往探索',partnerRoster:'前往夥伴',roster:'前往隊伍',equipment:'前往背包',worn:'前往裝備',forge:'前往強化',gather:'前往採集',alchemy:'前往煉金',shop:'前往商店',skills:'前往技能'};
+ const TYPES={gearWorn:'穿戴指定裝備',skillSlotted:'配置技能至合法槽位',gearBaseGem:'指定孔基礎能力生效',encounter:'任務關卡通關',companions:'招募夥伴數',party:'上陣人數',region:'解鎖地區',visit:'到達地區',explore:'地區擊殺進度',kill:'指定怪物擊殺',kills:'任意怪物擊殺',boss:'指定地區 BOSS',bosses:'任意 BOSS',stock:'持有道具',acquired:'累積取得道具',enhance:'強化次數',enhanceLevel:'裝備最高強化',classMastery:'主角職業精通等級',quest:'完成任務',stage:'完成階段',flag:'任務 Flag',unlock:'永久解鎖'};
+ const GUIDES={battle:'前往探索',partnerRoster:'前往夥伴',roster:'前往隊伍',equipment:'前往背包',worn:'前往裝備',forge:'前往強化',shop:'前往商店',skills:'前往技能'};
  const condition=(type='kills',key='',count=1,mode='lifetime')=>({type,key,count,mode,itemType:'material'});
  const group=conditions=>({mode:'all',conditions:conditions||[]});
  const encounter=()=>({enabled:false,name:'任務關卡',mapIndex:0,repeatable:false,enemies:[]});
@@ -103,11 +103,10 @@
     if(c.type==='skillSlotted'&&(c.mode!=='lifetime'||c.count!==1||ctx.skills&&!ctx.skills.some(s=>s.id===c.key)))add(label+'配置技能引用無效');
     if(['region','visit','explore','boss'].includes(c.type)&&(!/^\d+$/.test(c.key)||ctx.maps&& !ctx.maps[Number(c.key)]))add(label+'不存在的地區 '+c.key);
     if(c.type==='kill'&&ctx.monsters&&!ctx.monsters.some(m=>m.id===c.key))add(label+'不存在的怪物 '+c.key);
-    if(c.type==='recipe'&&ctx.recipes&&!Object.hasOwn(ctx.recipes,c.key))add(label+'不存在的配方 '+c.key);
     if(c.type==='quest'&&!qs.has(c.key))add(label+'不存在的任務 '+c.key);
     if(c.type==='encounter'){const [q,s]=c.key.split('/');if(!qs.get(q)?.stages?.some(x=>x.id===s&&x.encounter?.enabled))add(label+'不存在的任務關卡 '+c.key);}
     if(c.type==='stage'){const [q,s]=c.key.split('/');if(!qs.get(q)?.stages?.some(x=>x.id===s))add(label+'不存在的任務階段 '+c.key);}
-    if(['stock','acquired','gatherItem'].includes(c.type)&&(!c.key||c.itemType==='item'&&ctx.items&&!ctx.items.some(x=>x.id===c.key)))add(label+'道具引用無效 '+c.key);
+    if(['stock','acquired'].includes(c.type)&&(!c.key||c.itemType==='item'&&ctx.items&&!ctx.items.some(x=>x.id===c.key)))add(label+'道具引用無效 '+c.key);
    }
   }
   function rewards(r,label){if(!r||!num(r.gold)||!num(r.ore)||!Array.isArray(r.items)){add(label+'獎勵無效');return;}for(const x of r.items){if(!x||!['material','item','gear','gem','skill'].includes(x.type)||!key(x.key)||!x.key||!num(x.quantity)||x.quantity<1||x.job!==undefined&&(!num(x.job)||x.job>3)){add(label+'獎勵道具無效');continue;}if(x.type==='item'&&ctx.items&&!ctx.items.some(i=>i.id===x.key)||x.type==='gear'&&(!gear.has(x.key)||x.quantity!==1)||x.type==='gem'&&(!/^\d+$/.test(x.key)||Number(x.key)>14))add(label+'獎勵引用無效');if(x.type==='skill'&&(x.quantity!==1||ctx.skills&&!ctx.skills.some(s=>s.id===x.key&&s.type==='support'&&s.sources.some(t=>t.type==='quest')&&(!('job'in x)||s.jobs.includes(x.job))&&!s.requiresAdvanced&&!s.sources.some(t=>t.type==='advanced'))))add(label+'任務輔助技能獎勵無效');}}

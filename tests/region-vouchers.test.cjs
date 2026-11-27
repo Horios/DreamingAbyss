@@ -80,7 +80,7 @@ test('claimed tickets become inventory items with a short description; using the
 test('used tickets roll drops through the existing per-enemy loot rules without touching the real inventory',async()=>{
  const r=await ready(sampled());await offlineVouchers(r,4*3600000);r.run(`acknowledgeOfflineExploration();claimAllMailboxAttachments();running=false;`);
  const stack=json(r,'party.regionVouchers.stacks[0]');
- r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};EmberwildItems.add('material:紅色草',10);{const s=EmberwildItems.stacks().find(s=>s.item==='material:紅色草');EmberwildItems.split(s.uid,3);}`);
+ r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};EmberwildItems.add('material:光輝碎塊',10);{const s=EmberwildItems.stacks().find(s=>s.item==='material:光輝碎塊');EmberwildItems.split(s.uid,3);}`);
  const inv=r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions,layout:EmberwildItems.snapshot()})');
  const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:8}])`);const expected=Object.values(stack.enemies).reduce((a,b)=>a+b,0)*8;
  assert(Math.abs(r.run('__calls')-expected)<=Object.keys(stack.enemies).length*8,'one loot roll per locked enemy');

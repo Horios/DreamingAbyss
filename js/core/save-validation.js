@@ -6,6 +6,7 @@
 // stored weaponType. Armor follows its class group (the priest group uses 布袍); armor a member is wearing moves to the
 // armor of that member's class when the group's armor no longer fits it. Repeated runs leave migrated gear unchanged.
 // Runs only when the loaded catalogue is the slim one; target indexes are looked up by form id.
+const REMOVED_CRAFT_MATERIALS=new Set(['紅色草','藍色草','紅色草泥','小蟲','清水','藥水瓶']);
 const SLIM_REMOVED_FORM_IDS=new Set(['job0-slot0-form1','job0-slot1-form1','job1-slot0-form1','job1-slot1-form1','job2-slot0-form2','job2-slot1-form1','job3-slot0-form1','job3-slot0-form2','job3-slot1-form0','job3-slot1-form1']);
 const SLIM_ARMOR_BY_CLASS=['job0-slot1-form0','job1-slot1-form0','job2-slot1-form0','job1-slot1-form0'];
 function slimFormRef(id){if(typeof ITEM_FORMS==='undefined')return null;for(let group=0;group<ITEM_FORMS.length;group++)for(let slot=0;slot<(ITEM_FORMS[group]||[]).length;slot++){const index=(ITEM_FORMS[group][slot]||[]).findIndex(f=>f?.id===id);if(index>=0)return {group,slot,index,form:ITEM_FORMS[group][slot][index]};}return null;}
@@ -107,6 +108,7 @@ function validateSave(input,{companion=false}={}) {
   const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
   if(!object(input)||![1,2].includes(input.version))fail('存檔版本不符');
   const s=migrateLegacyEquipmentSlotsInSave(JSON.parse(JSON.stringify(input))),legacy=s.version===1;
+  if(s.materials&&typeof s.materials==='object')for(const key of REMOVED_CRAFT_MATERIALS)delete s.materials[key];
   if(Array.isArray(s.gems)&&s.gems.length===3){s.gems=[...s.gems,...Array(GEMS.length-3).fill(0)];if(Array.isArray(s.sockets))s.sockets=s.sockets.map((v,i)=>v===1&&CLASSES[s.job]?.skills?.[i]?.[1]==='proc'?2:v===2&&CLASSES[s.job]?.skills?.[i]?.[1]==='active'?3:v);}
   delete s.sp;delete s.ap;delete s.stats;
   // v0.161 removed character levels. A save that still has one keeps the maps that level could enter (mapAccess);
@@ -164,6 +166,7 @@ function validateSave(input,{companion=false}={}) {
   if(legacy)delete s.board;
   migrate(s);
   const b=s.board,questIds=new Set();
+  if(b?.dailyVersion===1&&Array.isArray(b.tasks)){const kept=b.tasks.filter(q=>!REMOVED_CRAFT_MATERIALS.has(q?.mat));if(kept.length!==b.tasks.length){b.tasks=kept;if(!kept.length)b.designVersion=1;}}
   if(!object(b)||!int(b.next,0,8.64e15)||!int(b.serial)||!Array.isArray(b.tasks)||b.tasks.length>12||!EmberwildCommissions.validBoard(b))fail('委託看板無效');
   for(const q of b.tasks) {
     if(q.designVersion===1){

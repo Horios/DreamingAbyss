@@ -42,12 +42,12 @@ test('slot usage is counted per tab, each tab with its own capacity (default 100
 test('classification and definitions follow category defaults with per-item overrides',()=>{
  const ctx={bossMaterials:new Set(['蛇王鱗']),monsterMaterials:new Set(['狼牙'])};
  assert.equal(M.classify('material:鍛鐵',ctx),'enhancementMaterial');assert.equal(M.classify('material:以太鍛鐵',ctx),'rareMaterial');assert.equal(M.classify('material:【地獄】蛇王鱗',ctx),'monsterMaterial');
- assert.equal(M.classify('material:狼牙',ctx),'monsterMaterial');assert.equal(M.classify('material:紅色草',ctx),'material');assert.equal(M.classify('gem:3',ctx),'gem');assert.equal(M.classify('item:imbue_fire',ctx),'consumable');assert.equal(M.classify('item:companion-ticket-10',ctx),'special');assert.equal(M.classify('material:升級卷軸',ctx),'consumable');
+ assert.equal(M.classify('material:狼牙',ctx),'monsterMaterial');assert.equal(M.classify('material:一般測試素材',ctx),'material');assert.equal(M.classify('gem:3',ctx),'gem');assert.equal(M.classify('item:imbue_fire',ctx),'consumable');assert.equal(M.classify('item:companion-ticket-10',ctx),'special');assert.equal(M.classify('material:升級卷軸',ctx),'consumable');
  const d=M.definition('gem:2',{ctx});assert.equal(d.maxStack,99);assert.equal(d.stackable,true);assert.equal(d.occupiesSlot,true);
  assert.equal(M.definition('item:companion-ticket-10',{ctx}).tab,'special');assert.equal(M.definition('material:鍛鐵',{ctx}).tab,'material');assert.equal(M.definition('gem:1',{ctx}).tab,'gem');
- assert.equal(M.definition('material:紅色草',{ctx,settings:{stackLimits:{material:500}}}).maxStack,500);
- const details=(kind,key)=>key==='紅色草'?{maxStack:20,occupiesSlot:false}:undefined;const o=M.definition('material:紅色草',{ctx,details});assert.equal(o.maxStack,20);assert.equal(o.occupiesSlot,false);
- assert.equal(M.definition('material:紅色草',{ctx,details:()=>({stackable:false})}).maxStack,1);
+ assert.equal(M.definition('material:一般測試素材',{ctx,settings:{stackLimits:{material:500}}}).maxStack,500);
+ const details=(kind,key)=>key==='一般測試素材'?{maxStack:20,occupiesSlot:false}:undefined;const o=M.definition('material:一般測試素材',{ctx,details});assert.equal(o.maxStack,20);assert.equal(o.occupiesSlot,false);
+ assert.equal(M.definition('material:一般測試素材',{ctx,details:()=>({stackable:false})}).maxStack,1);
  assert.equal(M.normalizeSettings({stackLimits:{equipment:5}}).stackLimits.equipment,1);assert.equal(M.normalizeSettings({capacities:{gem:150}}).capacities.gem,150);assert.equal(M.normalizeSettings({}).capacities.special,100);assert.equal(M.settingsIssues({capacities:{bag:1}}).length,1);
  assert.equal(M.settingsIssues({stackLimits:{equipment:2}}).length,1);assert.equal(M.settingsIssues({stackLimits:{gem:0}}).length,1);assert.equal(M.settingsIssues({stackLimits:{nope:1}}).length,1);
  assert.equal(M.overrideIssues({kind:'equipment',key:'x',maxStack:5}).length,1);assert.equal(M.overrideIssues({kind:'material',key:'x',maxStack:5,occupiesSlot:false}).length,0);

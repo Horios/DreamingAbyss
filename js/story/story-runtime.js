@@ -2,17 +2,20 @@
 (()=>{
  const M=EmberwildStory,copy=M.copy;
  let design=M.defaults(),category='main',selected='',dialogue=null,trackingOwner=null,inventoryBefore={},committedInventory={},pendingGains={};
- const context=d=>({companions:d.companions,classes:d.classes,maps:d.balanceSettings?.maps?.catalog,monsters:d.balanceSettings?.monsters?.catalog,items:d.items,recipes:d.lifeSkills?.recipes,skills:d.skillSystem?.definitions,forms:d.equipmentForms});
- function fresh(){return {version:1,quests:{},flags:{},unlocks:{},vip:0,autoBuy:false};}
- function freshStats(){return {version:1,encounters:{},visits:{},explore:{},gatherItems:{},gather:0,recipes:{},alchemy:0,enhance:0,enhanceLevel:0,acquired:{}};}
+ const context=d=>({companions:d.companions,classes:d.classes,maps:d.balanceSettings?.maps?.catalog,monsters:d.balanceSettings?.monsters?.catalog,items:d.items,skills:d.skillSystem?.definitions,forms:d.equipmentForms});
+ function fresh(){return {version:1,quests:{},flags:{},unlocks:{},vip:0};}
+ function freshStats(){return {version:1,encounters:{},visits:{},explore:{},enhance:0,enhanceLevel:0,acquired:{}};}
  function validData(raw,fallback){if(raw===undefined)return fallback;const x=copy(raw);function walk(v){if(!v||typeof v!=='object')return;for(const [k,n] of Object.entries(v)){if(['__proto__','constructor','prototype'].includes(k))throw Error('劇情存檔包含無效鍵值');if(typeof n==='number'&&(!Number.isSafeInteger(n)||n<0||n>1e12))throw Error('劇情存檔數值無效');walk(n);}}walk(x);return x;}
- function validateProgress(raw,stats){const q=validData(raw,fresh()),p=validData(stats,freshStats());
-  if(p.version!==1||q.version!==1||(!Number.isSafeInteger(q.vip)||q.vip<0||q.vip>99)||typeof q.autoBuy!=='boolean'||!q.quests||!q.flags||!q.unlocks||[q.quests,q.flags,q.unlocks].some(x=>Array.isArray(x)||typeof x!=='object'))throw Error('劇情存檔格式無效');
+ const activeFields=(v,base)=>Object.fromEntries(Object.keys(base).map(k=>[k,v?.[k]??base[k]]));
+ function validateProgress(raw,stats){const q=activeFields(validData(raw,fresh()),fresh()),p=activeFields(validData(stats,freshStats()),freshStats());
+  if(p.version!==1||q.version!==1||(!Number.isSafeInteger(q.vip)||q.vip<0||q.vip>99)||!q.quests||!q.flags||!q.unlocks||[q.quests,q.flags,q.unlocks].some(x=>Array.isArray(x)||typeof x!=='object'))throw Error('劇情存檔格式無效');
+  const merchant=q.quests.shop_rescue;if(merchant){if(['gather','delivery'].includes(merchant.current))merchant.current='vip';if(Array.isArray(merchant.completed))merchant.completed=merchant.completed.filter(id=>!['gather','delivery'].includes(id));}
   for(const [id,r] of Object.entries(q.quests)){if(!r||r.recoveryUses!==undefined&&(!Number.isSafeInteger(r.recoveryUses)||r.recoveryUses<0||r.recoveryUses>5)||r.started!==undefined&&typeof r.started!=='boolean'||typeof r.current!=='string'||typeof r.done!=='boolean'||!Array.isArray(r.completed)||r.completed.some(x=>typeof x!=='string')||!r.baseline||!r.choices||Array.isArray(r.baseline)||Array.isArray(r.choices)||typeof r.baseline!=='object'||typeof r.choices!=='object'||new Set(r.completed).size!==r.completed.length||Object.values(r.baseline).some(n=>!Number.isSafeInteger(n)||n<0)||Object.values(r.choices).some(v=>typeof v!=='string'))throw Error('任務階段存檔無效：'+id);}
   for(const f of [q.flags,q.unlocks])if(Object.values(f).some(v=>typeof v!=='boolean'))throw Error('任務解鎖格式無效');
   for(const k of Object.keys(freshStats()))if(p[k]===undefined)p[k]=freshStats()[k];
-  for(const k of ['encounters','visits','explore','gatherItems','recipes','acquired'])if(!p[k]||Array.isArray(p[k])||typeof p[k]!=='object'||Object.values(p[k]).some(n=>!Number.isSafeInteger(n)||n<0))throw Error('永久統計格式無效');
-  for(const k of ['gather','alchemy','enhance','enhanceLevel'])if(!Number.isSafeInteger(p[k])||p[k]<0)throw Error('永久統計數值無效');return {story:q,progressStats:p};
+  for(const k of ['encounters','visits','explore','acquired'])if(!p[k]||Array.isArray(p[k])||typeof p[k]!=='object'||Object.values(p[k]).some(n=>!Number.isSafeInteger(n)||n<0))throw Error('永久統計格式無效');
+  if(p.acquired&&typeof p.acquired==='object')for(const key of REMOVED_CRAFT_MATERIALS)delete p.acquired['material:'+key];
+  for(const k of ['enhance','enhanceLevel'])if(!Number.isSafeInteger(p[k])||p[k]<0)throw Error('永久統計數值無效');return {story:q,progressStats:p};
  }
  function migrateStats(account){const p=freshStats(),h=account.members?.[0];if(!h)return p;p.visits[String(account.map??0)]=1;p.enhance=(h.bag||[]).reduce((n,g)=>n+(g.plus||0),0);p.enhanceLevel=Math.max(0,...(h.bag||[]).map(g=>g.plus||0));
   const catalog=GAMEPLAY_SETTINGS.monsters.catalog;for(let i=0;i<MAPS.length;i++){const keys=new Set(catalog.filter(m=>m.mapIndex===i&&!catalog.some(other=>other.mapIndex!==i&&other.material===m.material)).map(m=>m.material));p.explore[i]=[...keys].reduce((n,k)=>n+(h.kills[k]||0),0);if(p.explore[i]||account.achievements?.bossKills[i])p.visits[i]=1;}return p;}
@@ -23,8 +26,6 @@
  function ensureTracking(){ensure();if(trackingOwner!==party){resetTracking();for(const [k,n] of Object.entries(inventoryBefore))stats().acquired[k]=Math.max(stats().acquired[k]||0,n);}}
  function observeInventory(explicitKey='',quantity=0){const current=inventory();for(const key of new Set([...Object.keys(current),explicitKey])){if(!key)continue;const gain=Math.max(0,(current[key]||0)-(inventoryBefore[key]||0),key===explicitKey?quantity:0);if(gain)pendingGains[key]=(pendingGains[key]||0)+gain;}inventoryBefore=current;}
  globalThis.recordStoryAcquisition=(type,key,n)=>{ensureTracking();observeInventory(type+':'+key,n);};
- globalThis.recordLifeProgress=(kind,key,type,quantity)=>{ensureTracking();const p=stats();if(kind==='gather')p.gather++;else if(kind==='alchemy')p.alchemy++;else if(kind==='recipe')p.recipes[key]=(p.recipes[key]||0)+1;if(quantity&&kind==='gather')p.gatherItems[type+':'+key]=(p.gatherItems[type+':'+key]||0)+quantity;};
- globalThis.recordGatheredItem=(type,key,n)=>{const p=stats();p.gatherItems[type+':'+key]=(p.gatherItems[type+':'+key]||0)+n;};
  const countStock=c=>c.itemType==='item'?(globalThis.__EMBERWILD_INVENTORY_STOCK?.count(c.key)||0):materialCount(c.key);
  const ownedGear=key=>party.members.flatMap(h=>h.bag||[]).filter(g=>g.storyRewardKey===key);
  const wornReward=(h,key)=>__EMBERWILD_SKILLS.worn(h).find(g=>g.storyRewardKey===key);
@@ -38,7 +39,7 @@
   case 'kill':{const m=GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===c.key);return m?h.kills[m.material]||0:0;}case 'kills':return h.totalKills;
   case 'boss':return party.achievements?.bossKills[c.key]||0;case 'bosses':return sum(party.achievements?.bossKills);
   case 'stock':return countStock(c);case 'acquired':return p.acquired[c.itemType+':'+c.key]||0;
-  case 'gatherItem':return p.gatherItems[c.itemType+':'+c.key]||0;case 'gather':return p.gather;case 'recipe':return p.recipes[c.key]||0;case 'alchemy':return p.alchemy;
+
   case 'enhance':return Math.max(p.enhance,...h.bag.map(g=>g.plus||0),0);case 'enhanceLevel':return Math.max(p.enhanceLevel,...h.bag.map(g=>g.plus||0),0);case 'classMastery':return classMasteryLevel(h);
   case 'quest':return Number(!!q.quests[c.key]?.done);case 'stage':{const [id,s]=c.key.split('/');return Number(q.quests[id]?.completed.includes(s)||false);}case 'flag':return Number(!!q.flags[c.key]);case 'unlock':return Number(!!q.unlocks[c.key]);default:return 0;
  }}
@@ -97,7 +98,7 @@
   if(!s.choices.length){const previous=dialogue;dialogue=null;const ok=completeStoryStage(q.id,'',s.id);if(!ok){dialogue=previous;render();}return ok;}
   render();return true;
  };
- function conditionLabel(c){const m=GAMEPLAY_SETTINGS.monsters.catalog.find(x=>x.id===c.key);let key=c.key;if(['region','visit','explore','boss'].includes(c.type))key=MAPS[Number(c.key)]?.name||c.key;if(c.type==='kill')key=m?.name||c.key;if(c.type==='quest')key=design.quests.find(q=>q.id===c.key)?.name||c.key;if(c.type==='recipe')key=__EMBERWILD_LIFE_SKILLS.design.recipes[c.key]?.name||c.key;if(c.itemType==='item'&&['stock','acquired','gatherItem'].includes(c.type))key=SHOP.find(x=>x.id===c.key)?.name||c.key;if(['gearWorn','gearBaseGem'].includes(c.type))key=design.gearRewards.find(g=>g.id===c.key)?.name||c.key;if(c.type==='skillSlotted')key=__EMBERWILD_SKILLS.byId(c.key)?.name||c.key;if(c.type==='encounter')key=questEncounterRows().find(x=>x.key===c.key)?.name||c.key;return M.TYPES[c.type]+(key?' · '+key:'');}
+ function conditionLabel(c){const m=GAMEPLAY_SETTINGS.monsters.catalog.find(x=>x.id===c.key);let key=c.key;if(['region','visit','explore','boss'].includes(c.type))key=MAPS[Number(c.key)]?.name||c.key;if(c.type==='kill')key=m?.name||c.key;if(c.type==='quest')key=design.quests.find(q=>q.id===c.key)?.name||c.key;if(c.itemType==='item'&&['stock','acquired'].includes(c.type))key=SHOP.find(x=>x.id===c.key)?.name||c.key;if(['gearWorn','gearBaseGem'].includes(c.type))key=design.gearRewards.find(g=>g.id===c.key)?.name||c.key;if(c.type==='skillSlotted')key=__EMBERWILD_SKILLS.byId(c.key)?.name||c.key;if(c.type==='encounter')key=questEncounterRows().find(x=>x.key===c.key)?.name||c.key;return M.TYPES[c.type]+(key?' · '+key:'');}
  function lessonEffects(s){return s.conditions.conditions.filter(c=>c.type==='gearBaseGem').map(c=>{const id=wornReward(playerHero(),c.key)?.skillSockets?.gems[c.slot];if(id==null)return '<p>鑲嵌前：此孔加成 0。</p>';const {stat,unit,values}=__EMBERWILD_SKILLS.system().gems.find(x=>x.kind===id%5).base,v=values[Math.floor(id/5)];return '<p>目前：'+({atk:'攻擊',hp:'生命',def:'防禦',attackSpeedPct:'攻擊速度',crit:'暴擊率'}[stat])+' +'+v*(unit==='ratio'?100:1)+(unit==='ratio'||unit==='percent'?'%':'')+'</p>';}).join('');}
  const objectives=(g,r)=>`<p class="small">${g.mode==='any'?'任一達成':'全部達成'}</p><ul class="story-objectives">${g.conditions.map(c=>`<li class="${progress(c,r)>=c.count?'story-met':''}"><span>${esc(conditionLabel(c))}${c.mode==='stage'?'（本階段起算）':''}</span><b>${progress(c,r)} / ${c.count}</b></li>`).join('')||'<li>閱讀劇情即可繼續</li>'}</ul>`;
  const rewardName=x=>x.type==='gear'?design.gearRewards.find(g=>g.id===x.key)?.name:x.type==='gem'?GEMS[Number(x.key)]?.name:x.type==='skill'?__EMBERWILD_SKILLS.byId(x.key)?.name:x.type==='item'?SHOP.find(i=>i.id===x.key)?.name:x.key;
@@ -108,10 +109,8 @@
  globalThis.hasShopVIP=()=>!!party&&ensure().vip>=1;
  // Round the payable amount once, consistently for all shop goods. Free goods remain free.
  globalThis.shopPayablePrice=price=>hasShopVIP()?(price>0?Math.max(1,Math.floor(price*95/100)):0):price;
- globalThis.setAlchemyAutoBuy=enabled=>{if(!hasShopVIP())return false;return transaction(()=>{ensure().autoBuy=!!enabled;});};
- globalThis.alchemyVIPView=()=>hasShopVIP()?`<div class="story-vip"><span>商店 VIP 卡・銅級 · 商品 95 折</span><label><input type="checkbox" onchange="setAlchemyAutoBuy(this.checked);render()" ${ensure().autoBuy?'checked':''}>自動購買基礎材料（只補本次缺少的清水與藥水瓶，依商店售價扣款）</label></div>`:`<div class="story-vip"><b>🔒 自動補充清水與空瓶</b><p>完成商店的特殊任務線即可解鎖。</p><button onclick="openStory('shop_rescue','npc')">查看任務</button></div>`;
  const validateBase=validateParty;validateParty=function(raw){const p=validateBase(raw);Object.assign(p,validateProgress(raw?.story,raw?.progressStats));if(raw?.progressStats===undefined)p.progressStats=migrateStats(p);return p;};
- const packBase=packParty;packParty=function(){ensure();return {...packBase(),story:copy(party.story),progressStats:copy(party.progressStats)};};
+ const packBase=packParty;packParty=function(){ensure();const story=copy(activeFields(party.story,fresh())),progressStats=copy(activeFields(party.progressStats,freshStats()));for(const key of REMOVED_CRAFT_MATERIALS)delete progressStats.acquired['material:'+key];return {...packBase(),story,progressStats};};
  const saveBase=save;save=function(...args){if(!party)return saveBase(...args);ensureTracking();const p=stats(),before=copy(p);observeInventory();for(const [k,n] of Object.entries(pendingGains))p.acquired[k]=Math.min(1e12,(p.acquired[k]||0)+n);const result=saveBase(...args);if(result===true){committedInventory=copy(inventoryBefore);pendingGains={};}else {party.progressStats=before;inventoryBefore=copy(committedInventory);pendingGains={};}return result;};
  const loadBase=loadParty;loadParty=function(...args){const result=loadBase(...args);ensure();resetTracking();dialogue=null;sync();return result;};
  const startBase=start;start=function(...args){const result=startBase(...args);ensure();resetTracking();sync();save();return result;};

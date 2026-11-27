@@ -16,7 +16,7 @@
  function stock(){
   const h=party.members[0],items=new Map();
   const put=(kind,id,name,n)=>items.set(kind+':'+id,{kind,key:id,name,count:Number(n)||0});
-  put('material','鍛鐵','鍛鐵',h.ore);put('material','粉塵','寶石粉塵',h.dust);
+  put('material','鍛鐵','鍛鐵',h.ore);put('material','粉塵','粉塵',h.dust);
   for(const [id,n] of Object.entries(h.materials||{}))put('material',id,id,n);
   h.gems.forEach((n,i)=>put('gem',String(i),GEMS[i].name,n));
   for(const item of SHOP)put('item',item.id,item.name,__EMBERWILD_INVENTORY_STOCK.count(item.id));

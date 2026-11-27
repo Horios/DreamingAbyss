@@ -5,9 +5,9 @@
  'use strict';
  const VERSION=1,copy=x=>structuredClone(x);
  const TYPES={guide:'操作引導',intro:'功能介紹',tip:'簡短提示',notice:'說明彈窗'};
- const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',life:'生活技能',alchemy:'煉金',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
+ const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
  // Page identities are the game's fixed navigation ids (js/ui/navigation-tree.js); 'story' is the quest page.
- const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',bossCraft:'BOSS 製作',story:'任務',quests:'委託',wishingLake:'許願湖',gather:'採集',alchemy:'煉金'};
+ const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',crafting:'製作',story:'任務',quests:'委託',wishingLake:'許願湖'};
  // Condition types the game can evaluate. key: what `key` names; count: whether `count` is used.
  const CONDITIONS={
   prologueDone:{label:'序幕已完成'},
@@ -94,19 +94,14 @@
   'forge.detail':{label:'工坊中間的放入格',page:'forge'},
   'forge.actions':{label:'目前裝備操作',page:'forge'},
   'forge.extraction':{label:'信物萃取',page:'forge'},
-  'boss.classTabs':{label:'BOSS 製作職業分頁',page:'bossCraft'},
-  'boss.recipe':{label:'第一張 BOSS 配方',page:'bossCraft'},
+  'boss.classTabs':{label:'BOSS 製作職業分頁',page:'crafting'},
+  'boss.recipe':{label:'第一張 BOSS 配方',page:'crafting'},
   'story.tabs':{label:'任務分類分頁',page:'story'},
   'story.card':{label:'任務卡片',page:'story'},
   'story.action':{label:'任務卡片的操作按鈕',page:'story'},
   'lake.panel':{label:'許願湖說明',page:'wishingLake'},
   'lake.offerings':{label:'許願湖投入物品',page:'wishingLake'},
   'lake.confirm':{label:'許願湖「投入」',page:'wishingLake'},
-  'gather.target':{label:'採集對象',page:'gather'},
-  'gather.start':{label:'「開始採集」',page:'gather'},
-  'life.stock':{label:'材料庫存',page:'gather'},
-  'alchemy.recipe':{label:'第一個煉金配方',page:'alchemy'},
-  'alchemy.start':{label:'配方的「開始煉金」',page:'alchemy'}
  };
  const ID=/^[a-z][a-z0-9_]{1,47}$/,STEP_ID=/^[a-z][a-z0-9_]{0,31}$/;
  const text=(v,max)=>typeof v==='string'&&v.length<=max,filled=(v,max)=>text(v,max)&&v.trim().length>0;
@@ -117,7 +112,7 @@
 
  // v0.176: only the key systems (exploring, wearing gear, the party) keep the spotlight. The other guides are a popup that
  // lists their steps, never takes focus and has one 「關閉」 button.
- const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','extraction_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','extraction_basics','boss_basics','story_basics','wishing_basics'];
  const asNotice=m=>NOTICE_GUIDES.includes(m.id)?{...m,type:'notice',steps:m.steps.map(x=>({...x,advance:{type:'next'},optional:false,onReplay:'same'}))}:m;
  function defaults(){return {version:VERSION,modules:[
   makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。',
@@ -232,9 +227,9 @@
    step('use','使用技能','夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。',{page:'forge',target:'forge.extraction'})
   ]}),
   makeModule({id:'boss_basics',title:'BOSS 製作',category:'equipment',description:'用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。',
-   trigger:{type:'pageEnter',page:'bossCraft'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('classes','職業分頁','切換職業查看該職業可以製作的首領裝備。',{page:'bossCraft',target:'boss.classTabs'}),
-   step('recipe','首領配方','每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。',{page:'bossCraft',target:'boss.recipe'})
+   trigger:{type:'pageEnter',page:'crafting'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('classes','職業分頁','切換職業查看該職業可以製作的首領裝備。',{page:'crafting',target:'boss.classTabs'}),
+   step('recipe','首領配方','每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。',{page:'crafting',target:'boss.recipe'})
   ]}),
   makeModule({id:'story_basics',title:'任務',category:'quests',description:'主線、支線與 NPC 任務。第一次進入任務頁時開始。',
    trigger:{type:'pageEnter',page:'story'},prerequisites:group([condition('prologueDone')]),steps:[
@@ -248,17 +243,6 @@
    step('offerings','選擇物品','背包裡有可投入的物品時，這裡會列出來，選擇要投入的物品與數量。',{page:'wishingLake',target:'lake.offerings'}),
    step('confirm','投入','確認後物品會沉入湖底，湖泊的回贈結果顯示在這個視窗。每天的次數有限。',{page:'wishingLake',target:'lake.confirm'})
   ]}),
-  makeModule({id:'gather_basics',title:'採集',category:'life',description:'選擇採集對象並持續取得材料。第一次進入採集時開始。',
-   trigger:{type:'pageEnter',page:'gather'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('target','採集對象','選擇要採集的材料，下方會顯示每次採集的時間與機率。',{page:'gather',target:'gather.target'}),
-   step('start','開始採集','採集會持續進行，切換頁面或同時探索都不會中斷。',{page:'gather',target:'gather.start'}),
-   step('stock','材料庫存','採集到的材料全隊共用，可以在這裡查看與篩選。',{page:'gather',target:'life.stock'})
-  ]}),
-  makeModule({id:'alchemy_basics',title:'煉金',category:'alchemy',description:'用材料煉製藥水與寶石。第一次進入煉金時開始。',
-   trigger:{type:'pageEnter',page:'alchemy'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('recipe','煉金配方','每個配方列出需要的材料、持有數量與產物。',{page:'alchemy',target:'alchemy.recipe'}),
-   step('start','開始煉金','材料足夠時按「開始煉金」。每次完成才扣材料，材料不足時自動停止。',{page:'alchemy',target:'alchemy.start'})
-  ]})
  ].map(asNotice)};}
 
  function conditionIssues(c,where,ctx,ids,add){

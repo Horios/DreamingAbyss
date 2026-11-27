@@ -1,7 +1,9 @@
 /* Account quests: five immutable daily choices at Taipei midnight; four claims per day. */
 (()=>{
   const C=EmberwildCommissions,M=EmberwildQuestDesign,copy=M.copy;
-  const current=b=>b?.dailyVersion===2&&b.day>=C.day(Date.now())&&C.validBoard(b);
+  const retiredTask=q=>!q.done&&(q.objectives||[]).some(o=>REMOVED_CRAFT_MATERIALS.has(o.key));
+  const retiredBonus=q=>(q.rewards?.materials||[]).some(x=>REMOVED_CRAFT_MATERIALS.has(x.key));
+  const current=b=>b?.dailyVersion===2&&b.day>=C.day(Date.now())&&C.validBoard(b)&&!b.tasks.some(q=>retiredTask(q)||retiredBonus(q));
   const design=()=>GAMEPLAY_SETTINGS.quests.design;
   const context=()=>({map:party.map,claimed:playerHero().claimed});
   const itemName=id=>SHOP.find(i=>i.id===id)?.name||id;
@@ -45,13 +47,13 @@
     while(pool.length&&board.tasks.length<5){const q=M.weighted(pool);pool.splice(pool.indexOf(q),1);
       const objectives=resolveObjectives(q,mi),rewards=resolveRewards(q.rewards,mi),o=objectives[0],g=rewards.gear[0],rewardPool=d.daily.materialRewards,pick=rewardPool[rand(rewardPool.length)];
       const amount=pick.min+rand(pick.max-pick.min+1);if(pick.key==='鍛鐵')rewards.ore+=amount;else if(pick.key==='粉塵')rewards.dust+=amount;else {const old=rewards.materials.find(x=>x.key===pick.key);if(old)old.quantity+=amount;else rewards.materials.push({key:pick.key,quantity:amount});}
-      const source=o.type==='potion'?'potion':o.type==='material'?(o.key==='紅色草'?'gather':o.key==='紅色草泥'?'alchemy':'monster'):'design';
+      const source=o.type==='potion'?'potion':o.type==='material'?'monster':'design';
       board.tasks.push({id:uid(),designVersion:1,templateId:q.id,title:q.title,description:q.description,objectives,rewards,map:mi,mat:o.type==='potion'?itemName(o.key):String(o.key),n:o.quantity,source,...(o.type==='potion'?{item:o.key}:{}),kind:g?'gear':'gem',gem:rand(3),slot:g?.slot??0,rar:g?.rar??2,job:g?.job??0,done:false,started:false});
     }return board;
   }
   ensureBoard=function(){
     if(!party||!state)return false;ensureAccountQuests();const h=playerHero();if(current(h.board))return true;
-    const old=h.board;try{h.board=generate();if(old?.dailyVersion===1&&old.day===h.board.day&&old.tasks[0]){const previous=copy(old.tasks[0]);if(previous.designVersion!==1)Object.assign(previous,legacyTask(previous),{designVersion:1,templateId:'legacy_daily',title:previous.mat+'募集',description:'更新前接取的每日委託。'});previous.started=true;h.board.tasks=[previous,...h.board.tasks.filter(q=>q.templateId!==previous.templateId)].slice(0,5);}if(save()!==true)throw Error('儲存失敗');return true;}catch(e){h.board=old;return false;}
+    const old=h.board;try{h.board=generate();if(old?.dailyVersion===2&&old.day===h.board.day&&C.validBoard(old)){const kept=old.tasks.filter(q=>!retiredTask(q)).map(q=>{const row=copy(q);row.rewards.materials=row.rewards.materials.filter(x=>!REMOVED_CRAFT_MATERIALS.has(x.key));return row;});h.board.tasks=[...kept,...h.board.tasks.filter(q=>!kept.some(x=>x.templateId===q.templateId))].slice(0,5);h.board.bonusClaimed=old.bonusClaimed;}if(old?.dailyVersion===1&&old.day===h.board.day&&old.tasks[0]){const previous=copy(old.tasks[0]);if(previous.designVersion!==1)Object.assign(previous,legacyTask(previous),{designVersion:1,templateId:'legacy_daily',title:previous.mat+'募集',description:'更新前接取的每日委託。'});previous.started=true;h.board.tasks=[previous,...h.board.tasks.filter(q=>q.templateId!==previous.templateId)].slice(0,5);}if(save()!==true)throw Error('儲存失敗');return true;}catch(e){h.board=old;return false;}
   };
   buildBoard=function(){return ensureBoard();};
   refreshBoard=confirmRefresh=function(){toast('每天五項選四項完成，台灣時間 00:00 更新');return false;};

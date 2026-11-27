@@ -165,11 +165,11 @@
   }
   function stackDetail(t,e){
     const p=P(),ref={kind:e.kind,key:e.key,context:'inventory',quantity:e.total??e.qty};
-    if(e.kind==='material'){const maps=[...(globalThis.inventoryMaterialRegions?.().get(e.key)||[])].sort((a,b)=>a-b);ref.extra='取得地區：'+(maps.length?maps.map(i=>MAPS[i].name).join('、'):e.key==='小蟲'?'採集取得':'非地區來源／未指定');}
+    if(e.kind==='material'){const maps=[...(globalThis.inventoryMaterialRegions?.().get(e.key)||[])].sort((a,b)=>a-b);ref.extra='取得地區：'+(maps.length?maps.map(i=>MAPS[i].name).join('、'):'非地區來源／未指定');}
     let body=p.info(ref),actions=p.controls(ref);
     if(e.kind==='gem'){
       const i=Number(e.key),q=globalThis.gemUpgradeQuote?.(i),have=state.gems[i]||0,one=globalThis.gemSalvageQuote?.({[i]:1});
-      actions+=`<div class="actions">${q&&!q.max?`<button type="button" onclick="openGemUpgrade(${i})" ${q.count>0?'':'disabled'}>粉塵升級 · ${q.cost} 粉塵</button>`:''}${one?.rows.length?`<button type="button" onclick="openGemSalvage({${i}:1})" ${have>0?'':'disabled'}>分解 1 顆 · ${one.dust} 粉塵</button><button type="button" onclick="openGemSalvage({${i}:${have}})" ${have>1?'':'disabled'}>全部分解</button>`:''}</div>`;
+      actions+=`<div class="actions">${q&&!q.max?`<button type="button" onclick="openGemUpgrade(${i})" ${q.count>0?'':'disabled'}>寶石粉塵升級 · ${q.cost} 寶石粉塵</button>`:''}${one?.rows.length?`<button type="button" onclick="openGemSalvage({${i}:1})" ${have>0?'':'disabled'}>分解 1 顆 · ${one.dust} 粉塵</button><button type="button" onclick="openGemSalvage({${i}:${have}})" ${have>1?'':'disabled'}>全部分解</button>`:''}</div>`;
     }
     const def=e.def,stack=e.ref.startsWith('s:')?`<p class="small">此格數量 ${num(e.qty)}${def?.maxStack&&def.maxStack<1e9?' / 堆疊上限 '+num(def.maxStack):''}${def?.categoryLabel?' · '+attr(def.categoryLabel):''}</p>`:'';
     return `<div class="inventory-detail-pane bag-item-detail"><div class="bag-detail-head"><span class="bag-detail-art">${p.icon(e.kind,e.key)}</span></div>${body}${stack}<div class="bag-detail-actions">${actions}</div></div>`;
@@ -229,7 +229,7 @@
   function stackTools(t){
     const opts={materials:[['kind','種類'],['name','名稱'],['qty','數量']],gems:[['kind','種類'],['tier','等級'],['qty','數量']],items:[['kind','種類'],['name','名稱'],['qty','數量']]}[t.id];
     if(t.id==='gems'&&gemMulti){const c=gemCounts(),n=Object.values(c).reduce((a,b)=>a+b,0),q=n?globalThis.gemSalvageQuote?.(c):null;
-      return `<div class="bag-batch" role="group" aria-label="批次分解寶石"><b>批次分解 · 已選 ${n} 顆${q?' · '+q.dust+' 粉塵':''}</b>${choose('依等級',gemTier,[['all','全部等級'],['1','1 階'],['2','2 階'],['3','3 階']],'setGemBatchTier(this.value)')}<button type="button" onclick="pickGemBatch(false)">選取符合條件</button><button type="button" onclick="pickGemBatch(true)">全選</button><button type="button" onclick="clearGemBatch()" ${n?'':'disabled'}>清除</button><button type="button" class="danger" onclick="requestGemBatchSalvage()" ${n?'':'disabled'}>批次分解</button><button type="button" onclick="toggleGemBatch()">取消</button><span class="small">選取的格子整格分解；分解前會顯示明細並確認。</span></div>`;}
+      return `<div class="bag-batch" role="group" aria-label="批次分解寶石"><b>批次分解 · 已選 ${n} 顆${q?' · '+q.dust+' 寶石粉塵':''}</b>${choose('依等級',gemTier,[['all','全部等級'],['1','1 階'],['2','2 階'],['3','3 階']],'setGemBatchTier(this.value)')}<button type="button" onclick="pickGemBatch(false)">選取符合條件</button><button type="button" onclick="pickGemBatch(true)">全選</button><button type="button" onclick="clearGemBatch()" ${n?'':'disabled'}>清除</button><button type="button" class="danger" onclick="requestGemBatchSalvage()" ${n?'':'disabled'}>批次分解</button><button type="button" onclick="toggleGemBatch()">取消</button><span class="small">選取的格子整格分解；分解前會顯示明細並確認。</span></div>`;}
     let html=opts?`<div class="bag-actions">${t.id==='gems'?'<button type="button" onclick="toggleGemBatch()">批次分解</button>':''}${choose('排序',stackSort[t.id],opts,'setBagStackSort(this.value)')}`:'<div class="bag-actions">';
     if(t.id==='items'){
       const target=pageHero('equipment')||party.members[0],heroes=typeof enlistedHeroes==='function'?enlistedHeroes():party.members;

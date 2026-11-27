@@ -15,7 +15,7 @@ test('Chromium: team plans and worn companion tokens have one management page',a
  const g=await openRuntime(root),p=g.page;
  try{
   await startParty(p);
-  for(const tab of ['battle','roster','partnerRoster','character','skills','equipment','worn','forge','bossCraft']){
+  for(const tab of ['battle','roster','partnerRoster','character','skills','equipment','worn','forge','crafting']){
    await p.evaluate(t=>setTab(t),tab);
    assert.equal(await p.locator('.team-plan-panel').count(),tab==='roster'?1:0,tab+' team plans');
    assert.equal(await p.locator('.companion-token-panel').count(),tab==='worn'?1:0,tab+' token management');

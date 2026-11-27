@@ -23,6 +23,6 @@ test('only backpack slots open details; references stay passive and shop keeps d
   r.ctx.slotContext=context;assert.equal(r.run("openItemSlotDetails({dataset:{itemKind:'material',itemKey:'鍛鐵',itemContext:slotContext}})"),false);
  }
  const inv=r.run("itemSlotHTML('material','鍛鐵',{context:'inventory'})");assert.match(inv,/^<button /);assert.match(inv,/openItemSlotDetails/);r.run("openItemSlotDetails({dataset:{itemKind:'material',itemKey:'鍛鐵',itemContext:'inventory'}})");assert(r.elements.get('item-detail-dialog').open);r.run('closeItemDetails()');
- for(const category of ['random','fixed','equipment','life']){r.ctx.category=category;r.run('setShopCategory(category)');const html=r.run('shopView()');assert.match(html,/shop-inline-controls/);assert.match(html,/onclick="buy(?:MarketOffer|FixedShopOffer|EquipmentShopOffer|LifeMaterial)/);assert.doesNotMatch(html,/onclick="openItemSlotDetails/);}
+ for(const category of ['random','fixed','equipment']){r.ctx.category=category;r.run('setShopCategory(category)');const html=r.run('shopView()');assert.match(html,/shop-inline-controls/);assert.match(html,/onclick="buy(?:MarketOffer|FixedShopOffer|EquipmentShopOffer)/);assert.doesNotMatch(html,/onclick="openItemSlotDetails/);}
  const custom=r.run("gearSlotHTML(state.bag[0],{onclick:\"selectInventoryGear('test')\"})");assert.match(custom,/^<button /);assert.match(custom,/selectInventoryGear/);assert.deepEqual(r.errors,[]);
 });

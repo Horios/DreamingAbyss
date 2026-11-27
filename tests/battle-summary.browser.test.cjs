@@ -38,7 +38,7 @@ test('shared summary stays visible on desktop pages and in the phone 戰況 dial
    // v0.133: narrow desktop windows (901–1100px) fold the report column by default; the summary is read after opening it.
    if(size.width>900&&size.width<=1100){assert.equal(await p.evaluate(()=>document.body.classList.contains('journal-collapsed')),true,'narrow desktop folds the report by default');await p.evaluate(()=>toggleJournalCollapsed(false));}
    assert(await p.locator('#journalEnemyIcons .battle-enemy-icon').evaluateAll(nodes=>nodes.every(n=>{const box=n.getBoundingClientRect(),svg=n.querySelector('svg').getBoundingClientRect();return svg.left>=box.left&&svg.right<=box.right&&svg.top>=box.top&&svg.bottom<=box.bottom;})),'journal SVGs fit their compact icons');
-   for(const tab of ['equipment','forge','skills','lifeSkills','gather','alchemy','story','battle']){
+   for(const tab of ['equipment','forge','skills','crafting','story','battle']){
     await p.evaluate(id=>setTab(id),tab);
     // v0.087: phone pages carry no report panel; the summary is read in the full-screen 戰況 dialog.
     if(size.width<=900){assert(!await p.locator('#battleSummary').isVisible(),tab+' phone page has no report panel');await p.evaluate(()=>toggleMobileReport(true));}

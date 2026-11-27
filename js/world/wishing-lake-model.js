@@ -6,8 +6,8 @@
   typeWeights:{gold:50,item:30,equipment:20},
   gold:{min:500,max:20000,bands:[{min:500,max:1999,weight:50},{min:2000,max:4999,weight:30},{min:5000,max:9999,weight:15},{min:10000,max:20000,weight:5}]},
   equipment:{progressSource:'mapClears',rangeSource:'regionTier',aheadChance:.1,aheadLevels:5,qualitySource:'normalDrops',tierSource:'normalDrops'},
-  inputs:[['gel','黏稠凝膠',50],['fang','完整狼牙',50],['herb','紅色草',20],['bug','小蟲',10]].map(([id,key,n])=>({id,kind:'material',key,enabled:true,quantityMode:'fixed',min:n,max:n,poolId:'daily',specialTrigger:''})),
-  pools:[{id:'daily',name:'每日湖泊回贈',rewards:[{id:'gold',type:'gold',enabled:true,weight:1,minMapId:'map0',allowAhead:false},{id:'heal',type:'item',kind:'item',key:'heal_small',min:2,max:5,enabled:true,weight:50,minMapId:'map0',allowAhead:false},{id:'iron',type:'item',kind:'material',key:'鍛鐵',min:5,max:12,enabled:true,weight:30,minMapId:'map0',allowAhead:false},{id:'herb',type:'item',kind:'material',key:'紅色草',min:10,max:20,enabled:true,weight:20,minMapId:'map0',allowAhead:false},{id:'gear',type:'equipment',enabled:true,weight:1,minMapId:'map0',allowAhead:true}]}],
+  inputs:[['gel','黏稠凝膠',50],['fang','完整狼牙',50]].map(([id,key,n])=>({id,kind:'material',key,enabled:true,quantityMode:'fixed',min:n,max:n,poolId:'daily',specialTrigger:''})),
+  pools:[{id:'daily',name:'每日湖泊回贈',rewards:[{id:'gold',type:'gold',enabled:true,weight:1,minMapId:'map0',allowAhead:false},{id:'heal',type:'item',kind:'item',key:'heal_small',min:2,max:5,enabled:true,weight:50,minMapId:'map0',allowAhead:false},{id:'iron',type:'item',kind:'material',key:'鍛鐵',min:5,max:12,enabled:true,weight:30,minMapId:'map0',allowAhead:false},{id:'gear',type:'equipment',enabled:true,weight:1,minMapId:'map0',allowAhead:true}]}],
   future:{fairyEvents:[],companionQuests:[],festivals:[],stateFields:{festivalClaims:'object',fairyEvents:'object',companionTriggers:'object',questCompletions:'object'}}};
  const maps=d=>d.balanceSettings?.maps?.catalog||[];
  function catalog(d){return root.EmberwildInventoryIcons.entries(d);}

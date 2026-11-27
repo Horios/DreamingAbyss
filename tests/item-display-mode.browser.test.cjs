@@ -16,7 +16,7 @@ test('Item interfaces share one persisted icon-name or name-only list mode',asyn
       /* v0.211: the bag is an icon grid and keeps its slots in both modes. */
       ()=>{setTab('forge');toggleWorkshopPicker(true);},/* v0.194: the workshop lists items in its picker */
       ()=>setTab('shop'),
-      ()=>setTab('lifeSkills')
+      ()=>setTab('crafting')
     ]){
       await p.evaluate(setup);
       const slot=p.locator('main .item-slot:visible').first();

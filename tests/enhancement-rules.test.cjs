@@ -67,24 +67,6 @@ test('accessories cannot be enhanced; existing base stats take the larger of per
  for(const k of ['atk','hp','def'])assert.equal(at9[k],base[k]>0?base[k]+Math.max(base[k],Math.round(9*cfg.flatStatsPerLevel[k])):0,k+' takes the greater gain at +9');
  assert.deepEqual(r.errors,[]);
 });
-test('鍛鐵 and 粉塵 swapped drop sources and salvage amounts',()=>{
- const r=game();
- assert.deepEqual(json(r,"exportableBalance().balanceSettings.drops.entries.filter(e=>/^cultivation_dust_/.test(e.id)).map(e=>[e.type,e.name])"),[['ore','鍛鐵'],['ore','鍛鐵']],'the rules that dropped 粉塵 drop 鍛鐵');
- // v0.206: monsters no longer give 粉塵 (the former per-kill base material is removed).
- r.run("state.ore=0;state.dust=0;roll=0;globalThis.e=makeEnemy(0,playerHero(),()=>.5);e.kind='normal';rollEnemyItemLoot(e)");
- assert.equal(r.run('state.dust'),0,'no per-kill 粉塵');
- // Salvage: the larger tier amount is 粉塵.
- const plan=json(r,"(()=>{const g=gear(3,0,1,0);return salvageRewardPlan(g);})()");
- const ore=plan.find(x=>x.type==='ore').quantity,dust=plan.find(x=>x.type==='dust').quantity;assert(dust>ore,'粉塵 '+dust+' > 鍛鐵 '+ore);
- assert.deepEqual(r.errors,[]);
-});
-test('鍛鐵 rules keep their rates; v0.206 removed the per-kill 粉塵 and its settings',()=>{
- const r=game();
- assert.equal(r.run('GAMEPLAY_SETTINGS.rewards.ore===undefined'),true);
- assert.deepEqual(json(r,"exportableBalance().balanceSettings.drops.entries.filter(e=>/^cultivation_dust_/.test(e.id)).map(e=>e.chanceByDifficulty)"),[[0.0063,0.0091,0.0112],[0.049,0.063,0.077]]);
- r.run("state.dust=0;for(const roll of [0,.5,.99]){const e=makeEnemy(0,playerHero(),()=>.5);e.kind='elite';Math.random=()=>roll;rollEnemyItemLoot(e);}");assert.equal(r.run('state.dust'),0);
- assert.deepEqual(r.errors,[]);
-});
 test('the offline receipt lists enhancement materials apart from the region materials',async()=>{
  const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);
  r.run(`selectSaveSlot(1);start(0);closeModal();globalThis.rngState=7;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);

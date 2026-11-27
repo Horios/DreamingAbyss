@@ -131,7 +131,7 @@
     const g=GEMS[i];if(!g)return null;
     if(g.tier>=3)return {gem:i,max:true};
     const target=i+GEM_KINDS,cost=D.gemUpgradeCost(upgradeSettings(),g.tier+1);
-    return {gem:i,target,cost,have:state.dust,count:state.gems[i]||0,max:false,ok:cost!==null&&(state.gems[i]||0)>0&&state.dust>=cost};
+    return {gem:i,target,cost,have:materialCount('寶石粉塵'),count:state.gems[i]||0,max:false,ok:cost!==null&&(state.gems[i]||0)>0&&materialCount('寶石粉塵')>=cost};
   }
   globalThis.gemUpgradeQuote=gemUpgradeQuote;
   /* ---------- gem salvage (v0.213): gems in the bag become gem dust; all or nothing, rolled back on a failed save ---------- */
@@ -150,15 +150,15 @@
     const q=gemSalvageQuote(counts);if(!q||!q.ok){toast('寶石數量不足或設定無效');return false;}
     const items=globalThis.EmberwildItems,cost=Object.fromEntries(q.rows.map(r=>['gem:'+r.gem,r.count]));
     if(!items.removeMany(cost)){toast('寶石數量不足');return false;}
-    items.add('material:粉塵',q.dust);
-    if(save()===false){items.remove('material:粉塵',q.dust);for(const [id,n] of Object.entries(cost))items.add(id,n);toast('無法儲存，分解未完成');return false;}
+    items.add('material:寶石粉塵',q.dust);
+    if(save()===false){items.remove('material:寶石粉塵',q.dust);for(const [id,n] of Object.entries(cost))items.add(id,n);toast('無法儲存，分解未完成');return false;}
     closeModal();render();toast(`分解 ${q.gems} 顆寶石，獲得 ${q.dust} 寶石粉塵`);return q;
   };
   let pendingGemSalvage=null;
   globalThis.openGemSalvage=function(counts){
     const q=gemSalvageQuote(counts);if(!q||!q.rows.length){toast('沒有可分解的寶石');return false;}
     pendingGemSalvage={counts:{...counts},signature:JSON.stringify(q)};
-    $('modal').innerHTML=`<h2>確認分解寶石</h2><table class="gem-upgrade-table"><tbody>${q.rows.map(r=>`<tr><th>${esc(r.name)}</th><td>${r.count} 顆 → ${r.dust} 粉塵</td></tr>`).join('')}</tbody></table><p>共分解 ${q.gems} 顆寶石，獲得 ${q.dust} 寶石粉塵。分解後無法復原。</p><div class="actions"><button class="danger" onclick="confirmGemSalvage()" ${q.ok?'':'disabled'}>確認分解</button><button onclick="closeModal()">取消</button></div>`;
+    $('modal').innerHTML=`<h2>確認分解寶石</h2><table class="gem-upgrade-table"><tbody>${q.rows.map(r=>`<tr><th>${esc(r.name)}</th><td>${r.count} 顆 → ${r.dust} 寶石粉塵</td></tr>`).join('')}</tbody></table><p>共分解 ${q.gems} 顆寶石，獲得 ${q.dust} 寶石粉塵。分解後無法復原。</p><div class="actions"><button class="danger" onclick="confirmGemSalvage()" ${q.ok?'':'disabled'}>確認分解</button><button onclick="closeModal()">取消</button></div>`;
     if(!$('modal').open)$('modal').showModal();return true;
   };
   globalThis.confirmGemSalvage=function(){
@@ -172,23 +172,23 @@
     if(!q.ok){toast(q.count<1?'沒有這種寶石':'需要 '+q.cost+' 寶石粉塵');return false;}
     // All or nothing: one gem of the stack and the dust leave together, then the higher-tier gem joins its own stack.
     const items=globalThis.EmberwildItems;
-    if(!items.removeMany({['gem:'+i]:1,'material:粉塵':q.cost})){toast('材料不足');return false;}
+    if(!items.removeMany({['gem:'+i]:1,'material:寶石粉塵':q.cost})){toast('材料不足');return false;}
     items.add('gem:'+q.target,1);
-    if(save()===false){items.remove('gem:'+q.target,1);items.add('gem:'+i,1);items.add('material:粉塵',q.cost);toast('無法儲存，升級未完成');return false;}
-    closeModal();render();toast(`${GEMS[i].name} 升級為 ${GEMS[q.target].name}（消耗 ${q.cost} 粉塵）`);return true;
+    if(save()===false){items.remove('gem:'+q.target,1);items.add('gem:'+i,1);items.add('material:寶石粉塵',q.cost);toast('無法儲存，升級未完成');return false;}
+    closeModal();render();toast(`${GEMS[i].name} 升級為 ${GEMS[q.target].name}（消耗 ${q.cost} 寶石粉塵）`);return true;
   };
   globalThis.openGemUpgrade=function(i){
     i=Number(i);const q=gemUpgradeQuote(i);if(!q)return false;
     const g=GEMS[i],next=q.max?null:GEMS[q.target];
-    $('modal').innerHTML=`<h2>粉塵升級 · ${esc(g.name)}</h2>${q.max?'<p>已是最高等級，無法再升級。</p>':`<table class="gem-upgrade-table"><tbody><tr><th>等級</th><td>${g.tier} 階 → ${next.tier} 階</td></tr><tr><th>效果</th><td>${esc(g.desc)} → ${esc(next.desc)}</td></tr><tr><th>所需寶石粉塵</th><td>${q.cost}</td></tr><tr><th>目前持有粉塵</th><td>${q.have}</td></tr><tr><th>持有此寶石</th><td>${q.count}</td></tr></tbody></table><p class="small">每次只升級 1 顆寶石；升級後的寶石放入對應等級的堆疊。</p>`}<div class="actions">${q.max?'':`<button class="primary" onclick="upgradeGemWithDust(${i})" ${q.ok?'':'disabled'}>升級</button>`}<button onclick="closeModal()">取消</button></div>`;
+    $('modal').innerHTML=`<h2>寶石粉塵升級 · ${esc(g.name)}</h2>${q.max?'<p>已是最高等級，無法再升級。</p>':`<table class="gem-upgrade-table"><tbody><tr><th>等級</th><td>${g.tier} 階 → ${next.tier} 階</td></tr><tr><th>效果</th><td>${esc(g.desc)} → ${esc(next.desc)}</td></tr><tr><th>所需寶石粉塵</th><td>${q.cost}</td></tr><tr><th>目前持有寶石粉塵</th><td>${q.have}</td></tr><tr><th>持有此寶石</th><td>${q.count}</td></tr></tbody></table><p class="small">每次只升級 1 顆寶石；升級後的寶石放入對應等級的堆疊。</p>`}<div class="actions">${q.max?'':`<button class="primary" onclick="upgradeGemWithDust(${i})" ${q.ok?'':'disabled'}>升級</button>`}<button onclick="closeModal()">取消</button></div>`;
     if(!$('modal').open)$('modal').showModal();return true;
   };
   if(typeof accountGemsView==='function'){
     const base=accountGemsView;
     accountGemsView=function(...args){
       const html=base.apply(this,args);
-      const rows=GEMS.map((g,i)=>({g,i})).filter(({i})=>(state.gems[i]||0)>0).map(({g,i})=>{const q=gemUpgradeQuote(i);return `<li data-gem-upgrade="${i}"><span>${esc(g.name)} ×${state.gems[i]}</span>${q.max?'<span class="small">最高等級</span>':`<button type="button" onclick="openGemUpgrade(${i})">粉塵升級 · ${q.cost} 粉塵</button>`}</li>`;}).join('');
-      return html+`<section class="panel gem-dust-upgrade"><h3>寶石粉塵升級</h3><p class="small">消耗寶石粉塵，將 1 顆寶石直接提升一個等級。同類寶石合成仍在煉金進行。</p><ul class="gem-upgrade-list">${rows||'<li class="empty">目前沒有可升級的寶石。</li>'}</ul></section>`;
+      const rows=GEMS.map((g,i)=>({g,i})).filter(({i})=>(state.gems[i]||0)>0).map(({g,i})=>{const q=gemUpgradeQuote(i);return `<li data-gem-upgrade="${i}"><span>${esc(g.name)} ×${state.gems[i]}</span>${q.max?'<span class="small">最高等級</span>':`<button type="button" onclick="openGemUpgrade(${i})">粉塵升級 · ${q.cost} 寶石粉塵</button>`}</li>`;}).join('');
+      return html+`<section class="panel gem-dust-upgrade"><h3>寶石粉塵升級</h3><p class="small">消耗寶石粉塵，將 1 顆寶石直接提升一個等級。</p><ul class="gem-upgrade-list">${rows||'<li class="empty">目前沒有可升級的寶石。</li>'}</ul></section>`;
     };
   }
 })();

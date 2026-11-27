@@ -180,11 +180,6 @@
     ]
   },
   "salvage": {
-    "oreBasePerTier": 3,
-    "orePerQualityPerTier": 2,
-    "orePerEnhancePerTier": 1,
-    "dustBase": 1,
-    "dustPerQuality": 1,
     "extraRewards": []
   },
   "lootOwnerSameJobChance": 0.75,

@@ -24,7 +24,6 @@
     "test:interface": "node --test tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/responsive-shell.browser.test.cjs tests/page-readability.browser.test.cjs tests/skill-fallback-icons.test.cjs tests/character-avatars.browser.test.cjs",
     "test:skill-effects": "node --test tests/skill-effects.test.cjs tests/status-advanced.test.cjs tests/skill-effects-editor.test.cjs tests/skill-effects.browser.test.cjs tests/skill-induction.test.cjs tests/skill-induction-editor.browser.test.cjs",
     "test:save-compatibility": "node --test tests/team-model.test.cjs tests/team-runtime.test.cjs tests/team-save-compatibility.test.cjs tests/team-save-compatibility.browser.test.cjs",
-    "test:life": "node --test tests/life-skills.test.cjs tests/life-products.test.cjs tests/life-products.browser.test.cjs",
     "test:balance": "node --test tests/balance-roundtrip.test.cjs tests/balance-roundtrip.browser.test.cjs tests/material-prices.test.cjs",
     "test:quests": "node --test tests/daily-commissions.test.cjs tests/quest-design.test.cjs tests/quest-design.browser.test.cjs",
     "test:acquisition": "node --test tests/equipment-acquisition.test.cjs tests/speed-boss-progression.test.cjs tests/daily-commissions.test.cjs",

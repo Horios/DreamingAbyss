@@ -266,7 +266,7 @@
       "name": "商店任務線",
       "type": "npc",
       "npc": "商人",
-      "description": "解救商人並協助準備補給，取得永久銅級 VIP 資格。",
+      "description": "解救商人並協助收集材料，取得永久銅級 VIP 資格。",
       "enabled": true,
       "hidden": false,
       "unlock": {
@@ -355,7 +355,7 @@
             "items": []
           },
           "effects": [],
-          "next": "gather",
+          "next": "vip",
           "branches": [],
           "choices": [],
           "guides": [
@@ -364,104 +364,15 @@
           ]
         },
         {
-          "id": "gather",
-          "name": "親手採集",
-          "speaker": "商人",
-          "description": "請用採集系統取得 3 株紅色草；以往採集的紀錄也計入。",
-          "dialogue": [
-            {
-              "kind": "npc",
-              "speaker": "商人",
-              "text": "請用採集系統取得 3 株紅色草；以往採集的紀錄也計入。"
-            }
-          ],
-          "conditions": {
-            "mode": "all",
-            "conditions": [
-              {
-                "type": "gatherItem",
-                "key": "紅色草",
-                "count": 3,
-                "mode": "lifetime",
-                "itemType": "material"
-              },
-              {
-                "type": "gather",
-                "key": "",
-                "count": 3,
-                "mode": "lifetime",
-                "itemType": "material"
-              }
-            ]
-          },
-          "rewards": {
-            "gold": 0,
-            "ore": 0,
-            "items": []
-          },
-          "effects": [],
-          "next": "delivery",
-          "branches": [],
-          "choices": [],
-          "guides": [
-            "gather"
-          ]
-        },
-        {
-          "id": "delivery",
-          "name": "準備補給",
-          "speaker": "商人",
-          "description": "請確認持有紅色草，並完成一次煉製簡易治療藥水。你可以在商店買到清水與藥水瓶。",
-          "dialogue": [
-            {
-              "kind": "npc",
-              "speaker": "商人",
-              "text": "請確認持有紅色草，並完成一次煉製簡易治療藥水。你可以在商店買到清水與藥水瓶。"
-            }
-          ],
-          "conditions": {
-            "mode": "all",
-            "conditions": [
-              {
-                "type": "stock",
-                "key": "紅色草",
-                "count": 1,
-                "mode": "lifetime",
-                "itemType": "material"
-              },
-              {
-                "type": "recipe",
-                "key": "alchemy",
-                "count": 1,
-                "mode": "lifetime",
-                "itemType": "material"
-              }
-            ]
-          },
-          "rewards": {
-            "gold": 20,
-            "ore": 0,
-            "items": []
-          },
-          "effects": [],
-          "next": "vip",
-          "branches": [],
-          "choices": [],
-          "guides": [
-            "alchemy",
-            "shop"
-          ]
-        },
-        {
           "id": "vip",
           "name": "商人的謝禮",
           "speaker": "商人",
-          "description": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折，並解鎖煉金自動購買基礎材料。",
+          "description": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折。",
           "dialogue": [
             {
               "kind": "npc",
               "speaker": "商人",
-              "text": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折，並解鎖煉金自動購買基礎材料。"
+              "text": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折。"
             }
           ],
           "conditions": {

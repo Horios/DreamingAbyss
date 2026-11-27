@@ -73,7 +73,6 @@ const mutations={
  'invalid skill timing':d=>{d.skillSystem.definitions[0].timing.mpCost=-1;},
  'invalid monster timing':d=>{d.balanceSettings.monsters.catalog[0].timing.baseIntervalSeconds=0;},
  'removed map':d=>{d.balanceSettings.maps.catalog.pop();},
- 'life recipe item':d=>{const r=Object.values(d.lifeSkills.recipes)[0];r.output='missing_item';r.outputType='item';},
  'story quest broken':d=>{d.story.quests[0].stages[0].id='';},
  'quest removed':d=>{const side=d.balanceSettings.quests.design.side;if(side?.length)side.shift();},
  'unknown availability':d=>{d.companions[0].availability='nope';}
