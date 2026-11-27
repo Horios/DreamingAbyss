@@ -61,7 +61,7 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
     await start(p);
     for(const width of [1440,768,390]){
       await p.setViewportSize({width,height:900});await p.evaluate(()=>closeModal());
-      await show(p,'bossCraft','.boss-reading-page');
+      await show(p,'crafting','.boss-reading-page');
       await p.locator('.boss-reading-page .ui-help').filter({has:p.getByText('製作說明',{exact:true})}).locator('summary').click();
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.boss-reading-page details'))el.open=true;});
       const boss=await p.evaluate(()=>{

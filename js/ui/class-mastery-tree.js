@@ -6,7 +6,7 @@
 (()=>{
   'use strict';
   const S=()=>globalThis.__EMBERWILD_SKILLS,M=globalThis.__EMBERWILD_MASTERY;
-  const TYPE={active:'主動',proc:'觸發',support:'輔助',passive:'被動'},STAT={hp:'生命',atk:'攻擊',def:'防禦',crit:'暴擊'};
+  const TYPE={active:'主動',proc:'觸發',support:'主動',passive:'被動'},STAT={hp:'生命',atk:'攻擊',def:'防禦',crit:'暴擊'};
   function treeRows(job){
     const rule=S()?.system?.()?.classRules?.find(r=>r.job===job);if(!rule)return [];
     return [...rule.initial,...rule.advanced].filter(row=>S().byId(row.skillId)&&!S().byId(row.skillId).disabled).map(row=>({row})).sort((x,y)=>x.row.masteryLevel-y.row.masteryLevel);
@@ -42,7 +42,7 @@
     const rows=nodes.map(n=>{const sk=S().byId(n.row.skillId),st=nodeState(h,n,equipped);
       const head=n.row.masteryLevel!==level?`<li class="skill-list-level">精通 Lv${level=n.row.masteryLevel}</li>`:'';
       return head+`<li><button type="button" class="skill-list-node tree-state-${st}" data-tree-node="${esc(sk.id)}" onclick="openSkillTreeDetail('${esc(sk.id)}')"><b>${esc(sk.name)}</b><span class="tag">${TYPE[sk.type]||''}</span><span class="skill-list-state tree-state-${st}">${STATE_TEXT[st]}</span></button></li>`;}).join('');
-    return `<section class="panel class-mastery-tree" data-class-tree="${h.job}">${headHTML(h)}<p class="small">依精通等級排列，點選技能查看說明。已解鎖的主動、觸發與輔助技能要放進技能槽才會在戰鬥中使用。</p><ul class="class-skill-list">${rows}</ul></section>`;
+    return `<section class="panel class-mastery-tree" data-class-tree="${h.job}">${headHTML(h)}<p class="small">依精通等級排列，點選技能查看說明。已解鎖的主動與觸發技能要放進技能槽才會在戰鬥中使用。</p><ul class="class-skill-list">${rows}</ul></section>`;
   }
   globalThis.openSkillTreeDetail=function(id){
     const h=party?.members?.[0];if(!h)return false;const n=treeRows(h.job).find(x=>x.row.skillId===id);if(!n)return false;

@@ -40,7 +40,7 @@
  function itemName(key){
   const [kind,id]=key.split(/:(.+)/);
   if(kind==='gem')return GEMS[Number(id)]?.name||'寶石';
-  if(kind==='material')return id==='粉塵'?'寶石粉塵':id;
+  if(kind==='material')return id;
   if(id==='legacy-potion')return '治療藥水';
   return SHOP.find(x=>x.id===id)?.name||globalThis.__EMBERWILD_INVENTORY_STOCK?.item?.(id)?.name||id;
  }

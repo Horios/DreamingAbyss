@@ -80,14 +80,16 @@ test('timeline: advance effects cannot bypass the cap; encounters and snapshots 
 function game(job=0){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(${job});closeModal()`);const read=c=>{const t=r.run('JSON.stringify('+c+')');return t===undefined?undefined:JSON.parse(t);};return {r,read};}
 
 test('runtime: four classes use 2.00 / 2.65 / 1.40 / 2.65 s and the balance data carries no speed points',()=>{
- for(const [job,want] of [[0,2],[1,2.65],[2,1.4],[3,2.65]]){const g=game(job);const s=g.read('heroAttackSpeedSummary(playerHero())');assert.equal(s.intervalSeconds,want);assert.equal(s.bonusPct,0);assert.equal(g.read('stats(playerHero()).speed'),undefined);}
+ // v0.215: the archer's starter 長弓 has −10% attack speed; take it off to read the class base interval.
+ for(const [job,want] of [[0,2],[1,2.65],[2,1.4],[3,2.65]]){const g=game(job);g.r.run('playerHero().equipped[0]=null');const s=g.read('heroAttackSpeedSummary(playerHero())');assert.equal(s.intervalSeconds,want);assert.equal(s.bonusPct,0);assert.equal(g.read('stats(playerHero()).speed'),undefined);}
  const d=require('../data/balance.json');
  assert.deepEqual(d.balanceSettings.combat.seconds.attackSpeed,{maxAttacksPerSecond:1.5,minimumBonusPct:-90});
  for(const k of ['heroBase','heroPerLevel','bonusCap','evasionWeight','critWeight'])assert.equal(d.balanceSettings.combat.speed[k],undefined,k);
  assert.deepEqual(d.skillSystem.gems.find(g=>g.kind===1).base,{stat:'attackSpeedPct',unit:'percent',values:[1,2,3]});
  for(const c of d.companions)assert.equal(c.initialStats?.speed,undefined);
  const wolf=d.skillSystem.definitions.find(s=>s.id==='wolf-double-bite');assert.equal(wolf.attackSpeedPct,18);assert.equal(wolf.power,0);
- assert.deepEqual(d.equipmentPowerSystem.suffixes.find(s=>s.id==='traveler').effect,{key:'basicAttackSpeedStack',value:3});
+ // v0.215: the prefix/suffix system (旅人 included) was removed; 疾行 stays a fixed equipment effect (basicAttackSpeedStack).
+ assert.equal(d.equipmentPowerSystem.prefixes,undefined);assert.equal(d.equipmentPowerSystem.suffixes,undefined);
  assert.ok(!JSON.stringify(d.companionTokens).includes('"speed"'));
 });
 
@@ -113,8 +115,8 @@ test('runtime: 野狼怒吼 gives 狼奔 +18% for 10 s; 旅人 gives 疾行 stac
  assert.equal(g.read('battleStats(playerHero()).attackSpeedPct'),18);
  assert.equal(g.read('skillCooldown(0,playerHero())'),cd,'attack speed does not change skill cooldowns');
  g.r.run('partyClock=110.0001');assert.equal(g.read('battleStats(playerHero()).attackSpeedPct'),0,'expires after 10 s');
- // 旅人 on the weapon.
- g.r.run(`{const w=equipment(playerHero())[0];w.suffixId='traveler';effects=[];partyClock=200;}`);
+ // 疾行 as a fixed effect of the weapon (formerly the 旅人 suffix).
+ g.r.run(`{const w=equipment(playerHero())[0];itemForm(w).fixedEffects.push({key:'basicAttackSpeedStack',value:3});effects=[];partyClock=200;}`);
  assert.match(g.read(`equipmentAbilitySummary(equipment(playerHero())[0]).values.join('|')`),/疾行.*3%.*5 秒.*3 層/);
  const stack=()=>g.read(`(effects.find(e=>e.skill==='traveler-basic-stack')||{}).value||0`);
  g.r.run('performHeroBasic(playerHero())');assert.equal(stack(),3);
@@ -154,8 +156,9 @@ test('migration: older documents and saves convert the speed fields once',()=>{
 test('offline settlement and the visible timeline give the same basic attacks with attack speed sources',async()=>{
  const seed=require('../data/balance.json');
  const setup=r=>{r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};
-  {const w=equipment(playerHero())[0];w.suffixId='traveler';w.skillSockets={version:1,count:3,gems:[11,11,6]};__EMBERWILD_SKILLS.refreshAll();}
+  {const w=equipment(playerHero())[0];itemForm(w).fixedEffects.push({key:'basicAttackSpeedStack',value:3});w.skillSockets={version:1,count:3,gems:[11,11,6]};__EMBERWILD_SKILLS.refreshAll();}
   globalThis.__basicCount=0;{const base=performHeroBasic;performHeroBasic=function(h){__basicCount++;return base.apply(this,arguments);};}
+  /* v0.215: a lone hero meets one monster; keep the earlier three-monster fights for this comparison. */EmberwildSecondsCombat.encounterSize=()=>3;
   startSelectedExploration();nextActionAt=Date.now()+50;save();`);return r;};
  const online=setup(loadRuntime(root)),offline=setup(loadRuntime(root));
  assert.equal(JSON.parse(online.run('JSON.stringify(stats(playerHero()).attackSpeedPct)')),8,'gems +3 +3 +2');
@@ -168,7 +171,7 @@ test('offline settlement and the visible timeline give the same basic attacks wi
 
 test('runtime: simultaneous sources add; the timeline rescales once per change and the panel shows the capped result',()=>{
  const g=game(0);
- g.r.run(`{const w=equipment(playerHero())[0];w.suffixId='traveler';w.skillSockets={version:1,count:1,gems:[11]};__EMBERWILD_SKILLS.refreshAll();partyClock=50;effects=[{source:memberKey(playerHero()),skill:'wolf-double-bite',target:heroKey(playerHero()),kind:'attackSpeedPct',value:18,until:60,name:'狼奔'}];performHeroBasic(playerHero());}`);
+ g.r.run(`{const w=equipment(playerHero())[0];itemForm(w).fixedEffects.push({key:'basicAttackSpeedStack',value:3});w.skillSockets={version:1,count:1,gems:[11]};__EMBERWILD_SKILLS.refreshAll();partyClock=50;effects=[{source:memberKey(playerHero()),skill:'wolf-double-bite',target:heroKey(playerHero()),kind:'attackSpeedPct',value:18,until:60,name:'狼奔'}];performHeroBasic(playerHero());}`);
  assert.equal(g.read('battleStats(playerHero()).attackSpeedPct'),24,'狼奔 18 + 疾行 3 + 疾風石 3');
  const s=g.read('heroAttackSpeedSummary(playerHero())');close(s.intervalSeconds,2/1.24,1e-12);
  assert.match(g.read('attackSpeedPanelHTML(playerHero())'),/攻擊速度 <b class="gold">\+24%<\/b>.*普攻間隔 <b class="gold">1\.613 秒<\/b>.*普攻頻率 <b class="gold">0\.620 次／秒/);

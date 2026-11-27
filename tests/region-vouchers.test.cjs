@@ -7,7 +7,7 @@ const MIN=60000;
 // One runtime with a real 30-minute snapshot of map 0, reused through state copies (building it takes ~30 game minutes).
 let base=null;
 function sampled(){
- if(!base){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();party.huntingMode='single';globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
+ if(!base){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=99;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
   // Play online until a 30-minute snapshot exists: level-ups that equip new skills restart the sampling run.
   for(let i=0;i<120*60*2&&!r.run('!!EmberwildRegionVouchers.ticketFor(0,0)');i++){r.advance(500);r.run('tick()');}r.run('save()');assert(json(r,'EmberwildRegionVouchers.ticketFor(0,0)'),'snapshot built');base={values:Object.fromEntries(r.values),now:r.now};}
  const r=loadRuntime(root,'index.html',base.values);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.advance(base.now-r.now);r.run("continueFromTitle();closeModal()");return r;
@@ -49,8 +49,8 @@ test('claimed tickets become inventory items with a short description; using the
  assert.equal(r.run(`claimMailboxAttachments(${voucherMail(r)[0].id})`),true);const stack=json(r,'party.regionVouchers.stacks[0]');assert.equal(stack.count,16);
  assert.equal(stack.levelMax,r.run('MAPS[0].max'));assert.equal(stack.gold,Math.max(0,stack.baseGold-stack.potionCost));
  r.run('inventoryCategory="items";setTab("equipment")');const html=r.elements.get('app').innerHTML;
- // A standard item slot in the ticket block, separate from potions and gems.
- assert.match(html,/data-inventory-group="tickets"[\s\S]*data-voucher-stack="v1"[\s\S]*class="item-slot[^"]*"[^>]*data-item-key="region-voucher:v1"[^>]*aria-label="無名密林 30 分鐘收益券 ×16"[\s\S]*data-inventory-group="potions"[\s\S]*目前裝備藥水：/);
+ // v0.211 grid bag: one slot of the 消耗品 tab per voucher stack (the potion status sits in the tab's toolbar).
+ assert.match(html,/目前藥水效果：[\s\S]*class="bag-cell[^"]*" data-bag-ref="v:v1:0" data-item-kind="item" data-item-key="region-voucher:v1"[^>]*aria-label="無名密林 30 分鐘收益券 ×16"/);
  assert.match(html,/data-item-key="region-voucher:v1"[\s\S]*?<svg/,'the ticket uses an SVG icon');
  const virtual=json(r,`(()=>{const v=__EMBERWILD_VIRTUAL_ITEM('region-voucher:v1');return {name:v.name,glyph:v.glyph,description:v.description,detail:v.detail(),actions:v.actions()};})()`);
  assert.equal(virtual.glyph,'ticket');assert.match(virtual.description,/使用時計算金幣與道具，收益寄到信箱/);assert(!/經驗 \d|金幣 \d/.test(virtual.description+virtual.detail),'the item shows no earnings until used');
@@ -80,7 +80,7 @@ test('claimed tickets become inventory items with a short description; using the
 test('used tickets roll drops through the existing per-enemy loot rules without touching the real inventory',async()=>{
  const r=await ready(sampled());await offlineVouchers(r,4*3600000);r.run(`acknowledgeOfflineExploration();claimAllMailboxAttachments();running=false;`);
  const stack=json(r,'party.regionVouchers.stacks[0]');
- r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};EmberwildItems.add('material:紅色草',10);{const s=EmberwildItems.stacks().find(s=>s.item==='material:紅色草');EmberwildItems.split(s.uid,3);}`);
+ r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};EmberwildItems.add('material:光輝碎塊',10);{const s=EmberwildItems.stacks().find(s=>s.item==='material:光輝碎塊');EmberwildItems.split(s.uid,3);}`);
  const inv=r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions,layout:EmberwildItems.snapshot()})');
  const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:8}])`);const expected=Object.values(stack.enemies).reduce((a,b)=>a+b,0)*8;
  assert(Math.abs(r.run('__calls')-expected)<=Object.keys(stack.enemies).length*8,'one loot roll per locked enemy');

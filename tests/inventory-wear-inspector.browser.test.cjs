@@ -6,24 +6,18 @@ test('backpack sort, modal filters and guided wear work on desktop and mobile; b
  try{
   await p.evaluate(async()=>{selectSaveSlot(1);start(0);closeModal();continueFromTitle();clearInterval(timer);await EmberwildOffline.settle(undefined,false);running=false;__EMBERWILD_STORY.sync();if(!completeStoryStage('skill_equipment_intro'))throw Error(JSON.stringify({quest:party.story.quests.skill_equipment_intro,toast:$('toast').textContent}));globalThis.charm=state.bag.find(g=>g.storyRewardKey==='initiation_charm');globalThis.filterGear=gear(1,1,0,0);filterGear.affix=[{type:4,rank:2,value:30,skill:0}];addGear(filterGear);setTab('equipment');selectInventoryGear(charm.id);});
   await p.clock.resume();
+  // v0.211 grid bag: sort and a folded filter row replace the list heading and the filter dialog.
   for(const width of [1440,390,320]){
    await p.setViewportSize({width,height:900});
-   assert(await p.locator('.inventory-master-heading select[aria-label="裝備排序"]').isVisible());
-   assert.equal(await p.locator('.gear-management-panel .gear-control-fold').count(),0);
-   // v0.184: with worn items hidden the list holds fewer items, so selecting the charm on a phone opens its detail sheet;
-   // close it before using the filter button underneath.
    await p.evaluate(()=>closeDetailSheet());
-   await p.getByRole('button',{name:'裝備篩選',exact:true}).click();
-   const modal=p.locator('#modal');assert(await modal.isVisible());
-   if(!await modal.locator('details').evaluate(el=>el.open))await modal.locator('summary').click();await modal.getByLabel('詞綴效果',{exact:true}).selectOption('4');
-   // Changing the effect rebuilds this filter dialog; expand its new details.
-   if(!await modal.locator('details').evaluate(el=>el.open))await modal.locator('summary').click();
-   await modal.getByLabel('詞綴技能',{exact:true}).selectOption('0:0');
-   assert.equal(await modal.getByLabel('屬性',{exact:true}).locator('option').filter({hasText:'核心技能'}).count(),0);
-   assert(await modal.evaluate(el=>el.scrollWidth<=el.clientWidth+1));
-   await modal.getByRole('button',{name:'完成',exact:true}).click();
-   await p.waitForFunction(()=>document.querySelectorAll('.gear-management-row').length===1);
-   await p.getByRole('button',{name:'裝備篩選 · 已套用',exact:true}).click();await modal.getByRole('button',{name:'清除篩選',exact:true}).click();await modal.getByRole('button',{name:'完成',exact:true}).click();
+   assert(await p.locator('.bag-actions select[aria-label="排序"]').isVisible());
+   await p.locator('.bag-filter-toggle').click();
+   await p.getByLabel('部位',{exact:true}).selectOption(String(await p.evaluate(()=>filterGear.slot)));
+   await p.waitForFunction(()=>[...document.querySelectorAll('.bag-cell[data-bag-ref]')].every(c=>findGear(c.dataset.bagRef.slice(2)).slot===filterGear.slot));
+   assert(await p.locator(`.bag-cell[data-bag-ref="g:${await p.evaluate(()=>filterGear.id)}"]`).isVisible());
+   await p.getByRole('button',{name:'清除篩選',exact:true}).click();
+   await p.locator('.bag-filter-toggle').click();
+   await p.waitForFunction(()=>!document.querySelector('.bag-filters'));
    assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    await p.evaluate(()=>selectInventoryGear(charm.id));
    if(width===1440)await p.screenshot({path:'/tmp/emberwild-inventory-desktop.png'});
@@ -35,7 +29,7 @@ test('backpack sort, modal filters and guided wear work on desktop and mobile; b
   if(await p.locator('#modal').isVisible())await p.locator('#modal').getByRole('button',{name:'確認穿戴',exact:true}).click();
   assert.equal(await p.evaluate(()=>state.equipped.includes(charm.id)),true);
   await p.getByRole('button',{name:'啟用與配置「追擊」',exact:true}).click();
-  await p.locator('[data-skill-slot="proc:0"]').click();await p.locator('[data-skill-id="tutorial_echo"]').getByRole('button',{name:'裝入技能'}).click();
+  await p.locator('[data-skill-slot="proc:0"]').click();await p.locator('[data-skill-id="tutorial_echo"]').getByRole('button',{name:'裝入',exact:true}).click();
   assert.equal(await p.evaluate(()=>state.skillLoadout.proc.includes('tutorial_echo')),true);
   await p.evaluate(()=>{setTab('battle');spawnGroup();const base=foes[0];foes=[{...base,id:'inspect-one',name:'同名測試',hp:13,maxhp:80},{...base,id:'inspect-two',name:'同名測試',hp:0,maxhp:120}];enemy=foes[0];effects.push({target:'inspect-one',kind:'weaken',value:.2,until:partyClock+2,name:'測試衰弱'});render();});
   for(const width of [1440,390,320]){

@@ -20,9 +20,9 @@ test('the goddess introduces the world; the three onboarding tasks each play a s
   await page.click('#prologue-layer .prologue-option >> nth=0');await page.click('#prologue-layer button:has-text("開始冒險")');
   // 女神的贈禮
   await wait(page,'onboarding_gift','bag');await next(page);await wait(page,'onboarding_gift','pick');await page.waitForTimeout(800);// the target scrolls into view; the highlight follows
-  assert.match(await underSpot(page),/selectInventoryGear\(/);
+  assert.match(await underSpot(page),/bagCellClick\(/);/* v0.211 grid bag slot */
   const starter=await page.evaluate(()=>{const h=playerHero();return h.bag.find(g=>g.starterPack&&!h.equipped.includes(g.id)).id;});
-  await page.click(`main [onclick*="selectInventoryGear('${starter}')"]`);
+  await page.click(`main .bag-cell[data-bag-ref="g:${starter}"]`);
   await wait(page,'onboarding_gift','wear');await page.click('main [onclick*="openInventoryWear("]');
   await wait(page,'onboarding_gift','equip');await page.click('main [onclick^="previewEquip("]');
   if(await page.locator('#modal [onclick^="confirmEquipComparison("]').count())await page.click('#modal [onclick^="confirmEquipComparison("]');
@@ -37,11 +37,12 @@ test('the goddess introduces the world; the three onboarding tasks each play a s
   await wait(page,'onboarding_helper','items');
   assert.equal(await page.evaluate(()=>party.tutorials.records.onboarding_practice.completed),true);
   assert.equal(await page.evaluate(()=>[tab,companionTicketCount(13)].join()),'equipment,1');
-  await page.click(`main [onclick="setInventoryCategory('items')"]`);await wait(page,'onboarding_helper','ticket');
-  await page.click('main [data-companion-ticket="13"] .item-slot');await wait(page,'onboarding_helper','use');
-  const detail=await page.locator('#item-detail-dialog').innerText();assert.match(detail,/夥伴招募券 - 艾琳/);assert.match(detail,/治療/,'the ticket describes the companion');
-  assert.equal(await page.evaluate(()=>document.getElementById('item-detail-dialog').contains(document.getElementById('tutorial-card'))),true,'the guide card follows into the item details');
-  await page.click('#item-detail-dialog button:has-text("使用招募券")');
+  // v0.211 grid bag: tickets are in 特殊 and their detail is the bag's detail pane.
+  await page.click('main [data-bag-tab="special"]');await wait(page,'onboarding_helper','ticket');
+  await page.click('main .bag-cell[data-bag-ref^="t:13:"]');await wait(page,'onboarding_helper','use');
+  const detail=await page.locator('.bag-detail').innerText();assert.match(detail,/夥伴招募券 - 艾琳/);assert.match(detail,/治療/,'the ticket describes the companion');
+  assert.equal(await page.locator('#tutorial-card').isVisible(),true,'the guide card stays visible');
+  await page.click('.bag-detail button:has-text("使用招募券")');
   await page.waitForFunction(()=>!__EMBERWILD_PROLOGUE.running()&&!__EMBERWILD_TUTORIAL.status().active);
   const rec=await page.evaluate(()=>party.tutorials.records);
   for(const id of ['onboarding_gift','onboarding_practice','onboarding_helper','explore_basics','partner_basics'])assert.equal(rec[id]?.completed,true,id);
@@ -58,7 +59,7 @@ test('every system page plays its guide once on the first visit after the onboar
   await page.setViewportSize({width:1280,height:860});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
   await page.evaluate(()=>{start(0);party.tutorials.auto=true;party.tutorials.records.explore_basics={triggered:true,completed:true,skipped:false,step:-1};party.wishingLake.unlocked=true;party.wishingLake.notified=true;closeModal();render();});
-  const tours=[['statistics','statistics_basics'],['roster','roster_basics'],['partnerRoster','partner_basics'],['character','character_basics'],['worn','worn_basics'],['forge','forge_basics'],['forge','extraction_basics'],['bossCraft','boss_basics'],['story','story_basics'],['gather','gather_basics'],['alchemy','alchemy_basics'],['shop','shop_basics'],['quests','quest_basics'],['wishingLake','wishing_basics']];
+  const tours=[['statistics','statistics_basics'],['roster','roster_basics'],['partnerRoster','partner_basics'],['character','character_basics'],['worn','worn_basics'],['forge','forge_basics'],['forge','extraction_basics'],['crafting','boss_basics'],['story','story_basics'],['shop','shop_basics'],['quests','quest_basics'],['wishingLake','wishing_basics']];
   const open=tab=>page.evaluate(tab=>{closeModal();tab==='story'?openStory('','main'):setTab(tab);},tab);
   for(const [n,[tab,id]] of tours.entries()){
    await open(tab);

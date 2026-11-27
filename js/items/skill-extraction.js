@@ -11,7 +11,7 @@
   // The prefix is the first two characters of the gear form's name (凝膠護符 → 凝膠).
   function prefixFor(g){const name=String((typeof itemForm==='function'&&itemForm(g)?.name)||g.name||'').trim();return name.slice(0,2);}
   function candidates(){return (state?.bag||[]).filter(g=>gearSkill(g));}
-  const kindLabel=sk=>({active:'主動',proc:'觸發',support:'輔助',passive:'被動'}[sk.type]||sk.type);
+  const kindLabel=sk=>({active:'主動',proc:'觸發',support:'主動',passive:'被動'}[sk.type]||sk.type);
   function extract(gearId,tokenId){
     const g=findGear(gearId),t=findGear(tokenId),sk=gearSkill(g);
     if(!sk){toast('這件裝備沒有可萃取的技能');return false;}

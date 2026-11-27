@@ -19,7 +19,7 @@
  // v0.173 added a guide for every system page. A save from before then has already used the pages it visited, so those
  // guides count as done (legacy) once; pages it never opened still get theirs. The marker record keeps this to one pass.
  const TOURS_MARK='system_tours_v173';
- const TOUR_IDS=['statistics_basics','roster_basics','partner_basics','character_basics','worn_basics','forge_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ const TOUR_IDS=['statistics_basics','roster_basics','partner_basics','character_basics','worn_basics','forge_basics','boss_basics','story_basics','wishing_basics'];
  function migrateTours(t){
   if(!t||t.records[TOURS_MARK])return false;
   for(const id of TOUR_IDS){const m=design.modules.find(x=>x.id===id);if(m&&!t.records[id]&&t.pages[m.trigger.page])t.records[id]={triggered:true,completed:true,skipped:false,step:-1,revision:m.revision,legacy:true};}
@@ -31,6 +31,7 @@
   const x=copy(raw),bad=m=>{throw Error('教學存檔格式無效：'+m);};
   if(!x||typeof x!=='object'||Array.isArray(x)||x.version!==1)bad('版本');
   for(const k of ['records','pages','events'])if(!x[k]||typeof x[k]!=='object'||Array.isArray(x[k]))bad(k);
+  if(x.pages.bossCraft===1)x.pages.crafting=1;for(const key of ['gather','alchemy','lifeSkills','bossCraft'])delete x.pages[key];for(const key of ['gather_basics','alchemy_basics'])delete x.records[key];
   if(x.auto!==undefined&&typeof x.auto!=='boolean')bad('auto');
   for(const k of Object.keys(x))if(!['version','auto','records','pages','events'].includes(k))bad(k);
   for(const [id,r] of Object.entries(x.records)){
@@ -138,6 +139,7 @@
  const shown=(...sels)=>sels.map(s=>$q(s)).find(el=>el&&el.getBoundingClientRect?.().height>0)||null;
  const main=()=>$q('#app .layout>main')||$q('#app');
  function newestGearRow(){
+  const grid=$q('.bag-grid');if(grid){const g=allGear().filter(normalGear).sort((a,b)=>(b.acquiredAt||0)-(a.acquiredAt||0))[0];return (g&&grid.querySelector(`.bag-cell[data-bag-ref="g:${g.id}"]`))||grid.querySelector('.bag-cell[data-bag-ref]');}
   const list=$q('.inline-equipment-list');if(!list)return null;
   const g=allGear().filter(normalGear).sort((a,b)=>(b.acquiredAt||0)-(a.acquiredAt||0))[0];
   return g?[...list.querySelectorAll('.gear-management-row')].find(r=>r.querySelector(`[onclick*="selectInventoryGear('${g.id}')"]`))||null:list.querySelector('.gear-management-row');
@@ -149,8 +151,8 @@
   'battle.start':()=>$q('main [onclick="startSelectedExploration()"]')||$q('main .seconds-adventure-toolbar [onclick="toggleBattle()"]'),
   'battle.allies':()=>$q('main .seconds-side-ally')||$q('main .party-combat'),
   'battle.enemies':()=>$q('main .seconds-side-enemy'),
-  'bag.categories':()=>$q('main [onclick^="setInventoryCategory"]')?.parentElement||null,
-  'bag.list':()=>$q('main .inline-equipment-list'),
+  'bag.categories':()=>$q('main .bag-tabs')||$q('main [onclick^="setInventoryCategory"]')?.parentElement||null,
+  'bag.list':()=>$q('main .bag-grid')||$q('main .inline-equipment-list'),
   'bag.newGear':newestGearRow,
   'bag.wearButton':()=>$q('main [onclick*="openInventoryWear("]'),
   'worn.slots':()=>$q('main [onclick^="selectWornSlot("]')?.parentElement?.parentElement||null,
@@ -168,16 +170,16 @@
   'quests.board':()=>$q('main .quest-design-card')?.parentElement||null,
   'quests.start':()=>$q('main [onclick^="startDailyCommission("]')||$q('main [onclick^="claimBoard("]'),
   'header.options':()=>document.getElementById('utilityButton-options'),
-  'bag.starterGear':()=>{const h=hero(),g=(h?.bag||[]).filter(x=>x.starterPack&&!(h.equipped||[]).includes(x.id)).sort((a,b)=>(a.slot||0)-(b.slot||0))[0];return g?$q(`main [onclick*="selectInventoryGear('${g.id}')"]`):null;},
+  'bag.starterGear':()=>{const h=hero(),g=(h?.bag||[]).filter(x=>x.starterPack&&!(h.equipped||[]).includes(x.id)).sort((a,b)=>(a.slot||0)-(b.slot||0))[0];return g?$q(`main .bag-cell[data-bag-ref="g:${g.id}"]`)||$q(`main [onclick*="selectInventoryGear('${g.id}')"]`):null;},
   'stats.summary':()=>$q('main .statistics-summary'),
   'stats.combat':()=>$q('main .statistics-combat-data'),
   'stats.drops':()=>$q('main .statistics-layout'),
   'roster.plans':()=>$q('main .team-plan-panel'),
   'roster.list':()=>$q('main .roster-page .roster-list'),
   'partners.list':()=>$q('main .partner-owned-list'),
-  'bag.itemsCategory':()=>$q(`main [onclick="setInventoryCategory('items')"]`),
-  'bag.companionTicket':()=>{const id=ticketFor();return $q(id===null?'main [data-companion-ticket] .item-slot':`main [data-companion-ticket="${id}"] .item-slot`);},
-  'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):null;},
+  'bag.itemsCategory':()=>$q(`main [data-bag-tab="special"]`)||$q(`main [onclick="setInventoryCategory('items')"]`),
+  'bag.companionTicket':()=>{const id=ticketFor();return $q(id===null?'main .bag-cell[data-bag-ref^="t:"]':`main .bag-cell[data-bag-ref^="t:${id}:"]`)||$q(id===null?'main [data-companion-ticket] .item-slot':`main [data-companion-ticket="${id}"] .item-slot`);},
+  'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):$q('main .bag-detail [onclick*="useCompanionRecruitmentTicket("]');},
   'character.stats':()=>$q('main .page-owner-content .grid')||$q('main .page-owner-content'),
   'character.mastery':()=>$q('main .class-mastery-grid'),
   'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick*="moveToWorkshop('${g.id}')"]`):null;},
@@ -198,11 +200,6 @@
   'lake.panel':()=>$q('#modal .lake-panel h1')||$q('#modal .lake-panel'),
   'lake.offerings':()=>shown('#modal .lake-offerings','#modal .lake-panel'),
   'lake.confirm':()=>shown('#modal .lake-confirm','#modal .lake-result','#modal .lake-panel'),
-  'gather.target':()=>$q('main .life-gather-selector'),
-  'gather.start':()=>$q('main [onclick="startLifeGathering()"]')?.parentElement||null,
-  'life.stock':()=>$q('main .life-stock>summary')||$q('main .life-stock'),
-  'alchemy.recipe':()=>$q('main .life-recipe'),
-  'alchemy.start':()=>$q('main .life-recipe [onclick^="startLifeWork("]')?.parentElement||null
  };
  // A control marked data-tutorial-target="id" wins over the built-in lookup, so a redesigned screen can keep its target.
  function resolve(id){
@@ -229,7 +226,8 @@
   wrap('chooseSkillSlot',{kind:'skillSlotted',after:out=>out===true});
   wrap('openSkillCatalog',{kind:'catalogOpened',after:out=>out!==false});
   wrap('setWorkshopAction',{kind:'socketsOpened',after:(out,before,action)=>out===true&&action==='socket'});
-  wrap('setInventoryCategory',{kind:'itemsOpened',after:(out,before,value)=>value==='items'});
+  wrap('setInventoryCategory',{kind:'itemsOpened',after:(out,before,value)=>value==='items'||value==='special'});
+  wrap('bagCellClick',{kind:'itemDetailsOpened',after:(out,before,ref)=>out===true&&/^[stv]:/.test(String(ref))});
   wrap('openItemSlotDetails',{kind:'itemDetailsOpened',after:()=>!!document.getElementById('item-detail-dialog')?.open});
   wrap('useCompanionRecruitmentTicket',{kind:'ticketUsed',after:out=>out===true});
   wrap('selectEquipmentSocket',{kind:'socketSelected',after:out=>out===true});

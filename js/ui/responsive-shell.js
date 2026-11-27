@@ -56,7 +56,7 @@
      bottom navigation. The pane is the page's own element (shown with CSS), so its content, ids and handlers are unchanged. */
   const phone=matchMedia('(max-width:700px)');
   const SHEETS={
-    gear:{panel:'#app .inventory-detail-wrap',trigger:'.gear-management-row .inventory-list-item',title:'裝備詳情'},
+    gear:{panel:'#app .inventory-detail-wrap',trigger:'.gear-management-row .inventory-list-item,.bag-grid:not(.is-batch) .bag-cell[data-bag-ref]',title:'道具詳情'},
     token:{panel:'#app .token-inventory-detail',trigger:'.token-management-row .token-inventory-row',title:'信物詳情'},
     worn:{panel:'#app .worn-candidate-pane',trigger:'.worn-slot-choice',title:'裝備欄位'},
     mail:{panel:'#modal .mailbox-detail',trigger:'.mailbox-list-item',title:'信件',back:'返回信件列表'}
@@ -137,10 +137,10 @@
   }
   globalThis.toggleJournalCollapsed=function(value){journalCollapsed=value===undefined?!journalCollapsed:!!value;journalChoice=journalCollapsed;try{localStorage.setItem(JOURNAL_KEY,journalCollapsed?'1':'0');}catch{}syncJournalToggle();return journalCollapsed;};
   if(typeof refreshGlobalJournal==='function'){const journalBase=refreshGlobalJournal;refreshGlobalJournal=function(...args){const out=journalBase(...args);syncJournalToggle();return out;};}
-  // Phones: long explanations are clamped to two lines, and alchemy recipes fold to one row. Both remember what was opened
+  // Phones: long explanations are clamped to two lines and remember what was opened
   // for this visit (by text, so a redraw keeps it).
-  const INTROS='#app>.layout>main .life-rules,#app>.layout>main .companion-management-page>.roster-page>p,#app>.layout>main .partner-roster-intro,#app>.layout>main>section.panel:has(+.cards),#app>.layout>main .statistics-note';
-  const openIntros=new Set(),openRecipes=new Set();
+  const INTROS='#app>.layout>main .companion-management-page>.roster-page>p,#app>.layout>main .partner-roster-intro,#app>.layout>main>section.panel:has(+.cards),#app>.layout>main .statistics-note';
+  const openIntros=new Set();
   const keyOf=el=>(el.textContent||'').trim().slice(0,40);
   function syncIntros(){
     if(!phone.matches||!document.querySelectorAll)return;
@@ -152,20 +152,6 @@
       const button=document.createElement('button');button.type='button';button.className='intro-clamp-toggle';button.textContent=open?'收起說明':'展開說明';button.setAttribute('aria-expanded',String(open));
       button.onclick=()=>{const now=!el.classList.contains('intro-open');el.classList.toggle('intro-open',now);if(now)openIntros.add(key);else openIntros.delete(key);button.textContent=now?'收起說明':'展開說明';button.setAttribute('aria-expanded',String(now));};
       el.after(button);
-    }
-  }
-  function syncRecipes(){
-    if(!document.querySelectorAll)return;
-    for(const card of document.querySelectorAll('#app .life-recipe')){
-      const title=card.querySelector(':scope>.life-action-title');if(!title)continue;
-      let button=card.querySelector(':scope>.life-recipe-toggle');
-      if(!phone.matches){button?.remove();card.classList.remove('recipe-folded');continue;}
-      const key=keyOf(title),open=openRecipes.has(key);
-      card.classList.toggle('recipe-folded',!open);
-      if(!button){button=document.createElement('button');button.type='button';button.className='life-recipe-toggle';title.after(button);
-        const flip=()=>{const now=card.classList.contains('recipe-folded');card.classList.toggle('recipe-folded',!now);if(now)openRecipes.add(key);else openRecipes.delete(key);button.textContent=now?'收起':'材料';button.setAttribute('aria-expanded',String(now));};
-        button.onclick=flip;title.onclick=flip;}
-      button.textContent=open?'收起':'材料';button.setAttribute('aria-expanded',String(open));
     }
   }
   // Wide screens (1600px and up): the equipment backpack gains a third column comparing the selected gear with what the
@@ -195,8 +181,10 @@
     pane.dataset.key=key;
     try{pane.innerHTML='<h3>與目前穿戴比較</h3>'+compareHTML(g);}catch(error){console.warn(error);pane.remove();}
   }
+  // v0.211 grid bag: the detail pane shows the same comparison in a fold on every width.
+  globalThis.__EMBERWILD_GEAR_COMPARE=g=>compareHTML(g);
   wide.addEventListener('change',()=>syncWideCompare());
-  function syncPages(){syncJournalToggle();syncSheet(true);syncIntros();syncRecipes();syncWideCompare();syncTokenFilters();syncBossRegions();syncCreationTabs();}
+  function syncPages(){syncJournalToggle();syncSheet(true);syncIntros();syncWideCompare();syncTokenFilters();syncBossRegions();syncCreationTabs();}
   globalThis.toggleTokenFilters=function(){const open=document.body.classList.toggle('token-filters-open');const b=document.querySelector('.token-filter-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起篩選':'信物篩選';}return open;};
   globalThis.closeDetailSheet=function(){const was=sheet;setSheet('');return !!was;};
   globalThis.openDetailSheet=key=>{setSheet(key);return sheet===key;};
@@ -221,7 +209,8 @@
   const closeBase=closeModal;closeModal=function(...args){if(sheet==='mail')setSheet('');return closeBase(...args);};
   // Selecting an item (a tap, or a jump from another page that picks one) means its detail is wanted.
   if(typeof selectInventoryGear==='function'){const gearBase=selectInventoryGear;selectInventoryGear=function(...args){if(phone.matches)setSheet('gear');return gearBase(...args);};}
-  if(typeof selectInventoryToken==='function'){const tokenBase=selectInventoryToken;selectInventoryToken=function(...args){if(phone.matches)setSheet('token');return tokenBase(...args);};}
+  // v0.211 grid bag: tokens share the bag's detail pane, so they open the same sheet.
+  if(typeof selectInventoryToken==='function'){const tokenBase=selectInventoryToken;selectInventoryToken=function(...args){if(phone.matches)setSheet(document.querySelector('#app .bag-detail')?'gear':'token');return tokenBase(...args);};}
   const modal=document.getElementById('modal');
   if(modal)new MutationObserver(()=>{if(sheet==='mail')syncSheet();}).observe(modal,{childList:true});
   const renderBase=render;render=function(...args){const out=renderBase(...args);sync();syncPages();return out;};

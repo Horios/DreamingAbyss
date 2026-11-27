@@ -78,7 +78,6 @@
         (cls.skills||[]).forEach((sk,i)=>{if(Number.isFinite(powers[job]?.[i]))sk.power=powers[job][i];});
       });
       if(out.equipmentPowerSystem?.strength?.multipliers)out.equipmentPowerSystem.strength.multipliers=clone(EmberwildProgression.defaults.powerMultipliers);
-      for(const list of [out.equipmentPowerSystem?.prefixes,out.equipmentPowerSystem?.suffixes])for(const x of list||[])if(x?.effect?.key==='pierce')x.effect.value=Math.max(1,Number((Number(x.effect.value||0)*.6).toFixed(2)));
       for(const x of out.equipmentPowerSystem?.bossAffixes||[])for(const e of x.effects||[])if(e?.key==='pierce')e.value=Math.max(1,Number((Number(e.value||0)*.6).toFixed(2)));
     }else{
       out.balanceSettings.meta??={};out.balanceSettings.meta.numericCompressionVersion=COMPRESSION_VERSION;

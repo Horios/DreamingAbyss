@@ -39,7 +39,7 @@ test('Idle notification refreshes do not mutate unchanged UI; saves coalesce and
 test('All navigation pages and utility dialogs retain unique DOM IDs at desktop and mobile widths',async()=>{
  const r=await game();
  try{
-  const pages=['battle','roster','partnerRoster','character','skills','equipment','worn','forge','bossCraft','quests','shop','lifeSkills','guide'];
+  const pages=['battle','roster','partnerRoster','character','skills','equipment','worn','forge','crafting','quests','shop','crafting','guide'];
   for(const width of [1440,390]){
    await r.page.setViewportSize({width,height:900});
    for(const id of pages){

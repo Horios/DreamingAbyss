@@ -14,7 +14,9 @@
   function weaponBonus(h){if(!h||h.companionId!==undefined)return 0;const type=M().currentWeaponType(h);return WEAPONS.includes(type)?level(h,type)*PER_LEVEL:0;}
   function elementBonus(h,element){if(!h||h.companionId!==undefined||!ELEMENTS.includes(element))return 0;return level(h,element)*PER_LEVEL;}
   // The multiplier for one hit of hero h: weapon always (when held), element only for a spell of that element.
-  function multiplier(h,element,{basic=false}={}){return (1+weaponBonus(h))*(1+(basic?0:elementBonus(h,element)));}
+  // v0.215: weapon base 技能傷害 (fixed effect skillDamagePct, percent points) applies to spells only, like element mastery.
+  function skillDamageBonus(h){if(!h)return 0;const n=Number(globalThis.equipmentIdentityEffectNumber?.(h,'skillDamagePct'))||0;return n/100;}
+  function multiplier(h,element,{basic=false}={}){return (1+weaponBonus(h))*(1+(basic?0:elementBonus(h,element)))*(1+(basic?0:skillDamageBonus(h)));}
   const isHero=h=>!!h&&Array.isArray(party?.members)&&party.members.includes(h);
   const baseHit=resolveHit;
   resolveHit=function(e,amount,h,element,crit,options={},...rest){
@@ -31,5 +33,5 @@
     for(const k of ELEMENTS){const lv=level(h,k);if(lv>0)out.push({key:k,kind:'element',level:lv,bonus:lv*PER_LEVEL,active:true});}
     return out;
   }
-  globalThis.__EMBERWILD_MASTERY_DAMAGE={PER_LEVEL,weaponBonus,elementBonus,multiplier,summary};
+  globalThis.__EMBERWILD_MASTERY_DAMAGE={PER_LEVEL,weaponBonus,elementBonus,skillDamageBonus,multiplier,summary};
 })();

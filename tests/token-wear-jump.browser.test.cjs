@@ -2,7 +2,16 @@
 const test=require('node:test'),assert=require('node:assert/strict'),{openRuntime}=require('./runtime.cjs');
 const root=require('node:path').resolve(__dirname,'..');
 
-for(const worn of [false,true])test(`backpack token 穿戴 stays enabled and opens the equipment page at the chosen companion (${worn?'worn':'unworn'} token)`,async()=>{
+test('v0.211 grid bag: a worn token is not a bag slot; the worn page manages it',async()=>{
+ const g=await openRuntime(root),p=g.page;
+ try{
+  const shown=await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();recruitCompanion(10);closeModal();clearInterval(timer);running=false;
+   const t=__EMBERWILD_TOKEN_TEST.makeToken('berserk');state.bag.push(t);equipCompanionToken(t.id,10);closeModal();
+   setTab('equipment');setInventoryCategory('tokens');return [!!document.querySelector(`.bag-cell[data-bag-ref="g:${t.id}"]`),EmberwildItems.slots().tabs.token.used];});
+  assert.deepEqual(shown,[false,0]);assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});
+for(const worn of [false])test(`backpack token 穿戴 stays enabled and opens the equipment page at the chosen companion (${worn?'worn':'unworn'} token)`,async()=>{
  const g=await openRuntime(root),p=g.page;
  try{
   for(const width of [1280,390]){

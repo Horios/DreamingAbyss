@@ -22,12 +22,12 @@ test('a stage that has not reached its battle shows it as not open, without a st
  assert.equal(r.run("goQuestEncounter('chapter1/ambush_fight')"),false);assert(!r.run('party.questChallenge'));
  assert.deepEqual(r.errors,[]);
 });
-test('v0.184: the bag hides worn equipment by default and shows it with 穿戴：全部',()=>{
+// v0.211: the bag always hides worn equipment; the 穿戴 filter no longer exists (worn gear is managed on the worn page).
+test('the bag always hides worn equipment; there is no worn filter',()=>{
  const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(0);closeModal();clearInterval(timer);globalThis.spare=gear(1,0,0,0);state.bag.push(spare);setTab('equipment');setInventoryCategory('equipment');`);
  const ids=()=>JSON.parse(r.run('JSON.stringify(__EMBERWILD_GEAR_INVENTORY.rows().map(x=>x.g.id))')),worn=JSON.parse(r.run('JSON.stringify(state.equipped.filter(Boolean))'));
  assert(worn.length>0);assert(ids().includes(r.run('spare.id')));assert(!ids().some(id=>worn.includes(id)),'worn items are hidden');
- r.run("setGearInventoryFilter('worn','all')");assert(worn.every(id=>ids().includes(id)),'全部 lists them');
- r.run('clearGearInventoryFilters()');assert(!ids().some(id=>worn.includes(id)),'clearing the filters hides them again');
+ assert.equal(r.run("setGearInventoryFilter('worn','all')"),false,'no worn filter');assert(!ids().some(id=>worn.includes(id)),'worn items stay hidden');
  assert.deepEqual(r.errors,[]);
 });
 test('v0.185: the exploration area shows the map difficulty with its monster and drop changes and switches it',()=>{

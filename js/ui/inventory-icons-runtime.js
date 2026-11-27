@@ -22,7 +22,7 @@
   globalThis.__EMBERWILD_ITEM_DETAILS=(kind,key)=>lookup.get(kind+':'+String(key));
   globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY=g=>globalThis.EmberwildTokens?.isToken(g)?{kind:'token',key:g.tokenId}:{kind:'equipment',key:gearKey(g)};
   globalThis.__EMBERWILD_ITEM_NAME=(kind,key,fallback)=>lookup.get(kind+':'+String(key))?.displayName||fallback;
-  globalThis.__EMBERWILD_CAN_SELL=(kind,key)=>lookup.get(kind+':'+String(key))?.saleEnabled??(!['gem','skill'].includes(kind)&&!String(key).startsWith('companion-ticket-'));
+  globalThis.__EMBERWILD_CAN_SELL=(kind,key)=>kind==='material'&&key==='粉塵'?false:lookup.get(kind+':'+String(key))?.saleEnabled??(!['gem','skill'].includes(kind)&&!String(key).startsWith('companion-ticket-'));
   globalThis.__EMBERWILD_CAN_SELL_GEAR=g=>{const id=globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY(g);return globalThis.__EMBERWILD_CAN_SELL(id.kind,id.key);};
   const baseGearName=gearName,baseGearDisplay=equipmentDisplayName;
   gearName=function(g){const out=baseGearName(g),id=globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY(g);return globalThis.__EMBERWILD_ITEM_NAME(id.kind,id.key,out);};

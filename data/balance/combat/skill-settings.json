@@ -18,6 +18,13 @@
         48,
         540
       ]
+    },
+    "dustSalvage": {
+      "dustByTier": [
+        10,
+        50,
+        300
+      ]
     }
   },
   "mastery": {

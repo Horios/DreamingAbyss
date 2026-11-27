@@ -12,7 +12,7 @@ function game(){
 }
 const entries=seed.balanceSettings.drops.entries,monsters=seed.balanceSettings.monsters.catalog;
 
-test('data: shared gear, legendary, random gem, potion and dust drops are gone; every monster has its own 1–2 form pool and every map its gem',()=>{
+test('data: shared gear, legendary, random gem, potion drops are gone; dust is independent; every monster has its own 1–2 form pool and every map its gem',()=>{
  for(const e of entries){assert(!D.isObsolete(e),'obsolete rule '+e.id);assert.notEqual(e.type,'item','monsters drop no consumables: '+e.id);}
  for(const m of monsters){
   const pools=entries.filter(e=>e.type==='monsterGear'&&e.sources.includes(m.id));
@@ -30,13 +30,13 @@ test('data: shared gear, legendary, random gem, potion and dust drops are gone; 
  }
  const kinds=new Set(entries.filter(e=>e.type==='gemPool').flatMap(e=>e.pool.map(p=>p.key)));assert.deepEqual([...kinds].sort(),['0','1','2','3','4']);
 });
-test('monsters drop only their own forms, unidentified, plus map gems; no dust; drops are the same instance after identification',()=>{
+test('monsters drop only their own forms, unidentified, plus map gems and independent dust; drops are the same instance after identification',()=>{
  const r=game();r.run('globalThis.d0=state.dust;always();killAt(0,25)');
  const out=json(r,`(()=>{const pools=new Map(GAMEPLAY_SETTINGS.drops.entries.filter(e=>e.type==='monsterGear').map(e=>[e.sources[0],e.pool.map(p=>p.key)]));const bag=state.bag.filter(g=>!EmberwildTokens.isToken(g));return {bag:bag.map(g=>({id:g.id,u:g.unidentified,form:'form:'+g.formJob+':'+g.slot+':'+g.form,boss:g.boss})),allowed:[...pools.entries()].filter(([id])=>id.startsWith('map0_')).flatMap(([,k])=>k),gems:[...state.gems],dust:state.dust}})()`);
  assert(out.bag.length>0);assert(out.bag.every(g=>g.u&&g.u.version===1&&Number.isInteger(g.u.slot)&&g.u.source.monsterId),'all monster gear is unidentified');
  const exclusive=new Set(['form:4:0:0','form:4:3:2','form:4:3:1','form:4:2:1']);
  for(const g of out.bag)if(g.boss===undefined&&!exclusive.has(g.form))assert(out.allowed.includes(g.form),'unexpected general form '+g.form);
- assert.equal(out.dust,r.run('d0'),'no dust from monsters');
+ assert(out.dust>r.run('d0'),'independent equipment dust from monsters');
  assert(out.gems[1]>0,'map 0 gem is 疾風石');for(const i of [0,2,3,4])assert.equal(out.gems[i],0);
  // Hidden before identification: names, journal and detail show only the slot.
  const first=out.bag[0].id;r.ctx.id=first;
@@ -76,10 +76,10 @@ test('BOSS gem pool picks from three gems by weight; normal/elite drops follow t
 test('gem dust upgrade: ceil(base × 1.5), one gem of the stack, all or nothing, not above tier 3; dust gem craft is gone',()=>{
  const r=game();assert.equal(r.run('typeof craftGem'),'undefined');assert.doesNotMatch(r.run('accountGemsView()'),/合成隨機寶石/);
  assert.equal(D.gemUpgradeCost({multiplier:1.5,baseDustByTargetTier:[0,10,25]},2),15);assert.equal(D.gemUpgradeCost({multiplier:1.5,baseDustByTargetTier:[0,25,50]},2),38);
- r.run('state.gems.fill(0);state.gems[2]=3;state.dust=71');
- assert.equal(r.run('gemUpgradeQuote(2).cost'),72);assert.equal(r.run('upgradeGemWithDust(2)'),false);assert.equal(r.run('state.gems[2]'),3);assert.equal(r.run('state.dust'),71);
- r.run('state.dust=72');assert.equal(r.run('upgradeGemWithDust(2)'),true);assert.deepEqual([r.run('state.gems[2]'),r.run('state.gems[7]'),r.run('state.dust')],[2,1,0]);
- r.run('state.gems[12]=1;state.dust=99999');assert.equal(r.run('upgradeGemWithDust(12)'),false);assert.equal(r.run('state.gems[12]'),1);
+ r.run('state.gems.fill(0);state.gems[2]=3;state.materials.寶石粉塵=71');
+ assert.equal(r.run('gemUpgradeQuote(2).cost'),72);assert.equal(r.run('upgradeGemWithDust(2)'),false);assert.equal(r.run('state.gems[2]'),3);assert.equal(r.run('(state.materials.寶石粉塵||0)'),71);
+ r.run('state.materials.寶石粉塵=72');assert.equal(r.run('upgradeGemWithDust(2)'),true);assert.deepEqual([r.run('state.gems[2]'),r.run('state.gems[7]'),r.run('(state.materials.寶石粉塵||0)')],[2,1,0]);
+ r.run('state.gems[12]=1;state.materials.寶石粉塵=99999');assert.equal(r.run('upgradeGemWithDust(12)'),false);assert.equal(r.run('state.gems[12]'),1);
  assert.equal(r.run('gemUpgradeQuote(7).cost'),810);assert.match(r.run('openGemUpgrade(2);$("modal").innerHTML'),/1 階 → 2 階[^]*暴擊率 \+1% → 暴擊率 \+2%/);
  assert.deepEqual(json(r,'EmberwildItems.audit()'),[]);
 });

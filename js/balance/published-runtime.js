@@ -1,18 +1,19 @@
 /* Installed last: one import/export boundary for published design documents. */
 (()=>{
  const M=EmberwildBalanceDocument,baseExport=exportableBalance,baseApply=applyBalanceConfig,baseValidate=validateBalanceConfig;
- let extras={schemaVersion:1,lifeSkills:M.normalizeLife(JSON.parse(balanceSourceText()||'null')?.lifeSkills||M.lifeDefaults(),baseExport().items)};
+ let extras={schemaVersion:1,crafting:JSON.parse(balanceSourceText()||'null')?.crafting||{etherIron:{dust:100,ore:3,quantity:1}}};
+ globalThis.currentCraftingRecipe=()=>structuredClone(extras.crafting.etherIron);
  const defaults={...baseExport(),...structuredClone(extras)};
  let validationDepth=0;
  exportableBalance=()=>({...baseExport(),...structuredClone(extras)});
  validateBalanceConfig=input=>{
   if(validationDepth)return baseValidate(input);
   const d=M.validate(input,null,defaults);validationDepth++;
-  try{return {...baseValidate(d),schemaVersion:1,lifeSkills:d.lifeSkills};}finally{validationDepth--;}
+  try{return {...baseValidate(d),schemaVersion:1,crafting:d.crafting};}finally{validationDepth--;}
  };
  applyBalanceConfig=(input,options={})=>{
   const d=validateBalanceConfig(input);validationDepth++;
-  try{const result=baseApply(d,options);extras={schemaVersion:1,lifeSkills:structuredClone(d.lifeSkills)};
+  try{const result=baseApply(d,options);extras={schemaVersion:1,crafting:structuredClone(d.crafting)};
    if(options.persist!==false)localStorage.setItem(BALANCE_KEY,JSON.stringify(exportableBalance()));
    if(options.persist!==false&&globalThis.__EMBERWILD_PUBLISHED_BALANCE&&IS_PREVIEW){globalThis.__EMBERWILD_BALANCE_SOURCE=exportableBalance();localStorage.setItem(BALANCE_KEY,JSON.stringify(globalThis.__EMBERWILD_BALANCE_SOURCE));localStorage.setItem(BALANCE_KEY+'-published-base',JSON.stringify(globalThis.__EMBERWILD_PUBLISHED_BALANCE));}
    return result;}finally{validationDepth--;}

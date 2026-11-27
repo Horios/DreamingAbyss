@@ -61,7 +61,7 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       });
       // Shop rows are item slots: the name sits under the slot and the description and effect show in the hover tooltip.
       const rows=[];
-      for(const category of ['life','random','fixed']){
+      for(const category of ['random','fixed']){
         await game.page.evaluate(category=>setShopCategory(category),category);
         const count=await game.page.locator('.shop-product-row').count();
         for(let i=0;i<count;i++){
@@ -76,7 +76,7 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       const stone=rows.find(x=>x.name.includes('重鑄'));assert(stone);assert(stone.tooltip.includes('基底'));assert(stone.tooltip.includes('基底評級'));
       assert.equal(await game.page.locator('main button[onclick="showTestCodes()"] ').count(),0);
       await game.page.setViewportSize({width:680,height:850});
-      for(const category of ['life','random','fixed']){
+      for(const category of ['random','fixed']){
         await game.page.evaluate(category=>setShopCategory(category),category);
         const overflow=await game.page.locator('.shop-product-row').evaluateAll(rows=>rows.some(row=>row.scrollWidth>row.clientWidth+1));assert.equal(overflow,false,category);
       }

@@ -1,5 +1,5 @@
 /* Equipment workshop: category tabs, one bench slot, item picker and per-item operations. */
-.workshop-shell{display:grid;gap:12px;padding:10px 12px;overflow:visible}
+.workshop-shell{display:grid;width:min(880px,100%);margin-left:auto;margin-right:auto;box-sizing:border-box;gap:12px;padding:10px 12px;overflow:visible}
 .workshop-categories{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .workshop-categories button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:8px 6px;border:1px solid var(--line);border-radius:10px;background:var(--control,#1d2629);color:var(--text-soft,var(--muted))}
 .workshop-categories button span{font-size:13px}

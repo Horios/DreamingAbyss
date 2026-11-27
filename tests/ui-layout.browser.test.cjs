@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const sizes=[[1920,1080],[1366,768],[1024,768],[768,1024],[390,844],[320,568],[844,390]];
-const pages=['character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:items','inventory:tokens','worn','forge','bossCraft','shop','story','story:side','story:npc','quests','gather','alchemy','statistics','battle'];
+const pages=['character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:items','inventory:tokens','worn','forge','crafting','shop','story','story:side','story:npc','quests','statistics','battle'];
 async function setup(p){
  await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
  await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);});
@@ -45,13 +45,15 @@ test('Long reading content and expanded rosters use the page scroll; inventory s
   const story=await p.evaluate(()=>{const m=document.querySelector('main');m.scrollTop=m.scrollHeight;const last=m.querySelector('.story-list').lastElementChild;return {bottom:last.getBoundingClientRect().bottom,end:m.getBoundingClientRect().bottom,overflow:m.scrollWidth-m.clientWidth};});
   assert(story.bottom<=story.end+1);assert(story.overflow<=1);
   await p.evaluate(()=>setTab('equipment'));
-  assert.equal(await p.locator('.page-owner-content').evaluate(e=>getComputedStyle(e).overflowY),'visible','inventory has no owner-panel scroll around the list');
-  const list=p.locator('.inventory-list-scroll'),item=list.locator('.gear-management-row').nth(3).locator('.item-slot');
-  await item.scrollIntoViewIfNeeded();const before=await list.evaluate(e=>e.scrollTop);await item.click();
+  // v0.211 grid bag: selecting a slot keeps the grid's (desktop) or the page's (phone) scroll position.
+  const pane=p.locator('.bag-grid-pane'),item=pane.locator('.bag-cell[data-bag-ref]').nth(60),main=p.locator('.layout>main');
+  await item.scrollIntoViewIfNeeded();const before=[await pane.evaluate(e=>e.scrollTop),await main.evaluate(e=>e.scrollTop)];await item.click();
   await p.waitForFunction(()=>!isEmberwildUIInteracting());
-  assert(Math.abs(await list.evaluate(e=>e.scrollTop)-before)<=1,'selecting gear keeps the list position at '+width+' (before '+before+', after '+await list.evaluate(e=>e.scrollTop)+')');
-  const panes=await p.locator('.inventory-master-detail').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.inventory-master-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
-  if(width<=700)assert.equal(panes.stack,'flex');else assert(panes.detail>=panes.list);
+  const after=[await pane.evaluate(e=>e.scrollTop),await main.evaluate(e=>e.scrollTop)];
+  assert(Math.abs(after[0]-before[0])<=1&&Math.abs(after[1]-before[1])<=1,'selecting gear keeps the scroll position at '+width+' '+JSON.stringify({before,after}));
+  if(width<=700)await p.evaluate(()=>closeDetailSheet());
+  const panes=await p.locator('.bag-layout').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.bag-grid-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
+  if(width<=700)assert.equal(panes.stack,'block');else assert(panes.detail>=panes.list);
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
@@ -68,7 +70,7 @@ test('Utility dialogs keep readable scroll regions and skill catalog names wrap 
    if(id==='achievements')assert.equal(await p.locator('.achievement-list').evaluate(e=>getComputedStyle(e).overflowY),'visible');
    await p.evaluate(()=>closeModal());
   }
-  await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
+  await p.evaluate(()=>setTab('skills'));await p.getByRole('tab',{name:'技能圖鑑',exact:true}).click();
   const name=p.locator('.skill-catalog-text b').first();await name.evaluate(e=>e.textContent='長技能名稱'.repeat(12));
   const b=await name.evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth,white:getComputedStyle(e).whiteSpace}));assert(b.scroll<=b.width+1);assert.equal(b.white,'normal');
   await p.evaluate(()=>closeModal());

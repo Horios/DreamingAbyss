@@ -133,7 +133,7 @@ function skillCatalogEntries(){
 function skillTileHTML(entry){
   const learned=entry.type==='core'?learnedCore(entry.i):learnedSupport(entry.i),selected=skillSelection?.type===entry.type&&skillSelection?.i===entry.i;
   const missing=entry.type==='core'?M.coreMissingRequirements(state,entry.i,false):M.supportMissingRequirements(state,entry.i,false);
-  const kind=entry.type==='support'?'輔助技能':entry.sk[1]==='proc'?'普攻觸發技能':'主動技能';
+  const kind=entry.type!=='support'&&entry.sk[1]==='proc'?'普攻觸發技能':'主動技能';
   const kindClass=entry.type==='support'?'skill-kind-support':entry.sk[1]==='proc'?'skill-kind-proc':'skill-kind-active';
   const requirements=entry.type==='core'?coreRequirementParts(entry.sk,entry.i):supportRequirementParts(entry.sk,entry.i);
   return `<button type="button" class="skill-icon-tile ${kindClass} ${learned?'learned':'locked'} ${selected?'selected':''}" onclick="selectSkillTile('${entry.type}',${entry.i})" aria-label="${esc(entry.name)}">${skillIconHTML(entry.icon)}<span class="skill-icon-status" aria-hidden="true">${learned?'✓':''}</span><span class="skill-icon-tooltip"><b>${esc(entry.name)}</b><span>${esc(kind)} · LV${entry.level}</span><span>${esc(skillMasteryTooltip(entry.meta))}</span><span>學習條件：${esc(requirements.join(' · '))}</span>${missing.length?`<span class="missing">尚缺：${esc(missing.join('、'))}</span>`:''}</span></button>`;

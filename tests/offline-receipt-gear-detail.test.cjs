@@ -32,7 +32,8 @@ test('offline receipt gear detail shows tier, level, total stats and attribute s
    assert.ok(html.includes(r.run(`companionTokenAbilityText(party.offlineExploration.receipt.gear[${i}])`)),'token ability text');
   }else{
    assert.match(html,/ · 裝等 \d+/,'wearable jobs and gear level');
-   assert.match(html,/class="equipment-total-summary"><span class="equipment-summary-values"><span>[^<]+ \+\d/,'total stat values');
+   // v0.215: a weapon opens with its base block (攻擊力：N); other slots list their totals first.
+   assert.match(html,/class="equipment-total-summary">(?:<span class="equipment-weapon-base"><span>攻擊力：\d+<\/span>|<span class="equipment-summary-values"><span>[^<]+ \+\d)/,'total stat values');
   }
   assert.match(html,/詳細數值來源/,'attribute sources stay available');
   assert.doesNotMatch(html,/^<h2>[\s\S]*?<\/h2><div class="offline-gear-detail"><h3>/,'the name is not repeated as a second heading');

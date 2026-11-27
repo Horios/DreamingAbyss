@@ -58,7 +58,7 @@ jobs:
               files=(tests/progression-model.test.cjs tests/monster-design.test.cjs tests/exploration-controls.test.cjs tests/story-system.test.cjs tests/daily-commissions.test.cjs tests/speed-boss-progression.test.cjs)
               ;;
             economy)
-              files=(tests/life-skills.test.cjs tests/element-potions.test.cjs tests/element-potions-runtime.test.cjs tests/realtime-stacking.test.cjs)
+              files=(tests/material-economy.test.cjs tests/element-potions.test.cjs tests/element-potions-runtime.test.cjs tests/realtime-stacking.test.cjs)
               ;;
             equipment)
               files=(tests/equipment-acquisition.test.cjs tests/equipment-enhancement.test.cjs tests/equipment-comparison.test.cjs tests/forge-equipped-runtime.test.cjs tests/reroll-dust.test.cjs)

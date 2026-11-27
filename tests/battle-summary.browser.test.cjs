@@ -38,7 +38,7 @@ test('shared summary stays visible on desktop pages and in the phone 戰況 dial
    // v0.133: narrow desktop windows (901–1100px) fold the report column by default; the summary is read after opening it.
    if(size.width>900&&size.width<=1100){assert.equal(await p.evaluate(()=>document.body.classList.contains('journal-collapsed')),true,'narrow desktop folds the report by default');await p.evaluate(()=>toggleJournalCollapsed(false));}
    assert(await p.locator('#journalEnemyIcons .battle-enemy-icon').evaluateAll(nodes=>nodes.every(n=>{const box=n.getBoundingClientRect(),svg=n.querySelector('svg').getBoundingClientRect();return svg.left>=box.left&&svg.right<=box.right&&svg.top>=box.top&&svg.bottom<=box.bottom;})),'journal SVGs fit their compact icons');
-   for(const tab of ['equipment','forge','skills','lifeSkills','gather','alchemy','story','battle']){
+   for(const tab of ['equipment','forge','skills','crafting','story','battle']){
     await p.evaluate(id=>setTab(id),tab);
     // v0.087: phone pages carry no report panel; the summary is read in the full-screen 戰況 dialog.
     if(size.width<=900){assert(!await p.locator('#battleSummary').isVisible(),tab+' phone page has no report panel');await p.evaluate(()=>toggleMobileReport(true));}
@@ -63,12 +63,12 @@ test('shared summary stays visible on desktop pages and in the phone 戰況 dial
 test('offline replay skips icon rendering and settles to the effective encounter, then live 2x updates continue across pages',async()=>{
  const g=await setup(),p=g.page;
  try{
-  await p.evaluate(()=>{resetEncounter();refillParty();running=false;party.huntingMode='group';startSelectedExploration();globalThis.iconMutations=0;new MutationObserver(rows=>{iconMutations+=rows.filter(r=>r.target.closest?.('#battleEnemyIcons .battle-enemy-icon')).length}).observe($('app'),{childList:true,subtree:true});});
+  await p.evaluate(()=>{resetEncounter();refillParty();running=false;startSelectedExploration();globalThis.iconMutations=0;new MutationObserver(rows=>{iconMutations+=rows.filter(r=>r.target.closest?.('#battleEnemyIcons .battle-enemy-icon')).length}).observe($('app'),{childList:true,subtree:true});});
   await p.clock.fastForward(60000);
   await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);EmberwildBattleSummary.sync();});
   assert(await p.evaluate(()=>iconMutations<100),'offline simulation must not build icons for every encounter');
   assert(await p.evaluate(()=>{const s=EmberwildBattleSummary.snapshot();return $('battleSummary').querySelector('[role="progressbar"]').getAttribute('aria-valuenow')===String(s.percent)}));
-  await p.evaluate(()=>{acknowledgeOfflineExploration();resetEncounter();running=false;party.huntingMode='group';startSelectedExploration();for(const h of heroes())h.shield=1e9;foes.forEach(e=>{e.hp=1e6;e.maxhp=1e6;e.atk=1});setTab('equipment');});
+  await p.evaluate(()=>{acknowledgeOfflineExploration();resetEncounter();running=false;startSelectedExploration();for(const h of heroes())h.shield=1e9;foes.forEach(e=>{e.hp=1e6;e.maxhp=1e6;e.atk=1});setTab('equipment');});
   assert.equal(await p.evaluate(()=>battleRate),1);
   // The warrior opens with a non-damaging taunt. A random six-enemy group
   // can still be resolving enemy actions at 12s; observe a real hit instead.

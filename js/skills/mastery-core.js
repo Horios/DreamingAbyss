@@ -46,7 +46,9 @@ const LEGACY_WEAPON_BY_NAME={
   '闊刃劍':'sword','穿甲槍':'sword','汲血斧':'axe',
   '狙擊長弓':'bow','穿雲弩':'crossbow','風羽短弓':'bow',
   '炎晶杖':'staff','霜紋杖':'staff','疾風法器':'grimoire',
-  '晨光權杖':'holyStaff','淨化槌':'holyStaff','祈禱法杖':'holyStaff'
+  '晨光權杖':'holyStaff','淨化槌':'holyStaff','祈禱法杖':'holyStaff',
+  // v0.215 weapon templates
+  '長劍':'sword','巨斧':'axe','木杖':'staff','水晶球':'grimoire','長弓':'bow','手弩':'crossbow','權杖':'holyStaff'
 };
 const CORE_PLAN=[
   [

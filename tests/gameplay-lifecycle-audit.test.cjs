@@ -48,14 +48,7 @@ test('shop purchases wait for the old timeline instead of supplying items retroa
  r.run('buyFixedShopOffer(auditOffer.id)');assert.equal(r.run('state.gold'),gold);assert.equal(r.run('healPotionCount(auditOffer.key)'),stock);await r.run('EmberwildOffline.settle()');const after=r.run('healPotionCount(auditOffer.key)');r.run('buyFixedShopOffer(auditOffer.id)');assert.equal(r.run('healPotionCount(auditOffer.key)'),after+r.run('auditOffer.quantity'));
 });
 
-test('delayed ticks still advance and persist gathering and alchemy after asynchronous catch-up',async()=>{
- const r=game();r.run('stopTeamExploration();Math.random=()=>.99;startLifeGathering();');const before=r.run('materialCount("紅色草")');
- for(let i=0;i<5;i++){r.advance(1001);r.run('tick()');await r.run('EmberwildOffline.settle(undefined,false)');}
- assert.equal(r.run('materialCount("紅色草")'),before+1);assert.equal(JSON.parse(r.values.get(r.run('KEY'))).members[0].materials['紅色草'],before+1);
- r.run('stopLifeGathering();for(const name of ["紅色草","清水","藥水瓶"])setMaterialCount(name,3);startLifeWork("alchemy");');const potions=r.run('healPotionCount("heal_small")');
- for(let i=0;i<5;i++){r.advance(1001);r.run('tick()');await r.run('EmberwildOffline.settle(undefined,false)');}
- assert.equal(r.run('healPotionCount("heal_small")'),potions+1);assert.equal(r.run('materialCount("清水")'),2);assert.equal(JSON.parse(r.values.get(r.run('KEY'))).members[0].healingPotions.heal_small,potions+1);
-});
+
 
 test('an old completed empty receipt cannot hide every future valid receipt',async()=>{
  const r=game(),raw=json(r,'packParty()');raw.offlineExploration.version=1;raw.offlineExploration.resumeRunning=true;raw.offlineExploration.receipt={id:'legacy-empty',start:r.now-1000,end:r.now,complete:true,levels:[],gear:[],items:{},boosts:{},effectiveMs:1000,kills:0,xp:0,goldGained:0,goldSpent:0};r.ctx.saved=raw;r.run('loadParty(saved)');r.advance(60000);await r.run('EmberwildOffline.settle()');

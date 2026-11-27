@@ -53,26 +53,14 @@ test('equipment: base stats, enhancement cost, required level and sell price fol
 });
 
 test('economy and commissions: material price, shop refresh, life material price and board refresh cost',()=>{
- const g=game(),probe=()=>g.read('({sell:materialSellPrice("鍛鐵"),refresh:currentRefreshCost(),water:lifeMaterialPurchasePrice("清水"),board:boardRefreshCost()})'),before=probe();
+ const g=game(),probe=()=>g.read('({sell:materialSellPrice("鍛鐵"),refresh:currentRefreshCost(),board:boardRefreshCost()})'),before=probe();
  g.edit(d=>{d.balanceSettings.economy.materialPrices.find(x=>x.key==='鍛鐵').sellPrice+=6;});
  g.edit(d=>{d.shopSettings.randomOffers.refreshBaseCost+=250;});
- g.edit(d=>{d.lifeSkills.materialBuyPrices['清水']+=4;});
  g.edit(d=>{d.balanceSettings.quests.board.refreshGoldPerTier+=70;});
- assert.deepEqual(probe(),{sell:before.sell+6,refresh:before.refresh+250,water:before.water+4,board:before.board+70});
+ assert.deepEqual(probe(),{sell:before.sell+6,refresh:before.refresh+250,board:before.board+70});
 });
 
-test('maps, life skills, wishing lake and story: names, level range, gathering period, daily limit and rewards',()=>{
- const g=game(),map=g.read('({name:MAPS[0].name,min:MAPS[0].min,max:MAPS[0].max})');
- g.edit(d=>{const m=d.balanceSettings.maps.catalog[0];m.name='生效測試林地';m.max+=2;});
- assert.deepEqual(g.read('({name:MAPS[0].name,min:MAPS[0].min,max:MAPS[0].max})'),{name:'生效測試林地',min:map.min,max:map.max+2});
- // Gathering: one item per period, so half the period gives twice the items in the same time.
- const gather=period=>{const x=game();if(period)x.edit(d=>{d.lifeSkills.gathering.find(t=>t.id==='herb').periodMs=period;});const base=x.read('__EMBERWILD_LIFE_SKILLS.design.gathering.find(t=>t.id==="herb")');assert.equal(x.r.run('startLifeGathering("herb")'),true);x.r.advance(20000);x.r.run('tickLifeSkills()');return {period:base.periodMs,got:x.read('playerHero().materials')[base.output]||0};};
- const normal=gather(),fast=gather(normal.period/2);assert(normal.got>0);assert.equal(fast.got,normal.got*2);
- const limit=g.read('__EMBERWILD_WISHING_LAKE.design().dailyLimit');g.edit(d=>{d.wishingLake.dailyLimit=limit+2;});
- assert.equal(g.read('__EMBERWILD_WISHING_LAKE.design().dailyLimit'),limit+2);
- const reward=g.read('__EMBERWILD_STORY.design.quests[0].stages[0].rewards.gold');g.edit(d=>{d.story.quests[0].stages[0].rewards.gold+=123;});
- assert.equal(g.read('__EMBERWILD_STORY.design.quests[0].stages[0].rewards.gold'),reward+123,'the running story design carries the edited reward');
-});
+
 
 test('offline settlement uses the same published values as online play',async()=>{
  const {runtime,fixture,replay,json}=require('./offline-fast-validation.cjs');

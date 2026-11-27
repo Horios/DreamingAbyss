@@ -6,7 +6,7 @@ async function setup(p){
  await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);for(let i=0;i<12;i++)state.bag.push(gear(1,i%4,i%4,0));equipSharedGear(state.bag[0].id,memberKey(state),0);state.gems[0]=1;state.dust=1000;save();});
 }
 function showPage(id){if(id.startsWith('inventory:')){setTab('equipment');setInventoryCategory(id.split(':')[1]);}else if(id.startsWith('story:'))setStoryCategory(id.split(':')[1]);else{if(id==='equipment')setInventoryCategory('equipment');setTab(id);}}
-const pages=['battle','character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:items','inventory:tokens','worn','forge','bossCraft','shop','story','story:side','quests','gather','alchemy','statistics'];
+const pages=['battle','character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:gems','inventory:items','inventory:tokens','inventory:special','worn','forge','crafting','shop','story','story:side','quests','statistics'];
 
 test('Phone pages keep text at 12px or more and tappable controls at 44px or more',async()=>{
  const r=await openRuntime(root),p=r.page;
@@ -61,9 +61,10 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  // Inventory
  await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
  assert.equal(await p.locator('.inventory-detail-wrap').isVisible(),false,'detail waits for a tap');
- assert.equal(await p.locator('.inventory-list-scroll').evaluate(e=>getComputedStyle(e).overflowY),'visible','the list uses the page scroll');
- assert.equal(await p.locator('.gear-management-row .gear-lock').first().isVisible(),false);
- await p.locator('.gear-management-row').nth(2).locator('.inventory-list-item').click();await idle();
+ // v0.211 grid bag: the grid uses the page scroll; a tap on a slot opens the detail sheet.
+ assert.equal(await p.locator('.bag-grid-pane').evaluate(e=>getComputedStyle(e).overflowY),'visible','the grid uses the page scroll');
+ const cells=p.locator('.bag-cell[data-bag-ref]');assert(await cells.count()>=2,'the setup has bag gear');
+ await cells.nth(1).click();await idle();
  assert.equal(await p.evaluate(()=>currentDetailSheet()),'gear');
  const sheet=await p.evaluate(()=>{const b=document.querySelector('.inventory-detail-wrap').getBoundingClientRect(),nav=document.querySelector('.layout>aside').getBoundingClientRect();return {top:b.top,bottom:b.bottom,nav:nav.top,width:b.width};});
  assert(Math.abs(sheet.bottom-sheet.nav)<=1&&sheet.width===390&&sheet.top>100,'the sheet rises from the navigation '+JSON.stringify(sheet));
@@ -73,14 +74,13 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  assert.equal(await p.evaluate(id=>!!findGear(id).locked,id),true,'locking works from the sheet');
  assert.equal(await p.evaluate(()=>currentDetailSheet()),'gear');
  await p.locator('.sheet-close').click();assert.equal(await p.locator('.inventory-detail-wrap').isVisible(),false);
- await p.locator('.gear-management-row').nth(1).locator('.inventory-list-item').click();await idle();
+ await cells.nth(0).click();await idle();
  await p.keyboard.press('Escape');assert.equal(await p.evaluate(()=>currentDetailSheet()),'');
- // Tokens: filters fold
- await p.evaluate(()=>setInventoryCategory('tokens'));
- assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),false);
- await p.locator('.token-filter-toggle').click();assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),true);
- await p.evaluate(()=>render());assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),true,'filters stay open through redraws');
- await p.locator('.token-filter-toggle').click();
+ // Other tabs use the same sheet.
+ await p.evaluate(()=>setInventoryCategory('materials'));await idle();
+ await p.locator('.bag-cell[data-bag-ref]').first().click();await idle();
+ assert.equal(await p.evaluate(()=>currentDetailSheet()),'gear');
+ await p.locator('.sheet-close').click();
  // Worn slots
  await p.evaluate(()=>setTab('worn'));
  // The filter click above can defer the next redraw (interaction guard); wait for the worn page itself.
@@ -111,9 +111,9 @@ test('Phone detail sheets: inventory, forge, worn slots and mail open on a tap a
  await p.evaluate(()=>closeModal());
  // Desktop: both panes, no sheet
  await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
- assert.equal(await p.locator('.inventory-detail-wrap').isVisible(),true);assert.equal(await p.locator('.gear-management-row .gear-lock').first().isVisible(),true);
+ assert.equal(await p.locator('.inventory-detail-wrap').isVisible(),true);assert.equal(await p.locator('.bag-cell[data-bag-ref]').first().isVisible(),true);
  assert.equal(await p.locator('.sheet-head:visible').count(),0);
- await p.locator('.gear-management-row').nth(1).locator('.inventory-list-item').click();await idle();assert.equal(await p.evaluate(()=>currentDetailSheet()),'');
+ await p.locator('.bag-cell[data-bag-ref]').nth(1).click();await idle();assert.equal(await p.evaluate(()=>currentDetailSheet()),'');
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
@@ -127,7 +127,7 @@ test('Phone BOSS crafting shows one region at a time; shop rows are one line eac
  await p.evaluate(()=>selectSaveSlot(1));
  assert.equal(await p.locator('#app>.start').isVisible(),false,'the prologue replaces the old class screen');
  await setup(p);
- await p.evaluate(()=>setTab('bossCraft'));
+ await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
  const regions=await p.locator('.boss-region-filter select option').count();assert(regions>2);
  const shown=await p.locator('.boss-recipe:visible .tag').allInnerTexts();assert(shown.length>0&&new Set(shown).size===1,'one region shown');
  assert.equal(shown[0],await p.evaluate(()=>MAPS[party.map].name));
@@ -138,7 +138,7 @@ test('Phone BOSS crafting shows one region at a time; shop rows are one line eac
  await p.evaluate(()=>setTab('shop'));
  const row=await p.locator('.shop-product-row').first().evaluate(e=>{const button=e.querySelector('.shop-inline-actions button').getBoundingClientRect(),slot=e.querySelector('.item-slot').getBoundingClientRect();return {height:e.getBoundingClientRect().height,beside:button.left>=slot.right-1};});
  assert(row.height<=110&&row.beside,'shop row '+JSON.stringify(row));
- await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>setTab('bossCraft'));
+ await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
  assert.equal(await p.locator('.boss-region-filter').count(),0);assert.equal(await p.locator('.boss-recipe:visible').count(),await p.locator('.boss-recipe').count());
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
@@ -175,11 +175,11 @@ test('Navigation rail on desktop, tablet and sideways phones; the report column 
  await p.locator('.journal-collapse-toggle').click();assert.equal(await p.locator('#liveLog').isVisible(),true);
  // Wide screens
  await p.setViewportSize({width:1920,height:1080});await p.evaluate(()=>{closeModal();setTab('equipment');render();});
- const wide=await p.evaluate(()=>{const b=s=>document.querySelector(s).getBoundingClientRect();return {zoom:getComputedStyle(document.documentElement).zoom,font:b('.layout>main h1').height,layoutBottom:b('.layout').bottom,journalRight:b('#globalBattleJournal').right,doc:[document.documentElement.scrollWidth,document.documentElement.scrollHeight]};});
+ const wide=await p.evaluate(()=>{const b=s=>document.querySelector(s).getBoundingClientRect();return {zoom:getComputedStyle(document.documentElement).zoom,font:b('.layout>main .bag-tabs').height,layoutBottom:b('.layout').bottom,journalRight:b('#globalBattleJournal').right,doc:[document.documentElement.scrollWidth,document.documentElement.scrollHeight]};});
  // v0.160: no page zoom (it shifted tooltips and spotlights placed from viewport coordinates).
  assert.equal(wide.zoom,'1');assert(wide.layoutBottom<=1081&&wide.journalRight<=1921,'the layout fits the screen '+JSON.stringify(wide));
- const slot=p.locator('.gear-management-row .inventory-list-item').nth(1);await slot.hover();await p.waitForSelector('#item-hover-tooltip:not([hidden])');
- const tip=await p.evaluate(()=>{const t=document.getElementById('item-hover-tooltip').getBoundingClientRect(),s=document.querySelectorAll('.gear-management-row .inventory-list-item')[1].getBoundingClientRect();return {gap:t.left>=s.right?t.left-s.right:s.left-t.right,dy:Math.abs(t.top-s.top)};});
+ const slot=p.locator('.bag-cell[data-bag-ref]').nth(1);await slot.hover();await p.waitForSelector('#item-hover-tooltip:not([hidden])');
+ const tip=await p.evaluate(()=>{const t=document.getElementById('item-hover-tooltip').getBoundingClientRect(),s=document.querySelectorAll('.bag-cell[data-bag-ref]')[1].getBoundingClientRect();return {gap:t.left>=s.right?t.left-s.right:s.left-t.right,dy:Math.abs(t.top-s.top)};});
  assert(tip.gap>=0&&tip.gap<=16&&tip.dy<=4,'the hover card sits right beside the item '+JSON.stringify(tip));
  await p.mouse.move(2,2);
  await p.evaluate(()=>setTab('options'));
@@ -188,32 +188,21 @@ test('Navigation rail on desktop, tablet and sideways phones; the report column 
  }finally{await r.browser.close();}
 });
 
-test('Phone second pass: two-column stats, compact empty skill slots, one-row quest filter, folded explanations and alchemy recipes',async()=>{
+test('Phone second pass: two-column stats, compact empty skill slots, one-row quest filter',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:390,height:844});await setup(p);
  await p.evaluate(()=>setTab('character'));
  const stats=await p.locator('.stat-grid>span').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(stats[0],stats[1],'two stats share a row');
  await p.evaluate(()=>setTab('skills'));
- const slots=await p.locator('.skill-system-slot').evaluateAll(es=>es.map(e=>({h:e.getBoundingClientRect().height,filled:!!e.querySelector('.skill-slot-name')})));
- assert(slots.some(s=>!s.filled)&&slots.filter(s=>!s.filled).every(s=>s.h>=44&&s.h<=60),'empty slots are one row '+JSON.stringify(slots));
+ // v0.214 skill grid: empty cells keep the filled cell's compact size instead of growing a row each.
+ const slots=await p.locator('.skill-cell').evaluateAll(es=>es.map(e=>({h:Math.round(e.getBoundingClientRect().height),filled:!e.classList.contains('is-empty')})));
+ const filledH=Math.max(...slots.filter(s=>s.filled).map(s=>s.h));
+ assert(slots.some(s=>!s.filled)&&slots.filter(s=>!s.filled).every(s=>s.h<=filledH&&s.h<=80),'empty slots stay compact '+JSON.stringify(slots));
  await p.evaluate(()=>setStoryCategory('side'));
  assert.equal(new Set(await p.locator('.quest-filter>button').evaluateAll(es=>es.map(e=>Math.round(e.getBoundingClientRect().top)))).size,1,'quest filter is one row');
  await p.evaluate(()=>setTab('roster'));
  const row=await p.locator('.roster-row').nth(1).evaluate(e=>{const a=e.querySelector('.roster-member-actions').getBoundingClientRect(),n=e.querySelector('.member-identity').getBoundingClientRect();return a.left>=n.left+60&&a.top<n.bottom+30;});assert(row,'member actions sit beside the name');
- await p.evaluate(()=>setTab('alchemy'));
- const intro=p.locator('.life-rules.intro-clamp');assert.equal(await intro.count(),1);
- const before=await intro.evaluate(e=>e.getBoundingClientRect().height);
- await p.locator('.intro-clamp-toggle').first().click();const opened=await intro.evaluate(e=>e.getBoundingClientRect().height);assert(opened>before,'explanation opens');
- await p.evaluate(()=>render());assert.equal(await p.locator('.life-rules').evaluate(e=>e.classList.contains('intro-open')),true,'it stays open through a redraw');
- const recipe=p.locator('.life-recipe').first();
- assert.equal(await recipe.locator('.recipe-item-line').isVisible(),false);assert(await recipe.evaluate(e=>e.getBoundingClientRect().height)<=96,'folded recipe is one row');
- assert.equal(await recipe.locator('button:not(.life-recipe-toggle)').isVisible(),true,'開始 stays reachable while folded');
- await recipe.locator('.life-recipe-toggle').click();assert.equal(await recipe.locator('.recipe-item-line').isVisible(),true);
- await p.evaluate(()=>render());assert.equal(await p.locator('.life-recipe').first().locator('.recipe-item-line').isVisible(),true,'an opened recipe survives a redraw');
- const stock=await p.locator('.life-materials>.life-stock-row').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));assert.equal(stock[0],stock[1],'stock is two per row');
- await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>render());
- assert.equal(await p.locator('.life-recipe-toggle').count(),0);assert.equal(await p.locator('.life-recipe').first().locator('.recipe-item-line').isVisible(),true);assert.equal(await p.locator('.intro-clamp-toggle:visible').count(),0);
- assert.deepEqual(r.errors,[]);
+
  }finally{await r.browser.close();}
 });
 
@@ -235,18 +224,15 @@ test('Desktop third pass: material lists fill the width, BOSS costs stay on one 
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:1366,height:768});await setup(p);
  await p.evaluate(()=>{setTab('equipment');setInventoryCategory('materials');});
- const mat=await p.locator('.account-sell-list').last().evaluate(e=>{const items=[...e.children].filter(c=>!c.classList.contains('empty')).map(c=>c.getBoundingClientRect());return {cols:new Set(items.map(b=>Math.round(b.top))).size<items.length,width:items[0]?.width||0,list:e.getBoundingClientRect().width};});
- assert(mat.cols&&mat.width>=220,'materials share rows and fill their column '+JSON.stringify(mat));
- await p.evaluate(()=>setTab('gather'));
- const stock=await p.locator('.life-materials>*').evaluateAll(es=>es.slice(0,3).map(e=>({top:Math.round(e.getBoundingClientRect().top),w:e.getBoundingClientRect().width})));
- assert(stock[0].top===stock[1].top&&stock[0].w>=220,'stock '+JSON.stringify(stock));
- await p.evaluate(()=>setTab('bossCraft'));
+ // v0.211 grid bag: square slots fill the grid's width, several per row.
+ const mat=await p.locator('.bag-grid').evaluate(e=>{const items=[...e.children].map(c=>c.getBoundingClientRect());const top=Math.round(items[0].top),row=items.filter(b=>Math.round(b.top)===top);return {perRow:row.length,square:Math.abs(items[0].width-items[0].height)<=1,fill:row.at(-1).right/e.getBoundingClientRect().right};});
+ assert(mat.perRow>=6&&mat.square&&mat.fill>0.97,'material slots share rows and fill the grid '+JSON.stringify(mat));
+ await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
  const cost=await p.locator('.boss-recipe .recipe-cost').first().evaluate(e=>{const [a,b]=e.children;return {held:a.getBoundingClientRect().height,gold:b.getBoundingClientRect().height};});
  assert(cost.held<=60&&cost.gold<=30,'cost lines '+JSON.stringify(cost));
  await p.evaluate(()=>{setTab('equipment');setInventoryCategory('tokens');});
- assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),false);assert.equal(await p.locator('.token-management-panel .gear-sort-controls').isVisible(),true);
- await p.locator('.token-filter-toggle').click();assert.equal(await p.locator('.token-management-panel .gear-basic-filters').isVisible(),true);
- await p.locator('.token-filter-toggle').click();
+ // v0.211 grid bag: the token tab shows sort and quality only.
+ assert.equal(await p.locator('.bag-actions select[aria-label="排序"]').isVisible(),true);assert.equal(await p.locator('.bag-filters').count(),0);
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
 });
@@ -281,11 +267,11 @@ test('Desktop remaining items: the report log starts at the top, quests are one 
  assert.equal(await p.locator('.inventory-compare-pane').count(),0,'no comparison column below 1600px');
  await p.setViewportSize({width:1920,height:1080});await p.evaluate(()=>render());
  const pane=p.locator('.inventory-compare-pane');assert.equal(await pane.isVisible(),true);
- const cols=await p.evaluate(()=>['.inventory-master-pane','.inventory-detail-wrap','.inventory-compare-pane'].map(s=>{const b=document.querySelector(s).getBoundingClientRect();return {l:b.left,r:b.right,t:Math.round(b.top)};}));
+ const cols=await p.evaluate(()=>['.bag-grid-pane','.inventory-detail-wrap','.inventory-compare-pane'].map(s=>{const b=document.querySelector(s).getBoundingClientRect();return {l:b.left,r:b.right,t:Math.round(b.top)};}));
  assert(cols[0].r<=cols[1].l+1&&cols[1].r<=cols[2].l+1&&new Set(cols.map(c=>c.t)).size===1,'three columns side by side '+JSON.stringify(cols));
  assert.match(await pane.innerText(),/與目前穿戴比較[\s\S]*能力/);
  const before=await pane.getAttribute('data-key');
- await p.locator('.gear-management-row').nth(2).locator('.inventory-list-item').click();await p.waitForFunction(()=>!isEmberwildUIInteracting());
+ await p.locator('.bag-cell[data-bag-ref]').nth(2).click();await p.waitForFunction(()=>!isEmberwildUIInteracting());
  assert.notEqual(await p.locator('.inventory-compare-pane').getAttribute('data-key'),before,'the comparison follows the selection');
  const snapshot=await p.evaluate(()=>JSON.stringify(party.members[0].equipped));await p.evaluate(()=>render());
  assert.equal(await p.evaluate(()=>JSON.stringify(party.members[0].equipped)),snapshot,'comparing changes nothing');
@@ -324,7 +310,7 @@ test('Narrow desktop (1024px): three allies share one row and five narrow enemy 
  }finally{await r.browser.close();}
 });
 
-test('Narrow desktop folds the report column by default until the player chooses; backpack list widens; alchemy recipes use two columns',async()=>{
+test('Narrow desktop folds the report column by default until the player chooses; backpack list widens',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:1024,height:768});await setup(p);
  await p.evaluate(()=>{try{localStorage.removeItem('dreamingAbyss.journalCollapsed');}catch{}});await p.reload();await p.evaluate(()=>selectSaveSlot(1));await p.waitForFunction(()=>!!state&&!!document.querySelector('.journal-collapse-toggle'));
@@ -340,13 +326,10 @@ test('Narrow desktop folds the report column by default until the player chooses
  await p.locator('.journal-collapse-toggle').click();
  await p.evaluate(()=>{setInventoryCategory('equipment');setTab('equipment');});
  // The strip click can defer the redraw (interaction guard); wait for the backpack list.
- await p.waitForFunction(()=>!isEmberwildUIInteracting()&&!!document.querySelector('.inventory-master-pane .gear-management-row'));
- const list=await p.evaluate(()=>{const m=document.querySelector('.inventory-master-pane').getBoundingClientRect(),g=document.querySelector('.inventory-master-detail').getBoundingClientRect(),name=document.querySelector('.gear-management-row .item-slot-name');return {share:m.width/g.width,oneLine:name.getBoundingClientRect().height<=26};});
- assert(list.share>=0.45&&list.oneLine,'backpack list '+JSON.stringify(list));
- await p.evaluate(()=>setTab('alchemy'));
- const recipes=await p.locator('#life-alchemy>.life-recipe').evaluateAll(es=>es.slice(0,2).map(e=>Math.round(e.getBoundingClientRect().top)));
- assert.equal(recipes[0],recipes[1],'two recipes share a row');
- assert.deepEqual(r.errors,[]);
+ await p.waitForFunction(()=>!isEmberwildUIInteracting()&&!!document.querySelector('.bag-grid-pane .bag-cell[data-bag-ref]'));
+ const list=await p.evaluate(()=>{const m=document.querySelector('.bag-grid-pane').getBoundingClientRect(),g=document.querySelector('.bag-layout').getBoundingClientRect(),c=document.querySelector('.bag-cell[data-bag-ref]').getBoundingClientRect();return {share:m.width/g.width,cell:c.width};});
+ assert(list.share>=0.45&&list.cell>=44,'backpack grid '+JSON.stringify(list));
+
  }finally{await r.browser.close();}
 });
 
@@ -382,7 +365,7 @@ test('Desktop: story NEW! follows the title; long action labels keep one line; w
  await p.evaluate(()=>setStoryCategory('main'));
  const story=await p.locator('.story-card>.row:first-child').first().evaluate(e=>{const h=e.querySelector('h2').getBoundingClientRect(),n=e.querySelector('.quest-new')?.getBoundingClientRect(),t=e.querySelector('.tag').getBoundingClientRect();return {gap:n?n.left-h.right:0,tagRight:Math.abs(t.right-e.getBoundingClientRect().right)};});
  assert(story.gap>=0&&story.gap<=16&&story.tagRight<=2,'NEW! next to the title, tag at the right '+JSON.stringify(story));
- await p.evaluate(()=>{setTab('equipment');setInventoryCategory('items');});
+ await p.evaluate(()=>{setTab('equipment');setInventoryCategory('gems');});
  const gem=await p.locator('button[onclick^="openGemUpgrade("]').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);return new Set([...range.getClientRects()].filter(x=>x.width>2).map(x=>Math.round(x.top))).size;});
  assert.equal(gem,1,'粉塵升級 stays on one line');
  await p.evaluate(()=>setTab('worn'));

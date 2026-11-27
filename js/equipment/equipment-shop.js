@@ -34,7 +34,7 @@
     const found=offer(stageId+'/'+entryId);if(!found)return null;
     const {stage:s,entry:e}=found,ref=C.equipmentForms(ITEM_FORMS).find(r=>r.form.id===e.formId);if(!ref)return null;
     const g=gear(Math.max(1,Math.min(12,Math.ceil(s.level/5))),ref.slot,0,e.job);
-    Object.assign(g,{formJob:ref.group,form:ref.index,powerTier:s.powerTier,equipmentLevel:s.level,equipmentSource:'shop',acquiredAt:Date.now(),baseRuleVersion:1,prefixId:'',suffixId:'',affix:[],plus:0,canEnhance:e.canEnhance,canReroll:e.canReroll});
+    Object.assign(g,{formJob:ref.group,form:ref.index,powerTier:s.powerTier,equipmentLevel:s.level,equipmentSource:'shop',acquiredAt:Date.now(),baseRuleVersion:1,affix:[],plus:0,canEnhance:e.canEnhance,canReroll:e.canReroll});
     delete g.baseSnapshot;
     // A fixed shop base is exactly 100%, regardless of the stage's displayed T.
     const baseline=gearStatBreakdown(g);g.baseSnapshot.base={...baseline.body};g.baseSnapshot.mult=1;
@@ -56,7 +56,7 @@
       const open=!folded.get(s.id),content=open?s.entries.map(e=>{
         const g=createEquipmentShopGear(s.id,e.id,{preview:true});if(!g)return '';
         const key=s.id+'/'+e.id,price=globalThis.shopPayablePrice?.(e.unitPrice*e.quantity)??e.unitPrice*e.quantity;
-        return '<article class="shop-product-row icon-product fixed-shop-row">'+gearSlotHTML(g,{preview:g,count:e.quantity,context:'shop',shopType:'equipment',shopId:key,price,detailLabel:'每份件數'})+'<small class="shop-product-label">'+esc(CLASSES[e.job].name)+' · '+esc(SLOTS[g.slot])+' · '+price.toLocaleString()+' 金幣</small></article>';
+        return '<article class="shop-product-row icon-product fixed-shop-row">'+gearSlotHTML(g,{preview:g,count:e.quantity,context:'shop',shopType:'equipment',shopId:key,price,detailLabel:'每份件數'})+'<small class="shop-product-label">'+esc(typeof gearWearableJobsText==='function'?gearWearableJobsText(g):CLASSES[e.job].name)+' · '+esc(SLOTS[g.slot])+' · '+price.toLocaleString()+' 金幣</small></article>';
       }).join(''):'';
       return '<section class="equipment-shop-stage" data-equipment-stage="'+esc(s.id)+'"><button type="button" class="equipment-stage-toggle" aria-expanded="'+open+'" onclick="setEquipmentShopFold(\''+s.id+'\','+!open+')">'+(open?'▼ ':'▶ ')+esc(s.name)+' · LV '+s.level+'</button>'+(open?'<div class="shop-product-grid">'+content+'</div>':'')+'</section>';
     }).join('')+'</section>';

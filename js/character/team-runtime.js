@@ -119,7 +119,24 @@
   const socketBase=socket;socket=function(i,value){if(state!==player())return socketBase(i,value);if(!safe()||plan().job===null||!Number.isInteger(i)||!player().skills[i])return false;const type=Number(value),p=plan();if(!Number.isInteger(type)||type< -1||type>=GEMS.length||type>=0&&!gemCompatible(type,player().job,i))return false;if(type>=0&&player().gems[type]<1)return false;return transaction(()=>{const old=p.sockets[i];p.sockets[i]=null;if(old&&!build().plans.some(other=>other.sockets.includes(old))){player().gems[build().permanent.gemInstances[old]]++;delete build().permanent.gemInstances[old];}if(type>=0){const id='gem-'+build().permanent.gemSerial++;build().permanent.gemInstances[id]=type;player().gems[type]--;p.sockets[i]=id;}player().sockets=p.sockets.map(id=>id?build().permanent.gemInstances[id]:null);});};
   const baseSave=save;save=function(...args){if(suppressSave)return true;if(party&&!hydrating)capture();return baseSave(...args);};
   const basePack=packParty;packParty=function(){capture();const out=basePack();out.buildSystem=copy(build());return out;};
-  function validateBuild(data,p){return M.validate(data,{classes:classDocs(),supports:SUPPORT,members:p.members,items:p.members.flatMap(h=>h.bag),progression:GAMEPLAY_SETTINGS.progression,config:cfg,wearable:(g,j,i)=>!EmberwildTokens.isToken(g)&&gearWearableJobs(g).includes(j)&&gearEquipPositions(g).includes(i)});}
+  // v0.215: equipment templates changed who can wear them (鐵甲 is warrior-only, accessories are worn by every class). A saved
+  // plan whose job can no longer wear a piece takes it off; the item stays in the bag. Gear the save does not own stays as it is.
+  function dropUnwearablePlanGear(data,p){
+    if(!data||!Array.isArray(data.plans))return data;const owned=new Map(p.members.flatMap(h=>h.bag).map(g=>[g.id,g]));
+    // Armor was worn by every class before; one that only classes sharing an armor template wear becomes that template.
+    const wearers=new Map(),note=(id,job)=>{const g=typeof id==='string'?owned.get(id):null;if(g&&g.slot===1&&Number.isInteger(job))(wearers.get(g)||wearers.set(g,new Set()).get(g)).add(job);};
+    for(const plan of data.plans)if(Array.isArray(plan?.equipped))note(plan.equipped[1],plan.job);
+    for(const h of p.members)note(h.equipped?.[1],h.job);
+    for(const [g,jobs] of wearers){
+     if([...jobs].every(j=>gearWearableJobs(g).includes(j)))continue;
+     const targets=new Map([...jobs].map(j=>globalThis.slimArmorFor?.(j)).filter(Boolean).map(t=>[t.group+':'+t.index,t]));
+     if(targets.size===1){const t=[...targets.values()][0];g.formJob=t.group;g.form=t.index;}
+    }
+    for(const plan of data.plans){if(!plan||!Array.isArray(plan.equipped)||!Number.isInteger(plan.job))continue;
+     plan.equipped=plan.equipped.map((id,i)=>{const g=typeof id==='string'?owned.get(id):null;if(!g||EmberwildTokens.isToken(g))return id;return gearWearableJobs(g).includes(plan.job)&&gearEquipPositions(g).includes(i)?id:null;});}
+    return data;
+  }
+  function validateBuild(data,p){data=dropUnwearablePlanGear(data,p);return M.validate(data,{classes:classDocs(),supports:SUPPORT,members:p.members,items:p.members.flatMap(h=>h.bag),progression:GAMEPLAY_SETTINGS.progression,config:cfg,wearable:(g,j,i)=>!EmberwildTokens.isToken(g)&&gearWearableJobs(g).includes(j)&&gearEquipPositions(g).includes(i)});}
   const baseValidate=validateParty;validateParty=function(input){const d=M.prepareSave(input),p=baseValidate(d);if(d.buildSystem!==undefined)p.buildSystem=validateBuild(d.buildSystem,p);return p;};
   const baseLoad=loadParty;loadParty=function(input){
     const d=M.prepareSave(input);validateParty(d);hydrating=true;try{baseLoad(d);if(d.buildSystem)party.buildSystem=validateBuild(d.buildSystem,party);else delete party.buildSystem;}finally{hydrating=false;}
@@ -144,10 +161,12 @@
       if(p.skillLoadout){
         const stage='advanced';
         const rule=d.skillSystem?.classRules?.find(r=>r.job===p.job)?.slots?.[stage];
+        // v0.212: support skills sit in active slots; supportSlots follows the active slot count and the plan has no
+        // support loadout of its own (skill-system-runtime.js).
         if(rule)for(const [type,field] of [['active','active'],['proc','procSlots'],['support','supportSlots']]){
-          const count=rule[type],slots=p[field],ids=p.skillLoadout[type];
+          const count=type==='support'?rule.active:rule[type],slots=p[field],ids=type==='support'?(p.skillLoadout.support=[]):p.skillLoadout[type];
           if(!Number.isInteger(count)||!Array.isArray(slots)||!Array.isArray(ids))throw Error('隊伍技能槽資料無效');
-          for(const entries of [slots,ids]){
+          for(const entries of type==='support'?[slots]:[slots,ids]){
             if(entries.slice(count).some(value=>value!==null))throw Error('新版技能槽不足以保留已配置技能');
             entries.length=Math.min(entries.length,count);
             while(entries.length<count)entries.push(null);

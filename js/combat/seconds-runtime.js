@@ -18,7 +18,9 @@
  function cdrPoints(h,s){
   const a=adapter(h,s),core=a?.kind==='core',i=a?.index,fixed=globalThis.equipmentIdentityEffectNumber;
   return {affixAll:equipment(h).filter(g=>g.job===h.job||g.slot===1).flatMap(g=>g.affix||[]).filter(a=>a.type===16).reduce((n,a)=>n+(Number(a.value)||0),0),
-   affixSkill:core?bonusFor(i,5,h):0,fixedAll:Math.max(0,Math.round(fixed?.(h,'allCooldownReduction')||0)),fixedSkill:core?Math.max(0,Math.round(fixed?.(h,'skillCooldownReduction',i)||0)):0};
+   affixSkill:core?bonusFor(i,5,h):0,fixedAll:Math.max(0,Math.round(fixed?.(h,'allCooldownReduction')||0)),fixedSkill:core?Math.max(0,Math.round(fixed?.(h,'skillCooldownReduction',i)||0)):0,
+   // v0.215 weapon base 技能冷卻 −X%: percent points added directly to the percent part (no per-point source rule).
+   directPercent:Math.max(0,Number(fixed?.(h,'cooldownPct'))||0)};
  }
  function reducedCooldown(h,s,extra={}){return Schema.applyCooldownReduction(timing(s).cooldownSeconds,{...cdrPoints(h,s),...extra},cdr(),config().minimumActionIntervalSeconds);}
  const mono=()=>engine?engine.now/1e6:partyClock;
@@ -353,15 +355,16 @@
   actorCooldowns=cds;supportCooldowns=supports;needsRoster=true;return out;
  };
  const oldPack=packParty,oldPartyValidate=validateParty;
- packParty=function(){const out=oldPack();if(party){out.huntingMode=party.huntingMode||'group';out.currentHuntingMode=party.currentHuntingMode||out.huntingMode;if(party.explorationRecovery)out.explorationRecovery=copy(party.explorationRecovery);}return out;};
- validateParty=function(raw){if(raw?.huntingMode!==undefined&&!['single','group'].includes(raw.huntingMode))throw Error('狩獵模式無效');const out=oldPartyValidate(raw);/* v0.179: the single-enemy mode is gone for players; a save that chose it explores in groups again. */out.huntingMode='group';out.currentHuntingMode=raw?.currentHuntingMode==='single'?'group':raw?.currentHuntingMode||'group';if(raw?.explorationRecovery!==undefined){const r=raw.explorationRecovery;if(!r||['minimumHpRatio','minimumMpRatio'].some(k=>typeof r[k]!=='number'||!Number.isFinite(r[k])||r[k]<0||r[k]>1))throw Error('探索恢復門檻無效');out.explorationRecovery=copy(r);}return out;};
+ packParty=function(){const out=oldPack();if(party){delete out.huntingMode;delete out.currentHuntingMode;if(party.explorationRecovery)out.explorationRecovery=copy(party.explorationRecovery);}return out;};
+ validateParty=function(raw){const out=oldPartyValidate(raw);/* v0.215: the hunting mode (single/group) is gone; older saves drop huntingMode and currentHuntingMode. */delete out.huntingMode;delete out.currentHuntingMode;if(raw?.explorationRecovery!==undefined){const r=raw.explorationRecovery;if(!r||['minimumHpRatio','minimumMpRatio'].some(k=>typeof r[k]!=='number'||!Number.isFinite(r[k])||r[k]<0||r[k]>1))throw Error('探索恢復門檻無效');out.explorationRecovery=copy(r);}return out;};
  const baseSupplyDetail=supplyDetail;supplyDetail=function(item){let text=baseSupplyDetail(item);if(item?.type==='imbue')text=text.replace(/持續 \d+(?:\.\d+)? ?(?:戰鬥)? ?回合/g,'持續 '+item.timing.durationSeconds+' 秒');return text;};
  const baseSupplyDetails=supplyBuffDetails;supplyBuffDetails=function(b,k){const d=baseSupplyDetails(b,k);if(k==='imbue'){d.time=Number(b.remainingTurns.toFixed(1))+' / '+Number(b.totalTurns.toFixed(1))+' 秒';d.clock='戰鬥秒數';}return d;};
  const baseSupplyStatus=supplyStatus;supplyStatus=function(h){return baseSupplyStatus(h).replace(/回合/g,'秒');};
  globalThis.setRecoveryThresholds=function(hp,mp){if(!party||![hp,mp].every(x=>Number.isFinite(x)&&x>=0&&x<=1))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.explorationRecovery={minimumHpRatio:hp,minimumMpRatio:mp};save();render();return true;};
- globalThis.setHuntingMode=function(mode){if(!party||!['single','group'].includes(mode))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.huntingMode=mode;save();render();return true;};
  globalThis.EmberwildSecondsCombat={active:true,maxEncounterSize:MAX_FOES,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
-  encounterSize(){party.currentHuntingMode=party.huntingMode||'group';if(party.currentHuntingMode==='single')return 1;const weights=config().groupWeights,total=weights.reduce((a,b)=>a+b,0);let pick=Math.random()*total;for(let i=0;i<weights.length;i++)if((pick-=weights[i])<0)return i+3;return 5;},
+  encounterSize(){return Schema.encounterCount(config().encounterByTeamSize,heroes().length,Math.random);},
+  // v0.215: the encounter size range for the deployed team (seconds-schema encounterByTeamSize).
+  encounterRange(){return Schema.encounterRange(config().encounterByTeamSize,heroes().length);},
   validateSnapshot(raw){if(raw!==null){if(raw.phase!==undefined&&!['combat','recovery'].includes(raw.phase)||raw.recoveryUntil!==undefined&&(!Number.isFinite(raw.recoveryUntil)||raw.recoveryUntil<0)||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
   // Enemy-death passives cut the remaining cooldowns by their rule: fixed seconds, or a percent of each skill's reuse cooldown.
   reduceCooldowns(h,points){if(!engine?.actors.some(a=>a.definition.id===key(h)))return;const r=cdr().sources.enemyDeath,a=engine.find(key(h)),now=engine.now;

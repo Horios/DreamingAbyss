@@ -29,22 +29,6 @@
       "sellPrice": 25
     },
     {
-      "key": "紅色草",
-      "sellPrice": 0
-    },
-    {
-      "key": "小蟲",
-      "sellPrice": 0
-    },
-    {
-      "key": "藥水瓶",
-      "sellPrice": 0
-    },
-    {
-      "key": "清水",
-      "sellPrice": 0
-    },
-    {
       "key": "黏稠凝膠",
       "sellPrice": 1
     },
@@ -478,6 +462,10 @@
     },
     {
       "key": "上古冥視之瞳",
+      "sellPrice": 2
+    },
+    {
+      "key": "寶石粉塵",
       "sellPrice": 2
     }
   ]

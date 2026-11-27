@@ -68,7 +68,7 @@
     for(const entry of entries){if(!groups.has(entry.level))groups.set(entry.level,[]);groups.get(entry.level).push(entry);}
     const tile=entry=>{
       const {kind,i,sk,key,name,level}=entry,isCore=kind==='core',learned=current&&!!(isCore?h.skills:h.supportLevels)[i],slots=isCore?(sk[1]==='proc'?h.procSlots:h.active):h.supportSlots,equipped=learned&&slots.includes(i),unlocked=!!T.build().permanent.unlocks[key],selected=selectedTeamSkill===key;
-      const category=isCore?(sk[1]==='proc'?'普攻觸發':'主動'):'輔助',status=equipped?'本隊已裝配':learned?'本隊已學習':unlocked?'已永久解鎖':'尚未永久解鎖',kindClass=isCore?(sk[1]==='proc'?'proc':'active'):'support';
+      const category=isCore&&sk[1]==='proc'?'普攻觸發':'主動',status=equipped?'本隊已裝配':learned?'本隊已學習':unlocked?'已永久解鎖':'尚未永久解鎖',kindClass=isCore?(sk[1]==='proc'?'proc':'active'):'support';
       return `<button type="button" class="skill-icon-tile team-skill-tile skill-kind-${kindClass} ${learned?'learned':'locked'} ${selected?'selected':''}" data-team-skill="${key}" aria-label="${esc(name)}" aria-pressed="${selected}" title="${esc(name)} · 精通 Lv${level} · ${category} · ${status}" onclick="selectTeamSkill('${kind}',${i})">${__EMBERWILD_MASTERY_UI.skillIcon(job,kind,i)}<span class="skill-icon-status" aria-hidden="true">${equipped?'●':learned?'✓':''}</span></button>`;
     };
     const selected=entries.find(x=>x.key===selectedTeamSkill);

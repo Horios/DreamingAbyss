@@ -13,7 +13,7 @@ test('standard shop stages, buying early, level gates, quantities, folding and r
  r.run("setEquipmentShopFold('equipment_lv20',false)");assert.match(r.run('shopView()'),/equipment_lv20[^]*?aria-expanded="false"/);
  r.run("setEquipmentShopFold('equipment_lv1',true)");assert.match(r.run('shopView()'),/equipment_lv1[^]*?aria-expanded="true"/);
  const before=json(r,'({gold:state.gold,bag:state.bag.length})');assert.equal(r.run("buyEquipmentShopOffer('equipment_lv20/job0-slot0-form0',2)"),true);
- const g=json(r,'state.bag.at(-1)');assert.equal(g.equipmentLevel,20);assert.equal(g.powerTier,5);assert.equal(g.baseSnapshot.mult,1);assert.deepEqual(g.affix,[]);assert.equal(g.prefixId,'');assert.equal(g.suffixId,'');
+ const g=json(r,'state.bag.at(-1)');assert.equal(g.equipmentLevel,20);assert.equal(g.powerTier,5);assert.equal(g.baseSnapshot.mult,1);assert.deepEqual(g.affix,[]);assert.equal(g.prefixId,undefined);assert.equal(g.suffixId,undefined);
  assert.equal(r.run('state.gold'),before.gold-18000);assert.equal(r.run('state.bag.length'),before.bag+2);
  // v0.161: no level gate; gear bought early can be worn at once.
  assert.equal(r.run('eligibleWearers(state.bag.at(-1)).length'),1);
@@ -23,8 +23,9 @@ test('standard shop stages, buying early, level gates, quantities, folding and r
  assert.deepEqual(r.errors,[]);
 });
 test('shop bases for every class/slot are deterministic and a blank item can be enhanced and rerolled without changing base/T/level',()=>{
- const r=game();const result=json(r,`(()=>{const out=[];for(const entry of seed.shopSettings.equipmentStages[0].entries){const a=createEquipmentShopGear('equipment_lv1',entry.id),b=createEquipmentShopGear('equipment_lv1',entry.id);out.push({slot:a.slot,job:a.job,affix:a.affix.length,same:JSON.stringify(a.baseSnapshot)===JSON.stringify(b.baseSnapshot),t:a.powerTier});}state.gold=100000;state.dust=1000;state.ore=1000;buyEquipmentShopOffer('equipment_lv1/job0-slot0-form0');const g=state.bag.at(-1);globalThis.gearUnderTest=g;const before={base:JSON.stringify(g.baseSnapshot),t:g.powerTier,level:gearRequiredLevel(g)};reroll(g.id);const draft=inlineAffixDrafts.get(affixDraftKey(g));resolveInlineAffix(g.id,true);const cost=rerollCostFor(g);enhance(g.id);return {out,before,after:{base:JSON.stringify(g.baseSnapshot),t:g.powerTier,level:gearRequiredLevel(g)},plus:g.plus,affixes:g.affix.length,draft:draft.length,cost,roundTrip:validateParty(packParty()).members[0].bag.at(-1).baseSnapshot};})()`);
- assert.equal(result.out.length,28);for(let job=0;job<4;job++)for(let slot=0;slot<4;slot++)assert(result.out.some(r=>r.job===job&&r.slot===slot));assert(result.out.every(r=>r.same&&r.affix===0&&r.t===5));assert.deepEqual(result.before,result.after);assert.equal(result.plus,1);assert.equal(result.affixes,2);assert.equal(result.draft,2);assert.equal(result.cost.dust,10);assert.equal(JSON.stringify(result.roundTrip),result.before.base);
+ const r=game();const result=json(r,`(()=>{const out=[];for(const entry of seed.shopSettings.equipmentStages[0].entries){const a=createEquipmentShopGear('equipment_lv1',entry.id),b=createEquipmentShopGear('equipment_lv1',entry.id);out.push({slot:a.slot,job:a.job,jobs:gearWearableJobs(a),affix:a.affix.length,same:JSON.stringify(a.baseSnapshot)===JSON.stringify(b.baseSnapshot),t:a.powerTier});}state.gold=100000;state.dust=1000;state.ore=1000;buyEquipmentShopOffer('equipment_lv1/job0-slot0-form0');const g=state.bag.at(-1);globalThis.gearUnderTest=g;const before={base:JSON.stringify(g.baseSnapshot),t:g.powerTier,level:gearRequiredLevel(g)};reroll(g.id);const draft=inlineAffixDrafts.get(affixDraftKey(g));resolveInlineAffix(g.id,true);const cost=rerollCostFor(g);enhance(g.id);return {out,before,after:{base:JSON.stringify(g.baseSnapshot),t:g.powerTier,level:gearRequiredLevel(g)},plus:g.plus,affixes:g.affix.length,draft:draft.length,cost,roundTrip:validateParty(packParty()).members[0].bag.at(-1).baseSnapshot};})()`);
+ // v0.215: 18 general templates; 布袍 is the priest's armor, so every class has a wearable entry in every slot.
+ assert.equal(result.out.length,18);for(let job=0;job<4;job++)for(let slot=0;slot<4;slot++)assert(result.out.some(r=>r.jobs.includes(job)&&r.slot===slot),job+':'+slot);assert(result.out.every(r=>r.same&&r.affix===0&&r.t===5));assert.deepEqual(result.before,result.after);assert.equal(result.plus,1);assert.equal(result.affixes,2);assert.equal(result.draft,2);assert.equal(result.cost.dust,10);assert.equal(JSON.stringify(result.roundTrip),result.before.base);
  r.run("state.consumables.power_tier_reroll=1;rerollEquipmentPowerTier(gearUnderTest.id)");assert.equal(r.run('state.consumables.power_tier_reroll'),1);assert.equal(r.run('gearUnderTest.powerTier'),5);
  assert.deepEqual(r.errors,[]);
 });
@@ -39,7 +40,9 @@ test('owned generated bases and legacy equipment stay unchanged through balance 
  // Legacy armor (equipment LV46, +4): refinement adds at least one integer point per level since 377bcf0,
  // hp ceil(1+45*.08)=5 and def ceil(.2+45*.015)=1 per level over the 158/43 base snapshot.
  // v0.180: enhancement multiplies the base snapshot by the cumulative bonus; +4 is +22%: 158×1.22≈193, 43×1.22≈52.
- assert.deepEqual(out.before,{hp:193,atk:0,def:52});assert.deepEqual(out.after,out.before);assert.deepEqual(out.reloaded,out.before);assert.equal(out.snapshot,out.base);assert.deepEqual(r.errors,[]);
+ // v0.215: a legacy item without a base snapshot takes the current template on first read; 鐵甲 has no +15% HP / +25% DEF
+ // (the old 重型板甲 had), so the snapshot is 138/34 and +4 gives 168/41. Owned items with a snapshot keep their base.
+ assert.deepEqual(out.before,{hp:168,atk:0,def:41});assert.deepEqual(out.after,out.before);assert.deepEqual(out.reloaded,out.before);assert.equal(out.snapshot,out.base);assert.deepEqual(r.errors,[]);
 });
 test('legacy kill/first-boss records unlock shops once; new per-enemy kills do not clear an unfinished boss stage',()=>{
  const r=game();r.run("globalThis.old=packParty();delete old.mapClears;delete old.equipmentShopUnlocked;old.etherBossClaims=['1:0'];old.achievements.bossKills[3]=1;loadParty(old)");assert.deepEqual(json(r,'__EMBERWILD_EQUIPMENT_SHOP.currentOffers().map(s=>s.level)'),[20,10,1]);

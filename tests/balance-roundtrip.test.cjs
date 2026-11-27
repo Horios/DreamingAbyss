@@ -23,7 +23,6 @@ const fields=[
  ['shopSettings.randomOffers.entries.0.unitPrice',n=>12+n],
  ['shopSettings.fixedOffers.entries.0.quantity',n=>n],
  ['starterPacks.0.0.plus',n=>n],
- ['equipmentPowerSystem.prefixes.0.chanceByTier.0',n=>n],
  ['statusDefinitions.0.modifiers.0.value',n=>.1+n/100],
  ['statusDefinitions.0.uses',n=>n],
  ['companions.0.initialStats.hp',n=>47+n],

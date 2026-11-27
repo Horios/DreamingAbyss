@@ -10,7 +10,10 @@ function assertLegacyRetained(actual,legacyRows,system){
  const byId=new Map(actual.map(p=>[p.id,p]));
  for(const old of legacyRows){
   const p=byId.get(old.id);assert(p,'plan '+old.id+' remains');
-  for(const field of ['id','name','job','equipped','companions','enlisted'])assert.deepEqual(p[field],old[field],old.id+' '+field+' retained');
+  for(const field of ['id','name','job','companions','enlisted'])assert.deepEqual(p[field],old[field],old.id+' '+field+' retained');
+  // v0.215: armor became class-specific (鐵甲 warrior, 布袍 mage/priest, 皮衣 archer). One old universal armor worn in plans
+  // of different armor classes follows the current wearer; the other plan takes it off. Every other position is retained.
+  assert.deepEqual(p.equipped.map((id,i)=>i===1&&id===null?old.equipped[i]:id),old.equipped,old.id+' equipped retained');
   if(old.job===null)continue;
   assert(p.skills.length>=old.skills.length,old.id+' core pool never shrinks');
   assert(p.supportLevels.length>=old.supportLevels.length,old.id+' support pool never shrinks');

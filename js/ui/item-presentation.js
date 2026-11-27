@@ -26,7 +26,7 @@
     return true;
   };
   globalThis.itemDisplayOptionsView=function(){
-    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">統一套用於背包、商店、信箱、強化、製作與生活技能等道具清單。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
+    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">套用於商店、信箱、強化與製作等道具清單。背包固定使用圖示格子。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
   };
   addEventListener('storage',event=>{
     if(event.key!==displayStorageKey&&event.key!==null)return;
@@ -60,7 +60,7 @@
     if(kind==='equipment'&&g?.slot===0)glyph=({staff:'wand-sparkles',holyStaff:'wand-sparkles',bow:'bow-arrow',crossbow:'crosshair',axe:'axe',hammer:'hammer',grimoire:'book-open'}[g.weaponType]||glyph);
     if(kind==='item')glyph=key==='level_scroll'||key.startsWith('companion-ticket-')||item?.type==='timedBoost'?'ticket':['healPotion','imbue','ward','elementTonic'].includes(item?.type)?'flask-round':item?.type==='gearTierReroll'?'sparkles':glyph;
     const virtual=virtualItem(kind,key);if(virtual)glyph=virtual.glyph||glyph;
-    if(kind==='material')glyph=({'鍛鐵':'anvil','粉塵':'sparkles','以太鍛鐵':'anvil','光輝碎塊':'sparkles','紅色草':'leaf','紅色草泥':'flask-conical','清水':'droplet','藥水瓶':'flask-round','小蟲':'bug'})[key]||glyph;
+    if(kind==='material')glyph=({'鍛鐵':'anvil','粉塵':'sparkles','以太鍛鐵':'anvil','光輝碎塊':'sparkles',})[key]||glyph;
     const svg=globalThis.__EMBERWILD_INVENTORY_ICON?.(kind,key,'lucide:'+glyph,{size:32})||globalThis.__EMBERWILD_SKILL_ICONS?.svgFor('lucide:'+glyph,[],{size:32})||fallback;
     return globalThis.__EMBERWILD_GEAR_SKILL_ICON?.(g,svg)||svg;
   }
@@ -90,7 +90,6 @@
     if(o.lockedReason)return `<span class="shop-inline-controls"><span class="small">${price.toLocaleString()} 金幣 · ${attr(o.lockedReason)}</span></span>`;
     let action='';
     if(o.shopType==='equipment')action=`<input type="number" min="1" max="100" step="1" value="1" aria-label="購買份數"><button onclick="buyEquipmentShopOffer(${id},Number(this.previousElementSibling.value))" ${off}>購買</button>`;
-    else if(o.shopType==='life')action=`<button onclick="buyLifeMaterial(${id},1)" ${off}>購買 1 份</button><button onclick="buyLifeMaterial(${id},10)" ${o.sold||state.gold<(globalThis.lifeMaterialPurchasePrice?.(o.shopId,10)??price*10)?'disabled':''}>購買 10 份</button>`;
     else if(['market','fixed'].includes(o.shopType))action=`<button onclick="${o.shopType==='market'?'buyMarketOffer':'buyFixedShopOffer'}(${id})" ${off}>${o.sold?attr(o.soldLabel||'已售完'):'購買'}</button>`;
     return `<span class="shop-inline-controls"><span class="small">${attr(o.detailLabel||'商品數量')} ${attr(o.detailQuantity??o.count??1)} · ${price.toLocaleString()} 金幣</span><span class="shop-inline-actions">${action}</span></span>`;
   }
@@ -151,6 +150,8 @@
     if(kind==='item'&&definition(kind,key))return `<div class="actions"><button onclick="closeItemDetails();useInventoryItem(${k},${hero})">${isHealPotion(definition(kind,key))?'自動喝水設定':key==='power_tier_reroll'?'前往強化':'使用'}</button><input id="item-detail-quantity" type="number" min="1" value="1" max="${__EMBERWILD_INVENTORY_STOCK.count(key)}" aria-label="賣出數量"><button onclick="itemDetailsAction(()=>sellInventoryItem(${k},document.getElementById('item-detail-quantity').value))">賣出</button><button onclick="itemDetailsAction(()=>sellInventoryItem(${k},__EMBERWILD_INVENTORY_STOCK.count(${k})))">全部賣出</button></div>`;
     return '';
   }
+  // v0.211 grid bag: the bag's detail pane reuses the same icon, information and actions as the item dialog.
+  globalThis.__EMBERWILD_ITEM_PRESENTATION={icon,info,controls,name};
   function dialog(){let d=document.getElementById('item-detail-dialog');if(!d){d=document.createElement('dialog');d.id='item-detail-dialog';document.body.appendChild(d);}return d;}
   function renderDetail(){const d=dialog();if(selection)d.innerHTML=`<div class="item-detail-top"><span class="item-detail-art">${icon(selection.kind,selection.key,selection.g)}</span><button onclick="closeItemDetails()" aria-label="關閉道具詳細資料">關閉</button></div>${info(selection)}${controls(selection)}`;}
   globalThis.openItemSlotDetails=function(node){const ref=refFromNode(node);if(ref.context!=='inventory'||!ref.kind)return false;selection=ref;hideTooltip();renderDetail();const d=dialog();if(!d.open)d.showModal();};

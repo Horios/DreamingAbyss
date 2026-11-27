@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 66,
+  "dataRevision": 78,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "81d05093959fc908f5d0dd25e1a7077e9c1af3a8a010d8a7972e2c46056f802c",
-    "bytes": 1425307
+    "sha256": "c31b8505eaa917ad67e61e40c1319ac759f3c8e0a2f982809157897e72f41b8a",
+    "bytes": 1408164
   },
   "layout": {
     "": [
@@ -36,14 +36,14 @@
       "companionTokens",
       "teamSettings",
       "schemaVersion",
-      "lifeSkills",
       "inventoryIcons",
       "iconColorTemplates",
       "story",
       "navigation",
       "skillSystem",
       "wishingLake",
-      "tutorials"
+      "tutorials",
+      "crafting"
     ],
     "balanceSettings": [
       "progression",
@@ -101,9 +101,9 @@
       "file": "meta/reference.json",
       "source": "_reference",
       "present": true,
-      "version": 2,
-      "sha256": "341c926a187e4834979f7a1fa49e06062869312b7ef43b705432a8014c93f5b8",
-      "bytes": 14593,
+      "version": 4,
+      "sha256": "df815942bcc1c4e5776558f779cfe1f398e2fb28745814bb91321533784c1b2f",
+      "bytes": 14301,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -115,9 +115,9 @@
       "file": "meta/notes.json",
       "source": "notes",
       "present": true,
-      "version": 2,
-      "sha256": "6ab447a320ef9b98f494f966e2fca50b49372b85c025f141a9d8c43a240cbe3b",
-      "bytes": 11106,
+      "version": 4,
+      "sha256": "9ed61ff89413f1afbb2a08608b508a0904367dec048f33e62b1b744df3f13431",
+      "bytes": 10225,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -159,9 +159,9 @@
       "file": "interface/navigation.json",
       "source": "navigation",
       "present": true,
-      "version": 3,
-      "sha256": "67637132f73dedda0179738cb9095da83b8b1b70abf096f56df0bbb81f6bc066",
-      "bytes": 2660,
+      "version": 4,
+      "sha256": "d2a132e92b2e58c576b3f79d31af49a744a83fba12a6f7eb5aa4c3186e0ee497",
+      "bytes": 2507,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -213,9 +213,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 10,
-      "sha256": "b5dfc0b35b263cd29be79563ef4e9aa4db730bba026c42f3b52579189adb2fc7",
-      "bytes": 235575,
+      "version": 15,
+      "sha256": "b9e95dc1ba81c160bc4cc2445b9ad7e0d8449cd780e9000eeea874e4a86d9330",
+      "bytes": 262548,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -247,9 +247,9 @@
       "file": "combat/rules.json",
       "source": "balanceSettings.combat",
       "present": true,
-      "version": 5,
-      "sha256": "7b6494b8410d28ae0a325da4fb38b41dba847351fd8564ddc9511f32e1b60ccd",
-      "bytes": 2858,
+      "version": 6,
+      "sha256": "6fa85b45caf256e3a916e6a69f5ad18b2b303d436b4fc7daaf377967623b1c3b",
+      "bytes": 3298,
       "dependsOn": [
         "characters/companion-settings",
         "combat/skills",
@@ -272,9 +272,9 @@
       "file": "combat/skill-settings.json",
       "source": "balanceSettings.skills",
       "present": true,
-      "version": 6,
-      "sha256": "a430042f7f98ba05150369a500050333c24426543b7d2b3dd41c26f9c9292723",
-      "bytes": 939,
+      "version": 7,
+      "sha256": "fc7bd10e017d4fb74c790d182c73fab9c45c71ce6745a07a460f937e0d6effbd",
+      "bytes": 1033,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -435,9 +435,9 @@
       "file": "equipment/forms.json",
       "source": "equipmentForms",
       "present": true,
-      "version": 4,
-      "sha256": "a993cfa5249c5e9eb0507ea73577e0279fc4f0ba149fcd4ebfe22e03e2033f0c",
-      "bytes": 11959,
+      "version": 7,
+      "sha256": "97419db12b453a4079c79a912d1669da74ff6c64db96a2f941d210410f7f1be2",
+      "bytes": 7287,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -466,9 +466,9 @@
       "file": "equipment/power-system.json",
       "source": "equipmentPowerSystem",
       "present": true,
-      "version": 2,
-      "sha256": "f7e27c09b2f0da2a9873fd048336f0349f140ba1455f61620a8f4b40f0fe24e1",
-      "bytes": 21167,
+      "version": 3,
+      "sha256": "505dc3e778a81959e425fcec9885eea13999fbb746b4497d164772a3179e8e1e",
+      "bytes": 11401,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -482,9 +482,9 @@
       "file": "equipment/settings.json",
       "source": "balanceSettings.equipment",
       "present": true,
-      "version": 6,
-      "sha256": "d3afd1bc558a426adb6adeb0b0340341596ec3e7e70b467123f1e833e482e280",
-      "bytes": 8231,
+      "version": 7,
+      "sha256": "032bfcfcd78eb760b9b1200689dfc9f11abb0f36f456e680eaf0c8c9a8819033",
+      "bytes": 8100,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -510,7 +510,6 @@
         "seconds-timing",
         "drop-references",
         "wishing-lake",
-        "life-skills",
         "tutorials",
         "story",
         "inventory-catalogue"
@@ -522,9 +521,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 8,
-      "sha256": "53cc3c249b6a1d630aa022aec430098c665631cb1a3872ef4f41ec7b96ad1387",
-      "bytes": 49992,
+      "version": 13,
+      "sha256": "2bf0bb38cc9d50f38320f21037452472789235235227034622335add4e033f3e",
+      "bytes": 48239,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",
@@ -538,8 +537,8 @@
         "interface/presentation",
         "items/items",
         "items/starter-packs",
+        "systems/crafting",
         "systems/economy",
-        "systems/life-skills",
         "systems/quests",
         "systems/shop",
         "world/drops",
@@ -558,9 +557,9 @@
       "file": "items/starter-packs.json",
       "source": "starterPacks",
       "present": true,
-      "version": 1,
-      "sha256": "f37b330aaaaa32b5411bf21bc4dd9222b6a28161bdd6fb82de596b550ae040a5",
-      "bytes": 7115,
+      "version": 4,
+      "sha256": "14858d56a98f793011aa8690ee42b819f35974ee6fd36f51e95bce28cb3151fe",
+      "bytes": 6235,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -573,9 +572,9 @@
       "file": "systems/economy.json",
       "source": "balanceSettings.economy",
       "present": true,
-      "version": 1,
-      "sha256": "014747bd189f8babad7fad42ef8464c91b964439cd89e93ae3266ffaea25c498",
-      "bytes": 7814,
+      "version": 4,
+      "sha256": "b31ec5703dc47e489693c10073a8b462931499fc2e379b5fcc8e66ab0efc5cb4",
+      "bytes": 7643,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -603,9 +602,9 @@
       "file": "systems/quests.json",
       "source": "balanceSettings.quests",
       "present": true,
-      "version": 2,
-      "sha256": "bffb36df167d83eacfdc052ed864ed6cc64a988539d399c694fa5f910f242087",
-      "bytes": 10276,
+      "version": 3,
+      "sha256": "5af239fb5ef7a61d7a92a84cc05ce5668a41482fe1f6cd37370e9e50fece12e9",
+      "bytes": 9215,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -619,14 +618,14 @@
       "file": "systems/story.json",
       "source": "story",
       "present": true,
-      "version": 22,
-      "sha256": "631751b5003fc83389524d0535918fba827bd4203da90a255ebcbeed0c6ba5a5",
-      "bytes": 36512,
+      "version": 24,
+      "sha256": "e4ea8fedb5221a299151e0f15f08d2fde6592d743b67b5cbf0984c2920b1cad7",
+      "bytes": 33870,
       "dependsOn": [
         "combat/skills",
         "equipment/forms",
         "items/items",
-        "systems/life-skills",
+        "systems/crafting",
         "world/maps",
         "world/monsters"
       ],
@@ -642,9 +641,9 @@
       "file": "systems/shop.json",
       "source": "shopSettings",
       "present": true,
-      "version": 3,
-      "sha256": "12b26467091df6abfda2ff5e3747cff90635a8b3ba537c5eca75da3e9385a1ba",
-      "bytes": 53472,
+      "version": 5,
+      "sha256": "6e3586fe694039924531770323f19ccdb267aae81a85b0648c42ede7d33ee0ed",
+      "bytes": 37422,
       "dependsOn": [
         "items/items",
         "world/maps"
@@ -655,20 +654,18 @@
       ]
     },
     {
-      "id": "systems/life-skills",
-      "title": "生活技能",
-      "file": "systems/life-skills.json",
-      "source": "lifeSkills",
+      "id": "systems/crafting",
+      "title": "製作",
+      "file": "systems/crafting.json",
+      "source": "crafting",
       "present": true,
       "version": 1,
-      "sha256": "b17f90d09fa268a9a5b4eb4cd6c61a4f4c985e3d5bd679c1caa70ae73aa123b4",
-      "bytes": 1514,
-      "dependsOn": [
-        "items/items"
-      ],
+      "sha256": "e126320c5d6a6c26026515d8fa406af06cb1d51b7404a37ce8a084311ab6a155",
+      "bytes": 74,
+      "dependsOn": [],
       "validators": [
         "field-rules",
-        "life-skills",
+        "crafting",
         "story",
         "inventory-catalogue"
       ]
@@ -679,9 +676,9 @@
       "file": "systems/wishing-lake.json",
       "source": "wishingLake",
       "present": true,
-      "version": 1,
-      "sha256": "7ed956186e2c6c3f80bae8498be22bbd801035bd03b5216d5a5dc4b561cbb5ff",
-      "bytes": 3428,
+      "version": 2,
+      "sha256": "ee7cd166b4fbb6ea669081443f844b50b28af2b7cfd463e26e5ebf9772617abe",
+      "bytes": 2698,
       "dependsOn": [
         "characters/companions",
         "characters/progression",
@@ -702,9 +699,9 @@
       "file": "systems/tutorials.json",
       "source": "tutorials",
       "present": true,
-      "version": 12,
-      "sha256": "920f42cab90e4981a1c473519404e655e1c3b25d7c6611fe909e17f2589f44ba",
-      "bytes": 61785,
+      "version": 14,
+      "sha256": "b6bb73b44f74cdf5131d733efd48d5337c45b32b24a8e2b172840100a27c9130",
+      "bytes": 57213,
       "dependsOn": [
         "items/items",
         "systems/story"

@@ -4,7 +4,7 @@
 .layout>main>.page-owner-panel:has(.compact-inventory-panel){padding:0}
 .layout>main>.game-subtabs,.layout>main>.inventory-category-tabs,.layout>main>.shop-category-tabs,.layout>main>.team-plan-panel{margin:0}
 .layout>main>.heading>div,.companion-management-page>.heading>div{min-width:0;overflow-wrap:anywhere}
-.layout>main:has(>.story-list,>.statistics-layout,>.companion-management-page,>.life-skills-page,>.cards)>*{flex-shrink:0}
+.layout>main:has(>.story-list,>.statistics-layout,>.companion-management-page,>.cards)>*{flex-shrink:0}
 .layout>main>.story-list{margin-top:0}
 .layout>main>.cards{gap:var(--card-gap)}
 .layout>main>.cards>.card{max-height:none;overflow:visible;padding:var(--panel-padding)}

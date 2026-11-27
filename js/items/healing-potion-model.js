@@ -22,7 +22,7 @@
  }
  function migrateDrops(settings){const entries=settings?.drops?.entries;if(!Array.isArray(entries))return;
   const old=entries.findIndex(x=>x.id==='potion_all'&&x.type==='potion');if(old<0)return;
-  // v0.206: monsters no longer drop healing potions; the shop and alchemy remain their sources. The legacy rule is removed.
+  // v0.206: monsters no longer drop healing potions; the shop remains an existing source. The legacy rule is removed.
   entries.splice(old,1);
  }
  function migrate(doc){migrateItems(doc?.items);migrateDrops(doc?.balanceSettings);return doc;}

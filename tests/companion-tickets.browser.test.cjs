@@ -21,11 +21,11 @@ test('the caravan ticket brings 洛恩 through a spotlight guide in the bag; the
   assert.equal(await page.evaluate(()=>[!!partyMember(10),companionTicketCount(10)].join()),'false,1');
   await page.waitForSelector('[data-tutorial-notice="recruit_lorne"]');
   await page.evaluate(()=>setTab('equipment'));
-  await wait(page,'items');await page.click(`main [onclick="setInventoryCategory('items')"]`);
-  await wait(page,'ticket');assert.match(await page.locator('main [data-companion-ticket="10"]').innerText(),/夥伴招募券 - 洛恩/);
-  await page.click('main [data-companion-ticket="10"] .item-slot');
-  await wait(page,'use');assert.match(await page.locator('#item-detail-dialog').innerText(),/劍術/,'the ticket describes 洛恩');
-  await page.click('#item-detail-dialog button:has-text("使用招募券")');
+  await wait(page,'items');await page.click('main [data-bag-tab="special"]');
+  await wait(page,'ticket');assert.match(await page.locator('main .bag-cell[data-bag-ref^="t:10:"]').getAttribute('aria-label'),/夥伴招募券 - 洛恩/);
+  await page.click('main .bag-cell[data-bag-ref^="t:10:"]');
+  await wait(page,'use');assert.match(await page.locator('.bag-detail').innerText(),/劍術/,'the ticket describes 洛恩');
+  await page.click('.bag-detail button:has-text("使用招募券")');
   await page.waitForFunction(()=>!__EMBERWILD_TUTORIAL.status().active);
   assert.equal(await page.evaluate(()=>[!!partyMember(10),companionTicketCount(10),party.tutorials.records.recruit_lorne?.completed].join()),'true,0,true');
   // A second ticket for a companion already in the party turns into gold.

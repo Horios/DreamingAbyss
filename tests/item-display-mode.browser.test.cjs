@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),key='emberwild-item-display';
 
 async function start(page){
   await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();});
-  await page.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);});
+  await page.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);addGear(gear(1,0,0,0));});/* v0.211: the workshop picker needs one bag item to show a slot */
 }
 
 test('Item interfaces share one persisted icon-name or name-only list mode',async()=>{
@@ -13,10 +13,10 @@ test('Item interfaces share one persisted icon-name or name-only list mode',asyn
     await start(p);
     assert.equal(await p.locator('html').getAttribute('data-item-display'),'icon-name');
     for(const setup of [
-      ()=>{setTab('equipment');setInventoryCategory('equipment');setGearInventoryFilter('worn','all');},/* v0.184: a new character's gear is all worn */
+      /* v0.211: the bag is an icon grid and keeps its slots in both modes. */
       ()=>{setTab('forge');toggleWorkshopPicker(true);},/* v0.194: the workshop lists items in its picker */
       ()=>setTab('shop'),
-      ()=>setTab('lifeSkills')
+      ()=>setTab('crafting')
     ]){
       await p.evaluate(setup);
       const slot=p.locator('main .item-slot:visible').first();

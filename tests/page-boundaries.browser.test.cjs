@@ -15,7 +15,7 @@ test('Chromium: team plans and worn companion tokens have one management page',a
  const g=await openRuntime(root),p=g.page;
  try{
   await startParty(p);
-  for(const tab of ['battle','roster','partnerRoster','character','skills','equipment','worn','forge','bossCraft']){
+  for(const tab of ['battle','roster','partnerRoster','character','skills','equipment','worn','forge','crafting']){
    await p.evaluate(t=>setTab(t),tab);
    assert.equal(await p.locator('.team-plan-panel').count(),tab==='roster'?1:0,tab+' team plans');
    assert.equal(await p.locator('.companion-token-panel').count(),tab==='worn'?1:0,tab+' token management');
@@ -77,10 +77,11 @@ test('Chromium: protagonist pages stay independent of companion selection and cl
   await p.evaluate(()=>{pageHeroSelection.set('skills',10);state=partyMember(10);setTab('skills');});
   assert.equal(await p.locator('.page-hero-tabs').count(),0);
   const builds=await p.evaluate(buildSnapshot),before=await p.evaluate(()=>({job:playerHero().job,player:structuredClone(playerHero().skillLoadout),companion:structuredClone(partyMember(10).skillLoadout)}));
-  await p.getByRole('button',{name:'技能圖鑑'}).click();
-  assert.match(await p.locator('#modal h2').innerText(),new RegExp(await p.evaluate(()=>CLASSES[playerHero().job].name)+'技能圖鑑'));
-  assert.equal(await p.evaluate(()=>[...document.querySelectorAll('#modal [data-skill-id]')].every(n=>__EMBERWILD_SKILLS.byId(n.dataset.skillId).jobs.includes(playerHero().job))),true,'only protagonist class skills');
-  await p.evaluate(()=>closeModal());
+  await p.getByRole('tab',{name:'技能圖鑑'}).click();
+  // v0.214: the catalog is a page of the skill tab (data-skill-page-view="catalog"), headed by the protagonist's class.
+  const catalog=p.locator('#app [data-skill-page-view="catalog"]');
+  assert.match(await catalog.locator('.skill-page-head').innerText(),new RegExp(await p.evaluate(()=>CLASSES[playerHero().job].name)));
+  assert.equal(await p.evaluate(()=>[...document.querySelectorAll('#app [data-skill-page-view="catalog"] [data-skill-pick]')].every(n=>__EMBERWILD_SKILLS.byId(n.dataset.skillPick).jobs.includes(playerHero().job))),true,'only protagonist class skills');
   assert.deepEqual(await p.evaluate(buildSnapshot),builds);assert.deepEqual(await p.evaluate(()=>({job:playerHero().job,player:playerHero().skillLoadout,companion:partyMember(10).skillLoadout})),before);
   assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
@@ -91,8 +92,8 @@ test('Chromium: protagonist class catalog excludes companion-exclusive and monst
  try{
   await startParty(p);
   // Skill system v1: companion-exclusive definitions (partnerId) never appear in the protagonist's 技能圖鑑.
-  await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'技能圖鑑'}).click();
-  const ids=await p.locator('#modal [data-skill-id]').evaluateAll(n=>n.map(e=>e.dataset.skillId));
+  await p.evaluate(()=>setTab('skills'));await p.getByRole('tab',{name:'技能圖鑑'}).click();
+  const ids=await p.locator('#app [data-skill-page-view="catalog"] [data-skill-pick]').evaluateAll(n=>n.map(e=>e.dataset.skillPick));
   const rows=await p.evaluate(ids=>ids.map(id=>{const sk=__EMBERWILD_SKILLS.byId(id);return {id,partner:sk.partnerId??null,jobs:sk.jobs,disabled:!!sk.disabled,scope:sk.usageScope||null};}),ids);
   assert(rows.length>0);for(const r of rows){assert.equal(r.partner,null,r.id);assert(r.jobs.includes(0),r.id);assert.equal(r.disabled,false,r.id);assert.notEqual(r.scope,'monster',r.id);}
   const exclusive=await p.evaluate(()=>__EMBERWILD_SKILLS.system().definitions.filter(sk=>sk.partnerId!=null&&sk.jobs.includes(0)).map(sk=>sk.id));

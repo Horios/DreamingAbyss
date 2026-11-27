@@ -42,7 +42,7 @@
   ['systems/quests','委託與支線','balanceSettings','quests'],
   ['systems/story','任務與劇情','', 'story'],
   ['systems/shop','商店','', 'shopSettings'],
-  ['systems/life-skills','生活技能','', 'lifeSkills'],
+  ['systems/crafting','製作','', 'crafting'],
   ['systems/wishing-lake','許願湖','', 'wishingLake'],
   ['systems/tutorials','教學','', 'tutorials']
  ];
@@ -72,9 +72,6 @@
   'shopSettings.randomOffers.entries':{id:'id',label:'隨機商品',keys:['id']},
   'shopSettings.fixedOffers.entries':{id:'id',label:'固定商品',keys:['id']},
   'companionTokens.catalog':{id:'id',label:'信物',keys:['id']},
-  'lifeSkills.gathering':{id:'id',label:'採集',keys:['id']},
-  'equipmentPowerSystem.prefixes':{id:'id',label:'前綴',keys:['id']},
-  'equipmentPowerSystem.suffixes':{id:'id',label:'後綴',keys:['id']},
   'equipmentPowerSystem.bossAffixes':{id:'id',label:'BOSS 詞綴',keys:['id']}
  };
  const RECORD_PATHS=Object.keys(RECORDS).map(p=>p.split('.')).sort((a,b)=>b.length-a.length);
@@ -205,7 +202,6 @@
   {id:'class-skill-map',from:'characters/classes',to:'world/maps',kind:'map',label:'技能解鎖地圖',each(d,add){(get(d,'classes')||[]).forEach((c,job)=>(Array.isArray(c?.skills)?c.skills:[]).forEach((s,i)=>{for(const key of ['bossKills','eliteKills','bossEquipment'])(Array.isArray(s?.unlockConditions?.[key])?s.unlockConditions[key]:[]).forEach((row,j)=>{if(row?.mapIndex!==-1)add(row?.mapIndex,'classes.'+job+'.skills.'+i+'.unlockConditions.'+key+'.'+j+'.mapIndex',s);});}));}},
   {id:'skill-class',from:'combat/skills',to:'characters/classes',kind:'class',label:'技能職業',each(d,add){(get(d,'skillSystem.definitions')||[]).forEach((s,i)=>(Array.isArray(s?.jobs)?s.jobs:[]).forEach((job,j)=>add(job,'skillSystem.definitions.'+i+'.jobs.'+j,s)));}},
   {id:'skill-companion',from:'combat/skills',to:'characters/companions',kind:'companion',label:'技能所屬夥伴',each(d,add){(get(d,'skillSystem.definitions')||[]).forEach((s,i)=>{if(s?.partnerId!=null)add(s.partnerId,'skillSystem.definitions.'+i+'.partnerId',s);});}},
-  {id:'life-item',from:'systems/life-skills',to:'items/items',kind:'item',label:'生活技能道具',each(d,add){const life=get(d,'lifeSkills')||{};(Array.isArray(life.gathering)?life.gathering:[]).forEach((r,i)=>{if(r?.outputType==='item')add(r.output,'lifeSkills.gathering.'+i+'.output',r);});for(const [id,r] of Object.entries(isObject(life.recipes)?life.recipes:{})){if(r?.outputType==='item')add(r.output,'lifeSkills.recipes.'+id+'.output',r);(Array.isArray(r?.inputs)?r.inputs:[]).forEach((row,j)=>{if(Array.isArray(row)&&row[2]==='item')add(row[0],'lifeSkills.recipes.'+id+'.inputs.'+j,r);});}}},
   {id:'shop-item',from:'systems/shop',to:'items/items',kind:'item',label:'商店道具',each(d,add){for(const pool of ['randomOffers','fixedOffers'])(get(d,'shopSettings.'+pool+'.entries')||[]).forEach((r,i)=>{if(r?.type==='item')add(r.key,'shopSettings.'+pool+'.entries.'+i+'.key',r);});}},
   {id:'shop-map',from:'systems/shop',to:'world/maps',kind:'mapId',label:'裝備商店地圖',each(d,add){(get(d,'shopSettings.equipmentStages')||[]).forEach((r,i)=>{if(r?.mapId)add(r.mapId,'shopSettings.equipmentStages.'+i+'.mapId',r);(Array.isArray(r?.unlockMapIds)?r.unlockMapIds:[]).forEach((id,j)=>add(id,'shopSettings.equipmentStages.'+i+'.unlockMapIds.'+j,r));});}},
   {id:'story-gear-skill',from:'systems/story',to:'combat/skills',kind:'skill',label:'劇情裝備技能',each(d,add){(get(d,'story.gearRewards')||[]).forEach((r,i)=>{if(r?.skillId)add(r.skillId,'story.gearRewards.'+i+'.skillId',r);});}}
@@ -234,8 +230,8 @@
   'document-preflight':['meta/document'],'field-rules':['*'],'healing-potions':['items/items','world/drops'],'seconds-timing':['combat/rules','meta/balance-settings','world/monsters','systems/rewards','combat/skills','combat/statuses','items/items','characters/companion-settings','equipment/forms','meta/document'],
   'skill-system':['combat/skills','combat/skill-system'],'status-definitions':['combat/statuses'],'equipment-effects':['equipment/power-system'],'drop-references':['world/drops','items/items','world/monsters'],
   'class-unlocks':['characters/classes','systems/quests','world/maps'],'wishing-lake':['systems/wishing-lake','items/items','items/inventory-icons','characters/companions','equipment/settings','world/monsters','characters/progression','world/maps'],
-  'life-skills':['systems/life-skills','items/items'],'tutorials':['systems/tutorials','systems/story','items/items'],'story':['systems/story','world/maps','world/monsters','items/items','systems/life-skills','combat/skills','equipment/forms'],
-  'inventory-catalogue':['items/inventory-icons','items/items','systems/shop','systems/life-skills','characters/companion-settings','equipment/power-system','characters/companions','characters/classes','equipment/forms','characters/support-skills','items/starter-packs','interface/presentation','world/drops','systems/economy','equipment/settings','world/maps','world/monsters','characters/progression','systems/quests','combat/skill-settings']
+  'crafting':['systems/crafting'],'tutorials':['systems/tutorials','systems/story','items/items'],'story':['systems/story','world/maps','world/monsters','items/items','systems/crafting','combat/skills','equipment/forms'],
+  'inventory-catalogue':['items/inventory-icons','items/items','systems/shop','systems/crafting','characters/companion-settings','equipment/power-system','characters/companions','characters/classes','equipment/forms','characters/support-skills','items/starter-packs','interface/presentation','world/drops','systems/economy','equipment/settings','world/maps','world/monsters','characters/progression','systems/quests','combat/skill-settings']
  };
  // Direct dependencies: modules whose key data a module's validation reads. Derived from REFERENCES and VALIDATORS,
  // not maintained separately.

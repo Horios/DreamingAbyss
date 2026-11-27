@@ -12,7 +12,7 @@ test('the 探索 category has a 怪物圖鑑 page listing the region monsters wi
  assert.match(html,/怪物圖鑑/);assert.match(html,/苔原史萊姆/);assert.match(html,/古木守望者/);assert.match(html,/<span class="tag">BOSS<\/span>/);
  assert.match(html,/<b>常見<\/b>黏稠凝膠/);assert.match(html,/古木之心護腕/,'the BOSS lists its new skill gear');assert.match(html,/<svg/,'monster artwork');
  // Each item appears once per monster.
- const slime=html.split('<article')[1];for(const item of ['黏稠凝膠','疾風石・1階','祈禱法杖','生命念珠'])assert.equal(slime.split(item).length-1,1,item);
+ const slime=html.split('<article')[1];for(const item of ['黏稠凝膠','疾風石・1階','權杖','手鍊'])assert.equal(slime.split(item).length-1,1,item);
  assert.deepEqual(r.errors,[]);
 });
 test('the old 地區圖鑑 entry opens the page on the current region; the exploration page has no bestiary button',()=>{

@@ -5,9 +5,9 @@
  'use strict';
  const VERSION=1,copy=x=>structuredClone(x);
  const TYPES={guide:'操作引導',intro:'功能介紹',tip:'簡短提示',notice:'說明彈窗'};
- const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',life:'生活技能',alchemy:'煉金',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
+ const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
  // Page identities are the game's fixed navigation ids (js/ui/navigation-tree.js); 'story' is the quest page.
- const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',bossCraft:'BOSS 製作',story:'任務',quests:'委託',wishingLake:'許願湖',gather:'採集',alchemy:'煉金'};
+ const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',crafting:'製作',story:'任務',quests:'委託',wishingLake:'許願湖'};
  // Condition types the game can evaluate. key: what `key` names; count: whether `count` is used.
  const CONDITIONS={
   prologueDone:{label:'序幕已完成'},
@@ -63,7 +63,7 @@
   'skills.activeSlots':{label:'主動技能槽',page:'skills'},
   'skills.firstActiveSlot':{label:'第一個主動槽',page:'skills'},
   'skills.procSlots':{label:'觸發技能槽',page:'skills'},
-  'skills.supportSlots':{label:'輔助技能槽',page:'skills'},
+  'skills.supportSlots':{label:'輔助技能槽（已併入主動技能）',page:'skills'},
   'skills.slotChoice':{label:'技能槽視窗的「裝入技能」',page:'skills'},
   'shop.categories':{label:'商店分類按鈕',page:'shop'},
   'shop.fixed':{label:'商店固定商品',page:'shop'},
@@ -79,8 +79,8 @@
   'roster.plans':{label:'隊伍方案',page:'roster'},
   'roster.list':{label:'上陣與後備名單',page:'roster'},
   'partners.list':{label:'夥伴名冊清單',page:'partnerRoster'},
-  'bag.itemsCategory':{label:'背包的「道具」分類',page:'equipment'},
-  'bag.companionTicket':{label:'道具中的夥伴招募券',page:'equipment'},
+  'bag.itemsCategory':{label:'背包的「特殊」分類',page:'equipment'},
+  'bag.companionTicket':{label:'特殊分類中的夥伴招募券',page:'equipment'},
   'items.useTicket':{label:'招募券詳細資料的「使用招募券」',page:'equipment'},
   'character.stats':{label:'人物能力',page:'character'},
   'character.mastery':{label:'職業精通',page:'character'},
@@ -94,19 +94,14 @@
   'forge.detail':{label:'工坊中間的放入格',page:'forge'},
   'forge.actions':{label:'目前裝備操作',page:'forge'},
   'forge.extraction':{label:'信物萃取',page:'forge'},
-  'boss.classTabs':{label:'BOSS 製作職業分頁',page:'bossCraft'},
-  'boss.recipe':{label:'第一張 BOSS 配方',page:'bossCraft'},
+  'boss.classTabs':{label:'BOSS 製作職業分頁',page:'crafting'},
+  'boss.recipe':{label:'第一張 BOSS 配方',page:'crafting'},
   'story.tabs':{label:'任務分類分頁',page:'story'},
   'story.card':{label:'任務卡片',page:'story'},
   'story.action':{label:'任務卡片的操作按鈕',page:'story'},
   'lake.panel':{label:'許願湖說明',page:'wishingLake'},
   'lake.offerings':{label:'許願湖投入物品',page:'wishingLake'},
   'lake.confirm':{label:'許願湖「投入」',page:'wishingLake'},
-  'gather.target':{label:'採集對象',page:'gather'},
-  'gather.start':{label:'「開始採集」',page:'gather'},
-  'life.stock':{label:'材料庫存',page:'gather'},
-  'alchemy.recipe':{label:'第一個煉金配方',page:'alchemy'},
-  'alchemy.start':{label:'配方的「開始煉金」',page:'alchemy'}
  };
  const ID=/^[a-z][a-z0-9_]{1,47}$/,STEP_ID=/^[a-z][a-z0-9_]{0,31}$/;
  const text=(v,max)=>typeof v==='string'&&v.length<=max,filled=(v,max)=>text(v,max)&&v.trim().length>0;
@@ -117,7 +112,7 @@
 
  // v0.176: only the key systems (exploring, wearing gear, the party) keep the spotlight. The other guides are a popup that
  // lists their steps, never takes focus and has one 「關閉」 button.
- const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','extraction_basics','boss_basics','story_basics','wishing_basics','gather_basics','alchemy_basics'];
+ const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','extraction_basics','boss_basics','story_basics','wishing_basics'];
  const asNotice=m=>NOTICE_GUIDES.includes(m.id)?{...m,type:'notice',steps:m.steps.map(x=>({...x,advance:{type:'next'},optional:false,onReplay:'same'}))}:m;
  function defaults(){return {version:VERSION,modules:[
   makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。',
@@ -137,16 +132,16 @@
   ]}),
   makeModule({id:'skill_basics',title:'技能',category:'skills',description:'看懂技能頁的技能槽、技能圖鑑，以及戰鬥中技能的自動施放規則。第一次進入技能頁時開始。',
    trigger:{type:'pageEnter',page:'skills'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('slots','技能槽','技能頁分成主動、觸發與輔助三種技能槽。技能要裝進技能槽才會在戰鬥中使用。',{page:'skills',target:'skills.activeSlots'}),
+   step('slots','技能槽','技能頁分成主動與觸發兩種技能槽。技能要裝進技能槽才會在戰鬥中使用。',{page:'skills',target:'skills.activeSlots'}),
    step('catalog','技能圖鑑','「技能圖鑑」列出目前職業可以取得的技能、已取得的技能，以及取得的方式。',{page:'skills',target:'skills.catalog'}),
    step('active','主動技能','點選主動槽可以選擇或替換技能。',{page:'skills',target:'skills.firstActiveSlot',advance:{type:'event',key:'skillSlotOpened'},requires:group([condition('learnedActiveSkills','',1),condition('skillSlots','active',1)]),skipIf:group([condition('prologueLesson','skillLesson')])}),
    step('auto','自動施放','戰鬥中，主動槽的技能在冷卻結束且 MP 足夠時自動施放；有施放條件的技能要等條件成立。沒有可用的技能時角色會普攻。',{page:'skills',target:'skills.activeSlots'}),
-   step('others','觸發與輔助','觸發技能在普攻時依觸發率發動；輔助技能在戰鬥中同樣自動施放。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
+   step('others','觸發技能','觸發技能在普攻時依觸發率發動。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
   ]}),
   makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。第一次進入商店時開始。',
    trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone')]),steps:[
    step('categories','商品分類','上方按鈕切換商品分類。',{page:'shop',target:'shop.categories'}),
-   step('fixed','商品','每件商品標示數量與價格，按「購買」後材料放進庫存、道具放進背包的「道具」分類。',{page:'shop',target:'shop.fixed'}),
+   step('fixed','商品','每件商品標示數量與價格，按「購買」後物品放進背包對應的分類。',{page:'shop',target:'shop.fixed'}),
    step('random','限時商品','這一區的商品會定期更換，也可以花金幣手動刷新。',{page:'shop',target:'shop.random'})
   ]}),
   makeModule({id:'quest_basics',title:'委託',category:'quests',description:'每日委託的接取與交付。第一次進入委託時開始。',
@@ -174,13 +169,13 @@
   // v0.178: companions join by their ticket. The onboarding hands out the priest's; the caravan story hands out 洛恩's.
   makeModule({id:'onboarding_helper',title:'招募牧師',category:'companions',description:'新手引導：在背包使用「夥伴招募券 - 艾琳」，讓牧師艾琳加入隊伍。',
    trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','helper')]),skippable:false,steps:[
-   step('items','道具分類','按「道具」切換到道具清單。夥伴招募券放在「票券」。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
    step('ticket','夥伴招募券','點選「夥伴招募券 - 艾琳」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
    step('use','使用招募券','艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源與治療強化。按「使用招募券」，艾琳就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
   ]}),
   makeModule({id:'recruit_lorne',title:'招募戰士',category:'companions',description:'完成商隊事件後取得「夥伴招募券 - 洛恩」，在背包使用讓戰士洛恩加入隊伍。',
-   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 道具使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
-   step('items','道具分類','按「道具」切換到道具清單。夥伴招募券放在「票券」。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 特殊使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
+   step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
    step('ticket','夥伴招募券','點選「夥伴招募券 - 洛恩」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
    step('use','使用招募券','洛恩是戰士，專注劍術輸出，技能有裂地斬、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
   ]}),
@@ -194,12 +189,12 @@
   makeModule({id:'roster_basics',title:'隊伍編成',category:'companions',description:'隊伍方案、上陣與後備的調整。第一次進入隊伍編成時開始。',
    trigger:{type:'pageEnter',page:'roster'},prerequisites:group([condition('prologueDone')]),steps:[
    step('list','上陣名單','最多三人上陣。點「移至後備」或「上陣」調整出戰的成員，請先停止探索再調整。',{page:'roster',target:'roster.list'}),
-   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 道具）。',{page:'roster',target:'roster.plans'})
+   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 特殊）。',{page:'roster',target:'roster.plans'})
   ]}),
   makeModule({id:'partner_basics',title:'夥伴名冊',category:'companions',description:'查看每位夥伴的能力、技能與信物。新手引導結束後第一次進入夥伴名冊時開始。',
    trigger:{type:'pageEnter',page:'partnerRoster'},prerequisites:group([condition('prologueDone')]),steps:[
    step('list','夥伴資料','點選夥伴可以查看能力、技能與信物。夥伴依固定走向自動成長，職業精通等級會解鎖夥伴技能。',{page:'partnerRoster',target:'partners.list'}),
-   step('recruit','更多夥伴','新夥伴要使用夥伴招募券加入：到背包 → 道具，點選招募券後按「使用招募券」。',{page:'partnerRoster'})
+   step('recruit','更多夥伴','新夥伴要使用夥伴招募券加入：到背包 → 特殊，點選招募券後按「使用招募券」。',{page:'partnerRoster'})
   ]}),
   makeModule({id:'character_basics',title:'角色能力',category:'character',description:'人物能力與職業、武器、元素精通。第一次進入角色能力時開始。',
    trigger:{type:'pageEnter',page:'character'},prerequisites:group([condition('prologueDone')]),steps:[
@@ -232,9 +227,9 @@
    step('use','使用技能','夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。',{page:'forge',target:'forge.extraction'})
   ]}),
   makeModule({id:'boss_basics',title:'BOSS 製作',category:'equipment',description:'用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。',
-   trigger:{type:'pageEnter',page:'bossCraft'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('classes','職業分頁','切換職業查看該職業可以製作的首領裝備。',{page:'bossCraft',target:'boss.classTabs'}),
-   step('recipe','首領配方','每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。',{page:'bossCraft',target:'boss.recipe'})
+   trigger:{type:'pageEnter',page:'crafting'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('classes','職業分頁','切換職業查看該職業可以製作的首領裝備。',{page:'crafting',target:'boss.classTabs'}),
+   step('recipe','首領配方','每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。',{page:'crafting',target:'boss.recipe'})
   ]}),
   makeModule({id:'story_basics',title:'任務',category:'quests',description:'主線、支線與 NPC 任務。第一次進入任務頁時開始。',
    trigger:{type:'pageEnter',page:'story'},prerequisites:group([condition('prologueDone')]),steps:[
@@ -248,17 +243,6 @@
    step('offerings','選擇物品','背包裡有可投入的物品時，這裡會列出來，選擇要投入的物品與數量。',{page:'wishingLake',target:'lake.offerings'}),
    step('confirm','投入','確認後物品會沉入湖底，湖泊的回贈結果顯示在這個視窗。每天的次數有限。',{page:'wishingLake',target:'lake.confirm'})
   ]}),
-  makeModule({id:'gather_basics',title:'採集',category:'life',description:'選擇採集對象並持續取得材料。第一次進入採集時開始。',
-   trigger:{type:'pageEnter',page:'gather'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('target','採集對象','選擇要採集的材料，下方會顯示每次採集的時間與機率。',{page:'gather',target:'gather.target'}),
-   step('start','開始採集','採集會持續進行，切換頁面或同時探索都不會中斷。',{page:'gather',target:'gather.start'}),
-   step('stock','材料庫存','採集到的材料全隊共用，可以在這裡查看與篩選。',{page:'gather',target:'life.stock'})
-  ]}),
-  makeModule({id:'alchemy_basics',title:'煉金',category:'alchemy',description:'用材料煉製藥水與寶石。第一次進入煉金時開始。',
-   trigger:{type:'pageEnter',page:'alchemy'},prerequisites:group([condition('prologueDone')]),steps:[
-   step('recipe','煉金配方','每個配方列出需要的材料、持有數量與產物。',{page:'alchemy',target:'alchemy.recipe'}),
-   step('start','開始煉金','材料足夠時按「開始煉金」。每次完成才扣材料，材料不足時自動停止。',{page:'alchemy',target:'alchemy.start'})
-  ]})
  ].map(asNotice)};}
 
  function conditionIssues(c,where,ctx,ids,add){

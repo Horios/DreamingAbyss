@@ -26,43 +26,14 @@ test('five identities, three tiers, color mappings and reduced first-tier drop t
  for(let id=0;id<15;id++)assert.equal(doc.inventoryIcons.find(x=>x.kind==='gem'&&x.key===String(id)).color,colors[id%5]);
  const drops=doc.balanceSettings.drops.entries.filter(x=>x.type==='gemPool');
  // v0.181: gem drops +10%.
- assert.deepEqual(drops.find(x=>x.id==='gem_map0_normal').chanceByDifficulty,[.033,.066,.11]);
- assert.deepEqual(drops.find(x=>x.id==='gem_map0_elite').chanceByDifficulty,[.099,.187,.297]);
- assert.deepEqual(drops.find(x=>x.id==='gem_map0_boss').chanceByDifficulty,[.297,.44,.605]);
+ // Map gem pools were cut to 1/10 of the former rates.
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_normal').chanceByDifficulty,[.0033,.0066,.011]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_elite').chanceByDifficulty,[.0099,.0187,.0297]);
+ assert.deepEqual(drops.find(x=>x.id==='gem_map0_boss').chanceByDifficulty,[.0297,.044,.0605]);
  assert.deepEqual(r.errors,[]);
 });
 
-test('alchemy spends five tier-one gems and ten tier-two gems in the existing five-second work lane',async()=>{
- const r=game(0);
- // Resolve the offline manager's asynchronous persistence in this headless clock.
- r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run('playerHero().gems[0]=5;setTab("alchemy");');
- assert.match(r.elements.get('app').innerHTML,/赤焰石・1階 ×5/);
- assert.equal(r.run("startLifeWork('gem_0')"),true);
- // The combat tick performs asynchronous offline catch-up after a simulated
- // five-second clock jump. Exercise the life-work heartbeat directly here.
- r.advance(4999);r.run('tickLifeSkills()');
- assert.equal(r.run('playerHero().gems[0]'),5);
- assert.equal(r.run('__EMBERWILD_LIFE_SKILLS.jobs.work.elapsed'),4999);
- r.advance(1);r.run('tickLifeSkills()');
- await r.run('EmberwildOffline.settle()');
- assert.equal(r.run('playerHero().gems[0]'),0);
- assert.equal(r.run('playerHero().gems[5]'),1);
- assert.equal(r.run('__EMBERWILD_LIFE_SKILLS.jobs.work'),null);
- r.run('playerHero().gems[5]=10;');
- assert.equal(r.run("startLifeWork('gem_5')"),true);
- r.advance(5000);r.run('tickLifeSkills()');
- await r.run('EmberwildOffline.settle()');
- assert.equal(r.run('playerHero().gems[5]'),0);
- assert.equal(r.run('playerHero().gems[10]'),1);
- assert.equal(r.run("startLifeWork('gem_10')"),false,'no fourth tier recipe');
- const persisted=loadRuntime(root,'index.html',Object.fromEntries(r.values),r.now);
- persisted.run('continueFromTitle();closeModal()');
- assert.equal(persisted.run('playerHero().gems[0]'),0);
- assert.equal(persisted.run('playerHero().gems[10]'),1);
- assert.deepEqual(r.errors,[]);
- assert.deepEqual(persisted.errors,[]);
-});
+
 
 test('legacy three-kind gems refund from shared skill instances once and survive validated reloads',()=>{
  const r=game(0);

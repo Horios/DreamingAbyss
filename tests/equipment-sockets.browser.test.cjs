@@ -55,6 +55,8 @@ test('equipment sockets: horizontal icons, icon gem choices, stat gems and inven
   }
   await p.evaluate(()=>{
    const g=findGear('socket-ui');socketEquipmentGem(g.id,1,0);
+   // v0.211 grid bag: worn gear stays off the bag grid, so take it off to read its bag slot.
+   const h=playerHero();h.equipped[h.equipped.indexOf(g.id)]=null;
    for(let n=0;n<3;n++){
     const item=gear(1,3,0,playerHero().job);
     Object.assign(item,{id:'socket-count-'+n,skillSockets:{version:1,count:n,gems:Array(n).fill(null)}});
@@ -64,8 +66,9 @@ test('equipment sockets: horizontal icons, icon gem choices, stat gems and inven
   });
   for(const width of [1280,390]){
    await p.setViewportSize({width,height:900});
-   for(let n=0;n<3;n++)assert.equal(await p.locator('[data-item-gear="socket-count-'+n+'"] .equipment-socket-badge svg').count(),n);
-   const badge=p.locator('[data-item-gear="socket-ui"] .equipment-socket-badge');
+   // v0.211 grid bag: the bag slot carries the same socket badge.
+   for(let n=0;n<3;n++)assert.equal(await p.locator('.bag-cell[data-bag-ref="g:socket-count-'+n+'"] .equipment-socket-badge svg').count(),n);
+   const badge=p.locator('.bag-cell[data-bag-ref="g:socket-ui"] .equipment-socket-badge');
    assert.equal(await badge.locator('svg').count(),3);
    assert.match(await badge.getAttribute('aria-label'),/第 2 孔：赤焰石/);
    assert.equal(await badge.locator('circle').nth(0).getAttribute('fill'),'none');

@@ -5,7 +5,7 @@
    - Boss equipment never inherits a hidden normal-form effect.
    - Equipment max-MP / MP-regen effects and affixes are removed; legacy ones migrate to small attack bonuses.
 */
-const EQUIPMENT_FIXED_EFFECT_KEYS=new Set(['flatAttack','flatHp','flatDefense','gearAtkPct','gearHpPct','gearDefPct','attackPct','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamagePct','attackSpeedPct','allCooldownReduction','dropRateBonus','basicAttackSpeedStack','basicElement','elementDamagePct','elementResistPct','raceDamagePct','skillEffectPct','skillCooldownReduction']);
+const EQUIPMENT_FIXED_EFFECT_KEYS=new Set(['flatAttack','flatHp','flatDefense','gearAtkPct','gearHpPct','gearDefPct','attackPct','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamagePct','attackSpeedPct','allCooldownReduction','dropRateBonus','basicAttackSpeedStack','basicElement','elementDamagePct','elementResistPct','raceDamagePct','skillEffectPct','skillCooldownReduction','defensePct','skillDamagePct','cooldownPct']);
 const EQUIPMENT_EFFECT_ELEMENTS=new Set(['physical','fire','ice','wind','light','shadow']);
 const EQUIPMENT_EFFECT_RACES=new Set(['beast','plant','undead','construct','demon','spirit']);
 function normalizeFixedEquipmentEffect(raw){
@@ -172,7 +172,7 @@ equipmentComparison=function(h,g,position=null){
 // Test JSON accepts fixedEffects (1–5 rows) and transparently migrates legacy exclusive / mana / form fields.
 validateBalanceConfig=function(input){
   const data=validateBalanceConfigCore(input),elements=new Set(Object.keys(ELEMENTS));
-  data.equipmentForms.forEach((jobs,job)=>jobs.forEach((forms,slot)=>forms.forEach((form,i)=>{normalizeEquipmentFormObject(form);for(const key of Object.keys(form))if(!['id','name','wearableJobs','fixedEffects','textStyleId','mana'].includes(key))throw Error(`未知裝備欄位：${key}`);if(!Array.isArray(form.fixedEffects)||form.fixedEffects.length<1||form.fixedEffects.length>5)throw Error(`裝備固定屬性必須為 1～5 條：${job}-${slot}-${i}`);const wearJobs=Array.isArray(form.wearableJobs)?form.wearableJobs.filter(j=>Number.isInteger(j)&&j>=0&&j<data.classes.length):(job<data.classes.length?[job]:data.classes.map((_,j)=>j)),skillCount=wearJobs.reduce((max,j)=>Math.max(max,(data.classes[j]?.skills||[]).length),0);for(const [j,fx] of form.fixedEffects.entries()){if(!fx||!EQUIPMENT_FIXED_EFFECT_KEYS.has(fx.key))throw Error(`裝備固定屬性無效：${job}-${slot}-${i}-${j}`);if(fx.key==='basicElement'){if(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.value))throw Error('裝備普通攻擊屬性無效');}else if(!Number.isFinite(fx.value))throw Error(`裝備固定屬性數值無效：${job}-${slot}-${i}-${j}`);if(['elementDamagePct','elementResistPct'].includes(fx.key)&&(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.element)||fx.element==='physical'))throw Error('裝備固定屬性的元素目標無效');if(fx.key==='raceDamagePct'&&!EQUIPMENT_EFFECT_RACES.has(fx.race))throw Error('裝備固定屬性的種族目標無效');if(['skillEffectPct','skillCooldownReduction'].includes(fx.key)&&(!Number.isInteger(fx.skill)||fx.skill<0||fx.skill>=skillCount))throw Error('裝備固定屬性的技能目標無效');}})));
+  data.equipmentForms.forEach((jobs,job)=>jobs.forEach((forms,slot)=>forms.forEach((form,i)=>{normalizeEquipmentFormObject(form);for(const key of Object.keys(form))if(!['id','name','wearableJobs','fixedEffects','textStyleId','mana','baseStat'].includes(key))throw Error(`未知裝備欄位：${key}`);if(form.baseStat!==undefined&&(form.baseStat!=='defense'||slot!==2))throw Error(`裝備基礎數值類型無效：${job}-${slot}-${i}`);if(!Array.isArray(form.fixedEffects)||form.fixedEffects.length<1||form.fixedEffects.length>5)throw Error(`裝備固定屬性必須為 1～5 條：${job}-${slot}-${i}`);const wearJobs=Array.isArray(form.wearableJobs)?form.wearableJobs.filter(j=>Number.isInteger(j)&&j>=0&&j<data.classes.length):(job<data.classes.length?[job]:data.classes.map((_,j)=>j)),skillCount=wearJobs.reduce((max,j)=>Math.max(max,(data.classes[j]?.skills||[]).length),0);for(const [j,fx] of form.fixedEffects.entries()){if(!fx||!EQUIPMENT_FIXED_EFFECT_KEYS.has(fx.key))throw Error(`裝備固定屬性無效：${job}-${slot}-${i}-${j}`);if(fx.key==='basicElement'){if(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.value))throw Error('裝備普通攻擊屬性無效');}else if(!Number.isFinite(fx.value))throw Error(`裝備固定屬性數值無效：${job}-${slot}-${i}-${j}`);if(['elementDamagePct','elementResistPct'].includes(fx.key)&&(!EQUIPMENT_EFFECT_ELEMENTS.has(fx.element)||fx.element==='physical'))throw Error('裝備固定屬性的元素目標無效');if(fx.key==='raceDamagePct'&&!EQUIPMENT_EFFECT_RACES.has(fx.race))throw Error('裝備固定屬性的種族目標無效');if(['skillEffectPct','skillCooldownReduction'].includes(fx.key)&&(!Number.isInteger(fx.skill)||fx.skill<0||fx.skill>=skillCount))throw Error('裝備固定屬性的技能目標無效');}})));
   return data;
 };
 
@@ -257,7 +257,7 @@ enhance=function(id){ensureBoard();const g=findGear(id);if(!g||g.plus>=RULES.enh
 
 // v0.180: 鍛鐵 and 粉塵 swapped: the tier/quality/enhancement amount (the ore* settings) is now 粉塵 and the small fixed
 // amount (the dust* settings) is 鍛鐵. Item-specific salvage rules keep exactly what they configure.
-function update12SalvageRewards(g,includeEnhance=true){const q=gearQualityRank(g),c=GAMEPLAY_SETTINGS.equipment.salvage;return {dust:Math.max(0,Math.round(g.tier*(c.oreBasePerTier+q*c.orePerQualityPerTier+(includeEnhance?(g.plus||0)*c.orePerEnhancePerTier:0)))),ore:Math.max(0,Math.round(c.dustBase+q*c.dustPerQuality))};}
+function update12SalvageRewards(g,includeEnhance=true){if(EmberwildTokens.isToken(g))return {dust:Math.max(0,Math.round(g.tier*(3+gearQualityRank(g)*2+(includeEnhance?(g.plus||0):0)))),ore:Math.max(0,Math.round(1+gearQualityRank(g)))};return {dust:10*gearRequiredLevel(g),ore:Math.floor((g.powerTier||1)/2)};}
 salvage=function(id){const g=findGear(id);if(!g||g.locked||gearWearer(g.id)||inlineAffixDrafts.has(affixDraftKey(g)))return;const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;state.bag=state.bag.filter(x=>x.id!==id);pruneGearSelections();save();render();};
 confirmMassSalvage=function(){if(!massSalvageIds)return;const items=massSalvageTargets(massSalvageIds),ids=new Set(items.map(g=>g.id)),bag=state.bag,ore=state.ore,dust=state.dust;for(const g of items){const r=update12SalvageRewards(g,true);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));if(!save()){state.bag=bag;state.ore=ore;state.dust=dust;return;}massSalvageIds=null;pruneGearSelections();closeModal();render();toast('已分解 '+items.length+' 件裝備');};
 salvageAll=function(){const targets=state.bag.filter(g=>gearQualityRank(g)===0&&(g.plus||0)===0&&!g.affix.length&&g.boss===undefined&&!state.equipped.includes(g.id)&&!g.locked),ids=new Set(targets.map(g=>g.id));for(const g of targets){const r=update12SalvageRewards(g,false);state.ore+=r.ore;state.dust+=r.dust;}state.bag=state.bag.filter(g=>!ids.has(g.id));pruneGearSelections();save();render();toast(`已分解 ${ids.size} 件未養成普通裝備`);};
@@ -357,8 +357,8 @@ guideView=function(){
  
  <h2>裝備與養成</h2>
  <p>裝備需符合職業才能穿戴，沒有等級限制。背包最多持有 ${e.bagCapacity} 件裝備，可篩選、排序、鎖定及批次處理。強化最多 +${e.enhance.maxLevel}，能提升裝備能力；洗鍊可重新產生詞條，並選擇採用新結果或保留原詞條。BOSS 專屬裝備可使用對應素材製作。</p>
- <h2>任務與生活技能</h2>
- <p>主線、支線、NPC 任務與每日委託會依各自條件推進並提供獎勵。採集會按時間取得材料；煉金則依配方消耗材料製作道具。</p>
+ <h2>任務與製作</h2>
+ <p>主線、支線、NPC 任務與每日委託會依各自條件推進並提供獎勵。製作頁可即時製作以太鍛鐵與 BOSS 裝備。</p>
  <h2>存檔與離線探索</h2>
  <p>遊戲會自動保存進度，也可以匯出存檔備份或移轉裝置。探索進行中關閉網頁，重新進入後會補算離線期間完成的戰鬥與收益；暫停或停止探索的時間不會產生探索收益。</p>
  </section>`;
