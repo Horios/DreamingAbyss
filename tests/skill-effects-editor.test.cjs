@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 test('editor embeds the exact common effect and status contracts used by the game',()=>{
  const html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8');

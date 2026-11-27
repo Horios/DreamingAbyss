@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {openRuntime,openEditorSection}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..'),editor=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editor=require('./runtime.cjs').balanceRoot(root);
 const field=async(page,key,value)=>{const el=page.locator('[data-quest-field="'+key+'"]');await el.fill(String(value));await el.dispatchEvent('change');};
 
 test('real daily and side design forms export/import into the journal, complete chained quests, and retain daily claims after reload',async()=>{

@@ -2,7 +2,7 @@
 // v0.173: the onboarding (prologue version 2) shows the goddess's opening on the name screen, the class option texts and
 // each stage's task-bar text; those are what the editor edits.
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {openRuntime,openEditorSection}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=path.resolve(process.env.EMBERWILD_BALANCE_ROOT||path.join(root,'../Emberwild-Balance'));
+const {openRuntime,openEditorSection}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('editor controls edit, add, reorder and delete prologue lines; the game shows the exported text',{skip:fs.existsSync(path.join(editorRoot,'balance-editor.html'))?false:'Balance editor checkout is not available; set EMBERWILD_BALANCE_ROOT'},async()=>{
  const editor=await openRuntime(editorRoot,'balance-editor.html');let doc;
  try{

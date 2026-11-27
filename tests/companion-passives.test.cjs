@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/skills/passive-model.js');
-const root=path.resolve(__dirname,'..'),balanceRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),balanceRoot=require('./runtime.cjs').balanceRoot(root);
 const editorPath=path.join(balanceRoot,'balance-editor.html');
 const json=(r,code)=>JSON.parse(r.run(`JSON.stringify(${code})`));
 function game(lv=60){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(0);closeModal();party.cleared=playerHero().won=${lv}===60;syncParty();for(const id of [10,11,12,13,14]){recruitCompanion(id);closeModal();}setPartyClassMasteryLevel(${lv}-1);globalThis.testFoe=()=>({id:'passive-foe',name:'測試敵人',hp:100000,maxhp:100000,atk:20,def:10,lv:1,kind:'normal',region:0,difficulty:0,element:'physical',race:'beast'});`);return r;}

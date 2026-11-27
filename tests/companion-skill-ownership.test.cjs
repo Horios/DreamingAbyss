@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/skills/companion-skill-model.js');
-const root=path.resolve(__dirname,'..'),editorRoot=path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 // Exported documents carry the canonical skillSystem; legacy class/support/passive arrays are projections of it.
 function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();for(const id of [10,11,12,13,14]){recruitCompanion(id);closeModal();}globalThis.canonicalSkill=(d,job,kind,index)=>d.skillSystem.definitions.find(s=>(s.adapters||[s.adapter]).some(a=>a.job===job&&a.kind===kind&&a.index===index));globalThis.canonicalById=(d,id)=>d.skillSystem.definitions.find(s=>s.id===id);');return r;}

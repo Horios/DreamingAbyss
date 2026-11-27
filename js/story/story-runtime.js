@@ -9,6 +9,7 @@
  const activeFields=(v,base)=>Object.fromEntries(Object.keys(base).map(k=>[k,v?.[k]??base[k]]));
  function validateProgress(raw,stats){const q=activeFields(validData(raw,fresh()),fresh()),p=activeFields(validData(stats,freshStats()),freshStats());
   if(p.version!==1||q.version!==1||(!Number.isSafeInteger(q.vip)||q.vip<0||q.vip>99)||!q.quests||!q.flags||!q.unlocks||[q.quests,q.flags,q.unlocks].some(x=>Array.isArray(x)||typeof x!=='object'))throw Error('劇情存檔格式無效');
+  delete q.quests.two_regions;
   const merchant=q.quests.shop_rescue;if(merchant){if(['gather','delivery'].includes(merchant.current))merchant.current='vip';if(Array.isArray(merchant.completed))merchant.completed=merchant.completed.filter(id=>!['gather','delivery'].includes(id));}
   for(const [id,r] of Object.entries(q.quests)){if(!r||r.recoveryUses!==undefined&&(!Number.isSafeInteger(r.recoveryUses)||r.recoveryUses<0||r.recoveryUses>5)||r.started!==undefined&&typeof r.started!=='boolean'||typeof r.current!=='string'||typeof r.done!=='boolean'||!Array.isArray(r.completed)||r.completed.some(x=>typeof x!=='string')||!r.baseline||!r.choices||Array.isArray(r.baseline)||Array.isArray(r.choices)||typeof r.baseline!=='object'||typeof r.choices!=='object'||new Set(r.completed).size!==r.completed.length||Object.values(r.baseline).some(n=>!Number.isSafeInteger(n)||n<0)||Object.values(r.choices).some(v=>typeof v!=='string'))throw Error('任務階段存檔無效：'+id);}
   for(const f of [q.flags,q.unlocks])if(Object.values(f).some(v=>typeof v!=='boolean'))throw Error('任務解鎖格式無效');

@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {loadRuntime}=require('./headless-runtime.cjs'),A=require('../js/character/achievement-model.js');
-const root=path.resolve(__dirname,'..'),editor=path.resolve(root,'../Emberwild-Balance'),json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
+const root=path.resolve(__dirname,'..'),editor=require('./runtime.cjs').balanceRoot(root),json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 // v0.179: achievement and shop tickets are off in the game; these mechanics tests switch them back on.
 function game(){const r=loadRuntime(root);r.run('__EMBERWILD_SET_EXTRA_TICKET_SOURCES(true);selectSaveSlot(1);start(0);closeModal()');return r;}
 function bind(r,id,achievementIds){r.ctx.ids=achievementIds;r.run(`{const d=exportableBalance(),p=d.companions.find(p=>p.id===${id});p.availability='visible';p.unlockCondition={type:'achievement',achievementIds:ids};applyBalanceConfig(d);claimAllMailboxAttachments();}`);}

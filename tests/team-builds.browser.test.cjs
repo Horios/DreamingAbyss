@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 // The 隊伍方案 block is folded by default since v0.059; these tests use its controls, so it starts open.
 const OPEN_PLANS={'emberwild-team-plan-panel-open':'1'};
 test('Chromium: create blank plans, choose classes, learn, copy, rename, safety gate and exact reload through actual UI',async t=>{
