@@ -17,7 +17,7 @@ test('legacy fixtures migrate without losing gear and repeated reloads do not re
  const r=game(0);for(let j=0;j<4;j++){r.ctx.fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/legacy-skills-job'+j+'.json')));r.run('loadParty(fixture)');assert.equal(r.run('state.job'),j);assert.equal(r.run('state.bag.length'),r.ctx.fixture.members[0].bag.length);const gems=json(r,'state.gems');r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');assert.deepEqual(json(r,'state.gems'),gems);}
 });
 test('companions use every unlocked skill automatically and remain compatible with save validators',()=>{
- const r=game(0);r.run('recruitCompanion(10);closeModal();setPartyClassMasteryLevel(7);party.active=[0,10];save()');assert.deepEqual(json(r,'partyMember(10).active'),[7]);assert.deepEqual(json(r,'partyMember(10).procSlots'),[8]);assert.equal(r.run('setCompanionSkillEnabled(10,"core",7,false)'),false);r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');assert.deepEqual(json(r,'partyMember(10).procSlots'),[8]);
+ const r=game(0);r.run('recruitCompanion(10);closeModal();setPartyClassMasteryLevel(7);party.active=[0,10];save()');/* v0.226: 洛恩 has 裂地斬 and 嘲諷 from the start. */assert.deepEqual(json(r,'partyMember(10).active'),[7,17]);assert.deepEqual(json(r,'partyMember(10).procSlots'),[8]);assert.equal(r.run('setCompanionSkillEnabled(10,"core",7,false)'),false);r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');assert.deepEqual(json(r,'partyMember(10).procSlots'),[8]);
 });
 
 test('quest acquisition, mastery and weapon requirements remain independent of slot configuration',()=>{

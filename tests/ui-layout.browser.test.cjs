@@ -40,7 +40,7 @@ test('Long reading content and expanded rosters use the page scroll; inventory s
   const roster=await p.locator('.partner-owned-list').evaluate(e=>({overflow:getComputedStyle(e).overflowY,width:e.closest('.roster-page').getBoundingClientRect().width,available:document.querySelector('.companion-management-page').clientWidth}));
   assert.equal(roster.overflow,'visible');assert(Math.abs(roster.width-roster.available)<=1);
   const spacing=await p.locator('.companion-management-page').evaluate(e=>{const h=e.querySelector('.heading'),panel=e.querySelector('.roster-page');return panel.getBoundingClientRect().top-h.getBoundingClientRect().bottom;});assert(spacing<=17,'roster rows do not stretch into blank space');
-  await p.evaluate(()=>setTab('story'));
+  await p.evaluate(()=>setStoryCategory('npc'));/* v0.226: the main story starts empty for a direct start */
   await p.evaluate(()=>{const list=document.querySelector('.story-list');for(let i=0;i<12;i++){const e=list.firstElementChild.cloneNode(true);e.querySelector('h2').textContent='很長的任務名稱與說明'.repeat(8);list.append(e);}});
   const story=await p.evaluate(()=>{const m=document.querySelector('main');m.scrollTop=m.scrollHeight;const last=m.querySelector('.story-list').lastElementChild;return {bottom:last.getBoundingClientRect().bottom,end:m.getBoundingClientRect().bottom,overflow:m.scrollWidth-m.clientWidth};});
   assert(story.bottom<=story.end+1);assert(story.overflow<=1);

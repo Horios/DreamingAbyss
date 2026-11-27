@@ -9,6 +9,11 @@ for(const [width,height] of [[1280,800],[390,780]])test('direct creation and inl
   assert.equal(await p.locator('#prologue-layer').isVisible(),false);
   // The wear UI itself remains covered by inventory-wear tests; use its actual equipment operation here.
   await p.evaluate(()=>withHero(playerHero(),()=>equipGear(playerHero().bag.find(g=>g.starterPack).id)));
+  // v0.226: the charm (wear it, slot 追擊) and the gem follow the weapon.
+  await p.waitForSelector('.prologue-task[data-stage="charm"]');
+  await p.evaluate(()=>{const h=playerHero(),g=h.bag.find(x=>x.storyRewardKey==='initiation_charm');withHero(h,()=>{equipGear(g.id);configureSkill('proc',0,'tutorial_echo');});render();});
+  await p.waitForSelector('.prologue-task[data-stage="gem"]');
+  await p.evaluate(()=>{const h=playerHero(),g=h.bag.find(x=>x.storyRewardKey==='initiation_charm');withHero(h,()=>socketEquipmentGem(g.id,0,0));render();});
   await p.waitForSelector('.prologue-task[data-stage="practice"]');
   await p.evaluate(()=>{clearInterval(timer);running=true;spawnGroup();for(let i=0;i<500&&__EMBERWILD_PROLOGUE.stage()==='practice';i++){const it=pacedRound();for(let n=0;n<5000&&!it.next().done;n++){}}stopTeamExploration();render();});
   // v0.178: the helper stage opens the bag; the priest's ticket is used from 道具.

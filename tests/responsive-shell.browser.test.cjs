@@ -367,7 +367,7 @@ test('Desktop rosters: member buttons sit side by side; closed partner sections 
 test('Desktop: story NEW! follows the title; long action labels keep one line; worn items fill their slot; wide battle cards grow',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await p.setViewportSize({width:1366,height:768});await setup(p);
- await p.evaluate(()=>setStoryCategory('main'));
+ await p.evaluate(()=>setStoryCategory('npc'));/* v0.226: the main story starts empty for a direct start */
  const story=await p.locator('.story-card>.row:first-child').first().evaluate(e=>{const h=e.querySelector('h2').getBoundingClientRect(),n=e.querySelector('.quest-new')?.getBoundingClientRect(),t=e.querySelector('.tag').getBoundingClientRect();return {gap:n?n.left-h.right:0,tagRight:Math.abs(t.right-e.getBoundingClientRect().right)};});
  assert(story.gap>=0&&story.gap<=16&&story.tagRight<=2,'NEW! next to the title, tag at the right '+JSON.stringify(story));
  await p.evaluate(()=>{setTab('equipment');setInventoryCategory('gems');});

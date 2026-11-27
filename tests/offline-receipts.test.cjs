@@ -24,7 +24,7 @@ test('one real completed encounter within ten seconds shows its applied rewards 
 
 test('a completed encounter without any real reward never shows an empty receipt',async()=>{
  const r=game();/* class mastery is a real offline reward since v0.161; switch it off to keep a reward-free fight */r.run('GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;foes.splice(1);foes[0].hp=1;rewardGroupKill=e=>{e.rewarded=true;};save()');await settle(r,10000);
- assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
+ /* v0.226: 重擊 opens the warrior's fights, so more than one encounter can finish in the window. */assert(r.run('party.offlineExploration.pendingReceipt.battles')>=1);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
 });
 
 test('open receipts stay unchanged during live background play; only a cold reload queues a new offline receipt',async()=>{
