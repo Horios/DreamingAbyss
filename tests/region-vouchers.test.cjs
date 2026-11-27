@@ -114,7 +114,7 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  assert.equal(r.run('state.gold'),gold+(g.attachments.find(a=>a.type==='voucherGold')?.quantity||0));
  assert.deepEqual(json(r,'EmberwildRegionVouchers.normalize({version:1,serial:3,remainders:{"0:0":99999999,"6:0":5,"x":1},stacks:[{id:"v1",count:0},{id:"bad"}],history:[]})'),{version:1,serial:3,remainders:{'0:0':30*MIN-1},stacks:[],history:[]});
  // v0.161: maps carry a recommended gear level (default: the map's max level) instead of an over-level voucher price.
- assert.equal(r.run('worldMapConfig(1).recommendedGearLevel'),r.run('MAPS[1].max'));assert.equal(r.run('worldMapConfig(1).overlevelVoucherGold'),undefined);
+ assert.equal(r.run('worldMapConfig(0).recommendedGearLevel'),r.run('MAPS[0].max'));assert.equal(r.run('worldMapConfig(0).overlevelVoucherGold'),undefined);
  assert.equal(r.run('party.mailbox.messages.some(m=>m.rewardKey.startsWith("starter-"))'),false,'creation no longer sends starter mail');
  assert.deepEqual(r.errors,[]);
 });

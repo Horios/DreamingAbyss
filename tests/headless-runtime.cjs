@@ -56,4 +56,10 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
       return out;};}`,ctx,{filename:'headless-starting-set'});
   return {ctx,elements,errors,warnings,values,dispatch:(type,target='window',event={})=>{for(const fn of listeners[target].get(type)||[])fn({...event,type});},run:code=>vm.runInContext(code,ctx),advance:ms=>{now+=ms;},get now(){return now;}};
 }
-module.exports={loadRuntime};
+// 遊戲資料只保留第一張地圖；需要第二張地圖的測試以 map0 複製一張暫時地圖（不寫入存檔）。
+const ADD_TEST_MAP=`{const d=exportableBalance(),bs=d.balanceSettings;const m=structuredClone(bs.maps.catalog[0]);m.id="map1";m.name="測試第二地圖";m.min=6;m.max=10;m.recommendedGearLevel=10;bs.maps.catalog.push(m);bs.maps.levelRanges.push({min:6,max:10});
+for(const x of bs.monsters.catalog.filter(x=>x.mapIndex===0)){const c=structuredClone(x);c.id=x.id.replace("map0","map1");c.mapIndex=1;bs.monsters.catalog.push(c);}
+for(const e of bs.drops.entries.filter(e=>e.type==="monsterGear"&&e.sources.length===1&&/^map0_/.test(e.sources[0]))){const c=structuredClone(e);c.id=e.id.replace("map0","map1");c.sources=[e.sources[0].replace("map0","map1")];bs.drops.entries.push(c);}
+applyBalanceConfig(d);}`;
+function addTestMap(r){r.run(ADD_TEST_MAP);}
+module.exports={loadRuntime,addTestMap,ADD_TEST_MAP};

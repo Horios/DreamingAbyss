@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {loadRuntime}=require('./headless-runtime.cjs');
+const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),M=(()=>{const vm=require('node:vm'),ctx={};vm.runInNewContext(fs.readFileSync(path.join(root,'js/items/timed-boosts.js'),'utf8'),ctx);return ctx.EmberwildTimedBoosts;})();
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 function fixture(){const r=loadRuntime(root);r.ctx.seed=require('../data/balance.json');r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();setClassMasteryLevel(19);state.hp=stats().hp;recruitCompanion(11);recruitCompanion(13);closeModal();for(const h of heroes()){h.lv=20;h.hp=stats(h).hp;}syncParty();globalThis.durable=()=>{foes=[{...makeEnemy(0,state,()=>.9),id:'durable',hp:1e8,maxhp:1e8,atk:1,def:0}];enemy=foes[0];for(const h of heroes())h.shield=1e6;};globalThis.tickets=()=>{for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=2;useSupply(id);}};`);return r;}
@@ -30,7 +30,7 @@ test('runtime exploration clock, controls, save compatibility, effects and quest
   r.run('toggleBattle();stopTeamExploration()');assert.equal(r.run('running||foes.length>0||!!roundIterator'),false);assert.match(view(),/開始探索/);assert.doesNotMatch(r.run('sharedBattleJournal()'),/onclick="toggleBattle\(\)"/);
  });
  await t.test('pending map selection never changes the active encounter, starting after stop applies it once',()=>{
-  reset();r.run('startSelectedExploration();durable();globalThis.oldFoe=foes[0];selectExplorationMap(1);');assert.equal(r.run('party.map'),0);assert.equal(r.run('foes[0]===oldFoe'),true);assert.match(view(),/選擇其他目的地僅供準備/);
+  reset();r.run(ADD_TEST_MAP);r.run('playerHero().kills[MAPS[0].boss[2]]=1;syncParty();startSelectedExploration();durable();globalThis.oldFoe=foes[0];selectExplorationMap(1);');assert.equal(r.run('party.map'),0);assert.equal(r.run('foes[0]===oldFoe'),true);assert.match(view(),/選擇其他目的地僅供準備/);
   r.run('stopTeamExploration();startSelectedExploration();');assert.equal(r.run('party.map'),1);assert.equal(r.run('foes.includes(oldFoe)'),false);assert.equal(r.run('running'),true);
  });
  await t.test('wall-clock effects count paused and stopped time; active time counts only exploration',async()=>{

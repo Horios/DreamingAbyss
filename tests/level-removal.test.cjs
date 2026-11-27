@@ -3,7 +3,7 @@
    companions keep their own mastery; maps open by bosses; old saves keep their maps and skills; offline earns no
    character XP. */
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs');
+const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),KEY='emberwild-save-v1';
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 function game(job=0){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`selectSaveSlot(1);start(${job});closeModal();globalThis.rngState=98765;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};`);return r;}
@@ -74,7 +74,7 @@ test('maps open by defeating the previous boss; recommended gear level is advice
  assert(json(r,'canVisit(1)&&!canVisit(2)'),'boss of map 0 opens map 1 only');
  assert.equal(r.run('canVisit(7)'),false,'post-clear maps need the gate cleared');
  assert.equal(r.run('mapRecommendedGearLevel(0)'),r.run('MAPS[0].max'));
- r.run('chooseMap(1)');assert.equal(r.run('party.map'),1,'a higher recommended gear level does not block entry');
+ r.run(ADD_TEST_MAP);r.run('chooseMap(1)');assert.equal(r.run('party.map'),1,'a higher recommended gear level does not block entry');
 });
 
 test('an old save keeps its maps, skills and gear; level, XP and level scrolls are removed once',()=>{

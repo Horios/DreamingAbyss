@@ -8,24 +8,24 @@ function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);clos
 
 test('an achievement-rule companion gets no ticket in the mail when the achievement completes',()=>{
  const r=game();
- r.run(`{const d=exportableBalance(),p=d.companions.find(p=>p.id===15);p.availability='visible';p.unlockCondition={type:'achievement',achievementIds:['region-0-elite-50']};applyBalanceConfig(d);}
+ r.run(`{const d=exportableBalance(),p=d.companions.find(p=>p.id===11);p.availability='visible';p.unlockCondition={type:'achievement',achievementIds:['region-0-elite-50']};applyBalanceConfig(d);}
   party.achievements.eliteKills[0]=49;globalThis.e=makeEnemy(0,playerHero(),()=>.5);e.kind='elite';e.hp=0;rewardGroupKill(e);`);
  assert.equal(r.run("party.achievements.completed.includes('region-0-elite-50')"),true,'the achievement itself still completes');
- assert.equal(r.run("party.mailbox.messages.some(m=>m.rewardKey==='companion-15')"),false,'no ticket mail');
- assert.equal(r.run('companionTicketCount(15)'),0);assert.equal(r.run('!!partyMember(15)'),false);
+ assert.equal(r.run("party.mailbox.messages.some(m=>m.rewardKey==='companion-11')"),false,'no ticket mail');
+ assert.equal(r.run('companionTicketCount(11)'),0);assert.equal(r.run('!!partyMember(11)'),false);
  assert.deepEqual(r.errors,[]);
 });
 
 test('the shop offers no companion tickets; a saved offer is hidden and cannot be bought; held tickets still work',()=>{
  const r=game();
- r.run(`{const d=exportableBalance(),p=d.companions.find(p=>p.id===17);p.availability='visible';p.unlockCondition={type:'ticket',chance:1,price:100};applyBalanceConfig(d);}`);
+ r.run(`{const d=exportableBalance(),p=d.companions.find(p=>p.id===12);p.availability='visible';p.unlockCondition={type:'ticket',chance:1,price:100};applyBalanceConfig(d);}`);
  assert.equal(r.run("generateMarket().offers.some(o=>o.ruleId?.startsWith('companion-recruit-'))"),false);
  assert.equal(r.run('hasCompanionRecruitmentOffers()'),false);
  // An offer saved by an older version.
- r.run("party.market=generateMarket();party.market.offers.push({id:'old-1',kind:'material',key:'夥伴招募券-17',qty:1,price:100,sold:false,ruleId:'companion-recruit-17'});playerHero().gold=500;");
- assert.doesNotMatch(r.run('marketCards()'),/companion-ticket-17/);
- r.run("buyMarketOffer('old-1')");assert.equal(r.run('companionTicketCount(17)'),0);assert.equal(r.run('playerHero().gold'),500);
+ r.run("party.market=generateMarket();party.market.offers.push({id:'old-1',kind:'material',key:'夥伴招募券-12',qty:1,price:100,sold:false,ruleId:'companion-recruit-12'});playerHero().gold=500;");
+ assert.doesNotMatch(r.run('marketCards()'),/companion-ticket-12/);
+ r.run("buyMarketOffer('old-1')");assert.equal(r.run('companionTicketCount(12)'),0);assert.equal(r.run('playerHero().gold'),500);
  // A ticket the player already holds is still used normally.
- r.run('grantCompanionTicket(17)');assert.equal(r.run('useCompanionRecruitmentTicket(17)'),true);assert.equal(r.run('!!partyMember(17)'),true);
+ r.run('grantCompanionTicket(12)');assert.equal(r.run('useCompanionRecruitmentTicket(12)'),true);assert.equal(r.run('!!partyMember(12)'),true);
  assert.deepEqual(r.errors,[]);
 });

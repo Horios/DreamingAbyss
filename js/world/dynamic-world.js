@@ -143,7 +143,7 @@
     const bs=input?.balanceSettings;if(!bs||typeof bs!=='object')return;
     const maps=Array.isArray(bs.maps?.catalog)?bs.maps.catalog.map(normalizeMapRow):GAMEPLAY_SETTINGS_DEFAULTS.maps.catalog;
     if(!maps.length)throw Error('地圖清單不可為空');
-    const gates=maps.map((m,i)=>m.progressionGate?i:-1).filter(i=>i>=0);if(gates.length!==1||maps[gates[0]]?.mapType!=='final')throw Error('必須恰好有 1 張終局地圖設定為等級突破關卡');
+    const gates=maps.map((m,i)=>m.progressionGate?i:-1).filter(i=>i>=0);if(gates.length>1||gates.length&&maps[gates[0]]?.mapType!=='final')throw Error('最多只能有 1 張終局地圖設定為等級突破關卡');
     const mapIds=new Set();for(const [i,m] of maps.entries()){
       if(!m||typeof m.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(m.id)||mapIds.has(m.id))throw Error('地圖 ID 無效或重複：'+i);mapIds.add(m.id);
       if(typeof m.name!=='string'||!m.name.trim()||!Number.isFinite(m.min)||!Number.isFinite(m.max)||m.min<1||m.max<m.min||!Number.isInteger(m.family)||m.family<0||m.family>5||!['normal','final'].includes(m.mapType))throw Error('地圖資料無效：'+m.id);
@@ -187,7 +187,7 @@
   validateGameplaySettings=function(cfg){
     cfg=worldValidateGameplayBase(cfg);const maps=cfg.maps.catalog;
     if(!Array.isArray(maps)||!maps.length)throw Error('地圖清單無效');
-    const gates=maps.filter(m=>m.progressionGate===true);if(gates.length!==1||gates[0].mapType!=='final')throw Error('必須恰好有 1 張終局地圖設定為等級突破關卡');
+    const gates=maps.filter(m=>m.progressionGate===true);if(gates.length>1||gates.length&&gates[0].mapType!=='final')throw Error('最多只能有 1 張終局地圖設定為等級突破關卡');
     if(!Number.isFinite(cfg.monsters.kindMultipliers.eliteDefense)||cfg.monsters.kindMultipliers.eliteDefense<=0||!Number.isFinite(cfg.monsters.kindMultipliers.bossDefense)||cfg.monsters.kindMultipliers.bossDefense<=0)throw Error('精英／BOSS 防禦倍率必須大於 0');
     for(const m of cfg.monsters.catalog)extendMonsterRow(m);
     return cfg;
