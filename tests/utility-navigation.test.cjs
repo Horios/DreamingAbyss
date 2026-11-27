@@ -3,7 +3,8 @@ const {loadRuntime}=require('./headless-runtime.cjs'),A=require('../js/character
 const root=path.resolve(__dirname,'..'),json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 // v0.179: achievement and shop tickets are off in the game; these mechanics tests switch them back on.
 function game(){const r=loadRuntime(root);r.run('__EMBERWILD_SET_EXTRA_TICKET_SOURCES(true);selectSaveSlot(1);start(0);closeModal();for(const m of [...party.mailbox.messages])if(m.rewardKey.startsWith("starter-"))claimMailboxAttachments(m.id)');return r;}
-function mail(r){r.run("{const d=exportableBalance(),p=d.companions.find(p=>p.id===15);p.availability='visible';p.unlockCondition={type:'achievement',achievementIds:['region-0-open']};applyBalanceConfig(d);globalThis.testMail=party.mailbox.messages.find(m=>m.rewardKey==='companion-15').id;}");}
+// 遊戲只保留已實裝夥伴；以一名不帶技能的暫時夥伴 15 測試成就招募信件。
+function mail(r){r.run("{const d=exportableBalance(),p=structuredClone(d.companions.find(p=>p.id===11));Object.assign(p,{id:15,name:'測試夥伴',passives:[],core:[],active:[],proc:[],support:[],availability:'visible',unlockCondition:{type:'achievement',achievementIds:['region-0-open']}});d.companions.push(p);applyBalanceConfig(d);globalThis.testMail=party.mailbox.messages.find(m=>m.rewardKey==='companion-15').id;}");}
 test('Three SVG buttons replace sidebar entries and open dialogs without changing the main page; redeem codes remain only in Options',()=>{
  // Settings is also a page in the top game menu (navigation data); mailbox and achievements open only as dialogs.
  // Save and guide are inserted next to the options button at runtime; this headless DOM keeps only the static three.

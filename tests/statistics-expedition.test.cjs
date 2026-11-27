@@ -2,7 +2,7 @@
 /* v0.114: 累積戰利品 lives on the 戰鬥統計 page (not the battle journal), with manual resets, and the page
    charts damage / damage taken / healing for the active protagonist and companions. */
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),{performance}=require('node:perf_hooks');
-const {loadRuntime}=require('./headless-runtime.cjs');
+const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const json=(r,x)=>JSON.parse(r.run('JSON.stringify('+x+')'));
 function game(){
@@ -29,7 +29,7 @@ test('real combat records damage, damage taken and healing per active member; th
 });
 
 test('the journal has no loot list; the statistics page keeps one drops table whose reset clears only this map',()=>{
- const r=game();drive(r,120000);
+ const r=game();r.run('stopTeamExploration()');r.run(ADD_TEST_MAP);r.run('startSelectedExploration()');drive(r,120000);
  const journal=r.run('sharedBattleJournal()');
  assert.doesNotMatch(journal,/累積戰利品|journal-loot-compact|journal-resizer/);
  assert.match(journal,/id="liveLog"/);

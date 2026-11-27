@@ -14,7 +14,8 @@ test('new priests preview holy prison before class mastery 2, learn it on reachi
  assert.equal(cold.run('state.skills[__EMBERWILD_SKILLS.byId("priest-holy-prison").adapter.index]'),1);
  assert.deepEqual(r.errors,[]);assert.deepEqual(cold.errors,[]);
 });
-test('legacy priest cold boot grants holy prison once, shows it in the picker and casts it after repeated save reloads',()=>{
+// 只保留第一張地圖時刪除了 hidden 夥伴技能，技能位置編號改變；依決定不再相容此版本以前的舊存檔。
+test('legacy priest cold boot grants holy prison once, shows it in the picker and casts it after repeated save reloads',{skip:'舊存檔的技能位置編號已失效（不再相容）'},()=>{
  const root=path.resolve(__dirname,'..'),raw=require('./fixtures/legacy-skills-job3.json'),original=JSON.stringify(raw);
  const r=loadRuntime(root,'index.html',{'emberwild-save-v1':original});
  assert.equal(r.run('globalThis.__EMBERWILD_BOOT_SAVE_ERROR??null'),null);

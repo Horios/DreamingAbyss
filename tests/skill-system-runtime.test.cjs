@@ -12,7 +12,8 @@ test('skill IDs configure three active slots, reject duplicates/types/locked sou
 test('higher class mastery adds the former second-class choices without replacing initial skills',()=>{
  const r=game(0);r.run('setClassMasteryLevel(19);state.mastery.sword=100000;save()');assert.equal(json(r,'state.active').length,3);assert.equal(json(r,'state.procSlots').length,2);assert.equal(json(r,'state.supportSlots').length,3,'v0.212: support skills share the three active slots');assert.equal(r.run('__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId("job0-core4"))'),true);assert.equal(r.run('__EMBERWILD_SKILLS.learned(state,__EMBERWILD_SKILLS.byId("class0-initial0"))'),true);
 });
-test('legacy fixtures migrate without losing gear and repeated reloads do not refund twice',()=>{
+// 只保留第一張地圖時刪除了 hidden 夥伴技能，技能位置編號改變；依決定不再相容此版本以前的舊存檔。
+test('legacy fixtures migrate without losing gear and repeated reloads do not refund twice',{skip:'舊存檔的技能位置編號已失效（不再相容）'},()=>{
  const r=game(0);for(let j=0;j<4;j++){r.ctx.fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/legacy-skills-job'+j+'.json')));r.run('loadParty(fixture)');assert.equal(r.run('state.job'),j);assert.equal(r.run('state.bag.length'),r.ctx.fixture.members[0].bag.length);const gems=json(r,'state.gems');r.run('loadParty(JSON.parse(JSON.stringify(packParty())))');assert.deepEqual(json(r,'state.gems'),gems);}
 });
 test('companions use every unlocked skill automatically and remain compatible with save validators',()=>{

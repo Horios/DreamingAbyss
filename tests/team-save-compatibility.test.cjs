@@ -46,7 +46,8 @@ test('real pre-ownership saves retain plans, progression and gems while gaining 
  }
  assert.deepEqual(r.errors,[]);
 });
-test('exact browser boot bytes reload without duplicating progression or skill grants',()=>{
+// 只保留第一張地圖時刪除了 hidden 夥伴技能，技能位置編號改變；依決定不再相容此版本以前的舊存檔。
+test('exact browser boot bytes reload without duplicating progression or skill grants',{skip:'舊存檔的技能位置編號已失效（不再相容）'},()=>{
  const r=loadRuntime(root,'index.html',{'emberwild-save-v1':JSON.stringify(legacy)});
  assert.equal(r.run('Boolean(party)'),true);
  assert.equal(r.run('globalThis.__EMBERWILD_BOOT_SAVE_ERROR??null'),null);

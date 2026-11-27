@@ -162,6 +162,11 @@ for s in skills:
             a['index'] = sup_pos[a['job']][sid]
         elif a['kind'] == 'passive':
             a['index'] = pas_pos[s['id']]
+    # 多職業技能另有一份主要對照（adapter），與 adapters 中同職業的項目保持一致。
+    if s.get('adapters') and s.get('adapter'):
+        for a in s['adapters']:
+            if a['job'] == s['adapter']['job'] and a['kind'] == s['adapter']['kind']:
+                s['adapter']['index'] = a['index']
 save('combat/skills.json', skills)
 
 # ── 隱藏夥伴的招募券圖示 ──

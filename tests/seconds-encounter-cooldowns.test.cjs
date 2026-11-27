@@ -15,7 +15,7 @@ function untilNewEncounter(r,limit=20000){const start=r.run('EmberwildSecondsCom
 
 test('every active and support skill in the published data has an explicit initial cooldown no longer than its reuse cooldown',()=>{
  const active=doc.skillSystem.definitions.filter(s=>['active','support'].includes(s.type));
- assert(active.length>100);
+ assert(active.length>50);
  for(const s of active){const t=s.timing;assert(Number.isFinite(t.initialCooldownSeconds),s.id);assert(t.initialCooldownSeconds>=0&&t.initialCooldownSeconds<=t.cooldownSeconds,s.id);}
  // Not one shared value: roles get different openings.
  assert(new Set(active.map(s=>s.timing.initialCooldownSeconds)).size>4);
