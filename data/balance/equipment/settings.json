@@ -15,22 +15,6 @@
   },
   "enhance": {
     "maxLevel": 12,
-    "statPerLevel": 0.05,
-    "flatStatsPerLevel": {
-      "atk": 1,
-      "hp": 1,
-      "def": 0.35
-    },
-    "flatStatsPerEquipmentLevel": {
-      "atk": 0.02,
-      "hp": 0.08,
-      "def": 0.015
-    },
-    "orePerTierPerLevel": 2,
-    "dustStartLevel": 6,
-    "dustPerTierPerLevelAboveStart": 1,
-    "etherStartLevel": 10,
-    "etherCost": 1,
     "costLevelStep": 5,
     "levels": [
       {
@@ -177,13 +161,30 @@
         "failureLevel": 0,
         "baseBonus": 1.9
       }
-    ]
+    ],
+    "statPerLevel": 0.05,
+    "orePerTierPerLevel": 2,
+    "dustStartLevel": 6,
+    "dustPerTierPerLevelAboveStart": 1,
+    "etherStartLevel": 10,
+    "etherCost": 1,
+    "flatStatsPerLevel": {
+      "atk": 1,
+      "hp": 1,
+      "def": 0.35
+    },
+    "flatStatsPerEquipmentLevel": {
+      "atk": 0.02,
+      "hp": 0.08,
+      "def": 0.015
+    }
   },
   "salvage": {
     "extraRewards": []
   },
   "lootOwnerSameJobChance": 0.75,
   "boss": {
+    "baseLevelBonus": 7,
     "powerByDifficulty": [
       1,
       1.25,
@@ -200,8 +201,7 @@
       3
     ],
     "craftGoldPerTier": 250,
-    "craftMaterialCount": 5,
-    "baseLevelBonus": 7
+    "craftMaterialCount": 5
   },
   "difficultyAffix": {
     "hardChance": 0.65,
@@ -386,5 +386,11 @@
         "monster": "map24_boss"
       }
     ]
+  },
+  "dropLevelGap": {
+    "enabled": true,
+    "freeLevels": 5,
+    "penaltyPerLevel": 0.4,
+    "minimumMultiplier": 0.05
   }
 }

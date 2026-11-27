@@ -7,12 +7,12 @@
     "duration": 50,
     "name": "火屬性附魔藥水",
     "sellPrice": 45,
-    "statEffects": {},
     "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "ward_fire",
@@ -24,8 +24,8 @@
     "effectPercent": 25,
     "name": "火屬性抗性藥水",
     "sellPrice": 35,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "elementTonic_fire",
@@ -37,8 +37,8 @@
     "effectPercent": 20,
     "name": "火屬性增幅藥水",
     "sellPrice": 50,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "imbue_ice",
@@ -48,12 +48,12 @@
     "duration": 50,
     "name": "冰屬性附魔藥水",
     "sellPrice": 45,
-    "statEffects": {},
     "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "ward_ice",
@@ -65,8 +65,8 @@
     "effectPercent": 25,
     "name": "冰屬性抗性藥水",
     "sellPrice": 35,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "elementTonic_ice",
@@ -78,8 +78,8 @@
     "effectPercent": 20,
     "name": "冰屬性增幅藥水",
     "sellPrice": 50,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "imbue_wind",
@@ -89,12 +89,12 @@
     "duration": 50,
     "name": "風屬性附魔藥水",
     "sellPrice": 45,
-    "statEffects": {},
     "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "ward_wind",
@@ -106,8 +106,8 @@
     "effectPercent": 25,
     "name": "風屬性抗性藥水",
     "sellPrice": 35,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "elementTonic_wind",
@@ -119,8 +119,8 @@
     "effectPercent": 20,
     "name": "風屬性增幅藥水",
     "sellPrice": 50,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "imbue_light",
@@ -130,12 +130,12 @@
     "duration": 50,
     "name": "光屬性附魔藥水",
     "sellPrice": 45,
-    "statEffects": {},
     "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "ward_light",
@@ -147,8 +147,8 @@
     "effectPercent": 25,
     "name": "光屬性抗性藥水",
     "sellPrice": 35,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "elementTonic_light",
@@ -160,8 +160,8 @@
     "effectPercent": 20,
     "name": "光屬性增幅藥水",
     "sellPrice": 50,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "imbue_shadow",
@@ -171,12 +171,12 @@
     "duration": 50,
     "name": "暗屬性附魔藥水",
     "sellPrice": 45,
-    "statEffects": {},
     "shopEnabled": false,
     "timing": {
       "cooldownSeconds": 0,
       "durationSeconds": 300
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "ward_shadow",
@@ -188,8 +188,8 @@
     "effectPercent": 25,
     "name": "暗屬性抗性藥水",
     "sellPrice": 35,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "elementTonic_shadow",
@@ -201,8 +201,8 @@
     "effectPercent": 20,
     "name": "暗屬性增幅藥水",
     "sellPrice": 50,
-    "statEffects": {},
-    "shopEnabled": false
+    "shopEnabled": false,
+    "statEffects": {}
   },
   {
     "id": "exp_100_30m",
@@ -238,7 +238,6 @@
     "duration": 0,
     "cooldown": 2,
     "name": "簡易治療藥水",
-    "statEffects": {},
     "shopEnabled": true,
     "healAmount": 20,
     "shopAvailable": true,
@@ -246,7 +245,8 @@
     "timing": {
       "cooldownSeconds": 6,
       "durationSeconds": 0
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "heal_standard",
@@ -256,7 +256,6 @@
     "duration": 0,
     "cooldown": 3,
     "name": "治療藥水",
-    "statEffects": {},
     "shopEnabled": true,
     "healAmount": 50,
     "shopAvailable": true,
@@ -264,7 +263,8 @@
     "timing": {
       "cooldownSeconds": 9,
       "durationSeconds": 0
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "heal_greater",
@@ -274,7 +274,6 @@
     "duration": 0,
     "cooldown": 4,
     "name": "強效治療藥水",
-    "statEffects": {},
     "shopEnabled": true,
     "healAmount": 200,
     "shopAvailable": false,
@@ -282,7 +281,8 @@
     "timing": {
       "cooldownSeconds": 12,
       "durationSeconds": 0
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "heal_supreme",
@@ -292,7 +292,6 @@
     "duration": 0,
     "cooldown": 5,
     "name": "特級治療藥水",
-    "statEffects": {},
     "shopEnabled": true,
     "healAmount": 500,
     "shopAvailable": false,
@@ -300,7 +299,8 @@
     "timing": {
       "cooldownSeconds": 15,
       "durationSeconds": 0
-    }
+    },
+    "statEffects": {}
   },
   {
     "id": "power_tier_reroll",

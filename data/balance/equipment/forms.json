@@ -312,13 +312,13 @@
           2,
           3
         ],
-        "weaponType": "staff",
         "fixedEffects": [
           {
             "key": "gearAtkPct",
             "value": 10
           }
-        ]
+        ],
+        "weaponType": "staff"
       }
     ],
     [

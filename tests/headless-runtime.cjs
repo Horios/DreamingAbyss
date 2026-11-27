@@ -19,7 +19,7 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
     localStorage:{getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,String(value)),removeItem:key=>values.delete(key),clear:()=>values.clear()},
     sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},location:{href:'http://emberwild.test/',origin:'http://emberwild.test',pathname:'/',hash:'',search:'',reload(){}},navigator:{userAgent:'runtime-verification'},
     HTMLElement:Element,HTMLDialogElement:Element,HTMLInputElement:Element,HTMLSelectElement:Element,HTMLTextAreaElement:Element,
-    MutationObserver:class{observe(){}disconnect(){}},ResizeObserver:class{observe(){}disconnect(){}},
+    MutationObserver:class{observe(){}disconnect(){}takeRecords(){return [];}},ResizeObserver:class{observe(){}disconnect(){}},
     setTimeout:()=>++seq,clearTimeout(){},setInterval:()=>++seq,clearInterval(){},requestAnimationFrame:()=>++seq,cancelAnimationFrame(){},queueMicrotask(){},
     addEventListener:(type,fn)=>on('window',type,fn),removeEventListener(){},matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),getComputedStyle:()=>({lineHeight:'20px',fontSize:'16px',getPropertyValue:()=>''}),
     performance:{now:()=>now},crypto:{randomUUID:()=>String(++seq)},innerWidth:1440,innerHeight:900,scrollX:0,scrollY:0,alert(){},confirm:()=>true,prompt:()=>null};

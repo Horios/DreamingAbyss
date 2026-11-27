@@ -1,11 +1,4 @@
 {
-  "regionVouchers": {
-    "ticketMinutes": 30,
-    "sampleMinutes": 30,
-    "maxGapMinutes": 10,
-    "chargePotions": true,
-    "averageMinutes": 180
-  },
   "kindMultiplier": {
     "normal": 1,
     "elite": 1.7,
@@ -47,5 +40,12 @@
     "bossRepeat": 0.01,
     "firstBossMin": 1,
     "firstBossMax": 2
+  },
+  "regionVouchers": {
+    "ticketMinutes": 30,
+    "sampleMinutes": 30,
+    "maxGapMinutes": 10,
+    "chargePotions": true,
+    "averageMinutes": 180
   }
 }

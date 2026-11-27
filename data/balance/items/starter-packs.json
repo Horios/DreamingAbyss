@@ -4,78 +4,7 @@
       "group": 0,
       "slot": 0,
       "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 0,
-      "slot": 1,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 0,
-      "slot": 2,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 0,
-      "slot": 3,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 0,
-      "slot": 3,
-      "form": 0,
+      "baseAttack": 4,
       "powerTier": 1,
       "plus": 0,
       "fixedEffects": null,
@@ -96,78 +25,7 @@
       "group": 1,
       "slot": 0,
       "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 1,
-      "slot": 1,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 1,
-      "slot": 2,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 1,
-      "slot": 3,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 1,
-      "slot": 3,
-      "form": 0,
+      "baseAttack": 4,
       "powerTier": 1,
       "plus": 0,
       "fixedEffects": null,
@@ -188,78 +46,7 @@
       "group": 2,
       "slot": 0,
       "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 2,
-      "slot": 1,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 2,
-      "slot": 2,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 2,
-      "slot": 3,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 2,
-      "slot": 3,
-      "form": 0,
+      "baseAttack": 4,
       "powerTier": 1,
       "plus": 0,
       "fixedEffects": null,
@@ -280,78 +67,7 @@
       "group": 3,
       "slot": 0,
       "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 1,
-      "slot": 1,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 3,
-      "slot": 2,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 3,
-      "slot": 3,
-      "form": 0,
-      "powerTier": 1,
-      "plus": 0,
-      "fixedEffects": null,
-      "affixes": [
-        null,
-        null
-      ],
-      "growth": {
-        "enabled": false,
-        "startLevel": 1,
-        "maxLevel": 60,
-        "effects": []
-      }
-    },
-    {
-      "group": 3,
-      "slot": 3,
-      "form": 0,
+      "baseAttack": 4,
       "powerTier": 1,
       "plus": 0,
       "fixedEffects": null,

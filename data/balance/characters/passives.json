@@ -12,7 +12,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 10
+    "partnerId": 10,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner11-passive1",
@@ -27,7 +38,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 11
+    "partnerId": 11,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner12-passive1",
@@ -42,7 +64,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 12
+    "partnerId": 12,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner13-passive1",
@@ -57,7 +90,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 13
+    "partnerId": 13,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner14-passive1",
@@ -72,7 +116,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 14
+    "partnerId": 14,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner15-passive1",
@@ -87,7 +142,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 15
+    "partnerId": 15,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner16-passive1",
@@ -102,7 +168,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 16
+    "partnerId": 16,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner17-passive1",
@@ -117,7 +194,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 17
+    "partnerId": 17,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner18-passive1",
@@ -132,7 +220,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 18
+    "partnerId": 18,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner19-passive1",
@@ -147,7 +246,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 19
+    "partnerId": 19,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner20-passive1",
@@ -162,7 +272,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 20
+    "partnerId": 20,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner21-passive1",
@@ -177,7 +298,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 21
+    "partnerId": 21,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner22-passive1",
@@ -192,7 +324,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 22
+    "partnerId": 22,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner23-passive1",
@@ -207,7 +350,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 23
+    "partnerId": 23,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner24-passive1",
@@ -222,7 +376,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 24
+    "partnerId": 24,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner25-passive1",
@@ -237,7 +402,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 25
+    "partnerId": 25,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner26-passive1",
@@ -252,7 +428,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 26
+    "partnerId": 26,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner27-passive1",
@@ -267,7 +454,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 27
+    "partnerId": 27,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner28-passive1",
@@ -282,7 +480,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 28
+    "partnerId": 28,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "partner29-passive1",
@@ -297,7 +506,18 @@
       }
     ],
     "requiredLevel": 7,
-    "partnerId": 29
+    "partnerId": 29,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "warrior-cleave-chain",
@@ -338,7 +558,18 @@
       "power": 0.8,
       "maxAttacks": 3
     },
-    "weaponTypes": []
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "mage-mana-cycle",
@@ -379,7 +610,18 @@
       "reduction": 1,
       "cooldown": 2
     },
-    "weaponTypes": []
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "gel-recovery",
@@ -393,7 +635,19 @@
         "value": 1
       }
     ],
-    "requiredLevel": 0
+    "requiredLevel": 0,
+    "partnerId": null,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   },
   {
     "id": "ancient-heart-revival",
@@ -407,6 +661,18 @@
         "value": 30
       }
     ],
-    "requiredLevel": 0
+    "requiredLevel": 0,
+    "partnerId": null,
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
   }
 ]

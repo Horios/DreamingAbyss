@@ -1,5 +1,10 @@
 [
   {
+    "timing": {
+      "durationSeconds": 594,
+      "periodicIntervalSeconds": 6,
+      "triggerIntervalSeconds": 3
+    },
     "polarity": "buff",
     "dispellable": true,
     "id": "pain-spread",
@@ -19,28 +24,25 @@
     "control": null,
     "periodic": [],
     "uses": 1,
-    "stackable": false,
-    "timing": {
-      "durationSeconds": 594,
-      "periodicIntervalSeconds": 6,
-      "triggerIntervalSeconds": 3
-    }
+    "stackable": false
   },
   {
+    "timing": {
+      "durationSeconds": null,
+      "periodicIntervalSeconds": 6,
+      "triggerIntervalSeconds": 3
+    },
+    "polarity": "debuff",
+    "dispellable": true,
     "id": "holy-prison-mark",
     "name": "神聖光牢",
     "tags": [],
-    "polarity": "debuff",
-    "dispellable": true,
     "duration": 99,
-    "permanent": true,
-    "durationClock": "target",
-    "stackable": true,
-    "uses": 1,
-    "removeOnTrigger": true,
     "modifiers": [],
     "control": null,
     "periodic": [],
+    "uses": 1,
+    "stackable": true,
     "triggers": [
       {
         "event": "targetTurnEnd",
@@ -61,10 +63,8 @@
         "chainMultiplier": 1
       }
     ],
-    "timing": {
-      "durationSeconds": null,
-      "periodicIntervalSeconds": 6,
-      "triggerIntervalSeconds": 3
-    }
+    "removeOnTrigger": true,
+    "permanent": true,
+    "durationClock": "target"
   }
 ]

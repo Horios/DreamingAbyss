@@ -43,10 +43,25 @@
       ]
     }
   ],
+  "starterPackItems": [
+    [],
+    [],
+    [],
+    []
+  ],
   "companionSkillVersion": 1,
   "companionNameVersion": 1,
   "teamSettings": {
     "maxPlans": 6
   },
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "textOverrides": {
+    "version": 1,
+    "entries": [
+      {
+        "source": "女神送的新手裝備都放在背包。護甲與飾品已經穿好，還差一把武器。",
+        "text": "女神送的新手裝備都放在背包，先穿上武器。"
+      }
+    ]
+  }
 }

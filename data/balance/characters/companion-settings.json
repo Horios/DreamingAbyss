@@ -171,7 +171,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "guardian",
@@ -221,7 +222,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "pursuit",
@@ -270,7 +272,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "arcane",
@@ -319,7 +322,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "echo",
@@ -368,7 +372,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "hunt",
@@ -417,7 +422,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "prayer",
@@ -466,7 +472,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "revival",
@@ -515,7 +522,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "plunder",
@@ -564,7 +572,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       },
       {
         "id": "endurance",
@@ -613,7 +622,8 @@
             "boss",
             "final"
           ]
-        }
+        },
+        "job": "all"
       }
     ]
   }

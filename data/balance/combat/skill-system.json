@@ -346,5 +346,6 @@
       }
     }
   ],
-  "masteryGateVersion": 1
+  "masteryGateVersion": 1,
+  "clearingSkillsVersion": 1
 }
