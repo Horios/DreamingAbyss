@@ -14,7 +14,8 @@ function priest(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn
  r.run(`{const T=EmberwildSecondsCombat.timeline,base=T.handlers.onEvent;T.handlers.onEvent=function(e){const out=base.call(this,e);if(!foes.some(f=>f.hp>0))EV.push(e.type+':'+(e.skillId||''));return out;};}`);
  return r;}
 test('no blocked actions or fear messages while the healer waits during recovery; the regen keeps healing',()=>{
- const r=priest(),log0=r.run('logs.length');for(let i=0;i<80;i++){r.advance(250);r.run('tick()');}
+ // 再生是否在戰鬥中施放過取決於亂數；回復開始時讓它就緒並讓牧師半血，確保回復期間一定有再生在作用。
+ const r=priest(),log0=r.run('logs.length');r.run(`{const a=EmberwildSecondsCombat.timeline.actors.find(a=>a.definition.id===heroKey(playerHero()));a.ready['job3-support0']=0;playerHero().hp=Math.min(playerHero().hp,stats(playerHero()).hp*.5);}`);for(let i=0;i<80;i++){r.advance(250);r.run('tick()');}
  const ev=JSON.parse(r.run('JSON.stringify(EV)'));
  assert.equal(ev.filter(e=>e.startsWith('blocked')).length,0,JSON.stringify(ev));
  assert(!JSON.parse(r.run('JSON.stringify(logs.slice(0,logs.length-'+log0+').map(e=>e.text||e))')).some(t=>/因畏懼延後行動/.test(t)),'no bogus fear message');
