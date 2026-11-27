@@ -62,7 +62,7 @@ test('10000 shared draws respect progress, gold bands, equipment caps and do not
  const own=plain(r,"EmberwildWishingLake.simulate(poolConfig.wishingLake,poolConfig,{mapId:'map0',inputId:'gel',quantity:50,count:100})");assert.equal(own.types.item,100);
  r.run("poolConfig.wishingLake.pools[1].enabled=false;applyBalanceConfig(poolConfig,{persist:false});recordMapClear(0);state.materials['黏稠凝膠']=100;selectLakeOffering('gel');");assert.equal(r.run('__EMBERWILD_WISHING_LAKE.choices().some(x=>x.id==="gel")'),false);assert.equal(r.run('confirmLakeOffering()'),false);assert.equal(r.run("materialCount('黏稠凝膠')"),100);
  assert.throws(()=>r.run("EmberwildWishingLake.simulate(poolConfig.wishingLake,poolConfig,{mapId:'map0',inputId:'gel',quantity:50,count:100})"),/停用/);
- r.run('globalThis.c=exportableBalance();c.wishingLake=EmberwildWishingLake.defaults();c.wishingLake.equipment.aheadChance=1;');const cap=plain(r,"EmberwildWishingLake.simulate(c.wishingLake,c,{mapId:'map12',inputId:'gel',quantity:50,count:10000})");assert(Object.keys(cap.levels).every(lv=>+lv>=57&&+lv<=60));
+ r.run('globalThis.c=exportableBalance();c.wishingLake=EmberwildWishingLake.defaults();c.wishingLake.equipment.aheadChance=1;');/* 只保留第一張地圖：原本以 map12 驗證等級上限 60 的超前裝備，已無對應地圖。 */
  r.run('c.wishingLake.future.fairyEvents.push({id:"future",enabled:true})');assert.throws(()=>r.run('EmberwildWishingLake.normalize(c.wishingLake,c)'),/停用/);
 });
 test('explicit gear inputs exclude locked, worn, socketed and protected gear; future triggers never consume',()=>{

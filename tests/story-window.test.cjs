@@ -1,8 +1,8 @@
 // v0.142: the shared story window. Headless checks of the views and of what skipping does to the story state.
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),M=require('../js/story/story-model.js');
+const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),M=require('../js/story/story-model.js');
 const regionFixture=require('./fixtures/story-region-chain.json');
-function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.ctx.regionFixture=structuredClone(regionFixture);r.run('globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
+function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.ctx.regionFixture=structuredClone(regionFixture);r.run(ADD_TEST_MAP+';globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
 const view=r=>r.json('__EMBERWILD_STORY.dialogueView()');
 
 test('skippable is decided by the quest data: never the prologue, and any quest can opt out',()=>{
@@ -35,7 +35,7 @@ test('skipping a read-only stage completes it once, exactly like finishing it; u
 });
 
 test('the prologue offers no skip and refuses every skip route',()=>{
- const r=loadRuntime(root);r.ctx.regionFixture=structuredClone(regionFixture);r.run('globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1)');
+ const r=loadRuntime(root);r.ctx.regionFixture=structuredClone(regionFixture);r.run(ADD_TEST_MAP+';globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1)');
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'creation');const html=r.run("$('prologue-layer').innerHTML");
  assert.doesNotMatch(html,/data-story-skip/);assert.doesNotMatch(html,/data-story-all/);assert.doesNotMatch(html,/data-story-summary/);assert.match(html,/data-story-speed/);
  assert.equal(r.run('storyWindowSkip()'),false);assert.equal(r.run('storyWindowSkip(true)'),false);assert.equal(r.run('skipStoryDialogue()'),false);

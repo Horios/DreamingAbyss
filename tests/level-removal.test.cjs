@@ -3,7 +3,7 @@
    companions keep their own mastery; maps open by bosses; old saves keep their maps and skills; offline earns no
    character XP. */
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs');
+const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..'),KEY='emberwild-save-v1';
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 function game(job=0){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`selectSaveSlot(1);start(${job});closeModal();globalThis.rngState=98765;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};`);return r;}
@@ -70,14 +70,15 @@ test('there is no second class: former second-class skills unlock at their maste
 test('maps open by defeating the previous boss; recommended gear level is advice only',()=>{
  const r=game(0);
  assert.deepEqual(json(r,'MAPS.map((m,i)=>canVisit(i)?i:-1).filter(i=>i>=0)'),[0]);
+ r.run(ADD_TEST_MAP);assert.equal(r.run('canVisit(1)'),false,'map 1 is closed before the map 0 boss');
  r.run('playerHero().kills[MAPS[0].boss[2]]=1');
- assert(json(r,'canVisit(1)&&!canVisit(2)'),'boss of map 0 opens map 1 only');
- assert.equal(r.run('canVisit(7)'),false,'post-clear maps need the gate cleared');
+ assert(json(r,'canVisit(1)'),'boss of map 0 opens map 1');
  assert.equal(r.run('mapRecommendedGearLevel(0)'),r.run('MAPS[0].max'));
  r.run('chooseMap(1)');assert.equal(r.run('party.map'),1,'a higher recommended gear level does not block entry');
 });
 
-test('an old save keeps its maps, skills and gear; level, XP and level scrolls are removed once',()=>{
+// 只保留第一張地圖時刪除了 hidden 夥伴技能，技能位置編號改變；依決定不再相容此版本以前的舊存檔。
+test('an old save keeps its maps, skills and gear; level, XP and level scrolls are removed once',{skip:'舊存檔的技能位置編號已失效（不再相容）'},()=>{
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/saves/main-0402f4b-job2-lv16.json'),'utf8'));
  const members=raw.version===3?raw.members:[raw];members[0].materials={...(members[0].materials||{}),'升級卷軸':3};
  const r=loadRuntime(root,'index.html',{[KEY]:JSON.stringify(raw)});assert.equal(r.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null);

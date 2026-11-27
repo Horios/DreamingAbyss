@@ -17,8 +17,8 @@ const setups={
  low:`setClassMasteryLevel(0);`,
  medium:`setClassMasteryLevel(19);`,
  high:`setClassMasteryLevel(58);state.won=true;party.cleared=true;`,
- potions:`setClassMasteryLevel(7);state.kills[MAPS[0].boss[2]]=1;party.map=1;state.equipped=state.equipped.map(()=>null);state.autoPotion=true;state.autoPotionId='heal_small';state.autoPotionThresholdPct=90;state.healingPotions={heal_small:2};`,
- boss:`setClassMasteryLevel(29);for(let i=0;i<6;i++)state.kills[MAPS[i].boss[2]]=1;party.map=6;`,
+ potions:`setClassMasteryLevel(7);party.map=0;state.equipped=state.equipped.map(()=>null);state.autoPotion=true;state.autoPotionId='heal_small';state.autoPotionThresholdPct=90;state.healingPotions={heal_small:2};`,
+ boss:`setClassMasteryLevel(29);party.map=0;`,
  boosts:`setClassMasteryLevel(58);state.won=true;party.cleared=true;for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}for(const b of party.timedBoosts)b.remainingMs=4*3600000;`,
  inventory:`setClassMasteryLevel(58);state.won=true;party.cleared=true;const token=createCompanionToken(EmberwildTokens.normalize().catalog[0].id),source=state.bag[0];for(let i=0;i<1500;i++)state.bag.push({...structuredClone(i%2?token:source),id:'existing-'+i});`
 };

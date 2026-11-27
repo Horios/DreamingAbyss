@@ -283,7 +283,6 @@ function chooseForge(id){forgeSelection=id;render();}
 
 
 
-for(let i=0;i<6;i++){let original=MAPS[i];let map={...original,name:ASCENDED_NAMES[i],min:31+i*5,max:35+i*5,family:i,mobs:original.mobs.map(x=>['覺醒・'+x[0],x[1],'覺醒'+x[2]]),boss:['覺醒・'+original.boss[0],original.boss[1],'覺醒'+original.boss[2]]};MAPS.push(map);map.mobs.concat([map.boss]).forEach((x,j)=>monsterArtByMaterial.set(x[2],i*4+j));}
 function regionTier(mi){return mi===6?6:Math.ceil(MAPS[mi].min/5);}
 function regionFamily(mi){return MAPS[mi].family??(mi>6?mi-7:Math.min(mi,5));}
 // Maps open by exploration: a map opens once the boss of the map before it (same side of the progression gate) is
@@ -805,12 +804,6 @@ MAPS.forEach((map,mi)=>{const family=regionFamily(mi);map.mobs.concat([map.boss]
 
 
 
-for(let tier=1;tier<=12;tier++){
- const family=(tier-1)%6,def=SIDE_REGIONS[family],high=tier>6,tag=high?'上古・':'',mi=MAPS.length;
- const tuple=x=>[tag+x[0],monsterPixel(x[2],true),(high?'上古':'')+x[1]];
- const map={name:high?HIGH_REGION_NAMES[family]:def[0],min:(tier-1)*5+1,max:tier*5,family,icon:'',color:'#34324a',mobs:def[2].map(tuple),boss:tuple(def[3]),parallel:true};MAPS.push(map);
- [...def[2],def[3]].forEach((m,i)=>{const row=i===4?map.boss:map.mobs[i];monsterArtByMaterial.set(row[2],m[2]);species.set(row[2],{element:def[1],race:m[3]});});
-}
 
 
 

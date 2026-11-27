@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 83,
+  "dataRevision": 91,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "41410826a4031751c2d8da8e6fde096b9a886ef64b7b93355c3b69e0df7fa9a3",
-    "bytes": 1464256
+    "sha256": "87a579088e008145b075fb6f4fbcabdf9b37cfb3210e36abcbb013ef68aced82",
+    "bytes": 601368
   },
   "layout": {
     "": [
@@ -176,9 +176,9 @@
       "file": "world/maps.json",
       "source": "balanceSettings.maps",
       "present": true,
-      "version": 5,
-      "sha256": "afdc1d7fbd5d8eb145c3fe37ff662138c3dadd56fd12a3c1f1081d07a493c9aa",
-      "bytes": 12367,
+      "version": 6,
+      "sha256": "7434c2e5eae1e038e51f271c1f51db7f9af0dd2f777b18ec1d229d6bebdb5cb8",
+      "bytes": 533,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -194,9 +194,9 @@
       "file": "world/monsters.json",
       "source": "balanceSettings.monsters",
       "present": true,
-      "version": 4,
-      "sha256": "b5515e3e23ed1c040692a989af4f386f519edbd9d17be1aa27ec0d87d9bce34f",
-      "bytes": 162063,
+      "version": 5,
+      "sha256": "69677e64b0fe8f7f3e988f0417ecac5ca66ae903769a381167d13496e000b770",
+      "bytes": 6716,
       "dependsOn": [
         "combat/skills",
         "world/maps"
@@ -216,9 +216,9 @@
       "file": "world/drops.json",
       "source": "balanceSettings.drops",
       "present": true,
-      "version": 15,
-      "sha256": "b9e95dc1ba81c160bc4cc2445b9ad7e0d8449cd780e9000eeea874e4a86d9330",
-      "bytes": 262548,
+      "version": 16,
+      "sha256": "9528f794b81e5d5d455ebb61db212a60a9ae31fdce1bc16edeea76b6cd0ec05f",
+      "bytes": 14177,
       "dependsOn": [
         "items/items",
         "world/monsters"
@@ -290,9 +290,9 @@
       "file": "combat/skills.json",
       "source": "skillSystem.definitions",
       "present": true,
-      "version": 8,
-      "sha256": "b6fce3b3d9e358dba17fd1160cb6bd8422eea4c4ec15db6db95fafaf61165cdb",
-      "bytes": 248381,
+      "version": 12,
+      "sha256": "78f62ec93c885d334809e0e06242fb7f9f6fd4caa68fbd6bc603d3a4915c554b",
+      "bytes": 131172,
       "dependsOn": [
         "characters/classes",
         "characters/companions",
@@ -342,9 +342,9 @@
       "file": "characters/classes.json",
       "source": "classes",
       "present": true,
-      "version": 8,
-      "sha256": "bfa8f25ac1e29026f074eda266e557476989d3a3dcd75995a980c55a93c777e3",
-      "bytes": 184636,
+      "version": 9,
+      "sha256": "253842c27046a0761354c147bfd42a97a9715c2aa889e21812eb70aa2adb37c5",
+      "bytes": 114064,
       "dependsOn": [
         "systems/quests",
         "world/maps"
@@ -361,9 +361,9 @@
       "file": "characters/support-skills.json",
       "source": "supportSkills",
       "present": true,
-      "version": 5,
-      "sha256": "ab0ad54b947f360ee186db6d0fdb89f955d40563a5824f0e17f36f449f3b1fcb",
-      "bytes": 55919,
+      "version": 7,
+      "sha256": "df2b32d1b4af2dfc8f16ccc7df7c619e2b6d78649cd1137d8db0183a754fdbfb",
+      "bytes": 25388,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -392,9 +392,9 @@
       "file": "characters/companions.json",
       "source": "companions",
       "present": true,
-      "version": 3,
-      "sha256": "8205187374f76412a2083d89f1d6022c4cc8744a4c94947c643722c316053181",
-      "bytes": 23768,
+      "version": 4,
+      "sha256": "335a0b364465256e3590344293f7bbc80dcb7ba4c3482e488b917d9ab59dc811",
+      "bytes": 5840,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -408,9 +408,9 @@
       "file": "characters/passives.json",
       "source": "passiveDefinitions",
       "present": true,
-      "version": 8,
-      "sha256": "066112d3e5b58ea521c1fb50cd0b97be1cd7a28f49370b90e2c37327cf826dba",
-      "bytes": 16001,
+      "version": 9,
+      "sha256": "8781aaf017ed9e2ab5a3a4a0bfd5982fe9de6fb241551a1ef61038a5c74a2530",
+      "bytes": 6950,
       "dependsOn": [],
       "validators": [
         "field-rules"
@@ -469,9 +469,9 @@
       "file": "equipment/power-system.json",
       "source": "equipmentPowerSystem",
       "present": true,
-      "version": 4,
-      "sha256": "8560b267645a0cac233e06e3728f8f5c86553c2412fb69ffdc18a273d8dc2884",
-      "bytes": 11401,
+      "version": 5,
+      "sha256": "54f0e1cefd4540940896e0bb0c9256a5f2cff8f0ed92a2c8cbbc94b018aae130",
+      "bytes": 1657,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -485,9 +485,9 @@
       "file": "equipment/settings.json",
       "source": "balanceSettings.equipment",
       "present": true,
-      "version": 8,
-      "sha256": "5c5f8112081a8439d7d262c9cc95bc4150f87173f3458f67db63a4b772c91a3d",
-      "bytes": 8225,
+      "version": 9,
+      "sha256": "841d60623fca5d110a56b1c0c990f126f012c24d60156a93bc13d6112939236f",
+      "bytes": 5490,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -524,9 +524,9 @@
       "file": "items/inventory-icons.json",
       "source": "inventoryIcons",
       "present": true,
-      "version": 13,
-      "sha256": "2bf0bb38cc9d50f38320f21037452472789235235227034622335add4e033f3e",
-      "bytes": 48239,
+      "version": 17,
+      "sha256": "c650d75204fbda61ea57d593871bacffb8441a2b36225d1b2caacf82af339bf6",
+      "bytes": 13502,
       "dependsOn": [
         "characters/classes",
         "characters/companion-settings",
@@ -575,9 +575,9 @@
       "file": "systems/economy.json",
       "source": "balanceSettings.economy",
       "present": true,
-      "version": 4,
-      "sha256": "b31ec5703dc47e489693c10073a8b462931499fc2e379b5fcc8e66ab0efc5cb4",
-      "bytes": 7643,
+      "version": 5,
+      "sha256": "b91b5fd5a94649b2d7c2f1198fe1c4b5c2f65698e2f5ecb35974e2301a997296",
+      "bytes": 776,
       "dependsOn": [],
       "validators": [
         "field-rules",
@@ -644,9 +644,9 @@
       "file": "systems/shop.json",
       "source": "shopSettings",
       "present": true,
-      "version": 5,
-      "sha256": "6e3586fe694039924531770323f19ccdb267aae81a85b0648c42ede7d33ee0ed",
-      "bytes": 37422,
+      "version": 6,
+      "sha256": "092516b4559f695eb4a01c75170ecb03bf4eb04fd4e04eefb098d2c2a8beb5d7",
+      "bytes": 10932,
       "dependsOn": [
         "items/items",
         "world/maps"

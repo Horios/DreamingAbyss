@@ -5,8 +5,8 @@ function apply(r,icons,edit=()=>{}){const d=JSON.parse(r.run('JSON.stringify(exp
 const plain=v=>JSON.parse(JSON.stringify(v));
 // Counts follow the reviewed data: speed tickets (v0.023) and 紅色草泥 were retired; gems are 5 types × 3 tiers.
 // v0.178: +20 companion tickets (every companion can have one).
-test('reviewed detailed hierarchy contains all 351 definitions including 48 difficulty material keys without duplicate stock',()=>{
- const rows=M.entries(published).filter(x=>x.kind!=='skill');assert.equal(rows.length,351);assert.equal(new Set(rows.map(r=>r.id)).size,351);assert.equal(new Set(rows.map(r=>r.categoryPath.join('|'))).size,40,'the companion tickets add one category');
+test('reviewed detailed hierarchy contains all 93 first-map definitions including difficulty material keys without duplicate stock',()=>{
+ const rows=M.entries(published).filter(x=>x.kind!=='skill');assert.equal(rows.length,93);assert.equal(new Set(rows.map(r=>r.id)).size,93);assert.equal(new Set(rows.map(r=>r.categoryPath.join('|'))).size,37,'the companion tickets add one category');
  assert(rows.some(r=>r.id==='material:寶石粉塵'));assert(!rows.some(r=>r.id==='material:紅色草'||r.id==='material:小蟲'));assert.deepEqual(rows.find(r=>r.id==='item:heal_small').categoryPath,['消耗品','藥水','治療藥水']);assert.deepEqual(rows.find(r=>r.id==='token:berserk').categoryPath.slice(0,2),['裝備','夥伴信物']);
  for(const [key,monster] of [['form:4:3:2','苔原史萊姆'],['form:4:3:1','林間野狼'],['form:4:0:0','迷路樹精']]){
   const row=rows.find(r=>r.key===key),sources=row.sourceDetails.filter(s=>s.type==='monster');
@@ -22,7 +22,7 @@ test('combined hierarchy, source, use, weapon, region, state, text and numeric s
  assert(M.query(published,{hierarchy:['素材'],search:'以太鍛鐵'}).length>0);assert.equal(M.query(published,{sources:['gather']}).length,0);
  assert(M.query(published,{hierarchy:['裝備'],job:'1',slot:'1',weapon:'axe'}).every(r=>r.slot===0&&r.jobs.includes(0)&&r.weaponTypes.includes('axe')));
  const sorted=M.query(published,{hierarchy:['消耗品'],sort:'price',direction:'desc'}).map(r=>M.economics(published,r).sellPrice);assert.deepEqual(sorted,[...sorted].sort((a,b)=>b-a));
- assert.equal(M.query(published,{status:'warning'}).length,0);assert.deepEqual(M.query(published,{status:'unsaleable'}).map(r=>r.kind).sort(),[...Array(15).fill('gem'),...Array(20).fill('item'),'material'],'dust, gem tiers and companion tickets are unsaleable');assert(M.query(published,{status:'unsaleable'}).filter(r=>r.kind==='item').every(r=>r.key.startsWith('companion-ticket-')));
+ assert.equal(M.query(published,{status:'warning'}).length,0);assert.deepEqual(M.query(published,{status:'unsaleable'}).map(r=>r.kind).sort(),[...Array(15).fill('gem'),...Array(5).fill('item'),'material'],'dust, gem tiers and companion tickets are unsaleable');assert(M.query(published,{status:'unsaleable'}).filter(r=>r.kind==='item').every(r=>r.key.startsWith('companion-ticket-')));
  const d=structuredClone(published);d.inventoryIcons.push({kind:'material',key:'光輝碎塊',iconType:'auto',categoryPath:['素材','自訂製作材料'],tags:['藥草'],displayName:'治療葉'});assert.equal(M.query(d,{hierarchy:['素材','自訂製作材料'],search:'治療葉 藥草',status:'custom'}).length,1);
 });
 test('material, consumable and gear sale eligibility and individual gear price affect actual transactions',()=>{

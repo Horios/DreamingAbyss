@@ -21,14 +21,16 @@ test('data: shared gear, legendary, random gem, potion drops are gone; dust is i
   // Normal and elite versions share the same forms.
   const keys=new Set(pools.map(p=>JSON.stringify(p.pool.map(x=>x.key))));assert.equal(keys.size,1,m.id);
  }
+ // 只保留第一張地圖後，部分一般裝備只由商店販售。
+ const sold=new Set((seed.balanceSettings?.shop?.equipmentStages||seed.shopSettings?.equipmentStages||[]).flatMap(st=>st.entries.map(e=>e.formId)));
  const forms=new Set(entries.filter(e=>e.type==='monsterGear').flatMap(e=>e.pool.map(p=>p.key)));
- for(const [job,slots] of seed.equipmentForms.slice(0,4).entries())for(const [slot,list] of slots.entries())for(const i of list.keys())assert(forms.has('form:'+job+':'+slot+':'+i),'general form without a source: '+job+':'+slot+':'+i);
+ for(const [job,slots] of seed.equipmentForms.slice(0,4).entries())for(const [slot,list] of slots.entries())for(const i of list.keys())assert(forms.has('form:'+job+':'+slot+':'+i)||sold.has(seed.equipmentForms[job][slot][i].id),'general form without a source: '+job+':'+slot+':'+i);
  for(const [mi] of seed.balanceSettings.maps.catalog.entries()){
   const normals=monsters.filter(m=>m.mapIndex===mi&&m.kind==='normal').map(m=>m.id),gems=entries.filter(e=>e.type==='gemPool'&&e.kinds.some(k=>k==='normal'||k==='elite')&&e.sources.some(id=>normals.includes(id)));
   if(normals.length)assert.equal(new Set(gems.flatMap(g=>g.pool.map(p=>p.key))).size,1,'one gem kind on map '+mi);
   const boss=entries.find(e=>e.type==='gemPool'&&e.id==='gem_map'+mi+'_boss');if(boss)assert.equal(boss.pool.length,3);
  }
- const kinds=new Set(entries.filter(e=>e.type==='gemPool').flatMap(e=>e.pool.map(p=>p.key)));assert.deepEqual([...kinds].sort(),['0','1','2','3','4']);
+ const kinds=new Set(entries.filter(e=>e.type==='gemPool').flatMap(e=>e.pool.map(p=>p.key)));assert([...kinds].length&&[...kinds].every(k=>['0','1','2','3','4'].includes(k)));
 });
 test('monsters drop only their own forms, unidentified, plus map gems and independent dust; drops are the same instance after identification',()=>{
  const r=game();r.run('globalThis.d0=state.dust;always();killAt(0,25)');
@@ -69,7 +71,7 @@ test('bulk sale and salvage skip unidentified gear; batch selection cannot pick 
 });
 test('BOSS gem pool picks from three gems by weight; normal/elite drops follow the map gem on every difficulty',()=>{
  const r=game();r.run('always()');
- for(const mode of [0,1,2]){r.run(`party.difficulty=${mode};state.gems.fill(0);`);r.run('killAt(3,6)');const g=json(r,'[...state.gems]');assert(g[3]>0);}
+ for(const mode of [0,1,2]){r.run(`party.difficulty=${mode};state.gems.fill(0);`);r.run('killAt(0,6)');const g=json(r,'[...state.gems]');assert(g[1]>0);}
  const boss=seed.balanceSettings.drops.entries.find(e=>e.id==='gem_map0_boss');const seen=new Set();let s=1;const rng=()=>{s=(s*16807)%2147483647;return s/2147483647;};
  for(let i=0;i<300;i++)seen.add(D.pick(boss.pool,rng).key);assert.deepEqual([...seen].sort(),boss.pool.map(p=>p.key).sort());
 });

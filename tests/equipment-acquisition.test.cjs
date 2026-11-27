@@ -3,21 +3,15 @@ const {loadRuntime}=require('./headless-runtime.cjs'),seed=require('../data/bala
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 function game(){const r=loadRuntime(root);r.ctx.seed=structuredClone(seed);r.run('applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();');return r;}
 test('standard shop stages, buying early, level gates, quantities, folding and rollback use the existing shop',()=>{
+ // 只保留第一張地圖：商店只有 Lv.1 階段（單一階段時沒有折疊區塊）。
  const r=game();
  assert.deepEqual(json(r,'__EMBERWILD_EQUIPMENT_SHOP.currentOffers().map(s=>s.level)'),[1]);
- assert.equal(r.run("buyEquipmentShopOffer('equipment_lv20/job0-slot0-form0')"),false);
- r.run("setClassMasteryLevel(17,playerHero());syncParty();recordMapClear(3);state.gold=100000;save();setShopCategory('equipment');");
- assert.deepEqual(json(r,'__EMBERWILD_EQUIPMENT_SHOP.currentOffers().map(s=>s.level)'),[20,1]);
- assert.equal(r.run('recordMapClear(3)'),false);
- const html=r.run('shopView()');assert.match(html,/equipment_lv20[^]*?aria-expanded="true"/);assert.match(html,/equipment_lv1[^]*?aria-expanded="false"/);
- r.run("setEquipmentShopFold('equipment_lv20',false)");assert.match(r.run('shopView()'),/equipment_lv20[^]*?aria-expanded="false"/);
- r.run("setEquipmentShopFold('equipment_lv1',true)");assert.match(r.run('shopView()'),/equipment_lv1[^]*?aria-expanded="true"/);
- const before=json(r,'({gold:state.gold,bag:state.bag.length})');assert.equal(r.run("buyEquipmentShopOffer('equipment_lv20/job0-slot0-form0',2)"),true);
- const g=json(r,'state.bag.at(-1)');assert.equal(g.equipmentLevel,20);assert.equal(g.powerTier,5);assert.equal(g.baseSnapshot.mult,1);assert.deepEqual(g.affix,[]);assert.equal(g.prefixId,undefined);assert.equal(g.suffixId,undefined);
- assert.equal(r.run('state.gold'),before.gold-18000);assert.equal(r.run('state.bag.length'),before.bag+2);
- // v0.161: no level gate; gear bought early can be worn at once.
+ assert.equal(r.run("buyEquipmentShopOffer('equipment_lv20/job0-slot0-form0')"),false,'removed stages cannot be bought');
+ r.run("state.gold=100000;save();setShopCategory('equipment');");
+ const before=json(r,'({gold:state.gold,bag:state.bag.length})');assert.equal(r.run("buyEquipmentShopOffer('equipment_lv1/job0-slot0-form0',2)"),true);
+ const g=json(r,'state.bag.at(-1)');assert.equal(g.equipmentLevel,1);assert.equal(g.baseSnapshot.mult,1);assert.deepEqual(g.affix,[]);assert.equal(g.prefixId,undefined);assert.equal(g.suffixId,undefined);
+ assert(r.run('state.gold')<before.gold);assert.equal(r.run('state.bag.length'),before.bag+2);
  assert.equal(r.run('eligibleWearers(state.bag.at(-1)).length'),1);
- r.run('globalThis.early=state.bag.at(-1).id;equipSharedGear(early,memberKey(playerHero()),0);');assert.equal(r.run('state.equipped.includes(early)'),true);
  const current=json(r,'({gold:state.gold,bag:state.bag.length})');r.run('globalThis.realSave=save;save=()=>false;');assert.equal(r.run("buyEquipmentShopOffer('equipment_lv1/job0-slot0-form0',2)"),false);assert.deepEqual(json(r,'({gold:state.gold,bag:state.bag.length})'),current);r.run('save=realSave;');
  assert.equal(r.run("buyEquipmentShopOffer('equipment_lv1/job0-slot0-form0',NaN)"),false);
  assert.deepEqual(r.errors,[]);
@@ -31,8 +25,8 @@ test('shop bases for every class/slot are deterministic and a blank item can be 
 });
 test('ten T levels use one multiplier, BOSS uses its own band and exclusive effects are separate from its base',()=>{
  const r=game();const rows=json(r,`(()=>{const out=[];for(let job=0;job<4;job++)for(let slot=0;slot<4;slot++)for(let t=1;t<=10;t++){const g=gear(10,slot,0,job);g.formJob=job;g.form=0;g.prefixId='';g.suffixId='';g.affix=[];g.powerTier=t;delete g.baseSnapshot;const b=gearStatBreakdown(g);out.push({kind:'normal',t,mult:b.mult,body:b.body,base:g.baseSnapshot.base});}for(let job=0;job<4;job++)for(let mi=0;mi<MAPS.length;mi++){if(worldIsFinalMap(mi))continue;for(let t=1;t<=10;t++){const g=bossGear(mi,job,0);g.powerTier=t;delete g.baseSnapshot;const b=gearStatBreakdown(g);out.push({kind:'boss',t,mult:b.mult,body:b.body,base:g.baseSnapshot.base,affixes:g.affix.length});}}return out;})()`);
- assert.equal(rows.length,1120);for(const row of rows){const multiplier=seed.equipmentPowerSystem.strength[row.kind==='boss'?'bossMultipliers':'multipliers'][row.t-1];assert.equal(row.mult,multiplier);for(const key of ['atk','hp','def'])assert.equal(row.base[key],Math.round(row.body[key]*multiplier));if(row.kind==='boss')assert.equal(row.affixes,2);}
- r.run('state.gold=100000;state.dust=1000;globalThis.bossItem=bossGear(1,0,0);state.bag.push(bossItem);globalThis.bossBefore=JSON.stringify(bossItem.baseSnapshot);reroll(bossItem.id);resolveInlineAffix(bossItem.id,true);');assert.equal(r.run('JSON.stringify(bossItem.baseSnapshot)===bossBefore'),true);assert.equal(r.run('bossItem.affix.length'),2);
+ assert.equal(rows.length,16*10+4*10*json(r,'MAPS.filter((_,i)=>!worldIsFinalMap(i)).length'));for(const row of rows){const multiplier=seed.equipmentPowerSystem.strength[row.kind==='boss'?'bossMultipliers':'multipliers'][row.t-1];assert.equal(row.mult,multiplier);for(const key of ['atk','hp','def'])assert.equal(row.base[key],Math.round(row.body[key]*multiplier));if(row.kind==='boss')assert.equal(row.affixes,2);}
+ r.run('state.gold=100000;state.dust=1000;globalThis.bossItem=bossGear(0,0,0);state.bag.push(bossItem);globalThis.bossBefore=JSON.stringify(bossItem.baseSnapshot);reroll(bossItem.id);resolveInlineAffix(bossItem.id,true);');assert.equal(r.run('JSON.stringify(bossItem.baseSnapshot)===bossBefore'),true);assert.equal(r.run('bossItem.affix.length'),2);
  assert.deepEqual(r.errors,[]);
 });
 test('owned generated bases and legacy equipment stay unchanged through balance publish and save reload',()=>{
@@ -44,16 +38,16 @@ test('owned generated bases and legacy equipment stay unchanged through balance 
  // (the old 重型板甲 had), so the snapshot is 138/34 and +4 gives 168/41. Owned items with a snapshot keep their base.
  assert.deepEqual(out.before,{hp:168,atk:0,def:41});assert.deepEqual(out.after,out.before);assert.deepEqual(out.reloaded,out.before);assert.equal(out.snapshot,out.base);assert.deepEqual(r.errors,[]);
 });
-test('legacy kill/first-boss records unlock shops once; new per-enemy kills do not clear an unfinished boss stage',()=>{
- const r=game();r.run("globalThis.old=packParty();delete old.mapClears;delete old.equipmentShopUnlocked;old.etherBossClaims=['1:0'];old.achievements.bossKills[3]=1;loadParty(old)");assert.deepEqual(json(r,'__EMBERWILD_EQUIPMENT_SHOP.currentOffers().map(s=>s.level)'),[20,10,1]);
- r.run("recordMapClear(0);globalThis.saved=packParty();loadParty(saved)");assert.equal(r.run('party.mapClears.map0'),true);assert.equal(r.run('party.equipmentShopUnlocked.length'),3);
- r.run("party.achievements.bossKills[5]=1;party.etherBossClaims.push('5:0');save()");assert.equal(r.run('party.mapClears.map5'),undefined);assert.equal(r.run("__EMBERWILD_EQUIPMENT_SHOP.currentOffers().some(s=>s.level===30)"),false);
- r.run('recordMapClear(5)');assert.equal(r.run("__EMBERWILD_EQUIPMENT_SHOP.currentOffers().some(s=>s.level===30)"),true);assert.deepEqual(r.errors,[]);
+test('a map clear is recorded once and survives reload; per-enemy kills do not clear an unfinished boss stage',()=>{
+ const r=game();assert.deepEqual(json(r,'__EMBERWILD_EQUIPMENT_SHOP.currentOffers().map(s=>s.level)'),[1]);
+ r.run("party.achievements.bossKills[0]=1;save()");assert.equal(r.run('party.mapClears?.map0'),undefined);
+ r.run("recordMapClear(0);globalThis.saved=packParty();loadParty(saved)");assert.equal(r.run('party.mapClears.map0'),true);assert.equal(r.run('recordMapClear(0)'),false);
+ assert.deepEqual(r.errors,[]);
 });
 test('completing a real boss stage records its map once, including stages with multiple bosses',()=>{
- const r=game();r.run("globalThis.multi=exportableBalance();const extra=structuredClone(multi.balanceSettings.monsters.catalog.find(m=>m.mapIndex===3&&m.kind==='boss'));extra.id='map3_boss_extra';extra.name='測試第二首領';extra.bossStageCount=1;multi.balanceSettings.monsters.catalog.push(extra);multi.balanceSettings.maps.catalog[3].bossStageMode='fixed';applyBalanceConfig(multi,{persist:false});for(let i=0;i<3;i++)playerHero().kills[MAPS[i].boss[2]]=1;syncParty();party.map=3;syncParty();bossProgressEntry(3).charges=1;startBossChallenge();globalThis.bosses=foes.filter(e=>e.kind==='boss');");
- r.run("bosses[0].hp=0;rewardGroupKill(bosses[0]);");assert.equal(r.run('party.mapClears?.map3'),undefined);assert.equal(r.run("party.equipmentShopUnlocked?.includes('equipment_lv20')||false"),false);
- r.run("for(const e of foes){e.hp=1;e.atk=0;}for(const h of heroes())h.hp=stats(h).hp;closeModal();running=true;for(let i=0;i<500&&party.bossChallenge?.active;i++)EmberwildSecondsCombat.step();");assert.equal(r.run('party.mapClears.map3'),true);assert.equal(r.run("party.equipmentShopUnlocked.includes('equipment_lv20')"),true);assert.equal(r.run('recordMapClear(3)'),false);assert.deepEqual(r.errors,[]);
+ const r=game();r.run("globalThis.multi=exportableBalance();const extra=structuredClone(multi.balanceSettings.monsters.catalog.find(m=>m.mapIndex===0&&m.kind==='boss'));extra.id='map0_boss_extra';extra.name='測試第二首領';extra.bossStageCount=1;multi.balanceSettings.monsters.catalog.push(extra);multi.balanceSettings.maps.catalog[0].bossStageMode='fixed';applyBalanceConfig(multi,{persist:false});party.map=0;syncParty();bossProgressEntry(0).charges=1;startBossChallenge();globalThis.bosses=foes.filter(e=>e.kind==='boss');");
+ r.run("bosses[0].hp=0;rewardGroupKill(bosses[0]);");assert.equal(r.run('party.mapClears?.map0'),undefined);
+ r.run("for(const e of foes){e.hp=1;e.atk=0;}for(const h of heroes())h.hp=stats(h).hp;closeModal();running=true;for(let i=0;i<500&&party.bossChallenge?.active;i++)EmberwildSecondsCombat.step();");assert.equal(r.run('party.mapClears.map0'),true);assert.equal(r.run('recordMapClear(0)'),false);assert.deepEqual(r.errors,[]);
 });
 test('roaming gear is rare, boosters still multiply it, low maps no longer attenuate gear and material/forge income remains',()=>{
  const r=game();const out=json(r,`(()=>{const d=GAMEPLAY_SETTINGS.drops.entries,gear=d.find(x=>x.id==='gear_pool_map0_mob0_normal'),mat=d.find(x=>x.id==='map0_mob0_material_normal'),boss=d.find(x=>x.id==='boss_gear'),e={monsterId:'map0_mob0',mat:'黏稠凝膠',kind:'normal',region:0,difficulty:0};const a=effectiveDropChance(gear,e,0),boosted=effectiveDropChance(gear,e,1);setClassMasteryLevel(59,playerHero());syncParty();const suppressed=effectiveDropChance(gear,e,0),material=effectiveDropChance(mat,e,0);let dust=0;const before=state.ore;for(let i=0;i<30;i++)rollConfiguredDrops(e,()=>0);dust=state.ore-before;/* v0.180: the former 粉塵 drop rules give 鍛鐵 */return {a,boosted,suppressed,material,boss:boss.chanceByDifficulty,dust,ore:state.ore,materials:state.materials['黏稠凝膠'],daily:GAMEPLAY_SETTINGS.quests.design.daily.entries.find(x=>x.id==='daily_salvage').objectives[0]};})()`);

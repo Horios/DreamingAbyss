@@ -35,7 +35,8 @@ test('five identities, three tiers, color mappings and reduced first-tier drop t
 
 
 
-test('legacy three-kind gems refund from shared skill instances once and survive validated reloads',()=>{
+// 只保留第一張地圖時刪除了 hidden 夥伴技能，技能位置編號改變；依決定不再相容此版本以前的舊存檔。
+test('legacy three-kind gems refund from shared skill instances once and survive validated reloads',{skip:'舊存檔的技能位置編號已失效（不再相容）'},()=>{
  const r=game(0);
  r.ctx.legacy=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/legacy-skills-job0.json'),'utf8'));
  const out=json(r,`(()=>{

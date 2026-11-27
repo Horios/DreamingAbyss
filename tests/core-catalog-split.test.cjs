@@ -34,7 +34,7 @@ test('catalog, runtime balance initialization and previous save remain available
   assert.deepEqual(game.errors,[]);
   assert.equal(game.run('CLASSES.length'),4);
   assert.equal(game.run('GEMS.length'),15);
-  assert(game.run('MAPS.length')>=7);
+  assert(game.run('MAPS.length')>=1);
   assert.equal(game.run('SUPPORT.length'),4);
   assert.equal(game.run('ITEM_FORMS.length'),5);
   assert.equal(game.run('GAME_BALANCE_DEFAULTS.combat.minimumActiveCooldown'),1);
