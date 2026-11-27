@@ -10,7 +10,10 @@
   if(sk.systemEffect)return `持續 ${sk.duration} 回合 · 冷卻 ${sk.cooldown} 回合${['guard','slow'].includes(sk.systemEffect)?' · '+Math.round(sk.power*100)+'%':sk.systemEffect==='regen'?' · 每回合最大生命 '+Math.round(sk.power*10000)/100+'%':''}`;
   return a.kind==='core'?coreSkillDetail(a.job,a.index,h):supportSkillDetail(a.job,a.index,h);
  }
- function icon(sk){if(sk.type==='passive')return `<span class="skill-icon-glyph" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor(sk.kind==='debuff'?'skull':'shield')}</span>`;return __EMBERWILD_MASTERY_UI.skillIcon(sk.adapter.job,sk.adapter.kind,sk.adapter.index);}
+ // v0.225: every skill gets its own glyph by name unless the balance data sets a custom icon (iconType other than auto).
+ const NAMED_ICONS={"裂地斬":"swords","堅毅壁壘":"shield","反擊之刃":"repeat","浴血重擊":"droplet","聖鋼裁決":"gavel","不屈戰意":"flame-kindling","狂亂嘲諷":"siren","嘲諷":"megaphone","戰吼":"volume-2","守護誓言":"shield-check","破甲怒吼":"shield-off","火焰箭":"flame","冰霜護幕":"shield-half","餘燼爆發":"bomb","奧術汲取":"hand-coins","隕星墜落":"orbit","魔力迴響":"radio","變形術":"rabbit","冰霜新星":"snowflake","寒冰箭":"move-right","奧術共鳴":"sparkles","時間凝滯":"hourglass","元素灼印":"stamp","穿透箭":"arrow-right","林間休憩":"tent","連射":"chevrons-right","獵手印記":"crosshair","疾風箭雨":"wind","生命之箭":"heart","冰凍陷阱":"snowflake","變形陷阱":"rabbit","鷹眼指引":"eye","獵手標記":"target","風行庇佑":"feather","聖光審判":"sun","治癒禱言":"heart-plus","懲戒":"zap","生命泉源":"heart-pulse","黎明聖印":"sunrise","神聖庇護":"shield-plus","植入恐怖":"ghost","晨光祝福":"sun-medium","聖光庇護":"shield-ellipsis","光明祈願":"sparkle","苦痛蔓延":"skull","攻擊強化":"sword","防禦強化":"shield","治療強化":"heart-handshake","減傷":"shield-minus","重擊":"hammer","魔爆":"bomb","變形":"rabbit","火球":"flame","狙擊":"crosshair","繩索陷阱":"link","聖光":"sun","治療":"heart-plus","癒合":"bandage","追擊":"chevrons-right","順勢斬":"slash","魔力循環":"refresh-cw","箭雨":"cloud-rain","神聖光牢":"grid-3x3","凝膠緩衝":"droplets","野狼怒吼":"dog","藤蔓纏繞":"sprout","凝膠復原":"droplets","古木之心":"tree-deciduous"};
+ function namedIcon(sk){const g=NAMED_ICONS[sk.name];if(!g||sk.iconType&&sk.iconType!=='auto')return '';const tone=sk.type==='passive'?'tone-passive':sk.type==='proc'||sk.adapter?.kind==='proc'?'tone-proc':sk.type==='support'?'tone-support':'tone-active';return `<span class="skill-icon-glyph icon-lucide icon-named ${tone}" data-skill-glyph="${g}" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+g,[],{size:24})}</span>`;}
+ function icon(sk){const named=namedIcon(sk);if(named)return named;if(sk.type==='passive')return `<span class="skill-icon-glyph" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor(sk.kind==='debuff'?'skull':'shield')}</span>`;return __EMBERWILD_MASTERY_UI.skillIcon(sk.adapter.job,sk.adapter.kind,sk.adapter.index)||`<span class="skill-icon-glyph" aria-hidden="true">${__EMBERWILD_SKILL_ICONS.svgFor('magic')}</span>`;}
  function stage(sk,h){return sk.requiresAdvanced||sk.sources.some(s=>s.type==='advanced')||S.system().classRules.find(r=>r.job===h.job)?.advanced.some(r=>r.skillId===sk.id)?'職業':'職業';}
  const questItems=q=>[...(q.rewards?.items||[]),...q.stages.flatMap(s=>s.rewards.items)];
  function routes(sk,h){
@@ -34,7 +37,7 @@
   if(sk.sources.some(s=>s.type==='equipment'))return '裝備附帶';
   const a=EmberwildSkillSystem.adapterFor(sk,h.job),parts=[];const need=sk.requiredLevel??sk.level??0;if(need)parts.push('職業精通 Lv'+need);
   if(sk.requiredMastery)parts.push((__EMBERWILD_MASTERY.masteryLabels[sk.requiredMastery]||sk.requiredMastery)+'精通 LV'+(sk.requiredMasteryLevel||0));
-  if(sk.weaponTypes?.length)parts.push('武器：'+sk.weaponTypes.join('／'));
+  if(sk.weaponTypes?.length)parts.push('武器：'+sk.weaponTypes.map(k=>__EMBERWILD_MASTERY?.weaponTypes?.[k]||k).join('／'));
   if(a.kind!=='passive')parts.push(...__EMBERWILD_TEAMS.unlockSummary(h.job,a.kind,a.index));
   if(sk.sources.some(s=>s.type==='quest'||s.type==='equipment'))parts.push(...routes(sk,h));
   return [...new Set(parts)].join(' · ');
@@ -49,7 +52,7 @@
   const parts=String(detail(sk,h)||'').split(/\s*·\s*/).map(x=>x.trim()).filter(Boolean).filter(x=>!SKIP_PART.test(x));
   const effect=[],numbers=[],timers=[],require=[];
   for(const x of parts){if(TIMER_PART.test(x))timers.push(x);else if(REQUIRE_PART.test(x))require.push(x);else if(/[。；]/.test(x)||x.length>26)effect.push(x);else numbers.push(x);}
-  const learn=[...require,'解鎖條件：'+conditions(sk,h),'取得來源：'+routes(sk,h).join('／')];
+  const from=routes(sk,h),learn=[...require,'解鎖條件：'+conditions(sk,h),'取得來源：'+(from.length?from.join('／'):sk.partnerId!=null?'夥伴專屬，達到精通等級自動學會':'—')];
   const section=(title,body)=>body?`<section class="skill-detail-section"><h4>${title}</h4>${body}</section>`:'';
   return `<div class="skill-detail">${section('效果',(sk.description?`<p>${esc(sk.description)}</p>`:'')+effect.map(x=>`<p class="small">${esc(x)}</p>`).join(''))}${section('數值',numbers.length?`<dl class="skill-detail-grid">${rows(numbers)}</dl>`:'')}${section('冷卻與消耗',timers.length?`<dl class="skill-detail-grid">${rows(timers)}</dl>`:'')}${section('學習條件',`<dl class="skill-detail-grid">${rows(learn)}</dl>`)}</div>`;
  }

@@ -12,7 +12,7 @@ test('game and standalone editor embed the exact same contract and migrate the o
  const source=fs.readFileSync(path.join(root,'js/world/quest-design-model.js'),'utf8').trim(),html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8');
  assert.equal(html.match(/<script id="quest-design-model-v1">([\s\S]*?)<\/script>/)[1].trim(),source);
  const d=M.defaults({board:{taskBase:12,taskRandomRange:4,goldPerTier:999},side:[{required:9,gold:444,ore:22,gem:3}]});
- assert.deepEqual(d.side.map(q=>q.id),['wolves','witch','stars']);assert.equal(d.side[0].objectives[0].quantity,9);assert.equal(d.side[0].rewards.gold,444);assert.equal(d.daily.entries.length,5);assert.equal(d.daily.version,2);assert.deepEqual(M.issues(d),[]);
+ assert.deepEqual(d.side.map(q=>q.id),['slime_gel','wolves','treant_core']);assert.equal(d.side[0].objectives[0].quantity,9);assert.equal(d.side[0].rewards.gold,444);assert.equal(d.daily.entries.length,5);assert.equal(d.daily.version,2);assert.deepEqual(M.issues(d),[]);
 });
 
 test('daily pool applies eligibility and weights, freezes resolved objectives and rewards, and survives cold reload',()=>{
@@ -43,7 +43,7 @@ test('failed saves roll back all inventories, XP, companions, team points and cl
 
 test('bad designs and cyclic/missing references fail atomically; snapshots reject unresolved or malformed rewards',()=>{
  const r=game(),baseline=json(r,'exportableBalance()'),saved=r.run('JSON.stringify(packParty())'),stored=Object.fromEntries(r.values);
- for(const change of [d=>d.side[0].id=d.side[1].id,d=>d.side[0].prerequisites=['missing'],d=>{d.side[0].prerequisites=['witch'];d.side[1].prerequisites=['wolves'];},d=>d.daily.entries[0].objectives[0].consume='true',d=>d.side[0].rewards.potions=[{key:'imbue_fire',quantity:1}],d=>d.side[0].rewards.gear=[{quantity:1,tier:1,slot:8,rar:2,job:0,legendaryChance:0}],d=>d.daily.entries[0].weight=0,d=>d.side[0].objectives.push({...d.side[0].objectives[0]})]){
+ for(const change of [d=>d.side[0].id=d.side[1].id,d=>d.side[0].prerequisites=['missing'],d=>{d.side[0].prerequisites=['wolves'];d.side[1].prerequisites=['slime_gel'];},d=>d.daily.entries[0].objectives[0].consume='true',d=>d.side[0].rewards.potions=[{key:'imbue_fire',quantity:1}],d=>d.side[0].rewards.gear=[{quantity:1,tier:1,slot:8,rar:2,job:0,legendaryChance:0}],d=>d.daily.entries[0].weight=0,d=>d.side[0].objectives.push({...d.side[0].objectives[0]})]){
   const doc=structuredClone(baseline);change(doc.balanceSettings.quests.design);r.ctx.bad=doc;assert.throws(()=>r.run('applyBalanceConfig(bad)'),/委託|支線|需求/);assert.deepEqual(json(r,'exportableBalance()'),baseline);assert.equal(r.run('JSON.stringify(packParty())'),saved);assert.deepEqual(Object.fromEntries(r.values),stored);
  }
  for(const mutation of ['q.templateId=undefined','q.rewards.choice="gearOrGems"','q.rewards.goldPerTier=1','q.objectives[0].quantity=0','q.objectives[0].quantityMax+=1','q.objectives[0].type="script"']){r.run('globalThis.badSave=JSON.parse(JSON.stringify(packParty()));globalThis.q=badSave.members[0].board.tasks[0];'+mutation);assert.throws(()=>r.run('loadParty(badSave)'),/委託/);assert.equal(r.run('JSON.stringify(packParty())'),saved);}

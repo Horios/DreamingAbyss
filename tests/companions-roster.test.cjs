@@ -24,13 +24,13 @@ test('Full game: acquired roster, enlistment, UID ownership, equipment UI and pe
   await t.test('Roster separates readonly companion abilities and skills with innate skills, equipped states and permanent passives',async()=>{const r=await page.evaluate(()=>{__rosterReset();setClassMasteryLevel(9,playerHero());syncParty();const h=partyMember(10);h.active=[null,null];const before=__rosterPersonal(h),v=stats(h);setTab('partnerRoster');const row=document.querySelector('[data-member-key="10"]'),ability=row.querySelector('.companion-roster-ability'),skills=row.querySelector('.companion-roster-skills'),main=document.querySelector('[data-member-key="0"]');return {before,after:__rosterPersonal(h),v,ability:ability.textContent,skills:skills.textContent,controls:row.querySelectorAll('.companion-roster-details button,.companion-roster-details input,.companion-roster-details select').length,details:document.querySelectorAll('.companion-roster-details').length,main:!!main,html:document.querySelector('main').innerHTML};});assert.deepEqual(r.after,r.before);assert.equal(r.controls,0,'companion skill toggles were retired in v0.055: unlocked skills are always used');assert.equal(r.details,5);assert.equal(r.main,false);assert.match(r.ability,new RegExp('生命\\s*'+r.v.hp));assert.match(r.ability,new RegExp('攻擊\\s*'+r.v.atk));for(const re of [/已啟用/,/槽 1/,/冷卻/,/常駐被動/,/需求精通 Lv/])assert.match(r.skills,re);assert.doesNotMatch(r.skills,/使用時培養|LV\.1/);assert.doesNotMatch(r.html,/companion-token-panel|data-token-owner/);});
   await t.test('Opened companion sections survive refresh and every displayed skill has a visible local icon',async()=>{
    await page.evaluate(()=>closeModal());
-   await page.locator('[data-member-key="10"] .companion-roster-skills > summary').click();
-   await page.waitForFunction(()=>document.querySelector('[data-member-key="10"] .companion-roster-skills').open);
+   await page.locator('[data-member-key="10"] .companion-roster-entry > summary .member-identity').click();
+   await page.waitForFunction(()=>document.querySelector('[data-member-key="10"] .companion-roster-entry').open);
    await page.evaluate(()=>render());
-   assert(await page.locator('[data-member-key="10"] .companion-roster-skills').evaluate(el=>el.open));
+   assert(await page.locator('[data-member-key="10"] .companion-roster-entry').evaluate(el=>el.open));
    assert.equal(await page.locator('[data-member-key="10"] .roster-member-actions button').count(),1);
    const icons=await page.evaluate(()=>{
-    for(const panel of document.querySelectorAll('.companion-roster-skills'))panel.open=true;
+    for(const panel of document.querySelectorAll('.companion-roster-entry'))panel.open=true;
     return [...document.querySelectorAll('.companion-skill-card')].map(card=>{
      const svg=card.querySelector('.skill-list-title .skill-icon-glyph svg');
      return svg?{width:svg.getBoundingClientRect().width,height:svg.getBoundingClientRect().height,visible:getComputedStyle(svg).visibility,geometry:svg.querySelectorAll('path,circle,line,rect,polygon,ellipse,polyline').length}:null;

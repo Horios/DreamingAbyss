@@ -14,7 +14,7 @@ const GEMS=Array.from({length:GEM_KINDS*3},(_,id)=>{
 
 const SLOTS=['武器','護甲','副手','飾品'];const RARITY=['普通','精良','稀有','傳說'];const AFFIX=['攻擊','生命','防禦','暴擊'];
 
-const QUESTS=[{id:'wolves',title:'縫補獵人的披肩',desc:'林間野狼的狼牙，是獵人交換皮革的憑證。',mat:'完整狼牙',n:5,gold:300,ore:20},{id:'witch',title:'淨化沼澤',desc:'採集女巫符印，協助營地研究暮色詛咒。',mat:'女巫符印',n:2,gold:800,ore:55},{id:'stars',title:'鍛造師的最後一課',desc:'取得星隕監視者的稜鏡，準備迎戰噬日者。',mat:'星隕稜鏡',n:3,gold:2000,ore:120}];
+const QUESTS=[{id:'slime_gel',title:'史萊姆凝膠回收',desc:'營地藥師需要黏稠凝膠調製藥膏，去無名密林擊敗苔原史萊姆收集。',mat:'黏稠凝膠',n:4,gold:60,ore:3},{id:'wolves',title:'縫補獵人的披肩',desc:'林間野狼的狼牙是獵人交換皮革的憑證，帶幾顆回營地。',mat:'完整狼牙',n:4,gold:80,ore:5},{id:'treant_core',title:'樹精的樹芯',desc:'迷路樹精的樹芯可以拿來修補營地工具。',mat:'活性樹芯',n:3,gold:120,ore:8}];
 
 const CLASS_GEAR=[['長劍','板甲','戰旗','飾品'],['法杖','法袍','魔典','飾品'],['長弓','皮甲','箭袋','飾品'],['權杖','聖衣','聖徽','飾品']];
 const BOSS_GEAR=['古木誓約','礦脈共鳴','暮沼咒印','永凍之誓','熔核意志','隕星遺產'];
