@@ -26,58 +26,6 @@
     }
   },
   {
-    "id": "partner11-passive1",
-    "name": "防禦強化",
-    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
-    "kind": "buff",
-    "target": "self",
-    "effects": [
-      {
-        "key": "defensePct",
-        "value": 10
-      }
-    ],
-    "requiredLevel": 7,
-    "partnerId": 11,
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner12-passive1",
-    "name": "攻擊強化",
-    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
-    "kind": "buff",
-    "target": "self",
-    "effects": [
-      {
-        "key": "attackPct",
-        "value": 10
-      }
-    ],
-    "requiredLevel": 7,
-    "partnerId": 12,
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
     "id": "partner13-passive1",
     "name": "治療強化",
     "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
@@ -91,32 +39,6 @@
     ],
     "requiredLevel": 7,
     "partnerId": 13,
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner14-passive1",
-    "name": "攻擊強化",
-    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
-    "kind": "buff",
-    "target": "self",
-    "effects": [
-      {
-        "key": "attackPct",
-        "value": 10
-      }
-    ],
-    "requiredLevel": 7,
-    "partnerId": 14,
     "timing": {
       "cooldownSeconds": 0,
       "mpCost": 0,

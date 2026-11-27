@@ -63,8 +63,10 @@ save('world/drops.json', drops)
 
 # ── 夥伴 ──
 companions = load('characters/companions.json')
-hidden = [c for c in companions if c.get('availability') == 'hidden']
-hidden_ids = {c['id'] for c in hidden}
+# 已實裝夥伴：序章發放招募券的洛恩（10）與艾琳（13）。其餘夥伴（含 visible 但無取得途徑者）一律刪除。
+IMPLEMENTED_COMPANIONS = {10, 13}
+hidden = [c for c in companions if c.get('availability') == 'hidden' or c['id'] not in IMPLEMENTED_COMPANIONS]
+hidden_ids = {c['id'] for c in hidden} | (set(range(10, 30)) - IMPLEMENTED_COMPANIONS)
 companions = [c for c in companions if c['id'] not in hidden_ids]
 for c in companions:
     c.pop('statTemplateId', None)

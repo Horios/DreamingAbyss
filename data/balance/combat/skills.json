@@ -605,261 +605,6 @@
     }
   },
   {
-    "id": "partner11-core10",
-    "name": "裂地斬",
-    "activation": "active",
-    "requiredLevel": 0,
-    "cooldown": 3,
-    "power": 1.35,
-    "effect": "damage",
-    "element": "physical",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "以沉重武器震裂地面，正面擊潰敵人。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "sword"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 11,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      0
-    ],
-    "adapter": {
-      "job": 0,
-      "index": 10,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 11
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 12,
-      "mpCost": 9.29516,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always",
-      "initialCooldownSeconds": 3
-    }
-  },
-  {
-    "id": "partner11-core11",
-    "name": "堅毅壁壘",
-    "activation": "active",
-    "requiredLevel": 2,
-    "cooldown": 6,
-    "power": 0.9,
-    "effect": "shield",
-    "element": "light",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "架起堅固防勢，以護盾吸收來襲傷害。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "sword"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 11,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      0
-    ],
-    "adapter": {
-      "job": 0,
-      "index": 11,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 11
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 21,
-      "mpCost": 8,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 1,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "missingEffect",
-      "initialCooldownSeconds": 0
-    }
-  },
-  {
-    "id": "partner11-core12",
-    "name": "反擊之刃",
-    "activation": "proc",
-    "requiredLevel": 4,
-    "cooldown": 0,
-    "power": 0.65,
-    "effect": "damage",
-    "element": "physical",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "procBaseChance": 0.245,
-    "description": "抓住敵人攻勢的空隙，順勢追加一次反擊。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "sword"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 11,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "proc",
-    "jobs": [
-      0
-    ],
-    "adapter": {
-      "job": 0,
-      "index": 12,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 11
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner11-core13",
-    "name": "嘲諷",
-    "activation": "active",
-    "requiredLevel": 0,
-    "cooldown": 6,
-    "power": 0,
-    "effect": "tauntRage",
-    "element": "physical",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "挑釁敵方攻擊力最高者，使其陷入狂暴並優先攻擊戰士。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [],
-    "iconType": "auto",
-    "controlId": "warrior-taunt",
-    "duration": 3,
-    "bossDuration": 1,
-    "slowPct": 0.3,
-    "basicAttackBonus": 0.2,
-    "skipChance": 0.3,
-    "bossSkipChance": 0.15,
-    "damageReduction": 0.2,
-    "trapHp": 1,
-    "usageScope": "character",
-    "partnerId": 11,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      0
-    ],
-    "adapter": {
-      "job": 0,
-      "index": 13,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 11
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 21,
-      "mpCost": 12,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 9,
-      "bossDurationSeconds": 3,
-      "tickIntervalSeconds": 6,
-      "condition": "always",
-      "initialCooldownSeconds": 2
-    }
-  },
-  {
     "id": "job0-support0",
     "name": "戰吼",
     "target": "allies",
@@ -1149,63 +894,6 @@
       "tickIntervalSeconds": 6,
       "condition": "missingEffect",
       "initialCooldownSeconds": 4
-    }
-  },
-  {
-    "id": "job0-support5",
-    "name": "守護誓言",
-    "target": "weakest",
-    "kind": "guard",
-    "value": 0.3,
-    "duration": 8,
-    "cooldown": 14,
-    "level": 3,
-    "element": "light",
-    "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [],
-    "iconType": "auto",
-    "partnerId": 11,
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "support",
-    "jobs": [
-      0
-    ],
-    "adapter": {
-      "job": 0,
-      "index": 5,
-      "kind": "support"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 11
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 45,
-      "mpCost": 8,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 1,
-      "durationSeconds": 48,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "missingEffect",
-      "initialCooldownSeconds": 0
     }
   },
   {
@@ -1761,195 +1449,6 @@
     }
   },
   {
-    "id": "partner12-core9",
-    "name": "火焰箭",
-    "activation": "active",
-    "requiredLevel": 0,
-    "cooldown": 3,
-    "power": 1.55,
-    "effect": "damage",
-    "element": "fire",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "射出凝聚火焰的魔法箭，灼穿眼前的敵人。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "staff",
-      "grimoire"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 12,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      1
-    ],
-    "adapter": {
-      "job": 1,
-      "index": 9,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 12
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 12,
-      "mpCost": 9.95992,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always",
-      "initialCooldownSeconds": 3
-    }
-  },
-  {
-    "id": "partner12-core10",
-    "name": "餘燼爆發",
-    "activation": "proc",
-    "requiredLevel": 2,
-    "cooldown": 0,
-    "power": 0.8,
-    "effect": "damage",
-    "element": "fire",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "procBaseChance": 0.245,
-    "description": "讓殘留的魔力驟然引爆，追加猛烈的法術攻勢。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "staff",
-      "grimoire"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 12,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "proc",
-    "jobs": [
-      1
-    ],
-    "adapter": {
-      "job": 1,
-      "index": 10,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 12
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner12-core11",
-    "name": "隕星墜落",
-    "activation": "active",
-    "requiredLevel": 14,
-    "cooldown": 5,
-    "power": 2.6,
-    "effect": "damage",
-    "element": "fire",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "召來高空隕星，以龐大魔力轟擊戰場。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "staff",
-      "grimoire"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 12,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      1
-    ],
-    "adapter": {
-      "job": 1,
-      "index": 11,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 12
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 18,
-      "mpCost": 12.899612,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always",
-      "initialCooldownSeconds": 4
-    }
-  },
-  {
     "id": "job1-support0",
     "name": "奧術共鳴",
     "target": "allies",
@@ -2116,120 +1615,6 @@
       "actionCostSeconds": 0,
       "priority": 1,
       "durationSeconds": 60,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "missingEffect",
-      "initialCooldownSeconds": 4
-    }
-  },
-  {
-    "id": "job1-support3",
-    "name": "奧術共鳴",
-    "target": "allies",
-    "kind": "power",
-    "value": 0.2,
-    "duration": 10,
-    "cooldown": 17,
-    "level": 0,
-    "element": "wind",
-    "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [],
-    "iconType": "auto",
-    "partnerId": 12,
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "support",
-    "jobs": [
-      1
-    ],
-    "adapter": {
-      "job": 1,
-      "index": 3,
-      "kind": "support"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 12
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 54,
-      "mpCost": 8,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 1,
-      "durationSeconds": 60,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "missingEffect",
-      "initialCooldownSeconds": 4
-    }
-  },
-  {
-    "id": "job1-support4",
-    "name": "時間凝滯",
-    "target": "enemies",
-    "kind": "weaken",
-    "value": 0.18,
-    "duration": 7,
-    "cooldown": 14,
-    "level": 3,
-    "element": "ice",
-    "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [],
-    "iconType": "auto",
-    "partnerId": 12,
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "support",
-    "jobs": [
-      1
-    ],
-    "adapter": {
-      "job": 1,
-      "index": 4,
-      "kind": "support"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 12
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 45,
-      "mpCost": 8,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 1,
-      "durationSeconds": 42,
       "bossDurationSeconds": 0,
       "tickIntervalSeconds": 6,
       "condition": "missingEffect",
@@ -2719,192 +2104,6 @@
     }
   },
   {
-    "id": "partner14-core8",
-    "name": "穿透箭",
-    "activation": "active",
-    "requiredLevel": 0,
-    "cooldown": 3,
-    "power": 1.45,
-    "effect": "damage",
-    "element": "wind",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "以強勁箭矢貫穿目標，迅速壓制敵人。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "bow"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 14,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      2
-    ],
-    "adapter": {
-      "job": 2,
-      "index": 8,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 14
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 12,
-      "mpCost": 9.633276,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always",
-      "initialCooldownSeconds": 3
-    }
-  },
-  {
-    "id": "partner14-core9",
-    "name": "連射",
-    "activation": "proc",
-    "requiredLevel": 2,
-    "cooldown": 0,
-    "power": 0.75,
-    "effect": "damage",
-    "element": "physical",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "procBaseChance": 0.245,
-    "description": "趁普攻命中時連續補上箭矢，延續攻勢。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "bow"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 14,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "proc",
-    "jobs": [
-      2
-    ],
-    "adapter": {
-      "job": 2,
-      "index": 9,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 14
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner14-core10",
-    "name": "疾風箭雨",
-    "activation": "active",
-    "requiredLevel": 14,
-    "cooldown": 4,
-    "power": 2.15,
-    "effect": "damage",
-    "element": "wind",
-    "maxTargets": 1,
-    "requiresAdvanced": false,
-    "description": "引導疾風化作箭雨，覆蓋前方敵群。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [
-      "bow"
-    ],
-    "iconType": "auto",
-    "usageScope": "character",
-    "partnerId": 14,
-    "tags": [],
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "active",
-    "jobs": [
-      2
-    ],
-    "adapter": {
-      "job": 2,
-      "index": 10,
-      "kind": "core"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 14
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 15,
-      "mpCost": 11.730303,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always",
-      "initialCooldownSeconds": 4
-    }
-  },
-  {
     "id": "job2-support0",
     "name": "鷹眼指引",
     "target": "allies",
@@ -3075,120 +2274,6 @@
       "tickIntervalSeconds": 6,
       "condition": "missingEffect",
       "initialCooldownSeconds": 0
-    }
-  },
-  {
-    "id": "job2-support3",
-    "name": "鷹眼指引",
-    "target": "allies",
-    "kind": "critical",
-    "value": 0.1,
-    "duration": 12,
-    "cooldown": 18,
-    "level": 0,
-    "element": "wind",
-    "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [],
-    "iconType": "auto",
-    "partnerId": 14,
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "support",
-    "jobs": [
-      2
-    ],
-    "adapter": {
-      "job": 2,
-      "index": 3,
-      "kind": "support"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 14
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 57,
-      "mpCost": 8,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 1,
-      "durationSeconds": 72,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "missingEffect",
-      "initialCooldownSeconds": 4
-    }
-  },
-  {
-    "id": "job2-support4",
-    "name": "獵手標記",
-    "target": "enemy",
-    "kind": "damageAmp",
-    "element": "physical",
-    "value": 0.2,
-    "duration": 10,
-    "cooldown": 15,
-    "level": 3,
-    "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
-    "baseCritRate": 0,
-    "baseCritDamage": 1.5,
-    "defensePenetration": 0,
-    "defenseIgnore": 0,
-    "mastery": null,
-    "requiredMastery": null,
-    "requiredMasteryLevel": 0,
-    "weaponTypes": [],
-    "iconType": "auto",
-    "partnerId": 14,
-    "unlockConditions": {
-      "classMasteryLevel": 0,
-      "quests": [],
-      "materials": [],
-      "bossKills": [],
-      "eliteKills": [],
-      "bossEquipment": []
-    },
-    "type": "support",
-    "jobs": [
-      2
-    ],
-    "adapter": {
-      "job": 2,
-      "index": 4,
-      "kind": "support"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 14
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 48,
-      "mpCost": 8,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 1,
-      "durationSeconds": 60,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "missingEffect",
-      "initialCooldownSeconds": 4
     }
   },
   {
@@ -4257,88 +3342,6 @@
     }
   },
   {
-    "id": "partner11-passive1",
-    "name": "防禦強化",
-    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
-    "kind": "buff",
-    "target": "self",
-    "effects": [
-      {
-        "key": "defensePct",
-        "value": 10
-      }
-    ],
-    "requiredLevel": 7,
-    "partnerId": 11,
-    "type": "passive",
-    "jobs": [
-      0
-    ],
-    "adapter": {
-      "job": 0,
-      "index": 1,
-      "kind": "passive"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 11
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner12-passive1",
-    "name": "攻擊強化",
-    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
-    "kind": "buff",
-    "target": "self",
-    "effects": [
-      {
-        "key": "attackPct",
-        "value": 10
-      }
-    ],
-    "requiredLevel": 7,
-    "partnerId": 12,
-    "type": "passive",
-    "jobs": [
-      1
-    ],
-    "adapter": {
-      "job": 1,
-      "index": 2,
-      "kind": "passive"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 12
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
     "id": "partner13-passive1",
     "name": "治療強化",
     "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
@@ -4358,54 +3361,13 @@
     ],
     "adapter": {
       "job": 3,
-      "index": 3,
+      "index": 1,
       "kind": "passive"
     },
     "sources": [
       {
         "type": "companion",
         "companionId": 13
-      }
-    ],
-    "timing": {
-      "cooldownSeconds": 0,
-      "mpCost": 0,
-      "castSeconds": 0,
-      "actionCostSeconds": 0,
-      "priority": 2,
-      "durationSeconds": 0,
-      "bossDurationSeconds": 0,
-      "tickIntervalSeconds": 6,
-      "condition": "always"
-    }
-  },
-  {
-    "id": "partner14-passive1",
-    "name": "攻擊強化",
-    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
-    "kind": "buff",
-    "target": "self",
-    "effects": [
-      {
-        "key": "attackPct",
-        "value": 10
-      }
-    ],
-    "requiredLevel": 7,
-    "partnerId": 14,
-    "type": "passive",
-    "jobs": [
-      2
-    ],
-    "adapter": {
-      "job": 2,
-      "index": 4,
-      "kind": "passive"
-    },
-    "sources": [
-      {
-        "type": "companion",
-        "companionId": 14
       }
     ],
     "timing": {
@@ -4431,7 +3393,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 14,
+      "index": 10,
       "kind": "core"
     },
     "sources": [
@@ -4499,7 +3461,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 15,
+      "index": 11,
       "kind": "core"
     },
     "sources": [
@@ -4567,7 +3529,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 16,
+      "index": 12,
       "kind": "core"
     },
     "sources": [
@@ -4633,7 +3595,7 @@
     ],
     "adapter": {
       "job": 1,
-      "index": 12,
+      "index": 9,
       "kind": "core"
     },
     "sources": [
@@ -4699,7 +3661,7 @@
     ],
     "adapter": {
       "job": 1,
-      "index": 13,
+      "index": 10,
       "kind": "core"
     },
     "sources": [
@@ -4766,7 +3728,7 @@
     ],
     "adapter": {
       "job": 1,
-      "index": 14,
+      "index": 11,
       "kind": "core"
     },
     "sources": [
@@ -4832,7 +3794,7 @@
     ],
     "adapter": {
       "job": 2,
-      "index": 11,
+      "index": 8,
       "kind": "core"
     },
     "sources": [
@@ -4899,7 +3861,7 @@
     ],
     "adapter": {
       "job": 2,
-      "index": 12,
+      "index": 9,
       "kind": "core"
     },
     "sources": [
@@ -4965,7 +3927,7 @@
     ],
     "adapter": {
       "job": 2,
-      "index": 13,
+      "index": 10,
       "kind": "core"
     },
     "sources": [
@@ -5264,7 +4226,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 17,
+      "index": 13,
       "kind": "core"
     },
     "sources": [
@@ -5280,17 +4242,17 @@
     "adapters": [
       {
         "job": 0,
-        "index": 17,
+        "index": 13,
         "kind": "core"
       },
       {
         "job": 1,
-        "index": 15,
+        "index": 12,
         "kind": "core"
       },
       {
         "job": 2,
-        "index": 14,
+        "index": 11,
         "kind": "core"
       },
       {
@@ -5322,7 +4284,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 5,
+      "index": 2,
       "kind": "passive"
     },
     "sources": [
@@ -5389,7 +4351,7 @@
     ],
     "adapter": {
       "job": 1,
-      "index": 6,
+      "index": 3,
       "kind": "passive"
     },
     "sources": [
@@ -5457,7 +4419,7 @@
     ],
     "adapter": {
       "job": 2,
-      "index": 15,
+      "index": 12,
       "kind": "core"
     },
     "sources": [
@@ -5591,7 +4553,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 18,
+      "index": 14,
       "kind": "core"
     },
     "sources": [
@@ -5649,17 +4611,17 @@
     "adapters": [
       {
         "job": 0,
-        "index": 18,
+        "index": 14,
         "kind": "core"
       },
       {
         "job": 1,
-        "index": 16,
+        "index": 13,
         "kind": "core"
       },
       {
         "job": 2,
-        "index": 16,
+        "index": 13,
         "kind": "core"
       },
       {
@@ -5684,7 +4646,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 19,
+      "index": 15,
       "kind": "core"
     },
     "sources": [
@@ -5741,17 +4703,17 @@
     "adapters": [
       {
         "job": 0,
-        "index": 19,
+        "index": 15,
         "kind": "core"
       },
       {
         "job": 1,
-        "index": 17,
+        "index": 14,
         "kind": "core"
       },
       {
         "job": 2,
-        "index": 17,
+        "index": 14,
         "kind": "core"
       },
       {
@@ -5777,7 +4739,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 20,
+      "index": 16,
       "kind": "core"
     },
     "sources": [
@@ -5835,17 +4797,17 @@
     "adapters": [
       {
         "job": 0,
-        "index": 20,
+        "index": 16,
         "kind": "core"
       },
       {
         "job": 1,
-        "index": 18,
+        "index": 15,
         "kind": "core"
       },
       {
         "job": 2,
-        "index": 18,
+        "index": 15,
         "kind": "core"
       },
       {
@@ -5878,7 +4840,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 7,
+      "index": 4,
       "kind": "passive"
     },
     "sources": [
@@ -5921,7 +4883,7 @@
     ],
     "adapter": {
       "job": 0,
-      "index": 8,
+      "index": 5,
       "kind": "passive"
     },
     "sources": [

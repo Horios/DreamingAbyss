@@ -24,7 +24,7 @@ test('mailed weapon can be opened and enhanced, while manual/auto affixes and po
  r.run('reroll(g.id);autoReroll(g.id,3);rerollEquipmentPowerTier(g.id)');assert.equal(r.run('JSON.stringify({gold:state.gold,ore:state.ore,dust:state.dust,consumables:state.consumables,gear:g})'),inventory);
 });
 test('all catalogue kinds are mailed in chunks of at most six and land in their actual inventories',()=>{
- const r=game(d=>{{const p=structuredClone(d.companions.find(p=>p.id===11));Object.assign(p,{id:15,name:'測試夥伴',passives:[],core:[],active:[],proc:[],support:[],availability:'visible',unlockCondition:{type:'ticket',price:10,chance:.1}});d.companions.push(p);}d.starterPackItems[0]=[
+ const r=game(d=>{{const p=structuredClone(d.companions.find(p=>p.id===10));Object.assign(p,{id:15,name:'測試夥伴',passives:[],core:[],active:[],proc:[],support:[],availability:'visible',unlockCondition:{type:'ticket',price:10,chance:.1}});d.companions.push(p);}d.starterPackItems[0]=[
   {kind:'item',key:'heal_small',quantity:3},{kind:'material',key:'鍛鐵',quantity:7},{kind:'material',key:'粉塵',quantity:4},{kind:'gem',key:'1',quantity:5},
   {kind:'item',key:'level_scroll',quantity:2},{kind:'item',key:'imbue_fire',quantity:4},{kind:'item',key:'companion-ticket-15',quantity:2},
   {kind:'equipment',key:'form:0:1:0',quantity:2},{kind:'token',key:'berserk',quantity:1}];});
