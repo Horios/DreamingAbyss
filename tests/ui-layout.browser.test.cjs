@@ -71,8 +71,8 @@ test('Utility dialogs keep readable scroll regions and skill catalog names wrap 
    await p.evaluate(()=>closeModal());
   }
   await p.evaluate(()=>setTab('skills'));await p.getByRole('tab',{name:'技能圖鑑',exact:true}).click();
-  const name=p.locator('.skill-catalog-text b').first();await name.evaluate(e=>e.textContent='長技能名稱'.repeat(12));
-  const b=await name.evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth,white:getComputedStyle(e).whiteSpace}));assert(b.scroll<=b.width+1);assert.equal(b.white,'normal');
+  // Measure the injected name in the same task, before a normal UI refresh replaces the node.
+  const b=await p.locator('.skill-catalog-text b').first().evaluate(e=>{e.textContent='長技能名稱'.repeat(12);return {width:e.clientWidth,scroll:e.scrollWidth,white:getComputedStyle(e).whiteSpace};});assert(b.scroll<=b.width+1);assert.equal(b.white,'normal');
   await p.evaluate(()=>closeModal());
  }
  assert.deepEqual(r.errors,[]);

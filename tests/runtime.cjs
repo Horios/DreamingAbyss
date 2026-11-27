@@ -1,4 +1,3 @@
-const {chromium}=require('playwright');
 const fs=require('node:fs');
 const path=require('node:path');
 function balanceRoot(root=path.resolve(__dirname,'..')) {
@@ -7,6 +6,7 @@ function balanceRoot(root=path.resolve(__dirname,'..')) {
   throw Error('找不到平衡器 balance-editor.html；請設定 EMBERWILD_BALANCE_ROOT 或將 DreamingAbyss-BalanceEditor（相容舊名 Emberwild-Balance）放在遊戲同層目錄。');
 }
 async function openRuntime(root,entry='index.html',storage={},options={}) {
+  const {chromium}=require('playwright');
   const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{})});
   const page=await browser.newPage();
   const errors=[];

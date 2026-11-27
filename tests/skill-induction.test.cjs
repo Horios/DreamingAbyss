@@ -62,7 +62,8 @@ test('failed source cannot induce; exceptions restore the recursion guard',()=>{
  const h=harness();h.behavior.throwIndex=1;assert.throws(()=>h.c.castPartySkill(h.hero,0,{}));delete h.behavior.throwIndex;h.calls.length=0;h.c.castPartySkill(h.hero,0,{});assert.deepEqual(h.calls,[0,1]);
 });
 test('support badges preserve support-group metadata',()=>{const {c}=harness();assert.equal(c.skillTypeBadges(0,0,'support'),'support');assert.match(c.skillTypeBadges(0,0,'core'),/誘發/);});
-const editorPath=path.join(require('./runtime.cjs').balanceRoot(root),'balance-editor.html');
-test('standalone editor uses exactly the same contract as the runtime',{skip:!fs.existsSync(editorPath)},()=>{
+// The standalone editor is optional in the game's headless CI checkout.
+const editorPath=[process.env.EMBERWILD_BALANCE_ROOT,path.resolve(root,'../DreamingAbyss-BalanceEditor'),path.resolve(root,'../Emberwild-Balance')].filter(Boolean).map(dir=>path.join(dir,'balance-editor.html')).find(file=>fs.existsSync(file));
+test('standalone editor uses exactly the same contract as the runtime',{skip:!editorPath},()=>{
  const html=fs.readFileSync(editorPath,'utf8');const embedded=html.match(/<script id="skill-induction-schema">\n([\s\S]*?)<\/script>/)[1];assert.equal(embedded,fs.readFileSync(path.join(root,'js/skills/induction-schema.js'),'utf8'));
 });
