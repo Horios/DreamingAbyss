@@ -307,30 +307,9 @@
     "description": "讓指定夥伴加入隊伍的招募券。"
   },
   {
-    "id": "item:companion-ticket-11",
-    "kind": "item",
-    "key": "companion-ticket-11",
-    "iconType": "auto",
-    "description": "讓指定夥伴加入隊伍的招募券。"
-  },
-  {
-    "id": "item:companion-ticket-12",
-    "kind": "item",
-    "key": "companion-ticket-12",
-    "iconType": "auto",
-    "description": "讓指定夥伴加入隊伍的招募券。"
-  },
-  {
     "id": "item:companion-ticket-13",
     "kind": "item",
     "key": "companion-ticket-13",
-    "iconType": "auto",
-    "description": "讓指定夥伴加入隊伍的招募券。"
-  },
-  {
-    "id": "item:companion-ticket-14",
-    "kind": "item",
-    "key": "companion-ticket-14",
     "iconType": "auto",
     "description": "讓指定夥伴加入隊伍的招募券。"
   },

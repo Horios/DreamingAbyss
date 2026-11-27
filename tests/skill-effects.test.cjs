@@ -31,7 +31,7 @@ test('party heal and shield target all active allies, overflow uses highest-shie
  assert.equal(out.healed.hp,out.healed.max);assert.equal(out.healed.shield,50);assert.equal(out.healed.allyShield,10);assert.equal(out.stillDead,0);assert.equal(out.shield,out.expected);
 });
 test('revival selects active dead companions only and returns false without targets; reserve units stay dead',()=>{
- const r=game(),out=json(r,`(()=>{foes=[];recruitCompanion(11);closeModal();party.active=[0,10];foes=[testFoe()];const h=playerHero(),ally=partyMember(10),reserve=partyMember(11),i=addTestSkill({effect:'revive',target:'fallenAllies',reviveHpRatio:.5});ally.hp=reserve.hp=0;ally.shield=99;const first=castPartySkill(h,i,battleStats(h)),hp=ally.hp,max=stats(ally).hp,shield=ally.shield,again=castPartySkill(h,i,battleStats(h));return {first,hp,max,shield,reserve:reserve.hp,again};})()`);
+ const r=game(),out=json(r,`(()=>{foes=[];recruitCompanion(13);closeModal();party.active=[0,10];foes=[testFoe()];const h=playerHero(),ally=partyMember(10),reserve=partyMember(13),i=addTestSkill({effect:'revive',target:'fallenAllies',reviveHpRatio:.5});ally.hp=reserve.hp=0;ally.shield=99;const first=castPartySkill(h,i,battleStats(h)),hp=ally.hp,max=stats(ally).hp,shield=ally.shield,again=castPartySkill(h,i,battleStats(h));return {first,hp,max,shield,reserve:reserve.hp,again};})()`);
  assert.equal(out.first,true);assert.equal(out.hp,Math.round(out.max*.5));assert.equal(out.shield,0);assert.equal(out.reserve,0);assert.equal(out.again,false);
 });
 test('cleanse and dispel remove only matching dispellable states/support effects, honor count, and release linked control',()=>{

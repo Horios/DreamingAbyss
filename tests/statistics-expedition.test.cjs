@@ -7,7 +7,7 @@ const root=path.resolve(__dirname,'..');
 const json=(r,x)=>JSON.parse(r.run('JSON.stringify('+x+')'));
 function game(){
  const r=loadRuntime(root);r.ctx.performance.now=performance.now.bind(performance);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`selectSaveSlot(1);start(3);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();globalThis.rng=24680;Math.random=()=>((rng=(Math.imul(rng,1664525)+1013904223)>>>0)/4294967296);startSelectedExploration();save();`);
+ r.run(`selectSaveSlot(1);start(3);closeModal();recruitCompanion(10);closeModal();recruitCompanion(13);closeModal();globalThis.rng=24680;Math.random=()=>((rng=(Math.imul(rng,1664525)+1013904223)>>>0)/4294967296);startSelectedExploration();save();`);
  return r;
 }
 function drive(r,ms){for(let i=0;i<ms;i+=50){r.advance(Math.min(50,ms-i));r.run('tick()');}}

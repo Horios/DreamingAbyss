@@ -3,11 +3,8 @@
   const ratings=['D','C','B','A','S','SS','SSS'],statKeys=['hp','atk','def','crit','critDamage','pierce','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage'];
   const copy=x=>JSON.parse(JSON.stringify(x));
   const defaultPlans=[
-    {id:10,job:0,role:'攻擊戰士',description:'劍術輸出、戰吼與破甲；優先提升攻擊。',names:['洛恩','雷昂','凱斯','艾伯'],core:[0,2,4],active:[4,0],proc:[2],support:[0,2],weapon:'sword'},
-    {id:11,job:0,role:'保護戰士',description:'堅毅壁壘、守護誓言與嘲諷；優先提升防禦與生命。',names:['維恩','瑟琳','賽德','塔莉'],core:[0,1,2,6],active:[6,1,0],proc:[2],support:[1],weapon:'sword'},
-    {id:12,job:1,role:'法師',description:'火焰箭、餘燼爆發與奧術共鳴；優先提升攻擊。',names:['伊瑟','梅洛','席昂','菲娜'],core:[0,2,4],active:[4,0],proc:[2],support:[0,1],weapon:'staff'},
-    {id:13,job:3,role:'祭司',description:'治癒禱言、晨光祝福與聖光庇護；偏重續航。',names:['艾琳','露薇','諾雅','米菈'],core:[0,1,3,5],active:[1,0],proc:[3,5],support:[0,1],weapon:'holyStaff'},
-    {id:14,job:2,role:'弓箭手',description:'穿透箭、連射與鷹眼指引；優先提升攻擊。',names:['希雅','凜羽','緹亞','菲爾'],core:[0,2,4],active:[4,0],proc:[2],support:[0,1],weapon:'bow'}
+    {id:10,job:0,role:'攻擊戰士',description:'劍術輸出、戰吼與破甲；優先提升攻擊。',names:['洛恩'],core:[0,2,4],active:[4,0],proc:[2],support:[0,2],weapon:'sword'},
+    {id:13,job:3,role:'祭司',description:'治癒禱言、晨光祝福與聖光庇護；偏重續航。',names:['艾琳'],core:[0,1,3,5],active:[1,0],proc:[3,5],support:[0,1],weapon:'holyStaff'},
   ].map(p=>({...p,rating:'D'}));
   function definition(plan,classes,settings){
     const cls=classes[plan.job],per=settings?.progression?.statsPerLevel||{};

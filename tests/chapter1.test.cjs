@@ -6,13 +6,13 @@ test('caravan is opt-in, retains encounter choices and rewards once, its ticket 
  assert.equal(r.run('__EMBERWILD_STORY.dialogueView()'),null);assert.equal(r.run('__EMBERWILD_CHAPTER.gated()'),false);
  r.run("readStory('chapter1')");assert.equal(r.run('__EMBERWILD_STORY.dialogueView().head.eyebrow'),'商隊事件');
  assert.deepEqual(r.json("__EMBERWILD_STORY.design.quests.find(q=>q.id==='chapter1').stages.find(s=>s.id==='ambush').choices.map(c=>c.id)"),['help','ask','what']);
- r.run("completeStoryStage('chapter1','ask','ambush');completeStoryStage('chapter1','','ambush_ask');party.progressStats.encounters['chapter1/ambush_fight']=1;completeStoryStage('chapter1','','ambush_fight');recruitCompanion(11);recruitCompanion(12);globalThis.lineup=JSON.stringify(party.active);globalThis.gold=playerHero().gold");
+ r.run("completeStoryStage('chapter1','ask','ambush');completeStoryStage('chapter1','','ambush_ask');party.progressStats.encounters['chapter1/ambush_fight']=1;completeStoryStage('chapter1','','ambush_fight');recruitCompanion(13);globalThis.lineup=JSON.stringify(party.active);globalThis.gold=playerHero().gold");
  assert.equal(r.run("completeStoryStage('chapter1','','village')"),true);assert.equal(r.run('playerHero().gold-gold'),100);
  assert.equal(r.run("completeStoryStage('chapter1','','village')"),false);
  assert.equal(r.run("completeStoryStage('chapter1','','together')"),true);
  assert.equal(r.run('!!partyMember(10)'),false,'not before the ticket is used');assert.equal(r.run('companionTicketCount(10)'),1);
  assert.equal(r.run("completeStoryStage('chapter1','','together')"),false);assert.equal(r.run('companionTicketCount(10)'),1,'one ticket');
- assert.equal(r.run('useCompanionRecruitmentTicket(10)'),true);assert.equal(r.run('!!partyMember(10)'),true);assert.equal(r.run('JSON.stringify(party.active)===lineup'),true);
+ assert.equal(r.run('useCompanionRecruitmentTicket(10)'),true);assert.equal(r.run('!!partyMember(10)'),true);assert.equal(r.run('JSON.parse(lineup).every(k=>party.active.includes(k))'),true,'existing lineup kept');
  assert.equal(r.run('party.members.filter(h=>h.companionId===10).length'),1);assert.equal(r.run('companionTicketCount(10)'),0);assert.deepEqual(r.errors,[]);
 });
 for(const current of ['arrival','travel','plans','offer','join_yes','forest_edge'])test('removed legacy stage '+current+' migrates preserving its reward receipt',()=>{
