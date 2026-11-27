@@ -1,13 +1,13 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/items/companion-token-model.js');
+const {loadRuntime,ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs'),M=require('../js/items/companion-token-model.js');
 const root=path.resolve(__dirname,'..');
-function game(){const r=loadRuntime(root);r.run(`start(0);closeModal();for(const id of [10,11,12,13,14])recruitCompanion(id);closeModal();`);return r;}
+function game(){const r=loadRuntime(root);r.run(ADD_TEST_COMPANIONS);r.run(`start(0);closeModal();for(const id of [10,11,12,13,14])recruitCompanion(id);closeModal();`);return r;}
 function json(r,code){return JSON.parse(r.run(`JSON.stringify(${code})`));}
 test('real runtime: five distinct companion profiles grow only by their own class mastery; no ordinary gear sources',()=>{
  const r=game(),result=json(r,`(()=>{const player=stats(playerHero()),rows=[];for(const lv of [1,2,15,30,60]){setPartyClassMasteryLevel(lv-1);rows.push(party.members.slice(1).map(h=>({id:h.companionId,lv:classMasteryLevel(h),...stats(h)})));}const h=partyMember(10),before=stats(h),g=gear(12,0,3,0);g.plus=10;state.bag.push(g);h.equipped[0]=g.id;const after=stats(h);return {player,rows,before,after,weapon:__EMBERWILD_MASTERY.currentWeaponType(h),count:state.bag.length};})()`);
  assert.deepEqual(result.before,result.after);assert.equal(result.weapon,'sword');assert.equal(result.count,6);
  assert.deepEqual(result.rows.map(row=>row.map(h=>h.lv)),[0,1,14,29,30].map(lv=>Array(5).fill(lv)));
- assert.equal(result.rows[0][0].hp,47);assert.equal(result.rows[0][1].hp,51);assert.notEqual(result.rows[4][0].atk,result.rows[4][1].atk);assert.equal(result.rows[4][0].crit,result.rows[0][0].crit);
+ assert.equal(result.rows[0][0].hp,47);assert.notEqual(result.rows[4][0].atk,result.rows[4][3].atk,'洛恩與艾琳成長不同');assert.equal(result.rows[4][0].crit,result.rows[0][0].crit);
  const d=json(r,`exportableBalance().companions[0]`);assert.equal(d.equipmentInternalized,1);assert.deepEqual(r.errors,[]);
 });
 test('single-slot eligibility, exclusive UID ownership, reserves, compound percentages, quality, enhancement, save/reload',()=>{

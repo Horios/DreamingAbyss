@@ -1,12 +1,12 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {loadRuntime,ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 const json=(r,c)=>JSON.parse(r.run(`JSON.stringify(${c})`));
 // Skills are acquired from canonical sources (class level, advancement, quests, worn equipment); exported
 // documents carry the canonical skillSystem, so gate edits go to its definitions, not the legacy projections.
 const helpers=`globalThis.canonicalSkill=(d,job,kind,index)=>d.skillSystem.definitions.find(s=>(s.adapters||[s.adapter]).some(a=>a.job===job&&a.kind===kind&&a.index===index));
 globalThis.skillIndex=id=>__EMBERWILD_SKILLS.byId(id).adapter.index;
 globalThis.initialSkillIndices=(job,lv)=>exportableBalance().skillSystem.classRules.find(r=>r.job===job).initial.filter(x=>lv>=x.masteryLevel&&__EMBERWILD_SKILLS.byId(x.skillId)?.adapter.kind==='core').map(x=>skillIndex(x.skillId));`;
-function game(job=0){const r=loadRuntime(root);r.run(`start(${job});closeModal();`+helpers);return r;}
+function game(job=0){const r=loadRuntime(root);r.run(ADD_TEST_COMPANIONS);r.run(`start(${job});closeModal();`+helpers);return r;}
 test('A: initial class stays intact; new late team is blank; configurations and copies are independent',()=>{
  const r=game();const out=json(r,`(()=>{setClassMasteryLevel(4,playerHero());syncParty();save();const items=state.bag.map(g=>g.id);addTeamPlan();const blank=structuredClone(party.buildSystem.plans[1]);switchTeamPlan('team-2');const full={hasAP:Object.hasOwn(playerHero(),'ap'),hasSp:Object.hasOwn(playerHero(),'sp')};toggleBattle();const blocked=!running;changePlayerClass(1);learn(0);equipSkill(0,1);copyTeamPlan();switchTeamPlan('team-1');return {blank,full,blocked,currentJob:playerHero().job,stats:playerHero().stats,plans:party.buildSystem.plans,items,after:state.bag.map(g=>g.id)};})()`);
  assert.equal(out.blank.job,null);assert.equal(out.blank.stats,undefined);for(const k of ['skills','supportLevels','companions','enlisted'])assert.deepEqual(out.blank[k],[]);assert(out.blank.equipped.every(x=>x===null));assert.equal(out.full.hasAP,false);assert.equal(out.full.hasSp,false);assert(out.blocked);assert.equal(out.currentJob,0);assert.equal(out.stats,undefined);assert.equal(out.plans[1].job,1);assert.equal(out.plans[1].stats,undefined);assert.equal(out.plans[2].stats,undefined);assert.deepEqual(out.items,out.after);assert.deepEqual(r.errors,[]);

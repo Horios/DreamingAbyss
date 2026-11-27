@@ -62,4 +62,6 @@ for(const x of bs.monsters.catalog.filter(x=>x.mapIndex===0)){const c=structured
 for(const e of bs.drops.entries.filter(e=>e.type==="monsterGear"&&e.sources.length===1&&/^map0_/.test(e.sources[0]))){const c=structuredClone(e);c.id=e.id.replace("map0","map1");c.sources=[e.sources[0].replace("map0","map1")];bs.drops.entries.push(c);}
 applyBalanceConfig(d);}`;
 function addTestMap(r){r.run(ADD_TEST_MAP);}
-module.exports={loadRuntime,addTestMap,ADD_TEST_MAP};
+// 遊戲只保留洛恩（10）與艾琳（13）；需要更多夥伴的測試加入不帶技能的暫時夥伴 11／12／14（戰士／法師／弓箭手）。
+const ADD_TEST_COMPANIONS=`{const d=exportableBalance();for(const [id,job,w] of [[11,0,"sword"],[12,1,"staff"],[14,2,"bow"]]){if(d.companions.some(p=>p.id===id))continue;const p=structuredClone(d.companions.find(p=>p.id===10));Object.assign(p,{id,job,weapon:w,name:"測試夥伴"+id,passives:[],core:[],active:[],proc:[],support:[],availability:"visible",unlockCondition:{type:"initial"}});d.companions.push(p);}applyBalanceConfig(d);}`;
+module.exports={loadRuntime,addTestMap,ADD_TEST_MAP,ADD_TEST_COMPANIONS};

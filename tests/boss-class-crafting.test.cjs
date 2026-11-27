@@ -3,14 +3,14 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
-function game(){const r=loadRuntime(root);r.run("start(0);state.tutorial=3;recruitCompanion(12);save();");return r;}
+function game(){const r=loadRuntime(root);r.run("start(0);state.tutorial=3;recruitCompanion(13);save();");return r;}
 function json(r,code){return JSON.parse(r.run('JSON.stringify('+code+')'));}
 
 test('BOSS recipes browse every class without selecting companions or changing the team class',()=>{
   const r=game();
   const out=json(r,`(()=>{
     const before=JSON.stringify(packParty().buildSystem),player=playerHero();
-    selectPageHero('crafting',12);selectHero(12);
+    selectPageHero('crafting',13);selectHero(13);
     const pages=CLASSES.map((c,j)=>{setBossCraftClass(j);return bossCraftView();});
     return {pages,before,after:JSON.stringify(packParty().buildSystem),job:player.job,selected:party.selected};
   })()`);
@@ -19,14 +19,14 @@ test('BOSS recipes browse every class without selecting companions or changing t
     assert.match(html,new RegExp('craftBoss\\(0,'+j+'\\)'));
     assert.doesNotMatch(html,/page-hero-tabs|selectPageHero|heroMenuAction/);
   }
-  assert.equal(out.before,out.after);assert.equal(out.job,0);assert.equal(out.selected,12);
+  assert.equal(out.before,out.after);assert.equal(out.job,0);assert.equal(out.selected,13);
   assert.deepEqual(r.errors,[]);
 });
 
 test('BOSS crafting uses the selected class and shared resources even when a companion is selected',()=>{
   const r=game();
   const out=json(r,`(()=>{
-    selectHero(12);const player=playerHero(),job=player.job,planJob=__EMBERWILD_TEAMS.plan().job;
+    selectHero(13);const player=playerHero(),job=player.job,planJob=__EMBERWILD_TEAMS.plan().job;
     player.gold=100000;player.materials[bossMaterial(0,0)]=40;
     const beforeGold=player.gold,beforeMat=player.materials[bossMaterial(0,0)],before=player.bag.length;
     const made=CLASSES.map((c,j)=>{setBossCraftClass(j);craftBoss(0);return {...player.bag.at(-1)};});
