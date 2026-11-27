@@ -1,9 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/story/story-model.js');
-const root=path.resolve(__dirname,'..'),editor=path.resolve(process.env.EMBERWILD_BALANCE_ROOT||path.join(root,'../Emberwild-Balance')),seed=JSON.parse(fs.readFileSync(path.join(root,'data/balance.json')));
+const root=path.resolve(__dirname,'..'),editor=require('./runtime.cjs').balanceRoot(root),seed=JSON.parse(fs.readFileSync(path.join(root,'data/balance.json')));
 const json=(r,c)=>JSON.parse(r.run('JSON.stringify('+c+')'));
 // v0.136: the shipped intro quest was removed (the prologue replaces it). These tests exercise the story system with it,
 // so it is kept as a fixture and put back in front, with the gear-skill quest depending on it as before.
+seed.story.quests.push(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-region-chain.json'),'utf8')));
 seed.story.quests.unshift(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-goddess-intro.json'),'utf8')));seed.story.quests.find(q=>q.id==='skill_equipment_intro').prerequisites=['goddess_intro'];
 async function game(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.ctx.doc=structuredClone(seed);r.run('applyBalanceConfig(doc);selectSaveSlot(1);start(0);closeModal()');await r.run('EmberwildOffline.settle()');return r;}
 function complete(r,id,choice=''){const s=r.run(`party.story.quests['${id}'].current`);assert.equal(r.run(`completeStoryStage('${id}','${choice}','${s}')`),true,id+'/'+s);}
@@ -35,7 +36,7 @@ test('new/legacy saves migrate, real recruitment, kills and enhancement complete
 });
 
 test('cross-map side chain uses original kill and boss histories and survives each stage reload',async()=>{
- let r=await game();recruit(r);for(let map=0;map<2;map++){for(let i=0;i<3;i++)kill(r,map);complete(r,'two_regions');r=await reload(r);complete(r,'two_regions');boss(r,map);assert(r.run(`party.achievements.bossKills[${map}]`)>=1);complete(r,'two_regions');r=await reload(r);}assert.equal(r.run('party.story.quests.two_regions.done'),true);assert.equal(r.run("completeStoryStage('two_regions')"),false);assert.deepEqual(r.errors,[]);
+ let r=await game();recruit(r);for(let map=0;map<2;map++){for(let i=0;i<3;i++)kill(r,map);complete(r,'test_region_chain');r=await reload(r);complete(r,'test_region_chain');boss(r,map);assert(r.run(`party.achievements.bossKills[${map}]`)>=1);complete(r,'test_region_chain');r=await reload(r);}assert.equal(r.run('party.story.quests.test_region_chain.done'),true);assert.equal(r.run("completeStoryStage('test_region_chain')"),false);assert.deepEqual(r.errors,[]);
 });
 
 
@@ -61,7 +62,7 @@ test('lifetime and stage baselines, all/any, flags, choices and conditional ques
 
 test('editor stage creation, serialization/import, dialogue and branch editing roundtrip into executable runtime',async t=>{
  if(!fs.existsSync(path.join(editor,'balance-editor.html')))return t.skip('Balance editor fixture is not available in standalone game CI');
- const e=loadRuntime(editor,'balance-editor.html');e.run("globalThis.first=__EMBERWILD_STORY_EDITOR.design().quests[0];globalThis.stagesBefore=first.stages.length;__EMBERWILD_STORY_EDITOR.select(first.id);globalThis.newStage=__EMBERWILD_STORY_EDITOR.addStage();__EMBERWILD_STORY_EDITOR.set('name','女神主線改名');");const d=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');assert.equal(d.story.quests[0].stages.length,e.run('stagesBefore')+1);assert.deepEqual(json(e,'validateData()'),[]);const r=await game();r.ctx.doc=d;r.run('applyBalanceConfig(doc)');assert.equal(r.run('exportableBalance().story.quests[0].name'),'女神主線改名');assert.deepEqual(json(r,'exportableBalance().story'),d.story);
+ const e=loadRuntime(editor,'balance-editor.html');e.ctx.stageFixture=M.quest('editor_stage','測試階段編輯');e.run('data.story.quests.unshift(stageFixture)');e.run("globalThis.first=__EMBERWILD_STORY_EDITOR.design().quests[0];globalThis.stagesBefore=first.stages.length;__EMBERWILD_STORY_EDITOR.select(first.id);globalThis.newStage=__EMBERWILD_STORY_EDITOR.addStage();__EMBERWILD_STORY_EDITOR.set('name','女神主線改名');");const d=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');assert.equal(d.story.quests[0].stages.length,e.run('stagesBefore')+1);assert.deepEqual(json(e,'validateData()'),[]);const r=await game();r.ctx.doc=d;r.run('applyBalanceConfig(doc)');assert.equal(r.run('exportableBalance().story.quests[0].name'),'女神主線改名');assert.deepEqual(json(r,'exportableBalance().story'),d.story);
  e.ctx.doc=json(r,'exportableBalance()');e.run('data=__EMBERWILD_VALIDATE_DOCUMENT(doc);ensureArrays()');assert.deepEqual(json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport().story'),d.story);assert.deepEqual(e.errors,[]);assert.deepEqual(r.errors,[]);
 });
 

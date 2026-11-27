@@ -39,12 +39,20 @@ for(const row of corpus()){
   for(const id of expected.equipped)assert(loaded.equipped.includes(id),'worn gear kept: '+id);
   const source=JSON.parse(row.raw),srcMembers=source.version===3?source.members:[source];
   for(const g of srcMembers.flatMap(h=>h.bag||[]))if(Number.isInteger(g.plus))assert.equal(loaded.plus[g.id],g.plus,'enhancement level kept: '+g.id);
+  if(/^legacy-skills-job[0-3]\.json$/.test(row.name)){
+   assert(source.story.quests.two_regions,'fixture retains the retired quest');
+   const quests=JSON.parse(cold.run('JSON.stringify(party.story.quests)'));
+   assert.equal(Object.hasOwn(quests,'two_regions'),false,'retired record is removed on cold load');
+   for(const [id,progress] of Object.entries(source.story.quests))if(id!=='two_regions')assert.deepEqual(quests[id],progress,'other quest progress remains: '+id);
+   cold.run("setStoryCategory('side')");assert.doesNotMatch(cold.run('storyView()'),/兩地巡查|two_regions/,'side page has no retired quest');
+  }
   assert.equal(cold.values.get(KEY),row.raw,'cold load must not rewrite the original save bytes');
   // Migrated data must survive one more save and cold boot unchanged.
   cold.run('save()');
   const rewritten=cold.values.get(KEY);
   const again=loadRuntime(root,'index.html',{[KEY]:rewritten});
   assert.equal(again.ctx.__EMBERWILD_BOOT_SAVE_ERROR,null,'re-saved boot error');
+  assert.equal(again.run('Object.hasOwn(party.story.quests,"two_regions")'),false);
   assert.deepEqual(summarize(again),loaded,'save → cold boot round trip');
  });
 }

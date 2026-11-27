@@ -9,10 +9,10 @@ npm ci
 npx playwright install --with-deps chromium
 ```
 
-整合測試需要對應的私有平衡器開發版本。預設位置為同層 `../Emberwild-Balance/balance-editor.html`；也可指定其他路徑：
+整合測試需要對應的私有平衡器開發版本。共用 `tests/runtime.cjs` 的 `balanceRoot()`，依序查找 `EMBERWILD_BALANCE_ROOT`、同層 `../DreamingAbyss-BalanceEditor`、舊名 `../Emberwild-Balance`，均需包含 `balance-editor.html`。找不到時會明確報錯。可指定其他路徑：
 
 ```sh
-EMBERWILD_BALANCE_ROOT=/absolute/path/Emberwild-Balance npm test
+EMBERWILD_BALANCE_ROOT=/absolute/path/DreamingAbyss-BalanceEditor npm test
 npm run test:simulation
 node tests/collect-progression.cjs /tmp/progression-rows.json
 ```

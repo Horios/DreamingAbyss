@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {openRuntime,openEditorSection}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('icon canvas: fill, transparent erase, rotation, curves, undo, touch, cancellation and JSON roundtrip',async()=>{
   const e=await openRuntime(editorRoot,'balance-editor.html'),p=e.page;
   try{

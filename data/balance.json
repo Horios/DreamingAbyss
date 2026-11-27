@@ -17421,21 +17421,21 @@
       },
       "side": [
         {
-          "required": 5,
-          "gold": 300,
-          "ore": 20,
+          "required": 4,
+          "gold": 60,
+          "ore": 3,
           "gem": 1
         },
         {
-          "required": 2,
-          "gold": 800,
-          "ore": 55,
+          "required": 4,
+          "gold": 80,
+          "ore": 5,
           "gem": 1
         },
         {
           "required": 3,
-          "gold": 2000,
-          "ore": 120,
+          "gold": 120,
+          "ore": 8,
           "gem": 1
         }
       ],
@@ -17690,9 +17690,47 @@
         },
         "side": [
           {
+            "id": "slime_gel",
+            "title": "史萊姆凝膠回收",
+            "description": "營地藥師需要黏稠凝膠調製藥膏，去無名密林擊敗苔原史萊姆收集。",
+            "enabled": true,
+            "weight": 1,
+            "mapIndices": [],
+            "prerequisites": [],
+            "objectives": [
+              {
+                "type": "material",
+                "key": "黏稠凝膠",
+                "quantity": 4,
+                "quantityMax": 4,
+                "perTier": 0,
+                "consume": true
+              }
+            ],
+            "rewards": {
+              "gold": 60,
+              "goldPerTier": 0,
+              "ore": 3,
+              "orePerTier": 0,
+              "dust": 3,
+              "randomGems": 1,
+              "gemCounts": [
+                0,
+                0,
+                0
+              ],
+              "materials": [],
+              "potions": [],
+              "items": [],
+              "gear": [],
+              "choice": "all",
+              "gearChance": 0.5
+            }
+          },
+          {
             "id": "wolves",
             "title": "縫補獵人的披肩",
-            "description": "林間野狼的狼牙，是獵人交換皮革的憑證。",
+            "description": "林間野狼的狼牙是獵人交換皮革的憑證，帶幾顆回營地。",
             "enabled": true,
             "weight": 1,
             "mapIndices": [],
@@ -17701,18 +17739,18 @@
               {
                 "type": "material",
                 "key": "完整狼牙",
-                "quantity": 5,
-                "quantityMax": 5,
+                "quantity": 4,
+                "quantityMax": 4,
                 "perTier": 0,
                 "consume": true
               }
             ],
             "rewards": {
-              "gold": 300,
+              "gold": 80,
               "goldPerTier": 0,
-              "ore": 20,
+              "ore": 5,
               "orePerTier": 0,
-              "dust": 0,
+              "dust": 5,
               "randomGems": 1,
               "gemCounts": [
                 0,
@@ -17728,9 +17766,9 @@
             }
           },
           {
-            "id": "witch",
-            "title": "淨化沼澤",
-            "description": "採集女巫符印，協助營地研究暮色詛咒。",
+            "id": "treant_core",
+            "title": "樹精的樹芯",
+            "description": "迷路樹精的樹芯可以拿來修補營地工具。",
             "enabled": true,
             "weight": 1,
             "mapIndices": [],
@@ -17738,45 +17776,7 @@
             "objectives": [
               {
                 "type": "material",
-                "key": "女巫符印",
-                "quantity": 2,
-                "quantityMax": 2,
-                "perTier": 0,
-                "consume": true
-              }
-            ],
-            "rewards": {
-              "gold": 800,
-              "goldPerTier": 0,
-              "ore": 55,
-              "orePerTier": 0,
-              "dust": 0,
-              "randomGems": 1,
-              "gemCounts": [
-                0,
-                0,
-                0
-              ],
-              "materials": [],
-              "potions": [],
-              "items": [],
-              "gear": [],
-              "choice": "all",
-              "gearChance": 0.5
-            }
-          },
-          {
-            "id": "stars",
-            "title": "鍛造師的最後一課",
-            "description": "取得星隕監視者的稜鏡，準備迎戰噬日者。",
-            "enabled": true,
-            "weight": 1,
-            "mapIndices": [],
-            "prerequisites": [],
-            "objectives": [
-              {
-                "type": "material",
-                "key": "星隕稜鏡",
+                "key": "活性樹芯",
                 "quantity": 3,
                 "quantityMax": 3,
                 "perTier": 0,
@@ -17784,11 +17784,11 @@
               }
             ],
             "rewards": {
-              "gold": 2000,
+              "gold": 120,
               "goldPerTier": 0,
-              "ore": 120,
+              "ore": 8,
               "orePerTier": 0,
-              "dust": 0,
+              "dust": 8,
               "randomGems": 1,
               "gemCounts": [
                 0,
@@ -39736,266 +39736,6 @@
   "story": {
     "version": 1,
     "quests": [
-      {
-        "id": "two_regions",
-        "name": "兩地巡查（測試）",
-        "type": "side",
-        "npc": "巡查員",
-        "description": "巡查兩張地圖，確認各地怪物與 BOSS 的狀況。",
-        "enabled": true,
-        "hidden": false,
-        "unlock": {
-          "mode": "all",
-          "conditions": []
-        },
-        "prerequisites": [],
-        "entry": "explore_0",
-        "stages": [
-          {
-            "id": "explore_0",
-            "name": "巡查無名密林",
-            "speaker": "巡查員",
-            "description": "前往無名密林並擊敗 2 隻怪物。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "巡查員",
-                "text": "前往無名密林並擊敗 2 隻怪物。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "visit",
-                  "key": "0",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "explore",
-                  "key": "0",
-                  "count": 2,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "hunt_0",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "hunt_0",
-            "name": "調查苔原史萊姆",
-            "speaker": "巡查員",
-            "description": "擊敗 苔原史萊姆 3 隻。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "巡查員",
-                "text": "擊敗 苔原史萊姆 3 隻。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "kill",
-                  "key": "map0_mob0",
-                  "count": 3,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "boss_0",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "boss_0",
-            "name": "挑戰無名密林 BOSS",
-            "speaker": "巡查員",
-            "description": "擊敗此地區的 BOSS 一次。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "巡查員",
-                "text": "擊敗此地區的 BOSS 一次。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "boss",
-                  "key": "0",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "explore_1",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "explore_1",
-            "name": "巡查風蝕礦坑",
-            "speaker": "巡查員",
-            "description": "前往風蝕礦坑並擊敗 2 隻怪物。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "巡查員",
-                "text": "前往風蝕礦坑並擊敗 2 隻怪物。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "visit",
-                  "key": "1",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "explore",
-                  "key": "1",
-                  "count": 2,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "hunt_1",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "hunt_1",
-            "name": "調查洞穴蝙蝠",
-            "speaker": "巡查員",
-            "description": "擊敗 洞穴蝙蝠 3 隻。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "巡查員",
-                "text": "擊敗 洞穴蝙蝠 3 隻。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "kill",
-                  "key": "map1_mob0",
-                  "count": 3,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "boss_1",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          },
-          {
-            "id": "boss_1",
-            "name": "挑戰風蝕礦坑 BOSS",
-            "speaker": "巡查員",
-            "description": "擊敗此地區的 BOSS 一次。",
-            "dialogue": [
-              {
-                "kind": "npc",
-                "speaker": "巡查員",
-                "text": "擊敗此地區的 BOSS 一次。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "boss",
-                  "key": "1",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "battle"
-            ]
-          }
-        ],
-        "rewards": {
-          "gold": 300,
-          "ore": 20,
-          "items": []
-        },
-        "effects": [],
-        "nextQuests": []
-      },
       {
         "id": "shop_rescue",
         "name": "商店任務線",

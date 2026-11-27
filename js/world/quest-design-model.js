@@ -8,8 +8,8 @@
   const objective=(type='material',key='黏稠凝膠',quantity=1)=>({type,key,quantity,quantityMax:quantity,perTier:0,consume:['material','potion','item'].includes(type)});
   const entry=(id,title)=>({id,title,description:'',enabled:true,weight:1,mapIndices:[],prerequisites:[],objectives:[objective()],rewards:reward()});
   function defaults(legacy={}){
-    const side=[['wolves','縫補獵人的披肩','林間野狼的狼牙，是獵人交換皮革的憑證。','完整狼牙',5,300,20],['witch','淨化沼澤','採集女巫符印，協助營地研究暮色詛咒。','女巫符印',2,800,55],['stars','鍛造師的最後一課','取得星隕監視者的稜鏡，準備迎戰噬日者。','星隕稜鏡',3,2000,120]].map(([id,title,description,key,n,gold,ore],i)=>{
-      const old=legacy.side?.[i]||{},q=entry(id,title);q.description=description;q.objectives=[objective('material',key,Math.round(old.required??n))];q.rewards={...reward(),gold:Math.round(old.gold??gold),ore:Math.round(old.ore??ore),randomGems:Math.round(old.gem??1)};return q;
+    const side=[['slime_gel','史萊姆凝膠回收','營地藥師需要黏稠凝膠調製藥膏，去無名密林擊敗苔原史萊姆收集。','黏稠凝膠',4,60,3,3],['wolves','縫補獵人的披肩','林間野狼的狼牙是獵人交換皮革的憑證，帶幾顆回營地。','完整狼牙',4,80,5,5],['treant_core','樹精的樹芯','迷路樹精的樹芯可以拿來修補營地工具。','活性樹芯',3,120,8,8]].map(([id,title,description,key,n,gold,ore,dust],i)=>{
+      const old=legacy.side?.[i]||{},q=entry(id,title);q.description=description;q.objectives=[objective('material',key,Math.round(old.required??n))];q.rewards={...reward(),gold:Math.round(old.gold??gold),ore:Math.round(old.ore??ore),dust,randomGems:Math.round(old.gem??1)};return q;
     });
     const make=(id,title,type,key,n,max=n)=>{const q=entry(id,title);q.objectives=[{...objective(type,key,n),quantityMax:max}];q.rewards=reward();q.description=['salvage','enhance'].includes(type)?'開始任務後進行裝備作業，協助營地整備。':'完成日常委託，協助營地補給。';return q;};
     const expanded=[make('daily_hunt','附近怪物討伐','nearKill','@nearLevel',12,20),make('daily_salvage','裝備回收作業','salvage','',3,5),make('daily_enhance','裝備強化作業','enhance','',1,2),make('daily_explore','探索物資募集','material','@currentMap',6,10),make('daily_potion','營地治療補給','potion','heal_small',2,3)];

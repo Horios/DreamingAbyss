@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=path.resolve(root,'../Emberwild-Balance');
+const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 function game(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.run('selectSaveSlot(1);start(0);closeModal();Math.random=()=>.99;');assert.deepEqual(r.errors,[]);assert.deepEqual(r.warnings,[]);return r;}
 const ids=['heal_small','heal_standard','heal_greater','heal_supreme'];

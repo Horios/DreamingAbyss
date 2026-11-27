@@ -220,9 +220,15 @@ function statusTargetsForSkill(h,meta){
 }
 function customStatusSummary(def){
   if(!def)return '未指定狀態';const bits=[];
-  if(def.modifiers.length)bits.push(def.modifiers.map(x=>x.kind+' '+Number((x.value*100).toFixed(2))+'%'+(x.kind==='followup'?' '+x.element:'' )).join('、'));
-  if(def.control)bits.push('控制 '+def.control.kind);
-  if(def.periodic.length)bits.push(def.periodic.map(x=>(x.kind==='heal'?'恢復':'傷害')+' '+x.basis+'×'+x.coefficient+' / '+x.resolution).join('、'));
+  // v0.225: player-facing text uses Chinese labels instead of internal keys.
+  const ML={attack:'攻擊增加',critical:'暴擊率增加',guard:'受到傷害減少',fracture:'防禦降低',power:'技能效果增加',weaken:'攻擊降低',vulnerable:'承受傷害增加',damageAmp:'承受傷害增加',regen:'每回合恢復最大生命',followup:'受擊追打'};
+  const CL={stun:'暈眩',freeze:'冰凍',sleep:'睡眠',silence:'沉默',taunt:'嘲諷',polymorph:'變形',root:'定身',fear:'恐懼',charm:'魅惑',slow:'緩速',frost:'凍傷',rage:'狂怒',tauntRage:'嘲諷狂怒'};
+  const BL={fixed:'固定值',casterAttack:'施術者攻擊',casterMaxHp:'施術者最大生命',casterCurrentHp:'施術者目前生命',casterMissingHp:'施術者已損生命',casterDefense:'施術者防禦',targetMaxHp:'目標最大生命',targetCurrentHp:'目標目前生命',targetMissingHp:'目標已損生命',targetAttack:'目標攻擊',targetDefense:'目標防禦',casterShield:'施術者護盾',casterLevel:'施術者等級',targetShield:'目標護盾',targetLevel:'目標等級'};
+  const RL={fixed:'固定傷害',defended:'受防禦減免',elemental:'屬性傷害',true:'真實傷害',heal:'治療',overflowShield:'溢出轉護盾'};
+  const mods=def.modifiers.filter(x=>x.kind!=='damageSpread');
+  if(mods.length)bits.push(mods.map(x=>(ML[x.kind]||x.kind)+' '+Number((x.value*100).toFixed(2))+'%'+(x.kind==='followup'?' '+(globalThis.ELEMENTS?.[x.element]||x.element||''):'')).join('、'));
+  if(def.control)bits.push('控制：'+(CL[def.control.kind]||def.control.kind));
+  if(def.periodic.length)bits.push(def.periodic.map(x=>(x.kind==='heal'?'恢復':'傷害')+' '+(BL[x.basis]||x.basis)+'×'+x.coefficient+'（'+(RL[x.resolution]||x.resolution)+'）').join('、'));
   if(def.tags.includes('instant'))bits.push('套用時立即結算持續效果 1 次');return bits.join('；')||'純標記狀態';
 }
 function customStatusTooltip(def){
@@ -234,7 +240,7 @@ function customStatusTooltip(def){
  const bits=[];
  for(const m of def.modifiers||[]){
   if(m.kind==='followup')bits.push('受到攻擊時追加 '+(ELEMENTS[m.element]||m.element||'無')+'屬性追打，倍率 '+pct(m.value));
-  else bits.push((modifierLabels[m.kind]||m.kind)+' '+pct(m.value));
+  else if(m.kind!=='damageSpread')bits.push((modifierLabels[m.kind]||m.kind)+' '+pct(m.value));
  }
  const c=def.control;
  if(c){

@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {openRuntime}=require('./runtime.cjs');const root=path.resolve(__dirname,'..'),balance=path.resolve(root,'../Emberwild-Balance');
+const {openRuntime}=require('./runtime.cjs');const root=path.resolve(__dirname,'..'),balance=require('./runtime.cjs').balanceRoot(root);
 test('Chromium: token UI, normal player equipment, enhancement, reserves and real reload',async()=>{
  const g=await openRuntime(root),p=g.page;
  try{

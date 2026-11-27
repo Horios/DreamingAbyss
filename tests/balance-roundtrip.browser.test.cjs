@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {openRuntime,openEditorSection}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..'),editor=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editor=require('./runtime.cjs').balanceRoot(root);
 test('every balance navigation page renders through the real grouped menu',async()=>{
  const e=await openRuntime(editor,'balance-editor.html');
  try{

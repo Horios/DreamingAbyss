@@ -34,7 +34,8 @@
   /* ---------- 技能配置 ---------- */
   function cell(type,n,id){
     const sk=id&&S().byId(id),label=TYPE[type]+'槽 '+(n+1);
-    return `<button type="button" class="skill-cell skill-cell-${type}${sk?'':' is-empty'}" data-skill-slot="${type}:${n}" onclick="openSkillSlot('${type}',${n})" aria-label="${attr(label+'：'+(sk?sk.name:'空欄位'))}"><span class="skill-cell-art">${sk?U().icon(sk):svg('plus',22)}</span><span class="skill-cell-name">${sk?attr(sk.name):'空欄位'}</span></button>`;
+    const clear=sk?`<button type="button" class="skill-cell-clear" onclick="event.stopPropagation();clearSkillCell('${type}',${n})" aria-label="${attr('卸下'+sk.name)}" title="卸下">×</button>`:'';
+    return `<span class="skill-cell-wrap"><button type="button" class="skill-cell skill-cell-${type}${sk?'':' is-empty'}" data-skill-slot="${type}:${n}" onclick="openSkillSlot('${type}',${n})" aria-label="${attr(label+'：'+(sk?sk.name:'空欄位'))}"><span class="skill-cell-art">${sk?U().icon(sk):svg('plus',22)}</span><span class="skill-cell-name">${sk?attr(sk.name):'空欄位'}</span></button>${clear}</span>`;
   }
   function row(type,label,body,note=''){return `<div class="skill-row skill-row-${type}"><span class="skill-row-label">${label}</span><div class="skill-row-cells">${body}</div>${note}</div>`;}
   function passiveRow(h){
@@ -49,8 +50,19 @@
   }
   function loadout(h){
     const l=h.skillLoadout;
-    return `${newSkillNotice(h)}<div class="skill-loadout">${row('active','主動',l.active.map((id,n)=>cell('active',n,id)).join(''))}${l.proc.length?row('proc','觸發',l.proc.map((id,n)=>cell('proc',n,id)).join('')):''}${passiveRow(h)}</div>${pending()?'<p class="small skill-pending" role="status">目前在戰鬥中：配置變更於下一場戰鬥生效。</p>':''}<p class="small skill-page-hint">點擊技能欄位即可更換；完整數值可在欄位視窗或技能圖鑑查看。</p>`;
+    const count=t=>`${(l[t]||[]).filter(Boolean).length} / ${(l[t]||[]).length}`;
+    return `${newSkillNotice(h)}<div class="skill-loadout">${row('active',`主動 <small>${count('active')}</small>`,l.active.map((id,n)=>cell('active',n,id)).join(''),'<span class="small skill-row-note">戰鬥中依冷卻自動施放</span>')}${l.proc.length?row('proc',`觸發 <small>${count('proc')}</small>`,l.proc.map((id,n)=>cell('proc',n,id)).join(''),'<span class="small skill-row-note">普攻時依機率觸發，不占行動</span>'):''}${passiveRow(h)}</div>${pending()?'<p class="small skill-pending" role="status">目前在戰鬥中：配置變更於下一場戰鬥生效。</p>':''}${available(h)}<p class="small skill-page-hint">點技能欄位可更換或查看完整數值；欄位右上角 × 可卸下。</p>`;
   }
+
+  /* v0.225: learned skills that are not slotted, with one-tap equip into the first empty slot of their type. */
+  function available(h){
+    const l=h.skillLoadout,slotted=new Set([...(l.active||[]),...(l.proc||[])].filter(Boolean));
+    const list=U().sortedSkills(S().system().definitions.filter(sk=>['active','proc'].includes(slotType(sk))&&(l[slotType(sk)]||[]).length&&!sk.disabled&&sk.partnerId==null&&S().learned(h,sk)&&!slotted.has(sk.id)),h);
+    if(!list.length)return '<section class="skill-available"><h3>可配置的技能</h3><p class="small">已學會的技能都已配置。到「技能圖鑑」查看還沒學會的技能與解鎖條件。</p></section>';
+    return `<section class="skill-available"><h3>可配置的技能 <small>${list.length}</small></h3><div class="skill-available-list">${list.map(sk=>{const t=slotType(sk),free=(l[t]||[]).indexOf(null);return `<div class="skill-available-item" data-available-skill="${attr(sk.id)}"><span class="skill-pick-art">${U().icon(sk)}</span><span class="skill-pick-text"><b>${attr(sk.name)}</b><small>${TYPE[t]} · ${attr(oneLine(sk))}</small></span><button type="button" onclick="quickEquipSkill('${attr(sk.id)}')">${free>=0?'裝入'+TYPE[t]+'槽 '+(free+1):'替換…'}</button></div>`;}).join('')}</div></section>`;
+  }
+  globalThis.quickEquipSkill=function(id){const h=hero(),sk=S().byId(id);if(!sk)return false;const t=slotType(sk),slots=h.skillLoadout?.[t];if(!slots)return false;const free=slots.indexOf(null);if(free<0){slotPreview=id;return openSkillSlot(t,0);}const ok=chooseSkillSlot(t,free,id);render();return ok;};
+  globalThis.clearSkillCell=function(t,n){const ok=chooseSkillSlot(t,n,null);render();return ok;};
 
   /* ---------- slot dialog: candidates on the left of the detail, one tap equips ---------- */
   function slotCandidates(h,type){

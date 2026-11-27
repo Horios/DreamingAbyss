@@ -1,6 +1,11 @@
 const {chromium}=require('playwright');
 const fs=require('node:fs');
 const path=require('node:path');
+function balanceRoot(root=path.resolve(__dirname,'..')) {
+  const candidates=[process.env.EMBERWILD_BALANCE_ROOT,path.resolve(root,'../DreamingAbyss-BalanceEditor'),path.resolve(root,'../Emberwild-Balance')].filter(Boolean);
+  for(const candidate of candidates)if(fs.existsSync(path.join(candidate,'balance-editor.html')))return path.resolve(candidate);
+  throw Error('找不到平衡器 balance-editor.html；請設定 EMBERWILD_BALANCE_ROOT 或將 DreamingAbyss-BalanceEditor（相容舊名 Emberwild-Balance）放在遊戲同層目錄。');
+}
 async function openRuntime(root,entry='index.html',storage={},options={}) {
   const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{})});
   const page=await browser.newPage();
@@ -59,4 +64,4 @@ async function installCompanionFixtures(page){
 async function importBalanceFile(page,name,buffer){
   return page.evaluate(({name,text})=>importBalanceJSON({target:{files:[new File([text],name,{type:'application/json'})],value:''}}),{name,text:Buffer.from(buffer).toString('utf8')});
 }
-module.exports={importBalanceFile,openRuntime,openEditorSection,installCompanionFixtures};
+module.exports={balanceRoot,importBalanceFile,openRuntime,openEditorSection,installCompanionFixtures};

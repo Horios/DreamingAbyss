@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('Chromium: one-hop induction editing, pure/combined effects, ownership and deletion guards import into real game',async()=>{
  const e=await openRuntime(editorRoot,'balance-editor.html'),g=await openRuntime(root);const p=e.page;p.setDefaultTimeout(10000);const dialogs=[];p.on('dialog',async d=>{dialogs.push(d.message());await d.accept();});
  try{
