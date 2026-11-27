@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
-async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')});await g.page.evaluate(()=>{
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')});await g.page.evaluate(ADD_TEST_COMPANIONS);await g.page.evaluate(()=>{
  selectSaveSlot(1);start(1);closeModal();clearInterval(timer);setClassMasteryLevel(7);syncParty();recruitCompanion(10);recruitCompanion(11);closeModal();party.active=party.members.map(h=>memberKey(h));startSelectedExploration();clearInterval(timer);spawnGroup();running=true;
  const base=foes[0];foes=Array.from({length:3},(_,i)=>({...base,name:'測試史萊姆',id:'fx-'+i,kind:i===2?'elite':'normal',hp:10000,maxhp:10000,shield:0}));enemy=foes[0];beginBattleStatistics();for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();
  globalThis.fxCapture=function(fn){EmberwildBattleEffects.begin();fn();EmberwildBattleEffects.end();globalThis.fxEvents=EmberwildBattleEffects.pendingEvents;EmberwildBattleSummary.sync();};

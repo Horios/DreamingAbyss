@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs');const root=path.resolve(__dirname,'..');
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs');const root=path.resolve(__dirname,'..');
 async function setup(){
  const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')});
  await g.page.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);spawnGroup();running=true;const base=foes[0];foes=[{...base,id:'summary-a',name:'測試怪物',hp:25,maxhp:100},{...base,id:'summary-b',name:'測試怪物',hp:450,maxhp:900}];enemy=foes[0];beginBattleStatistics();render();});return g;
@@ -152,7 +152,7 @@ test('an enemy without an id renders once with the summary key, and a lasting mi
 test('ally cards are tinted by class and the battle note explains card and portrait clicks',async()=>{
  const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')}),p=g.page;
  try{
-  const out=await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);recruitCompanion(10);closeModal();recruitCompanion(14);closeModal();spawnGroup();running=true;setTab('battle');render();
+  await p.evaluate(ADD_TEST_COMPANIONS);const out=await p.evaluate(()=>{selectSaveSlot(1);start(0);closeModal();clearInterval(timer);recruitCompanion(10);closeModal();recruitCompanion(14);closeModal();spawnGroup();running=true;setTab('battle');render();
    const cards=[...document.querySelectorAll('#battleAllyIcons>.unit.seconds-unit')];
    return {jobs:cards.map(n=>(n.className.match(/seconds-job-(\d)/)||[])[1]),bgs:cards.map(n=>getComputedStyle(n).backgroundImage),note:document.querySelector('.seconds-battlefield')?.textContent||''};});
   assert(out.jobs.length===3&&out.jobs.every(Boolean),JSON.stringify(out.jobs));

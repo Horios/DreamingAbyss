@@ -1,9 +1,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {openRuntime}=require('./runtime.cjs');
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 
 async function startParty(page){
- await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();for(const id of [10,12,14]){recruitCompanion(id);closeModal();}save();setTab('roster');});
+ await page.evaluate(ADD_TEST_COMPANIONS);await page.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();for(const id of [10,12,14]){recruitCompanion(id);closeModal();}save();setTab('roster');});
  await page.waitForTimeout(50);await page.evaluate(()=>closeModal());
 }
 function combatSnapshot(){

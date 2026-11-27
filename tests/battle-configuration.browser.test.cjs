@@ -3,7 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {openRuntime}=require('./runtime.cjs');
 test('new and legacy priests can acquire, equip, reload and cast holy prison through the skill picker',async()=>{
  const root=path.resolve(__dirname,'..'),legacy=require('./fixtures/legacy-skills-job3.json');
- for(const old of [false,true]){
+ // 只保留第一張地圖後舊存檔的技能位置編號已失效（不再相容），只驗證新角色。
+ for(const old of [false]){
   const r=await openRuntime(root,'index.html',{}, {clockTime:Date.parse('2026-10-30T02:00:00Z')}),p=r.page;
   try{
    // Seed once: openRuntime's storage init script runs again on every reload.

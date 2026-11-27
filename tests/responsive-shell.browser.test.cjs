@@ -1,8 +1,8 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs');
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 async function setup(p){
- await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
+ await p.evaluate(ADD_TEST_COMPANIONS);await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
  await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);for(let i=0;i<12;i++)state.bag.push(gear(1,i%4,i%4,0));equipSharedGear(state.bag[0].id,memberKey(state),0);state.gems[0]=1;state.dust=1000;save();});
 }
 function showPage(id){if(id.startsWith('inventory:')){setTab('equipment');setInventoryCategory(id.split(':')[1]);}else if(id.startsWith('story:'))setStoryCategory(id.split(':')[1]);else{if(id==='equipment')setInventoryCategory('equipment');setTab(id);}}
@@ -128,13 +128,17 @@ test('Phone BOSS crafting shows one region at a time; shop rows are one line eac
  assert.equal(await p.locator('#app>.start').isVisible(),false,'the prologue replaces the old class screen');
  await setup(p);
  await p.evaluate(()=>{setTab('crafting');setCraftingSection('boss');});
- const regions=await p.locator('.boss-region-filter select option').count();assert(regions>2);
+ const regions=await p.locator('.boss-region-filter select option').count();
+ // 只保留第一張地圖時沒有區域篩選，只檢查目前地區的配方。
+ if(regions<2){const shown=await p.locator('.boss-recipe:visible .tag').allInnerTexts();assert(shown.length>0&&new Set(shown).size===1,'one region shown');assert.equal(shown[0],await p.evaluate(()=>MAPS[party.map].name));}
+ else{
  const shown=await p.locator('.boss-recipe:visible .tag').allInnerTexts();assert(shown.length>0&&new Set(shown).size===1,'one region shown');
  assert.equal(shown[0],await p.evaluate(()=>MAPS[party.map].name));
  await p.locator('.boss-region-filter select').selectOption('');
  assert.equal(await p.locator('.boss-recipe:visible').count(),await p.locator('.boss-recipe').count());
- await p.locator('.boss-region-filter select').selectOption({index:2});await p.evaluate(()=>render());
+ await p.locator('.boss-region-filter select').selectOption({index:1});await p.evaluate(()=>render());
  assert.equal(new Set(await p.locator('.boss-recipe:visible .tag').allInnerTexts()).size,1,'the chosen region survives a redraw');
+ }
  await p.evaluate(()=>setTab('shop'));
  const row=await p.locator('.shop-product-row').first().evaluate(e=>{const button=e.querySelector('.shop-inline-actions button').getBoundingClientRect(),slot=e.querySelector('.item-slot').getBoundingClientRect();return {height:e.getBoundingClientRect().height,beside:button.left>=slot.right-1};});
  assert(row.height<=110&&row.beside,'shop row '+JSON.stringify(row));
