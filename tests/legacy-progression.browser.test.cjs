@@ -3,7 +3,8 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),legacy=require('./fixtures/legacy-progression.json');
 const root=path.resolve(__dirname,'..');
-test('v1 saves drop level and XP, keep the old level as legacySkillLevel and map access, and migrate once',async()=>{
+// 只保留第一張地圖時刪除了夥伴技能，技能位置編號改變；依決定不再相容此版本以前的舊存檔。
+test('v1 saves drop level and XP, keep the old level as legacySkillLevel and map access, and migrate once',{skip:'舊存檔的技能位置編號已失效（不再相容）'},async()=>{
  const g=await openRuntime(root,'index.html',{},{pathname:'/preview/'});
  try{
   const out=await g.page.evaluate(fixtures=>{
