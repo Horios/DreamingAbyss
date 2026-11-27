@@ -4,7 +4,7 @@
   let enemySharedCooldowns=Object.create(null);
   globalThis.EmberwildEnemyCombatState={pack:()=>enemySharedCooldowns,restore:v=>{enemySharedCooldowns=v||Object.create(null);}};
 
-  const BASIC_EFFECTS=new Set(['cleanse','dispel','revive','damage','heal','shield','drain','nextActiveDamage','advanceNextRound','shieldLowest','applyStatus','induceSkill']);
+  const BASIC_EFFECTS=new Set(['cleanse','dispel','revive','damage','heal','shield','drain','nextActiveDamage','advanceNextRound','shieldLowest','applyStatus','induceSkill','summonAllies','resetBasic']);
   const idFor=(job,index)=>CLASSES[job]?.skills?.[index]?.[6]?.sharedId||`job${job}-core${index}`;
   function sharedCoreSkillPool(){
     const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;if(cache?.sharedSkillPool)return cache.sharedSkillPool;
@@ -74,8 +74,36 @@
     else{const hs=heroTargets({...sk,maxTargets:1,meta:{...meta,target:'enemy'}});targets=hs.slice(0,1);}
     let ok=false;for(const t of targets)ok=api.apply(meta.statusId,e,t)||ok;return ok;
   }
+  /* v0.226 monster-only effects. The settings live on the skill definition (skillSystem.definitions):
+     summonAllies: summonMonsterId, summonCount, summonKind ('normal'/'elite'). Nothing is summoned while an earlier summon of the
+     same caster is still alive; summoned monsters grant no rewards (no farming by stalling the boss).
+     resetBasic: one random living hero's basic attack charge starts over. */
+  const definitionOf=sk=>globalThis.__EMBERWILD_SKILLS?.byId?.(sk.id)||{};
+  globalThis.enemySummonsAlive=e=>foes.some(f=>f.hp>0&&f.summonedBy===e?.id);
+  function summonAllies(e,sk){
+    const d=definitionOf(sk),row=(GAMEPLAY_SETTINGS?.monsters?.catalog||[]).find(m=>m.id===d.summonMonsterId);if(!row||enemySummonsAlive(e))return false;
+    const kind=d.summonKind==='normal'?'normal':'elite',mi=Number.isInteger(e.region)&&MAPS[e.region]?e.region:party.map,map=MAPS[mi],mode=e.difficulty??party.difficulty??0;
+    // Fallen summons of this caster leave the field first, so the encounter stays within its foe limit.
+    foes=foes.filter(f=>f.hp>0||f.summonedBy!==e.id);
+    const cap=Math.max(1,Number(globalThis.EmberwildSecondsCombat?.maxEncounterSize)||5),n=Math.max(0,Math.min(Math.max(1,Math.floor(d.summonCount||1)),cap-foes.length));if(!n)return false;
+    const names=[];
+    for(let i=0;i<n;i++){
+     const lv=map.min+Math.floor(Math.random()*Math.max(1,map.max-map.min+1)),v=EmberwildProgression.monsterStats(GAMEPLAY_SETTINGS,lv,kind,mode,row);
+     const m={id:'foe-'+uid(),monsterId:row.id,name:(kind==='elite'?'菁英・':'')+row.name,icon:'',mat:row.material,lv,...v,maxhp:v.hp,kind,turn:0,rewarded:true,summonedBy:e.id,element:row.element,race:row.race,maxDrops:row.maxDrops,difficulty:mode,region:mi};
+     foes.push(m);cdBox(m);names.push(m.name);
+    }
+    globalThis.EmberwildSecondsCombat?.rosterChanged?.();
+    note(combatEnemyName(e)+'・'+sk.name+' → 召喚 '+names.join('、'));return true;
+  }
+  function resetHeroBasic(e,sk){
+    const t=heroTargets({...sk,maxTargets:1,meta:{...sk.meta,target:'enemy'}})[0];if(!t)return false;
+    globalThis.EmberwildSecondsCombat?.resetBasic?.(heroKey(t));
+    note(combatEnemyName(e)+'・'+sk.name+' → '+characterName(t)+' 的普攻重新計時');return true;
+  }
   function castEnemySharedSkillEffect(e,sk){
     if(!e||e.hp<=0||!sk||sk.meta?.partnerId!=null||!BASIC_EFFECTS.has(sk.effect))return false;
+    if(sk.effect==='summonAllies')return summonAllies(e,sk);
+    if(sk.effect==='resetBasic')return resetHeroBasic(e,sk);
     const common=globalThis.EmberwildSkillEffectRuntime;
     if(common?.configured({...sk.meta,effect:sk.effect}))return common.castEnemy(e,sk);
     const v=enemyBattleStats(e),basePower=v.atk*sk.power*(1+effectTotal(e.id,'power'))*(1-Math.min(GAMEPLAY_SETTINGS.combat.caps.weaken,effectTotal(e.id,'weaken'))),element=sk.element||e.element||'physical';

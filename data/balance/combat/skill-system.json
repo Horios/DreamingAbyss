@@ -5,7 +5,7 @@
       "job": 0,
       "initial": [
         {
-          "skillId": "class0-initial0",
+          "skillId": "class0-initial2",
           "masteryLevel": 0
         },
         {
@@ -13,7 +13,7 @@
           "masteryLevel": 2
         },
         {
-          "skillId": "class0-initial2",
+          "skillId": "class0-initial0",
           "masteryLevel": 4
         },
         {

@@ -281,7 +281,14 @@
           "shadow": 0
         }
       },
-      "skillAssignments": [],
+      "skillAssignments": [
+        {
+          "skillId": "boss-summon-treants"
+        },
+        {
+          "skillId": "boss-entangle"
+        }
+      ],
       "enabled": true,
       "eliteEnabled": false,
       "spawnWeight": 1,

@@ -32,10 +32,13 @@
   lakeUnlocked:{label:'許願湖已解鎖'},
   socketGearWorn:{label:'主角穿著有鑲嵌孔的裝備'},
   // v0.178: tickets held for a companion (key: companion id).
-  companionTicket:{label:'持有指定夥伴的招募券',key:'companion',count:true}
+  companionTicket:{label:'持有指定夥伴的招募券',key:'companion',count:true},
+  // v0.226: the caravan story can be started from the quest page (questOffered) / has been started (questStarted).
+  questOffered:{label:'任務可以開始',key:'quest'},
+  questStarted:{label:'任務已開始',key:'quest'}
  };
  // Stages of the inline onboarding a tutorial can wait for (js/story/prologue-runtime.js).
- const STAGES={gift:'女神的贈禮',practice:'首次探索戰鬥',helper:'招募牧師'};
+ const STAGES={gift:'女神的贈禮',charm:'護符與裝備技能',gem:'鑲嵌寶石',practice:'首次探索戰鬥',helper:'招募牧師'};
  const SLOT_TYPES={active:'主動',proc:'觸發',support:'輔助'};
  // Lessons the prologue already teaches (its fixed system actions). A step can be left out for players who did them.
  const LESSONS={equipLesson:'穿戴裝備',skillLesson:'裝入技能',recruitHelper:'加入隊友'};
@@ -99,6 +102,14 @@
   'story.tabs':{label:'任務分類分頁',page:'story'},
   'story.card':{label:'任務卡片',page:'story'},
   'story.action':{label:'任務卡片的操作按鈕',page:'story'},
+  // v0.226: onboarding charm and gem lessons, the caravan story's start button.
+  'bag.storyGear':{label:'尚未穿戴的任務裝備（啟程護符）',page:'equipment'},
+  'skills.firstProcSlot':{label:'第一個觸發槽',page:'skills'},
+  'skills.echoChoice':{label:'技能槽視窗中的「追擊」',page:'skills'},
+  'forge.socketAction':{label:'工坊的「鑲嵌」',page:'forge'},
+  'forge.socketSlot':{label:'工坊鑲嵌的第一孔',page:'forge'},
+  'forge.gemChoice':{label:'工坊鑲嵌可放入的寶石',page:'forge'},
+  'story.begin':{label:'商隊事件的「閱讀劇情」',page:'story'},
   'lake.panel':{label:'許願湖說明',page:'wishingLake'},
   'lake.offerings':{label:'許願湖投入物品',page:'wishingLake'},
   'lake.confirm':{label:'許願湖「投入」',page:'wishingLake'},
@@ -154,10 +165,26 @@
   // stage and finish by themselves when the task is done (the onboarding then moves to its next page).
   makeModule({id:'onboarding_gift',title:'女神的贈禮',category:'equipment',description:'新手引導：在背包選擇女神送的新手武器並穿上。',
    trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','gift')]),skippable:false,steps:[
-   step('bag','背包','女神送的新手裝備都放在背包。護甲與飾品已經穿好，還差一把武器。',{page:'equipment',target:'bag.list'}),
+   step('bag','背包','女神送的新手武器與啟程護符都放在背包。先穿上武器。',{page:'equipment',target:'bag.list'}),
    step('pick','選擇新手武器','點選這件還沒穿上的新手裝備，右側會顯示它的數值。',{page:'equipment',target:'bag.starterGear',advance:{type:'event',key:'gearSelected'}}),
    step('wear','前往穿戴','按「穿戴」前往裝備頁。',{page:'equipment',target:'bag.wearButton',advance:{type:'event',key:'wearOpened'}}),
-   step('equip','穿上武器','按「穿戴至武器」把武器裝上。穿好之後就能出發探索。',{page:'worn',target:'worn.candidate',advance:{type:'event',key:'gearEquipped'}})
+   step('equip','穿上武器','按「穿戴至武器」把武器裝上。接著穿上啟程護符。',{page:'worn',target:'worn.candidate',advance:{type:'event',key:'gearEquipped'}})
+  ]}),
+  // v0.226: the charm's skill and sockets are taught right after the weapon (they replace the old quest 裝備技能與寶石入門).
+  makeModule({id:'onboarding_charm',title:'護符與裝備技能',category:'equipment',description:'新手引導：穿上啟程護符，把護符附帶的技能「追擊」裝進觸發技能槽。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','charm')]),skippable:false,steps:[
+   step('pick','啟程護符','點選啟程護符。護符附帶技能「追擊」，還有兩個鑲嵌孔。',{page:'equipment',target:'bag.storyGear',advance:{type:'event',key:'gearSelected'}}),
+   step('wear','前往穿戴','按「穿戴」前往裝備頁。',{page:'equipment',target:'bag.wearButton',advance:{type:'event',key:'wearOpened'}}),
+   step('equip','穿上護符','按「穿戴至飾品」把護符裝上。',{page:'worn',target:'worn.candidate',advance:{type:'event',key:'gearEquipped'}}),
+   step('slot','觸發技能槽','裝備附帶的技能要裝進技能槽才會使用。點選第一個觸發槽。',{page:'skills',target:'skills.firstProcSlot',advance:{type:'event',key:'skillSlotOpened'}}),
+   step('echo','裝入追擊','點選「追擊」的「裝入」。觸發技能會在普攻時依觸發率發動。',{page:'skills',target:'skills.echoChoice',advance:{type:'event',key:'skillSlotted'}})
+  ]}),
+  makeModule({id:'onboarding_gem',title:'鑲嵌寶石',category:'equipment',description:'新手引導：在裝備工坊把赤焰石鑲進啟程護符的第一孔，完成後學會新技能。',
+   trigger:{type:'pageEnter',page:'worn'},prerequisites:group([condition('prologueStage','gem')]),skippable:false,steps:[
+   step('move','移到工坊','女神另外給了一顆赤焰石。鑲嵌在裝備工坊進行，按護符的「移到工坊」。',{page:'worn',target:'worn.socketButton',advance:{type:'page',key:'forge'}}),
+   step('action','鑲嵌','按「鑲嵌」開啟護符的鑲嵌孔。',{page:'forge',target:'forge.socketAction',advance:{type:'event',key:'socketsOpened'}}),
+   step('slot','選擇孔位','點選第一孔。',{page:'forge',target:'forge.socketSlot',advance:{type:'event',key:'socketSelected'}}),
+   step('gem','放入寶石','點選赤焰石放進去。鑲嵌後攻擊力會提高，拆除與替換都免費。完成後女神會教你一招新技能。',{page:'forge',target:'forge.gemChoice',advance:{type:'event',key:'gemSocketed'}})
   ]}),
   makeModule({id:'onboarding_practice',title:'首次探索戰鬥',category:'battle',description:'新手引導：開始探索並完成第一場戰鬥。',
    trigger:{type:'pageEnter',page:'battle'},prerequisites:group([condition('prologueStage','practice')]),skippable:false,steps:[
@@ -171,13 +198,19 @@
    trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','helper')]),skippable:false,steps:[
    step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
    step('ticket','夥伴招募券','點選「夥伴招募券 - 艾琳」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
-   step('use','使用招募券','艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源與治療強化。按「使用招募券」，艾琳就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
+   step('use','使用招募券','艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源、治療強化與復活。按「使用招募券」，艾琳就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
+  ]}),
+  // v0.226: right after the priest joins, the caravan story (which hands out 洛恩's ticket) is started from the quest page.
+  makeModule({id:'caravan_quest',title:'商隊事件',category:'quests',description:'新手引導結束後，到任務頁開始主線「商隊事件」。完成後可以取得「夥伴招募券 - 洛恩」。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueDone'),condition('tutorialDone','onboarding_helper'),condition('questOffered','chapter1')]),steps:[
+   step('card','主線任務','林間的商隊正被魔物襲擊，戰士洛恩在護衛商隊。主線任務「商隊事件」已經可以開始。',{page:'story',target:'story.card'}),
+   step('begin','閱讀劇情','按「閱讀劇情」前往救援。完成後會取得「夥伴招募券 - 洛恩」。',{page:'story',target:'story.begin',advance:{type:'condition',condition:condition('questStarted','chapter1')}})
   ]}),
   makeModule({id:'recruit_lorne',title:'招募戰士',category:'companions',description:'完成商隊事件後取得「夥伴招募券 - 洛恩」，在背包使用讓戰士洛恩加入隊伍。',
    trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 特殊使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
    step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
    step('ticket','夥伴招募券','點選「夥伴招募券 - 洛恩」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
-   step('use','使用招募券','洛恩是戰士，專注劍術輸出，技能有裂地斬、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
+   step('use','使用招募券','洛恩是戰士，專注劍術輸出，技能有裂地斬、嘲諷、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
   ]}),
   // v0.173: every other system page plays one spotlight guide the first time it is opened after the onboarding.
   makeModule({id:'statistics_basics',title:'戰鬥統計',category:'battle',description:'目前地圖的戰鬥場次、隊員表現與掉落紀錄。第一次進入戰鬥統計時開始。',

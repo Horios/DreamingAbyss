@@ -1,4 +1,4 @@
-const test=require('node:test'),assert=require('node:assert/strict');const {open}=require('./opening-helpers.cjs');
+const test=require('node:test'),assert=require('node:assert/strict');const {open,charm,gem}=require('./opening-helpers.cjs');
 function old(r,current='together',done=false,completed=['village']){r.run(`selectSaveSlot(1);start(0);party.story.quests.prologue={current:'departure',started:true,done:true,completed:['creation','calling','gift','practice','helper','departure'],baseline:{},choices:{}};party.story.quests.chapter1={current:${JSON.stringify(current)},done:${done},started:true,completed:${JSON.stringify(completed)},baseline:{},choices:{}};party.story.flags.chapter_gate=true;delete party.story.flags.opening_v2;save()`);}
 // v0.178: finishing the caravan story hands out 夥伴招募券 - 洛恩; 洛恩 joins when the ticket is used from the bag.
 test('caravan is opt-in, retains encounter choices and rewards once, its ticket brings the warrior without replacing a full party',()=>{
@@ -29,8 +29,10 @@ test('migration save failure rolls back and can retry',()=>{
  r.run('save=originalSave');assert.equal(r.run('__EMBERWILD_PROLOGUE.migrate()'),true);assert.equal(r.run('companionTicketCount(10)'),1);
 });
 test('an unfinished old prologue resumes inline and its temporary priest does not replace the permanent recruit',()=>{
- const r=open();r.run("selectSaveSlot(1);start(0);__EMBERWILD_PROLOGUE_HELPER.add(13,'助手');party.story.quests.prologue={current:'trial',started:true,done:false,completed:['creation','commission','calling','gift','skills','practice','helper'],baseline:{},choices:{}};delete party.story.flags.opening_v2;__EMBERWILD_PROLOGUE.migrate();render()");
+ const r=open();r.run("selectSaveSlot(1);start(0);__EMBERWILD_PROLOGUE_HELPER.add(13,'助手');party.story.quests.prologue={current:'trial',started:true,done:false,completed:['creation','commission','calling','gift','skills','practice','helper'],baseline:{},choices:{}};delete party.story.flags.opening_v2;delete party.story.flags.onboarding_v226;__EMBERWILD_PROLOGUE.migrate();__EMBERWILD_PROLOGUE.migrateLessons();render()");
  assert.equal(r.run('!!state'),true);assert.equal(r.run('!!__EMBERWILD_PROLOGUE_HELPER.member()'),false);assert.equal(r.run("$('prologue-layer').hidden"),true);
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'gift');r.run('withHero(playerHero(),()=>equipGear(playerHero().bag.find(g=>g.starterPack).id));render()');
+ // v0.226: the charm and gem lessons follow the weapon; the old save gets the charm and the gem it never had.
+ assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'charm');assert.equal(r.run('playerHero().gems[0]'),1);charm(r);gem(r);
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'helper');r.run('recruitCompanion(13);render()');assert.equal(r.run('party.story.quests.prologue.done'),true);assert.equal(r.run('!!partyMember(13)'),true);
 });

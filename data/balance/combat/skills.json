@@ -646,7 +646,7 @@
       {
         "type": "quest",
         "questIds": [
-          "skill_equipment_intro"
+          "prologue"
         ],
         "rewardOnly": true
       }
@@ -1490,7 +1490,7 @@
       {
         "type": "quest",
         "questIds": [
-          "skill_equipment_intro"
+          "prologue"
         ],
         "rewardOnly": true
       }
@@ -2145,7 +2145,7 @@
       {
         "type": "quest",
         "questIds": [
-          "skill_equipment_intro"
+          "prologue"
         ],
         "rewardOnly": true
       }
@@ -2830,7 +2830,7 @@
     "id": "partner13-core9",
     "name": "生命泉源",
     "activation": "proc",
-    "requiredLevel": 2,
+    "requiredLevel": 0,
     "cooldown": 0,
     "power": 0.65,
     "effect": "heal",
@@ -2994,7 +2994,7 @@
       {
         "type": "quest",
         "questIds": [
-          "skill_equipment_intro"
+          "prologue"
         ],
         "rewardOnly": true
       }
@@ -3353,7 +3353,7 @@
         "value": 15
       }
     ],
-    "requiredLevel": 7,
+    "requiredLevel": 4,
     "partnerId": 13,
     "type": "passive",
     "jobs": [
@@ -3399,12 +3399,12 @@
     "sources": [
       {
         "type": "class",
-        "masteryLevel": 0
+        "masteryLevel": 4
       }
     ],
     "usageScope": "character",
     "partnerId": null,
-    "requiredLevel": 0,
+    "requiredLevel": 4,
     "requiresAdvanced": false,
     "requiredMastery": null,
     "requiredMasteryLevel": 0,
@@ -3535,12 +3535,12 @@
     "sources": [
       {
         "type": "class",
-        "masteryLevel": 4
+        "masteryLevel": 0
       }
     ],
     "usageScope": "character",
     "partnerId": null,
-    "requiredLevel": 4,
+    "requiredLevel": 0,
     "requiresAdvanced": false,
     "requiredMastery": null,
     "requiredMasteryLevel": 0,
@@ -4901,6 +4901,255 @@
       "bossDurationSeconds": 0,
       "tickIntervalSeconds": 6,
       "condition": "always"
+    }
+  },
+  {
+    "id": "partner10-core17",
+    "name": "嘲諷",
+    "description": "使敵人優先攻擊自己。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 17,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": 10,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "tauntRage",
+    "systemEffect": "taunt",
+    "power": 0,
+    "cooldown": 6,
+    "duration": 3,
+    "target": "enemies",
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 16,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "partner13-core19",
+    "name": "復活",
+    "activation": "active",
+    "requiredLevel": 7,
+    "cooldown": 15,
+    "power": 0,
+    "effect": "revive",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "呼喚倒下的隊友，使一名陣亡的我方成員復活。沒有隊友陣亡時不發動。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 13,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 19,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 3,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 0
+    },
+    "target": "fallen",
+    "commonEffectKeys": [
+      "target"
+    ],
+    "reviveHpRatio": 0.25
+  },
+  {
+    "id": "boss-summon-treants",
+    "name": "召喚樹精",
+    "description": "召喚兩隻迷路樹精菁英。場上還有召喚出的樹精時不施放。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "sources": [],
+    "usageScope": "boss",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "maxTargets": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "adapter": {
+      "job": 0,
+      "index": 18,
+      "kind": "core"
+    },
+    "cooldown": 6,
+    "effect": "summonAllies",
+    "element": "physical",
+    "summonMonsterId": "map0_mob2",
+    "summonCount": 2,
+    "summonKind": "elite",
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 3,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 10
+    }
+  },
+  {
+    "id": "boss-entangle",
+    "name": "纏藤",
+    "description": "藤蔓纏住一名隨機角色，使其普通攻擊秒數重新計算。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "sources": [],
+    "usageScope": "boss",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "maxTargets": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "adapter": {
+      "job": 0,
+      "index": 19,
+      "kind": "core"
+    },
+    "cooldown": 2,
+    "effect": "resetBasic",
+    "element": "physical",
+    "timing": {
+      "cooldownSeconds": 10,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 10
     }
   }
 ]

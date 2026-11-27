@@ -100,11 +100,14 @@
    case 'prologueStage':return Number(onboardingStage()===c.key);
    case 'lakeUnlocked':return Number(!!party.wishingLake?.unlocked);
    case 'companionTicket':return globalThis.companionTicketCount?.(Number(c.key))||0;
+   // v0.226: a quest waiting on the quest page (its record exists but was never opened), or a chapter that can be begun.
+   case 'questOffered':{const r=party.story?.quests?.[c.key];return Number(r?!r.started&&!r.done:!!globalThis.__EMBERWILD_CHAPTER?.offerable?.(c.key));}
+   case 'questStarted':return Number(!!party.story?.quests?.[c.key]?.started);
    case 'socketGearWorn':return Number((h.equipped||[]).some(id=>id&&h.bag.find(g=>g.id===id)?.skillSockets?.count>0));
    default:return 0;
   }
  }
- const need=c=>c.type==='exploring'||c.type==='prologueLesson'||c.type==='prologueStage'||c.type==='lakeUnlocked'||c.type==='socketGearWorn'||c.type==='prologueDone'||c.type==='tutorialDone'||c.type==='pageVisited'||c.type==='featureUnlocked'||c.type==='questDone'?Math.max(1,c.count):c.count;
+ const need=c=>c.type==='exploring'||c.type==='prologueLesson'||c.type==='prologueStage'||c.type==='lakeUnlocked'||c.type==='socketGearWorn'||c.type==='prologueDone'||c.type==='tutorialDone'||c.type==='pageVisited'||c.type==='featureUnlocked'||c.type==='questDone'||c.type==='questOffered'||c.type==='questStarted'?Math.max(1,c.count):c.count;
  const ok=c=>value(c)>=need(c);
  const met=g=>!g||!g.conditions.length||(g.mode==='any'?g.conditions.some(ok):g.conditions.every(ok));
  const label=c=>{const d=M.CONDITIONS[c.type];let key=c.key;if(c.type==='pageVisited')key=M.PAGES[c.key]||c.key;if(c.type==='tutorialDone')key=design.modules.find(m=>m.id===c.key)?.title||c.key;if(c.type==='skillSlots')key=M.SLOT_TYPES[c.key]||c.key;return (d?.label||c.type)+(key?'：'+key:'');};
@@ -182,7 +185,7 @@
   'items.useTicket':()=>{const d=document.getElementById('item-detail-dialog');return d?.open?$q('[onclick*="useCompanionRecruitmentTicket("]',d):$q('main .bag-detail [onclick*="useCompanionRecruitmentTicket("]');},
   'character.stats':()=>$q('main .page-owner-content .grid')||$q('main .page-owner-content'),
   'character.mastery':()=>$q('main .class-mastery-grid'),
-  'worn.socketButton':()=>{const h=hero(),g=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).find(x=>x?.skillSockets?.count>0);return g?$q(`main [onclick*="moveToWorkshop('${g.id}')"]`):null;},
+  'worn.socketButton':()=>{const h=hero(),list=(h?.equipped||[]).map(id=>id&&h.bag.find(x=>x.id===id)).filter(x=>x?.skillSockets?.count>0),g=list.find(x=>x.storyRewardKey)||list[0];return g?$q(`main [onclick*="moveToWorkshop('${g.id}')"]`):null;},
   'worn.socketSlot':()=>$q('main .equipment-socket-editor .equipment-socket-slot'),
   'worn.gemChoices':()=>$q('main .equipment-socket-choices')||$q('main .equipment-socket-editor'),
   'worn.socketBadge':()=>$q('main .worn-socket-badge')?.closest('.worn-slot-choice')||null,
@@ -197,6 +200,13 @@
   'story.tabs':()=>$q('main .game-subtabs'),
   'story.card':()=>$q('main .story-card'),
   'story.action':()=>$q('main .story-card .actions'),
+  'story.begin':()=>$q('main [onclick="readStory(\'chapter1\')"]')||$q('main [data-chapter-begin="chapter1"]'),
+  'bag.storyGear':()=>{const h=hero(),g=(h?.bag||[]).find(x=>x.storyRewardKey&&!(h.equipped||[]).includes(x.id));return g?$q(`main .bag-cell[data-bag-ref="g:${g.id}"]`)||$q(`main [onclick*="selectInventoryGear('${g.id}')"]`):null;},
+  'skills.firstProcSlot':()=>$q('main [onclick="openSkillSlot(\'proc\',0)"]'),
+  'skills.echoChoice':()=>{const m=modal();return m?$q('[onclick^="chooseSkillSlot(\'proc\',"][onclick*="\'tutorial_echo\'"]',m):null;},
+  'forge.socketAction':()=>$q('main [data-workshop-action="socket"]'),
+  'forge.socketSlot':()=>$q('main [data-workshop-panel="socket"] .equipment-socket-slot'),
+  'forge.gemChoice':()=>$q('main [data-workshop-panel="socket"] .equipment-gem-choice:not([disabled])'),
   'lake.panel':()=>$q('#modal .lake-panel h1')||$q('#modal .lake-panel'),
   'lake.offerings':()=>shown('#modal .lake-offerings','#modal .lake-panel'),
   'lake.confirm':()=>shown('#modal .lake-confirm','#modal .lake-result','#modal .lake-panel'),

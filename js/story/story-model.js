@@ -21,7 +21,7 @@
    const stages=q.stages||[],actions=stages.map(s=>s.prologue?.action).filter(Boolean);
    if(q.id!=='prologue'||q.type!=='main')add('任務 ID 必須是 prologue，類型為主線');
    if(actions.join()!=='nameHero,chooseClass,equipLesson,recruitHelper,enterWorld')add('操作引導必須依序包含命名、職業、裝備、招募及完成');
-   if(stages.map(s=>s.id).join()!=='creation,calling,gift,practice,helper,departure'||q.entry!=='creation'||stages.some((s,i)=>s.next!==(stages[i+1]?.id||'')))add('操作引導階段連結無效');
+   if(stages.map(s=>s.id).join()!=='creation,calling,gift,charm,gem,practice,helper,departure'||q.entry!=='creation'||stages.some((s,i)=>s.next!==(stages[i+1]?.id||'')))add('操作引導階段連結無效');
    const options=stages.find(s=>s.prologue?.action==='chooseClass')?.prologue?.options;
    if(!Array.isArray(options)||options.length!==4||options.some((o,i)=>o.job!==i||!text(o.text,40)||!text(o.description,200)))add('職業選項必須依序對應全部初始職業');
    if(stages.some(s=>s.encounter?.enabled||s.choices?.length||s.branches?.length))add('操作引導不使用劇情戰鬥或分歧');

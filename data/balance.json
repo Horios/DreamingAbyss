@@ -2525,7 +2525,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 0,
+          "requiredLevel": 4,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -2631,7 +2631,7 @@
           "activation": "active",
           "usageScope": "character",
           "partnerId": null,
-          "requiredLevel": 4,
+          "requiredLevel": 0,
           "requiresAdvanced": false,
           "requiredMastery": null,
           "requiredMasteryLevel": 0,
@@ -2884,6 +2884,152 @@
             "tickIntervalSeconds": 6,
             "condition": "always",
             "initialCooldownSeconds": 1
+          }
+        },
+        {
+          "id": "partner10-core17",
+          "name": "嘲諷",
+          "description": "使敵人優先攻擊自己。",
+          "activation": "active",
+          "usageScope": "character",
+          "partnerId": 10,
+          "requiredLevel": 0,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "element": "physical",
+          "maxTargets": 99,
+          "hitCount": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "commonEffectKeys": [
+            "target"
+          ],
+          "targetLimit": true,
+          "effect": "tauntRage",
+          "systemEffect": "taunt",
+          "power": 0,
+          "cooldown": 6,
+          "duration": 3,
+          "target": "enemies",
+          "timing": {
+            "cooldownSeconds": 21,
+            "mpCost": 16,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 1,
+            "durationSeconds": 9,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "missingEffect",
+            "initialCooldownSeconds": 2
+          }
+        },
+        {
+          "id": "boss-summon-treants",
+          "name": "召喚樹精",
+          "description": "召喚兩隻迷路樹精菁英。場上還有召喚出的樹精時不施放。",
+          "activation": "active",
+          "usageScope": "boss",
+          "partnerId": null,
+          "requiredLevel": 0,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "power": 0,
+          "maxTargets": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "cooldown": 6,
+          "effect": "summonAllies",
+          "element": "physical",
+          "summonMonsterId": "map0_mob2",
+          "summonCount": 2,
+          "summonKind": "elite",
+          "timing": {
+            "cooldownSeconds": 60,
+            "mpCost": 0,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 3,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 10
+          }
+        },
+        {
+          "id": "boss-entangle",
+          "name": "纏藤",
+          "description": "藤蔓纏住一名隨機角色，使其普通攻擊秒數重新計算。",
+          "activation": "active",
+          "usageScope": "boss",
+          "partnerId": null,
+          "requiredLevel": 0,
+          "requiresAdvanced": false,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "mastery": null,
+          "weaponTypes": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "iconType": "auto",
+          "powerPerLevel": 0,
+          "power": 0,
+          "maxTargets": 1,
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "cooldown": 2,
+          "effect": "resetBasic",
+          "element": "physical",
+          "timing": {
+            "cooldownSeconds": 10,
+            "mpCost": 0,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 2,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 10
           }
         }
       ],
@@ -5040,7 +5186,7 @@
           "id": "partner13-core9",
           "name": "生命泉源",
           "activation": "proc",
-          "requiredLevel": 2,
+          "requiredLevel": 0,
           "cooldown": 0,
           "power": 0.65,
           "effect": "heal",
@@ -5551,6 +5697,60 @@
             "condition": "always",
             "initialCooldownSeconds": 1
           }
+        },
+        {
+          "id": "partner13-core19",
+          "name": "復活",
+          "activation": "active",
+          "requiredLevel": 7,
+          "cooldown": 15,
+          "power": 0,
+          "effect": "revive",
+          "element": "light",
+          "maxTargets": 1,
+          "requiresAdvanced": false,
+          "description": "呼喚倒下的隊友，使一名陣亡的我方成員復活。沒有隊友陣亡時不發動。",
+          "baseCritRate": 0,
+          "baseCritDamage": 1.5,
+          "defensePenetration": 0,
+          "defenseIgnore": 0,
+          "mastery": null,
+          "requiredMastery": null,
+          "requiredMasteryLevel": 0,
+          "weaponTypes": [
+            "prayerBook",
+            "holyStaff"
+          ],
+          "iconType": "auto",
+          "usageScope": "character",
+          "partnerId": 13,
+          "tags": [],
+          "unlockConditions": {
+            "classMasteryLevel": 0,
+            "quests": [],
+            "materials": [],
+            "bossKills": [],
+            "eliteKills": [],
+            "bossEquipment": []
+          },
+          "timing": {
+            "cooldownSeconds": 60,
+            "mpCost": 12,
+            "castSeconds": 0,
+            "actionCostSeconds": 0,
+            "priority": 3,
+            "durationSeconds": 0,
+            "bossDurationSeconds": 0,
+            "tickIntervalSeconds": 6,
+            "condition": "always",
+            "initialCooldownSeconds": 0
+          },
+          "target": "fallen",
+          "commonEffectKeys": [
+            "target"
+          ],
+          "reviveHpRatio": 0.25,
+          "powerPerLevel": 0
         }
       ],
       "initialStats": {
@@ -7701,7 +7901,14 @@
               "shadow": 0
             }
           },
-          "skillAssignments": [],
+          "skillAssignments": [
+            {
+              "skillId": "boss-summon-treants"
+            },
+            {
+              "skillId": "boss-entangle"
+            }
+          ],
           "enabled": true,
           "eliteEnabled": false,
           "spawnWeight": 1,
@@ -9664,13 +9871,15 @@
     {
       "id": 10,
       "job": 0,
-      "description": "專注劍術輸出；技能：裂地斬、反擊之刃、攻擊強化。",
+      "description": "專注劍術輸出；技能：裂地斬、嘲諷、反擊之刃、攻擊強化。",
       "core": [
         7,
+        17,
         8
       ],
       "active": [
-        7
+        7,
+        17
       ],
       "proc": [
         8
@@ -9726,13 +9935,15 @@
     {
       "id": 13,
       "job": 3,
-      "description": "專注隊伍治療；技能：治癒禱言、生命泉源、治療強化。",
+      "description": "專注隊伍治療；技能：治癒禱言、生命泉源、治療強化、復活。",
       "core": [
         8,
-        9
+        9,
+        19
       ],
       "active": [
-        8
+        8,
+        19
       ],
       "proc": [
         9
@@ -9831,7 +10042,7 @@
           "value": 15
         }
       ],
-      "requiredLevel": 7,
+      "requiredLevel": 4,
       "partnerId": 13,
       "timing": {
         "cooldownSeconds": 0,
@@ -12003,230 +12214,6 @@
         "nextQuests": []
       },
       {
-        "id": "skill_equipment_intro",
-        "name": "裝備技能與寶石入門",
-        "type": "main",
-        "npc": "女神",
-        "description": "女神教你使用啟程護符的裝備技能與鑲嵌孔。完成後取得一招職業主動技能。",
-        "enabled": true,
-        "hidden": false,
-        "unlock": {
-          "mode": "all",
-          "conditions": []
-        },
-        "prerequisites": [],
-        "entry": "equipment_gift",
-        "effects": [],
-        "nextQuests": [],
-        "rewards": {
-          "gold": 0,
-          "ore": 0,
-          "items": [
-            {
-              "type": "skill",
-              "key": "job0-support0",
-              "quantity": 1,
-              "job": 0
-            },
-            {
-              "type": "skill",
-              "key": "job1-support0",
-              "quantity": 1,
-              "job": 1
-            },
-            {
-              "type": "skill",
-              "key": "job2-support0",
-              "quantity": 1,
-              "job": 2
-            },
-            {
-              "type": "skill",
-              "key": "job3-support0",
-              "quantity": 1,
-              "job": 3
-            }
-          ]
-        },
-        "completionGuides": [
-          "skills"
-        ],
-        "recovery": {
-          "limit": 2,
-          "gearKey": "initiation_charm",
-          "afterStage": "equipment_gift",
-          "gemKey": "0",
-          "gemQuantity": 1
-        },
-        "stages": [
-          {
-            "id": "equipment_gift",
-            "name": "女神的聯絡",
-            "speaker": "女神",
-            "description": "女神透過啟程護符聯絡你，說明護符的兩種用法。",
-            "dialogue": [
-              {
-                "speaker": "旁白",
-                "kind": "narrator",
-                "text": "啟程護符忽然亮起微光。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "喂喂？聽得到嗎？是我啦！"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "你身上那個啟程護符，其實還有兩種用法喔。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "一種是護符附帶的技能「追擊」，另一種是護符上的兩個鑲嵌孔。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "我一步一步教你，照著做就好。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": []
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": [
-                {
-                  "type": "gear",
-                  "key": "initiation_charm",
-                  "quantity": 1
-                }
-              ]
-            },
-            "effects": [],
-            "next": "equip_skill",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment"
-            ]
-          },
-          {
-            "id": "equip_skill",
-            "name": "啟用裝備技能",
-            "speaker": "女神",
-            "description": "穿上啟程護符，在技能頁把護符附帶的「追擊」裝進觸發技能槽。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "穿上啟程護符後，「追擊」會出現在技能清單。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "到技能頁點選觸發技能槽，把「追擊」裝進去。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "做完我就送你一顆赤焰石。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "gearWorn",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                },
-                {
-                  "type": "skillSlotted",
-                  "key": "tutorial_echo",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material"
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": [
-                {
-                  "type": "gem",
-                  "key": "0",
-                  "quantity": 1
-                }
-              ]
-            },
-            "effects": [],
-            "next": "gem_base",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment",
-              "skills"
-            ]
-          },
-          {
-            "id": "gem_base",
-            "name": "鑲嵌寶石",
-            "speaker": "女神",
-            "description": "在「裝備與信物」開啟啟程護符的鑲嵌介面，點選第一孔，再選擇赤焰石。鑲嵌後會增加攻擊力。",
-            "dialogue": [
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "點開啟程護符的「鑲嵌」，選第一孔放入赤焰石。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "赤焰石鑲進去後，你的攻擊力就會提高。"
-              },
-              {
-                "speaker": "女神",
-                "kind": "npc",
-                "text": "做完就到技能頁看看吧，我另外準備了一個新技能給你。"
-              }
-            ],
-            "conditions": {
-              "mode": "all",
-              "conditions": [
-                {
-                  "type": "gearBaseGem",
-                  "key": "initiation_charm",
-                  "count": 1,
-                  "mode": "lifetime",
-                  "itemType": "material",
-                  "slot": 0
-                }
-              ]
-            },
-            "rewards": {
-              "gold": 0,
-              "ore": 0,
-              "items": []
-            },
-            "effects": [],
-            "next": "",
-            "branches": [],
-            "choices": [],
-            "guides": [
-              "equipment",
-              "skills"
-            ]
-          }
-        ]
-      },
-      {
         "id": "prologue",
         "name": "新手引導",
         "type": "main",
@@ -12312,6 +12299,11 @@
                   "type": "gear",
                   "key": "initiation_charm",
                   "quantity": 1
+                },
+                {
+                  "type": "gem",
+                  "key": "0",
+                  "quantity": 1
                 }
               ]
             },
@@ -12366,7 +12358,7 @@
               "items": []
             },
             "effects": [],
-            "next": "practice",
+            "next": "charm",
             "branches": [],
             "choices": [],
             "guides": [
@@ -12377,6 +12369,117 @@
               "scene": 1,
               "action": "equipLesson",
               "hint": "前往背包選擇新手武器，按「穿戴」並選擇武器欄位。",
+              "steps": [],
+              "after": []
+            }
+          },
+          {
+            "id": "charm",
+            "name": "護符與裝備技能",
+            "speaker": "女神",
+            "description": "在背包點選「啟程護符」穿上，再到技能頁把護符附帶的「追擊」裝進觸發技能槽。",
+            "dialogue": [],
+            "conditions": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "gearWorn",
+                  "key": "initiation_charm",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material"
+                },
+                {
+                  "type": "skillSlotted",
+                  "key": "tutorial_echo",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material"
+                }
+              ]
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": []
+            },
+            "effects": [],
+            "next": "gem",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "equipment",
+              "skills"
+            ],
+            "prologue": {
+              "scene": 1,
+              "action": "",
+              "hint": "在背包點選「啟程護符」穿上，再到技能頁把護符附帶的「追擊」裝進觸發技能槽。",
+              "steps": [],
+              "after": []
+            }
+          },
+          {
+            "id": "gem",
+            "name": "鑲嵌寶石",
+            "speaker": "女神",
+            "description": "按啟程護符的「移到工坊」，在「鑲嵌」選第一孔放入赤焰石。完成後學會一招新技能。",
+            "dialogue": [],
+            "conditions": {
+              "mode": "all",
+              "conditions": [
+                {
+                  "type": "gearBaseGem",
+                  "key": "initiation_charm",
+                  "count": 1,
+                  "mode": "lifetime",
+                  "itemType": "material",
+                  "slot": 0
+                }
+              ]
+            },
+            "rewards": {
+              "gold": 0,
+              "ore": 0,
+              "items": [
+                {
+                  "type": "skill",
+                  "key": "job0-support0",
+                  "quantity": 1,
+                  "job": 0
+                },
+                {
+                  "type": "skill",
+                  "key": "job1-support0",
+                  "quantity": 1,
+                  "job": 1
+                },
+                {
+                  "type": "skill",
+                  "key": "job2-support0",
+                  "quantity": 1,
+                  "job": 2
+                },
+                {
+                  "type": "skill",
+                  "key": "job3-support0",
+                  "quantity": 1,
+                  "job": 3
+                }
+              ]
+            },
+            "effects": [],
+            "next": "practice",
+            "branches": [],
+            "choices": [],
+            "guides": [
+              "worn",
+              "forge"
+            ],
+            "prologue": {
+              "scene": 1,
+              "action": "",
+              "hint": "按啟程護符的「移到工坊」，在「鑲嵌」選第一孔放入赤焰石。完成後學會一招新技能。",
               "steps": [],
               "after": []
             }
@@ -13489,7 +13592,7 @@
           {
             "type": "quest",
             "questIds": [
-              "skill_equipment_intro"
+              "prologue"
             ],
             "rewardOnly": true
           }
@@ -14333,7 +14436,7 @@
           {
             "type": "quest",
             "questIds": [
-              "skill_equipment_intro"
+              "prologue"
             ],
             "rewardOnly": true
           }
@@ -14988,7 +15091,7 @@
           {
             "type": "quest",
             "questIds": [
-              "skill_equipment_intro"
+              "prologue"
             ],
             "rewardOnly": true
           }
@@ -15673,7 +15776,7 @@
         "id": "partner13-core9",
         "name": "生命泉源",
         "activation": "proc",
-        "requiredLevel": 2,
+        "requiredLevel": 0,
         "cooldown": 0,
         "power": 0.65,
         "effect": "heal",
@@ -15837,7 +15940,7 @@
           {
             "type": "quest",
             "questIds": [
-              "skill_equipment_intro"
+              "prologue"
             ],
             "rewardOnly": true
           }
@@ -16196,7 +16299,7 @@
             "value": 15
           }
         ],
-        "requiredLevel": 7,
+        "requiredLevel": 4,
         "partnerId": 13,
         "type": "passive",
         "jobs": [
@@ -16242,12 +16345,12 @@
         "sources": [
           {
             "type": "class",
-            "masteryLevel": 0
+            "masteryLevel": 4
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 0,
+        "requiredLevel": 4,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -16378,12 +16481,12 @@
         "sources": [
           {
             "type": "class",
-            "masteryLevel": 4
+            "masteryLevel": 0
           }
         ],
         "usageScope": "character",
         "partnerId": null,
-        "requiredLevel": 4,
+        "requiredLevel": 0,
         "requiresAdvanced": false,
         "requiredMastery": null,
         "requiredMasteryLevel": 0,
@@ -17745,6 +17848,255 @@
           "tickIntervalSeconds": 6,
           "condition": "always"
         }
+      },
+      {
+        "id": "partner10-core17",
+        "name": "嘲諷",
+        "description": "使敵人優先攻擊自己。",
+        "type": "active",
+        "activation": "active",
+        "jobs": [
+          0
+        ],
+        "adapter": {
+          "job": 0,
+          "index": 17,
+          "kind": "core"
+        },
+        "sources": [
+          {
+            "type": "companion",
+            "companionId": 10
+          }
+        ],
+        "usageScope": "character",
+        "partnerId": 10,
+        "requiredLevel": 0,
+        "requiresAdvanced": false,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "mastery": null,
+        "weaponTypes": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "iconType": "auto",
+        "powerPerLevel": 0,
+        "element": "physical",
+        "maxTargets": 99,
+        "hitCount": 1,
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "commonEffectKeys": [
+          "target"
+        ],
+        "targetLimit": true,
+        "effect": "tauntRage",
+        "systemEffect": "taunt",
+        "power": 0,
+        "cooldown": 6,
+        "duration": 3,
+        "target": "enemies",
+        "timing": {
+          "cooldownSeconds": 21,
+          "mpCost": 16,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 1,
+          "durationSeconds": 9,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "missingEffect",
+          "initialCooldownSeconds": 2
+        }
+      },
+      {
+        "id": "partner13-core19",
+        "name": "復活",
+        "activation": "active",
+        "requiredLevel": 7,
+        "cooldown": 15,
+        "power": 0,
+        "effect": "revive",
+        "element": "light",
+        "maxTargets": 1,
+        "requiresAdvanced": false,
+        "description": "呼喚倒下的隊友，使一名陣亡的我方成員復活。沒有隊友陣亡時不發動。",
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "mastery": null,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "weaponTypes": [
+          "prayerBook",
+          "holyStaff"
+        ],
+        "iconType": "auto",
+        "usageScope": "character",
+        "partnerId": 13,
+        "tags": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "type": "active",
+        "jobs": [
+          3
+        ],
+        "adapter": {
+          "job": 3,
+          "index": 19,
+          "kind": "core"
+        },
+        "sources": [
+          {
+            "type": "companion",
+            "companionId": 13
+          }
+        ],
+        "timing": {
+          "cooldownSeconds": 60,
+          "mpCost": 12,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 3,
+          "durationSeconds": 0,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "always",
+          "initialCooldownSeconds": 0
+        },
+        "target": "fallen",
+        "commonEffectKeys": [
+          "target"
+        ],
+        "reviveHpRatio": 0.25
+      },
+      {
+        "id": "boss-summon-treants",
+        "name": "召喚樹精",
+        "description": "召喚兩隻迷路樹精菁英。場上還有召喚出的樹精時不施放。",
+        "type": "active",
+        "activation": "active",
+        "jobs": [
+          0
+        ],
+        "sources": [],
+        "usageScope": "boss",
+        "partnerId": null,
+        "requiredLevel": 0,
+        "requiresAdvanced": false,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "mastery": null,
+        "weaponTypes": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "iconType": "auto",
+        "powerPerLevel": 0,
+        "power": 0,
+        "maxTargets": 1,
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "adapter": {
+          "job": 0,
+          "index": 18,
+          "kind": "core"
+        },
+        "cooldown": 6,
+        "effect": "summonAllies",
+        "element": "physical",
+        "summonMonsterId": "map0_mob2",
+        "summonCount": 2,
+        "summonKind": "elite",
+        "timing": {
+          "cooldownSeconds": 60,
+          "mpCost": 0,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 3,
+          "durationSeconds": 0,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "always",
+          "initialCooldownSeconds": 10
+        }
+      },
+      {
+        "id": "boss-entangle",
+        "name": "纏藤",
+        "description": "藤蔓纏住一名隨機角色，使其普通攻擊秒數重新計算。",
+        "type": "active",
+        "activation": "active",
+        "jobs": [
+          0
+        ],
+        "sources": [],
+        "usageScope": "boss",
+        "partnerId": null,
+        "requiredLevel": 0,
+        "requiresAdvanced": false,
+        "requiredMastery": null,
+        "requiredMasteryLevel": 0,
+        "mastery": null,
+        "weaponTypes": [],
+        "unlockConditions": {
+          "classMasteryLevel": 0,
+          "quests": [],
+          "materials": [],
+          "bossKills": [],
+          "eliteKills": [],
+          "bossEquipment": []
+        },
+        "iconType": "auto",
+        "powerPerLevel": 0,
+        "power": 0,
+        "maxTargets": 1,
+        "baseCritRate": 0,
+        "baseCritDamage": 1.5,
+        "defensePenetration": 0,
+        "defenseIgnore": 0,
+        "adapter": {
+          "job": 0,
+          "index": 19,
+          "kind": "core"
+        },
+        "cooldown": 2,
+        "effect": "resetBasic",
+        "element": "physical",
+        "timing": {
+          "cooldownSeconds": 10,
+          "mpCost": 0,
+          "castSeconds": 0,
+          "actionCostSeconds": 0,
+          "priority": 2,
+          "durationSeconds": 0,
+          "bossDurationSeconds": 0,
+          "tickIntervalSeconds": 6,
+          "condition": "always",
+          "initialCooldownSeconds": 10
+        }
       }
     ],
     "classRules": [
@@ -17752,7 +18104,7 @@
         "job": 0,
         "initial": [
           {
-            "skillId": "class0-initial0",
+            "skillId": "class0-initial2",
             "masteryLevel": 0
           },
           {
@@ -17760,7 +18112,7 @@
             "masteryLevel": 2
           },
           {
-            "skillId": "class0-initial2",
+            "skillId": "class0-initial0",
             "masteryLevel": 4
           },
           {
@@ -18941,7 +19293,7 @@
           {
             "id": "bag",
             "title": "背包",
-            "text": "女神送的新手裝備都放在背包。護甲與飾品已經穿好，還差一把武器。",
+            "text": "女神送的新手武器與啟程護符都放在背包。先穿上武器。",
             "page": "equipment",
             "target": "bag.list",
             "placement": "auto",
@@ -19006,13 +19358,281 @@
           {
             "id": "equip",
             "title": "穿上武器",
-            "text": "按「穿戴至武器」把武器裝上。穿好之後就能出發探索。",
+            "text": "按「穿戴至武器」把武器裝上。接著穿上啟程護符。",
             "page": "worn",
             "target": "worn.candidate",
             "placement": "auto",
             "advance": {
               "type": "event",
               "key": "gearEquipped"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": false,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      },
+      {
+        "id": "onboarding_charm",
+        "title": "護符與裝備技能",
+        "category": "equipment",
+        "type": "guide",
+        "enabled": true,
+        "implemented": true,
+        "description": "新手引導：穿上啟程護符，把護符附帶的技能「追擊」裝進觸發技能槽。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "equipment",
+          "notify": false,
+          "notifyText": ""
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueStage",
+              "key": "charm",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "pick",
+            "title": "啟程護符",
+            "text": "點選啟程護符。護符附帶技能「追擊」，還有兩個鑲嵌孔。",
+            "page": "equipment",
+            "target": "bag.storyGear",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "gearSelected"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "wear",
+            "title": "前往穿戴",
+            "text": "按「穿戴」前往裝備頁。",
+            "page": "equipment",
+            "target": "bag.wearButton",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "wearOpened"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "equip",
+            "title": "穿上護符",
+            "text": "按「穿戴至飾品」把護符裝上。",
+            "page": "worn",
+            "target": "worn.candidate",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "gearEquipped"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "slot",
+            "title": "觸發技能槽",
+            "text": "裝備附帶的技能要裝進技能槽才會使用。點選第一個觸發槽。",
+            "page": "skills",
+            "target": "skills.firstProcSlot",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "skillSlotOpened"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "echo",
+            "title": "裝入追擊",
+            "text": "點選「追擊」的「裝入」。觸發技能會在普攻時依觸發率發動。",
+            "page": "skills",
+            "target": "skills.echoChoice",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "skillSlotted"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": false,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      },
+      {
+        "id": "onboarding_gem",
+        "title": "鑲嵌寶石",
+        "category": "equipment",
+        "type": "guide",
+        "enabled": true,
+        "implemented": true,
+        "description": "新手引導：在裝備工坊把赤焰石鑲進啟程護符的第一孔，完成後學會新技能。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "worn",
+          "notify": false,
+          "notifyText": ""
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueStage",
+              "key": "gem",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "move",
+            "title": "移到工坊",
+            "text": "女神另外給了一顆赤焰石。鑲嵌在裝備工坊進行，按護符的「移到工坊」。",
+            "page": "worn",
+            "target": "worn.socketButton",
+            "placement": "auto",
+            "advance": {
+              "type": "page",
+              "key": "forge"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "action",
+            "title": "鑲嵌",
+            "text": "按「鑲嵌」開啟護符的鑲嵌孔。",
+            "page": "forge",
+            "target": "forge.socketAction",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "socketsOpened"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "slot",
+            "title": "選擇孔位",
+            "text": "點選第一孔。",
+            "page": "forge",
+            "target": "forge.socketSlot",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "socketSelected"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "gem",
+            "title": "放入寶石",
+            "text": "點選赤焰石放進去。鑲嵌後攻擊力會提高，拆除與替換都免費。完成後女神會教你一招新技能。",
+            "page": "forge",
+            "target": "forge.gemChoice",
+            "placement": "auto",
+            "advance": {
+              "type": "event",
+              "key": "gemSocketed"
             },
             "optional": false,
             "requires": {
@@ -19231,7 +19851,7 @@
           {
             "id": "use",
             "title": "使用招募券",
-            "text": "艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源與治療強化。按「使用招募券」，艾琳就會加入隊伍。",
+            "text": "艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源、治療強化與復活。按「使用招募券」，艾琳就會加入隊伍。",
             "page": "equipment",
             "target": "items.useTicket",
             "placement": "auto",
@@ -19256,6 +19876,98 @@
         },
         "replayable": true,
         "skippable": false,
+        "interrupt": "pause",
+        "revision": 1,
+        "reprompt": false
+      },
+      {
+        "id": "caravan_quest",
+        "title": "商隊事件",
+        "category": "quests",
+        "type": "guide",
+        "enabled": true,
+        "implemented": true,
+        "description": "新手引導結束後，到任務頁開始主線「商隊事件」。完成後可以取得「夥伴招募券 - 洛恩」。",
+        "trigger": {
+          "type": "pageEnter",
+          "page": "equipment",
+          "notify": false,
+          "notifyText": ""
+        },
+        "prerequisites": {
+          "mode": "all",
+          "conditions": [
+            {
+              "type": "prologueDone",
+              "key": "",
+              "count": 1
+            },
+            {
+              "type": "tutorialDone",
+              "key": "onboarding_helper",
+              "count": 1
+            },
+            {
+              "type": "questOffered",
+              "key": "chapter1",
+              "count": 1
+            }
+          ]
+        },
+        "steps": [
+          {
+            "id": "card",
+            "title": "主線任務",
+            "text": "林間的商隊正被魔物襲擊，戰士洛恩在護衛商隊。主線任務「商隊事件」已經可以開始。",
+            "page": "story",
+            "target": "story.card",
+            "placement": "auto",
+            "advance": {
+              "type": "next"
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          },
+          {
+            "id": "begin",
+            "title": "閱讀劇情",
+            "text": "按「閱讀劇情」前往救援。完成後會取得「夥伴招募券 - 洛恩」。",
+            "page": "story",
+            "target": "story.begin",
+            "placement": "auto",
+            "advance": {
+              "type": "condition",
+              "condition": {
+                "type": "questStarted",
+                "key": "chapter1",
+                "count": 1
+              }
+            },
+            "optional": false,
+            "requires": {
+              "mode": "all",
+              "conditions": []
+            },
+            "onReplay": "same",
+            "skipIf": {
+              "mode": "all",
+              "conditions": []
+            }
+          }
+        ],
+        "completion": {
+          "type": "steps"
+        },
+        "replayable": true,
+        "skippable": true,
         "interrupt": "pause",
         "revision": 1,
         "reprompt": false
@@ -19337,7 +20049,7 @@
           {
             "id": "use",
             "title": "使用招募券",
-            "text": "洛恩是戰士，專注劍術輸出，技能有裂地斬、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。",
+            "text": "洛恩是戰士，專注劍術輸出，技能有裂地斬、嘲諷、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。",
             "page": "equipment",
             "target": "items.useTicket",
             "placement": "auto",

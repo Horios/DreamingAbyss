@@ -37,7 +37,7 @@
         "value": 15
       }
     ],
-    "requiredLevel": 7,
+    "requiredLevel": 4,
     "partnerId": 13,
     "timing": {
       "cooldownSeconds": 0,

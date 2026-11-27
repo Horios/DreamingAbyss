@@ -140,6 +140,8 @@
     }
     // Moves the basic (and speed-scaled action) deadline earlier, never sooner than floorSeconds from now and, for a
     // player actor, never sooner than the minimum interval after its previous basic attack.
+    // v0.226: the basic attack charge starts over from now (纏藤).
+    resetBasic(actorId){const a=this.find(actorId);a.basicAt=safeAdd(this.now,this.interval(a));a.actionSpeedAt=Math.max(a.actionSpeedAt,this.now);}
     advanceBasic(actorId,secondsEarlier,floorSeconds){
       const a=this.find(actorId),amount=time(secondsEarlier,'advance'),floor=safeAdd(this.now,time(floorSeconds,'advance floor'));
       a.basicAt=Math.max(floor,a.basicAt-amount);a.actionSpeedAt=Math.max(floor,a.actionSpeedAt-amount);a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);this.floorBasic(a);

@@ -12,7 +12,7 @@ test('worn rows show sockets instead of a checkmark; the socket guide plays once
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
   await page.evaluate(()=>{start(2);party.tutorials.auto=true;
    for(const m of __EMBERWILD_TUTORIAL.design.modules)if(m.id!=='socket_basics')party.tutorials.records[m.id]={triggered:true,completed:true,skipped:false,step:-1};
-   closeModal();completeStoryStage('skill_equipment_intro');closeModal();setTab('battle');});
+   closeModal();__EMBERWILD_STORY.grantRewardGear('initiation_charm');closeModal();setTab('battle');});
   // Without socketed gear on, the worn page plays nothing.
   await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(400);assert.equal(await active(page),null);
   // Putting the quest charm on while on the worn page starts the guide at once.

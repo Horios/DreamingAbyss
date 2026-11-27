@@ -696,7 +696,7 @@
         {
           "id": "bag",
           "title": "背包",
-          "text": "女神送的新手裝備都放在背包。護甲與飾品已經穿好，還差一把武器。",
+          "text": "女神送的新手武器與啟程護符都放在背包。先穿上武器。",
           "page": "equipment",
           "target": "bag.list",
           "placement": "auto",
@@ -761,13 +761,281 @@
         {
           "id": "equip",
           "title": "穿上武器",
-          "text": "按「穿戴至武器」把武器裝上。穿好之後就能出發探索。",
+          "text": "按「穿戴至武器」把武器裝上。接著穿上啟程護符。",
           "page": "worn",
           "target": "worn.candidate",
           "placement": "auto",
           "advance": {
             "type": "event",
             "key": "gearEquipped"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": false,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "onboarding_charm",
+      "title": "護符與裝備技能",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "新手引導：穿上啟程護符，把護符附帶的技能「追擊」裝進觸發技能槽。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "equipment",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueStage",
+            "key": "charm",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "pick",
+          "title": "啟程護符",
+          "text": "點選啟程護符。護符附帶技能「追擊」，還有兩個鑲嵌孔。",
+          "page": "equipment",
+          "target": "bag.storyGear",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "gearSelected"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "wear",
+          "title": "前往穿戴",
+          "text": "按「穿戴」前往裝備頁。",
+          "page": "equipment",
+          "target": "bag.wearButton",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "wearOpened"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "equip",
+          "title": "穿上護符",
+          "text": "按「穿戴至飾品」把護符裝上。",
+          "page": "worn",
+          "target": "worn.candidate",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "gearEquipped"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "slot",
+          "title": "觸發技能槽",
+          "text": "裝備附帶的技能要裝進技能槽才會使用。點選第一個觸發槽。",
+          "page": "skills",
+          "target": "skills.firstProcSlot",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "skillSlotOpened"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "echo",
+          "title": "裝入追擊",
+          "text": "點選「追擊」的「裝入」。觸發技能會在普攻時依觸發率發動。",
+          "page": "skills",
+          "target": "skills.echoChoice",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "skillSlotted"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": false,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "onboarding_gem",
+      "title": "鑲嵌寶石",
+      "category": "equipment",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "新手引導：在裝備工坊把赤焰石鑲進啟程護符的第一孔，完成後學會新技能。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "worn",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueStage",
+            "key": "gem",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "move",
+          "title": "移到工坊",
+          "text": "女神另外給了一顆赤焰石。鑲嵌在裝備工坊進行，按護符的「移到工坊」。",
+          "page": "worn",
+          "target": "worn.socketButton",
+          "placement": "auto",
+          "advance": {
+            "type": "page",
+            "key": "forge"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "action",
+          "title": "鑲嵌",
+          "text": "按「鑲嵌」開啟護符的鑲嵌孔。",
+          "page": "forge",
+          "target": "forge.socketAction",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "socketsOpened"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "slot",
+          "title": "選擇孔位",
+          "text": "點選第一孔。",
+          "page": "forge",
+          "target": "forge.socketSlot",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "socketSelected"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "gem",
+          "title": "放入寶石",
+          "text": "點選赤焰石放進去。鑲嵌後攻擊力會提高，拆除與替換都免費。完成後女神會教你一招新技能。",
+          "page": "forge",
+          "target": "forge.gemChoice",
+          "placement": "auto",
+          "advance": {
+            "type": "event",
+            "key": "gemSocketed"
           },
           "optional": false,
           "requires": {
@@ -986,7 +1254,7 @@
         {
           "id": "use",
           "title": "使用招募券",
-          "text": "艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源與治療強化。按「使用招募券」，艾琳就會加入隊伍。",
+          "text": "艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源、治療強化與復活。按「使用招募券」，艾琳就會加入隊伍。",
           "page": "equipment",
           "target": "items.useTicket",
           "placement": "auto",
@@ -1011,6 +1279,98 @@
       },
       "replayable": true,
       "skippable": false,
+      "interrupt": "pause",
+      "revision": 1,
+      "reprompt": false
+    },
+    {
+      "id": "caravan_quest",
+      "title": "商隊事件",
+      "category": "quests",
+      "type": "guide",
+      "enabled": true,
+      "implemented": true,
+      "description": "新手引導結束後，到任務頁開始主線「商隊事件」。完成後可以取得「夥伴招募券 - 洛恩」。",
+      "trigger": {
+        "type": "pageEnter",
+        "page": "equipment",
+        "notify": false,
+        "notifyText": ""
+      },
+      "prerequisites": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "prologueDone",
+            "key": "",
+            "count": 1
+          },
+          {
+            "type": "tutorialDone",
+            "key": "onboarding_helper",
+            "count": 1
+          },
+          {
+            "type": "questOffered",
+            "key": "chapter1",
+            "count": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "id": "card",
+          "title": "主線任務",
+          "text": "林間的商隊正被魔物襲擊，戰士洛恩在護衛商隊。主線任務「商隊事件」已經可以開始。",
+          "page": "story",
+          "target": "story.card",
+          "placement": "auto",
+          "advance": {
+            "type": "next"
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        },
+        {
+          "id": "begin",
+          "title": "閱讀劇情",
+          "text": "按「閱讀劇情」前往救援。完成後會取得「夥伴招募券 - 洛恩」。",
+          "page": "story",
+          "target": "story.begin",
+          "placement": "auto",
+          "advance": {
+            "type": "condition",
+            "condition": {
+              "type": "questStarted",
+              "key": "chapter1",
+              "count": 1
+            }
+          },
+          "optional": false,
+          "requires": {
+            "mode": "all",
+            "conditions": []
+          },
+          "onReplay": "same",
+          "skipIf": {
+            "mode": "all",
+            "conditions": []
+          }
+        }
+      ],
+      "completion": {
+        "type": "steps"
+      },
+      "replayable": true,
+      "skippable": true,
       "interrupt": "pause",
       "revision": 1,
       "reprompt": false
@@ -1092,7 +1452,7 @@
         {
           "id": "use",
           "title": "使用招募券",
-          "text": "洛恩是戰士，專注劍術輸出，技能有裂地斬、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。",
+          "text": "洛恩是戰士，專注劍術輸出，技能有裂地斬、嘲諷、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。",
           "page": "equipment",
           "target": "items.useTicket",
           "placement": "auto",

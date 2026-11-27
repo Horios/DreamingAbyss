@@ -2,7 +2,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),M=require('../js/story/story-model.js');
 const regionFixture=require('./fixtures/story-region-chain.json');
-function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.ctx.regionFixture=structuredClone(regionFixture);r.run(ADD_TEST_MAP+';globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
+// v0.226: the old quest 裝備技能與寶石入門 left the game data; it stays here as an ordinary sample quest.
+const introFixture=require('./fixtures/story-skill-equipment-intro.json');
+function game(){const r=loadRuntime(root);r.json=s=>JSON.parse(r.run('JSON.stringify('+s+')'));r.ctx.regionFixture=structuredClone(regionFixture);r.ctx.introFixture=structuredClone(introFixture);r.run(ADD_TEST_MAP+';globalThis.fixtureDoc=exportableBalance();fixtureDoc.story.quests.push(regionFixture,introFixture);applyBalanceConfig(fixtureDoc,{persist:false})');r.run('selectSaveSlot(1);start(0);closeModal();clearInterval(timer)');return r;}
 const view=r=>r.json('__EMBERWILD_STORY.dialogueView()');
 
 test('skippable is decided by the quest data: never the prologue, and any quest can opt out',()=>{

@@ -17,7 +17,7 @@ function edit(r,fn){r.run('globalThis.__d=exportableBalance()');const t=r.json('
 test('the built-in tutorials pass the shared rules and keep their exact form when normalized',()=>{
  const d=M.defaults();assert.deepEqual(M.issues(d),[]);assert.equal(JSON.stringify(M.validate(d)),JSON.stringify(d));
  assert.deepEqual(d.modules.map(m=>[m.id,m.type,m.category,m.implemented]),[['explore_basics','guide','battle',true],['equipment_basics','guide','equipment',true],['skill_basics','notice','skills',true],['shop_basics','notice','shop',true],['quest_basics','notice','quests',true],
-  ['onboarding_gift','guide','equipment',true],['onboarding_practice','guide','battle',true],['onboarding_helper','guide','companions',true],['recruit_lorne','guide','companions',true],
+  ['onboarding_gift','guide','equipment',true],['onboarding_charm','guide','equipment',true],['onboarding_gem','guide','equipment',true],['onboarding_practice','guide','battle',true],['onboarding_helper','guide','companions',true],['caravan_quest','guide','quests',true],['recruit_lorne','guide','companions',true],
   ['statistics_basics','notice','battle',true],['roster_basics','guide','companions',true],['partner_basics','notice','companions',true],['character_basics','notice','character',true],['worn_basics','notice','equipment',true],['socket_basics','notice','equipment',true],['forge_basics','notice','equipment',true],['extraction_basics','notice','equipment',true],['boss_basics','notice','equipment',true],['story_basics','notice','quests',true],['wishing_basics','notice','wishingLake',true]]);
  assert.deepEqual(require('../data/balance.json').tutorials,d,'the published data carries the built-in tutorials');
 });
@@ -41,7 +41,7 @@ test('invalid tutorial data is reported with the module, step and reason',()=>{
 });
 
 test('the balance document check and the game both refuse invalid tutorials',()=>{
- const r=game();r.run('globalThis.__d=exportableBalance()');assert.equal(r.json('__d.tutorials.modules.length'),20,'export carries the tutorials');
+ const r=game();r.run('globalThis.__d=exportableBalance()');assert.equal(r.json('__d.tutorials.modules.length'),23,'export carries the tutorials');
  const bad=r.json('__d');bad.tutorials.modules[0].steps[0].target='nope';
  assert.match(D.inspect(bad).filter(x=>x.system==='教學').map(x=>x.reason).join('\n'),/引導目標不存在：nope/);
  assert.throws(()=>r.run('__d.tutorials.modules[0].steps[0].target="nope";applyBalanceConfig(__d,{persist:false})'),/引導目標不存在/);

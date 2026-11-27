@@ -26,9 +26,28 @@ test('the goddess introduces the world; the three onboarding tasks each play a s
   await wait(page,'onboarding_gift','wear');await page.click('main [onclick*="openInventoryWear("]');
   await wait(page,'onboarding_gift','equip');await page.click('main [onclick^="previewEquip("]');
   if(await page.locator('#modal [onclick^="confirmEquipComparison("]').count())await page.click('#modal [onclick^="confirmEquipComparison("]');
+  // v0.226 護符與裝備技能: wear the charm, then slot 追擊 in the first proc slot.
+  await wait(page,'onboarding_charm','pick');
+  assert.equal(await page.evaluate(()=>party.tutorials.records.onboarding_gift.completed),true);
+  const charm=await page.evaluate(()=>playerHero().bag.find(g=>g.storyRewardKey==='initiation_charm').id);
+  await page.click(`main .bag-cell[data-bag-ref="g:${charm}"]`);
+  await wait(page,'onboarding_charm','wear');await page.click('main [onclick*="openInventoryWear("]');
+  await wait(page,'onboarding_charm','equip');await page.click('main [onclick^="previewEquip("]');
+  if(await page.locator('#modal [onclick^="confirmEquipComparison("]').count())await page.click('#modal [onclick^="confirmEquipComparison("]');
+  await wait(page,'onboarding_charm','slot');assert.equal(await page.evaluate(()=>tab),'skills');
+  await page.click('main [onclick="openSkillSlot(\'proc\',0)"]');
+  await wait(page,'onboarding_charm','echo');await page.click('#modal [onclick^="chooseSkillSlot(\'proc\',"][onclick*="\'tutorial_echo\'"]');
+  // v0.226 鑲嵌寶石: the worn page sends the charm to the workshop; the gem goes into the first socket.
+  await wait(page,'onboarding_gem','move');assert.equal(await page.evaluate(()=>tab),'worn');
+  await page.click(`main [onclick*="moveToWorkshop('${charm}')"]`);
+  await wait(page,'onboarding_gem','action');await page.click('main [data-workshop-action="socket"]');
+  await wait(page,'onboarding_gem','slot');await page.click('main [data-workshop-panel="socket"] .equipment-socket-slot >> nth=0');
+  await wait(page,'onboarding_gem','gem');await page.click('main [data-workshop-panel="socket"] .equipment-gem-choice:not([disabled]) >> nth=0');
+  assert.equal(await page.evaluate(()=>playerHero().bag.find(g=>g.storyRewardKey==='initiation_charm').skillSockets.gems[0]),0);
+  assert.equal(await page.evaluate(()=>playerHero().acquiredSkillIds.includes('job0-support0')),true,'the lesson skill');
   // 首次探索戰鬥: the onboarding moves to the battle page and the gift guide ends with its task.
   await wait(page,'onboarding_practice','intro');
-  assert.equal(await page.evaluate(()=>party.tutorials.records.onboarding_gift.completed),true);
+  for(const id of ['onboarding_charm','onboarding_gem'])assert.equal(await page.evaluate(id=>party.tutorials.records[id].completed,id),true,id);
   await next(page);await wait(page,'onboarding_practice','start');await page.waitForTimeout(800);assert.equal(await underSpot(page),'startSelectedExploration()');
   await page.click('main [onclick="startSelectedExploration()"]');await wait(page,'onboarding_practice','enemies');
   // A real seconds-combat victory completes the task (it never passes through pacedRound).
@@ -43,10 +62,14 @@ test('the goddess introduces the world; the three onboarding tasks each play a s
   const detail=await page.locator('.bag-detail').innerText();assert.match(detail,/夥伴招募券 - 艾琳/);assert.match(detail,/治療/,'the ticket describes the companion');
   assert.equal(await page.locator('#tutorial-card').isVisible(),true,'the guide card stays visible');
   await page.click('.bag-detail button:has-text("使用招募券")');
-  await page.waitForFunction(()=>!__EMBERWILD_PROLOGUE.running()&&!__EMBERWILD_TUTORIAL.status().active);
+  // v0.226 商隊事件: right after the priest joins, the quest page opens and the caravan story is started from its card.
+  await wait(page,'caravan_quest','card');assert.equal(await page.evaluate(()=>__EMBERWILD_PROLOGUE.running()),false);
+  assert.equal(await page.evaluate(()=>tab),'story');await next(page);
+  await wait(page,'caravan_quest','begin');await page.click('main [onclick="readStory(\'chapter1\')"]');
+  await page.waitForFunction(()=>!__EMBERWILD_TUTORIAL.status().active);
   const rec=await page.evaluate(()=>party.tutorials.records);
-  for(const id of ['onboarding_gift','onboarding_practice','onboarding_helper','explore_basics','partner_basics'])assert.equal(rec[id]?.completed,true,id);
-  assert.equal(await page.evaluate(()=>[!!partyMember(13),companionTicketCount(13)].join()),'true,0');
+  for(const id of ['onboarding_gift','onboarding_charm','onboarding_gem','onboarding_practice','onboarding_helper','caravan_quest','explore_basics','partner_basics'])assert.equal(rec[id]?.completed,true,id);
+  assert.equal(await page.evaluate(()=>[!!partyMember(13),companionTicketCount(13),!!party.story.quests.chapter1].join()),'true,0,true');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}
 });

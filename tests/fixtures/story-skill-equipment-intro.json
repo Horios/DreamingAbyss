@@ -1,0 +1,224 @@
+{
+ "id": "skill_equipment_intro",
+ "name": "裝備技能與寶石入門",
+ "type": "main",
+ "npc": "女神",
+ "description": "女神教你使用啟程護符的裝備技能與鑲嵌孔。完成後取得一招職業主動技能。",
+ "enabled": true,
+ "hidden": false,
+ "unlock": {
+  "mode": "all",
+  "conditions": []
+ },
+ "prerequisites": [],
+ "entry": "equipment_gift",
+ "effects": [],
+ "nextQuests": [],
+ "rewards": {
+  "gold": 0,
+  "ore": 0,
+  "items": [
+   {
+    "type": "skill",
+    "key": "job0-support0",
+    "quantity": 1,
+    "job": 0
+   },
+   {
+    "type": "skill",
+    "key": "job1-support0",
+    "quantity": 1,
+    "job": 1
+   },
+   {
+    "type": "skill",
+    "key": "job2-support0",
+    "quantity": 1,
+    "job": 2
+   },
+   {
+    "type": "skill",
+    "key": "job3-support0",
+    "quantity": 1,
+    "job": 3
+   }
+  ]
+ },
+ "completionGuides": [
+  "skills"
+ ],
+ "recovery": {
+  "limit": 2,
+  "gearKey": "initiation_charm",
+  "afterStage": "equipment_gift",
+  "gemKey": "0",
+  "gemQuantity": 1
+ },
+ "stages": [
+  {
+   "id": "equipment_gift",
+   "name": "女神的聯絡",
+   "speaker": "女神",
+   "description": "女神透過啟程護符聯絡你，說明護符的兩種用法。",
+   "dialogue": [
+    {
+     "speaker": "旁白",
+     "kind": "narrator",
+     "text": "啟程護符忽然亮起微光。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "喂喂？聽得到嗎？是我啦！"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "你身上那個啟程護符，其實還有兩種用法喔。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "一種是護符附帶的技能「追擊」，另一種是護符上的兩個鑲嵌孔。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "我一步一步教你，照著做就好。"
+    }
+   ],
+   "conditions": {
+    "mode": "all",
+    "conditions": []
+   },
+   "rewards": {
+    "gold": 0,
+    "ore": 0,
+    "items": [
+     {
+      "type": "gear",
+      "key": "initiation_charm",
+      "quantity": 1
+     }
+    ]
+   },
+   "effects": [],
+   "next": "equip_skill",
+   "branches": [],
+   "choices": [],
+   "guides": [
+    "equipment"
+   ]
+  },
+  {
+   "id": "equip_skill",
+   "name": "啟用裝備技能",
+   "speaker": "女神",
+   "description": "穿上啟程護符，在技能頁把護符附帶的「追擊」裝進觸發技能槽。",
+   "dialogue": [
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "穿上啟程護符後，「追擊」會出現在技能清單。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "到技能頁點選觸發技能槽，把「追擊」裝進去。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "做完我就送你一顆赤焰石。"
+    }
+   ],
+   "conditions": {
+    "mode": "all",
+    "conditions": [
+     {
+      "type": "gearWorn",
+      "key": "initiation_charm",
+      "count": 1,
+      "mode": "lifetime",
+      "itemType": "material"
+     },
+     {
+      "type": "skillSlotted",
+      "key": "tutorial_echo",
+      "count": 1,
+      "mode": "lifetime",
+      "itemType": "material"
+     }
+    ]
+   },
+   "rewards": {
+    "gold": 0,
+    "ore": 0,
+    "items": [
+     {
+      "type": "gem",
+      "key": "0",
+      "quantity": 1
+     }
+    ]
+   },
+   "effects": [],
+   "next": "gem_base",
+   "branches": [],
+   "choices": [],
+   "guides": [
+    "equipment",
+    "skills"
+   ]
+  },
+  {
+   "id": "gem_base",
+   "name": "鑲嵌寶石",
+   "speaker": "女神",
+   "description": "在「裝備與信物」開啟啟程護符的鑲嵌介面，點選第一孔，再選擇赤焰石。鑲嵌後會增加攻擊力。",
+   "dialogue": [
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "點開啟程護符的「鑲嵌」，選第一孔放入赤焰石。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "赤焰石鑲進去後，你的攻擊力就會提高。"
+    },
+    {
+     "speaker": "女神",
+     "kind": "npc",
+     "text": "做完就到技能頁看看吧，我另外準備了一個新技能給你。"
+    }
+   ],
+   "conditions": {
+    "mode": "all",
+    "conditions": [
+     {
+      "type": "gearBaseGem",
+      "key": "initiation_charm",
+      "count": 1,
+      "mode": "lifetime",
+      "itemType": "material",
+      "slot": 0
+     }
+    ]
+   },
+   "rewards": {
+    "gold": 0,
+    "ore": 0,
+    "items": []
+   },
+   "effects": [],
+   "next": "",
+   "branches": [],
+   "choices": [],
+   "guides": [
+    "equipment",
+    "skills"
+   ]
+  }
+ ]
+}

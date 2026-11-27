@@ -5,7 +5,7 @@ const json=(r,c)=>JSON.parse(r.run('JSON.stringify('+c+')'));
 // v0.136: the shipped intro quest was removed (the prologue replaces it). These tests exercise the story system with it,
 // so it is kept as a fixture and put back in front, with the gear-skill quest depending on it as before.
 seed.story.quests.push(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-region-chain.json'),'utf8')));
-seed.story.quests.unshift(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-goddess-intro.json'),'utf8')));seed.story.quests.find(q=>q.id==='skill_equipment_intro').prerequisites=['goddess_intro'];
+seed.story.quests.unshift(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-goddess-intro.json'),'utf8')));seed.story.quests.splice(1,0,JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-skill-equipment-intro.json'),'utf8')));seed.story.quests.find(q=>q.id==='skill_equipment_intro').prerequisites=['goddess_intro'];
 async function game(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.ctx.doc=structuredClone(seed);r.run('applyBalanceConfig(doc);selectSaveSlot(1);start(0);closeModal()');await r.run('EmberwildOffline.settle()');return r;}
 function complete(r,id,choice=''){const s=r.run(`party.story.quests['${id}'].current`);assert.equal(r.run(`completeStoryStage('${id}','${choice}','${s}')`),true,id+'/'+s);}
 function recruit(r){r.run('recruitCompanion(10);recruitCompanion(11);closeModal()');}

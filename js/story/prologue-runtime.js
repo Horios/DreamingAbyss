@@ -14,7 +14,9 @@
  const stage=()=>creating()?(draft()?.name?'calling':'creation'):runningGuide()?R().current:null;
  const worn=()=>{const h=playerHero();return h.bag.some(g=>g.starterPack&&h.equipped.includes(g.id));};
  const priest=()=>party?.members.slice(1).find(h=>h.companionId===13||h.job===3&&![900000001,900000002,900000003,900000004].includes(h.companionId));
- function satisfied(){switch(stage()){case 'calling':return true;case 'gift':return worn();case 'practice':return !!party.story.flags.onboarding_battle;case 'helper':return !!priest();case 'departure':return true;default:return false;}}
+ // v0.226: the charm and gem lessons finish on their stage conditions (charm worn, 追擊 slotted, gem in the first socket).
+ const stageMet=id=>{const s=Q()?.stages.find(x=>x.id===id);return !!s&&S().met(s.conditions,R());};
+ function satisfied(){switch(stage()){case 'calling':return true;case 'gift':return worn();case 'charm':case 'gem':return stageMet(stage());case 'practice':return !!party.story.flags.onboarding_battle;case 'helper':return !!priest();case 'departure':return true;default:return false;}}
  // Runs inside the stage transaction: both rewards and joining roll back when saving fails.
  function commitStage(q,s){
   // v0.178: the priest joins by her ticket (夥伴招募券 - 艾琳), handed out with the starter gear and used in the helper stage.
@@ -36,11 +38,11 @@
     const equipped=worn(),fought=r.completed.includes('practice')||r.completed.includes('trial');
     if(fought)story.flags.onboarding_battle=true;
     r.current=!equipped?'gift':!fought?'practice':priest()?'departure':'helper';
-    r.completed=['creation','calling',...(equipped?['gift']:[]),...(equipped&&fought?['practice']:[]),...(equipped&&fought&&priest()?['helper']:[])];r.baseline={};
+    r.completed=['creation','calling',...(equipped?['gift','charm','gem']:[]),...(equipped&&fought?['practice']:[]),...(equipped&&fought&&priest()?['helper']:[])];r.baseline={};
     if(!playerHero().bag.some(g=>g.starterPack))grantStarterPackDirect(playerHero().job,globalThis.__EMBERWILD_STARTER_PACK.rows(playerHero().job));
    }
    if(r?.done||!r)story.flags.onboarding_done=true;
-   if(!r){story.quests.prologue={current:'departure',started:true,done:true,completed:['creation','calling','gift','practice','helper','departure'],baseline:{},choices:{}};}
+   if(!r){story.quests.prologue={current:'departure',started:true,done:true,completed:['creation','calling','gift','charm','gem','practice','helper','departure'],baseline:{},choices:{}};}
    // Keep the old quest id and completed reward stage as the receipt; never pay the 100 gold twice.
    if(c&&!c.done){
     const ids=new Set(S().design.quests.find(q=>q.id==='chapter1').stages.map(s=>s.id));
@@ -63,7 +65,7 @@
  globalThis.prologueConfirmClass=function(){
   const d=draft();if(!creating()||!d?.name||!CLASSES[chosenJob])return;
   globalThis.__EMBERWILD_STARTER_PACK.asPrologue(()=>start(chosenJob));if(!party||!state)return;
-  playerHero().name=d.name;S().begin('prologue','calling',['creation']);party.story.flags.opening_v2=true;
+  playerHero().name=d.name;S().begin('prologue','calling',['creation']);party.story.flags.opening_v2=true;party.story.flags.onboarding_v226=true;
   if(!completeStoryStage('prologue','','calling'))return;
   clearDraft();chosenJob=null;setTab('equipment');
  };
@@ -97,8 +99,10 @@
   if(introDone||introTimer){clearTimeout(introTimer);introTimer=null;introDone=false;}
   if(runningGuide()&&!busy&&!globalThis.EmberwildOffline?.busy){
    busy=true;try{
-    for(let i=0;i<4&&runningGuide()&&satisfied();i++){
+    for(let i=0;i<8&&runningGuide()&&satisfied();i++){
      const id=stage();if(!completeStoryStage('prologue','',id))break;
+     if(stage()==='charm'&&tab!=='equipment')setTab('equipment');
+     if(stage()==='gem'&&tab!=='worn')setTab('worn');
      if(stage()==='practice'&&tab!=='battle')setTab('battle');
      if(stage()==='helper'&&tab!=='equipment')setTab('equipment');
     }
@@ -108,7 +112,7 @@
   if(runningGuide()){
    const s=Q().stages.find(s=>s.id===stage());if(!s)return;
    const host=document.getElementById('app').querySelector?.('.layout>main');
-   if(host&&!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',`<aside class="prologue-task" data-stage="${s.id}"><div><b>新手引導 · ${esc(s.name)}</b><p>${esc(s.description)}</p></div><button onclick="prologueOpenTask()">${s.id==='practice'?'前往探索':'前往背包'}</button></aside>`);
+   if(host&&!host.querySelector('.prologue-task'))host.insertAdjacentHTML('afterbegin',`<aside class="prologue-task" data-stage="${s.id}"><div><b>新手引導 · ${esc(s.name)}</b><p>${esc(s.description)}</p></div><button onclick="prologueOpenTask()">${esc(EmberwildStory.GUIDES[s.guides[0]]||'前往背包')}</button></aside>`);
   }
   if(party&&!globalThis.__EMBERWILD_TITLE?.open()&&R()?.done&&!party.story.flags.onboarding_story_notice){
    if(S().transaction(()=>{party.story.flags.onboarding_story_notice=true;}))toast('主線任務已有「商隊事件」，可自行開始；也可繼續自由探索。');
@@ -130,8 +134,28 @@
    if(c?.done&&!partyMember(10)&&!companionTicketCount(10))grantCompanionTicket(10);
    f.companion_tickets_v178=true;});
  }
- const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);migrate();migrateTickets();return out;};
+ /* v0.226: the quest 裝備技能與寶石入門 was folded into the onboarding (stages charm and gem). Once per save:
+    - an onboarding still before or at those lessons plays them; the gem the quest used to give is handed out now;
+    - an onboarding already past them, or a finished onboarding whose quest was not finished, gets the quest's skill
+      (and the gem when the quest had not given it) and the two stages count as done;
+    - the old quest record is dropped. */
+ function migrateLessons(){
+  if(!party?.story||party.story.flags.onboarding_v226)return;
+  S().transaction(()=>{
+   const f=party.story.flags,r=R(),old=party.story.quests.skill_equipment_intro,h=playerHero();
+   const playing=!!r&&!r.done&&['gift','charm','gem'].includes(r.current),gemGiven=!!old?.completed?.includes('equip_skill');
+   if(r&&!playing&&!r.completed.includes('charm')){const i=r.completed.indexOf('gift');if(i>=0)r.completed.splice(i+1,0,'charm','gem');}
+   if(playing&&!gemGiven)h.gems[0]=(h.gems[0]||0)+1;
+   if(playing&&!party.members.some(m=>(m.bag||[]).some(g=>g.storyRewardKey==='initiation_charm')))S().grantRewardGear('initiation_charm');
+   if(!playing&&(old&&!old.done||r&&!r.done)){
+    for(const x of Q()?.stages.find(s=>s.id==='gem')?.rewards.items||[])if(x.type==='skill'&&(x.job===undefined||x.job===h.job))__EMBERWILD_SKILLS.grantSkill(h,x.key);
+    if(!gemGiven)h.gems[0]=(h.gems[0]||0)+1;
+   }
+   delete party.story.quests.skill_equipment_intro;f.onboarding_v226=true;
+  });
+ }
+ const loadBase=loadParty;loadParty=function(...args){const out=loadBase(...args);migrate();migrateTickets();migrateLessons();return out;};
  const renderBase=render;render=function(...args){const out=renderBase(...args);draw();return out;};
- globalThis.__EMBERWILD_PROLOGUE={active,running:runningGuide,creating,stage,phase:()=>active()?'action':null,satisfied,draftKey:DRAFT_KEY,commitStage,migrate};
+ globalThis.__EMBERWILD_PROLOGUE={active,running:runningGuide,creating,stage,phase:()=>active()?'action':null,satisfied,draftKey:DRAFT_KEY,commitStage,migrate,migrateLessons};
  draw();
 })();

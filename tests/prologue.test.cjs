@@ -1,12 +1,17 @@
 const test=require('node:test'),assert=require('node:assert/strict');
-const {open,create,equip,fight}=require('./opening-helpers.cjs');
+const {open,create,equip,weapon,charm,gem,fight}=require('./opening-helpers.cjs');
 // v0.178: the priest joins by her ticket (夥伴招募券 - 艾琳), handed out at the start and used from the bag.
 for(const job of [0,1,2,3])test('class '+job+': direct creation, equipment, real battle and the priest joins by her ticket',()=>{
  const r=open();create(r,job);
  assert.equal(r.run('playerHero().name'),'測試者');assert.equal(r.run('playerHero().job'),job);
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'gift');assert.equal(r.run("$('prologue-layer').hidden"),true);
  assert.equal(r.run('companionTicketCount(13)'),1,'the priest ticket comes with the starter gear');assert.equal(r.run('typeof showCompanionRecruitment'),'undefined','no recruiting page');
- equip(r);assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'practice');
+ assert.equal(r.run('playerHero().gems[0]'),1,'the gem comes with the charm');
+ weapon(r);assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'charm');assert.equal(r.run('tab'),'equipment','the charm lesson starts in the bag');
+ charm(r);assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'gem');assert.equal(r.run('tab'),'worn','the gem lesson starts on the worn page');
+ assert.equal(r.run(`__EMBERWILD_SKILLS.learned(playerHero(),__EMBERWILD_SKILLS.byId('job${job}-support0'))`),false);
+ gem(r);assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'practice');
+ assert.equal(r.run(`playerHero().acquiredSkillIds.filter(id=>id==='job${job}-support0').length`),1,'the lesson reward skill');
  assert.equal(r.run('party.questChallenge'),undefined);fight(r);
  assert.equal(r.run('__EMBERWILD_PROLOGUE.stage()'),'helper');
  assert.equal(r.run("tab"),'equipment','the helper stage opens the bag');

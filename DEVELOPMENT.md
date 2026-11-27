@@ -315,6 +315,8 @@ MP 採 100 點標準池，完整自然恢復為十個原參考期（60 秒）。
 
 ## 裝備技能教學與第一孔規則（追加）
 
+> v0.226 起 `skill_equipment_intro` 已移除，改為新手引導的 `charm`、`gem` 兩階段，見文末 v0.226。
+
 沿用 `story` 任務階段、條件、領獎交易與存檔：`skill_equipment_intro` 接在 `goddess_intro` 後，四階段為 `equipment_gift`、`equip_skill`、`gem_skill`、`gem_base`。一般裝備獎勵範本 `initiation_charm` 生成啟程護符，附帶共用觸發技能 `tutorial_echo`（追擊），固定兩孔；兩顆獎勵均為一階赤焰石（0）。第一孔技能效果 +2%，第二孔攻擊 +2。只有第一孔能切換模式，選擇保存在裝備實例，未啟用時全部回到基礎效果。
 
 選用既有任務輔助技能：戰吼 `job0-support0`、奧術共鳴 `job1-support0`、鷹眼指引 `job2-support0`、晨光祝福 `job3-support0`。四招都是一級、無二轉／精通門檻、職業特色直觀的第一招輔助技能，且不與三招初始主動重複。各職業 ID 由任務獎勵資料設定，永久解鎖沿用角色 acquiredSkillIds；保留舊存檔已取得的技能。
@@ -1664,3 +1666,27 @@ v0.211～v0.214 是手動觸發部署，沒有通過 CI；v0.215 合併後 CI �
 ## v0.217 裝備工坊置中固定寬度
 
 - 裝備工坊（`.workshop-shell`）寬度改為 `min(880px,100%)` 並置中，寬螢幕下不再佔滿整個內容區；窄螢幕維持填滿。
+
+## v0.226 新手引導併入裝備技能與寶石、商隊教學、夥伴技能調整、第一張地圖 BOSS 技能
+
+- 新手引導（`prologue`）階段改為 `creation`、`calling`、`gift`、`charm`、`gem`、`practice`、`helper`、`departure`（`story-model.js` 的階段順序檢查一併更新）。
+  - `calling` 除了新手武器、啟程護符與艾琳的招募券，再發一顆一階赤焰石。
+  - `charm`：穿上啟程護符（`gearWorn`）並把「追擊」裝進觸發槽（`skillSlotted`）。完成後切到背包。
+  - `gem`：赤焰石鑲進啟程護符第一孔（`gearBaseGem` slot 0）。階段獎勵是原任務的職業輔助技能（戰吼、奧術共鳴、鷹眼指引、晨光祝福，依職業）。完成後切到「裝備與信物」頁。
+  - 兩階段由階段條件判定完成（`prologue-runtime.js` 的 `stageMet`），教學 `onboarding_charm`、`onboarding_gem` 以聚光引導帶過背包、穿戴、技能槽、工坊鑲嵌。
+  - 新手引導進行中，任務裝備（啟程護符）不能出售或分解。
+- 移除主線任務「裝備技能與寶石入門」（`skill_equipment_intro`）。四招輔助技能的 `questIds` 改為 `prologue`。舊存檔讀取時執行一次 `migrateLessons`（旗標 `onboarding_v226`）：
+  - 新手引導停在 `gift`／`charm`／`gem`：照新流程進行；原任務沒發過寶石時補一顆赤焰石，沒有啟程護符時補發。
+  - 新手引導已過這兩階段，或原任務尚未完成：直接取得該職業的輔助技能，原任務沒發過寶石時補一顆；`charm`、`gem` 記為已完成。
+  - 刪除舊任務紀錄。
+- 新增教學「商隊事件」（`caravan_quest`）：完成招募艾琳的教學後，在背包頁開始，切到任務頁指向「商隊事件」的「閱讀劇情」，開始劇情後結束。新條件 `questOffered`（任務已出現但未開啟，或章節可開始）與 `questStarted`；新目標 `story.begin`、`bag.storyGear`、`skills.firstProcSlot`、`skills.echoChoice`、`forge.socketAction`、`forge.socketSlot`、`forge.gemChoice`。
+- 戰士職業技能：重擊改為精通 0 取得、嘲諷改為精通 4（`classRules` 順序同步）。新建戰士的第一個主動技能是重擊。
+- 洛恩：新增夥伴技能「嘲諷」（`partner10-core17`，複製職業嘲諷），精通 0 就有裂地斬與嘲諷兩個主動技能。
+- 艾琳：生命泉源改為精通 0、治療強化改為精通 4；新增「復活」（`partner13-core19`，精通 7）。復活一名陣亡的我方成員，恢復最大生命 25%，初始冷卻 0 秒、冷卻 60 秒，沒有成員陣亡時不施放（既有 `revive` 效果與施放條件）。
+- 夥伴的主動技能最多兩個（`applyPlan`），洛恩與艾琳目前都剛好兩個。
+- 測試：`tests/onboarding-lessons.test.cjs` 取代 `tests/skill-equipment-tutorial.test.cjs`；舊任務留在 `tests/fixtures/story-skill-equipment-intro.json` 供劇情視窗與劇情系統測試當範例任務。
+- 第一張地圖 BOSS「古木守望者」新增兩個技能（`world/monsters.json` 的 `skillAssignments`，技能定義在 `skillSystem.definitions`，用途 `boss`，掛在戰士核心技能池第 18、19 位但沒有取得來源，玩家看不到也學不到）：
+  - 召喚樹精（`boss-summon-treants`，新效果 `summonAllies`）：召喚兩隻菁英「迷路樹精」。初始冷卻 10 秒、冷卻 60 秒；同一施放者召喚出的怪物還活著時不施放。設定欄位 `summonMonsterId`、`summonCount`、`summonKind`。召喚物不給獎勵（`rewarded:true`），避免拖延首領來刷掉落；先前倒下的召喚物在下次召喚時離場，遭遇維持最多 5 隻。
+  - 纏藤（`boss-entangle`，新效果 `resetBasic`）：每 10 秒（初始 10 秒）讓一名隨機存活角色的普攻秒數重新計算（秒數時間軸 `resetBasic`）。
+  - 兩個效果加入核心技能效果驗證與怪物可施放效果清單（`core-game.js`、`shared-skill-runtime.js`）。平衡器尚未認得這兩個效果。
+  - 測試：`tests/boss-map0-skills.test.cjs`。
