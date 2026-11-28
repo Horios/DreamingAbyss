@@ -1700,3 +1700,4 @@ v0.211～v0.214 是手動觸發部署，沒有通過 CI；v0.215 合併後 CI �
 - 古木守望者（`map0_boss`）`hpMultiplier` 1 → 2，血量為原本兩倍（`data/balance/world/monsters.json`）。
 - 召喚樹精（`boss-summon-treants`）`initialCooldownSeconds` 10 → 5，戰鬥開始 5 秒後第一次召喚；冷卻 60 秒與「場上有召喚物不施放」不變（`data/balance/combat/skills.json`、`data/balance/characters/classes.json`）。
 - `tests/boss-map0-skills.test.cjs` 的時間點改為 5 秒與 65 秒。
+- 測試修正：`ancient-heart-bracer` 改用 `9c41f98` 降為 1/3 後的機率；`healing-potions` 只把藥水規則視為藥水掉落，掉落上下限改用鍛鐵規則測試；`story-system` 的巡查支線只剩無名密林、招募改用洛恩與艾琳（v0.222 只保留第一張地圖與兩位夥伴）。`healing-potions`、`story-system` 需要平衡器同步到 v0.228（序章 `charm`、`gem` 階段與 BOSS 效果 `summonAllies`、`resetBasic`）。

@@ -8,7 +8,8 @@ seed.story.quests.push(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/
 seed.story.quests.unshift(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-goddess-intro.json'),'utf8')));seed.story.quests.splice(1,0,JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-skill-equipment-intro.json'),'utf8')));seed.story.quests.find(q=>q.id==='skill_equipment_intro').prerequisites=['goddess_intro'];
 async function game(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.ctx.doc=structuredClone(seed);r.run('applyBalanceConfig(doc);selectSaveSlot(1);start(0);closeModal()');await r.run('EmberwildOffline.settle()');return r;}
 function complete(r,id,choice=''){const s=r.run(`party.story.quests['${id}'].current`);assert.equal(r.run(`completeStoryStage('${id}','${choice}','${s}')`),true,id+'/'+s);}
-function recruit(r){r.run('recruitCompanion(10);recruitCompanion(11);closeModal()');}
+// v0.228: since v0.222 the roster holds 洛恩 (10) and 艾琳 (13) only.
+function recruit(r){r.run('recruitCompanion(10);recruitCompanion(13);closeModal()');}
 function kill(r,map=0,id){r.ctx.targetMonster=id||seed.balanceSettings.monsters.catalog.find(x=>x.mapIndex===map&&x.kind==='normal').id;r.run(`party.map=${map};syncParty();party.bossChallenge=null;globalThis.testEnemy=makeEnemy(${map},playerHero(),()=>.99);var row=monsterCatalog().find(x=>x.id===targetMonster);testEnemy.monsterId=row.id;testEnemy.mat=row.material;testEnemy.name=row.name;testEnemy.region=${map};testEnemy.id='foe-'+uid();testEnemy.rewarded=false;foes=[testEnemy];enemy=testEnemy;testEnemy.hp=0;rewardGroupKill(testEnemy);save()`);}
 function boss(r,map){r.run(`party.map=${map};syncParty();party.bossChallenge=null;bossProgressEntry(${map}).charges=1;startBossChallenge();for(const e of [...foes]){e.hp=0;rewardGroupKill(e);}save();leaveBossChallenge();running=false;resetEncounter();closeModal()`);}
 async function tick(r,ms){r.advance(ms);await r.run('EmberwildOffline.settle()');r.run('tickLifeSkills()');}
@@ -35,8 +36,9 @@ test('new/legacy saves migrate, real recruitment, kills and enhancement complete
  const old=json(r,'packParty()');delete old.story;delete old.progressStats;r.ctx.old=old;r.run('loadParty(old)');assert.equal(r.run('party.story.quests.goddess_intro.current'),'welcome');assert(r.run('party.progressStats.enhance')>=1);assert(r.run('party.progressStats.explore[0]')>=1);assert.deepEqual(r.errors,[]);
 });
 
-test('cross-map side chain uses original kill and boss histories and survives each stage reload',async()=>{
- let r=await game();recruit(r);for(let map=0;map<2;map++){for(let i=0;i<3;i++)kill(r,map);complete(r,'test_region_chain');r=await reload(r);complete(r,'test_region_chain');boss(r,map);assert(r.run(`party.achievements.bossKills[${map}]`)>=1);complete(r,'test_region_chain');r=await reload(r);}assert.equal(r.run('party.story.quests.test_region_chain.done'),true);assert.equal(r.run("completeStoryStage('test_region_chain')"),false);assert.deepEqual(r.errors,[]);
+// v0.228: since v0.222 only the first map exists, so the side chain covers 無名密林 alone.
+test('side chain uses original kill and boss histories and survives each stage reload',async()=>{
+ let r=await game();recruit(r);for(let map=0;map<1;map++){for(let i=0;i<3;i++)kill(r,map);complete(r,'test_region_chain');r=await reload(r);complete(r,'test_region_chain');boss(r,map);assert(r.run(`party.achievements.bossKills[${map}]`)>=1);complete(r,'test_region_chain');r=await reload(r);}assert.equal(r.run('party.story.quests.test_region_chain.done'),true);assert.equal(r.run("completeStoryStage('test_region_chain')"),false);assert.deepEqual(r.errors,[]);
 });
 
 
