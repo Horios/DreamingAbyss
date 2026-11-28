@@ -27,8 +27,8 @@ test('victory receives inventory immediately; stream beam, flight, receiving lig
 test('local names fit desktop/mobile battlefield; no flight, tail or receiving light; next encounter is independent',async()=>{
  const g=await setup(),p=g.page;try{
  for(const size of [{width:1440,height:900},{width:390,height:844},{width:320,height:568}]){
- await p.setViewportSize(size);await p.evaluate(()=>{setLootEffects('local');spawnGroup();render();lootWin();});
- assert(await p.locator('.loot-fx-local').count()>0);assert(await p.locator('.loot-fx-name').count()>0);assert.equal(await p.locator('.loot-fx-flight,.loot-fx-receive').count(),0);
+ await p.setViewportSize(size);/* v0.228: let the resized layout settle before placing names over the enemy icons */await p.waitForFunction(w=>innerWidth===w,size.width);await p.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await p.evaluate(()=>{setLootEffects('local');spawnGroup();render();lootWin();});
+ /* v0.228: the effect nodes are built asynchronously; wait for them instead of counting at once */await p.waitForFunction(()=>document.querySelectorAll('.loot-fx-local').length>0,null,{timeout:2000});assert(await p.locator('.loot-fx-name').count()>0);assert.equal(await p.locator('.loot-fx-flight,.loot-fx-receive').count(),0);
  const r=await p.locator('#battleEnemyIcons').boundingBox(),names=await p.locator('.loot-fx-name').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}));
  const health=await p.locator('#battleEnemyIcons .unit-numbers,#battleEnemyIcons .battle-health-bar').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}));
  for(const n of names)for(const h of health)assert(n.right<=h.left||h.right<=n.left||n.bottom<=h.top||h.bottom<=n.top,'local names must not cover health information');
@@ -36,7 +36,7 @@ test('local names fit desktop/mobile battlefield; no flight, tail or receiving l
  for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i],b=names[j];assert(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top,'name rectangles must not overlap');}
  await p.screenshot({path:'/tmp/loot-local-'+size.width+'.png'});
  await p.evaluate(()=>spawnGroup());assert(await p.locator('.loot-fx-local').count()>0,'new encounter does not wait or cancel a prior win');
- await p.waitForTimeout(1250);assert.equal(await p.locator('.loot-fx-layer').count(),0);
+ await p.waitForTimeout(1250);/* v0.228: allow extra time under load; the next round needs every effect finished (visible effects are capped) */await p.waitForFunction(()=>!document.querySelector('.loot-fx-layer')&&EmberwildLootEffects.activeCount===0,null,{timeout:5000});assert.equal(await p.locator('.loot-fx-layer').count(),0);
  }
  assert.deepEqual(g.errors,[]);
  }finally{await g.browser.close();}
@@ -78,7 +78,7 @@ test('continuous wins are bounded and do not replace existing names; identical d
 test('v0.182: the beam size setting has 小 (original), 中 and 大, scales the beam and point, and is remembered',async()=>{
  const g=await setup(),p=g.page;try{
  await p.setViewportSize({width:1440,height:900});
- const measure=async value=>{await p.evaluate(v=>{setLootEffects('stream');setLootEffectSize(v);spawnGroup();foes.forEach(e=>{e.maxDrops=99;e.kind='elite';});render();lootWin();},value);
+ const measure=async value=>{await p.evaluate(v=>{/* v0.228: start from no running effects; the visible-effect cap can otherwise leave no room */EmberwildLootEffects.clear();setLootEffects('stream');setLootEffectSize(v);spawnGroup();foes.forEach(e=>{e.maxDrops=99;e.kind='elite';});render();lootWin();},value);
   const box=await p.locator('.loot-fx-drop').first().evaluate(n=>{const b=n.querySelector('.loot-fx-beam');return {beamW:b.offsetWidth,beamH:b.offsetHeight,point:n.offsetWidth,size:n.closest('.loot-fx-layer').dataset.lootSize};});
   await p.evaluate(()=>EmberwildLootEffects.clear());return box;};
  // Layout sizes (offsetWidth/Height) are not affected by the animated transform.
