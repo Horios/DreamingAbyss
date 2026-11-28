@@ -9,7 +9,7 @@ async function setup(){const g=await openRuntime(root);await g.page.evaluate(()=
  {independent:true,id:'fx-ore',type:'ore',quantityMin:3,quantityMax:3,chanceByDifficulty:[1,1,1]},
  {independent:true,id:'fx-ether',type:'material',key:'以太鍛鐵',quantityMin:1,quantityMax:1,chanceByDifficulty:[1,1,1]},
  {independent:true,id:'fx-gem',type:'gem',key:'0',quantityMin:2,quantityMax:2,chanceByDifficulty:[1,1,1]},
- {independent:true,id:'fx-gear',type:'gearLegendary',quantityMin:1,quantityMax:1,chanceByDifficulty:[1,1,1]}
+ {independent:true,id:'fx-gear',type:'monsterGear',pool:[{key:'form:1:0:1',weight:1}],quantityMin:1,quantityMax:1,chanceByDifficulty:[1,1,1]}/* v0.228: gearLegendary rules no longer exist */
  ];foes.forEach(e=>{e.maxDrops=99;e.kind='elite';});render();nextActionAt=Date.now()+1e9;
  });return g;}
 test('victory receives inventory immediately; stream beam, flight, receiving light and names use actual names/quantities',async()=>{

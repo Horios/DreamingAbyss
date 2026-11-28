@@ -1,8 +1,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {openRuntime}=require('./runtime.cjs');const root=path.resolve(__dirname,'..'),balance=require('./runtime.cjs').balanceRoot(root);
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs');const root=path.resolve(__dirname,'..'),balance=require('./runtime.cjs').balanceRoot(root);
 test('Chromium: token UI, normal player equipment, enhancement, reserves and real reload',async()=>{
  const g=await openRuntime(root),p=g.page;
  try{
+  /* v0.228: 12 is a skill-less test companion (the game ships 洛恩 and 艾琳). */await p.evaluate(ADD_TEST_COMPANIONS);
   await p.evaluate(()=>{selectSaveSlot(1);start(0);});await p.waitForTimeout(40);
   const ids=await p.evaluate(()=>{closeModal();clearInterval(timer);recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();const a=__EMBERWILD_TOKEN_TEST.makeToken('arcane',2),b=__EMBERWILD_TOKEN_TEST.makeToken('berserk',1);state.bag.push(a,b);setTab('worn');return [a.id,b.id];});await p.waitForTimeout(40);await p.evaluate(()=>closeModal());
   assert.equal(await p.locator('.worn-character-item').count(),0);assert.equal(await p.locator('.worn-player-equipment').count(),1);assert.equal(await p.locator('.worn-slot').count(),5);assert.equal(await p.locator('.token-slot').count(),2);

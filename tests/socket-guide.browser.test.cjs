@@ -17,7 +17,9 @@ test('worn rows show sockets instead of a checkmark; the socket guide plays once
   await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(400);assert.equal(await active(page),null);
   // Putting the quest charm on while on the worn page starts the guide at once.
   await page.evaluate(()=>{const h=playerHero(),g=h.bag.find(x=>x.storyRewardKey==='initiation_charm');h.gems[0]=2;previewEquip(g.id,memberKey(h),4);});
-  await page.click('#modal [onclick^="confirmEquipComparison("]');
+  // An empty slot equips at once; an occupied slot asks for the comparison first.
+  if(await page.evaluate(()=>!!document.querySelector('#modal [onclick^="confirmEquipComparison("]')))await page.click('#modal [onclick^="confirmEquipComparison("]');
+  assert.equal(await page.evaluate(()=>playerHero().equipped.includes(playerHero().bag.find(x=>x.storyRewardKey==='initiation_charm').id)),true,'the charm is worn');
   // Rows: no checkmark, sockets beside the name for socketed gear.
   assert.equal(await page.locator('main .worn-slot-choice .item-slot-worn').count(),0,'no worn checkmark on the worn page');
   const charmRow=page.locator('main .worn-slot-choice',{hasText:'啟程護符'});
@@ -40,7 +42,7 @@ test('worn rows show sockets instead of a checkmark; the socket guide plays once
   assert.notEqual(await charmRow.locator('.worn-socket-badge circle >> nth=0').getAttribute('fill'),'none');
   await page.evaluate(()=>{closeModal();setTab('battle');});await page.evaluate(()=>setTab('worn'));await page.waitForTimeout(400);
   assert.equal(await active(page),null,'plays once');assert.equal(await page.evaluate(()=>__EMBERWILD_TUTORIAL.status().tip),null);
-  await page.evaluate(()=>{setTab('equipment');setGearInventoryFilter('worn','all');});assert(await page.locator('main .item-slot-worn').count()>0,'the bag still marks worn gear when 穿戴：全部 is chosen');
+  /* v0.211: the grid bag lists bag slots only; worn gear is managed on the 裝備與信物 page. */await page.evaluate(()=>setTab('equipment'));assert.equal(await page.evaluate(()=>!!document.querySelector('main [data-bag-ref="g:'+playerHero().bag.find(x=>x.storyRewardKey==='initiation_charm').id+'"]')),false,'the worn charm is not a bag slot');
   assert.deepEqual(game.errors,[]);
  }finally{await game.browser.close();}
 });
