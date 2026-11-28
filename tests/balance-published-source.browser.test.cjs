@@ -1,4 +1,4 @@
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{openRuntime}=require('./runtime.cjs'),D=require('../js/balance/balance-diff.js');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{openRuntime}=require('./runtime.cjs'),D=require('../js/balance/balance-diff.js');
 const root=process.cwd(),published=JSON.parse(fs.readFileSync('data/balance.json'));
 // A runtime that accepts the document keeps every published value. It may add derived fields; the only removals are the
 // two deliberate normalizations below. Applies to the current runtime and to an upgraded production checkout alike.
@@ -21,8 +21,10 @@ test('production ignores old browser balance and player-save design snapshots; p
   const updated=structuredClone(published);updated.items[0].cost+=9;await preview.page.route('http://localhost/preview/data/balance.json?*',r=>r.fulfill({contentType:'application/json',body:JSON.stringify(updated)}));await preview.page.reload();assert.equal(await preview.page.evaluate(()=>exportableBalance().items[0].cost),updated.items[0].cost);assert.deepEqual(preview.errors,[]);
  }finally{await preview.browser.close();}
 });
-test('older production fails closed on expanded life data; upgraded runtime retains every effective field',async()=>{
- const r=await openRuntime('../Emberwild-main');try{await r.page.route('http://localhost/data/balance.json?*',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(published)}));await r.page.reload();
+// v0.228: the production checkout (main branch) is found through EMBERWILD_MAIN_ROOT, ../Emberwild-main or ../DreamingAbyss-main.
+const mainRoot=[process.env.EMBERWILD_MAIN_ROOT,path.resolve(root,'../Emberwild-main'),path.resolve(root,'../DreamingAbyss-main')].filter(Boolean).find(dir=>fs.existsSync(path.join(dir,'index.html')));
+test('older production fails closed on expanded life data; upgraded runtime retains every effective field',{skip:mainRoot?false:'Production checkout is not available; set EMBERWILD_MAIN_ROOT to a checkout of the main branch'},async()=>{
+ const r=await openRuntime(mainRoot);try{await r.page.route('http://localhost/data/balance.json?*',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(published)}));await r.page.reload();
   // The loader is asynchronous: wait until the older runtime either refuses the document or finishes booting.
   await r.page.waitForFunction(()=>/資料載入失敗/.test(document.getElementById('app')?.innerText||'')||window.emberwildBootComplete===true,{},{timeout:30000});
   const version=await r.page.evaluate(()=>/資料載入失敗/.test(document.getElementById('app').innerText)?0:EmberwildBalanceDocument.lifeProductsVersion||0);
