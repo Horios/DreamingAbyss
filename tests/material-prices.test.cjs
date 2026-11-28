@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=path.resolve(root,'../DreamingAbyss-BalanceEditor');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 // Test active material prices; equipment dust sale protection is covered separately.
 const prices={'光輝碎塊':20,'以太鍛鐵':15,'活性樹芯':1};

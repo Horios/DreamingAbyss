@@ -1,9 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/skills/companion-skill-model.js');
+const {loadRuntime,ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs'),M=require('../js/skills/companion-skill-model.js');
 const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 // Exported documents carry the canonical skillSystem; legacy class/support/passive arrays are projections of it.
-function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();for(const id of [10,11,12,13,14]){recruitCompanion(id);closeModal();}globalThis.canonicalSkill=(d,job,kind,index)=>d.skillSystem.definitions.find(s=>(s.adapters||[s.adapter]).some(a=>a.job===job&&a.kind===kind&&a.index===index));globalThis.canonicalById=(d,id)=>d.skillSystem.definitions.find(s=>s.id===id);');return r;}
+// v0.228: the game ships 洛恩 (10, warrior) and 艾琳 (13); 11／12／14 are skill-less test companions (11 is a warrior).
+function game(){const r=loadRuntime(root);r.run(ADD_TEST_COMPANIONS);r.run('selectSaveSlot(1);start(0);closeModal();for(const id of [10,11,12,13,14]){recruitCompanion(id);closeModal();}globalThis.canonicalSkill=(d,job,kind,index)=>d.skillSystem.definitions.find(s=>(s.adapters||[s.adapter]).some(a=>a.job===job&&a.kind===kind&&a.index===index));globalThis.canonicalById=(d,id)=>d.skillSystem.definitions.find(s=>s.id===id);');return r;}
 test('Game ownership migration is append-only and idempotent without the editor',()=>{
  const d=JSON.parse(fs.readFileSync(path.join(root,'data/balance.json'),'utf8'));M.validate(d);
  const before=structuredClone(d);M.migrate(d);assert.deepEqual(d,before);
@@ -17,13 +18,14 @@ test('Game and private designer embed the identical ownership module',t=>{
  const file=path.join(editorRoot,'balance-editor.html');
  if(!fs.existsSync(file))return t.skip('Private balance editor fixture unavailable in standalone game CI');
  const html=fs.readFileSync(file,'utf8');
- assert.equal(html.match(/<script id="companion-skill-model-v1">\n([\s\S]*?)<\/script>/)[1],fs.readFileSync(path.join(root,'js/skills/companion-skill-model.js'),'utf8'));
+ assert.equal(html.match(/<script id="companion-skill-model-v1">\n([\s\S]*?)<\/script>/)[1].trimEnd(),fs.readFileSync(path.join(root,'js/skills/companion-skill-model.js'),'utf8').trimEnd());
  const e=loadRuntime(editorRoot,'balance-editor.html'),d=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');M.validate(d);
 });
 test('Player, same-job companions and monsters cannot use another character’s skills; editing copies does not change the original',()=>{
  const r=game(),d=json(r,'exportableBalance()'),p=d.companions.find(p=>p.id===10),other=d.companions.find(p=>p.id===11),i=p.core[0];
- assert.notEqual(i,other.core[0]);const original=d.classes[0].skills[0].power,otherPower=d.classes[0].skills[other.core[0]].power;d.classes[0].skills[i].power=7;r.ctx.d=d;r.run('applyBalanceConfig(d);');
- assert.equal(r.run('CLASSES[0].skills[0][4]'),original);assert.equal(r.run('CLASSES[0].skills['+other.core[0]+'][4]'),otherPower);
+ // v0.228: the same-job companion 11 is a skill-less test companion, so only 洛恩's skill and a class skill are compared.
+ assert(!other.core.includes(i));const original=d.classes[0].skills[0].power;d.classes[0].skills[i].power=7;r.ctx.d=d;r.run('applyBalanceConfig(d);');
+ assert.equal(r.run('CLASSES[0].skills[0][4]'),original);
  r.ctx.i=i;assert.deepEqual(json(r,'[playerHero(),partyMember(10),partyMember(11)].map(h=>skillAllowedForPartner(h,CLASSES[0].skills[i][6]))'),[false,true,false]);
  assert.equal(r.run('skillAllowedForPartner(partyMember(10),CLASSES[0].skills[0][6])'),false);
  r.run('withHero(playerHero(),()=>learn(i));withHero(playerHero(),()=>equipSkill(i,0));partyMember(11).skills[i]=1;');assert.equal(r.run('playerHero().skills[i]'),0);assert(!json(r,'playerHero().active').includes(i));assert.equal(r.run('castPartySkill(partyMember(11),i,battleStats(partyMember(11)))'),false);
@@ -42,7 +44,7 @@ test('Passive stat, healing and both aura directions do nothing before their unl
 });
 test('Invalid ownership, cross-owner induction and passive levels reject atomically',()=>{
  const r=game(),before=r.run('JSON.stringify(exportableBalance())');
- for(const edit of [`d.companions[1].core.push(d.companions[0].core[0]);`,`canonicalSkill(d,0,'core',d.companions[0].core[0]).partnerId=999;`,`d.skillSystem.definitions.find(d=>d.type==='passive'&&d.partnerId===10).requiredLevel=-1;`,`d.companions[1].passives.push(d.companions[0].passives[0]);`,`{const sk=canonicalSkill(d,0,'core',d.companions[0].active[0]);sk.tags=['induce'];sk.induction={targets:[{kind:'skill',skillId:d.classes[0].skills[0].id,chance:1}]};}`]){
+ for(const edit of [`d.companions.find(p=>p.id===11).core.push(d.companions[0].core[0]);`,`canonicalSkill(d,0,'core',d.companions[0].core[0]).partnerId=999;`,`d.skillSystem.definitions.find(d=>d.type==='passive'&&d.partnerId===10).requiredLevel=-1;`,`d.companions[1].passives.push(d.companions[0].passives[0]);`,`{const sk=canonicalSkill(d,0,'core',d.companions[0].active[0]);sk.tags=['induce'];sk.induction={targets:[{kind:'skill',skillId:d.classes[0].skills[0].id,chance:1}]};}`]){
   assert.throws(()=>r.run('{const d=exportableBalance();'+edit+'applyBalanceConfig(d);}'));assert.equal(r.run('JSON.stringify(exportableBalance())'),before);
  }
 });

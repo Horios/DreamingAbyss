@@ -64,4 +64,8 @@ applyBalanceConfig(d);}`;
 function addTestMap(r){r.run(ADD_TEST_MAP);}
 // 遊戲只保留洛恩（10）與艾琳（13）；需要更多夥伴的測試加入不帶技能的暫時夥伴 11／12／14（戰士／法師／弓箭手）。
 const ADD_TEST_COMPANIONS=`{const d=exportableBalance();for(const [id,job,w] of [[11,0,"sword"],[12,1,"staff"],[14,2,"bow"]]){if(d.companions.some(p=>p.id===id))continue;const p=structuredClone(d.companions.find(p=>p.id===10));Object.assign(p,{id,job,weapon:w,name:"測試夥伴"+id,passives:[],core:[],active:[],proc:[],support:[],availability:"visible",unlockCondition:{type:"initial"}});d.companions.push(p);}applyBalanceConfig(d);}`;
-module.exports={loadRuntime,addTestMap,ADD_TEST_MAP,ADD_TEST_COMPANIONS};
+// v0.228: a final map appended after the existing maps (index 2 after ADD_TEST_MAP), with its final boss.
+const ADD_TEST_FINAL=`{const d=exportableBalance(),bs=d.balanceSettings,i=bs.maps.catalog.length;const m=structuredClone(bs.maps.catalog[0]);Object.assign(m,{id:"map"+i,name:"測試終局",min:40,max:40,mapType:"final",progressionGate:true,eliteEnabled:false});bs.maps.catalog.push(m);bs.maps.levelRanges.push({min:40,max:40});const b=structuredClone(bs.monsters.catalog.find(x=>x.id==="map0_boss"));Object.assign(b,{id:"map"+i+"_final",mapIndex:i,kind:"final",name:"測試終局首領"});bs.monsters.catalog.push(b);applyBalanceConfig(d);}`;
+// Hidden test companions 11／12／14 that unlock only through the rules a test assigns (like the removed 15／16／17).
+const ADD_HIDDEN_TEST_COMPANIONS=ADD_TEST_COMPANIONS.replace('availability:"visible",unlockCondition:{type:"initial"}',"availability:'hidden',unlockCondition:{type:'achievement',achievementIds:['region-0-boss-1000']}");
+module.exports={loadRuntime,addTestMap,ADD_TEST_MAP,ADD_TEST_COMPANIONS,ADD_TEST_FINAL,ADD_HIDDEN_TEST_COMPANIONS};
