@@ -1,5 +1,5 @@
 'use strict';
-/* v0.183: 古木之心護腕, an all-class off-hand dropped by the first map's BOSS 古木守衛 (5% / 8% / 12%). +50 HP; its passive
+/* v0.183: 古木之心護腕, an all-class off-hand dropped by the first map's BOSS 古木守衛 (5% / 8% / 12%; 1/3 since 9c41f98: 1.67% / 2.67% / 4%). +50 HP; its passive
    古木之心 restores the wearer to full HP when HP falls below 30% (a lethal hit included), then waits 60 seconds. */
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
@@ -11,7 +11,7 @@ function game(job=0){const r=loadRuntime(root);r.run(`selectSaveSlot(1);start(${
 test('the BOSS drops an all-class off-hand with +50 HP and the 古木之心 skill',()=>{
  for(const job of [0,1,2,3]){
   const r=game(job),out=json(r,`({chances:rule.chanceByDifficulty,kinds:rule.kinds,name:itemForm(bracer).name,slot:bracer.slot,jobs:gearWearableJobs(bracer),hp:gearStatBreakdown(bracer),skill:__EMBERWILD_SKILLS.byId('ancient-heart-revival')})`);
-  assert.deepEqual(out.chances,[0.05,0.08,0.12]);assert.deepEqual(out.kinds,['boss']);
+  assert.deepEqual(out.chances,[0.0166667,0.0266667,0.04]);assert.deepEqual(out.kinds,['boss']);
   assert.equal(out.name,'古木之心護腕');assert.equal(out.slot,2,'off-hand');assert.deepEqual(out.jobs,[0,1,2,3]);
   assert.equal(out.skill.type,'passive');assert.equal(out.skill.timing.cooldownSeconds,60);assert.deepEqual(out.skill.effects,[{key:'lowHpFullHeal',value:30}]);
   // Worn, the character gains 50 HP from the bracer's fixed effect.
