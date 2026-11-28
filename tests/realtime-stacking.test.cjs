@@ -11,7 +11,7 @@ test('All five real-time consumables extend remaining time without duplicating s
     g.ctx.itemId=id;
     const result=plain(g.run(`(()=>{const api=EmberwildTimedBoosts,item=SHOP.find(x=>x.id===itemId),rows=()=>item.type==='timedBoost'?party.timedBoosts.filter(b=>b.itemId===itemId):api.buffRows(state[item.type]);state.consumables[itemId]=2;useSupply(itemId);const first=rows()[0].remainingMs;useSupply(itemId);return {count:rows().length,first,remaining:rows()[0].remainingMs,minutes:item.durationMinutes,inventory:state.consumables[itemId]};})()`));
     assert.equal(result.remaining,result.first+result.minutes*60000);
-    assert.equal(result.count,1);assert.equal(result.inventory,0);
+    assert.equal(result.count,1);assert.equal(result.inventory||0,0);/* v0.204 stacks drop used-up items */
   }
   assert.equal(g.run("EmberwildTimedBoosts.bonus(party,'exp')"),100);
   assert.equal(g.run("supplyEffect(state,'ward','fire')"),.25);

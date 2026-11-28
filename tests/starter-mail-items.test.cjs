@@ -36,7 +36,7 @@ test('all catalogue kinds are mailed in chunks of at most six and land in their 
  assert.equal(r.run('new Set(state.bag.map(g=>g.id)).size===state.bag.length'),true);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
 });
 test('failed saves, a full bag and stock overflow retain every attachment and roll back all inventory changes',()=>{
- const r=game(d=>{d.starterPackItems[0]=[{kind:'material',key:'光輝碎塊',quantity:3}];d.balanceSettings.inventory.stackLimits.material=1e9;});
+ const r=game(d=>{d.starterPackItems[0]=[{kind:'material',key:'光輝碎塊',quantity:3}];d.balanceSettings.inventory.stackLimits.material=1e9;/* v0.228: 光輝碎塊 is a rare material (999 per stack by default) */d.balanceSettings.inventory.stackLimits.rareMaterial=1e9;});
  r.run("EmberwildItems.add('material:光輝碎塊',10);const split=EmberwildItems.stacks().find(s=>s.item==='material:光輝碎塊');EmberwildItems.split(split.uid,3);");const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
  r.run('save=()=>{throw Error("disk")};');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
  r.run('save=realSave;GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);

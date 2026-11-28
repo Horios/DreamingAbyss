@@ -126,8 +126,8 @@ applyBalanceConfig=function(input,options){
  install(overrides);
  return result;
 };
-const resetBase=resetBalanceJSON;
-resetBalanceJSON=function(...args){const out=resetBase(...args);install({version:VERSION,entries:[]});return out;};
+// v0.229: no reset wrapper. Resetting re-applies the published balance through applyBalanceConfig above, which installs
+// its text overrides; clearing them afterwards dropped published overrides, and a refused reset still lost the custom ones.
 
 globalThis.EmberwildTextOverrides=Object.freeze({
  VERSION,MAX_ENTRIES,normalize,templateOf,refresh,

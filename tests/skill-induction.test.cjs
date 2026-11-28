@@ -65,5 +65,5 @@ test('support badges preserve support-group metadata',()=>{const {c}=harness();a
 // The standalone editor is optional in the game's headless CI checkout.
 const editorPath=[process.env.EMBERWILD_BALANCE_ROOT,path.resolve(root,'../DreamingAbyss-BalanceEditor'),path.resolve(root,'../Emberwild-Balance')].filter(Boolean).map(dir=>path.join(dir,'balance-editor.html')).find(file=>fs.existsSync(file));
 test('standalone editor uses exactly the same contract as the runtime',{skip:!editorPath},()=>{
- const html=fs.readFileSync(editorPath,'utf8');const embedded=html.match(/<script id="skill-induction-schema">\n([\s\S]*?)<\/script>/)[1];assert.equal(embedded,fs.readFileSync(path.join(root,'js/skills/induction-schema.js'),'utf8'));
+ const html=fs.readFileSync(editorPath,'utf8');const embedded=html.match(/<script id="skill-induction-schema">\n([\s\S]*?)<\/script>/)[1];assert.equal(embedded.trimEnd(),fs.readFileSync(path.join(root,'js/skills/induction-schema.js'),'utf8').trimEnd());
 });

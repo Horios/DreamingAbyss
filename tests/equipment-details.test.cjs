@@ -154,7 +154,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         for(const tier of [1,3,12])for(const powerTier of [1,7,10])for(const plus of [0,10,15])check(__equipmentTestGear({tier,powerTier,plus}));
         return {issues,checked};
       });
-      assert.deepEqual(out.issues,[]);assert.ok(out.checked>1500);t.diagnostic('Checked '+out.checked+' additive equipment source ledgers.');
+      /* v0.228: 1440 generated pieces, 27 fixed-effect pieces and 3 boss pieces per map (one map since v0.222). */assert.deepEqual(out.issues,[]);assert.ok(out.checked>=1470);t.diagnostic('Checked '+out.checked+' additive equipment source ledgers.');
     });
     // The v0.016 snapshots were taken at LV60; v0.161 removed character levels, so each published item is checked to
     // still add its own stats on a fixed-base character instead.
@@ -170,15 +170,16 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
       },regression);
       assert.deepEqual(issues,[]);
     });
-    await t.test('four starter gifts arrive by mail, retain reroll restrictions and include growth in one ledger',async()=>{
+    // v0.228: the starter gift mail was removed in v0.210; the prologue's goddess hands the starter weapon over directly.
+    await t.test('four starter gifts are handed over, retain reroll restrictions and include growth in one ledger',async()=>{
       const out=await r.page.evaluate(async()=>{
         const issues=[];let checked=0,gift;
         // Real play chooses a save slot before creating a character; the title screen refuses unslotted saves.
         await EmberwildOffline.settle(undefined,false);selectSaveSlot(1);closeModal();
         for(let job=0;job<4;job++){
           await EmberwildOffline.settle(undefined,false);closeModal();start(job);closeModal();clearInterval(timer);await EmberwildOffline.settle(undefined,false);
-          const mail=party.mailbox.messages.find(m=>m.rewardKey.startsWith('starter-')&&!m.claimed);if(!mail){issues.push('missing gift '+job);continue;}
-          claimMailboxAttachments(mail.id);gift=state.bag.find(g=>g.starterPack);if(!gift){issues.push('missing weapon '+job);continue;}
+          if(!grantStarterPackDirect(job,__EMBERWILD_STARTER_PACK.rows(job))){issues.push('missing gift '+job);continue;}
+          gift=state.bag.find(g=>g.starterPack);if(!gift){issues.push('missing weapon '+job);continue;}
           checked++;if(equipmentBaseRating(gift)!=='—')issues.push('starter rating '+job);
           const before=JSON.stringify(gift);rerollEquipmentPowerTier(gift.id);reroll(gift.id);if(JSON.stringify(gift)!==before)issues.push('reroll restriction '+job);
           equipSharedGear(gift.id,memberKey(state),0);
@@ -249,7 +250,7 @@ test('Equipment ratings, source contributions and existing equipment flows',asyn
         const random=Math.random,ask=window.confirm;Math.random=()=>0;window.confirm=()=>true;for(let i=0;i<5;i++)enhance(next.id);Math.random=random;window.confirm=ask;
         const enhanced=next.plus,baseRating=equipmentBaseRating(next);
         h.consumables.power_tier_reroll=1;rerollEquipmentPowerTier(next.id);
-        const rerolled=h.consumables.power_tier_reroll===0&&next.plus===11&&next.affix[1].type===15;
+        /* v0.204 stacks drop used-up items */const rerolled=(h.consumables.power_tier_reroll||0)===0&&next.plus===11&&next.affix[1].type===15;
         const saveResult=save(),packed=structuredClone(packParty()),beforeLoad=stats(h),gearJSON=JSON.stringify(next),summary=equipmentTotalSummaryText(next);
         loadParty(packed);
         const loaded=state.bag.find(x=>x.id===next.id);
