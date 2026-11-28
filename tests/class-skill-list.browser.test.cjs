@@ -8,7 +8,7 @@ for(const [label,width] of [['desktop',1280],['phone',390]])test('class skill li
  try{
   await page.setViewportSize({width,height:860});
   await page.click('.save-slot-select');await page.waitForFunction(()=>typeof start==='function');
-  await page.evaluate(()=>{start(0);party.tutorials.auto=false;setClassMasteryLevel(10);syncParty();closeModal();setTab('skills');});
+  await page.evaluate(()=>{start(0);party.tutorials.auto=false;setClassMasteryLevel(10);syncParty();closeModal();setTab('skills');/* v0.225: the class list is the 職業成長 page */setSkillPage('growth');});
   assert.equal(await page.locator('.skill-tree, .skill-tree-node, svg.skill-tree-lines').count(),0,'no tree');
   const rows=page.locator('.class-skill-list [data-tree-node]');assert(await rows.count()>=5);
   const levels=await page.locator('.class-skill-list .skill-list-level').allInnerTexts();

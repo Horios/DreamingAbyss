@@ -9,7 +9,7 @@ test('editor controls edit, add, reorder and delete prologue lines; the game sho
   const page=editor.page;await openEditorSection(page,'prologue');
   // A built-in document from before the prologue has no such quest: the page says so and offers the default.
   if(await page.locator('#prologueSeed').count()){assert.match(await page.locator('#app').innerText(),/沒有序章任務/);await page.click('#prologueSeed');}
-  assert.equal(await page.locator('[data-pl-scene]').count(),0);assert.equal(await page.locator('.prologue-stage').count(),6);
+  /* v0.228: one scene (角色建立) and eight stages since v0.226 added charm and gem */assert.equal(await page.locator('[data-pl-scene]').count(),1);assert.equal(await page.locator('.prologue-stage').count(),8);
   const list=()=>page.locator('[data-stage="creation"] .prologue-lines').first(),last=()=>list().locator('.prologue-line').last();
   await list().locator('.prologue-line textarea').first().fill('平衡器改寫的開場。');await list().locator('.prologue-line textarea').first().dispatchEvent('change');
   const before=await list().locator('.prologue-line').count();
@@ -19,8 +19,8 @@ test('editor controls edit, add, reorder and delete prologue lines; the game sho
   const removed=await list().locator('.prologue-line textarea').nth(1).inputValue();
   await list().locator('.prologue-line').nth(1).locator('button:has-text("刪除")').click();assert.equal(await list().locator('.prologue-line').count(),before);
   assert.equal(await page.locator('[data-stage="creation"] .prologue-event').innerText(),'系統事件：角色命名（固定）');
-  assert.equal(await page.locator('[data-stage="practice"] .prologue-event').innerText(),'系統事件：首次探索戰鬥（贏得一場戰鬥）（固定）');
-  assert.equal(await page.locator('[data-pl*="action"], [data-pl*="next"], [data-pl*="hint"]').count(),0,'system bindings have no control');
+  /* v0.228: the practice stage has no system action any more */assert.equal(await page.locator('[data-stage="practice"] .prologue-event').count(),0);
+  /* Hints are editable text in the editor; the bound action and the next stage are not. */assert.equal(await page.locator('[data-pl*="action"], [data-pl*="next"]').count(),0,'system bindings have no control');
   const option=page.locator('[data-stage="calling"] .prologue-option-edit input').first();await option.fill('劍士');await option.dispatchEvent('change');
   const task=page.locator('[data-stage="gift"] textarea[data-pl*="description"]');await task.fill('打開背包，把武器穿上。');await task.dispatchEvent('change');
   assert.match(await page.locator('.prologue-preview').innerText(),/平衡器改寫的開場。[\s\S]*新增的最後一句。[\s\S]*〔系統事件〕角色命名[\s\S]*〔系統事件〕選擇初始職業/,'the preview lists lines and system events in play order');
