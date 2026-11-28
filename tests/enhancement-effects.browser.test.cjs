@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
-async function setup(){const g=await openRuntime(root);await g.page.evaluate(()=>{selectSaveSlot(1);start(1);closeModal();clearInterval(timer);globalThis.fxGear=state.bag.find(g=>!EmberwildTokens.isToken(g)).id;state.ore=100000;state.dust=100000;state.materials['以太鍛鐵']=100000;Math.random=()=>0;openForge(fxGear);save();});return g;}
+async function setup(){const g=await openRuntime(root);await g.page.evaluate(()=>{selectSaveSlot(1);start(1);closeModal();clearInterval(timer);/* v0.228: start() leaves the bag empty */if(!state.bag.some(g=>!EmberwildTokens.isToken(g)))addGear(gear(1,0,0,1));globalThis.fxGear=state.bag.find(g=>!EmberwildTokens.isToken(g)).id;state.ore=100000;state.dust=100000;state.materials['以太鍛鐵']=100000;Math.random=()=>0;openForge(fxGear);save();});return g;}
 async function checkResult(p,success){
  const n=p.locator('.forge-enhance-layer');assert.equal(await n.innerText(),success?'強化成功！':'失敗 ...');
  const style=await n.evaluate(n=>{const s=getComputedStyle(n);return {color:s.color,weight:s.fontWeight,pointer:s.pointerEvents};});

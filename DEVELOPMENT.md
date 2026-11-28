@@ -1721,3 +1721,6 @@ v0.211～v0.214 是手動觸發部署，沒有通過 CI；v0.215 合併後 CI �
 - 拆分夥伴名稱（`EmberwildCompanionSkills.migrate`）時，複製的核心、輔助技能與被動也會在 `skillSystem.definitions` 加入對應定義（沿用原技能的計時與條件，改為新夥伴與新位置）。之前只加在職業技能清單，平衡資料輸出時少了這些定義。
 - 修正：文字覆寫的平衡重設包裝（`text-overrides.js`）在重設後一律清空文字覆寫，重設被拒絕時也會清掉自訂文字、成功時會清掉正式版資料帶的文字覆寫。改為不包裝，由重設時重新套用的平衡資料決定。
 - 測試配合目前資料：`equipment-details`（地圖數量、新手武器改由序章交付、用完道具不留 0）、`team-runtime` 與 `expedition-stop-dispose`（分解鍛鐵為強度階級 ÷ 2，測試裝備改為 2 階）、`realtime-stacking`（用完道具不留 0）、`starter-mail-items`（光輝碎塊屬稀有素材，測試一併調高其堆疊上限，否則 1e9 個會建立上百萬疊而逾時）、`skill-induction`（內嵌模組比對忽略結尾換行）。
+- 瀏覽器測試（`*.browser.test.cjs`）配合目前資料：新遊戲不再有裝備（需要時測試先加入）、v0.225 技能頁分頁（職業技能在「職業成長」）、v0.226 戰士開局技能為重擊（`class0-initial2`）、序章 8 階段與可編輯提示、格子背包不列出穿戴中裝備、穿到空欄位不跳換裝比較、每日／支線任務目標預設素材、只剩一張地圖與兩位夥伴、`gearLegendary` 掉落類型已移除。
+  - `balance-publisher` 從本專案的 `main` 分支讀正式版資料（或 `EMBERWILD_MAIN_BALANCE`）；`balance-published-source` 的正式版程式改由 `EMBERWILD_MAIN_ROOT`、`../Emberwild-main` 或 `../DreamingAbyss-main` 提供，都沒有時跳過。
+- 平衡器修正（`Horios/DreamingAbyss-BalanceEditor`）：夥伴技能頁的修改（威力、共用效果、命中附加狀態等）在切換頁面或匯出後遺失。`skill-row-sync` 呼叫的 `__EMBERWILD_SKILL_ROW_SYNC.writeRow` 從未實作，且重建職業技能清單時換掉了頁面正在編輯的物件。
