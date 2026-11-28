@@ -26,7 +26,7 @@
     return true;
   };
   globalThis.itemDisplayOptionsView=function(){
-    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">統一套用於背包、商店、信箱、強化、製作與生活技能等道具清單。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
+    return `<section class="panel item-display-options"><h2>道具顯示</h2><p class="small">套用於商店、信箱、強化與製作等道具清單。背包固定使用圖示格子。</p><div class="item-display-choices" role="group" aria-label="道具顯示方式">${displayModes.map(mode=>`<button type="button" class="item-display-choice" data-item-display-choice="${mode.id}" aria-pressed="${displayMode===mode.id}" onclick="setItemDisplayMode('${mode.id}')"><strong>${mode.name}</strong><span>${mode.description}</span><span class="item-display-choice-state">${displayMode===mode.id?'使用中':'選擇方式'}</span></button>`).join('')}</div></section>`;
   };
   addEventListener('storage',event=>{
     if(event.key!==displayStorageKey&&event.key!==null)return;
@@ -46,7 +46,7 @@
   function rawName(kind,key){
     const virtual=virtualItem(kind,key);if(virtual)return virtual.name;
     if(kind==='gem')return GEMS[Number(key)]?.name||key;
-    if(kind==='item'&&key.startsWith('companion-ticket-'))return (exportableBalance().companions?.find(p=>p.id===Number(key.slice(17)))?.name||'夥伴')+'招募券';
+    if(kind==='item'&&key.startsWith('companion-ticket-'))return '夥伴招募券 - '+(exportableBalance().companions?.find(p=>p.id===Number(key.slice(17)))?.name||'夥伴');
     if(kind==='equipment'){
       const ref=globalThis.EmberwildMonsterDesign?.equipmentRef(key,exportableBalance());
       if(ref?.form)return ref.form.name;
@@ -60,7 +60,7 @@
     if(kind==='equipment'&&g?.slot===0)glyph=({staff:'wand-sparkles',holyStaff:'wand-sparkles',bow:'bow-arrow',crossbow:'crosshair',axe:'axe',hammer:'hammer',grimoire:'book-open'}[g.weaponType]||glyph);
     if(kind==='item')glyph=key==='level_scroll'||key.startsWith('companion-ticket-')||item?.type==='timedBoost'?'ticket':['healPotion','imbue','ward','elementTonic'].includes(item?.type)?'flask-round':item?.type==='gearTierReroll'?'sparkles':glyph;
     const virtual=virtualItem(kind,key);if(virtual)glyph=virtual.glyph||glyph;
-    if(kind==='material')glyph=({'鍛鐵':'anvil','粉塵':'sparkles','以太鍛鐵':'anvil','光輝碎塊':'sparkles','紅色草':'leaf','紅色草泥':'flask-conical','清水':'droplet','藥水瓶':'flask-round','小蟲':'bug'})[key]||glyph;
+    if(kind==='material')glyph=({'鍛鐵':'anvil','粉塵':'sparkles','以太鍛鐵':'anvil','光輝碎塊':'sparkles',})[key]||glyph;
     const svg=globalThis.__EMBERWILD_INVENTORY_ICON?.(kind,key,'lucide:'+glyph,{size:32})||globalThis.__EMBERWILD_SKILL_ICONS?.svgFor('lucide:'+glyph,[],{size:32})||fallback;
     return globalThis.__EMBERWILD_GEAR_SKILL_ICON?.(g,svg)||svg;
   }
@@ -74,13 +74,15 @@
     key=String(key);const g=options.gear;
     if(g)({kind,key}=gearIdentity(g));
     // A shop rule may give its offer a custom display name (商店顯示名稱).
-    const n=options.displayName||name(kind,key,g),label=n+(options.count!==undefined?' ×'+options.count:'');
+    // v0.206: an unidentified item shows its slot only (neutral frame, darkened slot icon with a question mark).
+    const unknown=!!g?.unidentified;
+    const n=unknown?unidentifiedGearName(g):options.displayName||name(kind,key,g),label=n+(options.count!==undefined?' ×'+options.count:'');
     const context=options.context||(options.mailId?'mail':'reference'),quantity=options.detailQuantity??options.count;
     const data=`data-item-kind="${attr(kind)}" data-item-key="${attr(key)}" data-item-context="${attr(context)}"${g?.id?` data-item-gear="${attr(g.id)}"`:''}${options.preview?` data-item-preview="${attr(JSON.stringify(options.preview))}"`:''}${options.mailId?` data-item-mail="${options.mailId}" data-item-index="${options.mailIndex}"`:''}${options.extra?` data-item-extra="${attr(options.extra)}"`:''}${options.displayName?` data-item-display-name="${attr(options.displayName)}"`:''}${quantity!==undefined?` data-item-quantity="${attr(quantity)}"`:''}${options.detailLabel?` data-item-quantity-label="${attr(options.detailLabel)}"`:''}${options.price!==undefined?` data-item-price="${attr(options.price)}"`:''}${options.priceLabel?` data-item-price-label="${attr(options.priceLabel)}"`:''}${options.shopType?` data-item-shop-type="${attr(options.shopType)}"`:''}${options.shopId!==undefined?` data-item-shop-id="${attr(options.shopId)}"`:''}${options.sold?` data-item-sold="true"`:''}${options.soldLabel?` data-item-sold-label="${attr(options.soldLabel)}"`:''}`;
     const token=globalThis.EmberwildTokens?.isToken(g),wearer=g&&typeof gearWearer==='function'?gearWearer(g.id):null;
-    const content=`<span class="item-slot-art" aria-hidden="true">${icon(kind,key,g)}</span><span class="item-slot-name">${attr(n)}${g&&!token?` <span class="gear-tier-chip gear-tier-${Number.isInteger(g.powerTier)?g.powerTier:0}">${Number.isInteger(g.powerTier)?'T'+g.powerTier:'T—'}</span>`:''}${token?` <span class="tag token-job-tag">${attr(companionTokenJobLabel(g))}</span>${wearer?` <span class="token-wearer">${attr(characterName(wearer))} · 已裝備</span>`:''}`:''}</span>${options.count!==undefined?`<span class="item-slot-count" aria-label="數量 ${attr(options.count)}">×${attr(options.count)}</span>`:''}${g?.plus?`<span class="item-slot-plus" aria-hidden="true">+${g.plus}</span>`:''}${g&&typeof gearWearer==='function'&&gearWearer(g.id)?'<span class="item-slot-worn" aria-label="已穿戴"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg></span>':''}`;
+    const content=unknown?`<span class="item-slot-art gear-unidentified-art" aria-hidden="true">${icon(kind,key,{slot:g.unidentified.slot??g.slot})}<span class="gear-unidentified-mark">?</span></span><span class="item-slot-name">${attr(n)} <span class="tag gear-unidentified-tag">未鑑定</span></span>`:`<span class="item-slot-art" aria-hidden="true">${icon(kind,key,g)}</span><span class="item-slot-name">${attr(n)}${g&&!token?` <span class="gear-tier-chip gear-tier-${Number.isInteger(g.powerTier)?g.powerTier:0}">${Number.isInteger(g.powerTier)?'T'+g.powerTier:'T—'}</span>`:''}${token?` <span class="tag token-job-tag">${attr(companionTokenJobLabel(g))}</span>${wearer?` <span class="token-wearer">${attr(characterName(wearer))} · 已裝備</span>`:''}`:''}</span>${options.count!==undefined?`<span class="item-slot-count" aria-label="數量 ${attr(options.count)}">×${attr(options.count)}</span>`:''}${g?.plus?`<span class="item-slot-plus" aria-hidden="true">+${g.plus}</span>`:''}${g&&typeof gearWearer==='function'&&gearWearer(g.id)?'<span class="item-slot-worn" aria-label="已穿戴"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg></span>':''}`;
     const tag=!options.contentOnly&&(options.onclick||context==='inventory')?'button':'span';
-    const slot=`<${tag} ${tag==='button'?'type="button" ':''}class="item-slot ${options.className||''}${options.selected?' selected':''}${g?' item-quality-'+gearQualityRank(g):''}" ${data} aria-label="${attr(label)}"${tag==='button'?` onclick="${options.onclick||'openItemSlotDetails(this)'}"`:''}${options.selected?' aria-pressed="true"':''}>${content}</${tag}>`;
+    const slot=`<${tag} ${tag==='button'?'type="button" ':''}class="item-slot ${options.className||''}${options.selected?' selected':''}${unknown?' item-unidentified':g?' item-quality-'+gearQualityRank(g):''}" ${data} aria-label="${attr(label)}"${tag==='button'?` onclick="${options.onclick||'openItemSlotDetails(this)'}"`:''}${options.selected?' aria-pressed="true"':''}>${content}</${tag}>`;
     return slot+(context==='shop'&&!options.contentOnly?shopInlineControls(options):'');
   };
   function shopInlineControls(o){
@@ -88,12 +90,11 @@
     if(o.lockedReason)return `<span class="shop-inline-controls"><span class="small">${price.toLocaleString()} 金幣 · ${attr(o.lockedReason)}</span></span>`;
     let action='';
     if(o.shopType==='equipment')action=`<input type="number" min="1" max="100" step="1" value="1" aria-label="購買份數"><button onclick="buyEquipmentShopOffer(${id},Number(this.previousElementSibling.value))" ${off}>購買</button>`;
-    else if(o.shopType==='life')action=`<button onclick="buyLifeMaterial(${id},1)" ${off}>購買 1 份</button><button onclick="buyLifeMaterial(${id},10)" ${o.sold||state.gold<(globalThis.lifeMaterialPurchasePrice?.(o.shopId,10)??price*10)?'disabled':''}>購買 10 份</button>`;
     else if(['market','fixed'].includes(o.shopType))action=`<button onclick="${o.shopType==='market'?'buyMarketOffer':'buyFixedShopOffer'}(${id})" ${off}>${o.sold?attr(o.soldLabel||'已售完'):'購買'}</button>`;
     return `<span class="shop-inline-controls"><span class="small">${attr(o.detailLabel||'商品數量')} ${attr(o.detailQuantity??o.count??1)} · ${price.toLocaleString()} 金幣</span><span class="shop-inline-actions">${action}</span></span>`;
   }
   globalThis.gearSlotHTML=(g,options={})=>itemSlotHTML('equipment','',{...options,gear:g});
-  globalThis.itemCostHTML=function(g){const c=upgradeMaterials(g);return '<span class="item-cost-line">'+[['鍛鐵',c.ore],['粉塵',c.dust],['以太鍛鐵',c.ether]].filter(([,n])=>n>0).map(([key,count])=>itemSlotHTML('material',key,{count,detailLabel:'所需數量'})).join(' ＋ ')+'</span>';};
+  globalThis.itemCostHTML=function(g){const c=upgradeMaterials(g),x=c.exclusive;return '<span class="item-cost-line">'+[['鍛鐵',c.ore],['粉塵',c.dust],['以太鍛鐵',c.ether],...(x?[[x.material,x.quantity]]:[])].filter(([,n])=>n>0).map(([key,count])=>itemSlotHTML('material',key,{count,detailLabel:'所需數量'})).join(' ＋ ')+'</span>'+(x?`<span class="small exclusive-enhance-note">專屬素材「${attr(x.material)}」本次需要 ${x.quantity}，持有 ${state.materials[x.material]||0}；來源：${attr(globalThis.monsterCatalogEntry?.(x.monster)?.name||x.monster)}</span>`:'');};
   globalThis.mailAttachmentSlot=function(mailId,index){
     const a=party.mailbox.messages.find(m=>m.id===mailId)?.attachments[index];if(!a)return '';
     const id=mailIdentity(a);
@@ -106,7 +107,7 @@
     return `<span class="mail-title-icon" aria-hidden="true">${icon(id.kind,id.key,a.gear)}</span>`;
   };
   // Shared gear detail body (tier, wearers/level, total stats, attribute sources). Also used by the offline receipt.
-  function gearInfoDetail(g){return `<p>T${g.powerTier||1} · ${g.affix?.length?'已附詞綴':'尚未洗鍊／無隨機詞綴'}${g.equipmentSource==='shop'?' · 固定商店基底':''}</p><p>${globalThis.EmberwildTokens?.isToken(g)?esc(gearDesc(g)):esc(gearWearableJobsText(g)+' · LV '+gearRequiredLevel(g))}</p><p class="equipment-total-summary">${globalThis.equipmentTotalSummaryHTML?.(g)||esc(gearDesc(g))}</p>${globalThis.equipmentAttributeDetailsHTML?.(g)||''}${g.starterPack?'<p>可強化；不可洗鍊詞綴或重鑄基底。</p>':''}`;}
+  function gearInfoDetail(g){return `<p>T${g.powerTier||1} · ${g.affix?.length?'已附詞綴':'尚未洗鍊／無隨機詞綴'}${g.equipmentSource==='shop'?' · 固定商店基底':''}</p><p>${globalThis.EmberwildTokens?.isToken(g)?esc(gearDesc(g)):esc(gearWearableJobsText(g)+' · 裝等 '+gearRequiredLevel(g))}</p><p class="equipment-total-summary">${globalThis.equipmentTotalSummaryHTML?.(g)||esc(gearDesc(g))}</p>${globalThis.equipmentAttributeDetailsHTML?.(g)||''}${g.starterPack?'<p>可強化；不可洗鍊詞綴或重鑄基底。</p>':''}`;}
   globalThis.gearInfoDetailHTML=gearInfoDetail;
   // Full read-only detail for one gear object (tokens add description, job tag and ability), as in the backpack.
   globalThis.gearInfoHTML=g=>info({kind:'equipment',key:'',g,context:'preview'});
@@ -115,7 +116,7 @@
     const {kind,key,g}=ref,item=definition(kind,key),description=globalThis.EmberwildTokens?.isToken(g)?companionTokenDescription(g):globalThis.__EMBERWILD_ITEM_DESCRIPTION?.(kind,key)||'';
     let detail='';
     if(g)detail=gearInfoDetail(g);
-    else if(kind==='item'&&key.startsWith('companion-ticket-'))detail='<p>領取後存入背包，使用可解鎖指定夥伴；重複取得依原規則轉換。</p>';
+    else if(kind==='item'&&key.startsWith('companion-ticket-')){const id=Number(key.slice(17)),p=exportableBalance().companions?.find(p=>p.id===id);detail=(p?`<p class="ticket-companion"><b>${esc(p.name)}</b> · ${esc(CLASSES[p.job]?.name||'')}</p><p>${esc(p.description||'')}</p>`:'')+`<p>使用後${esc(p?.name||'夥伴')}直接加入隊伍；已在隊伍中時轉換為金幣。</p>`;}
     else if(item&&key!=='level_scroll')detail='<p>'+esc(supplyDetail(item))+'</p>';
     else if(kind==='gem'&&!description)detail='<p>'+esc(GEMS[Number(key)]?.desc||'技能鑲嵌寶石')+'</p>';
     if(ref.context==='inventory'){
@@ -137,9 +138,9 @@
       if(!findGear(g.id))return '';
       if(globalThis.EmberwildTokens?.isToken(g)){
         const h=gearWearer(g.id),list=party.members.filter(x=>EmberwildTokens.canEquip(g,x));
-        return `<div class="actions"><select id="item-detail-token-target" aria-label="信物穿戴對象">${list.map(x=>`<option value="${memberKey(x)}" ${h===x?'selected':''}>${esc(characterName(x))}</option>`).join('')}</select><button onclick="itemDetailsAction(()=>equipCompanionToken('${g.id}',Number(document.getElementById('item-detail-token-target').value)))" ${list.length?'':'disabled'}>穿戴</button>${h?`<button onclick="itemDetailsAction(()=>unequipCompanionToken(${memberKey(h)}))">卸下</button>`:''}<button onclick="closeItemDetails();openForge('${g.id}')">強化</button><button onclick="itemDetailsAction(()=>toggleGearLock('${g.id}'))">${g.locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="closeItemDetails();salvage('${g.id}')" ${h||g.locked?'disabled':''}>分解</button></div>`;
+        return `<div class="actions"><select id="item-detail-token-target" aria-label="信物穿戴對象">${list.map(x=>`<option value="${memberKey(x)}" ${h===x?'selected':''}>${esc(characterName(x))}</option>`).join('')}</select><button onclick="itemDetailsAction(()=>equipCompanionToken('${g.id}',Number(document.getElementById('item-detail-token-target').value)))" ${list.length?'':'disabled'}>穿戴</button>${h?`<button onclick="itemDetailsAction(()=>unequipCompanionToken(${memberKey(h)}))">卸下</button>`:''}<button onclick="closeItemDetails();moveToWorkshop('${g.id}')">移到工坊</button><button onclick="itemDetailsAction(()=>toggleGearLock('${g.id}'))">${g.locked?'解除鎖定':'鎖定'}</button><button class="danger" onclick="closeItemDetails();salvage('${g.id}')" ${h||g.locked?'disabled':''}>分解</button></div>`;
       }
-      return `<button onclick="closeItemDetails();openForge('${g.id}')">前往強化／洗鍊</button>`;
+      return `<button onclick="closeItemDetails();moveToWorkshop('${g.id}')">移到工坊</button>`;
     }
     const virtual=virtualItem(kind,key);if(virtual)return virtual.actions?.(ref)||'';
     const k=attr(JSON.stringify(key)),hero=memberKey(pageHero('equipment')||playerHero());
@@ -149,6 +150,8 @@
     if(kind==='item'&&definition(kind,key))return `<div class="actions"><button onclick="closeItemDetails();useInventoryItem(${k},${hero})">${isHealPotion(definition(kind,key))?'自動喝水設定':key==='power_tier_reroll'?'前往強化':'使用'}</button><input id="item-detail-quantity" type="number" min="1" value="1" max="${__EMBERWILD_INVENTORY_STOCK.count(key)}" aria-label="賣出數量"><button onclick="itemDetailsAction(()=>sellInventoryItem(${k},document.getElementById('item-detail-quantity').value))">賣出</button><button onclick="itemDetailsAction(()=>sellInventoryItem(${k},__EMBERWILD_INVENTORY_STOCK.count(${k})))">全部賣出</button></div>`;
     return '';
   }
+  // v0.211 grid bag: the bag's detail pane reuses the same icon, information and actions as the item dialog.
+  globalThis.__EMBERWILD_ITEM_PRESENTATION={icon,info,controls,name};
   function dialog(){let d=document.getElementById('item-detail-dialog');if(!d){d=document.createElement('dialog');d.id='item-detail-dialog';document.body.appendChild(d);}return d;}
   function renderDetail(){const d=dialog();if(selection)d.innerHTML=`<div class="item-detail-top"><span class="item-detail-art">${icon(selection.kind,selection.key,selection.g)}</span><button onclick="closeItemDetails()" aria-label="關閉道具詳細資料">關閉</button></div>${info(selection)}${controls(selection)}`;}
   globalThis.openItemSlotDetails=function(node){const ref=refFromNode(node);if(ref.context!=='inventory'||!ref.kind)return false;selection=ref;hideTooltip();renderDetail();const d=dialog();if(!d.open)d.showModal();};

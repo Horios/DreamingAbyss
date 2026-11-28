@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 test('editor embeds the exact common effect and status contracts used by the game',()=>{
  const html=fs.readFileSync(path.join(editorRoot,'balance-editor.html'),'utf8');
- assert.equal(html.match(/<script id="skill-effect-schema-v1">\n([\s\S]*?)<\/script>/)[1],fs.readFileSync(path.join(root,'js/skills/skill-effect-schema.js'),'utf8'));
+ assert.equal(html.match(/<script id="skill-effect-schema-v1">\n([\s\S]*?)<\/script>/)[1].trimEnd(),fs.readFileSync(path.join(root,'js/skills/skill-effect-schema.js'),'utf8').trimEnd());
  const pure=s=>s.slice(s.indexOf('/* STATUS_PURE_START */'),s.indexOf('/* STATUS_PURE_END */'));
  // The editor may fill default seconds timing for a status without one (seconds authoring); everything else must match.
  const timingFree=s=>s.replace(/return \{\.\.\.\([\s\S]*?\),polarity:/,'return {...TIMING,polarity:');

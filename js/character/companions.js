@@ -69,13 +69,13 @@
     }return out;
   }
   globalThis.companionSkillDisabled=skillDisabled;
-  function passivesFor(h){return allPassivesFor(h).filter(d=>(h===party?.members[0]||d.partnerId===h.companionId)&&globalThis.__EMBERWILD_SKILLS?.passiveEnabled(h,d.id)!==false&&!globalThis.__EMBERWILD_SKILLS?.byId(d.id)?.disabled&&h.lv>=d.requiredLevel&&!skillDisabled(h,'passive',d.id));}
+  function passivesFor(h){return allPassivesFor(h).filter(d=>(h===party?.members[0]||d.partnerId===h.companionId)&&globalThis.__EMBERWILD_SKILLS?.passiveEnabled(h,d.id)!==false&&!globalThis.__EMBERWILD_SKILLS?.byId(d.id)?.disabled&&masteryRequirementMet(h,d.requiredLevel)&&!skillDisabled(h,'passive',d.id));}
   function passiveEffectsFor(h){
     const out=passivesFor(h).filter(d=>d.target==='self').flatMap(d=>d.effects);
     if(party?.active.includes(memberKey(h)))for(const owner of heroes().filter(x=>x.hp>0))out.push(...passivesFor(owner).filter(d=>d.target==='allies').flatMap(d=>d.effects));
     return out;
   }
-  globalThis.companionPassiveStatEffects=h=>passiveEffectsFor(h).filter(e=>!Passive.combatKeys.includes(e.key));
+  globalThis.companionPassiveStatEffects=h=>passiveEffectsFor(h).filter(e=>!Passive.combatKeys.includes(e.key)&&e.key!=='regenPerSecond');
   globalThis.scaleHeroHealing=function(h,amount){return Math.max(0,amount*(1+passiveEffectsFor(h).filter(e=>e.key==='healingPct').reduce((n,e)=>n+e.value,0)/100));};
   const passiveEffectBase=effectTotal;
   effectTotal=function(target,kind){
@@ -121,12 +121,11 @@
   function applyPlan(h,{fullHealth=false}={}){
     const plan=companionPlan(h);if(!plan)return;
     h.name=plan.name;
-    h.advanced=h.lv>=Math.round(GS('progression.advance.level',15));
     delete h.stats;delete h.ap;delete h.sp;
     delete h.mastery;
     syncHeroSkillArrays(h);
-    h.skills=h.skills.map((_,i)=>Number(plan.core.includes(i)&&!!CLASSES[h.job].skills[i]&&h.lv>=CLASSES[h.job].skills[i][2]&&skillAllowedForPartner(h,CLASSES[h.job].skills[i][6])));
-    h.supportLevels=SUPPORT[h.job].map((sk,i)=>Number(plan.support.includes(i)&&h.lv>=sk.level&&skillAllowedForPartner(h,sk)));
+    h.skills=h.skills.map((_,i)=>Number(plan.core.includes(i)&&!!CLASSES[h.job].skills[i]&&masteryRequirementMet(h,CLASSES[h.job].skills[i][2])&&skillAllowedForPartner(h,CLASSES[h.job].skills[i][6])));
+    h.supportLevels=SUPPORT[h.job].map((sk,i)=>Number(plan.support.includes(i)&&masteryRequirementMet(h,sk.level)&&skillAllowedForPartner(h,sk)));
     h.active=plan.active.filter(i=>h.skills[i]&&!skillDisabled(h,'core',i)&&CLASSES[h.job].skills[i]?.[1]==='active').slice(0,2);
     while(h.active.length<2)h.active.push(null);
     h.procSlots=plan.proc.filter(i=>h.skills[i]&&!skillDisabled(h,'core',i)&&CLASSES[h.job].skills[i]?.[1]==='proc').slice(0,PROC_SLOT_COUNT);
@@ -137,54 +136,113 @@
     h.sockets.forEach((gem,i)=>{if(gem!==null&&!h.skills[i]){h.gems[gem]++;h.sockets[i]=null;}});
     if(fullHealth)h.hp=stats(h).hp;else h.hp=Math.min(h.hp,stats(h).hp);
   }
-  // The first member is the player. Companions have no independent EXP pool.
+  // v0.161: companions have no level. Each companion keeps its own class mastery (companionMastery.xp), earned by its own
+  // skill casts and weapon attacks like the protagonist's; it unlocks the companion's skills, passives and second class.
+  const appliedMastery=new WeakMap();
+  function companionMasteryGain(h,amount){
+    if(!h||h.companionId===undefined)return 0;
+    const add=Math.max(0,Math.floor(Number(amount)||0));if(!add)return 0;
+    h.companionMastery??={xp:0};const before=classMasteryLevel(h),room=Math.max(0,__EMBERWILD_MASTERY.masteryMaxXp()-h.companionMastery.xp),gain=Math.min(add,room);
+    h.companionMastery.xp+=gain;const after=classMasteryLevel(h);
+    for(const fn of globalThis.__EMBERWILD_MASTERY_LISTENERS||[])fn(h,gain,before,after);
+    if(after>before){note(`${characterName(h)}・${CLASSES[h.job]?.name||''}精通提升至 Lv${after}`);syncCompanionLevels();}
+    return gain;
+  }
+  globalThis.__EMBERWILD_COMPANION_MASTERY_GAIN=companionMasteryGain;
+  // One participation XP per settled encounter, including defeats and fallen allies.
+  // The encounter array is shared by online/offline settlement; repeated finish calls are harmless.
+  const settledMasteryEncounters=new WeakSet();
+  globalThis.__EMBERWILD_COMPANION_BATTLE_MASTERY=function(result){
+    if(!party||!foes.length||!['victory','wipe'].includes(result)||settledMasteryEncounters.has(foes))return;
+    settledMasteryEncounters.add(foes);
+    for(const h of heroes())if(h.companionId!==undefined)__EMBERWILD_MASTERY.gainMastery(h,null,1);
+  };
   function syncCompanionLevels({fullHealth=false}={}){
     const player=party?.members[0];if(!player)return;
     hideCompanions(party);
     for(const h of party.members){
       if(h===player)continue;
       const fixedPlan=companionPlan(h);if(fixedPlan){h.name=fixedPlan.name;party.companionNames[h.companionId]=fixedPlan.name;}
-      delete h.mastery;
-      const previous=h.lv,changed=previous!==player.lv,wasDead=h.hp<=0;
-      h.lv=player.lv;h.xp=0;h.won=player.won;
-      if(!changed)continue;
-      if(companionPlan(h))applyPlan(h,{fullHealth:fullHealth&&h.lv>previous});
+      delete h.mastery;delete h.lv;delete h.xp;delete h.xpFraction;
+      if(h.companionId!==undefined)h.companionMastery??={xp:0};
+      h.won=player.won;
+      const level=classMasteryLevel(h),wasDead=h.hp<=0;
+      if(appliedMastery.get(h)===level)continue;
+      appliedMastery.set(h,level);
+      if(companionPlan(h))applyPlan(h,{fullHealth});
       else{
         // Retain the builds of old saves that predate fixed companion plans.
         delete h.stats;delete h.ap;delete h.sp;
-        h.advanced=h.advanced&&h.lv>=Math.round(GS('progression.advance.level',15));
         h.active=h.active.map(i=>i!==null&&h.skills[i]?i:null);
         h.procSlots=(h.procSlots||Array(PROC_SLOT_COUNT).fill(null)).map(i=>i!==null&&h.skills[i]?i:null);
         h.supportSlots=h.supportSlots.map(i=>i!==null&&h.supportLevels[i]?i:null);
-        h.hp=fullHealth&&h.lv>previous?stats(h).hp:Math.min(h.hp,stats(h).hp);
       }
-      // A previously higher-level companion keeps all gear and gems in storage.
-      h.equipped=h.equipped.map(id=>id&&h.bag.some(g=>g.id===id&&gearRequiredLevel(g)<=h.lv)?id:null);
       globalThis.__EMBERWILD_SKILLS?.refreshHero(h);
-    h.sockets.forEach((gem,i)=>{if(gem!==null&&!h.skills[i]){h.gems[gem]++;h.sockets[i]=null;}});
-      h.hp=wasDead?0:Math.min(h.hp,stats(h).hp);
+      h.sockets.forEach((gem,i)=>{if(gem!==null&&!h.skills[i]){h.gems[gem]++;h.sockets[i]=null;}});
+      h.hp=wasDead?0:fullHealth?stats(h).hp:Math.min(h.hp,stats(h).hp);
     }
   }
   const originalSyncParty=syncParty;
   syncParty=function(){originalSyncParty();syncCompanionLevels();};
-  window.recruitCompanion=function(id){
+  window.recruitCompanion=function(id,{persist=true}={}){
+    if(globalThis.__EMBERWILD_PROLOGUE?.running()&&!party.members.slice(1).some(h=>h.companionId===13||h.job===3)&&id!==13)return toast('請先招募新手牧師艾琳');
+    if(persist&&id===13&&globalThis.__EMBERWILD_PROLOGUE?.running()){
+      let h;const ok=globalThis.__EMBERWILD_STORY.transaction(()=>{h=recruitForStory(id,{persist:false});if(!h)throw Error('牧師未能加入');});
+      if(!ok)return false;render();toast('牧師艾琳已加入隊伍');return h;
+    }
     const plan=plans.find(p=>p.id===id);if(!party||!plan||plan.availability==='hidden'||!globalThis.companionUnlocked?.(id)||partyMember(id)||party.members.length>=513)return;
     ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureAccountQuests();ensureRoster(party);
     const full=party.active.length>=3;
     // During an encounter the new companion joins the lineup from the next encounter (battle configuration freezes the lineup).
     const deferRoster=!!globalThis.EmberwildBattleConfiguration?.pending();if(!deferRoster)resetEncounter();const h=initial(plan.job);h.companionId=id;
-    h.name=party.companionNames[id];h.lv=playerHero().lv;
-    h.won=party.cleared&&h.lv>=GS('progression.levelCaps.beforeClear',30);
+    h.name=party.companionNames[id];h.companionMastery={xp:0};
+    h.won=!!party.cleared;
     h.bag=[];h.equipped=Array(5).fill(null);h.tokenId=null;
     h.gold=0;h.ore=0;h.dust=0;h.gems=[0,0,0];h.materials={};h.potions=0;h.consumables={};
     party.members.push(h);party.companionProfiles[id]=copy(plan);applyPlan(h,{fullHealth:true});
     ensureAccountResources();ensureSharedGear();ensureSharedItems();ensureAccountQuests();
     if(party.enlisted.length<config.activeLimit){party.enlisted.push(id);if(party.active.length<3)party.active.push(id);}
-    syncParty();save();render();
-    if(full&&party.enlisted.includes(id))requestMemberReplacement(id);
-    toast(h.name+(party.enlisted.includes(id)?'已編入現役':'已加入名冊；現役夥伴已達上限'));return h;
+    syncParty();
+    if(persist){save();render();
+      if(full&&party.enlisted.includes(id))requestMemberReplacement(id);
+      toast(h.name+(party.enlisted.includes(id)?'已編入現役':'已加入名冊；現役夥伴已達上限'));}
+    return h;
   };
+  // Story stages own the save and rollback; do not persist a partial stage or render mid-transaction.
+  const recruitForStory=window.recruitCompanion;
+  globalThis.__EMBERWILD_RECRUIT_FOR_STORY=id=>recruitForStory(id,{persist:false});
   globalThis.acquireCompanion=id=>recruitCompanion(id);
+  // Prologue helper: a per-save profile cloned from a catalogue plan. It is not in the recruitment pool, uses no ticket or
+  // unlock, joins the roster without entering the lineup (the player does that in the team page), and is removed when the prologue ends.
+  const PROLOGUE_HELPER_ID=900000001;
+  function addPrologueHelper(templateId,name,HELPER=PROLOGUE_HELPER_ID){
+    if(!party)return null;const existing=partyMember(HELPER);if(existing)return existing;
+    // The template can be deleted from the catalogue later; any other companion of a different class than the player then stands in.
+    const base=plans.find(p=>p.id===templateId)||plans.find(p=>p.availability!=='hidden'&&p.job!==playerHero().job)||plans[0];if(!base||typeof name!=='string'||!name.trim()||party.members.length>=513)return null;
+    ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureAccountQuests();ensureRoster(party);resetEncounter();
+    const plan={...copy(base),id:HELPER,name:name.trim(),availability:'visible',unlockCondition:{type:'initial'}},h=initial(plan.job);
+    h.companionId=HELPER;h.name=plan.name;h.companionMastery={xp:0};h.won=false;
+    h.bag=[];h.equipped=Array(5).fill(null);h.tokenId=null;h.gold=0;h.ore=0;h.dust=0;h.gems=[0,0,0];h.materials={};h.potions=0;h.consumables={};
+    party.members.push(h);party.companionProfiles[HELPER]=plan;party.companionNames[HELPER]=plan.name;applyPlan(h,{fullHealth:true});
+    ensureAccountResources();ensureSharedGear();ensureSharedItems();ensureAccountQuests();
+    if(!party.enlisted.includes(HELPER))party.enlisted.push(HELPER);
+    syncParty();return h;
+  }
+  function removePrologueHelper(HELPER=PROLOGUE_HELPER_ID){
+    const h=party&&partyMember(HELPER);if(!h)return false;
+    resetEncounter();const playerKey=memberKey(party.members[0]);
+    party.active=party.active.filter(k=>k!==HELPER);if(!party.active.length)party.active=[playerKey];
+    party.enlisted=party.enlisted.filter(k=>k!==HELPER);if(!party.enlisted.includes(playerKey))party.enlisted.unshift(playerKey);
+    party.members=party.members.filter(x=>x!==h);delete party.companionProfiles[HELPER];delete party.companionNames[HELPER];
+    if(party.companionUnlocks?.unlocked)party.companionUnlocks.unlocked=party.companionUnlocks.unlocked.filter(id=>id!==HELPER);
+    if(party.selected===HELPER||!partyMember(party.selected)){party.selected=playerKey;state=party.members[0];}
+    for(const [page,key] of pageHeroSelection)if(key===HELPER)pageHeroSelection.delete(page);
+    ensureRoster(party);syncParty();return true;
+  }
+  globalThis.__EMBERWILD_PROLOGUE_HELPER={id:PROLOGUE_HELPER_ID,add:addPrologueHelper,remove:removePrologueHelper,member:()=>party?partyMember(PROLOGUE_HELPER_ID)||null:null};
+  // Story guests (chapter scenes): temporary allies with ids of their own, right after the prologue helper's.
+  const TEMP_ALLY_IDS=[900000002,900000003,900000004];
+  globalThis.__EMBERWILD_TEMP_ALLY={ids:TEMP_ALLY_IDS,add:(id,templateId,name)=>TEMP_ALLY_IDS.includes(id)?addPrologueHelper(templateId,name,id):null,remove:id=>TEMP_ALLY_IDS.includes(id)&&removePrologueHelper(id),member:id=>party&&TEMP_ALLY_IDS.includes(id)?partyMember(id)||null:null};
   function requestMemberReplacement(key){
     const incoming=partyMember(key);
     if(!party||!incoming||!isEnlisted(incoming)||party.active.includes(key)||party.active.length!==3)return;
@@ -219,24 +277,27 @@
     if(partyMember(key)!==party?.members[0])return;
     return originalConfirmRename(key);
   };
+  // v0.225: each owned companion is one collapsible entry; opening it shows abilities and skills together.
   const rosterDetails=new Map();
-  globalThis.rememberCompanionRosterDetail=function(key,kind,open){if(partyMember(key)&&['ability','skills'].includes(kind))rosterDetails.set(key+':'+kind,!!open);};
+  globalThis.rememberCompanionRosterDetail=function(key,open){if(partyMember(key))rosterDetails.set(key,!!open);};
   function memberRow(h,manage=false){
     const key=memberKey(h),plan=companionPlan(h),player=h===party.members[0];
-    const header=`<div><div class="member-identity"><b>${esc(characterName(h))}</b>${memberIdentityTags(h)}</div>${plan?`<p class="small">${esc(plan.description)}</p>`:''}</div><div class="roster-member-actions">${manage?`<button onclick="setPartnerEnlisted(${key},${!isEnlisted(h)})" ${party.active.includes(key)?'disabled':''}>${isEnlisted(h)?'移出現役':'編入現役'}</button>`:`<button onclick="toggleMember(${key})">${party.active.includes(key)?'移至後備':'加入上陣'}</button>`}${player?`<button onclick="requestRename(${key})">改名</button>`:''}</div>`;
-    const detail=(kind,title,view)=>`<details class="companion-roster-${kind}" ${rosterDetails.get(key+':'+kind)?'open':''} ontoggle="rememberCompanionRosterDetail(${key},'${kind}',this.open)"><summary>${title}</summary><div class="companion-roster-detail-content">${withHero(h,view)}</div></details>`;
-    return `<article class="roster-row ${player?'roster-player-row':''} ${manage?'roster-owned-row':''}" data-member-key="${key}">${manage?`<div class="roster-member-header">${header}</div>`:header}${manage&&!player?`<div class="companion-roster-details">${detail('ability','夥伴能力',companionCharacterView)}${detail('skills','夥伴技能',companionSkillsView)}</div>`:''}</article>`;
+    const progress=player?null:__EMBERWILD_MASTERY.masteryProgress(classMasteryXp(h));
+    const masteryText=progress?`<p class="small companion-mastery-progress">職業精通 Lv${progress.level} · ${progress.next?'經驗 '+progress.current+' / '+progress.next:'已達上限'}</p>`:'';
+    const actions=`<div class="roster-member-actions">${manage?`<button onclick="setPartnerEnlisted(${key},${!isEnlisted(h)})" ${party.active.includes(key)?'disabled':''}>${isEnlisted(h)?'移出現役':'編入現役'}</button>`:`<button onclick="toggleMember(${key})">${party.active.includes(key)?'移至後備':'加入上陣'}</button>`}${player?`<button onclick="requestRename(${key})">改名</button>`:''}</div>`;
+    const header=`<div><div class="member-identity"><b>${esc(characterName(h))}</b>${memberIdentityTags(h)}</div>${masteryText}${plan?`<p class="small">${esc(plan.description)}</p>`:''}</div>${actions}`;
+    if(!manage||player)return `<article class="roster-row ${player?'roster-player-row':''}" data-member-key="${key}">${header}</article>`;
+    const section=(kind,title,view)=>`<section class="companion-roster-${kind}"><h3>${title}</h3><div class="companion-roster-detail-content">${withHero(h,view)}</div></section>`;
+    return `<article class="roster-row roster-owned-row" data-member-key="${key}"><details class="companion-roster-entry" ${rosterDetails.get(key)?'open':''} ontoggle="rememberCompanionRosterDetail(${key},this.open)"><summary class="roster-member-header"><span class="companion-roster-chevron" aria-hidden="true"></span>${header}</summary><div class="companion-roster-details">${section('ability','夥伴能力',companionCharacterView)}${section('skills','夥伴技能',companionSkillsView)}</div></details></article>`;
   }
-  rosterView=function(){return heading('PARTY / 隊伍編成','隊伍編成',`<span class="tag">上陣 ${heroes().length} / 3 · 現役 ${enlistedHeroes().length} / ${config.activeLimit}</span>`)+`<section class="panel roster-page"><p class="small">所有夥伴等級與主角相同，不獨立獲得經驗；後備、名冊內與未取得夥伴也會同步主角等級。調整上陣會放棄目前遭遇。</p><div class="actions"><button onclick="setTab('partnerRoster')">管理夥伴名冊</button><button onclick="showCompanionRecruitment()">招募夥伴</button></div><div class="roster-list">${sortedEnlistedHeroes().map(h=>memberRow(h)).join('')}</div></section>`;};
+  rosterView=function(){return heading('PARTY / 隊伍編成','隊伍編成',`<span class="tag">上陣 ${heroes().length} / 3 · 現役 ${enlistedHeroes().length} / ${config.activeLimit}</span>`)+`<section class="panel roster-page"><p class="small">調整上陣會放棄目前遭遇。</p><div class="actions"><button onclick="setTab('partnerRoster')">管理夥伴名冊</button></div><div class="roster-list">${sortedEnlistedHeroes().map(h=>memberRow(h)).join('')}</div></section>`;};
   globalThis.partnerRosterView=function(){
     const companions=party.members.slice(1).filter(h=>companionPlan(h)?.availability!=='hidden').sort(compareMembers),enlisted=companions.filter(isEnlisted).length,limit=Math.max(0,config.activeLimit-Number(isEnlisted(party.members[0])));
-    return heading('PARTNER ROSTER / 已取得夥伴','夥伴名冊',`<span class="tag">持有 ${companions.length} · 現役 ${enlisted} / ${limit}</span>`)+`<section class="panel roster-page partner-roster-page"><p class="small">在名冊查看每位夥伴的能力、技能與配置；夥伴依固定走向自動成長。移出現役仍會同步主角等級，並保留所有養成與信物。上陣夥伴須先移至後備，才能移出現役。評級代表夥伴本身的設計。</p><div class="actions"><button onclick="setTab('roster')">隊伍編成</button><button onclick="showCompanionRecruitment()">招募夥伴</button></div><div class="roster-list partner-owned-list">${companions.map(h=>memberRow(h,true)).join('')||'<p class="empty partner-roster-empty">尚未招募任何夥伴。點選「招募夥伴」，將新夥伴加入名冊。</p>'}</div></section>`;
+    return heading('PARTNER ROSTER / 已取得夥伴','夥伴名冊',`<span class="tag">持有 ${companions.length} · 現役 ${enlisted} / ${limit}</span>`)+`<section class="panel roster-page partner-roster-page"><p class="small">點夥伴名稱展開完整能力與技能。夥伴依固定走向自動成長；移出現役仍保留養成與信物，上陣中的夥伴要先移至後備才能移出現役。</p><div class="actions"><button onclick="setTab('roster')">隊伍編成</button></div><p class="small partner-ticket-hint">新夥伴要使用夥伴招募券加入：到背包 → 特殊，點選招募券後按「使用招募券」。</p><div class="roster-list partner-owned-list">${companions.map(h=>memberRow(h,true)).join('')||'<p class="empty partner-roster-empty">尚未招募任何夥伴。使用夥伴招募券後，夥伴會加入名冊。</p>'}</div></section>`;
   };
-  globalThis.showCompanionRecruitment=function(){const available=rosterPlans().filter(p=>p.availability!=='hidden'&&!partyMember(p.id));$('modal').innerHTML=`<h2>招募夥伴</h2><p class="small">夥伴等級與主角相同（目前 LV${playerHero().lv}），不獨立獲得經驗；現役額滿時，新夥伴會留在名冊。</p><div class="roster-list">${available.map(p=>`<article class="roster-row"><div><div class="member-identity"><b>${esc(party.companionNames[p.id])}</b>${memberIdentityTags({job:p.job,companionId:p.id,lv:playerHero().lv},{includeStatus:false})}</div><p class="small">${esc(p.description)}</p><p class="small">${esc(globalThis.companionUnlockText?.(p)||'')}</p></div><button onclick="closeModal();recruitCompanion(${p.id})" ${globalThis.companionUnlocked?.(p.id)?'':'disabled'}>${globalThis.companionUnlocked?.(p.id)?'招募':'未解鎖'}</button></article>`).join('')||'<p>目前沒有可招募的夥伴。</p>'}</div><button onclick="closeModal()">關閉</button>`;$('modal').showModal();};
+  // v0.178: the recruiting page is gone; companions join by using their ticket (js/character/companion-unlocks.js).
   const originalValidateParty=validateParty;
   validateParty=function(data){const out=originalValidateParty(data);for(const h of out.members.slice(1))h.disabledCompanionSkills=validateDisabledSkills(h.disabledCompanionSkills);out.companionProfiles=storedPlans(data?.companionProfiles);out.companionNames=storedNames(data?.companionNames);const keys=out.members.map(memberKey);out.enlisted=data?.enlisted===undefined?[...keys]:data.enlisted;if(!Array.isArray(out.enlisted)||out.enlisted.length<1||new Set(out.enlisted).size!==out.enlisted.length||out.enlisted.some(k=>!keys.includes(k))||out.active.some(k=>!out.enlisted.includes(k)))throw Error('現役夥伴資料無效');out.enlisted=[...out.enlisted];if(!out.enlisted.includes(out.selected))out.selected=out.enlisted[0];return out;};
-  const originalAwardXP=awardXP;
-  awardXP=function(amount){const player=playerHero();if(!player)return;const before=player.lv,wasDead=player.hp<=0,out=withHero(player,()=>originalAwardXP(amount));syncCompanionLevels({fullHealth:player.lv>before});if(wasDead)player.hp=0;return out;};
   const originalStart=start;
   start=function(job){originalStart(job);if(party){ensureRoster(party);save();render();}};
   const originalLoadParty=loadParty;
@@ -282,7 +343,7 @@
     if(state)render();
   };
   const originalExportBalance=exportableBalance;
-  exportableBalance=function(){const doc=originalExportBalance();doc.companionSkillVersion=1;doc.companionNameVersion=1;doc.companions=copy(plans);doc.passiveDefinitions=copy(passiveDefinitions);doc.companionSettings=copy(config);for(let j=0;j<doc.classes.length;j++)for(let i=0;i<doc.classes[j].skills.length;i++)doc.classes[j].skills[i].partnerId=CLASSES[j].skills[i][6]?.partnerId??null;doc.notes=[...(doc.notes||[]),'companions 每位角色使用單一 name 與獨立技能池；core/support 為夥伴專屬技能，達到需求角色等級後自動學會，不需要二轉與精通；active/proc 依順序配置，可個別啟用或禁用並保存。passives 引用該夥伴的 passiveDefinitions，達到 requiredLevel 且啟用後常駐生效、不占技能槽。'];return doc;};
+  exportableBalance=function(){const doc=originalExportBalance();doc.companionSkillVersion=1;doc.companionNameVersion=1;doc.companions=copy(plans);doc.passiveDefinitions=copy(passiveDefinitions);doc.companionSettings=copy(config);for(let j=0;j<doc.classes.length;j++)for(let i=0;i<doc.classes[j].skills.length;i++)doc.classes[j].skills[i].partnerId=CLASSES[j].skills[i][6]?.partnerId??null;doc.notes=[...(doc.notes||[]),'companions 每位角色使用單一 name 與獨立技能池；core/support 為夥伴專屬技能，達到需求精通後自動學會；active/proc 依順序配置，可個別啟用或禁用並保存。passives 引用該夥伴的 passiveDefinitions，達到 requiredLevel 且啟用後常駐生效、不占技能槽。'];return doc;};
   const originalResetBalance=resetBalanceJSON;
   resetBalanceJSON=function(){restoringDefaults=true;try{originalResetBalance();}finally{restoringDefaults=false;}config=Model.defaults(CLASSES,GAMEPLAY_SETTINGS);if(party){ensureRoster(party);for(const h of party.members){applyPlan(h);cleanPartnerSkillSlots(h);}save();}if(state)render();};
   for(const name of ['learn','learnSupport','equipSkill','clearActiveSkill','slotProcSkill','clearProcSkill','slotSupport','socket','advance']){
@@ -290,10 +351,15 @@
     globalThis[name]=function(...args){if(companionPlan(state))return toast('夥伴的技能依固定走向自動成長');return original(...args);};
   }
   function companionCharacterView(){
-    const h=state,plan=companionPlan(h),v=stats(h),c=CLASSES[h.job],advanceLevel=Math.round(GS('progression.advance.level',15));
+    const h=state,plan=companionPlan(h),v=stats(h),c=CLASSES[h.job];
     const percentage=n=>Math.round((n||0)*100);
     const detail=(items,labels)=>Object.entries(items||{}).map(([key,value])=>`${esc(labels[key]||key)} +${percentage(value)}%`).join(' / ');
-    return `<p class="companion-ability-intro">${esc(plan?.description||'原有隊員')} ${plan?'<span>升級後依職業自然成長並自動二轉。</span>':''}</p><div class="companion-key-stats"><span>生命 <b>${v.hp}</b></span><span>攻擊 <b>${v.atk}</b></span><span>防禦 <b>${v.def}</b></span><span>暴擊 <b>${percentage(v.crit)}%</b></span><span>速度 <b>${v.speed}</b></span></div><div class="companion-advance-line"><b>職業進階</b><span>LV${advanceLevel} · ${esc(c.advanced)} · ${h.advanced?(plan?'已自動完成':'已完成'):(plan?'達到等級後自動完成':'尚未完成')}</span></div><details class="companion-ability-extra"><summary>查看進階詳細屬性</summary><div class="companion-extra-stats"><span>暴擊傷害 ${percentage(v.critDamage)}%</span><span>防禦穿透 ${Number((v.pierce||0).toFixed(1))}</span><span>防禦無視 ${percentage(v.defenseIgnore)}%</span><span>生命竊取 ${percentage(v.lifesteal)}%</span><span>閃避 ${percentage(v.evasion)}%</span><span>武器屬性 ${esc(ELEMENTS[weaponElement(h)])}</span><span>全屬性增傷 ${percentage(v.elementBonus)}%</span></div><p>${detail(v.elementDamage,ELEMENTS)}</p><p>${detail(v.raceDamage,RACES)}</p><p>${Object.entries(v.resist||{}).map(([key,value])=>`${esc(ELEMENTS[key]||key)}抗性 ${percentage(value)}%`).join(' / ')}</p></details>`;
+    return `<p class="companion-ability-intro">${esc(plan?.description||'原有隊員')} ${plan?'<span>依自身精通解鎖技能。</span>':''}</p><div class="companion-key-stats"><span>生命 <b>${v.hp}</b></span><span>攻擊 <b>${v.atk}</b></span><span>防禦 <b>${v.def}</b></span><span>暴擊 <b>${percentage(v.crit)}%</b></span>${typeof attackSpeedPanelHTML==='function'?attackSpeedPanelHTML(h):''}</div><details class="companion-ability-extra"><summary>查看進階詳細屬性</summary><div class="companion-extra-stats"><span>暴擊傷害 ${percentage(v.critDamage)}%</span><span>防禦穿透 ${Number((v.pierce||0).toFixed(1))}</span><span>防禦無視 ${percentage(v.defenseIgnore)}%</span><span>生命竊取 ${percentage(v.lifesteal)}%</span><span>閃避 ${percentage(v.evasion)}%</span><span>武器屬性 ${esc(ELEMENTS[weaponElement(h)])}</span><span>全屬性增傷 ${percentage(v.elementBonus)}%</span></div><p>${detail(v.elementDamage,ELEMENTS)}</p><p>${detail(v.raceDamage,RACES)}</p><p>${Object.entries(v.resist||{}).map(([key,value])=>`${esc(ELEMENTS[key]||key)}抗性 ${percentage(value)}%`).join(' / ')}</p></details>`;
+  }
+  function companionCard(def,h,status,on,notes,data){
+    const U=globalThis.__EMBERWILD_SKILL_SYSTEM_UI,type=U.labels[globalThis.__EMBERWILD_SKILLS.slotType(def)]||'';
+    const foot=notes.filter(Boolean).map(x=>`<p class="small companion-skill-equipped">${esc(x)}</p>`).join('');
+    return `<article class="skill-candidate companion-skill-card ${on?'':'skill-locked'}" ${data}><div class="skill-slot-name skill-list-title">${U.icon(def)}<b>${esc(def.name)}</b><span class="tag">${esc(type)}</span><span class="skill-state ${on?'learned':'locked'}">${esc(status)}</span></div>${U.detailSections(def,h)}${foot}</article>`;
   }
   function companionSkillsView(){
     const h=state,plan=companionPlan(h),mastery=globalThis.__EMBERWILD_MASTERY;
@@ -313,14 +379,17 @@
       const name=isCore?sk[0]:sk.name,flavor=isCore?coreSkillFlavor(h.job,i):sk.description;
       const detail=isCore?coreSkillDetail(h.job,i,h):supportSkillDetail(h.job,i,h),status=!learned?'未解鎖':skillDisabled(h,kind,i)?'已禁用':equipped.length?'已啟用':'已解鎖';
       const gem=isCore?h.sockets?.[i]:null;
-      return `<article class="companion-skill-card" data-companion-skill="${kind}:${i}"><div class="skill-list-title">${globalThis.__EMBERWILD_MASTERY_UI?.skillIcon?.(h.job,kind,i)||''}<b>${esc(name)}</b><span class="skill-state ${learned?'learned':'locked'}">${status}</span><span>${isCore?(sk[1]==='proc'?'普攻觸發':'主動'):'輔助'}</span></div>${skillTypeBadges(h.job,i,isCore?'core':'support')}${skillMechanicsDetails(h.job,i,isCore?'core':'support')}${flavor?`<p class="small">${esc(flavor)}</p>`:''}<p>${esc(detail)}</p><p class="small">解鎖 LV${isCore?sk[2]:sk.level}</p>${equipped.length?`<p class="small companion-skill-equipped">已配置：${esc(equipped.join('、'))}</p>`:''}${growthMissing.length?`<p class="small">使用條件：${esc(growthMissing.join('、'))}</p>`:''}${gem!=null&&GEMS[gem]?`<p class="small">鑲嵌寶石：${esc(GEMS[gem].name)}</p>`:''}${toggle(kind,i,!!learned)}</article>`;
+      // v0.225: same card layout and sectioned description as the player's skill page.
+      const U=globalThis.__EMBERWILD_SKILL_SYSTEM_UI,def=U&&globalThis.__EMBERWILD_SKILLS?.system().definitions.find(d=>d.partnerId===h.companionId&&d.adapter?.job===h.job&&d.adapter?.kind===kind&&d.adapter?.index===i);
+      if(def)return companionCard(def,h,status,learned,[equipped.length?'已配置：'+equipped.join('、'):'',growthMissing.length?'使用條件：'+growthMissing.join('、'):'',gem!=null&&GEMS[gem]?'鑲嵌寶石：'+GEMS[gem].name:''],`data-companion-skill="${kind}:${i}"`);
+      return `<article class="companion-skill-card" data-companion-skill="${kind}:${i}"><div class="skill-list-title">${globalThis.__EMBERWILD_MASTERY_UI?.skillIcon?.(h.job,kind,i)||''}<b>${esc(name)}</b><span class="skill-state ${learned?'learned':'locked'}">${status}</span><span>${isCore?(sk[1]==='proc'?'普攻觸發':'主動'):'輔助'}</span></div>${skillTypeBadges(h.job,i,isCore?'core':'support')}${skillMechanicsDetails(h.job,i,isCore?'core':'support')}${flavor?`<p class="small">${esc(flavor)}</p>`:''}<p>${esc(detail)}</p><p class="small">解鎖精通 Lv${isCore?sk[2]:sk.level}</p>${equipped.length?`<p class="small companion-skill-equipped">已配置：${esc(equipped.join('、'))}</p>`:''}${growthMissing.length?`<p class="small">使用條件：${esc(growthMissing.join('、'))}</p>`:''}${gem!=null&&GEMS[gem]?`<p class="small">鑲嵌寶石：${esc(GEMS[gem].name)}</p>`:''}${toggle(kind,i,!!learned)}</article>`;
     }).filter(Boolean).join('');
     // Heroes from saves older than the companion system cannot use class skills yet; list them as 等待解鎖.
     const legacy=!plan&&h.companionId===undefined&&h!==party?.members?.[0];
     const waiting=legacy?(globalThis.__EMBERWILD_SKILLS?.system()?.definitions||[]).filter(sk=>!sk.disabled&&sk.partnerId==null&&sk.type!=='passive'&&sk.jobs?.includes(h.job)).map(sk=>`<article class="companion-skill-card is-waiting" data-companion-skill-waiting="${esc(sk.id)}"><div class="skill-list-title"><b>${esc(sk.name)}</b><span class="skill-state locked">等待解鎖</span><span>${({active:'主動',proc:'普攻觸發',support:'輔助'})[sk.type]||''}</span></div>${sk.description?`<p class="small">${esc(sk.description)}</p>`:''}</article>`).join(''):'';
     const rows=legacy?waiting:skillRows('core',core)+skillRows('support',support);
-    const passiveRows=allPassivesFor(h).map(d=>`<article class="companion-skill-card" data-companion-passive="${esc(d.id)}"><div class="skill-list-title"><span class="skill-icon-glyph" aria-hidden="true">${globalThis.__EMBERWILD_SKILL_ICONS?.svgFor(d.kind==='debuff'?'skull':'shield')||''}</span><b>${esc(d.name)}</b><span class="skill-state ${h.lv>=d.requiredLevel?'learned':'locked'}">${h.lv<d.requiredLevel?'未解鎖':skillDisabled(h,'passive',d.id)?'已禁用':'已啟用'}</span><span>被動 · ${d.kind==='debuff'?'DEBUFF':'BUFF'}</span></div><p>${esc(d.effects.map(Passive.effectText).join('、'))}</p><p class="small">需求 LV${d.requiredLevel} · ${esc(Passive.targets[d.target])} · ${d.target==='self'?'解鎖且啟用後常時生效':'啟用、上陣且存活時提供常駐光環'} · 不占技能槽</p>${d.description?`<p class="small">${esc(d.description)}</p>`:''}${toggle('passive',d.id,h.lv>=d.requiredLevel)}</article>`).join('');
-    return `<p class="small companion-skill-note">${plan?'技能達到需求角色等級後自動解鎖，所有已解鎖技能都會自動使用。':legacy?'原有隊員目前不能使用職業技能，等待解鎖。':'保留原有隊員的技能與配置。'}</p>${legacy?'':slots}<div class="companion-skill-list">${rows||'<p class="small">此夥伴尚無技能。</p>'}</div><h3>常駐被動</h3><div class="companion-skill-list">${passiveRows||'<p class="small">此夥伴尚無被動。</p>'}</div>`;
+    const passiveRows=allPassivesFor(h).map(d=>{const def=globalThis.__EMBERWILD_SKILL_SYSTEM_UI&&globalThis.__EMBERWILD_SKILLS?.byId(d.id),met=masteryRequirementMet(h,d.requiredLevel);if(def)return companionCard(def,h,!met?'未解鎖':skillDisabled(h,'passive',d.id)?'已禁用':'已啟用',met,['需求精通 Lv'+d.requiredLevel+' · '+(d.target==='self'?'解鎖後常時生效':'上陣且存活時提供光環')+' · 不占技能槽'],`data-companion-passive="${esc(d.id)}"`);return `<article class="companion-skill-card" data-companion-passive="${esc(d.id)}"><div class="skill-list-title"><span class="skill-icon-glyph" aria-hidden="true">${globalThis.__EMBERWILD_SKILL_ICONS?.svgFor(d.kind==='debuff'?'skull':'shield')||''}</span><b>${esc(d.name)}</b><span class="skill-state ${masteryRequirementMet(h,d.requiredLevel)?'learned':'locked'}">${!masteryRequirementMet(h,d.requiredLevel)?'未解鎖':skillDisabled(h,'passive',d.id)?'已禁用':'已啟用'}</span><span>被動 · ${d.kind==='debuff'?'DEBUFF':'BUFF'}</span></div><p>${esc(d.effects.map(Passive.effectText).join('、'))}</p><p class="small">需求精通 Lv${d.requiredLevel} · ${esc(Passive.targets[d.target])} · ${d.target==='self'?'解鎖且啟用後常時生效':'啟用、上陣且存活時提供常駐光環'} · 不占技能槽</p>${d.description?`<p class="small">${esc(d.description)}</p>`:''}${toggle('passive',d.id,masteryRequirementMet(h,d.requiredLevel))}</article>`;}).join('');
+    return `<p class="small companion-skill-note">${plan?'技能達到需求職業精通等級後自動解鎖，所有已解鎖技能都會自動使用。':legacy?'原有隊員目前不能使用職業技能，等待解鎖。':'保留原有隊員的技能與配置。'}</p>${legacy?'':slots}<div class="companion-skill-list">${rows||'<p class="small">此夥伴尚無技能。</p>'}</div><h3>常駐被動</h3><div class="companion-skill-list">${passiveRows||'<p class="small">此夥伴尚無被動。</p>'}</div>`;
   }
   globalThis.setCompanionSkillEnabled=function(key,kind,id,enabled){
     if(globalThis.__EMBERWILD_SKILLS)return false;
@@ -328,7 +397,7 @@
     let unlocked=false;
     if(kind==='core')unlocked=plan.core.includes(id)&&!!h.skills[id]&&skillAllowedForPartner(h,CLASSES[h.job].skills[id]?.[6]);
     else if(kind==='support')unlocked=plan.support.includes(id)&&!!h.supportLevels[id]&&skillAllowedForPartner(h,SUPPORT[h.job][id]);
-    else if(kind==='passive')unlocked=allPassivesFor(h).some(d=>d.id===id&&d.partnerId===h.companionId&&!globalThis.__EMBERWILD_SKILLS?.byId(d.id)?.disabled&&h.lv>=d.requiredLevel);
+    else if(kind==='passive')unlocked=allPassivesFor(h).some(d=>d.id===id&&d.partnerId===h.companionId&&!globalThis.__EMBERWILD_SKILLS?.byId(d.id)?.disabled&&masteryRequirementMet(h,d.requiredLevel));
     if(!unlocked)return false;
     const settings=validateDisabledSkills(h.disabledCompanionSkills);settings[kind]=settings[kind].filter(value=>value!==id);if(!enabled)settings[kind].push(id);h.disabledCompanionSkills=settings;
     applyPlan(h);for(const member of party.members)member.hp=Math.min(member.hp,stats(member).hp);

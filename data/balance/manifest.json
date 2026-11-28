@@ -1,0 +1,718 @@
+{
+  "schema": "dreaming-abyss-balance-modules-v1",
+  "formatVersion": 1,
+  "documentSchema": "emberwild-balance-v1",
+  "dataRevision": 98,
+  "integrated": {
+    "file": "data/balance.json",
+    "sha256": "0ba8e8682e8a13d494c0af24d5e794193b5f8032a8508cf549730701de9cff6c",
+    "bytes": 567632
+  },
+  "layout": {
+    "": [
+      "schema",
+      "_reference",
+      "notes",
+      "balance",
+      "classes",
+      "supportSkills",
+      "equipmentForms",
+      "items",
+      "balanceSettings",
+      "uiText",
+      "timeUnits",
+      "equipmentPowerSystem",
+      "skillIcons",
+      "masteryTypes",
+      "statusDefinitions",
+      "starterPacks",
+      "starterPackItems",
+      "textStyles",
+      "companionSkillVersion",
+      "companionNameVersion",
+      "companions",
+      "passiveDefinitions",
+      "companionSettings",
+      "shopSettings",
+      "companionTokens",
+      "teamSettings",
+      "schemaVersion",
+      "crafting",
+      "navigation",
+      "iconColorTemplates",
+      "inventoryIcons",
+      "story",
+      "skillSystem",
+      "wishingLake",
+      "textOverrides",
+      "tutorials"
+    ],
+    "balanceSettings": [
+      "progression",
+      "skills",
+      "equipment",
+      "monsters",
+      "difficulty",
+      "rewards",
+      "combat",
+      "quests",
+      "inventory",
+      "economy",
+      "meta",
+      "maps",
+      "drops"
+    ],
+    "skillSystem": [
+      "version",
+      "definitions",
+      "classRules",
+      "equipment",
+      "gems",
+      "masteryGateVersion",
+      "clearingSkillsVersion"
+    ]
+  },
+  "compatibility": {
+    "loader": "data/balance.json",
+    "positionalReferences": [
+      "balanceSettings.monsters.catalog[].mapIndex",
+      "classes[] (job index)",
+      "skillSystem.definitions[].jobs"
+    ],
+    "note": "data/balance.json 由模組自動產生，請勿直接修改。"
+  },
+  "modules": [
+    {
+      "id": "meta/document",
+      "title": "文件版本與共用設定",
+      "file": "meta/document.json",
+      "source": "(root).*",
+      "present": true,
+      "version": 2,
+      "sha256": "e5d1c1bcbe80fcc2dd2ceef0e7c2bc688e8634ffceec7eb45f1a1ed312ac5860",
+      "bytes": 1243,
+      "dependsOn": [],
+      "validators": [
+        "document-preflight",
+        "field-rules",
+        "seconds-timing"
+      ]
+    },
+    {
+      "id": "meta/reference",
+      "title": "欄位說明（僅供閱讀）",
+      "file": "meta/reference.json",
+      "source": "_reference",
+      "present": true,
+      "version": 5,
+      "sha256": "8643275d4862c581217eaff334ee63573528dc669e356edbd1727f3840f0eef6",
+      "bytes": 16934,
+      "dependsOn": [],
+      "validators": [
+        "field-rules"
+      ]
+    },
+    {
+      "id": "meta/notes",
+      "title": "設計備註（僅供閱讀）",
+      "file": "meta/notes.json",
+      "source": "notes",
+      "present": true,
+      "version": 5,
+      "sha256": "be5e76808efb0b27377e5da9bdb5518834c817484f344590efbf41d51fec382d",
+      "bytes": 8827,
+      "dependsOn": [],
+      "validators": [
+        "field-rules"
+      ]
+    },
+    {
+      "id": "meta/balance-settings",
+      "title": "平衡設定版本旗標",
+      "file": "meta/balance-settings.json",
+      "source": "balanceSettings.*",
+      "present": true,
+      "version": 6,
+      "sha256": "ffff24469a9c007224335dbb499de54caef5019d8023130d0eb9f77496bf53d0",
+      "bytes": 897,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "seconds-timing"
+      ]
+    },
+    {
+      "id": "interface/presentation",
+      "title": "介面文字與圖示樣式",
+      "file": "interface/presentation.json",
+      "source": "uiText, textStyles, skillIcons, iconColorTemplates",
+      "present": true,
+      "version": 3,
+      "sha256": "e3ef26bfd2c1b5b6067fc3439e7592babc0b349312b8ee475471d4f5ec93c45e",
+      "bytes": 1753,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "interface/navigation",
+      "title": "遊戲導覽",
+      "file": "interface/navigation.json",
+      "source": "navigation",
+      "present": true,
+      "version": 4,
+      "sha256": "d2a132e92b2e58c576b3f79d31af49a744a83fba12a6f7eb5aa4c3186e0ee497",
+      "bytes": 2507,
+      "dependsOn": [],
+      "validators": [
+        "field-rules"
+      ]
+    },
+    {
+      "id": "world/maps",
+      "title": "地圖",
+      "file": "world/maps.json",
+      "source": "balanceSettings.maps",
+      "present": true,
+      "version": 6,
+      "sha256": "7434c2e5eae1e038e51f271c1f51db7f9af0dd2f777b18ec1d229d6bebdb5cb8",
+      "bytes": 533,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "class-unlocks",
+        "wishing-lake",
+        "story",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "world/monsters",
+      "title": "怪物",
+      "file": "world/monsters.json",
+      "source": "balanceSettings.monsters",
+      "present": true,
+      "version": 7,
+      "sha256": "7db054bc13508c55b0571e4fd86014439d4c9afe681adb3b33486c9cbab393e0",
+      "bytes": 6844,
+      "dependsOn": [
+        "combat/skills",
+        "world/maps"
+      ],
+      "validators": [
+        "field-rules",
+        "seconds-timing",
+        "drop-references",
+        "wishing-lake",
+        "story",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "world/drops",
+      "title": "掉落規則",
+      "file": "world/drops.json",
+      "source": "balanceSettings.drops",
+      "present": true,
+      "version": 16,
+      "sha256": "9528f794b81e5d5d455ebb61db212a60a9ae31fdce1bc16edeea76b6cd0ec05f",
+      "bytes": 14177,
+      "dependsOn": [
+        "items/items",
+        "world/monsters"
+      ],
+      "validators": [
+        "field-rules",
+        "healing-potions",
+        "drop-references",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "world/difficulty",
+      "title": "難度",
+      "file": "world/difficulty.json",
+      "source": "balanceSettings.difficulty",
+      "present": true,
+      "version": 3,
+      "sha256": "5e74d8e913850f19a82896ee3adce391d56c757c1302069c56262fbe4f22324f",
+      "bytes": 1150,
+      "dependsOn": [],
+      "validators": [
+        "field-rules"
+      ]
+    },
+    {
+      "id": "combat/rules",
+      "title": "戰鬥規則與秒數",
+      "file": "combat/rules.json",
+      "source": "balanceSettings.combat",
+      "present": true,
+      "version": 6,
+      "sha256": "6fa85b45caf256e3a916e6a69f5ad18b2b303d436b4fc7daaf377967623b1c3b",
+      "bytes": 3298,
+      "dependsOn": [
+        "characters/companion-settings",
+        "combat/skills",
+        "combat/statuses",
+        "equipment/forms",
+        "items/items",
+        "meta/balance-settings",
+        "meta/document",
+        "systems/rewards",
+        "world/monsters"
+      ],
+      "validators": [
+        "field-rules",
+        "seconds-timing"
+      ]
+    },
+    {
+      "id": "combat/skill-settings",
+      "title": "技能共用設定",
+      "file": "combat/skill-settings.json",
+      "source": "balanceSettings.skills",
+      "present": true,
+      "version": 7,
+      "sha256": "fc7bd10e017d4fb74c790d182c73fab9c45c71ce6745a07a460f937e0d6effbd",
+      "bytes": 1033,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "combat/skills",
+      "title": "技能定義",
+      "file": "combat/skills.json",
+      "source": "skillSystem.definitions",
+      "present": true,
+      "version": 17,
+      "sha256": "f210c15498f190f64e953b39844390b80000a00719106810354c960093574cef",
+      "bytes": 114125,
+      "dependsOn": [
+        "characters/classes",
+        "characters/companions",
+        "combat/skill-system"
+      ],
+      "validators": [
+        "field-rules",
+        "seconds-timing",
+        "skill-system",
+        "story"
+      ]
+    },
+    {
+      "id": "combat/skill-system",
+      "title": "技能系統規則與寶石",
+      "file": "combat/skill-system.json",
+      "source": "skillSystem.*",
+      "present": true,
+      "version": 10,
+      "sha256": "2988890f264f925b61e72c5b58a6781c31712727112f1537200736e265ec7209",
+      "bytes": 6601,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "skill-system"
+      ]
+    },
+    {
+      "id": "combat/statuses",
+      "title": "自訂狀態",
+      "file": "combat/statuses.json",
+      "source": "statusDefinitions",
+      "present": true,
+      "version": 2,
+      "sha256": "56aeb3fd0f93330a3069f445bb69712e73d848563b634d867526dfb39d3a22d2",
+      "bytes": 1444,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "seconds-timing",
+        "status-definitions"
+      ]
+    },
+    {
+      "id": "characters/classes",
+      "title": "職業",
+      "file": "characters/classes.json",
+      "source": "classes",
+      "present": true,
+      "version": 13,
+      "sha256": "c491dc82c7db104805411f6be93f0f81c01c9201c2419d0f1beae6742a2ce602",
+      "bytes": 105935,
+      "dependsOn": [
+        "systems/quests",
+        "world/maps"
+      ],
+      "validators": [
+        "field-rules",
+        "class-unlocks",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "characters/support-skills",
+      "title": "輔助技能",
+      "file": "characters/support-skills.json",
+      "source": "supportSkills",
+      "present": true,
+      "version": 8,
+      "sha256": "d0155e79226ff85ae1577efb67205c35d4a7932c9861776cd2cef5e39204ffad",
+      "bytes": 19771,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "characters/progression",
+      "title": "等級與成長",
+      "file": "characters/progression.json",
+      "source": "balanceSettings.progression",
+      "present": true,
+      "version": 3,
+      "sha256": "1bc7f254a07c4422cbd916c93d133cca81442f8675125c8adb451c6476070ef9",
+      "bytes": 174,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "wishing-lake",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "characters/companions",
+      "title": "夥伴",
+      "file": "characters/companions.json",
+      "source": "companions",
+      "present": true,
+      "version": 6,
+      "sha256": "f94c6b933cc055c5f2eb87c09993843dbd9b11ccde4f7ea991434a6f72403f6b",
+      "bytes": 2452,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "wishing-lake",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "characters/passives",
+      "title": "被動能力",
+      "file": "characters/passives.json",
+      "source": "passiveDefinitions",
+      "present": true,
+      "version": 11,
+      "sha256": "000909564bed121b4645847534e0a4af916c968e17815c559235afdad8046d75",
+      "bytes": 5140,
+      "dependsOn": [],
+      "validators": [
+        "field-rules"
+      ]
+    },
+    {
+      "id": "characters/companion-settings",
+      "title": "夥伴設定與信物",
+      "file": "characters/companion-settings.json",
+      "source": "companionSettings, companionTokens",
+      "present": true,
+      "version": 4,
+      "sha256": "2e23088ad1bdb503ae3f5f141bbd347f30bc6c000f7254db607a4ef73daf2d9c",
+      "bytes": 13468,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "seconds-timing",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "equipment/forms",
+      "title": "裝備型態",
+      "file": "equipment/forms.json",
+      "source": "equipmentForms",
+      "present": true,
+      "version": 8,
+      "sha256": "6ed7668a9b01562fbfe8311bb5d6845d78feb1ec85d9fc8a85bfa3108c605f37",
+      "bytes": 7287,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "seconds-timing",
+        "story",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "equipment/affix-pools",
+      "title": "詞綴池與基礎戰鬥係數",
+      "file": "equipment/affix-pools.json",
+      "source": "balance",
+      "present": true,
+      "version": 1,
+      "sha256": "3b1b2ae1c6fdc4d1c1fbc211426fd996f6e445dcfb514a99b3b3fe9fdf593eb6",
+      "bytes": 32410,
+      "dependsOn": [],
+      "validators": [
+        "field-rules"
+      ]
+    },
+    {
+      "id": "equipment/power-system",
+      "title": "裝備詞綴與強度",
+      "file": "equipment/power-system.json",
+      "source": "equipmentPowerSystem",
+      "present": true,
+      "version": 5,
+      "sha256": "54f0e1cefd4540940896e0bb0c9256a5f2cff8f0ed92a2c8cbbc94b018aae130",
+      "bytes": 1657,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "equipment-effects",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "equipment/settings",
+      "title": "裝備強化與分解",
+      "file": "equipment/settings.json",
+      "source": "balanceSettings.equipment",
+      "present": true,
+      "version": 9,
+      "sha256": "841d60623fca5d110a56b1c0c990f126f012c24d60156a93bc13d6112939236f",
+      "bytes": 5490,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "wishing-lake",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "items/items",
+      "title": "消耗道具",
+      "file": "items/items.json",
+      "source": "items",
+      "present": true,
+      "version": 3,
+      "sha256": "c8b7ef4d96b7da460d5570f002371b0a83bd20cd4be7c7231f03b64a99915c5c",
+      "bytes": 6535,
+      "dependsOn": [
+        "world/drops"
+      ],
+      "validators": [
+        "field-rules",
+        "healing-potions",
+        "seconds-timing",
+        "drop-references",
+        "wishing-lake",
+        "tutorials",
+        "story",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "items/inventory-icons",
+      "title": "全域物品目錄",
+      "file": "items/inventory-icons.json",
+      "source": "inventoryIcons",
+      "present": true,
+      "version": 18,
+      "sha256": "334909e68ac829b12000da879bdf5a09dad5d73ee4834ed0e1394d124b35f0a3",
+      "bytes": 12935,
+      "dependsOn": [
+        "characters/classes",
+        "characters/companion-settings",
+        "characters/companions",
+        "characters/progression",
+        "characters/support-skills",
+        "combat/skill-settings",
+        "equipment/forms",
+        "equipment/power-system",
+        "equipment/settings",
+        "interface/presentation",
+        "items/items",
+        "items/starter-packs",
+        "systems/crafting",
+        "systems/economy",
+        "systems/quests",
+        "systems/shop",
+        "world/drops",
+        "world/maps",
+        "world/monsters"
+      ],
+      "validators": [
+        "field-rules",
+        "wishing-lake",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "items/starter-packs",
+      "title": "新手禮包",
+      "file": "items/starter-packs.json",
+      "source": "starterPacks",
+      "present": true,
+      "version": 5,
+      "sha256": "68547337bd1b039cdcc91f9f3a19a8eeccc7ab0471d4d1edfb33403a4e73aa81",
+      "bytes": 1367,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "systems/economy",
+      "title": "經濟",
+      "file": "systems/economy.json",
+      "source": "balanceSettings.economy",
+      "present": true,
+      "version": 5,
+      "sha256": "b91b5fd5a94649b2d7c2f1198fe1c4b5c2f65698e2f5ecb35974e2301a997296",
+      "bytes": 776,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "systems/rewards",
+      "title": "戰鬥獎勵",
+      "file": "systems/rewards.json",
+      "source": "balanceSettings.rewards",
+      "present": true,
+      "version": 6,
+      "sha256": "ce5a770b6b7a6200b599bea214d780ddf8452df27cf63ac4883441b87f5ec633",
+      "bytes": 956,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "seconds-timing"
+      ]
+    },
+    {
+      "id": "systems/quests",
+      "title": "委託與支線",
+      "file": "systems/quests.json",
+      "source": "balanceSettings.quests",
+      "present": true,
+      "version": 4,
+      "sha256": "fe7a52751df2a4b2728acbc1c7484415736b1a73cf7d3a17c072addf66793be0",
+      "bytes": 9262,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "class-unlocks",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "systems/story",
+      "title": "任務與劇情",
+      "file": "systems/story.json",
+      "source": "story",
+      "present": true,
+      "version": 29,
+      "sha256": "f9329661fe8760b29ef9be15b5acb299ea616aca14a08052e6e9c0c263330fe3",
+      "bytes": 24319,
+      "dependsOn": [
+        "combat/skills",
+        "equipment/forms",
+        "items/items",
+        "systems/crafting",
+        "world/maps",
+        "world/monsters"
+      ],
+      "validators": [
+        "field-rules",
+        "tutorials",
+        "story"
+      ]
+    },
+    {
+      "id": "systems/shop",
+      "title": "商店",
+      "file": "systems/shop.json",
+      "source": "shopSettings",
+      "present": true,
+      "version": 6,
+      "sha256": "092516b4559f695eb4a01c75170ecb03bf4eb04fd4e04eefb098d2c2a8beb5d7",
+      "bytes": 10932,
+      "dependsOn": [
+        "items/items",
+        "world/maps"
+      ],
+      "validators": [
+        "field-rules",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "systems/crafting",
+      "title": "製作",
+      "file": "systems/crafting.json",
+      "source": "crafting",
+      "present": true,
+      "version": 1,
+      "sha256": "e126320c5d6a6c26026515d8fa406af06cb1d51b7404a37ce8a084311ab6a155",
+      "bytes": 74,
+      "dependsOn": [],
+      "validators": [
+        "field-rules",
+        "crafting",
+        "story",
+        "inventory-catalogue"
+      ]
+    },
+    {
+      "id": "systems/wishing-lake",
+      "title": "許願湖",
+      "file": "systems/wishing-lake.json",
+      "source": "wishingLake",
+      "present": true,
+      "version": 2,
+      "sha256": "ee7cd166b4fbb6ea669081443f844b50b28af2b7cfd463e26e5ebf9772617abe",
+      "bytes": 2698,
+      "dependsOn": [
+        "characters/companions",
+        "characters/progression",
+        "equipment/settings",
+        "items/inventory-icons",
+        "items/items",
+        "world/maps",
+        "world/monsters"
+      ],
+      "validators": [
+        "field-rules",
+        "wishing-lake"
+      ]
+    },
+    {
+      "id": "systems/tutorials",
+      "title": "教學",
+      "file": "systems/tutorials.json",
+      "source": "tutorials",
+      "present": true,
+      "version": 16,
+      "sha256": "98b028d9c78aeeeee1a89d125d9c00fe38fa24f8d226aca6970d8113eae48ea8",
+      "bytes": 66822,
+      "dependsOn": [
+        "items/items",
+        "systems/story"
+      ],
+      "validators": [
+        "field-rules",
+        "tutorials"
+      ]
+    }
+  ]
+}

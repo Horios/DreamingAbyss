@@ -1,0 +1,15 @@
+/* v0.206 unidentified equipment: the slot icon, darkened, with a centred question mark; neutral frame and colours. */
+.item-slot.item-unidentified{border-color:var(--line,#555)!important;background:var(--panel-2,rgba(255,255,255,.04))!important;box-shadow:none!important}
+.item-slot.item-unidentified .item-slot-name{color:var(--muted,#b8b8b8)}
+.gear-unidentified-art{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.gear-unidentified-art svg{filter:brightness(.42) saturate(.2);opacity:.9}
+.gear-unidentified-mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 1.15em/1 system-ui,sans-serif;color:#f4f1e6;text-shadow:0 0 3px #000,0 0 6px #000;pointer-events:none}
+.gear-unidentified-tag{font-size:.75em;opacity:.85}
+.gear-unidentified-name{color:var(--muted,#b8b8b8)!important;text-shadow:none!important}
+.identify-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px}
+.gear-unidentified-detail .actions{margin-top:8px}
+.gem-dust-upgrade .gem-upgrade-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.gem-dust-upgrade .gem-upgrade-list li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.gem-upgrade-table th{text-align:left;padding-right:12px;font-weight:600}
+.exclusive-enhance-note{display:block;margin-top:4px}
+@media (max-width:640px){.identify-bar button{flex:1 1 100%}}

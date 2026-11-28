@@ -1,0 +1,29 @@
+{
+  "levelRanges": [
+    {
+      "min": 1,
+      "max": 5
+    }
+  ],
+  "catalog": [
+    {
+      "id": "map0",
+      "name": "無名密林",
+      "min": 1,
+      "max": 5,
+      "family": 0,
+      "icon": "",
+      "color": "#34483a",
+      "parallel": false,
+      "mapType": "normal",
+      "progressionGate": false,
+      "eliteEnabled": true,
+      "eliteChance": 0.06,
+      "bossEnabled": true,
+      "bossChance": 0,
+      "bossStageMode": "fixed",
+      "bossStageRandomCount": 1,
+      "recommendedGearLevel": 5
+    }
+  ]
+}

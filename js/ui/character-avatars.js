@@ -51,7 +51,7 @@
     const existed=Object.prototype.hasOwnProperty.call(h,'avatarId'),previous=h.avatarId;
     if(id==='')delete h.avatarId;else h.avatarId=id;
     try{
-      if(save()===false)throw Error('無法儲存');
+      if(save()===false)throw Error(saveFailureText());
     }catch(e){
       if(existed)h.avatarId=previous;else delete h.avatarId;
       toast('圖示未保存：'+e.message);return false;

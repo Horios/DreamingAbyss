@@ -4,7 +4,7 @@
 .layout>main>.page-owner-panel:has(.compact-inventory-panel){padding:0}
 .layout>main>.game-subtabs,.layout>main>.inventory-category-tabs,.layout>main>.shop-category-tabs,.layout>main>.team-plan-panel{margin:0}
 .layout>main>.heading>div,.companion-management-page>.heading>div{min-width:0;overflow-wrap:anywhere}
-.layout>main:has(>.story-list,>.statistics-layout,>.companion-management-page,>.life-skills-page,>.cards)>*{flex-shrink:0}
+.layout>main:has(>.story-list,>.statistics-layout,>.companion-management-page,>.cards)>*{flex-shrink:0}
 .layout>main>.story-list{margin-top:0}
 .layout>main>.cards{gap:var(--card-gap)}
 .layout>main>.cards>.card{max-height:none;overflow:visible;padding:var(--panel-padding)}
@@ -65,7 +65,7 @@
 .guide-reading-page .mode-table{width:100%;table-layout:fixed;font-size:14px;line-height:1.7;margin:12px 0;overflow-wrap:anywhere}
 .guide-reading-page .mode-table th,.guide-reading-page .mode-table td{padding:10px 8px;vertical-align:top}
 
-@media(max-width:1000px){
+@media(max-width:1100px){
   .worn-single-player .worn-loadout-grid{grid-template-columns:minmax(0,1fr)}
   .worn-reading-page .worn-candidate-pane{position:static;border-left:0;border-top:1px solid var(--line);padding:16px 0 0}
 }
@@ -76,7 +76,7 @@
   .guide-reading-page .mode-table td{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:8px 0;border:0}
   .guide-reading-page .mode-table td::before{content:attr(data-reading-label);color:var(--muted)}
 }
-@media(max-width:780px){
+@media(max-width:700px){
   .layout>main>.readability-page{padding-bottom:12px}
   .readability-page .heading h1{font-size:20px}
   .readability-page .panel,.readability-page .card{padding:14px}
@@ -102,7 +102,7 @@
 .character-reading-page .class-mastery-grid>div{padding:10px 12px;border:1px solid var(--line);border-radius:4px}
 .character-reading-page .class-mastery-grid p{margin:4px 0 0}
 .character-reading-page .page-owner-summary{align-items:center;justify-content:space-between;gap:10px;padding-bottom:12px}
-@media(max-width:780px){.character-reading-page .page-owner-content>.grid{grid-template-columns:minmax(0,1fr)}.character-reading-page .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.character-reading-page .page-owner-content>.grid{grid-template-columns:minmax(0,1fr)}.character-reading-page .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container(max-width:620px){.character-reading-page .page-owner-content>.grid{grid-template-columns:minmax(0,1fr)}}
 @container(max-width:420px){
   .character-reading-page .stat-grid{grid-template-columns:minmax(0,1fr)}

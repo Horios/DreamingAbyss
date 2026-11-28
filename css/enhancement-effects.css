@@ -1,0 +1,5 @@
+/* Centered enhancement result, visible briefly without flashing. */
+.forge-enhance-layer{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(100vw - 32px);z-index:1400;pointer-events:none!important;font-size:clamp(28px,6vw,48px);font-weight:800;line-height:1.4;text-align:center;white-space:nowrap;text-shadow:0 2px 6px #000,0 0 12px #000;animation:forge-enhance-lifetime var(--enhance-lifetime) linear both!important}
+.forge-enhance-success{color:#65e891}
+.forge-enhance-failure{color:#ff6b6b}
+@keyframes forge-enhance-lifetime{from,to{opacity:1}}

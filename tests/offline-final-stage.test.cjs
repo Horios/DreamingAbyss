@@ -2,7 +2,9 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
 function challenge(){
  const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`selectSaveSlot(1);start(0);closeModal();playerHero().lv=GS('progression.levelCaps.beforeClear',30);syncParty();refillParty();setExplorationCategory('boss');selectExplorationMap(worldProgressionGateIndex());startSelectedExploration();for(const e of foes){e.hp=1;e.atk=1;}save();`);
+ /* 遊戲資料只保留第一張地圖；以 map0 複製一張暫時的終局突破地圖測試終局流程。 */
+ r.run(`{const d=exportableBalance(),bs=d.balanceSettings;const m=structuredClone(bs.maps.catalog[0]);Object.assign(m,{id:"map1",name:"測試終局",min:40,max:40,mapType:"final",progressionGate:true,eliteEnabled:false});bs.maps.catalog.push(m);bs.maps.levelRanges.push({min:40,max:40});const b=structuredClone(bs.monsters.catalog.find(x=>x.id==="map0_boss"));Object.assign(b,{id:"map1_final",mapIndex:1,kind:"final",name:"測試終局首領"});bs.monsters.catalog.push(b);applyBalanceConfig(d);}`);
+ r.run(`selectSaveSlot(1);start(0);closeModal();playerHero().kills[MAPS[0].boss[2]]=1;syncParty();refillParty();setExplorationCategory('boss');selectExplorationMap(worldProgressionGateIndex());startSelectedExploration();for(const e of foes){e.hp=1;e.atk=1;}save();`);
  assert.equal(r.run('party.map'),r.run('worldProgressionGateIndex()'));assert(r.run("foes.some(e=>e.kind==='final')"));return r;
 }
 async function settle(r){r.advance(55000);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false,r.elements.get('offline-settlement').innerHTML);}
@@ -12,7 +14,7 @@ test('final boss offline victory can close its simulated dialog and commit the c
  const kills=r.run('state.totalKills'),gold=r.run('state.gold');await r.run('EmberwildOffline.settle()');assert.equal(r.run('state.totalKills'),kills);assert.equal(r.run('state.gold'),gold);
 });
 test('refreshing a saved final-stage fight resumes and completes without a stuck settlement',async()=>{
- const original=challenge(),key=original.run('KEY'),raw=original.values.get(key),r=loadRuntime(root,'index.html',{[key]:raw},original.now+55000);r.ctx.setTimeout=fn=>setImmediate(fn);
+ const original=challenge(),key=original.run('KEY'),raw=original.values.get(key),r=loadRuntime(root,'index.html',{...Object.fromEntries(original.values),[key]:raw},original.now+55000);r.ctx.setTimeout=fn=>setImmediate(fn);
  r.run('continueFromTitle()');await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false,r.elements.get('offline-settlement').innerHTML);completed(r);
- const saved=r.values.get(key),cold=loadRuntime(root,'index.html',{[key]:saved},r.now);cold.ctx.setTimeout=fn=>setImmediate(fn);cold.run('continueFromTitle()');await cold.run('EmberwildOffline.settle()');assert.equal(cold.run('EmberwildOffline.failed'),false);assert.equal(cold.run('state.totalKills'),r.run('state.totalKills'));assert.equal(cold.run('state.gold'),r.run('state.gold'));assert.equal(cold.run('acknowledgeOfflineExploration()'),true);
+ const saved=r.values.get(key),cold=loadRuntime(root,'index.html',{...Object.fromEntries(r.values),[key]:saved},r.now);cold.ctx.setTimeout=fn=>setImmediate(fn);cold.run('continueFromTitle()');await cold.run('EmberwildOffline.settle()');assert.equal(cold.run('EmberwildOffline.failed'),false);assert.equal(cold.run('state.totalKills'),r.run('state.totalKills'));assert.equal(cold.run('state.gold'),r.run('state.gold'));assert.equal(cold.run('acknowledgeOfflineExploration()'),true);
 });

@@ -1,0 +1,351 @@
+{
+  "version": 1,
+  "classRules": [
+    {
+      "job": 0,
+      "initial": [
+        {
+          "skillId": "class0-initial2",
+          "masteryLevel": 0
+        },
+        {
+          "skillId": "class0-initial1",
+          "masteryLevel": 2
+        },
+        {
+          "skillId": "class0-initial0",
+          "masteryLevel": 4
+        },
+        {
+          "skillId": "warrior-cleave-chain",
+          "masteryLevel": 2
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job0-core4",
+          "masteryLevel": 14
+        },
+        {
+          "skillId": "job0-core5",
+          "masteryLevel": 19
+        },
+        {
+          "skillId": "job0-support2",
+          "masteryLevel": 14
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "堅守前線，以嘲諷與減傷保護隊伍。"
+    },
+    {
+      "job": 1,
+      "initial": [
+        {
+          "skillId": "class1-initial0",
+          "masteryLevel": 0
+        },
+        {
+          "skillId": "class1-initial1",
+          "masteryLevel": 2
+        },
+        {
+          "skillId": "class1-initial2",
+          "masteryLevel": 4
+        },
+        {
+          "skillId": "mage-mana-cycle",
+          "masteryLevel": 2
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job1-core4",
+          "masteryLevel": 14
+        },
+        {
+          "skillId": "job1-core5",
+          "masteryLevel": 19
+        },
+        {
+          "skillId": "job1-support2",
+          "masteryLevel": 14
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "以群體魔法清理敵群，兼具控制能力。"
+    },
+    {
+      "job": 2,
+      "initial": [
+        {
+          "skillId": "class2-initial0",
+          "masteryLevel": 0
+        },
+        {
+          "skillId": "class2-initial1",
+          "masteryLevel": 2
+        },
+        {
+          "skillId": "class2-initial2",
+          "masteryLevel": 4
+        },
+        {
+          "skillId": "archer-arrow-rain",
+          "masteryLevel": 2
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job2-core4",
+          "masteryLevel": 14
+        },
+        {
+          "skillId": "job2-core5",
+          "masteryLevel": 19
+        },
+        {
+          "skillId": "job2-support2",
+          "masteryLevel": 14
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "專注單體射擊，以連射與狙擊擊倒目標。"
+    },
+    {
+      "job": 3,
+      "initial": [
+        {
+          "skillId": "class3-initial0",
+          "masteryLevel": 0
+        },
+        {
+          "skillId": "class3-initial1",
+          "masteryLevel": 2
+        },
+        {
+          "skillId": "class3-initial2",
+          "masteryLevel": 4
+        },
+        {
+          "skillId": "priest-holy-prison",
+          "masteryLevel": 2
+        }
+      ],
+      "advanced": [
+        {
+          "skillId": "job3-core4",
+          "masteryLevel": 14
+        },
+        {
+          "skillId": "job3-core5",
+          "masteryLevel": 19
+        },
+        {
+          "skillId": "job3-support2",
+          "masteryLevel": 14
+        },
+        {
+          "skillId": "job3-support3",
+          "masteryLevel": 14
+        }
+      ],
+      "slots": {
+        "first": {
+          "active": 3,
+          "proc": 1,
+          "support": 1
+        },
+        "advanced": {
+          "active": 3,
+          "proc": 2,
+          "support": 2
+        }
+      },
+      "description": "以聖光攻擊，透過治療與持續恢復支援隊伍。"
+    }
+  ],
+  "equipment": {
+    "formRules": [
+      {
+        "formId": "gel-armor",
+        "skillId": "gel-recovery",
+        "dropOnly": true
+      },
+      {
+        "formId": "living-core-talisman",
+        "skillId": "living-core-renewal",
+        "dropOnly": true
+      },
+      {
+        "formId": "gel-charm",
+        "skillId": "gel-recovery",
+        "dropOnly": true
+      },
+      {
+        "formId": "wolf-fang-pendant",
+        "skillId": "wolf-double-bite",
+        "dropOnly": true
+      },
+      {
+        "formId": "vine-staff",
+        "skillId": "living-core-renewal",
+        "dropOnly": true
+      },
+      {
+        "formId": "ancient-heart-bracer",
+        "skillId": "ancient-heart-revival",
+        "dropOnly": true
+      }
+    ],
+    "socketBands": [
+      {
+        "minLevel": 1,
+        "maxLevel": 10,
+        "weights": [
+          0.7,
+          0.3,
+          0,
+          0
+        ]
+      },
+      {
+        "minLevel": 11,
+        "maxLevel": 20,
+        "weights": [
+          0.35,
+          0.5,
+          0.15,
+          0
+        ]
+      },
+      {
+        "minLevel": 21,
+        "maxLevel": 999,
+        "weights": [
+          0.1,
+          0.35,
+          0.35,
+          0.2
+        ]
+      }
+    ],
+    "sourceRules": [
+      {
+        "source": "starter",
+        "weights": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source": "boss",
+        "weights": [
+          0,
+          0.3,
+          0.4,
+          0.3
+        ]
+      }
+    ]
+  },
+  "gems": [
+    {
+      "kind": 0,
+      "base": {
+        "stat": "atk",
+        "unit": "flat",
+        "values": [
+          2,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "kind": 1,
+      "base": {
+        "stat": "attackSpeedPct",
+        "unit": "percent",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "kind": 2,
+      "base": {
+        "stat": "crit",
+        "unit": "ratio",
+        "values": [
+          0.01,
+          0.02,
+          0.03
+        ]
+      }
+    },
+    {
+      "kind": 3,
+      "base": {
+        "stat": "hp",
+        "unit": "flat",
+        "values": [
+          10,
+          20,
+          30
+        ]
+      }
+    },
+    {
+      "kind": 4,
+      "base": {
+        "stat": "def",
+        "unit": "flat",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      }
+    }
+  ],
+  "masteryGateVersion": 1,
+  "clearingSkillsVersion": 1
+}

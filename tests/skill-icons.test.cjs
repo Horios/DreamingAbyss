@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
-const root=path.resolve(__dirname,'..'),editor=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editor=require('./runtime.cjs').balanceRoot(root);
 const {loadRuntime}=require('./headless-runtime.cjs');
 function icons(){const c=vm.createContext({});for(const f of ['lucide-catalog.js','skill-icon-library.js'])vm.runInContext(fs.readFileSync(path.join(root,'js/ui',f),'utf8'),c);return c;}
 test('local Lucide catalog contains 1869 original names, safe SVG nodes and useful categories',()=>{

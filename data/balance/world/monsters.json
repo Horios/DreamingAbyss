@@ -1,0 +1,316 @@
+{
+  "encounter": {
+    "bossChance": 0,
+    "eliteChance": 0.06
+  },
+  "normal": {
+    "hpBase": 18,
+    "hpPerLevel": 9,
+    "hpQuadratic": 0.12,
+    "attackBase": 4,
+    "attackPerLevel": 1.7,
+    "defensePerLevel": 0.6
+  },
+  "kindMultipliers": {
+    "bossHp": 9,
+    "eliteHp": 2.08,
+    "bossAttack": 2,
+    "eliteAttack": 1.56,
+    "eliteDefense": 1.43,
+    "bossDefense": 1.2
+  },
+  "finalBoss": {
+    "level": 40,
+    "hp": 5500,
+    "attack": 95,
+    "defense": 35
+  },
+  "awakened": {
+    "threshold": 30,
+    "hpBaseMultiplier": 1,
+    "hpPerLevel": 0.003,
+    "attackBaseMultiplier": 1,
+    "attackPerLevel": 0.002,
+    "defenseMultiplier": 1
+  },
+  "catalog": [
+    {
+      "id": "map0_mob0",
+      "name": "苔原史萊姆",
+      "mapIndex": 0,
+      "kind": "normal",
+      "material": "黏稠凝膠",
+      "element": "wind",
+      "race": "spirit",
+      "maxDrops": 99,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "timing": {
+        "baseIntervalSeconds": 2.3
+      }
+    },
+    {
+      "id": "map0_mob1",
+      "name": "林間野狼",
+      "mapIndex": 0,
+      "kind": "normal",
+      "material": "完整狼牙",
+      "element": "wind",
+      "race": "beast",
+      "maxDrops": 99,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "timing": {
+        "baseIntervalSeconds": 2.2
+      }
+    },
+    {
+      "id": "map0_mob2",
+      "name": "迷路樹精",
+      "mapIndex": 0,
+      "kind": "normal",
+      "material": "活性樹芯",
+      "element": "wind",
+      "race": "plant",
+      "maxDrops": 99,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [],
+      "enabled": true,
+      "eliteEnabled": true,
+      "spawnWeight": 1,
+      "hpMultiplier": 1,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 10,
+      "stageElite": false,
+      "bossStageCount": 0,
+      "bossStageOrder": 10,
+      "bossStageElite": false,
+      "timing": {
+        "baseIntervalSeconds": 3.1
+      }
+    },
+    {
+      "id": "map0_boss",
+      "name": "古木守望者",
+      "mapIndex": 0,
+      "kind": "boss",
+      "material": "古木年輪",
+      "element": "wind",
+      "race": "plant",
+      "maxDrops": 99,
+      "baseStats": {
+        "hp": 0,
+        "attack": 0,
+        "defense": -1
+      },
+      "combatStats": {
+        "crit": 0,
+        "critDamage": 1.5,
+        "pierce": 0,
+        "defenseIgnore": 0,
+        "lifesteal": 0,
+        "evasion": 0,
+        "elementBonus": 0,
+        "bossDamage": 0,
+        "speedBonus": 0,
+        "elementDamage": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        },
+        "raceDamage": {
+          "beast": 0,
+          "plant": 0,
+          "undead": 0,
+          "construct": 0,
+          "demon": 0,
+          "spirit": 0
+        },
+        "resist": {
+          "physical": 0,
+          "fire": 0,
+          "ice": 0,
+          "wind": 0,
+          "light": 0,
+          "shadow": 0
+        }
+      },
+      "skillAssignments": [
+        {
+          "skillId": "boss-summon-treants"
+        },
+        {
+          "skillId": "boss-entangle"
+        }
+      ],
+      "enabled": true,
+      "eliteEnabled": false,
+      "spawnWeight": 1,
+      "hpMultiplier": 2,
+      "attackMultiplier": 1,
+      "defenseMultiplier": 1,
+      "stageCount": 1,
+      "stageOrder": 100,
+      "stageElite": false,
+      "bossStageCount": 1,
+      "bossStageOrder": 100,
+      "bossStageElite": false,
+      "timing": {
+        "baseIntervalSeconds": 3
+      }
+    }
+  ],
+  "bossMeter": {
+    "normalProgress": 1,
+    "eliteMultiplier": 1.5,
+    "progressPerCharge": 100,
+    "maxCharges": 100,
+    "maxStageEnemies": 20
+  }
+}

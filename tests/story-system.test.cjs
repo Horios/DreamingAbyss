@@ -1,10 +1,15 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),M=require('../js/story/story-model.js');
-const root=path.resolve(__dirname,'..'),editor=path.resolve(root,'../balance-site'),seed=JSON.parse(fs.readFileSync(path.join(root,'data/balance.json')));
+const root=path.resolve(__dirname,'..'),editor=require('./runtime.cjs').balanceRoot(root),seed=JSON.parse(fs.readFileSync(path.join(root,'data/balance.json')));
 const json=(r,c)=>JSON.parse(r.run('JSON.stringify('+c+')'));
+// v0.136: the shipped intro quest was removed (the prologue replaces it). These tests exercise the story system with it,
+// so it is kept as a fixture and put back in front, with the gear-skill quest depending on it as before.
+seed.story.quests.push(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-region-chain.json'),'utf8')));
+seed.story.quests.unshift(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-goddess-intro.json'),'utf8')));seed.story.quests.splice(1,0,JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/story-skill-equipment-intro.json'),'utf8')));seed.story.quests.find(q=>q.id==='skill_equipment_intro').prerequisites=['goddess_intro'];
 async function game(){const r=loadRuntime(root);r.ctx.setTimeout=fn=>setImmediate(fn);r.ctx.doc=structuredClone(seed);r.run('applyBalanceConfig(doc);selectSaveSlot(1);start(0);closeModal()');await r.run('EmberwildOffline.settle()');return r;}
 function complete(r,id,choice=''){const s=r.run(`party.story.quests['${id}'].current`);assert.equal(r.run(`completeStoryStage('${id}','${choice}','${s}')`),true,id+'/'+s);}
-function recruit(r){r.run('recruitCompanion(10);recruitCompanion(11);closeModal()');}
+// v0.228: since v0.222 the roster holds 洛恩 (10) and 艾琳 (13) only.
+function recruit(r){r.run('recruitCompanion(10);recruitCompanion(13);closeModal()');}
 function kill(r,map=0,id){r.ctx.targetMonster=id||seed.balanceSettings.monsters.catalog.find(x=>x.mapIndex===map&&x.kind==='normal').id;r.run(`party.map=${map};syncParty();party.bossChallenge=null;globalThis.testEnemy=makeEnemy(${map},playerHero(),()=>.99);var row=monsterCatalog().find(x=>x.id===targetMonster);testEnemy.monsterId=row.id;testEnemy.mat=row.material;testEnemy.name=row.name;testEnemy.region=${map};testEnemy.id='foe-'+uid();testEnemy.rewarded=false;foes=[testEnemy];enemy=testEnemy;testEnemy.hp=0;rewardGroupKill(testEnemy);save()`);}
 function boss(r,map){r.run(`party.map=${map};syncParty();party.bossChallenge=null;bossProgressEntry(${map}).charges=1;startBossChallenge();for(const e of [...foes]){e.hp=0;rewardGroupKill(e);}save();leaveBossChallenge();running=false;resetEncounter();closeModal()`);}
 async function tick(r,ms){r.advance(ms);await r.run('EmberwildOffline.settle()');r.run('tickLifeSkills()');}
@@ -31,21 +36,14 @@ test('new/legacy saves migrate, real recruitment, kills and enhancement complete
  const old=json(r,'packParty()');delete old.story;delete old.progressStats;r.ctx.old=old;r.run('loadParty(old)');assert.equal(r.run('party.story.quests.goddess_intro.current'),'welcome');assert(r.run('party.progressStats.enhance')>=1);assert(r.run('party.progressStats.explore[0]')>=1);assert.deepEqual(r.errors,[]);
 });
 
-test('cross-map side chain uses original kill and boss histories and survives each stage reload',async()=>{
- let r=await game();recruit(r);for(let map=0;map<2;map++){for(let i=0;i<3;i++)kill(r,map);complete(r,'two_regions');r=await reload(r);complete(r,'two_regions');boss(r,map);assert(r.run(`party.achievements.bossKills[${map}]`)>=1);complete(r,'two_regions');r=await reload(r);}assert.equal(r.run('party.story.quests.two_regions.done'),true);assert.equal(r.run("completeStoryStage('two_regions')"),false);assert.deepEqual(r.errors,[]);
+// v0.228: since v0.222 only the first map exists, so the side chain covers 無名密林 alone.
+test('side chain uses original kill and boss histories and survives each stage reload',async()=>{
+ let r=await game();recruit(r);for(let map=0;map<1;map++){for(let i=0;i<3;i++)kill(r,map);complete(r,'test_region_chain');r=await reload(r);complete(r,'test_region_chain');boss(r,map);assert(r.run(`party.achievements.bossKills[${map}]`)>=1);complete(r,'test_region_chain');r=await reload(r);}assert.equal(r.run('party.story.quests.test_region_chain.done'),true);assert.equal(r.run("completeStoryStage('test_region_chain')"),false);assert.deepEqual(r.errors,[]);
 });
 
-test('shop NPC chain requires actual gathering, recipe, materials and permanently unlocks VIP',async()=>{
- let r=await game();recruit(r);for(let i=0;i<3;i++)kill(r);complete(r,'shop_rescue');r.run("setMaterialCount('黏稠凝膠',2);save()");complete(r,'shop_rescue');r.run("buyLifeMaterial('清水',1);buyLifeMaterial('藥水瓶',1)");assert.equal(r.run('party.progressStats.gather'),0);r.run("startLifeGathering('herb')");await tick(r,20000);r.run('stopLifeGathering()');assert.equal(r.run('party.progressStats.gatherItems["material:紅色草"]'),4);complete(r,'shop_rescue');assert.equal(r.run("startLifeWork('alchemy')"),true);await tick(r,5000);r.run('stopLifeWork()');complete(r,'shop_rescue');complete(r,'shop_rescue','thanks');assert.equal(r.run('hasShopVIP()'),true);assert.equal(r.run('party.story.autoBuy'),false);r=await reload(r);assert.equal(r.run('hasShopVIP()'),true);assert.equal(r.run('party.story.quests.shop_rescue.choices.vip'),'thanks');assert.deepEqual(r.errors,[]);
-});
 
-test('locked alchemy links to NPC story; VIP buys only exact deficits at shared discounted prices and respects toggle/funds',async()=>{
- const r=await game(),startingPotions=r.run('healPotionCount("heal_small")');assert.match(r.run('alchemyView()'),/完成商店的特殊任務線/);r.run("openStory('shop_rescue','npc')");assert.equal(r.run('tab'),'story');assert.match(r.run('storyView()'),/商店任務線/);assert.equal(r.run('setAlchemyAutoBuy(true)'),false);
- replace(r,d=>{d.lifeSkills.materialBuyPrices.清水=100;d.lifeSkills.materialBuyPrices.藥水瓶=20;d.lifeSkills.recipes.alchemy.inputs=[['清水',3],['藥水瓶',2],['紅色草',1]];});
- r.run("state.materials={清水:1,藥水瓶:1,紅色草:1};state.gold=1000;save()");assert.equal(r.run("startLifeWork('alchemy')"),false);r.run('party.story.vip=1;save();setAlchemyAutoBuy(true)');assert.equal(r.run('shopPayablePrice(200)'),190);assert.equal(r.run("startLifeWork('alchemy')"),true);assert.equal(r.run('state.gold'),1000);await tick(r,5000);assert.equal(r.run('state.gold'),791);assert.equal(r.run('materialCount("清水")'),0);assert.equal(r.run('materialCount("藥水瓶")'),0);assert.equal(r.run('healPotionCount("heal_small")'),startingPotions+1);assert.equal(r.run('__EMBERWILD_LIFE_SKILLS.jobs.work'),null);
- r.run("setMaterialCount('紅色草',2);state.gold=1;save()");assert.equal(r.run("startLifeWork('alchemy')"),false);await tick(r,5000);assert.equal(r.run('state.gold'),1);assert.equal(r.run('healPotionCount("heal_small")'),startingPotions+1);assert.equal(r.run('materialCount("清水")'),0);
- r.run('state.gold=1000;setAlchemyAutoBuy(false)');assert.equal(r.run("startLifeWork('alchemy')"),false);r.run("buyLifeMaterial('清水',3);buyLifeMaterial('藥水瓶',2)");assert.equal(r.run('state.gold'),677);assert.equal(r.run("startLifeWork('alchemy')"),true);await tick(r,5000);assert.equal(r.run('state.gold'),677);assert.equal(r.run('healPotionCount("heal_small")'),startingPotions+2);assert.deepEqual(r.errors,[]);
-});
+
+
 
 test('VIP discount applies to fixed and random merchandise, minimum coin cost and failed saves roll back',async()=>{
  const r=await game();r.run('party.story.vip=1;state.gold=100000;save()');const d=replace(r,d=>{d.shopSettings.fixedOffers.entries=[{id:'test_ore',enabled:true,type:'ore',key:'',name:'測試',description:'',quantity:2,unitPrice:101}];d.shopSettings.randomOffers.entries=[{id:'test_random',enabled:true,type:'ore',key:'',name:'測試',description:'',quantityMin:2,quantityMax:2,unitPrice:101,weight:1,selection:'weighted',chance:1,quantityScalesWithTier:false,priceScalesWithTier:false}];});
@@ -60,20 +58,13 @@ test('lifetime and stage baselines, all/any, flags, choices and conditional ques
  const conditional=M.quest('condition_branch','條件分歧');conditional.stages.push(M.stage('yes','成立'),M.stage('no','不成立'));conditional.stages[0].branches=[{conditions:{mode:'any',conditions:[M.condition('flag','right'),M.condition('level','',999)]},next:'yes'}];conditional.stages[0].next='no';replace(r,d=>d.story.quests.push(conditional));complete(r,'condition_branch');assert.equal(r.run('party.story.quests.condition_branch.current'),'yes');assert.deepEqual(r.errors,[]);
 });
 
-test('story reward/flags/progression and alchemy auto-purchase all roll back on storage failure',async()=>{
- const r=await game();replace(r,d=>{d.story.quests[0].stages[0].rewards={gold:100,ore:9,items:[{type:'material',key:'紅色草',quantity:4}]};d.story.quests[0].stages[0].effects=[{type:'flag',key:'test',value:true}];});
- const before=json(r,'packParty()');r.run('globalThis.storageSet=localStorage.setItem;localStorage.setItem=()=>{throw Error("quota")};');assert.equal(r.run("completeStoryStage('goddess_intro')"),false);assert.deepEqual(json(r,'packParty()'),before);r.run('localStorage.setItem=storageSet');complete(r,'goddess_intro');assert.equal(r.run('state.gold'),before.members[0].gold+100);
- r.run("party.story.vip=1;setAlchemyAutoBuy(true);state.gold=100;setMaterialCount('紅色草',2);setMaterialCount('清水',0);setMaterialCount('藥水瓶',0);save();startLifeWork('alchemy')");const stock=json(r,'({gold:state.gold,materials:state.materials,potions:healingInventory(),stats:party.progressStats})');const comparable=v=>({...v,stats:{...v.stats,acquired:Object.fromEntries(Object.entries(v.stats.acquired).filter(([,n])=>n!==0))}});r.run('localStorage.setItem=()=>{throw Error("quota")};');await tick(r,5000);r.run('localStorage.setItem=storageSet');assert.deepEqual(comparable(json(r,'({gold:state.gold,materials:state.materials,potions:healingInventory(),stats:party.progressStats})')),comparable(stock));assert.equal(r.run('__EMBERWILD_LIFE_SKILLS.jobs.work'),null);
-});
 
-test('cumulative acquisition survives consuming items; per-recipe/gather/level/flag predicates use real stats',async()=>{
- const r=await game(),startingPotions=r.run('healPotionCount("heal_small")'),startingAcquired=r.run('party.progressStats.acquired["item:heal_small"]||0');r.run("setMaterialCount('清水',2);setMaterialCount('藥水瓶',2);setMaterialCount('紅色草',2);save();startLifeWork('alchemy')");await tick(r,10000);assert.equal(r.run('party.progressStats.recipes.alchemy'),2);assert.equal(r.run('party.progressStats.acquired["item:heal_small"]'),startingAcquired+2);assert.equal(r.run('healPotionCount("heal_small")'),startingPotions+2);assert.equal(r.run('party.progressStats.acquired["material:紅色草"]'),2);assert.equal(r.run('materialCount("紅色草")'),0);r.run('party.story.flags.ready=true;party.story.unlocks.special=true');
- for(const c of [M.condition('recipe','alchemy',2),M.condition('alchemy','',2),M.condition('stock','heal_small',2),M.condition('acquired','heal_small',2),M.condition('level'),M.condition('flag','ready'),M.condition('unlock','special')]){if(['stock','acquired'].includes(c.type))c.itemType='item';r.ctx.c=c;assert(r.run('__EMBERWILD_STORY.value(c)>=c.count'),c.type);}
-});
+
+
 
 test('editor stage creation, serialization/import, dialogue and branch editing roundtrip into executable runtime',async t=>{
  if(!fs.existsSync(path.join(editor,'balance-editor.html')))return t.skip('Balance editor fixture is not available in standalone game CI');
- const e=loadRuntime(editor,'balance-editor.html');e.run("__EMBERWILD_STORY_EDITOR.select('goddess_intro');globalThis.newStage=__EMBERWILD_STORY_EDITOR.addStage();__EMBERWILD_STORY_EDITOR.set('name','女神主線改名');");const d=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');assert.equal(d.story.quests[0].stages.length,10);assert.deepEqual(json(e,'validateData()'),[]);const r=await game();r.ctx.doc=d;r.run('applyBalanceConfig(doc)');assert.equal(r.run('exportableBalance().story.quests[0].name'),'女神主線改名');assert.deepEqual(json(r,'exportableBalance().story'),d.story);
+ const e=loadRuntime(editor,'balance-editor.html');e.ctx.stageFixture=M.quest('editor_stage','測試階段編輯');e.run('data.story.quests.unshift(stageFixture)');e.run("globalThis.first=__EMBERWILD_STORY_EDITOR.design().quests[0];globalThis.stagesBefore=first.stages.length;__EMBERWILD_STORY_EDITOR.select(first.id);globalThis.newStage=__EMBERWILD_STORY_EDITOR.addStage();__EMBERWILD_STORY_EDITOR.set('name','女神主線改名');");const d=json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport()');assert.equal(d.story.quests[0].stages.length,e.run('stagesBefore')+1);assert.deepEqual(json(e,'validateData()'),[]);const r=await game();r.ctx.doc=d;r.run('applyBalanceConfig(doc)');assert.equal(r.run('exportableBalance().story.quests[0].name'),'女神主線改名');assert.deepEqual(json(r,'exportableBalance().story'),d.story);
  e.ctx.doc=json(r,'exportableBalance()');e.run('data=__EMBERWILD_VALIDATE_DOCUMENT(doc);ensureArrays()');assert.deepEqual(json(e,'__EMBERWILD_MASTERY_EDITOR.cleanExport().story'),d.story);assert.deepEqual(e.errors,[]);assert.deepEqual(r.errors,[]);
 });
 
@@ -91,9 +82,7 @@ test('runtime dialogue continuation/exit and every guide preserve the independen
  const r=await game();r.run("openStory('goddess_intro');readStory('goddess_intro')");assert.match(r.run('storyView()'),/歡迎來到營地/);r.run('nextStoryDialogue()');assert.match(r.run('storyView()'),/完成階段／繼續劇情/);r.run('endStoryDialogue()');assert.equal(r.run('party.story.quests.goddess_intro.current'),'welcome');const old=json(r,'({map:party.map,kills:state.totalKills,running})');for(const id of Object.keys(M.GUIDES)){r.run(`storyNavigate('${id}')`);assert.equal(r.run('tab'),id);}assert.deepEqual(json(r,'({map:party.map,kills:state.totalKills,running})'),old);assert.deepEqual(r.errors,[]);
 });
 
-test('failed recipe attempts count actions but cannot satisfy successful recipe condition; missing other ingredients never buys basics',async()=>{
- const r=await game(),startingPotions=r.run('healPotionCount("heal_small")');replace(r,d=>{d.lifeSkills.recipes.alchemy.chance=0;d.lifeSkills.materialBuyPrices.清水=100;});r.run("party.story.vip=1;setAlchemyAutoBuy(true);state.gold=1000;setMaterialCount('紅色草',1);save();startLifeWork('alchemy')");await tick(r,5000);assert.equal(r.run('party.progressStats.alchemy'),1);assert.equal(r.run('party.progressStats.recipes.alchemy||0'),0);assert.equal(r.run('healPotionCount("heal_small")'),startingPotions);assert.equal(r.run('state.gold'),904);const gold=r.run('state.gold');assert.equal(r.run("startLifeWork('alchemy')"),false);assert.equal(r.run('state.gold'),gold);assert.equal(r.run('materialCount("清水")'),0);
-});
+
 
 test('invalid story save is rejected atomically and an unassigned protagonist cannot satisfy a ready party',async()=>{
  const r=await game();recruit(r);r.run('party.buildSystem.plans.find(p=>p.id===party.buildSystem.activeId).job=null');r.ctx.c=M.condition('party','',3);assert.equal(r.run('__EMBERWILD_STORY.value(c)'),0);

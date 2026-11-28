@@ -1,6 +1,8 @@
 name: Regression gate
 
 on:
+  push:
+    branches: [feature/material-economy-crafting, feature/inventory-drop-rework, claude/vibrant-turing-g3ccrm]
   workflow_call:
   workflow_dispatch:
 
@@ -8,32 +10,121 @@ permissions:
   contents: read
 
 jobs:
+  # Decides what this commit needs. A commit that only changes data/balance/** (and the generated
+  # data/balance.json / preview version) runs the tests that read the changed modules; anything else, or a
+  # change whose reach cannot be determined, runs the full gate below.
+  plan:
+    name: Balance change scope
+    runs-on: ubuntu-latest
+    outputs:
+      scope: ${{ steps.scope.outputs.scope }}
+      headless: ${{ steps.scope.outputs.headless }}
+      browser: ${{ steps.scope.outputs.browser }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - id: scope
+        name: Changed modules, change kinds and selected tests
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" != push ] || ! git rev-parse -q --verify HEAD^ >/dev/null; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"; echo "### 平衡資料影響範圍：full（非 push 事件或沒有上一個 commit）" >> "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
+          node scripts/balance-modules.cjs affected --base HEAD^ --head HEAD --github-output "$GITHUB_OUTPUT"
+
+  # Always runs: sources, manifest and generated data/balance.json agree; the changed modules pass the
+  # shared document checks (incremental; the first modular commit or a structural change runs them in full).
+  balance-modules:
+    name: Balance modules · consistency and incremental validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Module sources, manifest hashes and data/balance.json agree
+        run: node scripts/balance-modules.cjs check --allow-legacy-integrated
+      - name: Validate the changed modules and the references into them
+        run: node scripts/balance-modules.cjs validate --base HEAD^
+      - name: Module model tests
+        run: node --test tests/balance-modules.test.cjs tests/balance-document.test.cjs
+      # Runs for every commit, including a balance publish from the workbench: edited values must change what
+      # the running game does (spawned monster, character stats, price, cooldown seconds, title), restoring the
+      # document must restore them, and the deployment check itself must reject a site that is not this build.
+      - name: Published values take effect in the running game; deployment check rejects other builds
+        run: node --test --test-concurrency=2 tests/balance-effects.test.cjs tests/balance-effects-systems.test.cjs tests/verify-deployment.test.cjs
+
+  data-incremental:
+    name: Data change · selected tests
+    needs: plan
+    if: needs.plan.outputs.scope == 'data'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Headless tests that read the changed modules
+        if: needs.plan.outputs.headless != ''
+        run: node --test --test-concurrency=2 ${{ needs.plan.outputs.headless }}
+      - name: Install Chromium for selected browser tests
+        if: needs.plan.outputs.browser != ''
+        run: |
+          npm ci
+          npx playwright install chromium
+      - name: Browser tests that read the changed modules
+        if: needs.plan.outputs.browser != ''
+        run: node --test --test-concurrency=1 ${{ needs.plan.outputs.browser }}
+
   core:
+    needs: plan
+    if: needs.plan.outputs.scope == 'full'
     name: Core · ${{ matrix.group }}
     strategy:
       fail-fast: false
       matrix:
         include:
+          - group: inventory-drop-rework
+            tests: >-
+              tests/material-economy.test.cjs tests/drop-rework.test.cjs tests/inventory-model.test.cjs tests/inventory-runtime.test.cjs tests/companion-tokens.test.cjs
           - group: modules-and-gear
             tests: >-
               tests/core-catalog-split.test.cjs tests/core-services-split.test.cjs tests/core-ui-split.test.cjs tests/core-journal-split.test.cjs tests/battle-effects.test.cjs tests/gear-inventory-controls.test.cjs tests/inventory-wear-inspector.test.cjs tests/gear-inventory.test.cjs tests/gear-overflow.test.cjs tests/item-descriptions.test.cjs tests/load-integrity.test.cjs tests/preview-version.test.cjs tests/current-catalog-integrity.test.cjs
           - group: skill-loadouts
             tests: >-
-              tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/skill-equipment-tutorial.test.cjs tests/skill-system-model.test.cjs tests/passive-save-compat.test.cjs tests/skill-system-runtime.test.cjs tests/legacy-member-skills.test.cjs
+              tests/skill-gems.test.cjs tests/equipment-skill-system.test.cjs tests/onboarding-lessons.test.cjs tests/boss-map0-skills.test.cjs tests/skill-system-model.test.cjs tests/passive-save-compat.test.cjs tests/skill-system-runtime.test.cjs tests/legacy-member-skills.test.cjs
           - group: skill-events
             tests: >-
-              tests/initial-clearing-skills.test.cjs tests/battle-configuration.test.cjs
+              tests/initial-clearing-skills.test.cjs tests/battle-configuration.test.cjs tests/companion-battle-mastery.test.cjs
           - group: skill-effects
             tests: >-
               tests/status-advanced.test.cjs tests/skill-effects.test.cjs tests/shop-rule-price-name.test.cjs
           - group: combat
             tests: >-
-              tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/seconds-encounter-cooldowns.test.cjs tests/skill-new-badge.test.cjs tests/mailbox-actions.test.cjs tests/continuous-exploration.test.cjs tests/recovery-healing.test.cjs
+              tests/attack-speed.test.cjs tests/live-battle-journal.test.cjs tests/realtime-combat.test.cjs tests/seconds-timeline.test.cjs tests/seconds-runtime.test.cjs tests/seconds-encounter-cooldowns.test.cjs tests/skill-new-badge.test.cjs tests/mailbox-actions.test.cjs tests/continuous-exploration.test.cjs tests/recovery-healing.test.cjs
           # v0.110: files that ran in no CI job; each passed locally without the private balance editor.
           # Files that open Chromium through tests/runtime.cjs run in the browser job (it installs Playwright).
           - group: ui-and-catalogue
             tests: >-
               tests/battle-summary.test.cjs tests/navigation-tree.test.cjs tests/utility-navigation.test.cjs tests/item-display-mode.test.cjs tests/inventory-icons.test.cjs tests/inventory-supplies.test.cjs tests/icon-canvas-tools.test.cjs tests/icon-color-palette.test.cjs tests/text-rarity-runtime.test.cjs tests/global-item-catalogue.test.cjs tests/balance-diff.test.cjs tests/balance-document.test.cjs
+          # v0.135: the prologue played through the real systems for all four classes, with reloads at every stage.
+          - group: prologue
+            tests: >-
+              tests/prologue.test.cjs tests/story-window.test.cjs tests/tutorial-system.test.cjs
+          - group: chapter-story-transactions
+            tests: >-
+              tests/chapter1.test.cjs tests/story-transaction-roster.test.cjs
           - group: progression-and-teams
             tests: >-
               tests/skill-board.test.cjs tests/skill-induction.test.cjs tests/skill-system-combat.test.cjs tests/team-plan-management.test.cjs tests/companion-token-management.test.cjs tests/boss-class-crafting.test.cjs tests/equipment-socket-scroll.test.cjs tests/forge-quality-performance.test.cjs tests/starter-mail-items.test.cjs tests/wishing-lake.test.cjs tests/override-guard.test.cjs tests/character-page-layout.test.cjs tests/statistics-expedition.test.cjs
@@ -41,6 +132,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -48,6 +141,8 @@ jobs:
         run: node --test --test-concurrency=1 ${{ matrix.tests }}
 
   persistence:
+    needs: plan
+    if: needs.plan.outputs.scope == 'full'
     name: Saves · ${{ matrix.group }}
     strategy:
       fail-fast: false
@@ -66,6 +161,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -73,11 +170,15 @@ jobs:
         run: node --test --test-concurrency=1 ${{ matrix.tests }}
 
   browser-smoke:
+    needs: plan
+    if: needs.plan.outputs.scope == 'full'
     name: Chromium boot and responsive navigation
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -85,14 +186,25 @@ jobs:
       - run: npm ci
       - run: npx playwright install chromium
       - name: Install CJK fonts for requested UI screenshots
-        if: contains(github.event.head_commit.message, '[ui-review]')
+        if: contains(github.event.head_commit.message, '[ui-review]') || contains(github.event.head_commit.message, '跳字')
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y fonts-noto-cjk
+      - name: Verify resolved combat numbers before the broad browser suite
+        run: node --test --test-name-pattern='resolved numbers|number colors|numbers stay bounded' tests/battle-effects.browser.test.cjs
+      - name: Upload battle feedback screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: battle-feedback-${{ github.sha }}
+          path: battle-feedback-review/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Verify actual browser boot and mobile navigation
         env:
           EMBERWILD_PACE_REALTIME: '1'
-        run: node --test --test-concurrency=1 tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/shared-levels.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
+        run: node --test --test-concurrency=1 tests/material-economy.browser.test.cjs tests/battle-journal-scroll.test.cjs tests/skill-fallback-icons.test.cjs tests/prologue.browser.test.cjs tests/chapter1.browser.test.cjs tests/tutorial.browser.test.cjs tests/story-window.browser.test.cjs tests/token-wear-jump.browser.test.cjs tests/utility-dialog-close-race.browser.test.cjs tests/text-overrides.browser.test.cjs tests/character-avatars.browser.test.cjs tests/cleanup.browser.test.cjs tests/equipment-comparison.browser.test.cjs tests/team-plan-management.browser.test.cjs tests/themes.browser.test.cjs tests/mobile-layout.browser.test.cjs tests/ui-layout.browser.test.cjs tests/responsive-shell.browser.test.cjs tests/page-readability.browser.test.cjs tests/page-boundaries.browser.test.cjs tests/recovery-effects.browser.test.cjs tests/toast-layer.browser.test.cjs tests/region-vouchers.browser.test.cjs tests/published-loader.browser.test.cjs tests/legacy-progression.browser.test.cjs tests/battle-summary.browser.test.cjs tests/inventory-wear-inspector.browser.test.cjs tests/inventory-grid.browser.test.cjs tests/battle-configuration.browser.test.cjs tests/realtime-combat.browser.test.cjs tests/battle-effects.browser.test.cjs tests/team-save-compatibility.browser.test.cjs
 
       - name: Capture baseline and current UI review
         if: contains(github.event.head_commit.message, '[ui-review]')
@@ -122,3 +234,20 @@ jobs:
           node-version: '20'
       - name: Verify one version increment from previous commit
         run: node scripts/check-preview-version.cjs
+
+  material-economy:
+    name: Material economy and crafting acceptance
+    if: github.ref == 'refs/heads/feature/material-economy-crafting'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node --test tests/material-economy.test.cjs
+      - run: node --test --test-concurrency=1 tests/material-economy.browser.test.cjs

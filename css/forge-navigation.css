@@ -1,30 +1,67 @@
-
-/* Update: inventory forging is now centralized on the forge page. */
-.forge-account-shell{padding:10px 12px;overflow:visible}
-.forge-workbench{display:grid;grid-template-columns:minmax(300px,var(--master-column)) minmax(0,1fr);gap:var(--card-gap);height:auto;min-height:0;max-height:none;align-items:start;margin-top:var(--card-gap)}
-.forge-gear-pane,.forge-detail-pane{min-height:0;border:1px solid var(--line);background:#141c1f}
-.forge-gear-pane{height:clamp(280px,55dvh,600px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
-.forge-gear-toolbar{padding:8px 9px;border-bottom:1px solid var(--line);background:#182124}
-.forge-gear-toolbar .row{align-items:center;flex-wrap:wrap}
-.forge-gear-toolbar label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.forge-gear-toolbar select{width:auto;min-width:128px;max-width:180px;padding:4px 7px;font-size:12px}
-.forge-wear-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:7px 0}
+/* Equipment workshop: category tabs, one bench slot, item picker and per-item operations. */
+.workshop-shell{display:grid;width:min(880px,100%);margin-left:auto;margin-right:auto;box-sizing:border-box;gap:12px;padding:10px 12px;overflow:visible}
+.workshop-categories{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.workshop-categories button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:8px 6px;border:1px solid var(--line);border-radius:10px;background:var(--control,#1d2629);color:var(--text-soft,var(--muted))}
+.workshop-categories button span{font-size:13px}
+.workshop-categories button small{font-size:10px;color:var(--muted)}
+.workshop-categories button:hover{background:var(--control-hover,#202c30)}
+.workshop-categories button.selected{background:var(--selected,#2a383c);color:var(--text,#fff);border-color:var(--green)}
+.workshop-bench{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
+.workshop-slot{display:flex;align-items:center;gap:12px;min-height:84px;width:100%;padding:10px 14px;text-align:left;border:1px dashed var(--control-border,var(--line));border-radius:12px;background:var(--inset,#141c1f);color:var(--text,inherit)}
+.workshop-slot:hover{background:var(--control-hover,#202c30)}
+.workshop-slot.filled{border-style:solid}
+.workshop-slot-icon{display:grid;place-items:center;width:52px;height:52px;flex:0 0 52px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+.workshop-slot b,.workshop-slot small{display:block}
+.workshop-slot small{color:var(--muted);font-size:11px;margin-top:3px}
+.workshop-slot>.item-slot{flex:0 0 auto;pointer-events:none}
+.workshop-slot>.item-slot .item-slot-name{display:none}
+.workshop-slot-text{display:grid;gap:2px;min-width:0}
+.workshop-slot-text b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.workshop-slot-summary{font-size:12px}
+.workshop-bench-actions{display:flex;flex-direction:column;gap:6px;justify-content:center}
+.workshop-bench-actions button{padding:6px 12px;font-size:12px}
+.workshop-picker{display:grid;grid-template-rows:auto minmax(0,1fr);max-height:clamp(260px,50dvh,520px);border:1px solid var(--line);border-radius:10px;background:var(--inset,#141c1f);overflow:hidden}
+.workshop-picker-toolbar{padding:8px 9px;border-bottom:1px solid var(--line);background:var(--surface,#182124)}
+.workshop-picker-toolbar .row{align-items:center;flex-wrap:wrap;justify-content:space-between}
+.workshop-picker-toolbar label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.workshop-picker-toolbar select{width:auto;min-width:128px;max-width:180px;padding:4px 7px;font-size:12px}
+.workshop-picker-close{padding:4px 10px;font-size:12px}
+.forge-wear-toggle{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:7px 0}
 .forge-wear-toggle button{padding:5px 8px;font-size:12px}
 .forge-pagination{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:8px}.forge-pagination button{padding:4px 7px;font-size:12px}.forge-pagination span{text-align:center}
 .forge-sort-direction{padding:4px 8px;font-size:12px}
-.forge-gear-list{overflow:auto;min-height:0;scrollbar-gutter:stable}
-.forge-gear-item{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:22px 18px;width:100%;height:48px;padding:4px 8px;text-align:left;border:0;border-bottom:1px solid #2e3b3f;border-radius:0;background:transparent;gap:0 8px;overflow:hidden}
-.forge-gear-item:hover{background:#202c30}.forge-gear-item.selected{background:#2a383c;box-shadow:inset 3px 0 var(--green)}
-.forge-gear-name{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;align-self:end}
-.forge-gear-name .enhanced-name{font-size:13px}
-.forge-gear-meta{grid-column:1/-1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--muted);font-size:10px;line-height:16px}
-.forge-gear-quality{align-self:end;justify-self:end;font-size:10px;white-space:nowrap}
-.forge-detail-pane{min-height:0;max-height:none;overflow:visible;overscroll-behavior:contain;scrollbar-gutter:stable;padding:14px 16px}
-.forge-detail-pane .gear-detail-header{margin-bottom:8px}
-.forge-detail-pane .forge-layout{grid-template-columns:minmax(0,1fr);max-height:none;height:auto;overflow:visible;margin-top:8px}
-.forge-detail-pane .forge-preview,.forge-detail-pane .forge-controls{height:auto;max-height:none;overflow:visible}
-.forge-detail-pane .forge-preview{padding:12px}
-.forge-detail-pane .forge-action{padding:10px 12px}
-.forge-detail-pane .inline-affix-comparison{margin-top:10px}
+.workshop-picker-list{overflow:auto;min-height:0;scrollbar-gutter:stable;padding:6px;display:grid;gap:4px;align-content:start}
+.workshop-pick-row{display:grid;grid-template-columns:minmax(0,1fr);gap:2px}
+.workshop-pick-meta{padding:0 10px 4px;color:var(--muted);font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.forge-gear-item{width:100%;text-align:left}
+.forge-gear-item:hover{background:var(--control-hover,#202c30)}.forge-gear-item.selected{background:var(--selected,#2a383c);box-shadow:inset 3px 0 var(--green)}
+.workshop-operations{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--inset,#141c1f)}
+.workshop-operations>.eyebrow{margin:0}
+.workshop-action-tabs{display:flex;gap:4px;padding:3px;border-radius:999px;background:var(--surface,#182124)}
+.workshop-action-tabs button{flex:1 1 0;min-width:0;padding:6px 10px;border:0;border-radius:999px;background:transparent;color:var(--muted)}
+.workshop-action-tabs button.selected{background:var(--control,#2a383c);color:var(--text,#fff)}
+.workshop-action-panel .forge-action,.workshop-action-panel .forge-power-reroll,.workshop-action-panel .equipment-socket-editor{padding:0;border:0;background:transparent}
+.workshop-action-panel h3{margin-top:0}
+.workshop-rows{display:grid;gap:8px;margin:8px 0 10px}
+.workshop-rows>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.workshop-rows>div>span:first-child{color:var(--text-soft,var(--muted))}
+.workshop-rows .item-cost-line{justify-content:flex-end}
+.workshop-gains{margin:0 0 10px}
+.workshop-action-panel .forge-action>button.primary{width:100%}
+.workshop-ability{padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.workshop-ability>summary{cursor:pointer;font-weight:600}
+.workshop-empty{margin:0}
 .inventory-detail-forge-note{margin:5px 0 0;color:var(--gold);font-size:11px}
-@media(max-width:900px){.forge-workbench{grid-template-columns:1fr;grid-template-rows:250px auto;max-height:none}.forge-gear-pane{height:250px}.forge-detail-pane{min-height:0}.forge-account-shell{overflow:visible}}
+@media(max-width:600px){
+  .workshop-categories{gap:6px}
+  .workshop-categories button{min-height:56px;padding:6px 4px}
+  .workshop-bench{grid-template-columns:minmax(0,1fr)}
+  .workshop-bench-actions{flex-direction:row}
+  .workshop-bench-actions button{flex:1 1 0}
+  .workshop-rows>div{flex-wrap:wrap}
+}
+.workshop-slot-text .inventory-item-icon{display:none!important}
+.workshop-slot>.item-slot{width:60px;min-width:60px;height:60px;min-height:60px;padding:6px;justify-content:center;gap:0}
+.workshop-slot>.item-slot .item-slot-worn,.workshop-slot>.item-slot .equipment-socket-badge{display:none}
+.workshop-picker-list{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.workshop-pick-row .forge-gear-item.item-slot{width:100%}

@@ -1,0 +1,136 @@
+[
+  {
+    "id": 10,
+    "job": 0,
+    "description": "專注劍術輸出；技能：裂地斬、嘲諷、反擊之刃、攻擊強化。",
+    "core": [
+      7,
+      17,
+      8
+    ],
+    "active": [
+      7,
+      17
+    ],
+    "proc": [
+      8
+    ],
+    "support": [],
+    "weapon": "sword",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner10-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 16,
+      "def": 8,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 6.1,
+      "atk": 1.65,
+      "def": 1.2,
+      "crit": 0,
+      "critDamage": 0,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "洛恩",
+    "availability": "visible"
+  },
+  {
+    "id": 13,
+    "job": 3,
+    "description": "專注隊伍治療；技能：治癒禱言、生命泉源、治療強化、復活。",
+    "core": [
+      8,
+      9,
+      19
+    ],
+    "active": [
+      8,
+      19
+    ],
+    "proc": [
+      9
+    ],
+    "support": [],
+    "weapon": "holyStaff",
+    "rating": "D",
+    "unlockCondition": {
+      "type": "initial"
+    },
+    "duplicateTicketGold": 100,
+    "passives": [
+      "partner13-passive1"
+    ],
+    "initialStats": {
+      "hp": 47,
+      "atk": 15,
+      "def": 7,
+      "crit": 0.07,
+      "critDamage": 1.5,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthPerLevel": {
+      "hp": 5.25,
+      "atk": 1.5,
+      "def": 0.25,
+      "crit": 0,
+      "critDamage": 0,
+      "pierce": 0,
+      "defenseIgnore": 0,
+      "lifesteal": 0,
+      "evasion": 0,
+      "elementBonus": 0,
+      "bossDamage": 0
+    },
+    "growthSteps": [
+      {
+        "every": 2,
+        "hp": 0,
+        "atk": 0,
+        "def": 1
+      },
+      {
+        "every": 3,
+        "hp": 0,
+        "atk": 1,
+        "def": 0
+      }
+    ],
+    "equipmentInternalized": 1,
+    "name": "艾琳",
+    "availability": "visible"
+  }
+]

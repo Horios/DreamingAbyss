@@ -88,7 +88,7 @@
       followup=Math.max(minimumDamage,Math.round(followup*(1-Math.min(cap.guard,effectTotal(target.id,'guard')))));
       const dealt=Math.min(target.hp,followup);
       const visual=globalThis.EmberwildBattleEffects;
-      if(visual?.capturing)visual.scope({source:caster,mode:'damage',element},()=>{target.hp=Math.max(0,target.hp-dealt);});
+      if(visual?.capturing)visual.scope({source:caster,mode:'damage',element,critical:crit},()=>{target.hp=Math.max(0,target.hp-dealt);visual.result('resolved',target,caster,{critical:crit});});
       else target.hp=Math.max(0,target.hp-dealt);
       if(dealt>0)recordCombatContribution(caster,'damage',dealt);
       total+=dealt;
@@ -155,7 +155,7 @@
     const level=Math.max(1,h?.supportLevels?.[i]||1),value=+((sk.value+Math.max(0,level-1)*(Number.isFinite(sk.effectPerLevel)?sk.effectPerLevel:GS('skills.support.effectPerExtraLevel',.2)))*100).toFixed(1),cd=supportSkillCooldown(h,i);
     const elementText=sk.kind==='followup'?`${actionTurnElementLabel(sk.element)} · `:'';
     const combatText=sk.kind==='followup'?` · 基礎暴率 +${Number((sk.baseCritRate*100).toFixed(1))}% · 基礎暴傷 ${Number((sk.baseCritDamage*100).toFixed(1))}% · 防穿 +${Number(sk.defensePenetration.toFixed(2))} · 防無 +${Number((sk.defenseIgnore*100).toFixed(1))}%`:'';
-    return `${elementText}目標 ${TARGET_NAMES[sk.target]} · ${supportEffectDescription(sk,value)}${combatText} · 持續 ${Math.round(sk.duration)} 戰鬥回合 · 冷卻 ${cd} 回合 · 需求 LV${sk.level}${i===2?'／二轉':''}`;
+    return `${elementText}目標 ${TARGET_NAMES[sk.target]} · ${supportEffectDescription(sk,value)}${combatText} · 持續 ${Math.round(sk.duration)} 戰鬥回合 · 冷卻 ${cd} 回合 · 需求精通 Lv${sk.level}`;
   };
 
   battleBuffRows=function(){
@@ -192,7 +192,7 @@
         if(!SUPPORT_ELEMENT_KEYS.has(sk.element))throw Error(`輔助技能屬性無效：${job}-${i}`);
         if(!Number.isFinite(sk.value)||sk.value<0)throw Error(`輔助技能效果比例無效：${job}-${i}`);
         if(!Number.isFinite(sk.effectPerLevel)||sk.effectPerLevel<0)throw Error(`輔助技能每級增加倍率無效：${job}-${i}`);
-        if(!Number.isInteger(sk.duration)||sk.duration<0||!Number.isInteger(sk.cooldown)||sk.cooldown<0||!Number.isInteger(sk.level)||sk.level<1)throw Error(`輔助技能回合／等級無效：${job}-${i}`);
+        if(!Number.isInteger(sk.duration)||sk.duration<0||!Number.isInteger(sk.cooldown)||sk.cooldown<0||!Number.isInteger(sk.level)||sk.level<0)throw Error(`輔助技能回合／精通等級無效：${job}-${i}`);
         if(!Number.isFinite(sk.baseCritRate)||sk.baseCritRate<0||sk.baseCritRate>1||!Number.isFinite(sk.baseCritDamage)||sk.baseCritDamage<1||!Number.isFinite(sk.defensePenetration)||sk.defensePenetration<0||!Number.isFinite(sk.defenseIgnore)||sk.defenseIgnore<0||sk.defenseIgnore>1)throw Error(`輔助技能戰鬥判定無效：${job}-${i}`);
         if(SUPPORT_DEBUFF_KINDS.has(sk.kind)&&!['enemy','enemies'].includes(sk.target))throw Error(`傷害型 DEBUFF 目標必須是 enemy 或 enemies：${job}-${i}`);
       }

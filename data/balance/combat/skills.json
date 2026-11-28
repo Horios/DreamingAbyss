@@ -1,0 +1,5155 @@
+[
+  {
+    "id": "job0-core0",
+    "name": "裂地斬",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 3,
+    "power": 1.35,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以沉重武器震裂地面，正面擊潰敵人。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "sword",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 0,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 9.29516,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "job0-core1",
+    "name": "堅毅壁壘",
+    "activation": "active",
+    "requiredLevel": 2,
+    "cooldown": 6,
+    "power": 0.9,
+    "effect": "shield",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "架起堅固防勢，以護盾吸收來襲傷害。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "sword",
+    "requiredMastery": "sword",
+    "requiredMasteryLevel": 1,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 1,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "quest"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "job0-core2",
+    "name": "反擊之刃",
+    "activation": "proc",
+    "requiredLevel": 4,
+    "cooldown": 0,
+    "power": 0.65,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "抓住敵人攻勢的空隙，順勢追加一次反擊。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "sword",
+    "requiredMastery": "sword",
+    "requiredMasteryLevel": 2,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 2,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job0-core3",
+    "name": "浴血重擊",
+    "activation": "proc",
+    "requiredLevel": 6,
+    "cooldown": 0,
+    "power": 0.4,
+    "effect": "drain",
+    "element": "shadow",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "以兇猛重擊奪取敵人的生命力補充自身。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "axe",
+    "requiredMastery": "axe",
+    "requiredMasteryLevel": 2,
+    "weaponTypes": [
+      "axe"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 3,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job0-core4",
+    "name": "聖鋼裁決",
+    "activation": "active",
+    "requiredLevel": 14,
+    "cooldown": 4,
+    "power": 2.05,
+    "effect": "damage",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "description": "凝聚聖鋼之力，向敵人降下沉重裁決。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "sword",
+    "requiredMastery": "sword",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 4,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 11.454257,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job0-core5",
+    "name": "不屈戰意",
+    "activation": "proc",
+    "requiredLevel": 19,
+    "cooldown": 0,
+    "power": 0.8,
+    "effect": "shield",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "procBaseChance": 0.245,
+    "description": "在持續作戰中激發意志，為自身形成護盾。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "axe",
+    "requiredMastery": "axe",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "axe"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 5,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect"
+    }
+  },
+  {
+    "id": "job0-core6",
+    "name": "狂亂嘲諷",
+    "activation": "active",
+    "requiredLevel": 8,
+    "cooldown": 6,
+    "power": 0,
+    "effect": "tauntRage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "挑釁敵方攻擊力最高者，使其陷入狂暴並優先攻擊戰士。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "warrior-taunt",
+    "duration": 3,
+    "bossDuration": 1,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 1,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 6,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 3,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 2
+    },
+    "disabled": false
+  },
+  {
+    "id": "partner10-core7",
+    "name": "裂地斬",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 3,
+    "power": 1.35,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以沉重武器震裂地面，正面擊潰敵人。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 10,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 7,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 9.29516,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "partner10-core8",
+    "name": "反擊之刃",
+    "activation": "proc",
+    "requiredLevel": 2,
+    "cooldown": 0,
+    "power": 0.65,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "抓住敵人攻勢的空隙，順勢追加一次反擊。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 10,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 8,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "partner10-core9",
+    "name": "聖鋼裁決",
+    "activation": "active",
+    "requiredLevel": 14,
+    "cooldown": 4,
+    "power": 2.05,
+    "effect": "damage",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "凝聚聖鋼之力，向敵人降下沉重裁決。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "sword"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 10,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 9,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 11.454257,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job0-support0",
+    "name": "戰吼",
+    "target": "allies",
+    "kind": "attack",
+    "value": 0.18,
+    "duration": 10,
+    "cooldown": 16,
+    "level": 0,
+    "element": "physical",
+    "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 0,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "quest",
+        "questIds": [
+          "prologue"
+        ],
+        "rewardOnly": true
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job0-support1",
+    "name": "守護誓言",
+    "target": "weakest",
+    "kind": "guard",
+    "value": 0.3,
+    "duration": 8,
+    "cooldown": 14,
+    "level": 3,
+    "element": "light",
+    "description": "將守護誓言施加在最危急的隊友身上，替其承受壓力。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 1,
+      "kind": "support"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 45,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 48,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "job0-support2",
+    "name": "破甲怒吼",
+    "target": "enemies",
+    "kind": "fracture",
+    "value": 0.2,
+    "duration": 8,
+    "cooldown": 15,
+    "level": 14,
+    "element": "physical",
+    "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [
+        {
+          "mapIndex": 0,
+          "count": 10
+        }
+      ],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 2,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 48,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 48,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job0-support3",
+    "name": "戰吼",
+    "target": "allies",
+    "kind": "attack",
+    "value": 0.18,
+    "duration": 10,
+    "cooldown": 16,
+    "level": 0,
+    "element": "physical",
+    "description": "以戰吼鼓舞隊伍，讓全員更積極地發動攻勢。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "partnerId": 10,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "support",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 3,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job0-support4",
+    "name": "破甲怒吼",
+    "target": "enemies",
+    "kind": "fracture",
+    "value": 0.2,
+    "duration": 8,
+    "cooldown": 15,
+    "level": 14,
+    "element": "physical",
+    "description": "以怒吼動搖敵方防線，讓整個敵群更容易受到傷害。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [
+        {
+          "mapIndex": 0,
+          "count": 10
+        }
+      ],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "partnerId": 10,
+    "type": "support",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 4,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 48,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 48,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job1-core0",
+    "name": "火焰箭",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 3,
+    "power": 1.55,
+    "effect": "damage",
+    "element": "fire",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "射出凝聚火焰的魔法箭，灼穿眼前的敵人。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "fire",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "staff",
+      "grimoire"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 0,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 9.95992,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "job1-core1",
+    "name": "冰霜護幕",
+    "activation": "active",
+    "requiredLevel": 2,
+    "cooldown": 5,
+    "power": 0.9,
+    "effect": "shield",
+    "element": "ice",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "展開冰霜護幕，以護盾隔絕來襲傷害。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "ice",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "staff",
+      "grimoire"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 1,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "quest"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 18,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "job1-core2",
+    "name": "餘燼爆發",
+    "activation": "proc",
+    "requiredLevel": 4,
+    "cooldown": 0,
+    "power": 0.8,
+    "effect": "damage",
+    "element": "fire",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "讓殘留的魔力驟然引爆，追加猛烈的法術攻勢。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "fire",
+    "requiredMastery": "fire",
+    "requiredMasteryLevel": 2,
+    "weaponTypes": [
+      "staff",
+      "grimoire"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 2,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job1-core3",
+    "name": "奧術汲取",
+    "activation": "proc",
+    "requiredLevel": 6,
+    "cooldown": 0,
+    "power": 0.45,
+    "effect": "drain",
+    "element": "shadow",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "以奧術迴路抽取敵人的生命力，回補自身。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "shadow",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "staff",
+      "grimoire"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 3,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job1-core4",
+    "name": "隕星墜落",
+    "activation": "active",
+    "requiredLevel": 14,
+    "cooldown": 5,
+    "power": 2.6,
+    "effect": "damage",
+    "element": "fire",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "description": "召來高空隕星，以龐大魔力轟擊戰場。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "fire",
+    "requiredMastery": "fire",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "staff",
+      "grimoire"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 4,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 18,
+      "mpCost": 12.899612,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job1-core5",
+    "name": "魔力迴響",
+    "activation": "proc",
+    "requiredLevel": 19,
+    "cooldown": 0,
+    "power": 1.15,
+    "effect": "damage",
+    "element": "wind",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "procBaseChance": 0.245,
+    "description": "讓殘存魔力再次共鳴，形成追加的法術打擊。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "wind",
+    "requiredMastery": "wind",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "staff",
+      "grimoire"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 5,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job1-core6",
+    "name": "變形術",
+    "activation": "active",
+    "requiredLevel": 11,
+    "cooldown": 7,
+    "power": 1,
+    "effect": "polymorph",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "將敵人變形並賦予護盾；護盾存在期間無法行動且不會成為單體目標，護盾被打破時立即解除。對 BOSS 無效。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "mage-polymorph",
+    "duration": 3,
+    "bossDuration": 0,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 1,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 6,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "job1-core7",
+    "name": "冰霜新星",
+    "activation": "active",
+    "requiredLevel": 7,
+    "cooldown": 6,
+    "power": 0,
+    "effect": "frost",
+    "element": "ice",
+    "maxTargets": 99,
+    "requiresAdvanced": false,
+    "description": "使全部存活敵人結霜，降低速度。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "mage-frost-nova",
+    "duration": 0,
+    "bossDuration": 0,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 1,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 7,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 16,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "job1-core8",
+    "name": "寒冰箭",
+    "activation": "active",
+    "requiredLevel": 4,
+    "cooldown": 5,
+    "power": 0,
+    "effect": "freeze",
+    "element": "ice",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "凍結一名敵人，使其無法行動。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "mage-ice-arrow",
+    "duration": 2,
+    "bossDuration": 1,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 1,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 8,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 18,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 6,
+      "bossDurationSeconds": 3,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 5.5
+    }
+  },
+  {
+    "id": "job1-support0",
+    "name": "奧術共鳴",
+    "target": "allies",
+    "kind": "power",
+    "value": 0.2,
+    "duration": 10,
+    "cooldown": 17,
+    "level": 0,
+    "element": "wind",
+    "description": "讓奧術能量在隊伍間共鳴，強化技能的發揮。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "wind",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 0,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "quest",
+        "questIds": [
+          "prologue"
+        ],
+        "rewardOnly": true
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 54,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job1-support1",
+    "name": "時間凝滯",
+    "target": "enemies",
+    "kind": "weaken",
+    "value": 0.18,
+    "duration": 7,
+    "cooldown": 14,
+    "level": 3,
+    "element": "ice",
+    "description": "干擾敵人的時間感，使整個敵群的攻勢變得遲滯。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "ice",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 1,
+      "kind": "support"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 45,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 42,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job1-support2",
+    "name": "元素灼印",
+    "target": "enemy",
+    "kind": "followup",
+    "element": "fire",
+    "value": 0.25,
+    "duration": 10,
+    "cooldown": 16,
+    "level": 14,
+    "description": "在集火目標上留下元素印記，放大後續攻擊的效果。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "fire",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [
+        {
+          "mapIndex": 0,
+          "count": 10
+        }
+      ],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 2,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job2-core0",
+    "name": "穿透箭",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 3,
+    "power": 1.45,
+    "effect": "damage",
+    "element": "wind",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以強勁箭矢貫穿目標，迅速壓制敵人。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "bow",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "bow"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 0,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 9.633276,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "job2-core1",
+    "name": "林間休憩",
+    "activation": "active",
+    "requiredLevel": 2,
+    "cooldown": 5,
+    "power": 0.8,
+    "effect": "heal",
+    "element": "wind",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "藉由短暫喘息恢復傷勢，維持遠征節奏。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "bow",
+    "requiredMastery": "bow",
+    "requiredMasteryLevel": 1,
+    "weaponTypes": [
+      "bow"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 1,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "quest"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 18,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "job2-core2",
+    "name": "連射",
+    "activation": "proc",
+    "requiredLevel": 4,
+    "cooldown": 0,
+    "power": 0.75,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "趁普攻命中時連續補上箭矢，延續攻勢。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "bow",
+    "requiredMastery": "bow",
+    "requiredMasteryLevel": 2,
+    "weaponTypes": [
+      "bow"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 2,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job2-core3",
+    "name": "獵手印記",
+    "activation": "proc",
+    "requiredLevel": 6,
+    "cooldown": 0,
+    "power": 0.95,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "鎖定獵物的破綻，在射擊間追加精準打擊。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "crossbow",
+    "requiredMastery": "crossbow",
+    "requiredMasteryLevel": 2,
+    "weaponTypes": [
+      "crossbow"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 3,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job2-core4",
+    "name": "疾風箭雨",
+    "activation": "active",
+    "requiredLevel": 14,
+    "cooldown": 4,
+    "power": 2.15,
+    "effect": "damage",
+    "element": "wind",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "description": "引導疾風化作箭雨，覆蓋前方敵群。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "bow",
+    "requiredMastery": "bow",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "bow"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 4,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 11.730303,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job2-core5",
+    "name": "生命之箭",
+    "activation": "proc",
+    "requiredLevel": 19,
+    "cooldown": 0,
+    "power": 0.55,
+    "effect": "drain",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "procBaseChance": 0.245,
+    "description": "將生命之力附著於箭矢，命中後回補自身。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "crossbow",
+    "requiredMastery": "crossbow",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "crossbow"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 5,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job2-core6",
+    "name": "冰凍陷阱",
+    "activation": "active",
+    "requiredLevel": 7,
+    "cooldown": 6,
+    "power": 0,
+    "effect": "summonFreezeTrap",
+    "element": "ice",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "召喚 2 點生命的冰凍陷阱。每次受擊固定失去 1 點生命，並使敵方全體結霜；已結霜者改為短暫冰凍，持續時間依控制秒數設定。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "archer-freeze-trap",
+    "duration": 0,
+    "bossDuration": 0,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 2,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 6,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "job2-core7",
+    "name": "變形陷阱",
+    "activation": "active",
+    "requiredLevel": 11,
+    "cooldown": 7,
+    "power": 1,
+    "effect": "summonMorphTrap",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "召喚 1 點生命的變形陷阱。陷阱被擊破時，使攻擊者進入變形狀態。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "archer-morph-trap",
+    "duration": 3,
+    "bossDuration": 0,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 1,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 7,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "job2-support0",
+    "name": "鷹眼指引",
+    "target": "allies",
+    "kind": "critical",
+    "value": 0.1,
+    "duration": 12,
+    "cooldown": 18,
+    "level": 0,
+    "element": "wind",
+    "description": "以鷹眼般的視野指引隊伍，提高抓住致命破綻的機會。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 0,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "quest",
+        "questIds": [
+          "prologue"
+        ],
+        "rewardOnly": true
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 57,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 72,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job2-support1",
+    "name": "獵手標記",
+    "target": "enemy",
+    "kind": "damageAmp",
+    "element": "physical",
+    "value": 0.2,
+    "duration": 10,
+    "cooldown": 15,
+    "level": 3,
+    "description": "標記目前鎖定的獵物，使隊伍更容易對其造成有效傷害。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 1,
+      "kind": "support"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 48,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job2-support2",
+    "name": "風行庇佑",
+    "target": "allies",
+    "kind": "guard",
+    "value": 0.15,
+    "duration": 8,
+    "cooldown": 16,
+    "level": 14,
+    "element": "wind",
+    "description": "以流動氣流環繞隊伍，減輕敵方攻擊造成的壓力。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [
+        {
+          "mapIndex": 0,
+          "count": 10
+        }
+      ],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 2,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 48,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "job3-core0",
+    "name": "聖光審判",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 3,
+    "power": 1.4,
+    "effect": "damage",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以聖光審判敵人，將信念化為直接攻勢。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "light",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 0,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 9.465728,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "job3-core1",
+    "name": "治癒禱言",
+    "activation": "active",
+    "requiredLevel": 2,
+    "cooldown": 4,
+    "power": 1,
+    "effect": "heal",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以禱言治癒傷勢，優先扶起最需要支援的隊友。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "light",
+    "requiredMastery": "light",
+    "requiredMasteryLevel": 1,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 1,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "quest"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "job3-core2",
+    "name": "懲戒",
+    "activation": "proc",
+    "requiredLevel": 4,
+    "cooldown": 0,
+    "power": 0.7,
+    "effect": "damage",
+    "element": "shadow",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "在普通攻擊間引發聖光懲戒，追加神聖打擊。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "shadow",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 2,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "job3-core3",
+    "name": "生命泉源",
+    "activation": "proc",
+    "requiredLevel": 6,
+    "cooldown": 0,
+    "power": 0.65,
+    "effect": "heal",
+    "element": "shadow",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "喚起持續湧出的生命力，為受傷隊友提供治療。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "shadow",
+    "requiredMastery": "shadow",
+    "requiredMasteryLevel": 2,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 3,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured"
+    }
+  },
+  {
+    "id": "job3-core4",
+    "name": "黎明聖印",
+    "activation": "active",
+    "requiredLevel": 14,
+    "cooldown": 4,
+    "power": 2,
+    "effect": "damage",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "description": "刻下黎明聖印，以耀眼聖光壓制敵人。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "light",
+    "requiredMastery": "light",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 4,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 11.313708,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job3-core5",
+    "name": "神聖庇護",
+    "activation": "proc",
+    "requiredLevel": 19,
+    "cooldown": 0,
+    "power": 0.9,
+    "effect": "shield",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": true,
+    "procBaseChance": 0.245,
+    "description": "以神聖力量庇護自身，形成護盾。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "shadow",
+    "requiredMastery": "shadow",
+    "requiredMasteryLevel": 4,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 5,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect"
+    }
+  },
+  {
+    "id": "job3-core6",
+    "name": "植入恐怖",
+    "activation": "active",
+    "requiredLevel": 9,
+    "cooldown": 6,
+    "power": 0,
+    "effect": "fear",
+    "element": "shadow",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "植入恐怖，使敵人傷害降低並有機率無法行動。BOSS 的失去行動機率降低。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "controlId": "priest-implant-fear",
+    "duration": 3,
+    "bossDuration": 3,
+    "slowPct": 0.3,
+    "basicAttackBonus": 0.2,
+    "skipChance": 0.3,
+    "bossSkipChance": 0.15,
+    "damageReduction": 0.2,
+    "trapHp": 1,
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 6,
+      "kind": "core"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 9,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "partner13-core7",
+    "name": "聖光審判",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 3,
+    "power": 1.4,
+    "effect": "damage",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以聖光審判敵人，將信念化為直接攻勢。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 13,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 7,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 9.465728,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "partner13-core8",
+    "name": "治癒禱言",
+    "activation": "active",
+    "requiredLevel": 0,
+    "cooldown": 4,
+    "power": 1,
+    "effect": "heal",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "以禱言治癒傷勢，優先扶起最需要支援的隊友。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 13,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 8,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "partner13-core9",
+    "name": "生命泉源",
+    "activation": "proc",
+    "requiredLevel": 0,
+    "cooldown": 0,
+    "power": 0.65,
+    "effect": "heal",
+    "element": "shadow",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "喚起持續湧出的生命力，為受傷隊友提供治療。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 13,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 9,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured"
+    }
+  },
+  {
+    "id": "partner13-core10",
+    "name": "神聖庇護",
+    "activation": "proc",
+    "requiredLevel": 19,
+    "cooldown": 0,
+    "power": 0.9,
+    "effect": "shield",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.245,
+    "description": "以神聖力量庇護自身，形成護盾。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 13,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 10,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect"
+    }
+  },
+  {
+    "id": "job3-support0",
+    "name": "晨光祝福",
+    "target": "allies",
+    "kind": "regen",
+    "value": 0.025,
+    "duration": 10,
+    "cooldown": 16,
+    "level": 0,
+    "element": "light",
+    "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "light",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 0,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "quest",
+        "questIds": [
+          "prologue"
+        ],
+        "rewardOnly": true
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "job3-support1",
+    "name": "聖光庇護",
+    "target": "weakest",
+    "kind": "guard",
+    "value": 0.35,
+    "duration": 8,
+    "cooldown": 14,
+    "level": 3,
+    "element": "light",
+    "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "light",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 1,
+      "kind": "support"
+    },
+    "sources": [],
+    "timing": {
+      "cooldownSeconds": 45,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 48,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "job3-support2",
+    "name": "光明祈願",
+    "target": "allies",
+    "kind": "attack",
+    "value": 0.22,
+    "duration": 10,
+    "cooldown": 18,
+    "level": 14,
+    "element": "light",
+    "description": "向全隊獻上祈願，鼓舞眾人的攻擊意志。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": "light",
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [
+        {
+          "mapIndex": 0,
+          "count": 10
+        }
+      ],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 2,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 57,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job3-support3",
+    "name": "苦痛蔓延",
+    "description": "指定攻擊力最高的夥伴，使其下一次單體技能對額外最多 2 名敵人造成 30% 傷害。",
+    "target": "rankedAllies",
+    "statusTarget": "rankedAllies",
+    "statusTargetStat": "attack",
+    "statusTargetOrder": "highest",
+    "statusTargetIncludeSelf": false,
+    "kind": "applyStatus",
+    "statusId": "pain-spread",
+    "element": "physical",
+    "value": 0,
+    "duration": 99,
+    "cooldown": 16,
+    "level": 0,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "partnerId": null,
+    "type": "support",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 3,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "advanced"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 594,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "job3-support4",
+    "name": "晨光祝福",
+    "target": "allies",
+    "kind": "regen",
+    "value": 0.025,
+    "duration": 10,
+    "cooldown": 16,
+    "level": 0,
+    "element": "light",
+    "description": "以晨光祝福全隊，讓生命力在戰鬥中持續回流。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "partnerId": 13,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "support",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 4,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 51,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 60,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "job3-support5",
+    "name": "聖光庇護",
+    "target": "weakest",
+    "kind": "guard",
+    "value": 0.35,
+    "duration": 8,
+    "cooldown": 14,
+    "level": 3,
+    "element": "light",
+    "description": "將聖光集中在最危急的隊友身上，形成強力庇護。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "partnerId": 13,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "support",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 5,
+      "kind": "support"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 45,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 48,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "partner10-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 7,
+    "partnerId": 10,
+    "type": "passive",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 0,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "partner13-passive1",
+    "name": "治療強化",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "healingPct",
+        "value": 15
+      }
+    ],
+    "requiredLevel": 4,
+    "partnerId": 13,
+    "type": "passive",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 1,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "class0-initial0",
+    "name": "嘲諷",
+    "description": "使敵人優先攻擊自己。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 10,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 4
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 4,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "sword",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "tauntRage",
+    "systemEffect": "taunt",
+    "power": 0,
+    "cooldown": 6,
+    "duration": 3,
+    "target": "enemies",
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 16,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "class0-initial1",
+    "name": "減傷",
+    "description": "降低自身承受的傷害。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 11,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "sword",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "shield",
+    "systemEffect": "guard",
+    "power": 0.3,
+    "cooldown": 6,
+    "duration": 3,
+    "target": "self",
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 18,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    }
+  },
+  {
+    "id": "class0-initial2",
+    "name": "重擊",
+    "description": "對單一敵人造成強力傷害。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 12,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 0
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "sword",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 2.4,
+    "cooldown": 3,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 12.393547,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "class1-initial0",
+    "name": "魔爆",
+    "description": "以魔力爆發攻擊敵方群體。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 9,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 0
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "fire",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "fire",
+    "maxTargets": 3,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 1.8,
+    "cooldown": 3,
+    "target": "enemies",
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 14.733126,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "class1-initial1",
+    "name": "變形",
+    "description": "使單一敵人變形，暫時無法行動；首領免疫。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 10,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "fire",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "fire",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "polymorph",
+    "power": 1,
+    "cooldown": 7,
+    "duration": 2,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 6,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "class1-initial2",
+    "name": "火球",
+    "description": "以高倍率火球攻擊敵方群體，冷卻較長。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 11,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 4
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 4,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "fire",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "fire",
+    "maxTargets": 3,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 3.8,
+    "cooldown": 7,
+    "target": "enemies",
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 19.594871,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "class2-initial0",
+    "name": "連射",
+    "description": "連續射擊同一敵人，穩定造成傷害。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 8,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 0
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "bow",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 2,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target",
+      "hitCount"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 1.2,
+    "cooldown": 3,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 8.763561,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "class2-initial1",
+    "name": "狙擊",
+    "description": "瞄準單一敵人，造成高倍率爆發傷害。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 9,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "bow",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 4,
+    "cooldown": 7,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 16,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "class2-initial2",
+    "name": "繩索陷阱",
+    "description": "布設繩索陷阱，降低敵方行動速度。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 10,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 4
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 4,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "bow",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 3,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "systemEffect": "slow",
+    "power": 0.25,
+    "cooldown": 7,
+    "duration": 3,
+    "target": "enemies",
+    "timing": {
+      "cooldownSeconds": 24,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 18,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 6
+    }
+  },
+  {
+    "id": "class3-initial0",
+    "name": "聖光",
+    "description": "以聖光對單一敵人造成傷害。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 11,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 0
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "light",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "light",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "power": 2.5,
+    "cooldown": 3,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 12.649111,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    }
+  },
+  {
+    "id": "class3-initial1",
+    "name": "治療",
+    "description": "恢復生命比例最低的一名存活隊友。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 12,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "light",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "light",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "heal",
+    "power": 1.8,
+    "cooldown": 4,
+    "target": "weakest",
+    "timing": {
+      "cooldownSeconds": 15,
+      "mpCost": 10.733126,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "class3-initial2",
+    "name": "癒合",
+    "description": "使全隊持續恢復生命。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 13,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 4
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 4,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": "light",
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "light",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "heal",
+    "systemEffect": "regen",
+    "power": 0.025,
+    "cooldown": 8,
+    "duration": 4,
+    "target": "allies",
+    "timing": {
+      "cooldownSeconds": 27,
+      "mpCost": 8,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 0,
+      "durationSeconds": 24,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "injured",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "tutorial_echo",
+    "name": "追擊",
+    "activation": "proc",
+    "requiredLevel": 0,
+    "cooldown": 0,
+    "power": 0.5,
+    "effect": "damage",
+    "element": "physical",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "procBaseChance": 0.35,
+    "description": "普通攻擊時有 35% 機率追加一次 50% 攻擊力傷害。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": null,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "proc",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 13,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "powerPerLevel": 0,
+    "procChancePerLevel": 0,
+    "hitCount": 1,
+    "target": "enemy",
+    "commonEffectKeys": [],
+    "adapters": [
+      {
+        "job": 0,
+        "index": 13,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 12,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 11,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 14,
+        "kind": "core"
+      }
+    ],
+    "requiredWeaponType": null,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "warrior-cleave-chain",
+    "name": "順勢斬",
+    "description": "普攻或技能擊殺後，以 80% 攻擊追擊目前生命最低敵人；擊殺可連續追擊，最多 3 次。常駐生效、不占槽。",
+    "type": "passive",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 2,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 0,
+    "element": "physical",
+    "target": "self",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "kind": "buff",
+    "effects": [],
+    "eventPassive": {
+      "event": "kill",
+      "power": 0.8,
+      "maxAttacks": 3
+    },
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "mage-mana-cycle",
+    "name": "魔力循環",
+    "description": "敵人死亡事件群組使自身所有技能冷卻縮減；縮減秒數與獨立內部冷卻依秒數設定換算。常駐生效、不占槽。",
+    "type": "passive",
+    "jobs": [
+      1
+    ],
+    "adapter": {
+      "job": 1,
+      "index": 3,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 0,
+    "element": "physical",
+    "target": "self",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "kind": "buff",
+    "effects": [],
+    "eventPassive": {
+      "event": "enemyDeath",
+      "reduction": 1,
+      "cooldown": 2
+    },
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "archer-arrow-rain",
+    "name": "箭雨",
+    "description": "對所有存活敵人各造成 130% 攻擊力的物理傷害。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      2
+    ],
+    "adapter": {
+      "job": 2,
+      "index": 12,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 1.3,
+    "cooldown": 3,
+    "element": "physical",
+    "target": "enemies",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": false,
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 13.121403,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 4
+    }
+  },
+  {
+    "id": "priest-holy-prison",
+    "name": "神聖光牢",
+    "description": "對最多 3 名敵人施加可疊加的永久光牢；依標記的固定週期（含受控）引爆 50%，死亡引爆 30% 光屬性全體傷害；每個標記僅引爆一次，死亡可連鎖。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 15,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "class",
+        "masteryLevel": 2
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 3,
+    "element": "light",
+    "target": "enemies",
+    "maxTargets": 3,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "applyStatus",
+    "statusId": "holy-prison-mark",
+    "statusTarget": "enemies",
+    "statusMaxTargets": 3,
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 12,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 2.5
+    }
+  },
+  {
+    "id": "gel-guard",
+    "name": "凝膠緩衝",
+    "description": "缺少凝膠緩衝時施放，使自身承受的傷害降低 15%，持續 6 秒。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 14,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "shield",
+    "systemEffect": "guard",
+    "power": 0.15,
+    "cooldown": 6,
+    "duration": 3,
+    "target": "self",
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 5,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 6,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 0
+    },
+    "adapters": [
+      {
+        "job": 0,
+        "index": 14,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 13,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 13,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 16,
+        "kind": "core"
+      }
+    ],
+    "disabled": true
+  },
+  {
+    "id": "wolf-double-bite",
+    "name": "野狼怒吼",
+    "description": "開場 3 秒後施放：獲得「狼奔」，自身攻擊速度 +18%，持續 10 秒。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 15,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "shield",
+    "power": 0,
+    "attackSpeedPct": 18,
+    "cooldown": 30,
+    "target": "self",
+    "timing": {
+      "cooldownSeconds": 30,
+      "mpCost": 5,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 10,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 3
+    },
+    "adapters": [
+      {
+        "job": 0,
+        "index": 15,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 14,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 14,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 17,
+        "kind": "core"
+      }
+    ],
+    "systemEffect": "haste",
+    "duration": 10
+  },
+  {
+    "id": "living-core-renewal",
+    "name": "藤蔓纏繞",
+    "description": "開場 1 秒後施放：隨機綑綁一名敵人，使其普通攻擊重新蓄力（重置到完整間隔一次）。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 16,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 1,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "damage",
+    "systemEffect": "bind",
+    "power": 0,
+    "cooldown": 10,
+    "duration": 1,
+    "target": "enemy",
+    "timing": {
+      "cooldownSeconds": 10,
+      "mpCost": 10,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 1
+    },
+    "adapters": [
+      {
+        "job": 0,
+        "index": 16,
+        "kind": "core"
+      },
+      {
+        "job": 1,
+        "index": 15,
+        "kind": "core"
+      },
+      {
+        "job": 2,
+        "index": 15,
+        "kind": "core"
+      },
+      {
+        "job": 3,
+        "index": 18,
+        "kind": "core"
+      }
+    ]
+  },
+  {
+    "id": "gel-recovery",
+    "name": "凝膠復原",
+    "description": "穿戴或由信物賦予時常駐生效：每秒恢復 1 點生命，戰鬥內外都生效。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "regenPerSecond",
+        "value": 1
+      }
+    ],
+    "requiredLevel": 0,
+    "partnerId": null,
+    "type": "passive",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 4,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "ancient-heart-revival",
+    "name": "古木之心",
+    "description": "穿戴或由信物賦予時常駐生效：生命值降到 30% 以下時立即恢復為滿血，之後冷卻 60 秒。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "lowHpFullHeal",
+        "value": 30
+      }
+    ],
+    "requiredLevel": 0,
+    "partnerId": null,
+    "type": "passive",
+    "jobs": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 5,
+      "kind": "passive"
+    },
+    "sources": [
+      {
+        "type": "equipment"
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "partner10-core17",
+    "name": "嘲諷",
+    "description": "使敵人優先攻擊自己。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "adapter": {
+      "job": 0,
+      "index": 17,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 10
+      }
+    ],
+    "usageScope": "character",
+    "partnerId": 10,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "element": "physical",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "commonEffectKeys": [
+      "target"
+    ],
+    "targetLimit": true,
+    "effect": "tauntRage",
+    "systemEffect": "taunt",
+    "power": 0,
+    "cooldown": 6,
+    "duration": 3,
+    "target": "enemies",
+    "timing": {
+      "cooldownSeconds": 21,
+      "mpCost": 16,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 1,
+      "durationSeconds": 9,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "missingEffect",
+      "initialCooldownSeconds": 2
+    }
+  },
+  {
+    "id": "partner13-core19",
+    "name": "復活",
+    "activation": "active",
+    "requiredLevel": 7,
+    "cooldown": 15,
+    "power": 0,
+    "effect": "revive",
+    "element": "light",
+    "maxTargets": 1,
+    "requiresAdvanced": false,
+    "description": "呼喚倒下的隊友，使一名陣亡的我方成員復活。沒有隊友陣亡時不發動。",
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "mastery": null,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "weaponTypes": [
+      "prayerBook",
+      "holyStaff"
+    ],
+    "iconType": "auto",
+    "usageScope": "character",
+    "partnerId": 13,
+    "tags": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "type": "active",
+    "jobs": [
+      3
+    ],
+    "adapter": {
+      "job": 3,
+      "index": 19,
+      "kind": "core"
+    },
+    "sources": [
+      {
+        "type": "companion",
+        "companionId": 13
+      }
+    ],
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 12,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 3,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 0
+    },
+    "target": "fallen",
+    "commonEffectKeys": [
+      "target"
+    ],
+    "reviveHpRatio": 0.25
+  },
+  {
+    "id": "boss-summon-treants",
+    "name": "召喚樹精",
+    "description": "召喚兩隻迷路樹精菁英。場上還有召喚出的樹精時不施放。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "sources": [],
+    "usageScope": "boss",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "maxTargets": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "adapter": {
+      "job": 0,
+      "index": 18,
+      "kind": "core"
+    },
+    "cooldown": 6,
+    "effect": "summonAllies",
+    "element": "physical",
+    "summonMonsterId": "map0_mob2",
+    "summonCount": 2,
+    "summonKind": "elite",
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 3,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 5
+    }
+  },
+  {
+    "id": "boss-entangle",
+    "name": "纏藤",
+    "description": "藤蔓纏住一名隨機角色，使其普通攻擊秒數重新計算。",
+    "type": "active",
+    "activation": "active",
+    "jobs": [
+      0
+    ],
+    "sources": [],
+    "usageScope": "boss",
+    "partnerId": null,
+    "requiredLevel": 0,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "weaponTypes": [],
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "maxTargets": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "adapter": {
+      "job": 0,
+      "index": 19,
+      "kind": "core"
+    },
+    "cooldown": 2,
+    "effect": "resetBasic",
+    "element": "physical",
+    "timing": {
+      "cooldownSeconds": 10,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always",
+      "initialCooldownSeconds": 10
+    }
+  }
+]

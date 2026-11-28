@@ -1,0 +1,742 @@
+{
+  "entries": [
+    {
+      "id": "map0_mob0_material_normal",
+      "name": "黏稠凝膠",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "map0_mob0_material_elite",
+      "name": "黏稠凝膠（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "map0_mob1_material_normal",
+      "name": "完整狼牙",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "map0_mob1_material_elite",
+      "name": "完整狼牙（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "map0_mob2_material_normal",
+      "name": "活性樹芯",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.025,
+        0.035,
+        0.048
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "map0_mob2_material_elite",
+      "name": "活性樹芯（菁英）",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "map0_boss_material",
+      "name": "古木年輪",
+      "enabled": true,
+      "type": "sourceMaterial",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss"
+      ]
+    },
+    {
+      "id": "boss_gear",
+      "name": "BOSS 專屬裝備",
+      "enabled": true,
+      "type": "bossGear",
+      "key": "",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.02,
+        0.0333333,
+        0.05
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss"
+      ]
+    },
+    {
+      "id": "radiant_normal",
+      "name": "光輝碎塊（普通／菁英）",
+      "enabled": true,
+      "type": "material",
+      "key": "光輝碎塊",
+      "kinds": [
+        "normal",
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0002,
+        0.0002,
+        0.0002
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "radiant_boss",
+      "name": "光輝碎塊（首領）",
+      "enabled": true,
+      "type": "material",
+      "key": "光輝碎塊",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.004,
+        0.004,
+        0.004
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss"
+      ]
+    },
+    {
+      "id": "gel-armor-normal",
+      "name": "凝膠護符",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:3:2",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000133333,
+        0.000166667,
+        0.0002
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "gel-armor-elite",
+      "name": "凝膠護符",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:3:2",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0005,
+        0.0006
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0"
+      ]
+    },
+    {
+      "id": "wolf-fang-pendant-normal",
+      "name": "狼牙綴飾",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:3:1",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000133333,
+        0.000166667,
+        0.0002
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "wolf-fang-pendant-elite",
+      "name": "狼牙綴飾",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:3:1",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0005,
+        0.0006
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob1"
+      ]
+    },
+    {
+      "id": "living-core-talisman-normal",
+      "name": "纏藤法杖",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:0:0",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000133333,
+        0.000166667,
+        0.0002
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "living-core-talisman-elite",
+      "name": "纏藤法杖",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:0:0",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0004,
+        0.0005,
+        0.0006
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob2"
+      ]
+    },
+    {
+      "id": "ancient-heart-bracer-boss",
+      "name": "古木之心護腕",
+      "enabled": true,
+      "type": "equipment",
+      "key": "form:4:2:1",
+      "kinds": [
+        "boss"
+      ],
+      "chanceByDifficulty": [
+        0.0166667,
+        0.0266667,
+        0.04
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_boss"
+      ]
+    },
+    {
+      "id": "gear_pool_map0_mob0_normal",
+      "name": "一般裝備（苔原史萊姆）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000666667,
+        0.0009,
+        0.00113333
+      ],
+      "sources": [
+        "map0_mob0"
+      ],
+      "pool": [
+        {
+          "key": "form:3:0:0",
+          "weight": 1
+        },
+        {
+          "key": "form:3:3:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gear_pool_map0_mob0_elite",
+      "name": "一般裝備（菁英苔原史萊姆）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.002,
+        0.00266667,
+        0.00333333
+      ],
+      "sources": [
+        "map0_mob0"
+      ],
+      "pool": [
+        {
+          "key": "form:3:0:0",
+          "weight": 1
+        },
+        {
+          "key": "form:3:3:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gear_pool_map0_mob1_normal",
+      "name": "一般裝備（林間野狼）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000666667,
+        0.0009,
+        0.00113333
+      ],
+      "sources": [
+        "map0_mob1"
+      ],
+      "pool": [
+        {
+          "key": "form:2:0:0",
+          "weight": 1
+        },
+        {
+          "key": "form:2:1:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gear_pool_map0_mob1_elite",
+      "name": "一般裝備（菁英林間野狼）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.002,
+        0.00266667,
+        0.00333333
+      ],
+      "sources": [
+        "map0_mob1"
+      ],
+      "pool": [
+        {
+          "key": "form:2:0:0",
+          "weight": 1
+        },
+        {
+          "key": "form:2:1:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gear_pool_map0_mob2_normal",
+      "name": "一般裝備（迷路樹精）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.000666667,
+        0.0009,
+        0.00113333
+      ],
+      "sources": [
+        "map0_mob2"
+      ],
+      "pool": [
+        {
+          "key": "form:1:0:1",
+          "weight": 1
+        },
+        {
+          "key": "form:1:1:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gear_pool_map0_mob2_elite",
+      "name": "一般裝備（菁英迷路樹精）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.002,
+        0.00266667,
+        0.00333333
+      ],
+      "sources": [
+        "map0_mob2"
+      ],
+      "pool": [
+        {
+          "key": "form:1:0:1",
+          "weight": 1
+        },
+        {
+          "key": "form:1:1:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gear_pool_map0_boss",
+      "name": "一般裝備（古木守望者）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "monsterGear",
+      "key": "",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.0666667,
+        0.0833333,
+        0.1
+      ],
+      "sources": [
+        "map0_boss"
+      ],
+      "pool": [
+        {
+          "key": "form:0:0:0",
+          "weight": 1
+        },
+        {
+          "key": "form:0:1:0",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gem_map0_normal",
+      "name": "地圖寶石（無名密林）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "gemPool",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.0033,
+        0.0066,
+        0.011
+      ],
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ],
+      "pool": [
+        {
+          "key": "1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gem_map0_elite",
+      "name": "地圖寶石（菁英，無名密林）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "gemPool",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.0099,
+        0.0187,
+        0.0297
+      ],
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ],
+      "pool": [
+        {
+          "key": "1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "gem_map0_boss",
+      "name": "首領寶石（無名密林）",
+      "enabled": true,
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "type": "gemPool",
+      "key": "",
+      "kinds": [
+        "boss",
+        "final"
+      ],
+      "chanceByDifficulty": [
+        0.0297,
+        0.044,
+        0.0605
+      ],
+      "sources": [
+        "map0_boss"
+      ],
+      "pool": [
+        {
+          "key": "1",
+          "weight": 2
+        },
+        {
+          "key": "2",
+          "weight": 1
+        },
+        {
+          "key": "3",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "cultivation_dust_normal_map0",
+      "name": "鍛鐵",
+      "enabled": true,
+      "type": "ore",
+      "key": "",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.005081300813008131,
+        0.007339656729900633,
+        0.00903342366757001
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ],
+      "independent": true
+    },
+    {
+      "id": "cultivation_dust_elite_map0",
+      "name": "鍛鐵",
+      "enabled": true,
+      "type": "ore",
+      "key": "",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.03952122854561879,
+        0.05081300813008131,
+        0.062104787714543815
+      ],
+      "quantityMin": 1,
+      "quantityMax": 2,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ],
+      "independent": true
+    },
+    {
+      "id": "base_dust_map0_normal",
+      "name": "粉塵",
+      "enabled": true,
+      "type": "material",
+      "key": "粉塵",
+      "kinds": [
+        "normal"
+      ],
+      "chanceByDifficulty": [
+        0.1240079365079365,
+        0.17361111111111108,
+        0.2232142857142857
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ],
+      "independent": true
+    },
+    {
+      "id": "base_dust_map0_elite",
+      "name": "粉塵",
+      "enabled": true,
+      "type": "material",
+      "key": "粉塵",
+      "kinds": [
+        "elite"
+      ],
+      "chanceByDifficulty": [
+        0.3720238095238095,
+        0.5208333333333333,
+        0.6696428571428571
+      ],
+      "quantityMin": 1,
+      "quantityMax": 1,
+      "sources": [
+        "map0_mob0",
+        "map0_mob1",
+        "map0_mob2"
+      ],
+      "independent": true
+    }
+  ]
+}

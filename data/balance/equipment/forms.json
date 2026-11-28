@@ -1,0 +1,427 @@
+[
+  [
+    [
+      {
+        "id": "job0-slot0-form0",
+        "name": "長劍",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ],
+        "weaponType": "sword"
+      },
+      {
+        "id": "job0-slot0-form2",
+        "name": "巨斧",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          },
+          {
+            "key": "attackSpeedPct",
+            "value": -10
+          }
+        ],
+        "weaponType": "axe"
+      }
+    ],
+    [
+      {
+        "id": "job0-slot1-form0",
+        "name": "鐵甲",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job0-slot2-form0",
+        "name": "皮盾",
+        "wearableJobs": [
+          0
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ],
+        "baseStat": "defense"
+      }
+    ],
+    [
+      {
+        "id": "job0-slot3-form0",
+        "name": "木腕甲",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "job1-slot0-form0",
+        "name": "木杖",
+        "fixedEffects": [
+          {
+            "key": "skillDamagePct",
+            "value": 5
+          }
+        ],
+        "wearableJobs": [
+          1
+        ],
+        "weaponType": "staff"
+      },
+      {
+        "id": "job1-slot0-form2",
+        "name": "水晶球",
+        "fixedEffects": [
+          {
+            "key": "cooldownPct",
+            "value": 5
+          }
+        ],
+        "wearableJobs": [
+          1
+        ],
+        "weaponType": "grimoire"
+      }
+    ],
+    [
+      {
+        "id": "job1-slot1-form0",
+        "name": "布袍",
+        "wearableJobs": [
+          1,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearDefPct",
+            "value": -20
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job1-slot2-form0",
+        "name": "法書",
+        "wearableJobs": [
+          1
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job1-slot3-form0",
+        "name": "硬木符印",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "job2-slot0-form0",
+        "name": "長弓",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          },
+          {
+            "key": "attackSpeedPct",
+            "value": -10
+          }
+        ],
+        "weaponType": "bow"
+      },
+      {
+        "id": "job2-slot0-form1",
+        "name": "手弩",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackSpeedPct",
+            "value": 10
+          }
+        ],
+        "weaponType": "crossbow"
+      }
+    ],
+    [
+      {
+        "id": "job2-slot1-form0",
+        "name": "皮衣",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearDefPct",
+            "value": -10
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job2-slot2-form0",
+        "name": "皮箭袋",
+        "wearableJobs": [
+          2
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job2-slot3-form0",
+        "name": "木戒指",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "job3-slot0-form0",
+        "name": "權杖",
+        "fixedEffects": [
+          {
+            "key": "defensePct",
+            "value": 5
+          }
+        ],
+        "wearableJobs": [
+          3
+        ],
+        "weaponType": "holyStaff"
+      }
+    ],
+    [],
+    [
+      {
+        "id": "job3-slot2-form0",
+        "name": "聖徽",
+        "wearableJobs": [
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job3-slot3-form0",
+        "name": "手鍊",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatAttack",
+            "value": 0
+          }
+        ]
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "id": "vine-staff",
+        "name": "纏藤法杖",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearAtkPct",
+            "value": 10
+          }
+        ],
+        "weaponType": "staff"
+      }
+    ],
+    [
+      {
+        "id": "gel-armor",
+        "name": "凝膠護甲",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "gearDefPct",
+            "value": 15
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "living-core-talisman",
+        "name": "活芯護符",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 5
+          }
+        ]
+      },
+      {
+        "id": "ancient-heart-bracer",
+        "name": "古木之心護腕",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 50
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "id": "job4-slot3-form0",
+        "name": "啟程護符",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 5
+          }
+        ]
+      },
+      {
+        "id": "wolf-fang-pendant",
+        "name": "狼牙綴飾",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "attackPct",
+            "value": 2
+          }
+        ]
+      },
+      {
+        "id": "gel-charm",
+        "name": "凝膠護符",
+        "wearableJobs": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fixedEffects": [
+          {
+            "key": "flatHp",
+            "value": 5
+          }
+        ]
+      }
+    ]
+  ]
+]

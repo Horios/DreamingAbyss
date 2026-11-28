@@ -1,0 +1,576 @@
+[
+  {
+    "kind": "equipment",
+    "key": "form:0:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:0:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:1:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:2:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:3:3:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:3:0",
+    "iconType": "auto",
+    "description": "新手教學取得的通用飾品，四個職業皆可穿戴。"
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:1:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:2:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:2:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:3:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:1",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "boss:0:3",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "item",
+    "key": "imbue_fire",
+    "iconType": "auto",
+    "description": "讓武器暫時附著火之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_fire",
+    "iconType": "auto",
+    "description": "以火之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_fire",
+    "iconType": "auto",
+    "description": "強化對火之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_ice",
+    "iconType": "auto",
+    "description": "讓武器暫時附著冰之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_ice",
+    "iconType": "auto",
+    "description": "以冰之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_ice",
+    "iconType": "auto",
+    "description": "強化對冰之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_wind",
+    "iconType": "auto",
+    "description": "讓武器暫時附著風之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_wind",
+    "iconType": "auto",
+    "description": "以風之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_wind",
+    "iconType": "auto",
+    "description": "強化對風之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_light",
+    "iconType": "auto",
+    "description": "讓武器暫時附著光之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_light",
+    "iconType": "auto",
+    "description": "以光之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_light",
+    "iconType": "auto",
+    "description": "強化對光之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "imbue_shadow",
+    "iconType": "auto",
+    "description": "讓武器暫時附著暗之力，調整普通攻擊的屬性。"
+  },
+  {
+    "kind": "item",
+    "key": "ward_shadow",
+    "iconType": "auto",
+    "description": "以暗之力形成短暫防護，降低對應屬性的威脅。"
+  },
+  {
+    "kind": "item",
+    "key": "elementTonic_shadow",
+    "iconType": "auto",
+    "description": "強化對暗之力的運用，使對應屬性的攻勢更加集中。"
+  },
+  {
+    "kind": "item",
+    "key": "exp_100_30m",
+    "iconType": "auto",
+    "description": "暫時增加出戰角色取得的經驗值。"
+  },
+  {
+    "kind": "item",
+    "key": "drop_50_30m",
+    "iconType": "auto",
+    "description": "暫時提高物品掉落機率。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_small",
+    "iconType": "auto",
+    "description": "恢復少量固定生命值，供戰鬥中緊急補血使用。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_standard",
+    "iconType": "auto",
+    "description": "恢復固定生命值，可作為戰鬥中的備用補給。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_greater",
+    "iconType": "auto",
+    "description": "恢復較多固定生命值，適合生命偏低時救急。"
+  },
+  {
+    "kind": "item",
+    "key": "heal_supreme",
+    "iconType": "auto",
+    "description": "提供大量固定生命值恢復，供危急戰況使用。"
+  },
+  {
+    "kind": "item",
+    "key": "power_tier_reroll",
+    "iconType": "auto",
+    "description": "重新抽選一件裝備的 T1～T10 強度階級；抽選分布依該裝備原始掉落難度決定。"
+  },
+  {
+    "kind": "item",
+    "key": "level_scroll",
+    "iconType": "auto",
+    "description": "提升全隊共用等級 1 級，後備與名冊夥伴同步成長。"
+  },
+  {
+    "id": "item:companion-ticket-10",
+    "kind": "item",
+    "key": "companion-ticket-10",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "id": "item:companion-ticket-13",
+    "kind": "item",
+    "key": "companion-ticket-13",
+    "iconType": "auto",
+    "description": "讓指定夥伴加入隊伍的招募券。"
+  },
+  {
+    "kind": "material",
+    "key": "鍛鐵",
+    "iconType": "auto",
+    "description": "裝備強化材料。"
+  },
+  {
+    "kind": "material",
+    "key": "粉塵",
+    "iconType": "auto",
+    "description": "基礎裝備強化與以太鍛鐵製作材料，不可販售。",
+    "saleEnabled": false
+  },
+  {
+    "kind": "material",
+    "key": "以太鍛鐵",
+    "iconType": "auto",
+    "description": "高階裝備強化材料。"
+  },
+  {
+    "kind": "material",
+    "key": "光輝碎塊",
+    "iconType": "auto",
+    "description": "洗鍊時用於保留指定詞條。"
+  },
+  {
+    "kind": "material",
+    "key": "黏稠凝膠",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "完整狼牙",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "活性樹芯",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "gem",
+    "key": "0",
+    "iconType": "auto",
+    "description": "攻擊 +2",
+    "color": "#EF5D5D",
+    "displayName": "赤焰石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "1",
+    "iconType": "auto",
+    "description": "攻擊速度 +1%",
+    "color": "#49B976",
+    "displayName": "疾風石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "2",
+    "iconType": "auto",
+    "description": "暴擊率 +1%",
+    "color": "#AE83EC",
+    "displayName": "靈巧石・1階"
+  },
+  {
+    "kind": "token",
+    "key": "berserk",
+    "iconType": "auto",
+    "description": "狂戰信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "guardian",
+    "iconType": "auto",
+    "description": "守護信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "pursuit",
+    "iconType": "auto",
+    "description": "追擊信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "arcane",
+    "iconType": "auto",
+    "description": "魔導信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "echo",
+    "iconType": "auto",
+    "description": "迴響信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "hunt",
+    "iconType": "auto",
+    "description": "狩獵信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "prayer",
+    "iconType": "auto",
+    "description": "祈禱信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "revival",
+    "iconType": "auto",
+    "description": "復甦信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "plunder",
+    "iconType": "auto",
+    "description": "掠奪信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "token",
+    "key": "endurance",
+    "iconType": "auto",
+    "description": "持久信物：所有夥伴通用的單一信物。"
+  },
+  {
+    "kind": "material",
+    "key": "【困難】古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "material",
+    "key": "【地獄】古木年輪",
+    "iconType": "auto",
+    "description": "探索途中收集的製作素材。"
+  },
+  {
+    "kind": "gem",
+    "key": "3",
+    "iconType": "auto",
+    "description": "生命 +10",
+    "color": "#E8EDF7",
+    "displayName": "生息石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "4",
+    "iconType": "auto",
+    "description": "防禦 +1",
+    "color": "#64AAF0",
+    "displayName": "守護石・1階"
+  },
+  {
+    "kind": "gem",
+    "key": "5",
+    "iconType": "auto",
+    "description": "攻擊 +4",
+    "color": "#EF5D5D",
+    "displayName": "赤焰石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "6",
+    "iconType": "auto",
+    "description": "攻擊速度 +2%",
+    "color": "#49B976",
+    "displayName": "疾風石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "7",
+    "iconType": "auto",
+    "description": "暴擊率 +2%",
+    "color": "#AE83EC",
+    "displayName": "靈巧石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "8",
+    "iconType": "auto",
+    "description": "生命 +20",
+    "color": "#E8EDF7",
+    "displayName": "生息石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "9",
+    "iconType": "auto",
+    "description": "防禦 +2",
+    "color": "#64AAF0",
+    "displayName": "守護石・2階"
+  },
+  {
+    "kind": "gem",
+    "key": "10",
+    "iconType": "auto",
+    "description": "攻擊 +6",
+    "color": "#EF5D5D",
+    "displayName": "赤焰石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "11",
+    "iconType": "auto",
+    "description": "攻擊速度 +3%",
+    "color": "#49B976",
+    "displayName": "疾風石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "12",
+    "iconType": "auto",
+    "description": "暴擊率 +3%",
+    "color": "#AE83EC",
+    "displayName": "靈巧石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "13",
+    "iconType": "auto",
+    "description": "生命 +30",
+    "color": "#E8EDF7",
+    "displayName": "生息石・3階"
+  },
+  {
+    "kind": "gem",
+    "key": "14",
+    "iconType": "auto",
+    "description": "防禦 +3",
+    "color": "#64AAF0",
+    "displayName": "守護石・3階"
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:0:0",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "equipment",
+    "key": "form:4:3:2",
+    "iconType": "auto",
+    "description": ""
+  },
+  {
+    "kind": "material",
+    "key": "寶石粉塵",
+    "iconType": "lucide:gem",
+    "description": "分解寶石取得，專供寶石升級；與裝備強化粉塵分開計算。",
+    "saleEnabled": true
+  }
+]

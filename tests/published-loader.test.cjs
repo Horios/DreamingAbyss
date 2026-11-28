@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const source=fs.readFileSync(require.resolve('../js/balance/published-loader.js'),'utf8');
-function harness({badSchema=false,stallMetadata=false,executionFailure=false,storage={},preview=false,bootSave=null,loadFailure=false}={}){
+function harness({styles=[],badSchema=false,stallMetadata=false,executionFailure=false,storage={},preview=false,bootSave=null,loadFailure=false,manifest=null,modules=null}={}){
   const nodes=[],links=[],scripts=[],listeners=new Map(),timers=new Map(),values=new Map(Object.entries(storage));let nextTimer=0;
   class Node{
     constructor(tag){this.tag=tag;this.style={};this.children=[];this.textContent='';this.removed=false;nodes.push(this);}
@@ -12,19 +12,20 @@ function harness({badSchema=false,stallMetadata=false,executionFailure=false,sto
     }return node;}
   }
   const app=new Node('app'),body=new Node('body'),head=new Node('head'),published={schema:'emberwild-balance-v1',schemaVersion:badSchema?99:1,items:[{cost:1}]};
-  const document={getElementById:()=>app,createElement:tag=>new Node(tag),body,head,querySelectorAll:()=>['first.js','second.js','third.js'].map(file=>({getAttribute:()=>file}))};
+  const sheets=styles.map(({name,loaded=false,empty=false})=>{const events=new Map();return {href:'https://emberwild.test/css/'+name+'?v=test',sheet:loaded?{cssRules:[{}]}:empty?{cssRules:[]}:null,addEventListener:(type,fn)=>events.set(type,fn),removeEventListener:type=>events.delete(type),emit(type){events.get(type)?.();}};});
+  const document={getElementById:()=>app,createElement:tag=>new Node(tag),body,head,querySelectorAll:selector=>selector==='link[rel="stylesheet"]'?sheets:['first.js','second.js','third.js'].map(file=>({getAttribute:()=>file}))};
   const emit=(type,event)=>{for(const fn of listeners.get(type)||[])fn(event);};
   const ctx=vm.createContext({state:null,party:null,BACKUP_KEY:'emberwild-save-v1-backup',VERIFIED_KEY:'emberwild-save-v1-verified',BATTLE_STATS_STORAGE_KEY:'emberwild-battle-statistics-v1',migrateWorldSave:data=>data,navigator:{locks:{request:(_name,callback)=>Promise.resolve().then(callback)}},document,URL,AbortController,Date,Promise,Error,Array,JSON,Map,Set,order:[],applied:[],loaded:[],toasts:[],__EMBERWILD_BOOT_SAVE_RAW:bootSave,
     location:{href:'https://emberwild.test/'+(preview?'preview/':''),pathname:preview?'/preview/':'/',reload(){}},
     localStorage:{getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)},
     setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout:id=>timers.delete(id),clearInterval(){},
-    fetch:async(url,{signal})=>{if(stallMetadata&&url.startsWith('data/build.json'))return new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Error('aborted'))));return {ok:true,json:async()=>url.startsWith('data/build.json')?{commit:'a'.repeat(40)}:published};},
-    EmberwildBalanceDocument:{inspect:()=>[]},applyBalanceConfig(data){ctx.applied.push(data);},loadParty(data){ctx.loaded.push(data);if(loadFailure===true||typeof loadFailure==='function'&&loadFailure(data))throw Error('道具資料無效');ctx.party=data;ctx.state=data.members?.[0]||{};},
+    fetch:async(url,{signal})=>{if(stallMetadata&&url.startsWith('data/build.json'))return new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Error('aborted'))));if(url.startsWith('data/balance/manifest.json'))return manifest?{ok:true,status:200,json:async()=>manifest}:{ok:false,status:404,json:async()=>({})};const body=url.startsWith('data/build.json')?{commit:'a'.repeat(40)}:published;return {ok:true,status:200,json:async()=>body,text:async()=>JSON.stringify(body)};},
+    EmberwildBalanceDocument:{inspect:()=>[]},EmberwildBalanceModules:modules,applyBalanceConfig(data){ctx.applied.push(data);},loadParty(data){ctx.loaded.push(data);if(loadFailure===true||typeof loadFailure==='function'&&loadFailure(data))throw Error('道具資料無效');ctx.party=data;ctx.state=data.members?.[0]||{};},
     importBalanceJSON:async()=>true,resetBalanceJSON:()=>true,exportableBalance:()=>ctx.__EMBERWILD_BALANCE_SOURCE,toast(message){ctx.toasts.push(message);},backToTitle(){ctx.returnedToTitle=true;},
     addEventListener:(type,fn)=>{if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(fn);},removeEventListener:(type,fn)=>listeners.get(type)?.delete(fn),dispatchEvent(){},Event:class{}
   });ctx.window=ctx;
   const done=vm.runInContext(source,ctx);
-  return {ctx,done,published,links,scripts,nodes,timers,values,app,async flush(){await new Promise(resolve=>setImmediate(resolve));},expire(){for(const {fn} of [...timers.values()])fn();}};
+  return {ctx,done,published,links,scripts,nodes,timers,values,app,sheets,async flush(){await new Promise(resolve=>setImmediate(resolve));},expire(){for(const {fn} of [...timers.values()])fn();}};
 }
 
 test('preloads overlap while execution stays ordered and balance applies exactly once',async()=>{
@@ -178,4 +179,40 @@ test('a verified-copy write failure leaves the loaded save and both stored recor
   assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);
   assert.equal(h.values.get('emberwild-save-v1'),primary);
   assert.equal(h.values.has('emberwild-save-v1-verified'),false);
+});
+
+test('a manifest whose modules are missing from data/balance.json stops boot before any module download',async()=>{
+  const modules={checkManifest:()=>[],split:()=>({modules:{'world/monsters':undefined}})};
+  const h=harness({manifest:{modules:[{id:'world/monsters',present:true,source:'balanceSettings.monsters'}],integrated:{sha256:'0'.repeat(64)}},modules});await h.done;
+  assert.match(h.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,/缺少必要模組：world\/monsters/);assert.equal(h.links.length,0);assert.equal(h.ctx.applied.length,0);
+  const bad=harness({manifest:{modules:[]},modules:{checkManifest:()=>['manifest 缺少模組：world/maps'],split:()=>({modules:{}})}});await bad.done;
+  assert.match(bad.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,/模組清單無效/);assert.equal(bad.links.length,0);
+});
+
+test('a deployment without a manifest still loads the integrated document (pre-module builds)',async()=>{
+  const h=harness();await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);assert.equal(h.ctx.__EMBERWILD_BALANCE_MODULES.state,'legacy');
+});
+
+
+test('missing battle CSS is retried in place and must load before game modules execute',async()=>{
+  const h=harness({styles:[{name:'seconds-battle.css',loaded:true},{name:'battle-summary.css'},{name:'battle-effects.css',empty:true}]});
+  await h.flush();assert.equal(h.links.length,0);assert.equal(h.scripts.length,0);
+  assert.equal(new URL(h.sheets[0].href).searchParams.has('battle-build'),false,'loaded CSS keeps its URL and order');
+  for(const sheet of h.sheets.slice(1)){assert.equal(new URL(sheet.href).searchParams.get('battle-build'),'a'.repeat(40));sheet.sheet={cssRules:[{}]};sheet.emit('load');}
+  await h.flush();for(const link of h.links)link.onload();await h.done;
+  assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,true);assert.equal(h.scripts.length,3);assert.equal(h.timers.size,0);
+});
+test('failed or stalled battle CSS never starts the malformed game and preserves saved bytes',async()=>{
+  for(const stalled of [false,true]){
+    const h=harness({styles:[{name:'battle-effects.css'}],storage:{'emberwild-save-probe':'unchanged'}});await h.flush();
+    if(stalled)h.expire();else h.sheets[0].emit('error');await h.done;
+    assert.match(h.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,stalled?/戰鬥樣式載入逾時/:/戰鬥樣式載入失敗/);
+    assert.equal(h.scripts.length,0);assert.equal(h.ctx.__EMBERWILD_BALANCE_READY,undefined);assert.equal(h.values.get('emberwild-save-probe'),'unchanged');assert.equal(h.timers.size,0);
+  }
+});
+
+test('an empty stylesheet after retry is rejected even if its load event fires',async()=>{
+  const h=harness({styles:[{name:'battle-summary.css',empty:true}]});await h.flush();h.sheets[0].emit('load');await h.done;
+  assert.match(h.ctx.__EMBERWILD_BALANCE_LOAD_ERROR,/戰鬥樣式載入失敗/);assert.equal(h.scripts.length,0);assert.equal(h.timers.size,0);
 });

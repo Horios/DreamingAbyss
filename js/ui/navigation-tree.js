@@ -4,24 +4,23 @@
 (()=>{
   const VERSION=1,copy=value=>structuredClone(value);
   const PAGES={
-    battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',
+    battle:'荒野探索',statistics:'戰鬥統計',bestiary:'怪物圖鑑',shop:'商店',
     roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',
-    equipment:'背包',worn:'裝備與信物',forge:'裝備強化',bossCraft:'BOSS 製作',
-    'story-main':'主線','story-side':'支線','story-npc':'NPC 任務',quests:'委託',wishingLake:'許願湖',
-    gather:'採集',alchemy:'煉金'
+    equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',crafting:'製作',
+    'story-main':'主線','story-side':'支線','story-npc':'NPC 任務',quests:'委託',wishingLake:'許願湖'
   };
   const RETIRED=new Set(['guide']);
   const DEFAULTS={version:VERSION,groups:[
-    {id:'map',label:'探索',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計']]},
+    {id:'map',label:'探索',expanded:false,pages:[['battle','荒野探索'],['statistics','戰鬥統計'],['bestiary','怪物圖鑑']]},
     {id:'adventure-config',label:'隊伍',expanded:false,pages:[['roster','隊伍編成']]},
     {id:'skills',label:'技能',expanded:false,pages:[['skills','技能']]},
-    {id:'gear',label:'裝備',expanded:false,pages:[['worn','裝備與信物'],['forge','裝備強化'],['bossCraft','BOSS 製作']]},
+    {id:'gear',label:'裝備',expanded:false,pages:[['worn','裝備與信物'],['forge','裝備工坊']]},
     {id:'bag',label:'背包',expanded:false,pages:[['equipment','背包']]},
     {id:'partners',label:'夥伴',expanded:false,pages:[['partnerRoster','夥伴名冊']]},
     {id:'character',label:'角色',expanded:false,pages:[['character','角色能力']]},
     {id:'missions',label:'任務',expanded:false,pages:[['story-main','主線'],['story-side','支線'],['story-npc','NPC 任務'],['quests','委託'],['wishingLake','許願湖']]},
     {id:'shop',label:'商店',expanded:false,pages:[['shop','商品列表']]},
-    {id:'life',label:'生活',expanded:false,pages:[['gather','採集'],['alchemy','煉金']]}
+    {id:'crafting',label:'製作',expanded:false,pages:[['crafting','製作']]}
   ].map(group=>({...group,pages:group.pages.map(([id,label])=>({id,label}))}))};
   const validText=(value,max)=>typeof value==='string'&&value.trim()===value&&value.length>0&&value.length<=max;
   function normalize(raw){
@@ -38,6 +37,8 @@
     });
     // The wishing lake joined the 任務 category (v0.062); older documents get it right after 委託.
     if(!pageIds.has('wishingLake')){const g=groups.find(x=>x.pages.some(p=>p.id==='quests'))||groups.find(x=>x.id==='missions')||groups.at(-1);const i=g.pages.findIndex(p=>p.id==='quests');g.pages.splice(i<0?g.pages.length:i+1,0,{id:'wishingLake',label:'許願湖'});pageIds.add('wishingLake');}
+    // v0.185: 怪物圖鑑 joined the 探索 category; older documents get it right after 戰鬥統計.
+    if(!pageIds.has('bestiary')){const g=groups.find(x=>x.pages.some(p=>p.id==='statistics'))||groups.find(x=>x.pages.some(p=>p.id==='battle'))||groups[0];const i=g.pages.findIndex(p=>p.id==='statistics');g.pages.splice(i<0?g.pages.length:i+1,0,{id:'bestiary',label:'怪物圖鑑'});pageIds.add('bestiary');}
     const missing=Object.keys(PAGES).filter(id=>!pageIds.has(id));
     if(missing.length)throw Error('導覽列表缺少頁籤：'+missing.join('、'));
     return {version:VERSION,groups};
@@ -47,7 +48,7 @@
   function storyType(){return globalThis.currentStoryCategory?.()||'main';}
   function active(page,current){
     if(page.id.startsWith('story-'))return current==='story'&&storyType()===page.id.slice(6);
-    return current===page.id||current==='lifeSkills'&&page.id==='gather';
+    return current===page.id;
   }
   function action(page){
     if(page.id.startsWith('story-'))return `openStory('','${page.id.slice(6)}')`;
@@ -57,10 +58,10 @@
     document.querySelectorAll?.('#app>.layout>aside nav details[data-nav-group]').forEach(group=>openState.set(group.dataset.navGroup,group.open));
   }
 
-  const icons={wishingLake:'waves',battle:'swords',statistics:'chart-no-axes-combined',shop:'store',guide:'book-open',roster:'users',partnerRoster:'contact',character:'user-round',skills:'sparkles',equipment:'backpack',worn:'shield',forge:'hammer',bossCraft:'anvil','story-main':'scroll-text','story-side':'scroll','story-npc':'message-circle',quests:'clipboard-list',gather:'pickaxe',alchemy:'flask-conical'};
+  const icons={bestiary:'book-open-text',wishingLake:'waves',battle:'swords',statistics:'chart-no-axes-combined',shop:'store',guide:'book-open',roster:'users',partnerRoster:'contact',character:'user-round',skills:'sparkles',equipment:'backpack',worn:'shield',forge:'hammer',crafting:'anvil','story-main':'scroll-text','story-side':'scroll','story-npc':'message-circle',quests:'clipboard-list'};
   const navIcon=id=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(icons[id]||'folder'),[],{size:18});
   // Top menu categories use the same Lucide line icons as the rest of the interface.
-  const groupIcons={'adventure-config':'users',skills:'scroll-text',gear:'swords',bag:'backpack',partners:'handshake',character:'user-round',missions:'clipboard-list',map:'compass',shop:'store',life:'sprout',adventure:'compass',equipment:'backpack'};
+  const groupIcons={'adventure-config':'users',skills:'scroll-text',gear:'swords',bag:'backpack',partners:'handshake',character:'user-round',missions:'clipboard-list',map:'compass',shop:'store',crafting:'anvil',adventure:'compass',equipment:'backpack'};
   const groupIcon=group=>__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+(groupIcons[group.id]||icons[group.pages[0]?.id]||'folder'),[],{size:18});
   const lastPage=new Map();
   const taskPages=new Set(['story-main','story-side','story-npc','quests','wishingLake']);

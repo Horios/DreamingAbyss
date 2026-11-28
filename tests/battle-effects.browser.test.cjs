@@ -1,16 +1,17 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..');
-async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')});await g.page.evaluate(()=>{
- selectSaveSlot(1);start(1);closeModal();clearInterval(timer);state.lv=8;syncParty();recruitCompanion(10);recruitCompanion(11);closeModal();party.active=party.members.map(h=>memberKey(h));party.huntingMode='group';startSelectedExploration();clearInterval(timer);spawnGroup();running=true;
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+async function setup(){const g=await openRuntime(root,'index.html',{}, {clockTime:new Date('2026-10-27T02:00:00Z')});await g.page.evaluate(ADD_TEST_COMPANIONS);await g.page.evaluate(()=>{
+ selectSaveSlot(1);start(1);closeModal();clearInterval(timer);setClassMasteryLevel(7);syncParty();recruitCompanion(10);recruitCompanion(11);closeModal();party.active=party.members.map(h=>memberKey(h));startSelectedExploration();clearInterval(timer);spawnGroup();running=true;
  const base=foes[0];foes=Array.from({length:3},(_,i)=>({...base,name:'測試史萊姆',id:'fx-'+i,kind:i===2?'elite':'normal',hp:10000,maxhp:10000,shield:0}));enemy=foes[0];beginBattleStatistics();for(const h of heroes()){h.hp=stats(h).hp;h.shield=0;}render();
  globalThis.fxCapture=function(fn){EmberwildBattleEffects.begin();fn();EmberwildBattleEffects.end();globalThis.fxEvents=EmberwildBattleEffects.pendingEvents;EmberwildBattleSummary.sync();};
  });return g;}
 const effects=p=>p.locator('#battleEnemyIcons .battle-enemy-icon .battle-fx').evaluateAll(nodes=>nodes.map(n=>({target:n.parentNode.dataset.enemyId,type:n.dataset.fx})));
 const semanticColors={damage:'rgb(255, 121, 111)',buff:'rgb(244, 213, 139)',shield:'rgb(242, 245, 255)',recovery:'rgb(135, 239, 173)',debuff:'rgb(196, 149, 240)'};
 async function assertSemanticColors(p){
- const rows=await p.locator('.battle-fx,.battle-fx-status>[data-fx-persistent]').evaluateAll(ns=>ns.map(n=>({type:n.dataset.fx||n.dataset.fxPersistent,category:n.dataset.fxCategory,color:getComputedStyle(n).color})));
- for(const row of rows){assert.equal(row.color,semanticColors[row.category],JSON.stringify(row));if(['slash','ranged','impact','magic','fire','ice','lightning','wind','light','shadow','critical','dot','hit','attack'].includes(row.type))assert.equal(row.category,'damage',row.type);if(['heal','regen','potion','drain'].includes(row.type))assert.equal(row.category,'recovery',row.type);if(['shield','absorb','break','dissolve','shield-impact','resist','evade'].includes(row.type))assert.equal(row.category,'shield',row.type);if(['debuff','skip','polymorph','freeze','frost','fear','tauntRage'].includes(row.type))assert.equal(row.category,'debuff',row.type);if(['buff','rage'].includes(row.type))assert.equal(row.category,'buff',row.type);}
+ // v0.200: damage effects are drawn with the element and class palettes of the effect templates (fire is orange #ff6a3d, archer shots green); other categories keep the semantic colors.
+ const rows=await p.locator('.battle-fx,.battle-fx-status>[data-fx-persistent]').evaluateAll(ns=>ns.map(n=>{const type=n.dataset.fx||n.dataset.fxPersistent,category=n.dataset.fxCategory,T=globalThis.EmberwildBattleEffectTemplates,rgb=t=>t?'rgb('+t.rgb.split(',').map(x=>x.trim()).join(', ')+')':null,allowed=category==='damage'&&T?[...Object.values(T.ELEMENT_PALETTES),...Object.values(T.CLASS_PALETTES)].map(rgb):[];return {type,category,color:getComputedStyle(n).color,allowed};}));
+ for(const row of rows){assert.ok([semanticColors[row.category],...row.allowed].includes(row.color),JSON.stringify(row));if(['slash','ranged','impact','magic','fire','ice','lightning','wind','light','shadow','critical','dot','hit','attack'].includes(row.type))assert.equal(row.category,'damage',row.type);if(['heal','regen','potion','drain'].includes(row.type))assert.equal(row.category,'recovery',row.type);if(['shield','absorb','break','dissolve','shield-impact','resist','evade'].includes(row.type))assert.equal(row.category,'shield',row.type);if(['debuff','skip','polymorph','freeze','frost','fear','tauntRage'].includes(row.type))assert.equal(row.category,'debuff',row.type);if(['buff','rage'].includes(row.type))assert.equal(row.category,'buff',row.type);}
  return rows;
 }
 test('plain elemental weapon hits stay red without a purple cast/debuff burst or replaying existing statuses',async()=>{
@@ -162,11 +163,12 @@ test('mage blasts retain cast and lethal HP stages across twenty encounters with
  try{
   await p.evaluate(()=>{
    globalThis.blastSeed=8723;Math.random=()=>{blastSeed=(Math.imul(blastSeed,1664525)+1013904223)>>>0;return blastSeed/4294967296;};selectSaveSlot(1);start(1);closeModal();
+   /* v0.215: a lone hero meets one monster; the blast audit needs groups. */EmberwildSecondsCombat.encounterSize=()=>3;
    globalThis.blastAudit={casts:[],impacts:[],battles:0};
    const cast=castPartySkill;castPartySkill=function(h,i,...args){const before=foes.filter(e=>e.hp>0).map(e=>({id:e.id,hp:e.hp})),out=cast(h,i,...args);if(h.job===1&&CLASSES[h.job]?.skills?.[i]?.[0]==='魔爆'&&out!==false)blastAudit.casts.push({at:performance.now(),targets:before.filter(b=>foes.find(e=>e.id===b.id)?.hp<b.hp).map(b=>b.id),attempted:before.length,dead:foes.filter(e=>e.hp<=0).map(e=>e.id)});return out;};
    const finish=EmberwildBattleSummary.finish;EmberwildBattleSummary.finish=function(result){if(result==='victory')blastAudit.battles++;return finish(result);};
    new MutationObserver(rows=>{for(const row of rows)for(const n of row.addedNodes)if(n.nodeType===1&&n.matches('.battle-fx'))blastAudit.impacts.push({at:performance.now(),type:n.dataset.fx,event:n.dataset.event,unit:n.parentNode.dataset.combatId||n.parentNode.dataset.heroId||n.parentNode.dataset.enemyId,surface:n.classList.contains('battle-fx-health')?'hp':'icon'});}).observe($('app'),{subtree:true,childList:true});
-   state.lv=8;state.shield=1e9;state.mana={regenPerSecond:100};syncParty();party.huntingMode='group';startSelectedExploration();
+   setClassMasteryLevel(7);state.shield=1e9;state.mana={regenPerSecond:100};syncParty();startSelectedExploration();
   });
   // v0.074: each encounter waits for the blast's initial cooldown, so group fights last longer; allow more battle time.
   for(let n=0;n<20000;n++){
@@ -257,3 +259,99 @@ test('ongoing shield, buff, debuff and polymorph layers persist together until t
  }finally{await g.browser.close();}
 });
 test('an overlapping instant action cannot discard the prior resolved cast impact',async()=>{const g=await setup(),p=g.page;try{await p.evaluate(()=>{globalThis.overlap=[];new MutationObserver(rows=>{for(const r of rows)for(const n of r.addedNodes)if(n.nodeType===1&&n.matches('.battle-fx-health[data-fx="hit"]'))overlap.push(n.parentNode.dataset.combatId);}).observe($('app'),{childList:true,subtree:true});fxCapture(()=>castPartySkill(state,state.active[0],battleStats(state)));});await p.clock.runFor(50);await p.evaluate(()=>{heroes()[1].hp=1;fxCapture(()=>EmberwildBattleEffects.scope({mode:'regen'},()=>heroes()[1].hp+=5));});await p.clock.runFor(250);const hits=await p.evaluate(()=>overlap);for(const id of ['fx-0','fx-1','fx-2'])assert(hits.includes(id),'resolved impact '+id+' survives the next action');assert.deepEqual(g.errors,[]);}finally{await g.browser.close();}});
+
+test('resolved numbers keep each hit and its target, preserve last damage and redraw, then clear on a new encounter',async()=>{
+ const g=await setup(),p=g.page;try{
+  const expected=await p.evaluate(()=>{
+   EmberwildBattleEffects.begin();const out=[];for(const e of foes)for(let i=0;i<3;i++)out.push({target:e.id,amount:resolveHit(e,30,state,'fire',i===1)});EmberwildBattleEffects.end();EmberwildBattleSummary.sync();return out;
+  });
+  const rows=await p.locator('.battle-number[data-kind=damage]').evaluateAll(ns=>ns.map(n=>({target:n.dataset.target,amount:Number(n.dataset.amount)})));
+  assert.deepEqual(rows,expected);
+  assert.equal(await p.locator('.battle-number[data-critical=true]').count(),3);
+  const normal=p.locator('.battle-number[data-critical=false]').first(),critical=p.locator('.battle-number[data-critical=true]').first();
+  assert(await critical.evaluate(n=>parseFloat(n.style.fontSize))>await normal.evaluate(n=>parseFloat(n.style.fontSize)));
+  await p.evaluate(()=>{globalThis.retainedNumber=document.querySelector('.battle-number');render();});assert(await p.evaluate(()=>retainedNumber.isConnected));
+  await p.clock.runFor(1100);assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);
+  await p.evaluate(()=>fxCapture(()=>{for(let i=0;i<8;i++)resolveHit(foes[1],1,state,'physical',false);}));
+  const slots=await p.locator('.battle-number[data-target="fx-1"]').evaluateAll(ns=>ns.map(n=>n.style.left+'|'+n.style.getPropertyValue('--number-lane')));assert.equal(slots.length,3);assert.equal(new Set(slots).size,3);await p.clock.runFor(1100);
+  await p.evaluate(()=>{fxCapture(()=>{for(let i=0;i<3;i++)resolveHit(foes[1],1,state,'physical',true);});foes[1].hp=1;fxCapture(()=>resolveHit(foes[1],50,state,'physical',false));});assert.equal(await p.locator('.battle-number[data-target="fx-1"][data-amount="1"]').count(),1);
+  await p.evaluate(()=>{spawnGroup();render();});assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});
+test('number colors, shield/HP split, DOT, capped healing, dodge and immunity follow actual resolution',async()=>{
+ const g=await setup(),p=g.page;try{
+  await p.evaluate(()=>{foes[1].shield=3;fxCapture(()=>resolveHit(foes[1],50,state,'ice',true));});
+  assert.equal(await p.locator('.battle-number[data-kind=absorb][data-amount="3"]').count(),1);assert.equal(await p.locator('.battle-number[data-kind=damage]').count(),1);
+  const color=async kind=>p.locator('.battle-number[data-kind="'+kind+'"]').first().evaluate(n=>getComputedStyle(n).color);
+  assert.equal(await color('absorb'),'rgb(242, 245, 255)');assert.equal(await color('damage'),'rgb(255, 170, 160)');
+  await p.clock.runFor(1100);await p.evaluate(()=>{state.hp=stats(state).hp-2;fxCapture(()=>EmberwildBattleEffects.scope({mode:'skill'},()=>state.hp=stats(state).hp));});
+  assert.equal(await p.locator('.battle-number[data-kind=heal]').textContent(),'+2');assert.equal(await color('heal'),'rgb(135, 239, 173)');
+  await p.clock.runFor(1100);await p.evaluate(()=>fxCapture(()=>{const api=__EMBERWILD_STATUS_TEST_API;api.apply({id:'number-dot',name:'灼燒',tags:['periodic'],duration:3,timing:{durationSeconds:3,periodicIntervalSeconds:1,triggerIntervalSeconds:1},periodic:[{kind:'damage',basis:'fixed',coefficient:5,resolution:'true',element:'physical'}]},state,foes[1]);const inst=api.active.find(s=>s.statusId==='number-dot');for(let i=0;i<3;i++)EmberwildStatusCombatState.seconds.periodic(inst,inst.definition.periodic[0]);}));
+  assert.equal(await p.locator('.battle-number[data-kind=dot][data-amount="5"]').count(),3);assert.equal(await color('dot'),'rgb(255, 121, 111)');
+  await p.clock.runFor(1100);await p.evaluate(()=>{const base=enemyBattleStats;enemyBattleStats=e=>({...base(e),evasion:1});fxCapture(()=>resolveHit(foes[1],50,state,'fire',true));});
+  assert.equal(await p.locator('.battle-number').textContent(),'閃避');assert.equal(await p.locator('.battle-number[data-kind=damage]').count(),0);
+  await p.clock.runFor(1100);await p.evaluate(()=>{foes[1].kind='boss';fxCapture(()=>__EMBERWILD_CONTROL_TEST_API.applyPolymorph(foes[1],500,{duration:3}));});
+  assert.equal(await p.locator('.battle-number').textContent(),'免疫');assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});
+test('numbers stay bounded at high speed, readable within phone cards, obey modes and leave details clickable',async()=>{
+ const g=await setup(),p=g.page;try{
+  for(const width of [1440,390,320]){
+   await p.setViewportSize({width,height:844});await p.evaluate(()=>{render();setBattleEffects('full');battleRate=1;fxCapture(()=>{for(const e of foes)for(let i=0;i<3;i++)resolveHit(e,20,state,'fire',i===1);sharedEnemySkillDamage(foes[0],state,5,'physical',{name:'測試',meta:{baseCritRate:0}});EmberwildBattleEffects.scope({mode:'skill'},()=>state.hp=Math.min(stats(state).hp,state.hp+2));});});
+   await p.clock.runFor(320);require('node:fs').mkdirSync(path.join(root,'battle-feedback-review'),{recursive:true});await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
+   const layout=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect(),s=getComputedStyle(n);return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,card:{left:card.left,right:card.right,top:card.top,bottom:card.bottom},font:parseFloat(s.fontSize),pointer:s.pointerEvents};}));
+   for(const n of layout){assert(n.left>=n.card.left-1&&n.right<=n.card.right+1,JSON.stringify(n));assert(n.bottom<=n.card.bottom+1,JSON.stringify(n));assert(n.font>=11);assert.equal(n.pointer,'none');}
+   // v0.138: numbers start on the card, rise above it and fade out; the layer does not clip them.
+   assert.equal(await p.locator('.battle-number-layer').first().evaluate(n=>getComputedStyle(n).overflow),'visible');
+   // The test clock does not drive CSS animations, so sample each number's own animation at two points of its run.
+   const flight=at=>p.locator('.battle-number').evaluateAll((ns,at)=>ns.map(n=>{const a=n.getAnimations()[0];a.pause();a.currentTime=a.effect.getComputedTiming().duration*at;return {y:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,card:n.closest('.unit').getBoundingClientRect(),opacity:Number(getComputedStyle(n).opacity)};}),at);
+   const early=await flight(.12),late=await flight(.85);assert(early.length>0);assert.equal(late.length,early.length);
+   late.forEach((n,i)=>{assert(early[i].bottom>n.card.top&&early[i].opacity>.95,'it starts on the card, fully visible');assert(n.y<early[i].y-16,'it moves up: '+early[i].y+' -> '+n.y);assert(n.y<n.card.top,'it has left the top of the card');assert(n.opacity<.4,'it fades while rising');});
+   await p.locator('.battle-number').evaluateAll(ns=>ns.forEach(n=>n.getAnimations()[0].play()));
+   await p.clock.runFor(1100);
+   await p.evaluate(()=>{foes.forEach(e=>e.hp=e.maxhp=1e9);fxCapture(()=>foes.forEach((e,i)=>EmberwildBattleEffects.scope({mode:'damage',critical:i===2},()=>e.hp-=[1,37,123456789][i])));});
+   await p.clock.runFor(320);
+   const centered=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>{const range=document.createRange();range.selectNodeContents(n);const r=range.getBoundingClientRect(),card=n.closest('.unit').getBoundingClientRect();return {text:n.textContent,font:parseFloat(n.style.fontSize),ratio:r.width/card.width,offset:r.x+r.width/2-card.x-card.width/2,weight:Number(getComputedStyle(n).fontWeight),cardWidth:card.width,clientWidth:n.closest('.unit').clientWidth,offsetWidth:n.closest('.unit').offsetWidth};}));
+   assert.equal(centered.length,3);
+   // v0.138: ordinary numbers span about 39% of the card; the critical hit (the third) keeps its large size.
+   // v0.160: on wide cards the size is capped by Settings → 傷害數字大小 (default 中: ordinary 22px, critical 30px), so only the upper bounds of the card share remain.
+   centered.forEach((n,i)=>{assert(n.font<=(i===2?30:22)+.01,JSON.stringify(n));if(i===2)assert(n.ratio<=.8,JSON.stringify(n));else assert(n.ratio<=.48,JSON.stringify(n));});
+   for(const n of centered){assert(Math.abs(n.offset)<=1,JSON.stringify(n));assert(n.weight>=900);}
+   await p.locator('.seconds-battlefield').screenshot({path:path.join(root,'battle-feedback-review',width+'.png')});
+   await p.locator('#battleEnemyIcons .battle-enemy-icon').first().click();assert(await p.locator('#modal.battle-unit-dialog').isVisible());assert.equal(await p.locator('.battle-number').count(),0);await p.locator('#modal button').last().click();
+   await p.evaluate(()=>{battleRate=8;fxCapture(()=>{for(let i=0;i<300;i++)resolveHit(foes[i%3],1,state,'fire',i%30===0);});});
+   assert(await p.locator('.battle-number').count()<=32);assert(await p.locator('.battle-number[data-critical=true]').count()>0);
+   assert((await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>n.dataset.detail))).every(x=>x==='simple'));
+   await p.clock.runFor(800);assert.equal(await p.locator('.battle-number').count(),0);assert.equal(await p.evaluate(()=>EmberwildBattleEffects.numberCount),0);
+  }
+  await p.evaluate(()=>{battleRate=1;setBattleEffects('simple');fxCapture(()=>resolveHit(foes[1],20,state,'physical',false));});assert.equal(await p.locator('.battle-number').getAttribute('data-detail'),'simple');
+  await p.emulateMedia({reducedMotion:'reduce'});await p.evaluate(()=>{setBattleEffects('full');fxCapture(()=>resolveHit(foes[1],20,state,'physical',false));});assert.equal(await p.locator('.battle-number').getAttribute('data-detail'),'simple');
+  await p.evaluate(()=>{setBattleEffects('off');fxCapture(()=>resolveHit(foes[1],20,state,'physical',false));});assert.equal(await p.locator('.battle-number').count(),0);assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});
+
+test('damage number size follows Settings (大／中／小), persists in this browser and keeps critical hits larger',async()=>{
+ const g=await setup(),p=g.page;try{
+  await p.setViewportSize({width:1440,height:900});
+  assert.equal(await p.evaluate(()=>battleNumberSize()),'medium','中 is the default');
+  const sizes={};
+  for(const size of ['large','medium','small']){
+   assert.equal(await p.evaluate(v=>setBattleNumberSize(v),size),true);
+   await p.evaluate(()=>{render();setBattleEffects('full');battleRate=1;foes.forEach(e=>e.hp=e.maxhp=1e9);fxCapture(()=>foes.forEach((e,i)=>EmberwildBattleEffects.scope({mode:'damage',critical:i===2},()=>e.hp-=[37,37,37][i])));});
+   await p.clock.runFor(200);
+   sizes[size]=await p.locator('.battle-number').evaluateAll(ns=>ns.map(n=>({font:parseFloat(n.style.fontSize),critical:n.dataset.critical==='true'})));
+   await p.clock.runFor(1200);
+  }
+  const top=list=>({normal:Math.max(...list.filter(n=>!n.critical).map(n=>n.font)),critical:Math.max(...list.filter(n=>n.critical).map(n=>n.font))});
+  const l=top(sizes.large),m=top(sizes.medium),s=top(sizes.small);
+  assert(l.normal>m.normal&&m.normal>s.normal,'大 > 中 > 小 '+JSON.stringify({l,m,s}));
+  assert(l.normal<=28.01&&m.normal<=22.01&&s.normal<=16.01&&s.normal>=11,'ordinary caps '+JSON.stringify({l,m,s}));
+  for(const x of [l,m,s])assert(x.critical>x.normal,'critical hits stay larger');
+  await p.evaluate(()=>setTab('options'));
+  assert.equal(await p.locator('#modal [data-battle-number-size]').inputValue(),'small');
+  await p.locator('#modal [data-battle-number-size]').selectOption('large');assert.equal(await p.evaluate(()=>battleNumberSize()),'large');
+  await p.evaluate(()=>closeModal());await p.reload();
+  assert.equal(await p.evaluate(()=>battleNumberSize()),'large','the choice is kept for this browser');
+  assert.deepEqual(g.errors,[]);
+ }finally{await g.browser.close();}
+});

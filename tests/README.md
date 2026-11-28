@@ -9,10 +9,10 @@ npm ci
 npx playwright install --with-deps chromium
 ```
 
-整合測試需要對應的私有平衡器開發版本。預設位置為同層 `../Emberwild-Balance/balance-editor.html`；也可指定其他路徑：
+整合測試需要對應的私有平衡器開發版本。共用 `tests/runtime.cjs` 的 `balanceRoot()`，依序查找 `EMBERWILD_BALANCE_ROOT`、同層 `../DreamingAbyss-BalanceEditor`、舊名 `../Emberwild-Balance`，均需包含 `balance-editor.html`。找不到時會明確報錯。可指定其他路徑：
 
 ```sh
-EMBERWILD_BALANCE_ROOT=/absolute/path/Emberwild-Balance npm test
+EMBERWILD_BALANCE_ROOT=/absolute/path/DreamingAbyss-BalanceEditor npm test
 npm run test:simulation
 node tests/collect-progression.cjs /tmp/progression-rows.json
 ```
@@ -38,11 +38,11 @@ node tests/collect-progression.cjs /tmp/progression-rows.json
 
 `npm run test:companions` 驗證夥伴名冊、現役上限、上陣限制、養成／裝備 UID 保存、實際角色導向換裝、七種評級、可調軟警告、動態夥伴與專屬技能，包含真正重新整理讀檔和平衡器 JSON 下載。來源、相容性與 14% 成長差距依據見 `../docs/COMPANION_ROSTER.md`。設計器 `companion-model-v1` 必須與遊戲 `js/character/companion-model.js` 完全相同。
 
-`tests/shared-levels.test.cjs` 同時納入完整測試與夥伴測試：驗證只有主角累積 EXP、主角未上陣、1～3 人原有經驗量與限時增益、全名冊的固定配點／技能／自動二轉、晚招募與動態夥伴成長、LV30／60 上限、不同等級舊存檔與裝備／寶石保存、主角名稱及探索經驗條、升級卷軸與寫入失敗回復，以及實際開發工具操作。
+`tests/shared-levels.test.cjs` 同時納入完整測試與夥伴測試：驗證只有主角累積 EXP、主角未上陣、1～3 人原有經驗量與限時增益、全名冊的固定配點／技能、晚招募與動態夥伴成長、LV30／60 上限、不同等級舊存檔與裝備／寶石保存、主角名稱及探索經驗條、升級卷軸與寫入失敗回復，以及實際開發工具操作。
 
 `npm run test:tokens` 驗證夥伴裝備內化與單一信物。包括實際成長、十件信物戰鬥、正式擊殺掉落、機率／冷卻／持續、待結算與冪等遷移、寫入失敗回復、主角修改前 16 組快照、UID 所有權、真正 Chromium 換裝／手機寬度／重新整理，以及設計器操作、實際 JSON 下載與檔案匯入。詳細欄位、數值與限制見 `../docs/COMPANION_TOKENS.md`。新夥伴不再生成五件普通裝備，舊夥伴普通裝備完整保留於共用背包／待結算。
 
-`npm run test:teams` 驗證自由轉職、獨立空白／複製／改名方案、永久與配置分離、等級推導 AP／SP、實際技能取得職業精通、二轉與元素精通門檻、一次性材料、免費確認洗點、共享 UID／信物／寶石與強制處置、所有核心入口的探索鎖定、停止與切換重置所有戰鬥狀態、v1／v2／v3 遷移、缺失引用修復及保存失敗回復。Chromium 另外操作真實按鈕／原生確認、下載／檔案匯入、重新整理、設計器欄位及 Preview 存檔隔離。測試 fixture 才新增技能或設定解鎖門檻，不改出貨技能。資料結構與限制見 `../docs/TEAM_BUILDS.md`；同樣納入完整 `npm test`。
+`npm run test:teams` 驗證自由轉職、獨立空白／複製／改名方案、永久與配置分離、等級推導 AP／SP、實際技能取得職業精通與元素精通門檻、一次性材料、免費確認洗點、共享 UID／信物／寶石與強制處置、所有核心入口的探索鎖定、停止與切換重置所有戰鬥狀態、v1／v2／v3 遷移、缺失引用修復及保存失敗回復。Chromium 另外操作真實按鈕／原生確認、下載／檔案匯入、重新整理、設計器欄位及 Preview 存檔隔離。測試 fixture 才新增技能或設定解鎖門檻，不改出貨技能。資料結構與限制見 `../docs/TEAM_BUILDS.md`；同樣納入完整 `npm test`。
 
 Lucide 圖示製作器與遊戲渲染的專項驗證：`npm run test:icons`。請設定 `EMBERWILD_BALANCE_ROOT` 及 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`；專項包含實際搜尋／分類／分頁／動畫、JSON 下載往返、遊戲 UI 與保存重載，完整 `npm test` 也包含此項。共用資源更新後使用 `tools/sync-icon-resources.cjs` 同步私人單檔 HTML；模型及授權見 `docs/ICON_DESIGNER.md`。
 

@@ -1,8 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const {loadRuntime}=require('./headless-runtime.cjs'),A=require('../js/character/achievement-model.js');
 const root=path.resolve(__dirname,'..'),json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
-function game(){const r=loadRuntime(root);r.run('selectSaveSlot(1);start(0);closeModal();for(const m of [...party.mailbox.messages])if(m.rewardKey.startsWith("starter-"))claimMailboxAttachments(m.id)');return r;}
-function mail(r){r.run("{const d=exportableBalance(),p=d.companions.find(p=>p.id===15);p.availability='visible';p.unlockCondition={type:'achievement',achievementIds:['region-0-open']};applyBalanceConfig(d);globalThis.testMail=party.mailbox.messages.find(m=>m.rewardKey==='companion-15').id;}");}
+// v0.179: achievement and shop tickets are off in the game; these mechanics tests switch them back on.
+function game(){const r=loadRuntime(root);r.run('__EMBERWILD_SET_EXTRA_TICKET_SOURCES(true);selectSaveSlot(1);start(0);closeModal();for(const m of [...party.mailbox.messages])if(m.rewardKey.startsWith("starter-"))claimMailboxAttachments(m.id)');return r;}
+// 遊戲只保留已實裝夥伴；以一名不帶技能的暫時夥伴 15 測試成就招募信件。
+function mail(r){r.run("{const d=exportableBalance(),p=structuredClone(d.companions.find(p=>p.id===10));Object.assign(p,{id:15,name:'測試夥伴',passives:[],core:[],active:[],proc:[],support:[],availability:'visible',unlockCondition:{type:'achievement',achievementIds:['region-0-open']}});d.companions.push(p);applyBalanceConfig(d);globalThis.testMail=party.mailbox.messages.find(m=>m.rewardKey==='companion-15').id;}");}
 test('Three SVG buttons replace sidebar entries and open dialogs without changing the main page; redeem codes remain only in Options',()=>{
  // Settings is also a page in the top game menu (navigation data); mailbox and achievements open only as dialogs.
  // Save and guide are inserted next to the options button at runtime; this headless DOM keeps only the static three.
@@ -26,8 +28,8 @@ test('Bag reminder counts unresolved affix drafts once, without a pending-loot r
  r.run('pendingAffix=null;render()');assert.equal(r.run('numberBadgeCounts().equipment'),1);r.run('resolveInlineAffix(g.id,false)');assert.equal(r.run('numberBadgeCounts().equipment'),0);r.run('inlineAffixDrafts.set("shared:missing",[])');assert.equal(r.run('numberBadgeCounts().equipment'),0);
 });
 test('commission reminders count started objectives, exclude side quests and block full-bag rewards',()=>{
- const r=game();r.run(`state.board.tasks.forEach(q=>q.started=false);globalThis.q=state.board.tasks[0];q.started=true;q.done=false;q.objectives=[EmberwildQuestDesign.objective('material','紅色草',3)];q.rewards=EmberwildQuestDesign.reward();q.rewards.gemCounts=[1,0,0];setMaterialCount('紅色草',3);`);assert.equal(r.run('numberBadgeCounts().quests'),1);r.run('claimBoard(q.id)');assert.equal(r.run('numberBadgeCounts().quests'),0);
- r.run(`q.done=false;setMaterialCount('紅色草',3);q.rewards.gear=[{tier:1,slot:0,job:0,rar:0,quantity:1,legendaryChance:0}];globalThis.cap=GAMEPLAY_SETTINGS.equipment.bagCapacity;GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;`);assert.equal(r.run('numberBadgeCounts().quests'),0);r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=cap');assert.equal(r.run('numberBadgeCounts().quests'),1);
+ const r=game();r.run(`state.board.tasks.forEach(q=>q.started=false);globalThis.q=state.board.tasks[0];q.started=true;q.done=false;q.objectives=[EmberwildQuestDesign.objective('material','光輝碎塊',3)];q.rewards=EmberwildQuestDesign.reward();q.rewards.gemCounts=[1,0,0];setMaterialCount('光輝碎塊',3);`);assert.equal(r.run('numberBadgeCounts().quests'),1);r.run('claimBoard(q.id)');assert.equal(r.run('numberBadgeCounts().quests'),0);
+ r.run(`q.done=false;setMaterialCount('光輝碎塊',3);q.rewards.gear=[{tier:1,slot:0,job:0,rar:0,quantity:1,legendaryChance:0}];globalThis.cap=GAMEPLAY_SETTINGS.equipment.bagCapacity;GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;`);assert.equal(r.run('numberBadgeCounts().quests'),0);r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=cap');assert.equal(r.run('numberBadgeCounts().quests'),1);
 });
 test('Each reminder switch persists by player save, hides only badges, and rolls back when saving fails',()=>{
  const r=game();mail(r);for(const id of ['mailbox','achievements','equipment','quests'])assert.equal(r.run(`setNumberReminder('${id}',false)`),true);assert.equal(r.elements.get('utilityReminder-mailbox').hidden,true);assert.equal(r.run('numberBadgeCounts().mailbox'),1);r.run('save()');

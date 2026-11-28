@@ -15,7 +15,7 @@ function untilNewEncounter(r,limit=20000){const start=r.run('EmberwildSecondsCom
 
 test('every active and support skill in the published data has an explicit initial cooldown no longer than its reuse cooldown',()=>{
  const active=doc.skillSystem.definitions.filter(s=>['active','support'].includes(s.type));
- assert(active.length>100);
+ assert(active.length>50);
  for(const s of active){const t=s.timing;assert(Number.isFinite(t.initialCooldownSeconds),s.id);assert(t.initialCooldownSeconds>=0&&t.initialCooldownSeconds<=t.cooldownSeconds,s.id);}
  // Not one shared value: roles get different openings.
  assert(new Set(active.map(s=>s.timing.initialCooldownSeconds)).size>4);
@@ -49,7 +49,7 @@ test('each encounter re-applies initial cooldowns and a full basic charge; recov
 
 test('heroes use their class interval and monsters their own catalog interval',()=>{
  const intervals=Object.fromEntries(doc.balanceSettings.combat.seconds.classes.map(c=>[c.job,c.baseIntervalSeconds]));
- assert.deepEqual(intervals,{0:2,1:2.8,2:1.6,3:2.5});
+ assert.deepEqual(intervals,{0:2,1:2.65,2:1.4,3:2.65},'v0.196 class base intervals');
  for(const job of [0,1,2,3]){const r=game(job);step(r);
   const v=json(r,`(()=>{const T=EmberwildSecondsCombat.timeline,h=T.find(heroKey(state)),e=T.find(foes[0].id);return {hero:h.definition.baseIntervalSeconds,foe:e.definition.baseIntervalSeconds,catalog:EmberwildSecondsCombat.source.balanceSettings.monsters.catalog.find(m=>m.id===foes[0].monsterId).timing.baseIntervalSeconds};})()`);
   assert.equal(v.hero,intervals[job]);assert.equal(v.foe,v.catalog);assert.deepEqual(r.errors,[]);
@@ -88,7 +88,7 @@ test('cooldown reduction applies percent then fixed, diminishes below the thresh
  assert.equal(S.applyCooldownReduction(12,{fixedAll:10},c,.3),2,'never below 2 s');
  assert.equal(S.applyCooldownReduction(1.5,{fixedAll:2},c,.3),1.5,'a shorter own cooldown is kept');
  assert.equal(S.applyCooldownReduction(21,{},c,.3),21);
- const bad=structuredClone(doc);bad.balanceSettings.combat.seconds.cooldownReduction.sources.onCast.mode='turns';assert.throws(()=>S.validate(bad));
+ const bad=structuredClone(doc);bad.balanceSettings.combat.seconds.cooldownReduction.sources.enemyDeath.mode='turns';assert.throws(()=>S.validate(bad));
 });
 
 test('runtime cooldowns, the on-cast cut and enemy-death reductions follow the configured rules',()=>{

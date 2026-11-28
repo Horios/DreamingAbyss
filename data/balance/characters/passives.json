@@ -1,0 +1,210 @@
+[
+  {
+    "id": "partner10-passive1",
+    "name": "攻擊強化",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "attackPct",
+        "value": 10
+      }
+    ],
+    "requiredLevel": 7,
+    "partnerId": 10,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "partner13-passive1",
+    "name": "治療強化",
+    "description": "達到解鎖的精通等級且啟用時常駐生效，不占技能槽。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "healingPct",
+        "value": 15
+      }
+    ],
+    "requiredLevel": 4,
+    "partnerId": 13,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "warrior-cleave-chain",
+    "name": "順勢斬",
+    "description": "普攻或技能擊殺後，以 80% 攻擊追擊目前生命最低敵人；擊殺可連續追擊，最多 3 次。常駐生效、不占槽。",
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 0,
+    "element": "physical",
+    "target": "self",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "kind": "buff",
+    "effects": [],
+    "eventPassive": {
+      "event": "kill",
+      "power": 0.8,
+      "maxAttacks": 3
+    },
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "mage-mana-cycle",
+    "name": "魔力循環",
+    "description": "敵人死亡事件群組使自身所有技能冷卻縮減；縮減秒數與獨立內部冷卻依秒數設定換算。常駐生效、不占槽。",
+    "usageScope": "character",
+    "partnerId": null,
+    "requiredLevel": 2,
+    "requiresAdvanced": false,
+    "requiredMastery": null,
+    "requiredMasteryLevel": 0,
+    "mastery": null,
+    "unlockConditions": {
+      "classMasteryLevel": 0,
+      "quests": [],
+      "materials": [],
+      "bossKills": [],
+      "eliteKills": [],
+      "bossEquipment": []
+    },
+    "iconType": "auto",
+    "powerPerLevel": 0,
+    "power": 0,
+    "cooldown": 0,
+    "element": "physical",
+    "target": "self",
+    "maxTargets": 99,
+    "hitCount": 1,
+    "baseCritRate": 0,
+    "baseCritDamage": 1.5,
+    "defensePenetration": 0,
+    "defenseIgnore": 0,
+    "effect": "damage",
+    "kind": "buff",
+    "effects": [],
+    "eventPassive": {
+      "event": "enemyDeath",
+      "reduction": 1,
+      "cooldown": 2
+    },
+    "weaponTypes": [],
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "gel-recovery",
+    "name": "凝膠復原",
+    "description": "穿戴或由信物賦予時常駐生效：每秒恢復 1 點生命，戰鬥內外都生效。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "regenPerSecond",
+        "value": 1
+      }
+    ],
+    "requiredLevel": 0,
+    "partnerId": null,
+    "timing": {
+      "cooldownSeconds": 0,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  },
+  {
+    "id": "ancient-heart-revival",
+    "name": "古木之心",
+    "description": "穿戴或由信物賦予時常駐生效：生命值降到 30% 以下時立即恢復為滿血，之後冷卻 60 秒。",
+    "kind": "buff",
+    "target": "self",
+    "effects": [
+      {
+        "key": "lowHpFullHeal",
+        "value": 30
+      }
+    ],
+    "requiredLevel": 0,
+    "partnerId": null,
+    "timing": {
+      "cooldownSeconds": 60,
+      "mpCost": 0,
+      "castSeconds": 0,
+      "actionCostSeconds": 0,
+      "priority": 2,
+      "durationSeconds": 0,
+      "bossDurationSeconds": 0,
+      "tickIntervalSeconds": 6,
+      "condition": "always"
+    }
+  }
+]

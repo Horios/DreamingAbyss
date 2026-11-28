@@ -2,6 +2,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 const MIN=60000;
+// v0.179: players always meet groups; the sampling run keeps the internal single-enemy setting so it builds its 30-minute
+// snapshot without wipes.
 // One runtime with a real 30-minute snapshot of map 0, reused through state copies (building it takes ~30 game minutes).
 let base=null;
 function sampled(){
@@ -47,45 +49,43 @@ test('claimed tickets become inventory items with a short description; using the
  assert.equal(r.run(`claimMailboxAttachments(${voucherMail(r)[0].id})`),true);const stack=json(r,'party.regionVouchers.stacks[0]');assert.equal(stack.count,16);
  assert.equal(stack.levelMax,r.run('MAPS[0].max'));assert.equal(stack.gold,Math.max(0,stack.baseGold-stack.potionCost));
  r.run('inventoryCategory="items";setTab("equipment")');const html=r.elements.get('app').innerHTML;
- // A standard item slot in the ticket block, separate from potions and gems.
- assert.match(html,/data-inventory-group="tickets"[\s\S]*data-voucher-stack="v1"[\s\S]*class="item-slot[^"]*"[^>]*data-item-key="region-voucher:v1"[^>]*aria-label="苔光林地 30 分鐘收益券 ×16"[\s\S]*data-inventory-group="potions"[\s\S]*目前裝備藥水：/);
+ // v0.211 grid bag: one slot of the 消耗品 tab per voucher stack (the potion status sits in the tab's toolbar).
+ assert.match(html,/目前藥水效果：[\s\S]*class="bag-cell[^"]*" data-bag-ref="v:v1:0" data-item-kind="item" data-item-key="region-voucher:v1"[^>]*aria-label="無名密林 30 分鐘收益券 ×16"/);
  assert.match(html,/data-item-key="region-voucher:v1"[\s\S]*?<svg/,'the ticket uses an SVG icon');
  const virtual=json(r,`(()=>{const v=__EMBERWILD_VIRTUAL_ITEM('region-voucher:v1');return {name:v.name,glyph:v.glyph,description:v.description,detail:v.detail(),actions:v.actions()};})()`);
- assert.equal(virtual.glyph,'ticket');assert.match(virtual.description,/使用時計算經驗、金幣與道具，收益寄到信箱/);assert(!/經驗 \d|金幣 \d/.test(virtual.description+virtual.detail),'the item shows no earnings until used');
+ assert.equal(virtual.glyph,'ticket');assert.match(virtual.description,/使用時計算金幣與道具，收益寄到信箱/);assert(!/經驗 \d|金幣 \d/.test(virtual.description+virtual.detail),'the item shows no earnings until used');
  assert.match(virtual.actions,/useRegionVouchers\('v1',1\)[\s\S]*全部使用（16）/);
  // Later team changes cannot raise a locked ticket.
  r.run('playerHero().autoPotion=!playerHero().autoPotion');assert.deepEqual(json(r,'party.regionVouchers.stacks[0]'),stack);
- r.run('running=false;playerHero().lv=1;playerHero().xp=0;save()');
+ r.run('running=false;save()');
  const stats=json(r,'party.idleStatistics.regions["0:0"].total'),kills=r.run('state.totalKills'),inv=json(r,'({gold:state.gold,lv:state.lv,bag:state.bag.length,ore:state.ore,mats:state.materials})');
- assert.equal(r.run(`useRegionVouchers('${stack.id}',3)`),true);assert.match(r.run("$('modal').innerHTML"),/預估收益[\s\S]*經驗[\s\S]*金幣[\s\S]*確認使用/);
+ assert.equal(r.run(`useRegionVouchers('${stack.id}',3)`),true);assert.match(r.run("$('modal').innerHTML"),/預估收益[\s\S]*金幣[\s\S]*確認使用/);
  r.run('render()');assert.match(r.run("$('modal').innerHTML"),/確認使用/,'a mailbox refresh does not overwrite the dialog');
  const p=json(r,`EmberwildRegionVouchers.preview([{id:'${stack.id}',count:3}])`);
  r.run('confirmRegionVouchers()');assert.match(r.run("$('modal').innerHTML"),/收益已寄到信箱/);
  assert.deepEqual(json(r,'({gold:state.gold,lv:state.lv,bag:state.bag.length,ore:state.ore,mats:state.materials})'),inv,'nothing is granted before the mail is claimed');
  const h=json(r,'party.regionVouchers.history.at(-1)');assert.equal(h.tickets,3);assert.equal(h.overlevel,p.overlevel);assert.equal(json(r,'party.regionVouchers.stacks[0].count'),13);
  const gold=mails(r,'gold');assert.equal(gold.length,1);const cur=Object.fromEntries(gold[0].attachments.map(a=>[a.type,a.quantity]));
- assert.equal(cur.voucherGold,h.gold);assert.equal(cur.voucherXp||0,h.xp);assert.equal(h.gold,(3-h.overlevel)*stack.gold+h.overlevel*r.run('worldMapConfig(0).overlevelVoucherGold'));
- // Unclaimed XP already counts: using more tickets now sees the projected level.
- assert.equal(r.run('EmberwildRegionVouchers.projectedHero().lv'),p.levelAfter);
- assert.equal(r.run(`claimMailboxAttachments(${gold[0].id})`),true);assert.equal(r.run('state.gold'),inv.gold+h.gold);assert(r.run('state.lv')>1);
+ assert.equal(cur.voucherGold,h.gold);assert.equal(cur.voucherXp||0,h.xp);assert.equal(h.overlevel,0);assert.equal(h.gold,3*stack.gold);
+ assert.equal(r.run(`claimMailboxAttachments(${gold[0].id})`),true);assert.equal(r.run('state.gold'),inv.gold+h.gold);
  const items=mails(r,'items');assert.equal(items.length>0,h.overlevel<3);
  r.run('claimAllMailboxAttachments()');assert(json(r,'party.mailbox.messages.filter(m=>m.rewardKey.startsWith("voucher-")).every(m=>m.claimed)'),'item mail is claimed into the inventory');
  assert(r.run('state.ore')>=inv.ore);
  assert.equal(r.run('state.totalKills'),kills,'using tickets adds no kills');assert.deepEqual(json(r,'party.idleStatistics.regions["0:0"].total'),stats,'using tickets never feeds statistics');
- // Overlevel tickets only mail gold.
- const before=mails(r,'items').length;const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:5}])`);assert.equal(t.overlevel,5);assert.equal(t.xp,0);assert.deepEqual(t.items,{});assert.equal(t.gear,0);
- assert.equal(mails(r,'items').length,before);assert.deepEqual(mails(r,'gold').at(-1).attachments.map(a=>[a.type,a.quantity]),[['voucherGold',5*r.run('worldMapConfig(0).overlevelVoucherGold')]]);
+ // v0.161: no over-level rule; more tickets mail full gold and no XP.
+ const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:5}])`);assert.equal(t.overlevel,0);assert.equal(t.xp,0);
+ assert.deepEqual(mails(r,'gold').at(-1).attachments.map(a=>[a.type,a.quantity]),[['voucherGold',5*stack.gold]]);
  assert.deepEqual(r.errors,[]);
 });
 test('used tickets roll drops through the existing per-enemy loot rules without touching the real inventory',async()=>{
  const r=await ready(sampled());await offlineVouchers(r,4*3600000);r.run(`acknowledgeOfflineExploration();claimAllMailboxAttachments();running=false;`);
  const stack=json(r,'party.regionVouchers.stacks[0]');
- r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};`);
- const inv=r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions})');
+ r.run(`party.regionVouchers.stacks[0].levelMax=999;globalThis.__calls=0;const base=rollEnemyItemLoot;rollEnemyItemLoot=function(e,o){__calls++;if(!o?.voucher)throw Error('voucher flag');return base(e,o);};EmberwildItems.add('material:光輝碎塊',10);{const s=EmberwildItems.stacks().find(s=>s.item==='material:光輝碎塊');EmberwildItems.split(s.uid,3);}`);
+ const inv=r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions,layout:EmberwildItems.snapshot()})');
  const t=json(r,`EmberwildRegionVouchers.redeem([{id:'${stack.id}',count:8}])`);const expected=Object.values(stack.enemies).reduce((a,b)=>a+b,0)*8;
  assert(Math.abs(r.run('__calls')-expected)<=Object.keys(stack.enemies).length*8,'one loot roll per locked enemy');
- assert.equal(r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions})'),inv,'rolls happen in a scratch inventory');
- assert(t.xp>0);assert(Object.keys(t.items).length>0);
+ assert.equal(r.run('JSON.stringify({bag:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,mats:state.materials,gems:state.gems,heal:playerHero().healingPotions,layout:EmberwildItems.snapshot()})'),inv,'rolls happen in a scratch inventory');
+ assert.equal(t.xp,0);assert(Object.keys(t.items).length>0);
  const goods=mails(r,'items').flatMap(m=>m.attachments);assert(goods.every(a=>['catalogue','gear'].includes(a.type)));assert.equal(goods.filter(a=>a.type==='gear').length,t.gear);
  assert.equal(goods.filter(a=>a.type==='catalogue').reduce((n,a)=>n+a.quantity,0),Object.values(t.items).reduce((a,b)=>a+b,0));
  assert(mails(r,'items').every(m=>m.attachments.length<=6));
@@ -96,21 +96,26 @@ test('using tickets and claims are atomic, refuse another tab and keep mailbox v
  const r=await ready(sampled());await offlineVouchers(r,2*3600000);r.run('acknowledgeOfflineExploration()');
  assert.doesNotThrow(()=>r.run('validateParty(JSON.parse(JSON.stringify(packParty())))'));
  assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-")).attachments[0].quantity=0;validateParty(d)}'),/信箱存檔無效/);
+ assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));const m=d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-"));d.mailbox.messages.push(JSON.parse(JSON.stringify(m)));validateParty(d)}'),/信箱存檔無效/,'duplicate voucher mail IDs must be rejected before rewards can be claimed');
  assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-")).attachments[0].voucher.enemies={};validateParty(d)}'),/信箱存檔無效/);
  assert.throws(()=>r.run('{const d=JSON.parse(JSON.stringify(packParty()));const m=d.mailbox.messages.find(m=>m.rewardKey.startsWith("voucher-"));m.rewardKey="voucher-gold-"+m.id;validateParty(d)}'),/信箱存檔無效/,'ticket attachments cannot pose as gold mail');
  r.run('claimAllMailboxAttachments()');const id=r.run('party.regionVouchers.stacks[0].id'),snap=r.run('JSON.stringify({v:party.regionVouchers,m:party.mailbox,gold:state.gold,lv:state.lv,bag:state.bag.length})');
  r.run('globalThis.__EMBERWILD_SAVE_OWNER=false');assert.equal(r.run(`EmberwildRegionVouchers.redeem([{id:'${id}',count:1}])`),false);r.run('globalThis.__EMBERWILD_SAVE_OWNER=true');
  r.run('globalThis.__save=save;save=()=>false');assert.equal(r.run(`EmberwildRegionVouchers.redeem([{id:'${id}',count:2}])`),false);r.run('save=__save');
  assert.equal(r.run('JSON.stringify({v:party.regionVouchers,m:party.mailbox,gold:state.gold,lv:state.lv,bag:state.bag.length})'),snap,'a failed save restores tickets and mailbox together');
- assert.equal(json(r,`EmberwildRegionVouchers.redeem([{id:'${id}',count:99}])`).tickets,4,'never more than held');assert.equal(json(r,'party.regionVouchers.stacks').length,0);
+ const requests=`[{id:'${id}',count:2},{id:'${id}',count:99}]`;
+ assert.equal(json(r,`EmberwildRegionVouchers.preview(${requests})`).tickets,4,'duplicate requests share the held stock');
+ assert.equal(json(r,'party.regionVouchers.stacks[0].count'),4,'preview does not consume tickets');
+ assert.equal(json(r,`EmberwildRegionVouchers.redeem(${requests})`).tickets,4,'duplicate requests never redeem more than held');assert.equal(json(r,'party.regionVouchers.stacks').length,0);
  assert.equal(r.run(`EmberwildRegionVouchers.redeem([{id:'${id}',count:1}])`),false,'a used ticket cannot be used again');
  // Claiming XP/gold mail twice grants once; a failed save keeps it in the mailbox.
  const g=mails(r,'gold')[0];r.run('globalThis.__save=save;save=()=>false');assert.equal(r.run(`claimMailboxAttachments(${g.id})`),false);r.run('save=__save');
  const gold=r.run('state.gold');assert.equal(r.run(`claimMailboxAttachments(${g.id})`),true);assert.equal(r.run(`claimMailboxAttachments(${g.id})`),false);
  assert.equal(r.run('state.gold'),gold+(g.attachments.find(a=>a.type==='voucherGold')?.quantity||0));
  assert.deepEqual(json(r,'EmberwildRegionVouchers.normalize({version:1,serial:3,remainders:{"0:0":99999999,"6:0":5,"x":1},stacks:[{id:"v1",count:0},{id:"bad"}],history:[]})'),{version:1,serial:3,remainders:{'0:0':30*MIN-1},stacks:[],history:[]});
- assert.equal(r.run('worldMapConfig(13).overlevelVoucherGold'),100);assert.equal(r.run('worldMapConfig(1).overlevelVoucherGold'),400);assert.equal(r.run('worldMapConfig(12).overlevelVoucherGold'),3400);
- assert.match(r.run('party.mailbox.messages.find(m=>m.rewardKey.startsWith("starter-")).body'),/初始裝已穿戴/);
+ // v0.161: maps carry a recommended gear level (default: the map's max level) instead of an over-level voucher price.
+ assert.equal(r.run('worldMapConfig(0).recommendedGearLevel'),r.run('MAPS[0].max'));assert.equal(r.run('worldMapConfig(0).overlevelVoucherGold'),undefined);
+ assert.equal(r.run('party.mailbox.messages.some(m=>m.rewardKey.startsWith("starter-"))'),false,'creation no longer sends starter mail');
  assert.deepEqual(r.errors,[]);
 });
 test('ticket length and potion charging come from balance settings; invalid values are rejected',async()=>{
@@ -131,3 +136,4 @@ test('ticket length and potion charging come from balance settings; invalid valu
  }
  assert.deepEqual(r.errors,[]);
 });
+

@@ -81,7 +81,7 @@
 
   function applyPolymorph(e,shield,meta){
     if(!e||e.hp<=0)return false;
-    if(isBossEnemy(e)){globalThis.EmberwildBattleEffects?.result('resist',e);note(combatEnemyName(e)+' 對變形免疫。');return true;}
+    if(isBossEnemy(e)){globalThis.EmberwildBattleEffects?.result('resist',e,null,{label:'免疫'});note(combatEnemyName(e)+' 對變形免疫。');return true;}
     meta=normalizeControlMeta(meta,'polymorph');
     const s=stateFor(e.id),amount=Math.max(1,Math.round(Number(shield)||1));
     s.polymorph={turns:Math.max(1,meta.duration),total:Math.max(1,meta.duration),shield:amount,maxShield:amount};
@@ -140,10 +140,14 @@
     const polymorph=stateFor(e?.id,false)?.polymorph;
     if(!polymorph||polymorph.shield<=0)return controlResolveHitBase(e,amount,h,element,crit,options);
     const proxy={...e,hp:polymorph.shield,maxhp:polymorph.maxShield,shield:0};
-    const dealt=controlResolveHitBase(proxy,amount,h,element,crit,options);
-    polymorph.shield=Math.max(0,proxy.hp);
-    if(polymorph.shield<=0){const s=stateFor(e.id,false);if(s)delete s.polymorph;cleanState(e.id);note(combatEnemyName(e)+' 的變形護盾被打破，變形解除。');}
-    return dealt;
+    const resolve=()=>{
+      const dealt=controlResolveHitBase(proxy,amount,h,element,crit,options);
+      polymorph.shield=Math.max(0,proxy.hp);
+      if(polymorph.shield<=0){const s=stateFor(e.id,false);if(s)delete s.polymorph;cleanState(e.id);note(combatEnemyName(e)+' 的變形護盾被打破，變形解除。');}
+      return dealt;
+    };
+    const visual=globalThis.EmberwildBattleEffects;
+    return visual?.capturing?visual.scope({shieldProxy:{target:e,unit:proxy}},resolve):resolve();
   };
 
   const controlCombatSpeedBase=combatSpeed;
@@ -168,7 +172,7 @@
     if(target.__controlSummon){
       target.hp=Math.max(0,target.hp-1);note(combatEnemyName(e)+' 攻擊 '+target.name+'，陷阱生命 -1（剩餘 '+target.hp+'）。','enemyDamage');onTrapHit(target,e);return;
     }
-    const h=target,beforeHp=h.hp,v=battleStats(h),ev=enemyBattleStats(e),c=GAMEPLAY_SETTINGS.combat,fb=c.finalBoss,multi=e.kind==='final'?(globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.bossMultiplier(e):(e.turn>fb.enrageAfterTurn?fb.enrageMultiplier:e.turn%Math.max(1,Math.round(fb.specialEveryTurns))===0?fb.specialMultiplier:1)):1+Math.max(0,e.lv-h.lv)*c.levelGapDamagePerLevel;
+    const h=target,beforeHp=h.hp,v=battleStats(h),ev=enemyBattleStats(e),c=GAMEPLAY_SETTINGS.combat,fb=c.finalBoss,multi=e.kind==='final'?(globalThis.EmberwildSecondsCombat?.active?EmberwildSecondsCombat.bossMultiplier(e):(e.turn>fb.enrageAfterTurn?fb.enrageMultiplier:e.turn%Math.max(1,Math.round(fb.specialEveryTurns))===0?fb.specialMultiplier:1)):1;
     const formula=c.damageFormula||{},attackCoefficient=Number.isFinite(formula.attackCoefficient)?formula.attackCoefficient:1,defenseCoefficient=Number.isFinite(formula.defenseCoefficient)?formula.defenseCoefficient:c.defenseEffectiveness,minimumDamage=Math.max(0,Number.isFinite(formula.minimumDamage)?formula.minimumDamage:1);
     const effectiveDefense=Math.max(0,v.def*(1-Math.min(.95,ev.defenseIgnore))-ev.pierce);
     let hit=Math.max(minimumDamage,Math.round(ev.atk*(1-Math.min(c.caps.weaken,effectTotal(e.id,'weaken')))*multi*attackCoefficient-effectiveDefense*defenseCoefficient));
@@ -181,6 +185,7 @@
     hit=Math.max(minimumDamage,Math.round(hit*(1-resist)));const absorb=Math.min(h.shield,hit);h.shield-=absorb;
     if(absorb>0&&typeof recordCombatContribution==='function')recordCombatContribution(h,'mitigation',absorb);
     const hpDamage=Math.max(0,hit-absorb);h.hp=Math.max(0,h.hp-hpDamage);
+    globalThis.EmberwildBattleEffects?.result('resolved',h,e,{critical});
     if(typeof recordCombatContribution==='function')recordCombatContribution(h,'taken',absorb+Math.max(0,beforeHp-h.hp));
     if(critical&&beforeHp>h.hp)globalThis.EmberwildBattleEffects?.result('critical',h,e);
     globalThis.EmberwildTokenRuntime?.afterDamage(h,e,beforeHp,h.hp);
@@ -244,7 +249,7 @@
   const controlCoreDetailBase=coreSkillDetail;
   coreSkillDetail=function(job,i,h=state){
     const sk=CLASSES[job]?.skills?.[i],effect=sk?.[5];if(!sk||!CONTROL_EFFECTS.has(effect))return controlCoreDetailBase(job,i,h);
-    const m=normalizeControlMeta(sk[6],effect),cd=sk[1]==='active'?skillCooldown(i,h):0,head=actionTurnElementLabel(coreSkillElement(job,i))+' · 冷卻 '+cd+' 回合 · 需求 LV'+sk[2];
+    const m=normalizeControlMeta(sk[6],effect),cd=sk[1]==='active'?skillCooldown(i,h):0,head=actionTurnElementLabel(coreSkillElement(job,i))+' · 冷卻 '+cd+' 回合 · 需求精通 Lv'+sk[2];
     if(effect==='polymorph')return head+' · 變形護盾＝攻擊×'+Number(skillPower(i,h).toFixed(2))+' · 無法行動 '+m.duration+' 回合 · 不會成為單體目標 · 護盾破裂立即解除 · BOSS 無效';
     if(effect==='freeze')return head+' · 冰凍：無法行動 '+m.duration+' 回合；BOSS '+m.bossDuration+' 回合';
     if(effect==='frost')return head+' · 敵方全體結霜：速度 -'+Math.round(m.slowPct*100)+'% · 持續至遭遇結束或被陷阱轉為冰凍';

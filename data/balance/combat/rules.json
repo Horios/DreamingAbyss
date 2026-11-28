@@ -1,0 +1,171 @@
+{
+  "defenseEffectiveness": 0.55,
+  "baseCritDamage": 1.5,
+  "caps": {
+    "fracture": 0.75,
+    "guard": 0.75,
+    "weaken": 0.7,
+    "resistance": 0.75
+  },
+  "finalBoss": {
+    "enrageAfterTurn": 45,
+    "enrageMultiplier": 4,
+    "specialEveryTurns": 5,
+    "specialMultiplier": 1.65
+  },
+  "autoPotionThreshold": 0.35,
+  "defeatGoldLoss": 0.05,
+  "groupSize": {
+    "min": 3,
+    "max": 5
+  },
+  "speed": {
+    "enemyBase": 106,
+    "enemyPerLevel": 0.5,
+    "race": {
+      "beast": 5,
+      "plant": -4,
+      "undead": -2,
+      "construct": -5,
+      "demon": 3,
+      "spirit": 4
+    },
+    "kind": {
+      "normal": 0,
+      "elite": 2,
+      "boss": 4,
+      "final": 6
+    },
+    "difficultyBonus": 2
+  },
+  "pacing": {
+    "actionIntervalMs": 1500,
+    "roundMinimumMs": 6000
+  },
+  "supply": {
+    "wardResistance": 0.25,
+    "elementTonicDamage": 0.2
+  },
+  "damageFormula": {
+    "attackCoefficient": 1,
+    "defenseCoefficient": 0.55,
+    "minimumDamage": 1
+  },
+  "seconds": {
+    "version": 1,
+    "referenceSpeed": 106,
+    "minimumActionIntervalSeconds": 0.3,
+    "actionReferenceSeconds": 3,
+    "durationReferenceSeconds": 6,
+    "periodicIntervalSeconds": 6,
+    "triggerIntervalSeconds": 3,
+    "encounterDelaySeconds": 1.5,
+    "healThreshold": 0.75,
+    "mana": {
+      "maxMp": 100,
+      "regenPerSecond": 1.666667,
+      "costMultiplier": 1
+    },
+    "classes": [
+      {
+        "job": 0,
+        "baseIntervalSeconds": 2
+      },
+      {
+        "job": 1,
+        "baseIntervalSeconds": 2.65
+      },
+      {
+        "job": 2,
+        "baseIntervalSeconds": 1.4
+      },
+      {
+        "job": 3,
+        "baseIntervalSeconds": 2.65
+      }
+    ],
+    "attackSpeed": {
+      "maxAttacksPerSecond": 1.5,
+      "minimumBonusPct": -90
+    },
+    "encounterByTeamSize": {
+      "1": [
+        {
+          "count": 1,
+          "weight": 100
+        }
+      ],
+      "2": [
+        {
+          "count": 2,
+          "weight": 90
+        },
+        {
+          "count": 3,
+          "weight": 10
+        }
+      ],
+      "3": [
+        {
+          "count": 3,
+          "weight": 50
+        },
+        {
+          "count": 4,
+          "weight": 30
+        },
+        {
+          "count": 5,
+          "weight": 20
+        }
+      ]
+    },
+    "migration": {
+      "version": 1,
+      "source": "actor-turns",
+      "resourceBudget": 100,
+      "recoveryReferencePeriods": 10
+    },
+    "advanceStepSeconds": 1.5,
+    "finalBoss": {
+      "enrageAfterSeconds": 135,
+      "specialIntervalSeconds": 15
+    },
+    "actionModel": "independent",
+    "recovery": {
+      "hpFractionPerSecond": 0.02,
+      "mpRegenMultiplier": 1,
+      "minimumHpRatio": 1,
+      "minimumMpRatio": 0
+    },
+    "cooldownReduction": {
+      "diminishing": {
+        "thresholdSeconds": 5,
+        "factor": 0.5,
+        "minimumSeconds": 2
+      },
+      "sources": {
+        "affixAll": {
+          "mode": "flat",
+          "value": 3
+        },
+        "affixSkill": {
+          "mode": "flat",
+          "value": 3
+        },
+        "fixedAll": {
+          "mode": "flat",
+          "value": 3
+        },
+        "fixedSkill": {
+          "mode": "flat",
+          "value": 3
+        },
+        "enemyDeath": {
+          "mode": "flat",
+          "value": 3
+        }
+      }
+    }
+  }
+}

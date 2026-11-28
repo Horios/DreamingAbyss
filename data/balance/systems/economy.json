@@ -1,0 +1,52 @@
+{
+  "equipmentSellPriceByQuality": [
+    2,
+    6,
+    18,
+    45
+  ],
+  "materialDefaultSellPrice": 1,
+  "potionSellPrice": 2,
+  "materialPrices": [
+    {
+      "key": "鍛鐵",
+      "sellPrice": 1
+    },
+    {
+      "key": "粉塵",
+      "sellPrice": 2
+    },
+    {
+      "key": "以太鍛鐵",
+      "sellPrice": 15
+    },
+    {
+      "key": "光輝碎塊",
+      "sellPrice": 20
+    },
+    {
+      "key": "升級卷軸",
+      "sellPrice": 25
+    },
+    {
+      "key": "黏稠凝膠",
+      "sellPrice": 1
+    },
+    {
+      "key": "完整狼牙",
+      "sellPrice": 1
+    },
+    {
+      "key": "活性樹芯",
+      "sellPrice": 1
+    },
+    {
+      "key": "古木年輪",
+      "sellPrice": 2
+    },
+    {
+      "key": "寶石粉塵",
+      "sellPrice": 2
+    }
+  ]
+}

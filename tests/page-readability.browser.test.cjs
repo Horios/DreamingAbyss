@@ -61,7 +61,9 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
     await start(p);
     for(const width of [1440,768,390]){
       await p.setViewportSize({width,height:900});await p.evaluate(()=>closeModal());
-      await show(p,'bossCraft','.boss-reading-page');
+      await p.evaluate(()=>setTab('crafting'));
+      await p.getByRole('button',{name:'BOSS 裝備製作',exact:true}).click();
+      await p.locator('.boss-reading-page').waitFor();
       await p.locator('.boss-reading-page .ui-help').filter({has:p.getByText('製作說明',{exact:true})}).locator('summary').click();
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.boss-reading-page details'))el.open=true;});
       const boss=await p.evaluate(()=>{
@@ -72,6 +74,8 @@ test('Chromium: expanded BOSS help and guide flow naturally through one main scr
       assert(boss.panelHeight>boss.helpHeight);assert(boss.bodyScroll<=boss.bodyClient+2);
       assert(boss.font>=15);assert(boss.pageScroll<=boss.pageWidth+2);
       assert.deepEqual(await p.evaluate(overflowingChildren),[],width+' BOSS nested scrolls');
+      // v0.121: phones list one region at a time; show every region before reaching the last recipe.
+      if(await p.locator('.boss-region-filter select').count())await p.locator('.boss-region-filter select').selectOption('');
       await p.locator('.boss-recipe').last().scrollIntoViewIfNeeded();
       await show(p,'guide','.guide-reading-page');
       await p.evaluate(()=>{for(const el of document.querySelectorAll('.guide-reading-page details'))el.open=true;});

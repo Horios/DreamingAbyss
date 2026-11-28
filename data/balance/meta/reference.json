@@ -1,0 +1,317 @@
+{
+  "purpose": "_reference 僅供閱讀，不參與任何計算；可保留、刪除或修改文字。真正生效的是 balance / classes / supportSkills / equipmentForms / items。",
+  "units": {
+    "chance": "0~1 小數，例如 0.03 = 3%",
+    "percent": "整數百分點，例如 5 = 5%",
+    "multiplier": "倍率，例如 1.3 = 130%",
+    "power": "技能基礎倍率，例如 2.8 = 280% 攻擊倍率",
+    "cooldown": "canonical timing.cooldownSeconds：戰鬥秒數；舊 cooldown 為相容投影",
+    "duration": "canonical timing.durationSeconds：戰鬥秒數；抗性／屬性增幅與加倍券維持現實時間",
+    "timedBoostDuration": "現實分鐘；暫停、停止與離線仍會扣時"
+  },
+  "elements": {
+    "physical": "無屬性；不是物理屬性。攻擊方或防禦方為 physical 時不參與剋制，使用 neutral 倍率；全屬性增傷也不加成 physical。",
+    "fire": "火；剋 wind，被 ice 剋",
+    "ice": "冰；剋 fire，被 wind 剋",
+    "wind": "風；剋 ice，被 fire 剋",
+    "light": "光；與 shadow 互剋",
+    "shadow": "暗；與 light 互剋"
+  },
+  "races": {
+    "beast": "野獸",
+    "plant": "植物",
+    "undead": "不死",
+    "construct": "構裝",
+    "demon": "惡魔",
+    "spirit": "精靈"
+  },
+  "activations": {
+    "active": "主動技能；裝入主動槽，冷卻完成後施放",
+    "proc": "觸發技能；普通攻擊時各自判定觸發率"
+  },
+  "effects": {
+    "damage": "造成傷害",
+    "heal": "治療生命比例最低的存活隊員",
+    "shield": "給予護盾",
+    "drain": "造成傷害並依技能機制回復生命"
+  },
+  "qualities": {
+    "normal": "rank 0／普通",
+    "fine": "rank 1／精良",
+    "rare": "rank 2／稀有",
+    "legendary": "rank 3／傳說"
+  },
+  "affixTypes": {
+    "0": "固定攻擊",
+    "1": "固定生命",
+    "2": "固定防禦",
+    "3": "暴擊率 %",
+    "4": "指定技能效果 %",
+    "5": "主動技能冷卻減少；若該技能為 proc，則每 1 點依 procChancePerPointPercent 增加觸發率",
+    "6": "暴擊傷害 %",
+    "7": "防禦穿透 %",
+    "8": "生命竊取 %",
+    "9": "閃避率 %",
+    "12": "指定屬性傷害 %",
+    "13": "對指定種族增傷 %",
+    "14": "指定屬性抗性 %",
+    "15": "總攻擊力 %；目前只在稀有／傳說池出現",
+    "16": "全主動技能冷卻減少（回合）",
+    "17": "掉寶率增加：實際機率 = 基礎掉落率 × (1 + 全隊掉寶率加成)，最高 100%"
+  },
+  "equipmentExclusive": {
+    "basicElement": "武器攻擊屬性的唯一固定來源；設定於 equipmentForms[].fixedEffects，舊 element 僅在匯入時轉換",
+    "gearAtkPct": "只增加該件裝備的基礎攻擊 %",
+    "gearHpPct": "只增加該件裝備的基礎生命 %",
+    "gearDefPct": "只增加該件裝備的基礎防禦 %",
+    "attackPct": "增加角色總攻擊力 %",
+    "crit": "暴擊率 %",
+    "critDamage": "暴擊傷害 %",
+    "pierce": "防禦穿透 %",
+    "lifesteal": "生命竊取 %",
+    "evasion": "閃避率 %",
+    "elementBonus": "全元素傷害 %；不含 physical 無屬性"
+  },
+  "equipmentSlots": {
+    "0": "武器",
+    "1": "護甲",
+    "2": "副手",
+    "3": "飾品"
+  },
+  "balancePaths": {
+    "balance.combat.elementMultipliers": "neutral=無剋制、same=同屬性、strong=剋制、weak=被剋制",
+    "balance.combat.statCaps": "暴擊、閃避、吸血、防禦無視使用 0~1 小數；防禦穿透為固定防禦點數",
+    "balance.combat.minimumActiveCooldown": "主動技能最低冷卻回合",
+    "balance.affixes.qualityChance": "每一條詞條獨立抽品質，四項總和必須 = 1",
+    "balance.affixes.qualityMultiplier": "普通四種基礎詞條（攻擊/生命/防禦/暴擊）的品質倍率",
+    "balance.affixes.skillSpecialChance": "精良以上先改抽技能類詞條的機率",
+    "balance.affixes.skillEffectShare": "進入技能類詞條後，抽到技能效果 % 的比例；其餘為冷卻/觸發率類",
+    "balance.affixes.extendedPoolChance": "基礎詞條生成後，替換成暴傷/穿透/吸血/閃避/屬傷/種族增傷/抗性/攻擊%池的機率",
+    "balance.affixes.baseValues": "固定攻擊/生命/防禦與暴擊的基礎隨機範圍；前三者再乘裝備階級與品質倍率",
+    "balance.affixes.skillEffectPercent": "各品質技能效果詞條 %",
+    "balance.affixes.cooldownReduction": "各品質冷卻減少點數；proc 技能會把點數轉為觸發率",
+    "balance.affixes.extendedValues.attackPercent": "新攻擊力 % 詞條；目前稀有 3%、傳說 5%",
+    "balance.affixes.rerollCost": "洗鍊金幣 = 裝備階級 × goldPerTier；粉塵 = dustPerRoll（固定每次，不乘階級）；自動洗鍊逐次正常扣費",
+    "balance.affixes.extendedValues.allCooldownReduction": "新全技能冷卻詞條；只影響有冷卻的主動技能，單位為角色回合",
+    "balanceSettings.equipment.dropLevelGap": "一般與 BOSS 裝備使用 progression.xpLevelGap 相同的等級差倍率；enabled 控制啟用與否，舊 freeLevels／penaltyPerLevel／minimumMultiplier 僅保留相容，不再參與計算。",
+    "balance.affixes.extendedValues.dropRateBonus": "各品質「掉寶率」詞條數值，單位為百分比",
+    "balanceSettings.drops.entries": "所有可配置物品掉落的唯一機率來源；各規則依來源怪物、遭遇種類與難度獨立判定，並受 maxDrops 與掉寶率加成影響。",
+    "balanceSettings.equipment.difficultyAffix": "hardChance / hellChance 與各品質累積門檻只決定難度品質處理；最終種類與數值由 balance.affixes.poolBySlotRank 抽取。",
+    "items[].effectPercent": "抗性或屬性增幅百分比，各道具獨立設定。",
+    "balance.affixes.poolBySlotRank": "實際洗鍊／隨機詞條池；第一層為裝備種類 0武器/1護甲/2副手/3飾品，第二層為詞條稀有度 0普通/1精良/2稀有/3傳說。每筆 type/chance/min/max 控制種類、百分比機率與數值；type 4/5 可用 skill 指定核心技能序號，-1 代表隨機。固定攻擊/生命/防禦的 min/max 會再乘裝備階級。",
+    "balanceSettings.equipment.enhance.flatStatsPerLevel": "LV1 裝備每 +1 的最低收益係數 atk/hp/def；round(強化等級 × (固定係數 + 裝等成長 × (需求等級 - 1))) 與 round(原始基礎能力 × 累計百分比) 取較大值，只增加原有屬性，信物維持百分比。",
+    "balanceSettings.equipment.enhance.flatStatsPerEquipmentLevel": "每多 1 裝備需求等級，最低收益每次強化的 atk/hp/def 成長係數；與 flatStatsPerLevel 相加，乘強化等級後四捨五入，和百分比收益取較大值。",
+    "classes[].initialStats": "職業固定基礎能力（v0.161 起沒有角色等級成長）。",
+    "balanceSettings.skills.mastery": "職業精通與武器／元素精通的經驗曲線（xpBase + L×xpLinear + L²×xpQuadratic）與上限 maxLevel；達上限後不再累積。",
+    "balanceSettings.rewards.gold": "金幣採獨立曲線和各怪物種類倍率，不共用 EXP。",
+    "balanceSettings.difficulty.modes[].goldMultiplier": "各難度獨立金幣倍率。",
+    "shopSettings.randomOffers.entries": "隨機商品池：抽選規則、數量、單價與顯示說明。",
+    "shopSettings.fixedOffers.entries": "固定商品池：上架項目、數量、單價與顯示說明。",
+    "items[].bonusPercent": "各限時來源的加算百分比，精通經驗與掉寶各自先相加。",
+    "items[].durationMinutes": "抗性／屬性增幅與限時增益的現實分鐘；元素藥水可輸入小數，不使用 duration 的戰鬥回合。",
+    "balanceSettings.quests.design": "每日委託池與一次性支線的唯一有效設計來源。每日隨機五項、完成上限四項；台灣午夜更新；當日委託保存需求／獎勵快照。進度型需求採累計紀錄。"
+  },
+  "dropAlgorithm": "掉落率 = 基礎機率 × (1 + 全隊裝備加成 + 各有效限時來源加成)，封頂 100%；首殺保底不變。",
+  "legacySettings": {
+    "balanceSettings.difficulty.modes[].equipmentChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.difficulty.modes[].gemChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.difficulty.modes[].bossGearChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.difficulty.modes[].legendaryGearChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.difficulty.materialChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.rewards.potionDropChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.rewards.radiant.normalElite": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.rewards.radiant.bossFinal": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.drops.entries",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.baseAttackPerTier": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.baseHpPerTier": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.defenseBasePerTier": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.defensePerRankPerTier": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.critBase": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.critPerRank": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.difficultyAffix.skillChance": {
+      "status": "deprecated",
+      "replacement": "balance.affixes.poolBySlotRank",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.boss.powerByDifficulty": {
+      "status": "deprecated",
+      "replacement": "equipmentPowerSystem.bossAffixes / equipmentPowerSystem.strength",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.equipment.boss.skillEffectByDifficulty": {
+      "status": "deprecated",
+      "replacement": "equipmentPowerSystem.bossAffixes / equipmentPowerSystem.strength",
+      "note": "僅保留舊 JSON 相容，不參與最終遊戲計算。"
+    },
+    "balanceSettings.monsters.encounter.bossChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.monsters.bossMeter",
+      "note": "一般地圖固定視為 0；BOSS 由進度與手動挑戰生成。終局地圖仍使用固定關卡規則。"
+    },
+    "balanceSettings.maps.catalog[].bossChance": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.monsters.bossMeter",
+      "note": "一般地圖固定視為 0；BOSS 由進度與手動挑戰生成。終局地圖仍使用固定關卡規則。"
+    },
+    "balanceSettings.equipment.enhance.statPerLevel": {
+      "status": "unused",
+      "replacement": "balanceSettings.equipment.enhance.levels",
+      "note": "v0.181 起裝備與信物都依強化表的累計加成成長，不再使用每級百分比。"
+    },
+    "classes[].growthPerLevel": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "classes[].growthSteps": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.progression.statsPerLevel": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.progression.xpCurve": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.progression.xpLevelGap": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.progression.levelCaps": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.progression.mapAheadAllowance": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.rewards.xp": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.difficulty.modes[].xpMultiplier": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.drops.levelGap": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.equipment.dropLevelGap": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.monsters.encounter.levelLeadInterval": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.combat.levelGapDamagePerLevel": {
+      "status": "removed",
+      "note": "v0.161 移除角色等級與經驗後不再使用。"
+    },
+    "balanceSettings.quests.board": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.quests.design",
+      "note": "僅作舊 JSON 遷移，新設計器使用穩定任務 ID。"
+    },
+    "balanceSettings.quests.repeat": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.quests.design",
+      "note": "僅作舊 JSON 遷移，新設計器使用穩定任務 ID。"
+    },
+    "balanceSettings.quests.side": {
+      "status": "deprecated",
+      "replacement": "balanceSettings.quests.design",
+      "note": "僅作舊 JSON 遷移，新設計器使用穩定任務 ID。"
+    }
+  },
+  "itemTypes": {
+    "healPotion": "治療藥水；healAmount=固定恢復 HP，shopAvailable=商店販售狀態，requiredVip=最低商店 VIP 等級，timing.cooldownSeconds=使用後等待的戰鬥秒數；cooldown 為舊版相容欄位；只能由自動喝藥機制使用。",
+    "timedBoost": "全隊現實時間增益；boostType=exp/drop，bonusPercent 為加算百分比，durationMinutes 為正整數分鐘；同名同效果累加時間；不同倍率獨立計時；單一狀態上限 24 小時。"
+  },
+  "affixPoolRule": "詞條品質仍由 qualityChance 決定；決定品質後，只會從對應裝備種類＋詞條稀有度的 poolBySlotRank 抽取。每個池的 chance 合計必須固定為 100%；舊版 weight 會在匯入時按比例轉換為 chance。",
+  "equipmentIdentity": {
+    "naming": "一般裝備名稱 = 基底名稱；BOSS 裝備只使用 BOSS 專屬名稱。v0.215 起沒有前綴／後綴。",
+    "stats": "一般裝備 ATK/HP/DEF 只由基底、T1~T10 與既有 +N 強化計算。",
+    "boss": "BOSS 裝備保留三條專屬效果及兩個可洗鍊隨機詞綴。",
+    "effects": [
+      "basicElement",
+      "basicAttackSpeedStack",
+      "attackSpeedPct",
+      "flatHp",
+      "gearHpPct",
+      "hpPct",
+      "flatDefense",
+      "gearDefPct",
+      "defensePct",
+      "attackPct",
+      "crit",
+      "critDamage",
+      "pierce",
+      "defenseIgnore",
+      "lifesteal",
+      "evasion",
+      "elementBonus",
+      "allCooldownReduction",
+      "dropRateBonus",
+      "gearAtkPct",
+      "bossDamagePct"
+    ]
+  }
+}

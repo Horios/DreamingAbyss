@@ -22,7 +22,8 @@
  }
  function migrateDrops(settings){const entries=settings?.drops?.entries;if(!Array.isArray(entries))return;
   const old=entries.findIndex(x=>x.id==='potion_all'&&x.type==='potion');if(old<0)return;
-  entries.splice(old,1,...dropDefaults(settings.monsters?.catalog).filter(x=>!entries.some(r=>r.id===x.id)));
+  // v0.206: monsters no longer drop healing potions; the shop remains an existing source. The legacy rule is removed.
+  entries.splice(old,1);
  }
  function migrate(doc){migrateItems(doc?.items);migrateDrops(doc?.balanceSettings);return doc;}
  function issues(item){const out=[];if(!Number.isSafeInteger(item.healAmount)||item.healAmount<1||item.healAmount>1e9)out.push('固定恢復 HP 必須為 1～1000000000 的整數');if(typeof item.shopAvailable!=='boolean')out.push('商店販售狀態必須為布林值');if(!Number.isSafeInteger(item.requiredVip)||item.requiredVip<0||item.requiredVip>99)out.push('VIP 等級必須為 0～99 的整數');if(item.healFraction!==undefined)out.push('請移除舊 healFraction 欄位');return out;}

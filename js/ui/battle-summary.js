@@ -16,6 +16,8 @@
   // Keep the actual array, including its final HP, even if result cleanup clears
   // the global foes binding. This is O(1), including during offline simulation.
   terminal={owner:party,units:foes,name:currentExplorationName(),result};
+  globalThis.__EMBERWILD_COMPANION_BATTLE_MASTERY?.(result);
+  globalThis.__EMBERWILD_MASTERY_BATTLE_NOTE?.();
  }
  function snapshot(){return globalThis.EmberwildBattleConfiguration?EmberwildBattleConfiguration.combat(snapshotCore):snapshotCore();}
  function snapshotCore(){
@@ -151,7 +153,7 @@
    const assignment=GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===u.monsterId)?.skillAssignments||[],box=globalThis.EmberwildEnemyCombatState?.pack()?.[u.id]||{};
    for(const a of assignment){
     const sk=sharedSkillById(a.skillId);if(!sk)continue;
-    const configured=sk.meta?.partnerId==null&&u.lv>=sk.requiredLevel&&sharedSkillScopeAllowsEnemy(sk.usageScope,u.kind);
+    const configured=sk.meta?.partnerId==null&&u.lv>=(sk.requiredLevel||0)+1&&sharedSkillScopeAllowsEnemy(sk.usageScope,u.kind);
     skills.push({id:sk.id,name:sk.name,type:sk.activation,configured,remaining:cooldownLeft(box,sk.id),cooldown:sk.cooldown,detail:sk.meta.description||`${ELEMENTS[sk.element]||sk.element}屬性 · 倍率 ${pct(sk.power)} · 最多 ${sk.maxTargets} 目標`});
    }
   }
@@ -184,12 +186,14 @@
  }
  function showUnit(id,side){
   const d=globalThis.EmberwildSecondsCombat?.active?globalThis.EmberwildBattleSummary.inspect(id,side):inspect(id,side);if(!d)return false;
-  const statNames={atk:'攻擊力',def:'防禦力',speed:'速度',crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷'},ratios=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
+  // v0.196: allies show attack speed percent with the resulting interval and frequency; enemies keep their speed.
+  const ally=d.side==='ally',statNames={atk:'攻擊力',def:'防禦力',...(ally?{}:{speed:'速度'}),crit:'暴擊率',critDamage:'暴擊傷害',pierce:'防禦穿透',defenseIgnore:'防禦無視',lifesteal:'生命竊取',evasion:'閃避率',elementBonus:'全屬性增傷',bossDamage:'BOSS 增傷'},ratios=new Set(['crit','critDamage','defenseIgnore','lifesteal','evasion','elementBonus','bossDamage']);
   const statRows=Object.entries(statNames).map(([k,n])=>[n,ratios.has(k)?pct(d.stats[k]):fmt(finite(d.stats[k]))]);
+  if(ally){const h=party?.members.find(x=>heroKey(x)===d.id);if(h&&typeof heroAttackSpeedSummary==='function'){const a=heroAttackSpeedSummary(h);statRows.splice(2,0,['攻擊速度',EmberwildAttackSpeed.formatPct(a.bonusPct)],['普攻間隔',a.intervalSeconds.toFixed(3)+' 秒'],['普攻頻率',a.attacksPerSecond.toFixed(3)+' 次／秒']);}}
   for(const [k,label,names] of [['elementDamage','屬性增傷',ELEMENTS],['resist','屬性抗性',ELEMENTS],['raceDamage','種族增傷',RACES]])for(const [target,value] of Object.entries(d.stats[k]||{}))statRows.push([(names[target]||target)+' · '+label,pct(value)]);
-  const labels={active:'主動',proc:'普攻觸發',support:'輔助',passive:'被動'},polarity={buff:'增益',debuff:'減益',neutral:'狀態'};
+  const labels={active:'主動',proc:'普攻觸發',support:'主動',passive:'被動'},polarity={buff:'增益',debuff:'減益',neutral:'狀態'};
   const modal=$('modal');modal.classList.add('battle-unit-dialog');
-  modal.innerHTML=`<div class="battle-unit-inspector"><h2>${esc(d.name)} · 戰鬥詳細資訊</h2><p>LV ${esc(String(d.level??'—'))} · ${esc(d.kind)} · ${d.alive?'存活':'已倒下／擊敗'} · ${esc(ELEMENTS[d.element]||d.element||'無')}屬性${d.race?' · '+esc(RACES[d.race]||d.race):''}</p><p class="battle-unit-vitals"><b>生命 ${fmt(d.hp)} / ${fmt(d.max)}</b><span>護盾 ${fmt(d.shield)}</span>${d.controlShield?'<span>變形護盾 '+fmt(d.controlShield)+'</span>':''}</p><h3>目前戰鬥能力</h3><dl class="battle-unit-stat-grid">${statRows.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${d.nextActiveDamageBonus?'<p>下一次主動技能增傷 '+pct(d.nextActiveDamageBonus)+'</p>':''}${d.advanceSteps?'<p>下回合行動提前 '+d.advanceSteps+' 格</p>':''}<h3>持有技能與冷卻</h3><div class="battle-unit-skill-list">${d.skills.map(sk=>`<article><b>${esc(sk.name)}</b><span>${labels[sk.type]||esc(sk.type)} · ${!sk.configured?'未配置／不符合使用條件 · ':''}${sk.type==='proc'?'普攻時判定觸發':sk.type==='passive'?'持續生效':sk.remaining>0?'剩餘冷卻 '+sk.remaining+' 個自身回合':'就緒'}${sk.cooldown?' · 冷卻 '+sk.cooldown+' 回合':''}</span><p>${esc(sk.detail)}</p></article>`).join('')||'<p>未持有技能，使用普通攻擊。</p>'}</div><h3>目前增益與減益</h3><div class="battle-unit-status-list">${d.statuses.map(e=>`<article data-polarity="${esc(e.polarity)}"><b>${esc(e.name)} · ${polarity[e.polarity]||'狀態'}</b><p>${esc(e.detail)}</p><small>${esc(e.time|| (e.remaining===null?'持續至解除／戰鬥結束':'剩餘 '+e.remaining+' 戰鬥回合'))}${e.clock?' · '+esc(e.clock):''}${e.uses!=null?' · 剩餘 '+e.uses+' 次':''}${e.source?' · 來源：'+esc(e.source):''}</small></article>`).join('')||'<p>目前無增益或減益。</p>'}</div><p class="small">開啟視窗時戰鬥暫停。冷卻依該單位自身回合計算，增減益依各自標示的時間計算。</p><button type="button" class="primary" onclick="closeModal()">關閉</button></div>`;
+  modal.innerHTML=`<div class="battle-unit-inspector"><h2>${esc(d.name)} · 戰鬥詳細資訊</h2><p>${esc(d.kind)} · ${d.alive?'存活':'已倒下／擊敗'} · ${esc(ELEMENTS[d.element]||d.element||'無')}屬性${d.race?' · '+esc(RACES[d.race]||d.race):''}</p><p class="battle-unit-vitals"><b>生命 ${fmt(d.hp)} / ${fmt(d.max)}</b><span>護盾 ${fmt(d.shield)}</span>${d.controlShield?'<span>變形護盾 '+fmt(d.controlShield)+'</span>':''}</p><h3>目前戰鬥能力</h3><dl class="battle-unit-stat-grid">${statRows.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${d.nextActiveDamageBonus?'<p>下一次主動技能增傷 '+pct(d.nextActiveDamageBonus)+'</p>':''}${d.advanceSteps?'<p>下回合行動提前 '+d.advanceSteps+' 格</p>':''}<h3>持有技能與冷卻</h3><div class="battle-unit-skill-list">${d.skills.map(sk=>`<article><b>${esc(sk.name)}</b><span>${labels[sk.type]||esc(sk.type)} · ${!sk.configured?'未配置／不符合使用條件 · ':''}${sk.type==='proc'?'普攻時判定觸發':sk.type==='passive'?'持續生效':sk.remaining>0?'剩餘冷卻 '+sk.remaining+' 個自身回合':'就緒'}${sk.cooldown?' · 冷卻 '+sk.cooldown+' 回合':''}</span><p>${esc(sk.detail)}</p></article>`).join('')||'<p>未持有技能，使用普通攻擊。</p>'}</div><h3>目前增益與減益</h3><div class="battle-unit-status-list">${d.statuses.map(e=>`<article data-polarity="${esc(e.polarity)}"><b>${esc(e.name)} · ${polarity[e.polarity]||'狀態'}</b><p>${esc(e.detail)}</p><small>${esc(e.time|| (e.remaining===null?'持續至解除／戰鬥結束':'剩餘 '+e.remaining+' 戰鬥回合'))}${e.clock?' · '+esc(e.clock):''}${e.uses!=null?' · 剩餘 '+e.uses+' 次':''}${e.source?' · 來源：'+esc(e.source):''}</small></article>`).join('')||'<p>目前無增益或減益。</p>'}</div><p class="small">開啟視窗時戰鬥暫停。冷卻依該單位自身回合計算，增減益依各自標示的時間計算。</p><button type="button" class="primary" onclick="closeModal()">關閉</button></div>`;
   if(!modal.open)modal.showModal();return true;
  }
  $('modal').addEventListener('close',()=>$('modal').classList.remove('battle-unit-dialog'));
@@ -230,8 +234,11 @@
    // Stacked cards hold the portrait inside their first face; flat cards hold it directly.
    const slots=':scope > .battle-enemy-icon, :scope > .seconds-face-main > .battle-enemy-icon',portrait=old.querySelector(slots);
    if(portrait){const replaced=fresh.querySelector(slots);if(replaced)replaced.replaceWith(portrait);else fresh.prepend(portrait);}
-   for(const child of [...old.children])if(!child.matches('.battle-fx,.battle-fx-status'))child.remove();
-   old.append(...fresh.children);for(const a of [...fresh.attributes])old.setAttribute(a.name,a.value);old.className=fresh.className;old.style.cssText=fresh.style.cssText;fresh.replaceWith(old);
+   for(const child of [...old.children])if(!child.matches('.battle-fx,.battle-fx-status,.battle-number-layer'))child.remove();
+   old.append(...fresh.children);
+   // Copy the raw style attribute: it carries the card color (--vs-card). Re-serializing through
+   // style.cssText can drop custom properties, which turns the card back to the fallback gray.
+   for(const a of [...fresh.attributes])old.setAttribute(a.name,a.value);if(!fresh.hasAttribute('style'))old.removeAttribute('style');fresh.replaceWith(old);
   }
   retainedField=document.querySelector('.squad-field')||retainedField;
   sync();return out;

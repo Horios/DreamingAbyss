@@ -18,7 +18,7 @@ test('manual reroll consumes ten shared dust, regardless of tier, with no ore re
   assert.equal(r.run('state.dust'),0);assert.equal(r.run('state.ore'),before.ore);
   assert.equal(before.gold-r.run('state.gold'),r.run('rerollCostFor(g).gold'));
   assert.equal(r.run('inlineAffixDrafts.has(affixDraftKey(g))'),true);
-  assert.match(r.run('forgeView()'),/data-item-key="粉塵"/);
+  assert.match(r.run('openForge(g.id),forgeView()'),/data-item-key="粉塵"/);
   assert.deepEqual(r.errors,[]);
 });
 

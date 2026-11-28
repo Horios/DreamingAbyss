@@ -19,7 +19,7 @@
      death, a stop, a map/difficulty change, a configuration change or a gap longer than 10 minutes
      discards the unfinished run: such time is not sustained idle efficiency.
    - A completed run becomes a candidate snapshot. It replaces the stored one only when its earnings are
-     higher (XP per hour, then gold per hour).
+     higher (gold per hour; character XP was removed in v0.161).
    - A region without 30 minutes of online records samples the first 30 minutes of an offline replay
      instead (source 'offline'). That replay still settles its full time as before.
    - The snapshot keeps the configuration key, levels, consumed items and active timed boosts, so the
@@ -60,7 +60,7 @@
  }
  // Player-chosen setup that changes combat output (levels are recorded separately): members, class stage, loadouts, gear, auto-potion settings, speed.
  function configuration(){
-  const members=heroes().map(h=>[memberKey(h),h.job,!!h.advanced,h.skillLoadout||null,h.passiveEnabled||null,h.activeSkillEquipmentId??null,equipment(h).map(g=>g&&[g.id,g.plus||0,g.skillSockets?.gems||null]),h.autoPotion?[h.autoPotionId,h.autoPotionThresholdPct]:null,h.autoManaPotion?h.autoManaPotionThresholdPct:null,h.recoveryHealing===true]);
+  const members=heroes().map(h=>[memberKey(h),h.job,!!h.advanced,h.skillLoadout||null,h.passiveEnabled||null,equipment(h).map(g=>g&&[g.id,g.plus||0,g.skillSockets?.gems||null]),h.autoPotion?[h.autoPotionId,h.autoPotionThresholdPct]:null,h.autoManaPotion?h.autoManaPotionThresholdPct:null,h.recoveryHealing===true]);
   return hash(JSON.stringify([typeof battleRate==='number'?battleRate:1,members]));
  }
  function stock(){
@@ -99,7 +99,7 @@
   else if(p.pending)p.run=keepAverage(p);
   p.pending=null;p.current=null;
   if(!m||!running||!foes.length||challenge()){p.run=keepAverage(p);return;}
-  p.current={region:key,mode:m,window,config:configuration(),start:at,end:0,levels:heroes().map(h=>h.lv),boosts:boosts(),stock:stock(),goldAfter:null,...empty()};
+  p.current={region:key,mode:m,window,config:configuration(),start:at,end:0,levels:heroes().map(h=>classMasteryLevel(h)),boosts:boosts(),stock:stock(),goldAfter:null,...empty()};
  }
  function finish(result){
   const p=P(),e=p.current;p.current=null;if(!e)return;
@@ -113,7 +113,8 @@
   agg.ms+=cycle;agg.battles++;if(e.result==='wipe')agg.wipes++;agg.deaths+=e.deaths;agg.xp+=e.xp;agg.gold+=e.gold;agg.goldLost+=e.goldLost;
   for(const field of COUNTS)for(const k in e[field])if(k in agg[field]||Object.keys(agg[field]).length<RULES.maxKeys)add(agg[field],k,e[field][k]);
  };
- const better=(a,b)=>!b||a.xp*b.ms>b.xp*a.ms||a.xp*b.ms===b.xp*a.ms&&a.gold*b.ms>b.gold*a.ms;
+ // v0.161: no character XP; a sample is better when it earns more gold per unit of time.
+ const better=(a,b)=>!b||a.gold*b.ms>b.gold*a.ms;
  function region(data,key,at){return data.regions[key]??={map:Number(key.split(':')[0]),difficulty:Number(key.split(':')[1]),first:at,last:0,total:empty(),snapshot:null};}
  function sample(e,cycle){
   const p=P();
@@ -149,14 +150,14 @@
  function aggregate(raw){const a=empty();if(!raw||typeof raw!=='object')return a;for(const k of NUMBERS)a[k]=num(raw[k]);for(const k of COUNTS)a[k]=counts(raw[k]);return a;}
  function snapshotOf(raw){
   if(!raw||typeof raw!=='object'||!['online','offline','average'].includes(raw.source)||num(raw.ms)<RULES.sampleMs||typeof raw.config!=='string'||raw.config.length>16||typeof raw.id!=='string'||raw.id.length>80)return null;
-  return {id:raw.id,source:raw.source,config:raw.config,at:num(raw.at),levelMin:num(raw.levelMin,1,1e4)||1,levelMax:num(raw.levelMax,1,1e4)||1,boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[],...aggregate(raw)};
+  return {id:raw.id,source:raw.source,config:raw.config,at:num(raw.at),levelMin:num(raw.levelMin,0,1e4)||0,levelMax:num(raw.levelMax,0,1e4)||0,boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[],...aggregate(raw)};
  }
  // Transient progress is optional: anything malformed is dropped and only delays the next sample.
  function partOf(raw,kind){
   if(!raw||typeof raw!=='object'||typeof raw.region!=='string'||!/^\d+:[012]$/.test(raw.region)||!['online','offline','average'].includes(raw.mode)||typeof raw.config!=='string'||raw.config.length>16)return null;
   const out={region:raw.region,mode:raw.mode,window:raw.window==null?null:num(raw.window,0,8.64e15),config:raw.config,start:num(raw.start),...aggregate(raw)};
-  if(kind==='run')return {...out,levelMin:num(raw.levelMin,1,1e4)||1,levelMax:num(raw.levelMax,0,1e4),boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[]};
-  const extra={end:num(raw.end),levels:Array.isArray(raw.levels)?raw.levels.slice(0,3).map(n=>num(n,1,1e4)||1):[],boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[]};
+  if(kind==='run')return {...out,levelMin:num(raw.levelMin,0,1e4)||0,levelMax:num(raw.levelMax,0,1e4),boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[]};
+  const extra={end:num(raw.end),levels:Array.isArray(raw.levels)?raw.levels.slice(0,3).map(n=>num(n,0,1e4)||0):[],boosts:Array.isArray(raw.boosts)?raw.boosts.slice(0,20).map(x=>String(x).slice(0,60)):[]};
   if(!extra.levels.length)return null;
   if(kind==='current')return {...out,...extra,stock:counts(raw.stock,true),goldAfter:raw.goldAfter==null?null:num(raw.goldAfter,-1e15,1e15)};
   return {...out,...extra,result:raw.result==='wipe'?'wipe':'victory'};
@@ -208,7 +209,6 @@
    }
   }
  };
- const xpBase=awardXP;awardXP=function(amount,...args){if(rewarding)rewarding.xp+=Math.max(0,Math.floor(Number(amount)||0));return xpBase.call(this,amount,...args);};
  const gearBase=addGear;addGear=function(g,...args){const out=gearBase.call(this,g,...args);if(rewarding&&g)add(rewarding.gear,gearKey(g),1);return out;};
  const resetBase=resetEncounter;resetEncounter=function(...args){clear();return resetBase.apply(this,args);};
  const createBase=createParty;createParty=function(...args){const p=createBase.apply(this,args);p.idleStatistics=normalize(null);return p;};

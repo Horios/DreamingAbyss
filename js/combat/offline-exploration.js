@@ -79,7 +79,7 @@
   function finite(v){if(typeof v==='number'&&!Number.isFinite(v))throw Error('離線存檔包含無效數值');if(v&&typeof v==='object')for(const x of Object.values(v))finite(x);}finite(c);
   return migrate(c);
  }
- validateParty=function(raw){const c=validate(raw?.offlineExploration,raw?.members),p=baseValidate(raw);if(c)p.offlineExploration=c;return p;};
+ validateParty=function(raw){const c=validate(raw?.offlineExploration,raw?.members),p=baseValidate(raw);if(c){for(const r of [c.receipt,c.pendingReceipt])if(Array.isArray(r?.gear))globalThis.migrateSlimEquipmentForms?.(r.gear);p.offlineExploration=c;}return p;};
  loadParty=function(raw){
   if(job&&!restoring)throw Error('離線結算進行中，請完成後再讀取存檔');
   restoring=true;try{const out=baseLoad(raw);const c=ensure();hydrate(c);failed=false;lastCheck=nowReal();renderedReceipt=null;return out;}finally{restoring=false;}
@@ -91,7 +91,7 @@
  save=function(...args){
   if(stepping||restoring)return true;
   if(!internal){sync();if(job)return true;}
-  if(failed||globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
+  if(failed||globalThis.__EMBERWILD_SAVE_OWNER===false){globalThis.__EMBERWILD_SAVE_ERROR=failed?'離線結算未完成，請先處理結算訊息':'存檔已交給其他分頁，請重新整理此頁';return false;}
   // Never move lastAt just because a save ran: it represents settled events only.
   const saved=baseSave(...args);if(saved===true&&typeof globalThis.__EMBERWILD_BOOT_SAVE_RAW==='string')lastCommitted=globalThis.__EMBERWILD_BOOT_SAVE_RAW;return saved;
  };
@@ -112,7 +112,7 @@
   try{return fn();}finally{({render,note,toast,refreshGlobalJournal,GS}=originals);globalThis.__EMBERWILD_SIMULATION_MODAL=null;globalThis.__EMBERWILD_OFFLINE_RULE_CACHE=null;globalThis.__EMBERWILD_OFFLINE_SILENT=false;}
  }
  function buffs(){return [...(party?.timedBoosts||[]),...party.members.flatMap(h=>api.ELEMENTAL_TYPES.flatMap(k=>api.buffRows(h[k])))];}
- function receipt(start,end){const p=playerHero();return {id:String(start)+'-'+String(end)+'-'+String(p.created),start,end,map:MAPS[party.map]?.name||'',stage:party.questChallenge?.name||(party.bossChallenge?.active?'BOSS 難關':'一般探索'),intervals:[],battles:0,effectiveMs:0,kills:0,xp:0,goldGained:0,goldSpent:0,items:{},consumed:{},gear:[],boosts:{},levels:party.members.map(h=>({key:memberKey(h),name:characterName(h),before:h.lv,after:h.lv})),complete:false,reason:'',stoppedAt:null};}
+ function receipt(start,end){const p=playerHero();return {id:String(start)+'-'+String(end)+'-'+String(p.created),start,end,map:MAPS[party.map]?.name||'',stage:party.questChallenge?.name||(party.bossChallenge?.active?'BOSS 難關':'一般探索'),intervals:[],battles:0,effectiveMs:0,kills:0,xp:0,goldGained:0,goldSpent:0,items:{},consumed:{},gear:[],boosts:{},levels:party.members.map(h=>({key:memberKey(h),name:characterName(h),before:classMasteryLevel(h),after:classMasteryLevel(h)})),complete:false,reason:'',stoppedAt:null};}
  // Scratch buffers belong to one synchronous advance batch, never to the save.
  function stock(out={}){
   const h=playerHero();for(const k in out)out[k]=0;
@@ -139,10 +139,10 @@
   // Retain ID comparison if a future event replaces the bag array.
   if(h.bag===before.bag){for(let i=before.length;i<h.bag.length;i++)r.gear.push(copy(h.bag[i]));}
   else {const ids=new Set(before.bag.map(g=>g.id));for(const g of h.bag)if(!ids.has(g.id))r.gear.push(copy(g));}
-  for(const l of r.levels)l.after=partyMember(l.key)?.lv??l.after;if(metrics)metrics.inventoryMs+=performance.now()-t;
+  for(const l of r.levels){const m=partyMember(l.key);if(m)l.after=classMasteryLevel(m);}if(metrics)metrics.inventoryMs+=performance.now()-t;
  }
- const award=awardXP;
- awardXP=function(...args){const h=playerHero(),level=h?.lv,xp=h?.xp,out=award(...args),r=clock()?.pendingReceipt;if(stepping&&jobOffline&&r&&!r.complete&&h){let gained=h.xp-xp;for(let lv=level;lv<h.lv;lv++)gained+=need(lv);r.xp+=Math.max(0,gained);}return out;};
+ // Receipts count class mastery XP (character XP no longer exists); levels record class mastery before/after.
+ (globalThis.__EMBERWILD_MASTERY_LISTENERS??=[]).push((h,amount)=>{const r=clock()?.pendingReceipt;if(stepping&&jobOffline&&r&&!r.complete&&h&&party?.members?.includes(h))r.xp+=Math.max(0,Math.floor(Number(amount)||0));});
  const reward=rewardGroupKill;
  rewardGroupKill=function(e){const started=performance.now(),eligible=e&&!e.rewarded,before=playerHero()?.gold||0,out=reward(e),r=clock()?.pendingReceipt;if(stepping&&jobOffline&&metrics)metrics.dropMs+=performance.now()-started;if(stepping&&jobOffline&&eligible&&e.rewarded&&r&&!r.complete){if(analysis){const k=e.monsterId+':'+e.kind;analysis.monsters[k]=(analysis.monsters[k]||0)+1;}r.kills++;r.goldGained+=Math.max(0,playerHero().gold-before);}return out;};
  const finalize=finalizeBattleStatistics;
@@ -172,7 +172,7 @@
   const c=clock(),elapsed=at-c.lastAt;if(elapsed<=0)return;
   const r=c.pendingReceipt,rows=buffs(),disabled=rows.filter(b=>!b.enabled);
   if(jobOffline&&r&&!r.complete&&combatActive){r.effectiveMs+=elapsed;for(const b of rows.filter(b=>b.enabled&&b.remainingMs>0)){
-   const key=api.sourceKey(b);const entry=r.boosts[key]??={name:b.name,effect:b.boostType==='exp'?'經驗＋'+b.bonusPercent+'%':b.boostType==='drop'?'掉寶＋'+b.bonusPercent+'%':'屬性藥水',ms:0};entry.ms+=Math.min(elapsed,b.remainingMs);
+   const key=api.sourceKey(b);const entry=r.boosts[key]??={name:b.name,effect:b.boostType==='exp'?'精通經驗＋'+b.bonusPercent+'%':b.boostType==='drop'?'掉寶＋'+b.bonusPercent+'%':'屬性藥水',ms:0};entry.ms+=Math.min(elapsed,b.remainingMs);
   }}
   if(combatActive)party.combatSession.idleTimeMs+=elapsed;
   api.consume(party,elapsed);
@@ -220,7 +220,7 @@
  let analysis=null,observed=null,metrics=null,replayCache=null,modelSeed=0;
  function sampleRandom(){modelSeed=(Math.imul(modelSeed,1664525)+1013904223)>>>0;return modelSeed/4294967296;}
  function fastReason(reason){if(metrics)metrics.fallbacks[reason]=(metrics.fallbacks[reason]||0)+1;return false;}
- function combatKey(){return JSON.stringify([party.map,party.difficulty,party.active,battleRate,party.members.map(h=>[memberKey(h),h.lv,h.job,h.advanced,h.stats,h.skills,h.active,h.procSlots,h.supportSlots,h.activeSkillEquipmentId,h.passiveEnabled,h.recoveryHealing===true,equipment(h),stats(h)]),buffs().filter(b=>b.enabled&&b.remainingMs>0).map(b=>[b.name,b.boostType,b.bonusPercent,b.effectPercent])]);}
+ function combatKey(){return JSON.stringify([party.map,party.difficulty,party.active,battleRate,party.members.map(h=>[memberKey(h),classMasteryLevel(h),/* v0.179: weapon/element mastery levels change damage */Object.entries(h.mastery||{}).map(([k,x])=>[k,__EMBERWILD_MASTERY.masteryLevelFromXp(x)]),h.job,h.advanced,h.stats,h.skills,h.active,h.procSlots,h.supportSlots,h.passiveEnabled,h.recoveryHealing===true,equipment(h),stats(h)]),buffs().filter(b=>b.enabled&&b.remainingMs>0).map(b=>[b.name,b.boostType,b.bonusPercent,b.effectPercent])]);}
  function simpleCombat(){
   if(globalThis.EmberwildSecondsCombat?.active)return 'seconds-event-model';
   if(party.questChallenge||party.bossChallenge?.active||isFinalMap(party.map))return 'special-stage';
@@ -229,10 +229,10 @@
   if(heroes().length!==1||heroes()[0]!==playerHero())return 'party-mechanism';
   const h=playerHero();
   if(h.hp<=0||h.mp!==undefined)return 'unsupported-resource';
-  if(h.tokenId||h.procSlots.some(x=>x!==null)||h.supportSlots.some(x=>x!==null)||h.activeSkillEquipmentId)return 'special-skill';
+  if(h.tokenId||h.procSlots.some(x=>x!==null)||h.supportSlots.some(x=>x!==null)||h.skillLoadout?.active.some(id=>__EMBERWILD_SKILLS.byId(id)?.sources.some(s=>s.type==='equipment')))return 'special-skill';
   const simpleSkill=i=>{const sk=CLASSES[h.job].skills[i],m=sk?.[6];return /^class\d+-initial\d+$/.test(m?.id||'')&&['damage','tauntRage','shield','heal'].includes(sk[5])&&!m.onHitStatusId&&!m.statusId&&(!m.systemEffect||['taunt','guard','regen','slow'].includes(m.systemEffect))&&(m.commonEffectKeys||[]).every(k=>['target','hitCount'].includes(k));};
   if(h.active.some(i=>i!==null&&!simpleSkill(i)))return 'special-skill';
-  if(equipment(h).some(g=>itemForm(g)?.fixedEffects?.some(x=>['basicAdvanceNextRound'].includes(x.key))))return 'special-equipment';
+  if(equipment(h).some(g=>itemForm(g)?.fixedEffects?.some(x=>['basicAttackSpeedStack'].includes(x.key))))return 'special-equipment';
   if(api.ELEMENTAL_TYPES.some(k=>api.buffRows(h[k]).some(b=>b.remainingMs>0)))return 'elemental-supply';
   const rows=monsterCatalog().filter(m=>m.mapIndex===party.map&&m.enabled!==false&&m.kind==='normal');
   if(rows.some(m=>m.skillAssignments?.length))return 'enemy-skill';
@@ -293,12 +293,15 @@
   const sample=p.rows[Math.floor(sampleRandom()*p.rows.length)],c=clock(),end=observed.at+sample.duration;
   const expiry=Math.min(...buffs().filter(b=>b.remainingMs>0).map(b=>c.lastAt+b.remainingMs),Infinity);
   if(end>=expiry||end>Math.min(target,c.lastAt+HOUR))return fastReason('time-boundary');
-  const h=playerHero(),xp=foes.reduce((n,e)=>n+EmberwildProgression.xpShare(EmberwildProgression.enemyXp(GAMEPLAY_SETTINGS,e.lv,e.kind,e.difficulty||0,h.lv),heroes().length)*(1+api.bonus(party,'exp')/100),0);
-  if(h.lv<levelCap(h)&&h.xp+(h.xpFraction||0)+xp>=need(h.lv))return fastReason('level-boundary');
+  // A class mastery level-up can unlock skills and change the fight: finish that battle in full mode.
+  const h=playerHero(),gain=Object.values(sample.mastery||{}).reduce((n,v)=>n+Math.max(0,v),0);
+  if(gain>0&&__EMBERWILD_MASTERY.masteryLevelFromXp(classMasteryXp(h)+gain)!==classMasteryLevel(h))return fastReason('mastery-boundary');
+  // v0.179: a weapon or element mastery level-up changes damage (js/skills/mastery-damage.js): also a full battle.
+  if(Object.entries(sample.mastery||{}).some(([k,n])=>n>0&&h.mastery&&__EMBERWILD_MASTERY.masteryLevelFromXp((h.mastery[k]||0)+n)!==__EMBERWILD_MASTERY.masteryLevelFromXp(h.mastery[k]||0)))return fastReason('mastery-boundary');
   // Require a large HP reserve even with twice the longest sampled battle,
   // no evasion, healing, shield or beneficial status. Special attacks are excluded.
   const v=stats(h),formula=GAMEPLAY_SETTINGS.combat.damageFormula||{},maxRounds=Math.max(...p.rows.map(x=>x.rounds))*2;
-  const damage=foes.reduce((n,e)=>n+Math.ceil(Math.max(formula.minimumDamage??1,e.atk*(formula.attackCoefficient??1)*(1+Math.max(0,e.lv-h.lv)*GAMEPLAY_SETTINGS.combat.levelGapDamagePerLevel)-Math.max(0,v.def*(1-Math.min(.95,e.defenseIgnore||0))-(e.pierce||0))*(formula.defenseCoefficient??GAMEPLAY_SETTINGS.combat.defenseEffectiveness))*(e.crit>0?Math.max(1,e.critDamage||1.5):1)*Math.max(1,1+(e.elementBonus||0)+(e.elementDamage?.[e.element]||0))*Math.max(1,1-(v.resist?.[e.element]||0))),0)*maxRounds;
+  const damage=foes.reduce((n,e)=>n+Math.ceil(Math.max(formula.minimumDamage??1,e.atk*(formula.attackCoefficient??1)-Math.max(0,v.def*(1-Math.min(.95,e.defenseIgnore||0))-(e.pierce||0))*(formula.defenseCoefficient??GAMEPLAY_SETTINGS.combat.defenseEffectiveness))*(e.crit>0?Math.max(1,e.critDamage||1.5):1)*Math.max(1,1+(e.elementBonus||0)+(e.elementDamage?.[e.element]||0))*Math.max(1,1-(v.resist?.[e.element]||0))),0)*maxRounds;
   if(h.hp<v.hp*.99||damage>h.hp*.5)return fastReason('hp-reserve');
   if(h.autoPotion&&(healPotionCount(h.autoPotionId)>0||h.potions>0)&&h.hp-damage<=v.hp*(h.autoPotionThresholdPct??35)/100)return fastReason('potion-threshold');
   // No full save per encounter. A failed fast mutation restores the existing
@@ -395,8 +398,7 @@
   if(voucherState==='requested')return '<p class="small">已確認改領收益券，正在停止計算並寄送收益券。</p>';
   if(averageWindow!==null&&IS()?.averaging(averageWindow))return `<p class="small offline-voucher-average">此地區還沒有收益樣本：先完整計算 ${averageHours()} 小時，剩餘時間依這段時間的平均收益自動改領收益券。</p>`;
   const q=voucherQuote();if(!q){voucherState=null;return '';}
-  const gold=globalThis.EmberwildRegionVouchers.overlevelGold(party.map);
-  if(voucherState==='confirm')return `<div class="offline-voucher-confirm" role="group" aria-label="改領收益券確認"><h3>改領收益券</h3><p>停止目前的離線戰鬥計算。已計算的收益照常入帳；剩餘的 ${api.timeText(q.ms,true)} 轉換為 <b>${q.tickets} 張「${esc(q.name)}」${voucherMinutes()} 分鐘收益券</b>，寄到信箱。</p><ul class="small"><li>收益券以道具形式寄到信箱，領取後放入背包的道具欄。</li><li>使用時才計算經驗、金幣與道具，收益寄到信箱。</li><li>收益依此地區收益最高的掛機紀錄換算；道具依地區掉落機率實際抽取。</li><li>主角等級超過 Lv.${MAPS[party.map].max} 後，此券只能兌換固定金幣 ${gold.toLocaleString('zh-TW')}。</li>${q.remainder?`<li>不足 ${voucherMinutes()} 分鐘的 ${api.timeText(q.remainder,true)} 保留，下次改領時累積。</li>`:''}</ul><p>確定要停止計算並改領收益券嗎？</p><div class="actions"><button type="button" class="primary" onclick="offerOfflineVouchers('confirm')">確認改領</button><button type="button" onclick="offerOfflineVouchers('cancel')">繼續計算</button></div></div>`;
+  if(voucherState==='confirm')return `<div class="offline-voucher-confirm" role="group" aria-label="改領收益券確認"><h3>改領收益券</h3><p>停止目前的離線戰鬥計算。已計算的收益照常入帳；剩餘的 ${api.timeText(q.ms,true)} 轉換為 <b>${q.tickets} 張「${esc(q.name)}」${voucherMinutes()} 分鐘收益券</b>，寄到信箱。</p><ul class="small"><li>收益券以道具形式寄到信箱，領取後放入背包的道具欄。</li><li>使用時才計算經驗、金幣與道具，收益寄到信箱。</li><li>收益依此地區收益最高的掛機紀錄換算；道具依地區掉落機率實際抽取。</li>${q.remainder?`<li>不足 ${voucherMinutes()} 分鐘的 ${api.timeText(q.remainder,true)} 保留，下次改領時累積。</li>`:''}</ul><p>確定要停止計算並改領收益券嗎？</p><div class="actions"><button type="button" class="primary" onclick="offerOfflineVouchers('confirm')">確認改領</button><button type="button" onclick="offerOfflineVouchers('cancel')">繼續計算</button></div></div>`;
   return `<div class="offline-voucher-offer"><button type="button" onclick="offerOfflineVouchers('open')">改領收益券（${q.tickets} 張）</button><p class="small">不想等待計算時，可將剩餘時間改為收益券。</p></div>`;
  }
  function showProgress(message,error=false){
@@ -424,12 +426,14 @@
   const r=clock()?.receipt,box=document.getElementById('offline-settlement');if(!r?.complete||!eligible(r)||!box||atTitle()||document.hidden)return;
   if(renderedReceipt===r.id&&!box.hidden)return;renderedReceipt=r.id;
   box.hidden=false;const fmt=n=>Math.round(n).toLocaleString('zh-TW'),time=t=>new Date(t).toLocaleString('zh-TW',{hour12:false});
-  const group=(kind,title)=>{const rows=Object.entries(r.items).filter(([k,n])=>k.startsWith(kind+':')&&n>0);return rows.length?`<h3>${title}</h3><div class="offline-items">${rows.map(([k,n])=>itemSlotHTML(kind,k.slice(kind.length+1),{count:n,detailLabel:'本次獲得'})).join('')}</div>`:'';};
-  box.innerHTML=`<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="offline-heading"><h2 id="offline-heading">離線探索收益</h2><p>${esc(r.map)} · ${esc(r.stage||'一般探索')} · ${r.reason?esc(r.reason):'正常完成補算'}</p><p class="small">開始 ${time(r.start)}<br>結束 ${time(r.end)}${r.stoppedAt?'<br>探索終止 '+time(r.stoppedAt):''}</p>${r.vouchers?`<p class="offline-voucher-note">已改領 ${r.vouchers} 張「${esc(r.voucherRegion||'')}」${voucherMinutes()} 分鐘收益券（${api.timeText(r.voucherMs||0,true)}），已寄至信箱；到信箱領取後使用。</p>`:r.voucherMs?`<p class="offline-voucher-note">改領的 ${api.timeText(r.voucherMs,true)} 不足 ${voucherMinutes()} 分鐘，已保留到下次累積。</p>`:''}<div class="offline-summary"><div>計入離線<b>${api.timeText(r.intervals?.reduce((n,x)=>n+x.end-x.start,0)??r.end-r.start,true)}</b></div><div>有效掛機<b>${api.timeText(r.effectiveMs,true)}</b></div><div>擊殺怪物<b>${fmt(r.kills)} 隻</b></div><div>經驗值<b>＋${fmt(r.xp)}</b></div><div>金錢獲得<b>＋${fmt(r.goldGained)}</b></div><div>金錢消耗<b>−${fmt(r.goldSpent)}</b></div><div>金錢淨增加<b>${fmt(r.goldGained-r.goldSpent)}</b></div></div><p class="small">單次離線最多計算 24 小時，超過的時間不產生戰鬥收益。夥伴沿用現有規則，與主角同步等級，沒有獨立經驗槽。</p><div>${r.levels.map(l=>`<p>${esc(l.name)}：Lv.${l.before} → Lv.${l.after}（升級 ${l.after-l.before} 次）</p>`).join('')}</div>${group('material','素材收益')}${group('item','消耗品收益')}${group('gem','寶石收益')}${r.gear.length?'<h3>裝備收益 · '+r.gear.length+' 件</h3><div class="offline-items">'+r.gear.slice(gearPage*30,gearPage*30+30).map((g,j)=>{const i=gearPage*30+j;return `<button class="offline-gear" onclick="showOfflineGear(${i})">${gearSlotHTML(g,{preview:g,count:1,contentOnly:true})}<span class="q${gearQualityRank(g)}">${AFFIX_RANK[gearQualityRank(g)]}</span></button>`;}).join('')+'</div>'+ (r.gear.length>30?`<div class="actions"><button onclick="changeOfflineGearPage(-1)" ${gearPage===0?'disabled':''}>上一頁</button><span>${gearPage+1} / ${Math.ceil(r.gear.length/30)}</span><button onclick="changeOfflineGearPage(1)" ${(gearPage+1)*30>=r.gear.length?'disabled':''}>下一頁</button></div>`:''):''}<h3>增益實際生效時間</h3>${Object.values(r.boosts).map(b=>`<p>${esc(b.name)} · ${esc(b.effect)}：${api.timeText(b.ms,true)}</p>`).join('')||'<p>無限時增益</p>'}${Object.keys(r.consumed||{}).length?'<h3>道具消耗</h3><div class="offline-items">'+Object.entries(r.consumed).filter(([,n])=>n>0).map(([k,n])=>{const split=k.indexOf(':'),kind=k.slice(0,split),id=k.slice(split+1);if(k==='item:legacy-potion')return '<p>舊版治療藥水 ×'+fmt(n)+'</p>';return ['item','material','gem'].includes(kind)?itemSlotHTML(kind,id,{count:n,detailLabel:'本次消耗'}):'<p>'+esc(k)+' ×'+fmt(n)+'</p>';}).join('')+'</div>':''}<p class="small">收益已存入角色與背包；視窗僅顯示已保存的收益，探索仍會持續進行。</p><button class="primary" onclick="acknowledgeOfflineExploration()">確認／關閉</button></section>`;box.querySelector('[role="dialog"]')?.focus({preventScroll:true});
+  // v0.180: enhancement materials (鍛鐵、粉塵、以太鍛鐵) have their own section, apart from the region materials.
+  const ENHANCE=new Set(['material:鍛鐵','material:粉塵','material:以太鍛鐵']);
+  const group=(kind,title,only=()=>true)=>{const rows=Object.entries(r.items).filter(([k,n])=>k.startsWith(kind+':')&&n>0&&only(k));return rows.length?`<h3>${title}</h3><div class="offline-items">${rows.map(([k,n])=>itemSlotHTML(kind,k.slice(kind.length+1),{count:n,detailLabel:'本次獲得'})).join('')}</div>`:'';};
+  box.innerHTML=`<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="offline-heading"><h2 id="offline-heading">離線探索收益</h2><p>${esc(r.map)} · ${esc(r.stage||'一般探索')} · ${r.reason?esc(r.reason):'正常完成補算'}</p><p class="small">開始 ${time(r.start)}<br>結束 ${time(r.end)}${r.stoppedAt?'<br>探索終止 '+time(r.stoppedAt):''}</p>${r.vouchers?`<p class="offline-voucher-note">已改領 ${r.vouchers} 張「${esc(r.voucherRegion||'')}」${voucherMinutes()} 分鐘收益券（${api.timeText(r.voucherMs||0,true)}），已寄至信箱；到信箱領取後使用。</p>`:r.voucherMs?`<p class="offline-voucher-note">改領的 ${api.timeText(r.voucherMs,true)} 不足 ${voucherMinutes()} 分鐘，已保留到下次累積。</p>`:''}<div class="offline-summary"><div>計入離線<b>${api.timeText(r.intervals?.reduce((n,x)=>n+x.end-x.start,0)??r.end-r.start,true)}</b></div><div>有效掛機<b>${api.timeText(r.effectiveMs,true)}</b></div><div>擊殺怪物<b>${fmt(r.kills)} 隻</b></div><div>職業精通經驗<b>＋${fmt(r.xp)}</b></div><div>金錢獲得<b>＋${fmt(r.goldGained)}</b></div><div>金錢消耗<b>−${fmt(r.goldSpent)}</b></div><div>金錢淨增加<b>${fmt(r.goldGained-r.goldSpent)}</b></div></div><p class="small">單次離線最多計算 24 小時，超過的時間不產生戰鬥收益。</p><div>${r.levels.map(l=>`<p>${esc(l.name)}：職業精通 Lv.${l.before} → Lv.${l.after}（提升 ${l.after-l.before} 級）</p>`).join('')}</div>${group('material','強化素材',k=>ENHANCE.has(k))}${group('material','地區素材',k=>!ENHANCE.has(k))}${group('item','消耗品收益')}${group('gem','寶石收益')}${r.gear.length?'<h3>裝備收益 · '+r.gear.length+' 件</h3><div class="offline-items">'+r.gear.slice(gearPage*30,gearPage*30+30).map((g,j)=>{const i=gearPage*30+j;return `<button class="offline-gear" onclick="showOfflineGear(${i})">${gearSlotHTML(g,{preview:g,count:1,contentOnly:true})}<span class="q${gearQualityRank(g)}">${AFFIX_RANK[gearQualityRank(g)]}</span></button>`;}).join('')+'</div>'+ (r.gear.length>30?`<div class="actions"><button onclick="changeOfflineGearPage(-1)" ${gearPage===0?'disabled':''}>上一頁</button><span>${gearPage+1} / ${Math.ceil(r.gear.length/30)}</span><button onclick="changeOfflineGearPage(1)" ${(gearPage+1)*30>=r.gear.length?'disabled':''}>下一頁</button></div>`:''):''}<h3>增益實際生效時間</h3>${Object.values(r.boosts).map(b=>`<p>${esc(b.name)} · ${esc(b.effect)}：${api.timeText(b.ms,true)}</p>`).join('')||'<p>無限時增益</p>'}${Object.keys(r.consumed||{}).length?'<h3>道具消耗</h3><div class="offline-items">'+Object.entries(r.consumed).filter(([,n])=>n>0).map(([k,n])=>{const split=k.indexOf(':'),kind=k.slice(0,split),id=k.slice(split+1);if(k==='item:legacy-potion')return '<p>舊版治療藥水 ×'+fmt(n)+'</p>';return ['item','material','gem'].includes(kind)?itemSlotHTML(kind,id,{count:n,detailLabel:'本次消耗'}):'<p>'+esc(k)+' ×'+fmt(n)+'</p>';}).join('')+'</div>':''}<p class="small">收益已存入角色與背包；視窗僅顯示已保存的收益，探索仍會持續進行。</p><button class="primary" onclick="acknowledgeOfflineExploration()">確認／關閉</button></section>`;box.querySelector('[role="dialog"]')?.focus({preventScroll:true});
  }
  globalThis.changeOfflineGearPage=function(delta){renderedReceipt=null;gearPage=Math.max(0,Math.min(Math.ceil((clock()?.receipt?.gear.length||1)/30)-1,gearPage+delta));showReceipt();};
  // v0.115: the receipt shows the same gear detail as the backpack (stats and abilities, not only the source breakdown).
- globalThis.showOfflineGear=function(i){const g=clock()?.receipt?.gear[i];if(!g)return;$('modal').innerHTML='<h2>'+equipmentNameHTML(g)+'</h2><div class="offline-gear-detail">'+(globalThis.gearInfoHTML?.(g).replace(/^<h3>[\s\S]*?<\/h3>/,'')||equipmentAttributeDetailsHTML(g))+'</div><button onclick="closeModal()">關閉</button>';$('modal').showModal();};
+ globalThis.showOfflineGear=function(i){const g=clock()?.receipt?.gear[i];if(!g)return;$('modal').innerHTML='<h2>'+equipmentNameHTML(g)+'</h2><div class="offline-gear-detail">'+(g.unidentified&&globalThis.unidentifiedGearDetailHTML?globalThis.unidentifiedGearDetailHTML(g):(globalThis.gearInfoHTML?.(g).replace(/^<h3>[\s\S]*?<\/h3>/,'')||equipmentAttributeDetailsHTML(g)))+'</div><button onclick="closeModal()">關閉</button>';$('modal').showModal();};
  globalThis.acknowledgeOfflineExploration=function(){
   const c=clock();if(job||failed||!c?.receipt?.complete||globalThis.__EMBERWILD_SAVE_OWNER===false)return false;
   const previous=copy(c);c.receipt=null;promote();
@@ -472,7 +476,6 @@
      if(c.offlineWindow&&c.lastAt<requestedAt)skipUncreditedTime(requestedAt);
     }while(c.lastAt<requestedAt);
     // A throttled tick takes this async path; do not starve online life jobs.
-    internal=true;try{globalThis.emberwildLifeHeartbeat?.();}finally{internal=false;}
     if(show){showProgress('正在完成收益與存檔');await new Promise(resolve=>setTimeout(resolve,0));}if(jobOffline&&!document.hidden)promote();c.offlineWindow=null;commit();metrics.totalMs=performance.now()-settlementStarted;lastRendered=actionSerial;render();showReceipt();
     if(!c.receipt)document.getElementById('offline-settlement').hidden=true;
    }catch(e){rollback(String(e.message||e));}
@@ -501,7 +504,7 @@
   if(failed||atTitle()||globalThis.__EMBERWILD_SAVE_OWNER===false)return;
   const now=nowReal();if(now-lastCheck<(document.hidden?1000:50))return;lastCheck=now;sync(now);
   if(!job&&!document.hidden){
-   if(now-lastHeartbeat>=1000){lastHeartbeat=now;globalThis.emberwildLifeHeartbeat?.();__EMBERWILD_TIMED_BOOST_TEST.refreshJournalRealtime();}
+   if(now-lastHeartbeat>=1000){lastHeartbeat=now;__EMBERWILD_TIMED_BOOST_TEST.refreshJournalRealtime();}
    if(lastRendered!==actionSerial){
     // save()/UI sync can resolve an action before tick presents it. Its wait
     // must survive a delayed publication or a slow render, rather than already
@@ -521,14 +524,14 @@
  for(const name of [
   'toggleBattle','stopTeamExploration','restartExploration','startSelectedExploration','startBossChallenge','startQuestEncounter','leaveBossChallenge',
   'chooseMap','changeDifficulty','setEncounterMode','returnToTitle','setTimedBoostEnabled','useSupply','closeModal',
-  'buyFixedShopOffer','buyMarketOffer','buyHealingPotion','buySupply','buyLifeMaterial','sellInventoryItem',
+  'buyFixedShopOffer','buyMarketOffer','buyHealingPotion','buySupply','craftEtherIron','sellInventoryItem',
   'setHeroAutoPotion','setHeroAutoPotionThreshold','setHeroAutoPotionItem','potion',
   'enhance','reroll','autoReroll','acceptAffix','resolveInlineAffix','rerollEquipmentPowerTier','socket',
   'salvage','salvageAll','sellGear','sellAllGearByQuality','confirmMassSalvage','confirmGearInventoryBatch','confirmTokenBatch','sellMaterial','sellCatalogueGem',
   'startDailyCommission','claimBoard','startSideQuest','claimQuest','completeStoryStage','claimMailboxAttachments','claimAllMailboxAttachments','useLevelScroll'
  ]){
   // Mail claims commit attachments and claim flags atomically, including rollback.
-  const savesOwnState=['claimMailboxAttachments','claimAllMailboxAttachments'].includes(name),base=globalThis[name];if(typeof base!=='function')continue;
+  const savesOwnState=['claimMailboxAttachments','claimAllMailboxAttachments','craftEtherIron'].includes(name),base=globalThis[name];if(typeof base!=='function')continue;
   globalThis[name]=function(...args){if(!stepping){if(globalThis.__EMBERWILD_SAVE_OWNER===false)return false;sync();if(job||failed)return false;}const wasRunning=running,wasEncounter=foes.length;const out=base.apply(this,args);if(!stepping){if(!wasRunning&&running&&!wasEncounter)ensure().startedAt=nowReal();sync();if(!savesOwnState)save();if(atTitle()){document.getElementById('offline-settlement').hidden=true;renderedReceipt=null;}}return out;};
  }
  const continueBase=continueFromTitle;

@@ -1,16 +1,16 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs');
+const {openRuntime}=require('./runtime.cjs'),{ADD_TEST_COMPANIONS}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const sizes=[[1920,1080],[1366,768],[1024,768],[768,1024],[390,844],[320,568],[844,390]];
-const pages=['character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:items','inventory:tokens','worn','forge','bossCraft','shop','story','story:side','story:npc','quests','gather','alchemy','statistics','battle'];
+const pages=['character','roster','partnerRoster','skills','equipment','inventory:materials','inventory:items','inventory:tokens','worn','forge','crafting','shop','story','story:side','story:npc','quests','statistics','battle'];
 async function setup(p){
- await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
+ await p.evaluate(ADD_TEST_COMPANIONS);await p.evaluate(()=>{selectSaveSlot(1);start(0);clearInterval(timer);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();});
  await p.evaluate(async()=>{await EmberwildOffline.settle(undefined,false);if(EmberwildOffline.failed)throw Error('offline setup failed');if(party.offlineExploration?.receipt?.complete)acknowledgeOfflineExploration();closeModal();clearInterval(timer);});
 }
 function showPage(id){if(id.startsWith('inventory:')){setTab('equipment');setInventoryCategory(id.split(':')[1]);}else if(id.startsWith('story:'))setStoryCategory(id.split(':')[1]);else{if(id==='equipment')setInventoryCategory('equipment');setTab(id);}}
 function bounds(){
  const m=document.querySelector('main'),nav=document.querySelector('.layout>aside'),s=getComputedStyle(m);
- return {overflow:m.scrollWidth-m.clientWidth,padding:parseFloat(s.paddingLeft),expected:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-padding')),bottom:m.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().top,headings:[...m.querySelectorAll('.heading')].filter(e=>e.getBoundingClientRect().height).map(e=>({height:e.clientHeight,scroll:e.scrollHeight})),scroll:s.overflowY};
+ return {overflow:m.scrollWidth-m.clientWidth,padding:parseFloat(s.paddingLeft),expected:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-padding')),bottom:m.getBoundingClientRect().bottom,navTop:nav.getBoundingClientRect().height>nav.getBoundingClientRect().width?(m.getBoundingClientRect().left>=nav.getBoundingClientRect().right-1?innerHeight:-1):nav.getBoundingClientRect().top,headings:[...m.querySelectorAll('.heading')].filter(e=>e.getBoundingClientRect().height).map(e=>({height:e.clientHeight,scroll:e.scrollHeight})),scroll:s.overflowY};
 }
 test('Shared layout: every page fits seven viewports in all three themes, with reachable page bottoms',async()=>{
  const r=await openRuntime(root),p=r.page;
@@ -40,18 +40,20 @@ test('Long reading content and expanded rosters use the page scroll; inventory s
   const roster=await p.locator('.partner-owned-list').evaluate(e=>({overflow:getComputedStyle(e).overflowY,width:e.closest('.roster-page').getBoundingClientRect().width,available:document.querySelector('.companion-management-page').clientWidth}));
   assert.equal(roster.overflow,'visible');assert(Math.abs(roster.width-roster.available)<=1);
   const spacing=await p.locator('.companion-management-page').evaluate(e=>{const h=e.querySelector('.heading'),panel=e.querySelector('.roster-page');return panel.getBoundingClientRect().top-h.getBoundingClientRect().bottom;});assert(spacing<=17,'roster rows do not stretch into blank space');
-  await p.evaluate(()=>setTab('story'));
+  await p.evaluate(()=>setStoryCategory('npc'));/* v0.226: the main story starts empty for a direct start */
   await p.evaluate(()=>{const list=document.querySelector('.story-list');for(let i=0;i<12;i++){const e=list.firstElementChild.cloneNode(true);e.querySelector('h2').textContent='很長的任務名稱與說明'.repeat(8);list.append(e);}});
   const story=await p.evaluate(()=>{const m=document.querySelector('main');m.scrollTop=m.scrollHeight;const last=m.querySelector('.story-list').lastElementChild;return {bottom:last.getBoundingClientRect().bottom,end:m.getBoundingClientRect().bottom,overflow:m.scrollWidth-m.clientWidth};});
   assert(story.bottom<=story.end+1);assert(story.overflow<=1);
   await p.evaluate(()=>setTab('equipment'));
-  assert.equal(await p.locator('.page-owner-content').evaluate(e=>getComputedStyle(e).overflowY),'visible','inventory has no owner-panel scroll around the list');
-  const list=p.locator('.inventory-list-scroll'),item=list.locator('.gear-management-row').nth(3).locator('.item-slot');
-  await item.scrollIntoViewIfNeeded();const before=await list.evaluate(e=>e.scrollTop);await item.click();
+  // v0.211 grid bag: selecting a slot keeps the grid's (desktop) or the page's (phone) scroll position.
+  const pane=p.locator('.bag-grid-pane'),item=pane.locator('.bag-cell[data-bag-ref]').nth(60),main=p.locator('.layout>main');
+  await item.scrollIntoViewIfNeeded();const before=[await pane.evaluate(e=>e.scrollTop),await main.evaluate(e=>e.scrollTop)];await item.click();
   await p.waitForFunction(()=>!isEmberwildUIInteracting());
-  assert(Math.abs(await list.evaluate(e=>e.scrollTop)-before)<=1,'selecting gear keeps the list position at '+width+' (before '+before+', after '+await list.evaluate(e=>e.scrollTop)+')');
-  const panes=await p.locator('.inventory-master-detail').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.inventory-master-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
-  if(width<=900)assert.equal(panes.stack,'flex');else assert(panes.detail>=panes.list);
+  const after=[await pane.evaluate(e=>e.scrollTop),await main.evaluate(e=>e.scrollTop)];
+  assert(Math.abs(after[0]-before[0])<=1&&Math.abs(after[1]-before[1])<=1,'selecting gear keeps the scroll position at '+width+' '+JSON.stringify({before,after}));
+  if(width<=700)await p.evaluate(()=>closeDetailSheet());
+  const panes=await p.locator('.bag-layout').evaluate(e=>({stack:getComputedStyle(e).display,list:e.querySelector('.bag-grid-pane').getBoundingClientRect().right,detail:e.querySelector('.inventory-detail-wrap').getBoundingClientRect().left}));
+  if(width<=700)assert.equal(panes.stack,'block');else assert(panes.detail>=panes.list);
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
@@ -68,9 +70,9 @@ test('Utility dialogs keep readable scroll regions and skill catalog names wrap 
    if(id==='achievements')assert.equal(await p.locator('.achievement-list').evaluate(e=>getComputedStyle(e).overflowY),'visible');
    await p.evaluate(()=>closeModal());
   }
-  await p.evaluate(()=>setTab('skills'));await p.getByRole('button',{name:'技能圖鑑',exact:true}).click();
-  const name=p.locator('.skill-catalog-text b').first();await name.evaluate(e=>e.textContent='長技能名稱'.repeat(12));
-  const b=await name.evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth,white:getComputedStyle(e).whiteSpace}));assert(b.scroll<=b.width+1);assert.equal(b.white,'normal');
+  await p.evaluate(()=>setTab('skills'));await p.getByRole('tab',{name:'技能圖鑑',exact:true}).click();
+  // Measure the injected name in the same task, before a normal UI refresh replaces the node.
+  let b=null;for(let k=0;k<50&&!b;k++){b=await p.evaluate(()=>{const e=document.querySelector('.skill-catalog-text b');if(!e||!e.isConnected)return null;e.textContent='長技能名稱'.repeat(12);return {width:e.clientWidth,scroll:e.scrollWidth,white:getComputedStyle(e).whiteSpace};});if(!b)await p.waitForTimeout(50);}assert(b,'skill catalog name rendered');assert(b.scroll<=b.width+1);assert.equal(b.white,'normal');
   await p.evaluate(()=>closeModal());
  }
  assert.deepEqual(r.errors,[]);
@@ -85,8 +87,14 @@ test('Deployed preview badge leaves utility buttons reachable at every viewport'
   const covered=await p.locator('#utilityNavigation>button').evaluateAll(es=>{const a=document.getElementById('preview-build-banner').getBoundingClientRect();return es.filter(e=>{const b=e.getBoundingClientRect();return b.width&&b.height&&b.left<a.right&&b.right>a.left&&b.top<a.bottom&&b.bottom>a.top;}).map(e=>e.textContent);});
   assert.deepEqual(covered,[],width+' badge covers utility buttons');
   const b=await p.evaluate(bounds);assert(b.overflow<=1);assert(b.bottom<=b.navTop+1);
+  // v0.119: at phone widths the guide and save buttons sit in the header's ⋯ menu.
+  const folded=width<=900;
+  // The header folds on the resize event; wait for it rather than reading the layout in the same frame.
+  if(folded){await p.locator('#utilityButton-guide').waitFor({state:'hidden',timeout:3000}).catch(()=>{});assert.equal(await p.locator('#utilityButton-guide').isVisible(),false,width+' guide is folded');await p.locator('#utilityMoreButton').click();}
   await p.locator('#utilityButton-guide').click();assert.equal(await p.evaluate(()=>isUtilityDialogOpen('guide')),true);await p.evaluate(()=>closeModal());
+  if(folded){assert.equal(await p.locator('#utilityMoreMenu').isVisible(),false,width+' the menu closes after a choice');await p.locator('#utilityMoreButton').click();}
   await p.locator('#utilityButton-save').click();
+  if(folded){const header=await p.locator('body>header').evaluate(e=>e.getBoundingClientRect().height);assert(header<=49,width+' one-row header '+header);}
  }
  assert.deepEqual(r.errors,[]);
  }finally{await r.browser.close();}
@@ -95,10 +103,10 @@ test('Deployed preview badge leaves utility buttons reachable at every viewport'
 test('Long mailbox lists preserve visible desktop detail and reachable mobile mail actions',async()=>{
  const r=await openRuntime(root),p=r.page;
  try{await setup(p);
- const saved=await p.evaluate(()=>{for(let i=0;i<30;i++)party.mailbox.messages.push({id:++party.mailbox.serial,rewardKey:'starter-0-'+(i+10),subject:'信件 '+i,body:'完整信件內容',at:Date.now()+i,read:true,claimed:true,attachments:[{type:'catalogue',kind:'item',key:'heal_small',quantity:1,name:'簡易治療藥水'}]});return save();});assert.equal(saved,true,'mail fixtures use the real validated save contract');
+ const saved=await p.evaluate(()=>{for(let i=0;i<30;i++)party.mailbox.messages.push({id:++party.mailbox.serial,rewardKey:'starter-0-'+(i+10),subject:'信件 '+i,body:'完整信件內容',at:Date.now()+i,read:true,claimed:true,attachments:[{type:'catalogue',kind:'item',key:'heal_small',quantity:1,name:'簡易治療藥水'}]});return {ok:save(),count:party.mailbox.messages.length};});assert.equal(saved.ok,true,'mail fixtures use the real validated save contract');
  for(const [width,height]of [[1366,768],[1024,768],[390,844],[320,568]]){
   await p.setViewportSize({width,height});await p.evaluate(()=>{closeModal();setTab('mailbox');});
-  assert.equal(await p.locator('.mailbox-list-item').count(),31,'all saved mail remains available');
+  assert.equal(await p.locator('.mailbox-list-item').count(),saved.count,'all saved mail remains available');
   const item=p.locator('.mailbox-list-item').last(),id=await item.getAttribute('data-mail-id');await item.click();
   const detail=p.locator('.mailbox-detail');await p.waitForFunction(id=>document.querySelector('.mailbox-detail')?.dataset.mailDetail===id,id);
   const visible=await detail.evaluate(e=>{const b=e.getBoundingClientRect(),m=e.closest('dialog').getBoundingClientRect();return b.top>=m.top&&b.top<m.bottom;});

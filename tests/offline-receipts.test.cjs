@@ -1,16 +1,18 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
-function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};party.huntingMode="group";startSelectedExploration();save();`);return r;}
+function game(){const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=123456;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);return r;}
 async function settle(r,ms=0){r.advance(ms);await r.run('EmberwildOffline.settle()');assert.equal(r.run('EmberwildOffline.failed'),false);}
 function hidden(r,value){r.ctx.document.hidden=value;r.ctx.document.visibilityState=value?'hidden':'visible';r.dispatch('visibilitychange','document');}
 function rewardState(r){return json(r,'({gold:state.gold,xp:state.xp,lv:state.lv,kills:state.totalKills,bag:state.bag,materials:state.materials,at:party.offlineExploration.lastAt})');}
 
+// v0.181: the encounter in progress is made 20× tougher and harmless where a test needs it unfinished, instead of relying on the
+// encounter sequence (fewer elites since v0.181 make the first group fights short).
 test('one second or an unfinished ten-second encounter preserves cursor without opening any window',async()=>{
- const r=game();await settle(r,1000);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
+ const r=game();r.run('for(const e of foes)if(e.hp>0){e.maxhp*=20;e.hp*=20;e.atk=1;}save();');await settle(r,1000);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
  await settle(r,9000);assert.equal(r.run('party.offlineExploration.receipt'),null);assert(r.run('foes.some(e=>e.hp>0)'));assert(r.run('!!party.offlineExploration.combat'));assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);
  const raw=json(r,'packParty()'),cursor=json(r,'combatRoundProgress');r.ctx.saved=raw;r.run('loadParty(saved)');assert.deepEqual(json(r,'combatRoundProgress'),cursor);
- await settle(r,50000);assert(r.run('party.offlineExploration.receipt.battles')>=1);assert.equal(r.elements.get('offline-settlement').hidden,false);
+ r.run('for(const e of foes)if(e.hp>0)e.hp=1;save();');await settle(r,50000);assert(r.run('party.offlineExploration.receipt.battles')>=1);assert.equal(r.elements.get('offline-settlement').hidden,false);
 });
 
 test('one real completed encounter within ten seconds shows its applied rewards once',async()=>{
@@ -21,12 +23,12 @@ test('one real completed encounter within ten seconds shows its applied rewards 
 });
 
 test('a completed encounter without any real reward never shows an empty receipt',async()=>{
- const r=game();r.run('foes.splice(1);foes[0].hp=1;rewardGroupKill=e=>{e.rewarded=true;};save()');await settle(r,10000);
- assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
+ const r=game();/* class mastery is a real offline reward since v0.161; switch it off to keep a reward-free fight */r.run('GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;foes.splice(1);foes[0].hp=1;rewardGroupKill=e=>{e.rewarded=true;};save()');await settle(r,10000);
+ /* v0.226: 重擊 opens the warrior's fights, so more than one encounter can finish in the window. */assert(r.run('party.offlineExploration.pendingReceipt.battles')>=1);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.notEqual(r.elements.get('offline-settlement')?.hidden,false);
 });
 
 test('open receipts stay unchanged during live background play; only a cold reload queues a new offline receipt',async()=>{
- const r=game();r.run('state.lv=20;syncParty();refillParty();save()');await settle(r,600000);const first=json(r,'party.offlineExploration.receipt'),html=r.elements.get('offline-settlement').innerHTML,kills=r.run('state.totalKills');
+ const r=game();r.run('setClassMasteryLevel(19);syncParty();refillParty();save()');await settle(r,600000);const first=json(r,'party.offlineExploration.receipt'),html=r.elements.get('offline-settlement').innerHTML,kills=r.run('state.totalKills');
  for(let i=0;i<60;i++){r.advance(1000);r.run('tick()');}assert(r.run('state.totalKills')>kills);assert.deepEqual(json(r,'party.offlineExploration.receipt'),first);assert.equal(r.elements.get('offline-settlement').innerHTML,html);
  hidden(r,true);r.advance(1200000);hidden(r,false);await r.run('EmberwildOffline.settle(undefined,false)');
  assert.deepEqual(json(r,'party.offlineExploration.receipt'),first);assert.equal(r.elements.get('offline-settlement').innerHTML,html);assert.equal(r.run('party.offlineExploration.pendingReceipt'),null);
@@ -38,7 +40,7 @@ test('open receipts stay unchanged during live background play; only a cold relo
 });
 
 test('queued incomplete battle and merged absence intervals keep all partial rewards until a later completion',async()=>{
- const r=game();await settle(r,60000);const first=json(r,'party.offlineExploration.receipt');await settle(r,1000);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);
+ const r=game();await settle(r,60000);const first=json(r,'party.offlineExploration.receipt');r.run('for(const e of foes)if(e.hp>0){e.maxhp*=20;e.hp*=20;e.atk=1;}save();');await settle(r,1000);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);
  assert.equal(r.run('acknowledgeOfflineExploration()'),true);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.elements.get('offline-settlement').hidden,true);
  // A foreground gap is not part of the next actual absence duration.
  r.advance(1000);r.run('EmberwildOffline.sync()');await settle(r,60000);let next=json(r,'party.offlineExploration.receipt');if(!next){assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),0);r.run('foes.forEach(e=>{if(e.hp>0)e.hp=1;})');await settle(r,30000);next=json(r,'party.offlineExploration.receipt');}assert(next&&next.battles>0);assert(next.intervals.reduce((n,x)=>n+x.end-x.start,0)>=61000);assert.equal(next.intervals.length,2);assert(next.start>=first.end);
@@ -74,10 +76,10 @@ test('title page never settles or displays errors and a late valid consumable sa
 
 
 test('normal defeat retries by existing rules, while a failed quest encounter stops with no fabricated rewards',async()=>{
- const r=game();r.run('state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,4000);
+ const r=game();r.run('GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save()');await settle(r,4000);
  assert.equal(r.run('running'),true);assert.equal(r.run('party.offlineExploration.receipt'),null);assert.equal(r.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(r.run('party.offlineExploration.pendingReceipt.kills'),0);
  r.run('stopTeamExploration()');const before=rewardState(r);await settle(r,60000);assert.equal(r.run('state.totalKills'),before.kills);assert.equal(r.run('state.gold'),before.gold);
- const q=game();q.run(`stopTeamExploration();state.lv=20;syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save();`);await settle(q,60000);
+ const q=game();q.run(`GAMEPLAY_SETTINGS.skills.mastery.skillUseXp=0;GAMEPLAY_SETTINGS.skills.mastery.basicAttackXp=0;stopTeamExploration();setClassMasteryLevel(19);syncParty();refillParty();__EMBERWILD_STORY.record('shop_rescue').started=true;startQuestEncounter('shop_rescue/rescue');state.hp=1;state.autoPotion=false;state.potions=0;foes.forEach(e=>{e.hp=e.maxhp=1000000;e.atk=1000000;});save();`);await settle(q,60000);
  assert.equal(q.run('running'),false);assert.equal(q.run('party.offlineExploration.receipt'),null);assert.equal(q.run('party.offlineExploration.pendingReceipt.battles'),1);assert.equal(q.run('party.offlineExploration.pendingReceipt.kills'),0);assert.equal(q.run('expeditionChallengeResult.success'),false);
 });
 
@@ -114,11 +116,11 @@ test('returning to the title and continuing in the same page cannot open offline
 test('offline receipt shows the real names of consumed items and omits the clock warning',async()=>{
  const r=game();await settle(r,60000);
  assert(r.run('party.offlineExploration.receipt?.complete'));
- r.run('party.offlineExploration.receipt.consumed={"item:heal_small":2,"material:紅色草":4,"item:legacy-potion":1};changeOfflineGearPage(0)');
+ r.run('party.offlineExploration.receipt.consumed={"item:heal_small":2,"material:光輝碎塊":4,"item:legacy-potion":1};changeOfflineGearPage(0)');
  const html=r.elements.get('offline-settlement').innerHTML;
  assert.match(html,/道具消耗/);
  assert.match(html,/簡易治療藥水/);
- assert.match(html,/紅色草/);
+ assert.match(html,/光輝碎塊/);
  assert.match(html,/舊版治療藥水/);
  assert.doesNotMatch(html,/item:heal_small|item:legacy-potion|改時鐘作弊/);
 });

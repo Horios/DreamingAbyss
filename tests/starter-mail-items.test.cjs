@@ -1,9 +1,11 @@
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {loadRuntime:loadBase}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..');
+const {installLegacyStarterMail}=require('./legacy-starter-mail-fixture.cjs');
+const loadRuntime=(...args)=>installLegacyStarterMail(loadBase(...args));
 const json=(r,s)=>JSON.parse(r.run('JSON.stringify('+s+')'));
 function game(edit){const r=loadRuntime(root),d=json(r,'exportableBalance()');if(edit)edit(d);r.ctx.doc=d;r.run('applyBalanceConfig(doc);selectSaveSlot(1);start(0);closeModal()');return r;}
 
-test('all classes start with five ordinary white items; only the weapon is mailed and claiming never equips it',()=>{
+test('mail fixtures for all classes retain a starter weapon; claiming never equips it',()=>{
  for(let job=0;job<4;job++){
   const r=game();if(job)r.run(`start(${job});closeModal()`);
   assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('state.bag.every(g=>!g.starterPack&&g.tier===1&&g.powerTier===1&&g.plus===0&&g.affix.length===0&&!g.prefixId&&!g.suffixId)'),true);
@@ -22,7 +24,7 @@ test('mailed weapon can be opened and enhanced, while manual/auto affixes and po
  r.run('reroll(g.id);autoReroll(g.id,3);rerollEquipmentPowerTier(g.id)');assert.equal(r.run('JSON.stringify({gold:state.gold,ore:state.ore,dust:state.dust,consumables:state.consumables,gear:g})'),inventory);
 });
 test('all catalogue kinds are mailed in chunks of at most six and land in their actual inventories',()=>{
- const r=game(d=>{d.companions.find(p=>p.id===15).unlockCondition={type:'ticket',price:10,chance:.1};d.starterPackItems[0]=[
+ const r=game(d=>{{const p=structuredClone(d.companions.find(p=>p.id===10));Object.assign(p,{id:15,name:'測試夥伴',passives:[],core:[],active:[],proc:[],support:[],availability:'visible',unlockCondition:{type:'ticket',price:10,chance:.1}});d.companions.push(p);}d.starterPackItems[0]=[
   {kind:'item',key:'heal_small',quantity:3},{kind:'material',key:'鍛鐵',quantity:7},{kind:'material',key:'粉塵',quantity:4},{kind:'gem',key:'1',quantity:5},
   {kind:'item',key:'level_scroll',quantity:2},{kind:'item',key:'imbue_fire',quantity:4},{kind:'item',key:'companion-ticket-15',quantity:2},
   {kind:'equipment',key:'form:0:1:0',quantity:2},{kind:'token',key:'berserk',quantity:1}];});
@@ -34,12 +36,12 @@ test('all catalogue kinds are mailed in chunks of at most six and land in their 
  assert.equal(r.run('new Set(state.bag.map(g=>g.id)).size===state.bag.length'),true);assert.doesNotThrow(()=>r.run('validateParty(packParty())'));
 });
 test('failed saves, a full bag and stock overflow retain every attachment and roll back all inventory changes',()=>{
- const r=game(d=>d.starterPackItems[0]=[{kind:'material',key:'紅色草',quantity:3}]);
- const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
+ const r=game(d=>{d.starterPackItems[0]=[{kind:'material',key:'光輝碎塊',quantity:3}];d.balanceSettings.inventory.stackLimits.material=1e9;/* v0.228: 光輝碎塊 is a rare material (999 per stack by default) */d.balanceSettings.inventory.stackLimits.rareMaterial=1e9;});
+ r.run("EmberwildItems.add('material:光輝碎塊',10);const split=EmberwildItems.stacks().find(s=>s.item==='material:光輝碎塊');EmberwildItems.split(split.uid,3);");const before=r.run('JSON.stringify(packParty())');r.run('globalThis.realSave=save;save=()=>false');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
  r.run('save=()=>{throw Error("disk")};');for(const claim of ['claimMailboxAttachments(1)','claimAllMailboxAttachments()']){assert.equal(r.run(claim),false);assert.equal(r.run('JSON.stringify(packParty())'),before);}
- r.run('save=realSave;while(state.bag.length<RULES.bagCapacity)state.bag.push(gear(1,1,0,0));');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
- r.run('state.bag=state.bag.slice(0,5);state.materials["紅色草"]=1e9;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
- r.run('state.materials["紅色草"]=0;globalThis.saveCalls=0;save=(...args)=>{if(++saveCalls>1)throw Error("duplicate save");return realSave(...args);};');
+ r.run('save=realSave;GAMEPLAY_SETTINGS.equipment.bagCapacity=state.bag.length;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
+ r.run('GAMEPLAY_SETTINGS.equipment.bagCapacity=720;state.bag=state.bag.slice(0,5);state.materials["光輝碎塊"]=1e9;');assert.equal(r.run('claimMailboxAttachments(1)'),false);assert.equal(r.run('state.bag.length'),5);assert.equal(r.run('party.mailbox.messages[0].claimed'),false);
+ r.run('state.materials["光輝碎塊"]=0;globalThis.saveCalls=0;save=(...args)=>{if(++saveCalls>1)throw Error("duplicate save");return realSave(...args);};');
  assert.equal(r.run('claimMailboxAttachments(1)'),true);assert.equal(r.run('saveCalls'),1);assert.equal(r.run('claimAllMailboxAttachments()'),false);assert.equal(r.run('saveCalls'),1);
 });
 test('pending/claimed mail survives cold reload and no gifts are sent again on loading an existing save',async()=>{
@@ -48,18 +50,17 @@ test('pending/claimed mail survives cold reload and no gifts are sent again on l
 });
 test('six attachment slots use SVG; inventory keeps detail actions; references and mail stay non-modal',()=>{
  const r=game();assert.equal((r.run('mailboxView()').match(/class="item-slot /g)||[]).length,6);assert.match(r.run('mailboxView()'),/data-item-mail="1"/);
- r.run('claimMailboxAttachments(1);state.materials["紅色草"]=3;state.consumables.imbue_fire=2;state.gems[0]=1;continueFromTitle()');
- for(const view of ['inventoryGearListItem(state.bag[0],true)','forgeView()','accountMaterialsView()','accountItemsView()','lifeSkillsView()','shopView()'])assert.match(r.run(view),/<svg/);
+ r.run('claimMailboxAttachments(1);state.materials["光輝碎塊"]=3;state.consumables.imbue_fire=2;state.gems[0]=1;continueFromTitle()');
+ for(const view of ['inventoryGearListItem(state.bag[0],true)','forgeView()','accountMaterialsView()','accountItemsView()','craftingView()','shopView()'])assert.match(r.run(view),/<svg/);
  const html=r.run('inventoryGearListItem(state.bag[0],true)');assert.match(html,/selectInventoryGear/);assert.doesNotMatch(html,/inventory-list-name|inventory-list-meta/);
- r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"紅色草",itemContext:"inventory"}})');assert.match(r.elements.get('item-detail-dialog').innerHTML,/紅色草/);assert.match(r.elements.get('item-detail-dialog').innerHTML,/sellMaterial/);
- r.run('openUtilityPanel("mailbox");globalThis.mailHTML=$("modal").innerHTML;openItemSlotDetails({dataset:{itemMail:"1",itemIndex:"0"}})');assert.equal(r.run('$("modal").innerHTML'),r.run('mailHTML'));assert.match(r.elements.get('item-detail-dialog').innerHTML,/紅色草/);assert.deepEqual(r.errors,[]);
+ r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"光輝碎塊",itemContext:"inventory"}})');assert.match(r.elements.get('item-detail-dialog').innerHTML,/光輝碎塊/);assert.match(r.elements.get('item-detail-dialog').innerHTML,/sellMaterial/);
+ r.run('openUtilityPanel("mailbox");globalThis.mailHTML=$("modal").innerHTML;openItemSlotDetails({dataset:{itemMail:"1",itemIndex:"0"}})');assert.equal(r.run('$("modal").innerHTML'),r.run('mailHTML'));assert.match(r.elements.get('item-detail-dialog').innerHTML,/光輝碎塊/);assert.deepEqual(r.errors,[]);
 });
 test('shop uses an inventory-style slot grid and item details stay scoped to their source',()=>{
- const r=game();r.run('state.materials["清水"]=3');let shop=r.run('shopView()');assert.match(shop,/class="shop-product-grid"/);assert.match(shop,/data-item-context="shop"/);assert.match(shop,/class="shop-product-stock">庫存<br><b>\d+/);assert.match(shop,/class="shop-product-label">[^<]+/);assert.doesNotMatch(shop,/class="shop-product-meta"/);
- r.run('setShopCategory("life")');shop=r.run('shopView()');assert.match(shop,/class="shop-product-stock">庫存<br><b>3<\/b>/);assert.match(shop,/class="shop-product-label">清水<\/small>/);
+ const r=game();r.run('state.materials["古木年輪"]=3');let shop=r.run('shopView()');assert.match(shop,/class="shop-product-grid"/);assert.match(shop,/data-item-context="shop"/);assert.match(shop,/class="shop-product-stock">庫存<br><b>\d+/);assert.match(shop,/class="shop-product-label">[^<]+/);assert.doesNotMatch(shop,/class="shop-product-meta"/);
  const slot=r.run(`itemSlotHTML('item','heal_small',{context:'shop',count:3,detailLabel:'商品數量',price:99,shopType:'fixed',shopId:'fixed-heal-small'})`);
  assert.match(slot,/商品數量 3/);assert.match(slot,/99 金幣/);assert.match(slot,/buyFixedShopOffer/);assert.doesNotMatch(slot,/openItemSlotDetails/);
- assert.equal(r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"紅色草",itemContext:"reference"}})'),false);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);assert.deepEqual(r.errors,[]);
+ assert.equal(r.run('openItemSlotDetails({dataset:{itemKind:"material",itemKey:"光輝碎塊",itemContext:"reference"}})'),false);assert.notEqual(r.elements.get('item-detail-dialog')?.open,true);assert.deepEqual(r.errors,[]);
 });
 test('inline shop purchase uses the original offer and updates its sold state without a detail dialog',()=>{
  const r=game();r.run('state.gold=1e6;shopView();globalThis.o=party.market.offers.find(x=>!x.sold&&!String(x.ruleId).startsWith("companion-recruit-"));globalThis.before=state.gold;buyMarketOffer(o.id)');

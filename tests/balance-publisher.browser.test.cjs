@@ -1,8 +1,16 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const {chromium}=require('playwright'),{loadRuntime}=require('./headless-runtime.cjs'),{createServer}=require('../../Emberwild-Balance/server/server.cjs'),{ReleaseService}=require('../../Emberwild-Balance/server/release-service.cjs');
+const {chromium}=require('playwright'),{loadRuntime}=require('./headless-runtime.cjs'),{createServer}=require(require('node:path').join(require('./runtime.cjs').balanceRoot(),'server/server.cjs')),{ReleaseService}=require(require('node:path').join(require('./runtime.cjs').balanceRoot(),'server/release-service.cjs'));
+// v0.228: the production document comes from this repository's main branch (EMBERWILD_MAIN_BALANCE overrides it) instead of
+// a separate ../Emberwild-main checkout.
+function mainBalance(){
+ if(process.env.EMBERWILD_MAIN_BALANCE)return fs.readFileSync(process.env.EMBERWILD_MAIN_BALANCE,'utf8');
+ const {execFileSync}=require('node:child_process');
+ for(const ref of ['origin/main','main'])try{return execFileSync('git',['show',ref+':data/balance.json'],{cwd:path.resolve(__dirname,'..'),encoding:'utf8',maxBuffer:1<<28,stdio:['ignore','pipe','ignore']});}catch{}
+ throw Error('找不到正式版 data/balance.json：請 fetch main 分支或設定 EMBERWILD_MAIN_BALANCE');
+}
 function gitFixture(){
  const sha=x=>crypto.createHash('sha1').update(x).digest('hex'),docs=new Map(),docBlobs=new Map(),commits=new Map(),refs={main:sha('main'), 'chatgpt-dev':sha('dev')},blobs=new Map(),trees=new Map();
- for(const [branch,head] of Object.entries(refs)){docs.set(head,JSON.parse(fs.readFileSync(branch==='main'?'../Emberwild-main/data/balance.json':'data/balance.json')));commits.set(head,{sha:head,commit:{message:'Initial balance',committer:{date:new Date().toISOString()}},parents:[]});}
+ for(const [branch,head] of Object.entries(refs)){docs.set(head,JSON.parse(branch==='main'?mainBalance():fs.readFileSync('data/balance.json')));commits.set(head,{sha:head,commit:{message:'Initial balance',committer:{date:new Date().toISOString()}},parents:[]});}
  const hashDoc=d=>sha(JSON.stringify(d));for(const [head,d] of docs)docBlobs.set(head,hashDoc(d));
  async function api(p,o={}){
   if(p.includes('/git/ref/heads/'))return {object:{sha:refs[p.split('/').at(-1)]}};

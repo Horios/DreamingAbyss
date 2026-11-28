@@ -2,7 +2,7 @@
 (()=>{
  'use strict';
  const M=EmberwildSkillSystem,copy=M.copy,T=()=>globalThis.__EMBERWILD_TEAMS;
- let system=null,byId=new Map(),byPosition=new Map(),refreshing=false,restoringBuild=null;
+ let system=null,byId=new Map(),byPosition=new Map(),refreshing=false,restoringBuild=null,previousSystem=null,exportSystem=null;
  const wornCache=new WeakMap();
  function worn(h){if(!party?.members.includes(h))return (h.bag||[]).filter(g=>h.equipped?.includes(g.id));if(!wornCache.has(h))wornCache.set(h,equipment(h));return wornCache.get(h);}
  const player=()=>party?.members[0],companion=h=>h&&h!==player()&&h.companionId!==undefined;
@@ -10,29 +10,49 @@
  // skills: protagonist skills belong to the protagonist, and these heroes wait for a future unlock.
  const legacyMember=h=>!!h&&h!==player()&&h.companionId===undefined&&!!party?.members?.includes(h);
  const position=(j,k,i)=>`${j}:${k}:${i}`;
+ /* v0.212: the support category is merged into active skills. Skill data keeps type 'support' as the marker of its
+    effect engine (castSupport, supportCooldowns); for the player it is an active skill in an active slot. The player has
+    no support slots: h.active holds the core skills of the active slots and h.supportSlots the support ones (both in
+    active-slot positions, null elsewhere), so the combat engines read the same fields as before. */
+ const slotType=sk=>sk?.type==='support'?'active':sk?.type;
  function install(s){system=copy(M.validate(s));byId=new Map(system.definitions.map(sk=>[sk.id,sk]));byPosition=new Map(system.definitions.flatMap(sk=>M.adapters(sk).map(a=>[position(a.job,a.kind,a.index),sk])));}
- function slotCounts(h){return companion(h)?{active:h.active?.length||0,proc:h.procSlots?.length||0,support:h.supportSlots?.length||0}:M.slots(system,h.job,h.advanced);}
+ function slotCounts(h){if(companion(h))return {active:h.active?.length||0,proc:h.procSlots?.length||0,support:h.supportSlots?.length||0};const c=M.slots(system,h.job,true);return {active:c.active,proc:c.proc,support:c.active};}
+ // A tree node is met when its class mastery requirement is met and every prerequisite node is met too.
+ function treeRowMet(h,r,row,depth=0){
+  if(depth>16||!masteryRequirementMet(h,row.masteryLevel))return false;
+  for(const id of row.prerequisites||[]){const p=r.initial.find(x=>x.skillId===id)||r.advanced.find(x=>x.skillId===id);if(!p||!treeRowMet(h,r,p,depth+1))return false;}
+  return true;
+ }
  function learned(h,sk){
   const battle=globalThis.EmberwildBattleConfiguration;if(battle?.active&&battle.has(h))return battle.learned(h,sk?.id);
   if(!sk||sk.disabled||!sk.jobs.includes(h.job)||sk.partnerId!=null&&sk.partnerId!==h.companionId)return false;
   if(legacyMember(h))return false;
-  const level=sk.requiredLevel??sk.level??1;if(h.lv<level)return false;
+  // v0.172: a skill extracted onto a companion's worn token is usable by that companion, whatever its class.
+  if(companion(h)&&sk.sources.some(s=>s.type==='equipment')&&globalThis.__EMBERWILD_TOKEN_SKILL?.(h)===sk.id)return true;
+  const level=sk.requiredLevel??sk.level??0;if(!masteryRequirementMet(h,level))return false;
   if(companion(h)){const p=globalThis.__EMBERWILD_COMPANION_TEST_API?.companionPlan(h);return sk.partnerId===h.companionId&&(sk.type==='passive'?p?.passives?.includes(sk.id):(sk.adapter.kind==='core'?p?.core:p?.support)?.includes(sk.adapter.index));}
   const key=`${h.job}:${M.adapterFor(sk,h.job).kind}:${M.adapterFor(sk,h.job).index}`,permanent=restoringBuild?.permanent||T()?.build()?.permanent,unlocked=permanent?.unlocks?.[key];
   if(!unlocked&&sk.requiredMastery&&__EMBERWILD_MASTERY.masteryLevelFromXp(h.mastery?.[sk.requiredMastery]||0)<(sk.requiredMasteryLevel||0))return false;
   const gates=sk.unlockConditions||{};
   if(!unlocked&&(gates.classMasteryLevel||['materials','bossKills','eliteKills','bossEquipment'].some(k=>gates[k]?.length)))return false;
   const r=system.classRules.find(r=>r.job===h.job);
-  if(r.initial.some(x=>x.skillId===sk.id&&h.lv>=x.level))return true;
-  if(h.advanced&&r.advanced.some(x=>x.skillId===sk.id&&h.lv>=x.level))return true;
+  // Class skills unlock automatically once class mastery and the tree prerequisites are reached (v0.168: every row,
+  // including the former second-class rows). No point or currency is spent, and nothing can be locked out permanently.
+  const row=r.initial.find(x=>x.skillId===sk.id)||r.advanced.find(x=>x.skillId===sk.id);
+  if(row&&treeRowMet(h,r,row))return true;
   for(const src of sk.sources){
-   if(src.level&&h.lv<src.level)continue;
-   if(src.type==='quest'){if(src.rewardOnly){if(h.acquiredSkillIds?.includes(sk.id))return true;continue;}const qs=src.questIds||sk.unlockConditions?.quests||['tutorial'];const required=qs.length?qs:['tutorial'];if(required.every(q=>q==='tutorial'?player()?.tutorial>=3||party?.story?.quests?.goddess_intro?.done:player()?.claimed?.includes(q)||party?.story?.quests?.[q]?.done)||h.acquiredSkillIds?.includes(sk.id))return true;}
-   if(src.type==='equipment'&&h.activeSkillEquipmentId&&worn(h).some(g=>g.id===h.activeSkillEquipmentId&&g.skillId===sk.id))return true;
+   if(src.masteryLevel&&!masteryRequirementMet(h,src.masteryLevel))continue;
+   if(src.type==='quest'){if(src.rewardOnly){if(h.acquiredSkillIds?.includes(sk.id))return true;continue;}const qs=src.questIds||sk.unlockConditions?.quests||['tutorial'];const required=qs.length?qs:['tutorial'];if(required.every(q=>q==='tutorial'?player()?.tutorial>=3||party?.story?.quests?.goddess_intro?.done||!!globalThis.__EMBERWILD_STORY?.tutorialDone?.():player()?.claimed?.includes(q)||party?.story?.quests?.[q]?.done)||h.acquiredSkillIds?.includes(sk.id))return true;}
+   if(src.type==='equipment'&&worn(h).some(g=>g.skillId===sk.id))return true;
   }
   return false;
  }
- function emptyLoadout(h){const c=M.slots(system,h.job,h.advanced);return Object.fromEntries(['active','proc','support'].map(t=>[t,Array(c[t]).fill(null)]));}
+ // A rollback document is captured before the inner importer installs the candidate's item forms.
+ function exportBeforeApply(read){
+  const previous=exportSystem;exportSystem=previousSystem;
+  try{return read();}finally{exportSystem=previous;}
+ }
+ function emptyLoadout(h){const c=M.slots(system,h.job,true);return {active:Array(c.active).fill(null),proc:Array(c.proc).fill(null),support:[]};}
  function legacyLoadout(h){const out=emptyLoadout(h);for(const [type,field,kind] of [['active','active','core'],['proc','procSlots','core'],['support','supportSlots','support']])out[type]=out[type].map((_,n)=>byPosition.get(position(h.job,kind,h[field]?.[n]))?.id??null);return out;}
  function projectHero(h){
   if(!h||!system)return h;
@@ -52,22 +72,21 @@
    return h;
   }
   if(!h.skillLoadout)return h;
-  for(const [type,field] of [['active','active'],['proc','procSlots'],['support','supportSlots']])h[field]=h.skillLoadout[type].map(id=>(byId.has(id)?M.adapterFor(byId.get(id),h.job).index:null));
+  const index=(id,kind)=>{const sk=byId.get(id),a=sk&&M.adapterFor(sk,h.job);return a?.kind===kind?a.index:null;};
+  h.active=h.skillLoadout.active.map(id=>index(id,'core'));h.procSlots=h.skillLoadout.proc.map(id=>index(id,'core'));h.supportSlots=h.skillLoadout.active.map(id=>index(id,'support'));
   return h;
  }
  function refreshHero(h){
   if(!h||!system)return h;
-  if(h===player()&&T()?.plan()?.job===null){h.skillLoadout=null;h.activeSkillEquipmentId=null;return h;}
-  h.activeSkillEquipmentId??=null;
+  if(h===player()&&T()?.plan()?.job===null){h.skillLoadout=null;return h;}
   wornCache.delete(h);
   h.passiveEnabled??={};
   if(companion(h)){for(const sk of system.definitions)if(sk.type==='passive'&&learned(h,sk)&&!Object.hasOwn(h.passiveEnabled,sk.id))h.passiveEnabled[sk.id]=true;delete h.disabledCompanionSkills;return projectHero(h);}
-  if(h.activeSkillEquipmentId&&!worn(h).some(g=>g.id===h.activeSkillEquipmentId&&byId.get(g.skillId)?.jobs.includes(h.job)))h.activeSkillEquipmentId=null;
   globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.refresh(h);
   const first=!h.skillLoadout;h.skillLoadout??=legacyLoadout(h);
   const slots=emptyLoadout(h),seen=new Set();
   for(const type of ['active','proc','support'])for(let n=0;n<slots[type].length;n++){
-   const id=h.skillLoadout[type]?.[n],sk=byId.get(id);if(id&&sk?.type===type&&learned(h,sk)&&!seen.has(id)){slots[type][n]=id;seen.add(id);}
+   const id=h.skillLoadout[type]?.[n],sk=byId.get(id);if(id&&slotType(sk)===type&&learned(h,sk)&&!seen.has(id)){slots[type][n]=id;seen.add(id);}
   }
   if(first)for(const row of system.classRules.find(r=>r.job===h.job).initial){const sk=byId.get(row.skillId),n=slots.active.indexOf(null);if(sk.type==='active'&&n>=0&&!seen.has(sk.id)&&learned(h,sk)){slots.active[n]=sk.id;seen.add(sk.id);}}
   h.skillLoadout=slots;
@@ -80,10 +99,11 @@
  function applyMetadata(){for(const r of system.classRules)if(r.description)CLASSES[r.job].desc=r.description;for(const sk of system.definitions)for(const a of M.adapters(sk)){if(a.kind==='core'&&CLASSES[a.job]?.skills[a.index])Object.assign(CLASSES[a.job].skills[a.index][6],copy(sk),{sharedId:sk.adapters?sk.id+'-job'+a.job:sk.id,requiresAdvanced:false});else if(a.kind==='support'&&SUPPORT[a.job]?.[a.index])Object.assign(SUPPORT[a.job][a.index],copy(sk));}}
  const baseValidate=validateBalanceConfig,baseApply=applyBalanceConfig,baseExport=exportableBalance;
  validateBalanceConfig=function(input){const d=M.normalizeDocument(input),out=baseValidate(d);out.skillSystem=copy(d.skillSystem);return out;};
- exportableBalance=function(){const d=baseExport();d.skillSystem=copy(system);d.balanceSettings.meta.skillSystemVersion=M.VERSION;return M.project(d);};
+ exportableBalance=function(){const d=baseExport();d.skillSystem=copy(exportSystem||system);d.balanceSettings.meta.skillSystemVersion=M.VERSION;return M.project(d);};
  applyBalanceConfig=function(input,options={}){
-  const d=M.normalizeDocument(input),old=system;install(d.skillSystem);
-  try{const out=baseApply(d,{...options,persist:false});if(out===false){install(old);return false;}applyMetadata();refreshAll();if(options.persist!==false)localStorage.setItem(BALANCE_KEY,JSON.stringify(exportableBalance()));return {...out,skillSystem:copy(system)};}catch(e){if(old)install(old);throw e;}
+  const d=M.normalizeDocument(input),old=system,previous=previousSystem;
+  install(d.skillSystem);previousSystem=old;
+  try{const out=baseApply(d,{...options,persist:false});if(out===false){install(old);return false;}applyMetadata();refreshAll();if(options.persist!==false)localStorage.setItem(BALANCE_KEY,JSON.stringify(exportableBalance()));return {...out,skillSystem:copy(system)};}catch(e){if(old)install(old);throw e;}finally{previousSystem=previous;}
  };
  const baseCoreAvailable=coreSkillAvailableToHero;
  coreSkillAvailableToHero=function(j,i,h=state){const sk=byPosition.get(position(j,'core',i));return sk?learned(h,sk):baseCoreAvailable(j,i,h);};
@@ -101,7 +121,7 @@
    const targets=sk.systemEffect==='guard'?[h]:living(),kind=sk.systemEffect==='guard'?'guard':'regen';
    for(const ally of targets){effects=effects.filter(e=>!(e.source===memberKey(h)&&e.skill===sk.id&&e.target===heroKey(ally)));effects.push({source:memberKey(h),skill:sk.id,target:heroKey(ally),kind,value:sk.power,until:partyClock+sk.duration,name:sk.name});}
   }else if(sk.systemEffect==='slow')for(const e of alive.slice(0,sk.maxTargets)){effects=effects.filter(x=>!(x.skill===sk.id&&x.target===e.id));effects.push({source:memberKey(h),skill:sk.id,target:e.id,kind:'skillSlow',value:sk.power,until:partyClock+sk.duration,name:sk.name});}
-  note(characterName(h)+'・'+sk.name+' · '+sk.description);applyGemAfterSkill(h,i,v||battleStats(h));return true;
+  note(characterName(h)+'・'+sk.name+' · '+sk.description);return true;
  };
  castSupport=function(h,i){return validCast(h,i,'support')?oldSupport(h,i):false;};
  const speedBase=combatSpeed;combatSpeed=function(e){return Math.max(1,Math.round(speedBase(e)*(1-Math.min(.9,effectTotal(e.id,'skillSlow')))));};
@@ -119,36 +139,36 @@
   }
   const d=M.migrateSave(migrateLegacyGemSave(raw),system),members=d.version===3?d.members:[d],h=members[0],b=d.buildSystem;
   if(d.skillTutorialVersion!==1&&d.story?.quests?.goddess_intro?.done){h.acquiredSkillIds??=[];for(const sk of system.definitions.filter(sk=>sk.sources.some(s=>s.rewardOnly))){const a=sk.adapter;if((h.job===a.job&&h.supportLevels?.[a.index]||b?.plans?.some(p=>p.job===a.job&&p.supportLevels?.[a.index]))&&!h.acquiredSkillIds.includes(sk.id))h.acquiredSkillIds.push(sk.id);}}d.skillTutorialVersion=1;
-  if(b){restoringBuild=b;try{for(const p of b.plans){if(p.job===null){p.skillLoadout=null;p.activeSkillEquipmentId=null;continue;}const tmp={...h,job:p.job,advanced:!!b.permanent.classes[p.job]?.advanced,...copy(p)};tmp.advanced=!!b.permanent.classes[p.job]?.advanced;refreshHero(tmp);for(const f of ['skills','supportLevels','active','procSlots','supportSlots','skillLoadout','activeSkillEquipmentId','passiveEnabled'])if(tmp[f]!==undefined)p[f]=copy(tmp[f]);for(const [kind,list] of [['core',p.skills],['support',p.supportLevels]])list.forEach((v,i)=>{if(v)b.permanent.unlocks[`${p.job}:${kind}:${i}`]=true;});}const p=b.plans.find(x=>x.id===b.activeId);if(p?.job!==null)for(const f of ['skills','supportLevels','active','procSlots','supportSlots','skillLoadout','activeSkillEquipmentId','passiveEnabled'])if(p[f]!==undefined)h[f]=copy(p[f]);}finally{restoringBuild=null;}}
+  if(b){restoringBuild=b;try{for(const p of b.plans){if(p.job===null){p.skillLoadout=null;continue;}const tmp={...h,job:p.job,advanced:!!b.permanent.classes[p.job]?.advanced,...copy(p)};tmp.advanced=!!b.permanent.classes[p.job]?.advanced;refreshHero(tmp);for(const f of ['skills','supportLevels','active','procSlots','supportSlots','skillLoadout','passiveEnabled'])if(tmp[f]!==undefined)p[f]=copy(tmp[f]);for(const [kind,list] of [['core',p.skills],['support',p.supportLevels]])list.forEach((v,i)=>{if(v)b.permanent.unlocks[`${p.job}:${kind}:${i}`]=true;});}const p=b.plans.find(x=>x.id===b.activeId);if(p?.job!==null)for(const f of ['skills','supportLevels','active','procSlots','supportSlots','skillLoadout','passiveEnabled'])if(p[f]!==undefined)h[f]=copy(p[f]);}finally{restoringBuild=null;}}
   for(const member of members)refreshHero(member);
   if(raw.skillSystemVersion!==M.VERSION&&d.offlineExploration?.combat){d.offlineExploration.combat.progress=null;d.offlineExploration.combat.actorCooldowns={};d.offlineExploration.combat.supportCooldowns={};}
   return d;
  }
- validateParty=function(raw){const d=prepare(raw),out=oldValidateParty(d);out.skillSystemVersion=M.VERSION;for(let n=0;n<out.members.length;n++){const src=d.version===3?d.members[n]:d;if(src.passiveEnabled!==undefined&&(!src.passiveEnabled||typeof src.passiveEnabled!=='object'||Array.isArray(src.passiveEnabled)||Object.entries(src.passiveEnabled).some(([id,v])=>typeof v!=='boolean'||byId.has(id)&&byId.get(id).type!=='passive')))throw Error('被動技能啟用資料無效');for(const f of ['skillLoadout','activeSkillEquipmentId','acquiredSkillIds','passiveEnabled'])if(src[f]!==undefined)out.members[n][f]=copy(src[f]);
+ validateParty=function(raw){const d=prepare(raw),out=oldValidateParty(d);out.skillSystemVersion=M.VERSION;for(let n=0;n<out.members.length;n++){const src=d.version===3?d.members[n]:d;if(src.passiveEnabled!==undefined&&(!src.passiveEnabled||typeof src.passiveEnabled!=='object'||Array.isArray(src.passiveEnabled)||Object.entries(src.passiveEnabled).some(([id,v])=>typeof v!=='boolean'||byId.has(id)&&byId.get(id).type!=='passive')))throw Error('被動技能啟用資料無效');for(const f of ['skillLoadout','acquiredSkillIds','passiveEnabled'])if(src[f]!==undefined)out.members[n][f]=copy(src[f]);
  // A passive removed by a later balance update is skipped instead of rejecting the whole save.
  if(out.members[n].passiveEnabled)out.members[n].passiveEnabled=Object.fromEntries(Object.entries(out.members[n].passiveEnabled).filter(([id])=>byId.has(id)));}return out;};
  const oldLoad=loadParty;loadParty=function(raw){const d=prepare(raw),out=oldLoad(d);party.skillSystemVersion=M.VERSION;party.skillTutorialVersion=1;refreshAll();const message=$('toast');if(party&&state&&message?.textContent?.startsWith('存檔未能載入：')){message.textContent='';message.style.display='none';}return out;};
  const oldPack=packParty;packParty=function(){refreshAll();const out=oldPack();out.skillSystemVersion=M.VERSION;out.skillTutorialVersion=1;return out;};
  const oldStart=start;start=function(...args){const out=oldStart(...args);refreshAll();T()?.capture();save();render();return out;};
- const oldXP=awardXP;awardXP=function(...args){
-  const out=oldXP(...args),cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;
-  const key=cache?JSON.stringify([party.members.map(h=>[memberKey(h),h.lv,h.job,h.advanced,h.activeSkillEquipmentId,h.acquiredSkillIds,Object.entries(h.mastery||{}).map(([k,n])=>[k,__EMBERWILD_MASTERY.masteryLevelFromXp(n)])]),T()?.build()?.permanent.unlocks]):null;
+ // Skills unlock by class mastery now; gaining mastery refreshes the projection (cached while simulating).
+ globalThis.__EMBERWILD_SKILL_REFRESH=function(){
+  const cache=globalThis.__EMBERWILD_OFFLINE_RULE_CACHE;
+  const key=cache?JSON.stringify([party.members.map(h=>[memberKey(h),h.job,h.advanced,h.equipped,h.acquiredSkillIds,globalThis.classMasteryLevel?.(h)??0,Object.entries(h.mastery||{}).map(([k,n])=>[k,__EMBERWILD_MASTERY.masteryLevelFromXp(n)])]),T()?.build()?.permanent.unlocks]):null;
   if(!cache||cache.skillParty!==party||cache.skillProjection!==key){refreshAll();if(cache){cache.skillParty=party;cache.skillProjection=key;}}
-  return out;
  };
  const oldSave=save;save=function(...args){refreshAll();return oldSave(...args);};
  globalThis.configureSkill=function(type,slot,id){
-  const h=state;if(!h||companion(h)||T()?.plan()?.job===null||!['active','proc','support'].includes(type)||!Number.isInteger(slot)||slot<0||slot>=slotCounts(h)[type])return false;
-  const sk=byId.get(id);if(id!==null&&(!sk||sk.type!==type||!learned(h,sk)||(M.adapterFor(sk,h.job).kind==='core'?oldCoreMissing:oldSupportMissing)(h,M.adapterFor(sk,h.job).index,true).length))return false;
+  const h=state;if(!h||companion(h)||T()?.plan()?.job===null||!['active','proc'].includes(type)||!Number.isInteger(slot)||slot<0||slot>=slotCounts(h)[type])return false;
+  const sk=byId.get(id);if(id!==null&&(!sk||slotType(sk)!==type||!learned(h,sk)||(M.adapterFor(sk,h.job).kind==='core'?oldCoreMissing:oldSupportMissing)(h,M.adapterFor(sk,h.job).index,true).length))return false;
   const old=copy(h.skillLoadout);for(const list of Object.values(h.skillLoadout))for(let n=0;n<list.length;n++)if(id!==null&&list[n]===id)list[n]=null;
   h.skillLoadout[type][slot]=id;projectHero(h);
   if(save()===false){h.skillLoadout=old;projectHero(h);T()?.capture();return false;}globalThis.EmberwildBattleConfiguration?.notify();render();return true;
  };
  globalThis.setPassiveSkillEnabled=function(id,enabled){const h=party?.members[0],sk=byId.get(id);if(!h||sk?.type!=='passive'||!learned(h,sk)||typeof enabled!=='boolean')return false;h.passiveEnabled??={};const old=h.passiveEnabled[id],hp=h.hp;h.passiveEnabled[id]=enabled;if(!globalThis.EmberwildBattleConfiguration?.pending())h.hp=Math.min(h.hp,stats(h).hp);if(save()===false){h.hp=hp;if(old===undefined)delete h.passiveEnabled[id];else h.passiveEnabled[id]=old;T()?.capture();return false;}globalThis.EmberwildBattleConfiguration?.notify();render();return true;};
  equipSkill=(i,n)=>configureSkill('active',n,byPosition.get(position(state.job,'core',i))?.id);
- clearActiveSkill=n=>configureSkill('active',n,null);slotProcSkill=(i,n)=>configureSkill('proc',n,i===null?null:byPosition.get(position(state.job,'core',i))?.id);clearProcSkill=n=>configureSkill('proc',n,null);slotSupport=(i,n)=>configureSkill('support',n,i===null?null:byPosition.get(position(state.job,'support',i))?.id);
+ clearActiveSkill=n=>configureSkill('active',n,null);slotProcSkill=(i,n)=>configureSkill('proc',n,i===null?null:byPosition.get(position(state.job,'core',i))?.id);clearProcSkill=n=>configureSkill('proc',n,null);slotSupport=(i,n)=>configureSkill('active',n,i===null?null:byPosition.get(position(state.job,'support',i))?.id);
  socket=()=>false;
- globalThis.__EMBERWILD_SKILLS={legacyMember,system:()=>system,byId:id=>byId.get(id),byPosition:(j,k,i)=>byPosition.get(position(j,k,i)),slotCounts,learned,passiveEnabled:(h,id)=>h?.passiveEnabled?.[id]!==false,grantSkill(h,id){const sk=byId.get(id);if(!sk||!sk.jobs.includes(h.job)||!sk.sources.some(s=>s.type==='quest'))throw Error('任務技能不適用目前職業');h.acquiredSkillIds??=[];if(h.acquiredSkillIds.includes(id))return false;h.acquiredSkillIds.push(id);const a=M.adapterFor(sk,h.job);T().build().permanent.unlocks[`${h.job}:${a.kind}:${a.index}`]=true;refreshHero(h);toast('取得技能：'+sk.name+'；請前往技能頁配置輔助槽');return true;},refreshHero,refreshAll,projectHero,prepare,validCast,worn};
+ globalThis.__EMBERWILD_SKILLS={slotType,legacyMember,exportBeforeApply,restoringBuild:()=>restoringBuild,system:()=>system,byId:id=>byId.get(id),byPosition:(j,k,i)=>byPosition.get(position(j,k,i)),slotCounts,learned,passiveEnabled:(h,id)=>h?.passiveEnabled?.[id]!==false,grantSkill(h,id){const sk=byId.get(id);if(!sk||!sk.jobs.includes(h.job)||!sk.sources.some(s=>s.type==='quest'))throw Error('任務技能不適用目前職業');h.acquiredSkillIds??=[];if(h.acquiredSkillIds.includes(id))return false;h.acquiredSkillIds.push(id);const a=M.adapterFor(sk,h.job);T().build().permanent.unlocks[`${h.job}:${a.kind}:${a.index}`]=true;refreshHero(h);toast('取得技能：'+sk.name+'；請前往技能頁配置輔助槽');return true;},refreshHero,refreshAll,projectHero,prepare,validCast,worn};
  install(M.normalizeDocument(baseExport()).skillSystem);applyMetadata();
  const source=globalThis.__EMBERWILD_BALANCE_FINAL_APPLY_PENDING?null:JSON.parse(balanceSourceText()||'null');if(source)applyBalanceConfig(source,{persist:false});
  refreshAll();

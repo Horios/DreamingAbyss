@@ -32,9 +32,8 @@
       definitions.push(sk);classRules[job].initial.push({skillId:id,level:sk.requiredLevel});
     }
     for(const sk of definitions)if(sk.sources.some(s=>s.type==='advanced'))classRules[sk.jobs[0]].advanced.push({skillId:sk.id,level:Math.max(15,sk.requiredLevel??sk.level??1)});
-    const equipmentPool=definitions.filter(sk=>sk.sources.some(s=>s.type==='equipment')).map(sk=>({skillId:sk.id,jobs:sk.jobs,slots:[0,1,2,3],minLevel:1,maxLevel:999,weight:1,maps:[],monsters:[],bosses:[],allowShop:true,allowCraft:true}));
-    const gems=[['atk','flat','effect',[.02,.04,.06]],['speed','flat','cooldown',[.05,.1,.15]],['crit','ratio','procChance',[.01,.02,.03]],['hp','flat','heal',[.03,.06,.09]],['def','flat','shield',[.01,.02,.03]]].map(([stat,unit,key,values],kind)=>({kind,base:{stat,unit,values:kind===0?[2,4,6]:kind===1?[1,2,3]:kind===2?[.01,.02,.03]:kind===3?[10,20,30]:[1,2,3]},skill:{key,values,types:kind===1?['active','support']:kind===2?['proc']:['active','proc','support'],effects:[],slots:[0]},cap:1}));
-    return addClearingSkills({version:VERSION,gemSlotRuleVersion:2,definitions,classRules,equipment:{chanceByDifficulty:[.15,.15,.15],formRules:[],pool:equipmentPool,socketBands:[{minLevel:1,maxLevel:10,weights:[.7,.3,0,0]},{minLevel:11,maxLevel:20,weights:[.35,.5,.15,0]},{minLevel:21,maxLevel:999,weights:[.1,.35,.35,.2]}],sourceRules:[{source:'starter',weights:[1,0,0,0]},{source:'boss',weights:[0,.3,.4,.3]}]},gems},d);
+    const gems=[['atk','flat',[2,4,6]],['attackSpeedPct','percent',[1,2,3]],['crit','ratio',[.01,.02,.03]],['hp','flat',[10,20,30]],['def','flat',[1,2,3]]].map(([stat,unit,values],kind)=>({kind,base:{stat,unit,values}}));
+    return addClearingSkills({version:VERSION,definitions,classRules,equipment:{formRules:[],socketBands:[{minLevel:1,maxLevel:10,weights:[.7,.3,0,0]},{minLevel:11,maxLevel:20,weights:[.35,.5,.15,0]},{minLevel:21,maxLevel:999,weights:[.1,.35,.35,.2]}],sourceRules:[{source:'starter',weights:[1,0,0,0]},{source:'boss',weights:[0,.3,.4,.3]}]},gems},d);
   }
   function clearingStatus(){return {"id":"holy-prison-mark","name":"神聖光牢","tags":[],"polarity":"debuff","dispellable":true,"duration":99,"permanent":true,"durationClock":"target","stackable":true,"uses":1,"removeOnTrigger":true,"modifiers":[],"control":null,"periodic":[],"triggers":[{"event":"targetTurnEnd","effect":"damage","power":0.5,"target":"enemies","element":"light","allowDeathChain":true,"chainMultiplier":1},{"event":"targetDeath","effect":"damage","power":0.3,"target":"enemies","element":"light","allowDeathChain":true,"chainMultiplier":1}]};}
   function addClearingSkills(s,d){
@@ -48,6 +47,8 @@
       if(passive)Object.assign(sk,{kind:'buff',effects:[],eventPassive:job===0?{event:'kill',power:.8,maxAttacks:3}:{event:'enemyDeath',reduction:1,cooldown:2}});
       else if(job===2)Object.assign(sk,{commonEffectKeys:['target'],targetLimit:false});
       else Object.assign(sk,{statusId:'holy-prison-mark',statusTarget:'enemies',statusMaxTargets:3});
+      // A document already on class-mastery gates gets the converted values (LV3 -> mastery 2).
+      if(s.masteryGateVersion===1){sk.requiredLevel=2;sk.sources=[{type:'class',masteryLevel:2}];s.definitions.push(sk);s.classRules.find(r=>r.job===job).initial.push({skillId:sk.id,masteryLevel:2});continue;}
       s.definitions.push(sk);s.classRules.find(r=>r.job===job).initial.push({skillId:sk.id,level:3});
     }
     s.clearingSkillsVersion=1;return s;
@@ -65,36 +66,55 @@
       if(sk.type==='support'&&a.kind!=='support'||['active','proc'].includes(sk.type)&&a.kind!=='core')fail('技能類型與引擎對照不符：'+sk.id);
       for(const key of ['power','cooldown','duration','requiredLevel','procBaseChance','baseCritRate','defenseIgnore'])if(sk[key]!==undefined&&!finite(sk[key],0,key.includes('Chance')||['baseCritRate','defenseIgnore'].includes(key)?1:1e9))fail('技能數值無效：'+sk.id+' '+key);
       if(sk.eventPassive){const e=sk.eventPassive;if(sk.type!=='passive'||!['kill','enemyDeath'].includes(e.event)||e.event==='kill'&&(!finite(e.power,0,100)||!integer(e.maxAttacks,1,99))||e.event==='enemyDeath'&&(!integer(e.reduction,0,99)||!integer(e.cooldown,0,99)))fail('事件型被動設定無效：'+sk.id);}
-      if(sk.systemEffect!==undefined&&!['taunt','guard','slow','regen'].includes(sk.systemEffect))fail('未知特殊效果：'+sk.id);
+      if(sk.systemEffect!==undefined&&!['taunt','guard','slow','regen','haste','bind'].includes(sk.systemEffect))fail('未知特殊效果：'+sk.id);
       if(sk.systemEffect&&(!integer(sk.duration,1,999)||!finite(sk.power,0,1)))fail('特殊效果持續時間或倍率無效：'+sk.id);
-      for(const src of sk.sources)if(src.level!==undefined&&!integer(src.level,1,999))fail('技能取得等級無效：'+sk.id);
+      // v0.196: 'haste' grants attack speed percent points (18 = +18%); power is not read for it.
+      if(sk.systemEffect==='haste'&&(typeof sk.attackSpeedPct!=='number'||!Number.isFinite(sk.attackSpeedPct)||sk.attackSpeedPct<=0||sk.attackSpeedPct>1000))fail('攻擊速度加成必須是 0～1000 的百分點：'+sk.id);
+      if(sk.systemEffect!=='haste'&&sk.attackSpeedPct!==undefined)fail('只有攻速技能可以設定 attackSpeedPct：'+sk.id);
+      for(const src of sk.sources)if(src.level!==undefined||src.masteryLevel!==undefined&&!integer(src.masteryLevel,0,100))fail('技能取得精通等級無效：'+sk.id);
       ids.set(sk.id,sk);positions.add(`${a.job}:${a.kind}:${a.index}`);
     }
     const classJobs=new Set();
     for(const rule of s.classRules){
       if(!integer(rule.job,0,3)||classJobs.has(rule.job))fail('職業設定重複');classJobs.add(rule.job);
-      for(const k of ['initial','advanced']){if(!Array.isArray(rule[k]))fail('職業技能清單無效');for(const row of rule[k])if(!ids.has(row.skillId)||!ids.get(row.skillId).jobs.includes(rule.job)||!integer(row.level,1,999))fail('職業引用不存在或等級無效：'+row.skillId);}
+      for(const k of ['initial','advanced']){if(!Array.isArray(rule[k]))fail('職業技能清單無效');for(const row of rule[k])if(!ids.has(row.skillId)||!ids.get(row.skillId).jobs.includes(rule.job)||row.level!==undefined||!integer(row.masteryLevel,0,100))fail('職業引用不存在或精通等級無效：'+row.skillId);}
       for(const stage of ['first','advanced'])for(const type of ['active','proc','support'])if(!integer(rule.slots?.[stage]?.[type],0,type==='active'?3:2))fail('職業槽位超出上限');
+      // Skill tree (v0.161): optional prerequisites (skills of the same class tree) and display position per node.
+      const nodes=[...rule.initial,...rule.advanced],inTree=new Set(nodes.map(r=>r.skillId));
+      if(inTree.size!==nodes.length)fail('同一技能在職業技能樹出現多次：'+rule.job);
+      for(const row of nodes){
+        if(row.prerequisites!==undefined&&(!Array.isArray(row.prerequisites)||row.prerequisites.length>8||new Set(row.prerequisites).size!==row.prerequisites.length||row.prerequisites.some(id=>id===row.skillId||!inTree.has(id))))fail('技能樹前置技能無效：'+row.skillId);
+        if(row.position!==undefined&&(!row.position||typeof row.position!=='object'||!integer(row.position.col,0,7)||!integer(row.position.row,0,40)))fail('技能樹位置無效：'+row.skillId);
+      }
+      const byId=new Map(nodes.map(r=>[r.skillId,r])),done=new Set(),walking=new Set();
+      const visit=id=>{if(walking.has(id))fail('技能樹前置技能形成循環：'+id);if(done.has(id))return;walking.add(id);for(const p of byId.get(id)?.prerequisites||[])visit(p);walking.delete(id);done.add(id);};
+      for(const id of byId.keys())visit(id);
+      // A prerequisite that needs more mastery than its dependant, or that sits in the second-class list under a
+      // first-class node, would hold the dependant behind a later gate than its own; such trees are rejected.
+      for(const row of nodes)for(const p of row.prerequisites||[]){const q=byId.get(p);}
     }
-    const e=s.equipment;if(!e||!Array.isArray(e.pool)||!Array.isArray(e.chanceByDifficulty)||e.chanceByDifficulty.length!==3||e.chanceByDifficulty.some(x=>!finite(x,0,1)))fail('裝備技能機率無效');
-    if(e.formRules!==undefined&&(!Array.isArray(e.formRules)||e.formRules.some(r=>!safe(r.formId)||r.skillId&&!ids.has(r.skillId)||r.skillChance!==undefined&&!finite(r.skillChance,0,1)||r.allowSkill!==undefined&&typeof r.allowSkill!=='boolean')))fail('固定裝備技能設定無效');
-    for(const row of e.pool){const sk=ids.get(row.skillId);if(!sk||!sk.sources.some(x=>x.type==='equipment')||!Array.isArray(row.jobs)||row.jobs.some(x=>!integer(x,0,3))||!Array.isArray(row.slots)||row.slots.some(x=>!integer(x,0,3))||!integer(row.minLevel,1,999)||!integer(row.maxLevel,row.minLevel,999)||!finite(row.weight,0)||!['maps','monsters','bosses'].every(k=>Array.isArray(row[k]))||typeof row.allowShop!=='boolean'||typeof row.allowCraft!=='boolean')fail('裝備技能池引用或限制無效：'+row.skillId);}
+    const e=s.equipment;if(!e||Object.hasOwn(e,'pool')||Object.hasOwn(e,'chanceByDifficulty'))fail('裝備技能只能來自指定裝備');
+    if(e.formRules!==undefined&&(!Array.isArray(e.formRules)||e.formRules.some(r=>!safe(r.formId)||r.dropOnly!==undefined&&typeof r.dropOnly!=='boolean'||r.dropOnly&&!r.skillId||r.skillId&&!ids.get(r.skillId)?.sources.some(x=>x.type==='equipment'))))fail('固定裝備技能設定無效');
     if(!Array.isArray(e.socketBands)||!e.socketBands.length||!Array.isArray(e.sourceRules))fail('鑲嵌孔分布無效');
     const weights=row=>Array.isArray(row.weights)&&row.weights.length===4&&row.weights.every(v=>finite(v,0,1))&&Math.abs(row.weights.reduce((a,v)=>a+v,0)-1)<1e-8;
     let end=0;for(const row of e.socketBands){if(!integer(row.minLevel,1,999)||row.minLevel!==end+1||!integer(row.maxLevel,row.minLevel,999)||!weights(row))fail('孔數等級區間必須連續且機率總和為 1');end=row.maxLevel;}if(end!==999)fail('孔數分布需涵蓋 LV1～999');
     for(const row of e.sourceRules)if(!['starter','boss','drop','shop','craft','legacy'].includes(row.source)||!weights(row))fail('來源孔數機率無效');
     if(!Array.isArray(s.gems)||s.gems.length!==5||new Set(s.gems.map(g=>g.kind)).size!==5)fail('寶石定義無效');
-    for(const g of s.gems)if(!integer(g.kind,0,4)||!['atk','hp','def','speed','crit'].includes(g.base?.stat)||!['flat','ratio'].includes(g.base?.unit)||!['effect','cooldown','procChance','heal','shield'].includes(g.skill?.key)||![g.base.values,g.skill.values].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>finite(v,0,1e6)))||!Array.isArray(g.skill.types)||g.skill.types.some(x=>!types.includes(x))||!Array.isArray(g.skill.effects)||!Array.isArray(g.skill.slots)||g.skill.slots.some(x=>x!==0)||!finite(g.cap,0,1e6))fail('寶石效果、相容性或階級無效');
+    for(const g of s.gems)if(!integer(g.kind,0,4)||!['atk','hp','def','attackSpeedPct','crit'].includes(g.base?.stat)||!(g.base.stat==='attackSpeedPct'?['percent']:['flat','ratio']).includes(g.base?.unit)||!Array.isArray(g.base.values)||g.base.values.length!==3||g.base.values.some(v=>!finite(v,0,1e6))||Object.hasOwn(g,'skill')||Object.hasOwn(g,'cap'))fail('屬性寶石數值或階級無效');
     for(const sk of s.definitions)for(const target of sk.induction?.targets||[])if(target.kind==='skill'&&!ids.has(target.skillId))fail('誘發技能引用不存在：'+target.skillId);
     return s;
   }
   function project(d){
-    const raw=d.skillSystem;if(raw.gemSlotRuleVersion!==2){raw.gems.forEach(g=>g.skill.slots=g.skill.slots.filter(n=>n===0));raw.gemSlotRuleVersion=2;}
-    const s=validate(raw);
-    const maps=d.balanceSettings?.maps?.catalog,monsters=d.balanceSettings?.monsters?.catalog,forms=new Set();
+    const s=validate(migrateMasteryGates(d.skillSystem));
+    const forms=new Set();
     for(const [job,slots] of (d.equipmentForms||[]).entries())for(const [slot,rows] of slots.entries())for(const [i,row] of rows.entries())forms.add(row.id||`job${job}-slot${slot}-form${i}`);
-    for(const row of s.equipment.pool)if(maps&&row.maps.some(i=>!integer(i,0,maps.length-1))||monsters&&row.monsters.some(id=>!monsters.some(m=>m.id===id))||maps&&row.bosses.some(i=>!integer(i,0,maps.length-1)))throw Error('技能系統：裝備技能池來源引用不存在：'+row.skillId);
-    for(const row of s.equipment.formRules||[])if(forms.size&&!forms.has(row.formId))throw Error('技能系統：固定裝備引用不存在：'+row.formId);
+    const rules=s.equipment.formRules||[];
+    if(new Set(rules.map(r=>r.formId)).size!==rules.length)throw Error('技能系統：固定裝備設定重複');
+    for(const row of rules){
+      if(forms.size&&!forms.has(row.formId))throw Error('技能系統：固定裝備引用不存在：'+row.formId);
+      if(!row.dropOnly)continue;
+      if(d.shopSettings?.equipmentStages?.some(stage=>stage.entries.some(e=>e.formId===row.formId))||(d.starterPacks||[]).some(pack=>pack.some(e=>e.formId===row.formId))||d.story?.gearRewards?.some(g=>g.formId===row.formId))throw Error('技能系統：怪物限定裝備不能作為其他獎勵或商品：'+row.formId);
+    }
     for(const sk of s.definitions){
       for(const adapter of adapters(sk)){
       const {adapters:unused,adapter:primary,type,jobs,sources,disabled,...row}=copy(sk),{job,index,kind}=adapter;
@@ -102,24 +122,49 @@
       if(kind==='passive'){d.passiveDefinitions[index]=row;continue;}
       const list=kind==='core'?d.classes[job].skills:d.supportSkills[job];
       if(index>list.length)throw Error('技能引擎對照不可跳號：'+sk.id);
-      if(kind==='core'){row.activation=type;row.requiredLevel??=1;row.requiresAdvanced=false;row.powerPerLevel??=0;if(type==='proc'){row.procChancePerLevel??=0;row.procBaseChance??=.245;}}
-      else row.level??=1;
+      if(kind==='core'){row.activation=type;row.requiredLevel??=0;row.requiresAdvanced=false;row.powerPerLevel??=0;if(type==='proc'){row.procChancePerLevel??=0;row.procBaseChance??=.245;}}
+      else row.level??=0;
       list[index]=row;
       }
     }
     return d;
   }
-  function normalizeDocument(input){const d=copy(input);d.skillSystem??=fromLegacy(d);if(!d.skillSystem.clearingSkillsVersion)addClearingSkills(d.skillSystem,d);return project(d);}
+  // v0.161 removed character levels. Skill gates that were character levels become class mastery levels once:
+  // a requirement of LV L becomes class mastery L-1 (LV1 means no requirement). Rows in classRules keep that number as
+  // masteryLevel; skills keep it in requiredLevel (support skills in level). masteryGateVersion marks the conversion.
+  const MASTERY_GATE_VERSION=1,toMastery=v=>Math.max(0,Math.floor(Number(v)||1)-1);
+  function migrateMasteryGates(s){
+    if(s.masteryGateVersion===MASTERY_GATE_VERSION)migrateAttackSpeed(s);
+    // Rows or sources written in the old shape after the conversion (an older editor, a test fixture) still carry `level`.
+    if(s.masteryGateVersion===MASTERY_GATE_VERSION){for(const rule of s.classRules||[])for(const k of ['initial','advanced'])for(const row of rule[k]||[])if(row.level!==undefined&&row.masteryLevel===undefined){row.masteryLevel=toMastery(row.level);delete row.level;}for(const sk of s.definitions||[])for(const src of sk.sources||[])if(src.level!==undefined&&src.masteryLevel===undefined){src.masteryLevel=toMastery(src.level);delete src.level;}return s;}
+    for(const sk of s.definitions){
+      if(sk.requiredLevel!==undefined)sk.requiredLevel=toMastery(sk.requiredLevel);
+      if(sk.type==='support'&&sk.level!==undefined)sk.level=toMastery(sk.level);
+      for(const src of sk.sources||[])if(src.level!==undefined){src.masteryLevel=toMastery(src.level);delete src.level;}
+    }
+    for(const rule of s.classRules)for(const k of ['initial','advanced'])for(const row of rule[k]||[])if(row.level!==undefined){row.masteryLevel=toMastery(row.level);delete row.level;}
+    s.masteryGateVersion=MASTERY_GATE_VERSION;return migrateAttackSpeed(s);
+  }
+  // v0.196 attack speed: speed points are gone. Documents written before it (an older editor or published file) carry the
+  // speed gem as {stat:'speed',unit:'flat'} and haste as an interval cut in power (0.15 = -15% interval). They convert
+  // once: the gem keeps its values as percent points (+1/+2/+3 -> +1%/+2%/+3%) and haste becomes the attack speed with the
+  // same frequency, rounded to a whole percent (0.15 -> 1/0.85-1 = 17.6% -> 18). Other shapes are left to validation.
+  function migrateAttackSpeed(s){
+    for(const g of s?.gems||[])if(g?.base?.stat==='speed'&&g.base.unit==='flat'){g.base.stat='attackSpeedPct';g.base.unit='percent';}
+    for(const sk of s?.definitions||[])if(sk?.systemEffect==='haste'&&sk.attackSpeedPct===undefined&&typeof sk.power==='number'&&sk.power>0&&sk.power<1){sk.attackSpeedPct=Math.round((1/(1-sk.power)-1)*100);sk.power=0;}
+    return s;
+  }
+  function normalizeDocument(input){const d=copy(input);d.skillSystem??=fromLegacy(d);if(!d.skillSystem.clearingSkillsVersion)addClearingSkills(d.skillSystem,d);migrateMasteryGates(d.skillSystem);return project(d);}
   function slots(system,job,advanced){return copy(system.classRules.find(r=>r.job===job)?.slots[advanced?'advanced':'first']||{active:3,proc:1,support:1});}
   function gear(g,{legacy=false,source='drop',system,random=Math.random}={}){
     if(!g||g.type==='companionToken')return g;
     if(g.skillSockets===undefined){
       const level=g.equipmentLevel||1,rows=system?.equipment,rule=rows?.sourceRules.find(x=>x.source===source&&(x.boss===undefined||x.boss===g.boss))||rows?.socketBands.find(x=>level>=x.minLevel&&level<=x.maxLevel),weights=rule?.weights||[1,0,0,0];
       let n=0;if(!legacy){let r=random();while(n<3&&r>=weights[n])r-=weights[n++];}
-      g.skillSockets={version:VERSION,count:n,gems:Array(n).fill(null),firstMode:'skill'};
+      g.skillSockets={version:VERSION,count:n,gems:Array(n).fill(null)};
     }
     const x=g.skillSockets;
-    if(x.version!==VERSION||!integer(x.count,0,3)||!Array.isArray(x.gems)||x.gems.length!==x.count||x.gems.some(id=>id!==null&&!integer(id,0,14))||!['skill','base'].includes(x.firstMode))throw Error('裝備寶石孔資料無效：'+g.id);
+    if(x.version!==VERSION||!integer(x.count,0,3)||!Array.isArray(x.gems)||x.gems.length!==x.count||x.gems.some(id=>id!==null&&!integer(id,0,14)))throw Error('裝備寶石孔資料無效：'+g.id);
     if(g.skillId!==undefined&&g.skillId!==null&&(typeof g.skillId!=='string'||system&&!system.definitions.some(s=>s.id===g.skillId)))throw Error('裝備技能不存在：'+g.skillId);
     return g;
   }
@@ -136,5 +181,5 @@
     const ids=new Set();for(const member of members)for(const g of member.bag||[]){if(ids.has(g.id))throw Error('重複裝備 ID：'+g.id);ids.add(g.id);gear(g,{legacy:true,source:'legacy',system});}
     d.skillSystemVersion=VERSION;return d;
   }
-  return {VERSION,copy,adapters,adapterFor,types,sources,emptyConditions,fromLegacy,clearingStatus,addClearingSkills,validate,project,normalizeDocument,slots,gear,migrateSave};
+  return {VERSION,MASTERY_GATE_VERSION,migrateMasteryGates,migrateAttackSpeed,copy,adapters,adapterFor,types,sources,emptyConditions,fromLegacy,clearingStatus,addClearingSkills,validate,project,normalizeDocument,slots,gear,migrateSave};
 });

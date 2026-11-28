@@ -1,12 +1,12 @@
 /* Account actions live in Options.
-   Options are grouped into 一般 (appearance), 存檔 (save, export, import, title) and 其他 (codes, test data). */
+   Options are grouped into 一般 (appearance), 教學回顧 (js/story/tutorial-runtime.js), 存檔 (save, export, import, title) and 其他 (codes, test data). */
 (function(){
   globalThis.isEmberwildPreview=function(){return isPreviewBuild();};
-  const tabs=[['general','一般'],['save','存檔'],['other','其他']];
+  const tabs=[['general','一般'],['tutorials','教學回顧'],['save','存檔'],['other','其他']];
   let current='general';
   globalThis.setOptionsTab=function(id){if(!tabs.some(([key])=>key===id))return false;current=id;render();return true;};
   const row=(title,text,action)=>`<section class="panel option-row"><div><h2>${title}</h2><p class="small">${text}</p></div>${action}</section>`;
-  function general(){return `${globalThis.uiThemeOptionsView?.()||''}${globalThis.itemDisplayOptionsView?.()||''}${globalThis.numberReminderOptionsView?.()||''}${globalThis.battleEffectsOptionsView?.()||''}`;}
+  function general(){return `${globalThis.uiThemeOptionsView?.()||''}${globalThis.itemDisplayOptionsView?.()||''}${globalThis.numberReminderOptionsView?.()||''}${globalThis.battleEffectsOptionsView?.()||''}${globalThis.storyTextOptionsView?.()||''}`;}
   function saves(){
     return row('儲存','立即儲存目前進度到這個存檔欄位。','<button onclick="save(true)">儲存</button>')
       +row('匯出存檔 JSON','下載目前進度的 JSON 備份檔。','<button onclick="exportSave()">匯出存檔 JSON</button>')
@@ -18,7 +18,7 @@
     return row('兌換碼','輸入兌換碼並領取獎勵。','<button onclick="showTestCodes()">兌換碼</button>');
   }
   globalThis.optionsView=function(){
-    const body={general,save:saves,other}[current]();
+    const body={general,tutorials:()=>globalThis.tutorialReviewView?.()||'',save:saves,other}[current]();
     return heading('OPTIONS / 選項','選項')+`<div class="options-tabs" role="tablist" aria-label="設定分類">${tabs.map(([key,label])=>`<button type="button" role="tab" data-options-tab="${key}" aria-selected="${key===current}" class="${key===current?'primary':''}" onclick="setOptionsTab('${key}')">${label}</button>`).join('')}</div><div class="options-list" role="tabpanel" data-options-panel="${current}">${body}</div>`;
   };
 })();

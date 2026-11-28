@@ -28,13 +28,13 @@
 :root[data-item-display="name"] .inventory-item-icon,
 :root[data-item-display="name"] .item-detail-art{display:none!important}
 
-.inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.life-materials,.account-gem-slots,.token-inventory-list,.worn-candidate-list{
+.inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.account-gem-slots,.token-inventory-list,.worn-candidate-list{
   display:grid!important;grid-template-columns:minmax(0,1fr);align-content:start;justify-items:start;gap:6px;padding:5px
 }
 .inventory-list-item.item-slot,.forge-gear-item.item-slot,.worn-candidate.item-slot,.token-inventory-row.item-slot{
   display:flex;width:var(--item-slot-width);max-width:100%;height:auto;min-height:var(--item-slot-height);padding:7px 10px;gap:10px
 }
-.account-item-row.icon-only-row,.account-material-row.icon-only-row,.life-stock-row.icon-only-row{display:block;min-width:0}
+.account-item-row.icon-only-row,.account-material-row.icon-only-row{display:block;min-width:0}
 
 .mailbox-attachments{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;width:100%;max-width:480px;margin:12px 0 20px}
 .mailbox-attachment.item-slot{display:flex;width:var(--item-slot-width);max-width:100%;height:auto;min-height:var(--item-slot-height);padding:7px 10px;aspect-ratio:auto;overflow:hidden}
@@ -55,8 +55,6 @@
 .recipe-item-line>.item-slot,.recipe-input{flex:0 1 var(--item-slot-width);min-width:0}
 .recipe-input{display:grid;gap:3px;justify-items:stretch}
 .recipe-input small{font-size:11px;text-align:right}
-.gather-output-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.gather-output-line .item-slot{flex:0 1 var(--item-slot-width)}
 .account-gem-list .actions{margin-top:14px}
 .forge-action .item-cost-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 
@@ -69,20 +67,20 @@
 .item-hover-tooltip[hidden]{display:none}.item-hover-tooltip h3{margin:0 0 8px;font-size:14px}.item-hover-tooltip p{margin:6px 0}.item-hover-tooltip details{display:block}.item-hover-tooltip details>*{display:block!important}.item-hover-tooltip summary{display:none}.item-hover-tooltip::backdrop{background:transparent}
 #item-detail-dialog{width:min(580px,calc(100vw - 28px));max-height:85dvh;padding:20px;overflow:auto}#item-detail-dialog .actions{flex-wrap:wrap}#item-detail-dialog input{width:95px;max-width:100%}.item-detail-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.item-detail-art svg{width:44px;height:44px}.item-detail-top button{flex:none}
 
-@media(max-width:600px){
-  .inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.life-materials,.account-gem-slots,.token-inventory-list,.worn-candidate-list,.shop-product-grid{gap:5px;padding:3px}
+@media(max-width:700px){
+  .inventory-list-scroll,.forge-gear-list,.account-item-list,.account-sell-list,.account-gem-slots,.token-inventory-list,.worn-candidate-list,.shop-product-grid{gap:5px;padding:3px}
   .item-slot,.inventory-list-item.item-slot,.forge-gear-item.item-slot,.worn-candidate.item-slot,.token-inventory-row.item-slot,.mailbox-attachment.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px}
   .mailbox-attachments{max-width:none}
 }
 
 /* Mobile legacy list rules must not enlarge shared item slots. */
-@media(max-width:600px){#app .inventory-list-item.item-slot,#app .forge-gear-item.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px;align-items:center}}
+@media(max-width:700px){#app .inventory-list-item.item-slot,#app .forge-gear-item.item-slot{min-height:var(--item-slot-height);padding:7px 10px;gap:10px;align-items:center}}
 
 /* Reference slots keep hover information without opening another dialog. */
 .item-slot:not(button){cursor:default}.shop-inline-controls{display:flex;flex-direction:column;gap:6px;min-width:0;margin-top:6px}.shop-inline-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.shop-inline-actions input{width:64px;min-width:0}.shop-inline-actions button{min-height:32px}
 .shop-product-visual>.shop-inline-controls{grid-column:1/-1;grid-row:2}.shop-product-visual>.shop-product-stock{grid-column:2;grid-row:1}
 
-/* Five skill gem identities retain their colors through every alchemy tier. */
+/* Five skill gem identities retain their colors through every gem tier. */
 .item-slot[data-item-kind="gem"][data-item-key="0"] .item-slot-art,
 .item-slot[data-item-kind="gem"][data-item-key="5"] .item-slot-art,
 .item-slot[data-item-kind="gem"][data-item-key="10"] .item-slot-art { color: #ef5d5d; }

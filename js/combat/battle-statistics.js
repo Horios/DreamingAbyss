@@ -77,7 +77,7 @@ function battleStatLootSnapshot(){
 }
 function collectBattleStatLootDiff(before,after){
   if(!before||!after)return;
-  addBattleStatDrop('鍛鐵',after.ore-before.ore);addBattleStatDrop('寶石粉塵',after.dust-before.dust);addBattleStatDrop('治療藥水',after.potions-before.potions);
+  addBattleStatDrop('鍛鐵',after.ore-before.ore);addBattleStatDrop('粉塵',after.dust-before.dust);addBattleStatDrop('治療藥水',after.potions-before.potions);
   for(const [id,n] of Object.entries(after.healingPotions||{})){const item=SHOP.find(x=>x.id===id);if(item)addBattleStatDrop(item.name,n-(before.healingPotions?.[id]||0));}
   after.gems.forEach((n,i)=>addBattleStatDrop(GEMS[i].name,n-before.gems[i]));
   for(const [name,n] of Object.entries(after.materials))addBattleStatDrop(name,n-(before.materials[name]||0));
@@ -97,8 +97,8 @@ const battleStatsResetEncounterBase=resetEncounter;
 resetEncounter=function(){activeBattleStat=null;return battleStatsResetEncounterBase();};
 const battleStatsSpawnGroupBase=spawnGroup;
 spawnGroup=function(){const r=battleStatsSpawnGroupBase();beginBattleStatistics();return r;};
-const battleStatsAwardXPBase=awardXP;
-awardXP=function(amount){if(statsRewardingKill&&activeBattleStat)activeBattleStat.xp+=Math.max(0,Math.floor(Number(amount)||0));return battleStatsAwardXPBase(amount);};
+// v0.161: the battle's XP column counts class mastery XP earned by the party during the encounter.
+(globalThis.__EMBERWILD_MASTERY_LISTENERS??=[]).push((h,amount)=>{if(activeBattleStat&&party?.members?.includes(h))activeBattleStat.xp+=Math.max(0,Math.floor(Number(amount)||0));});
 const battleStatsAddGearBase=addGear;
 addGear=function(g){if(statsRewardingKill&&activeBattleStat)addBattleStatDrop(equipmentDisplayName(g)+(globalThis.EmberwildTokens?.isToken(g)?' · '+AFFIX_RANK[g.rar]:''),1);return battleStatsAddGearBase(g);};
 const battleStatsRewardGroupKillBase=rewardGroupKill;
@@ -126,7 +126,7 @@ function statisticsCombatDataPanel(){
 // Manual reset of this map's records (completed battles, EXP, drops and deaths). Rewards already earned are kept.
 globalThis.requestResetMapBattleStatistics=function(){
   if(!party)return false;const n=currentMapBattleRecords().length,name=MAPS[party.map]?.name||'';
-  $('modal').innerHTML=`<h2>重置戰鬥統計？</h2><p>清除「${esc(name)}」最近 ${n} 場的完成戰鬥、總獲得經驗、掉落道具與死亡紀錄。已取得的獎勵不受影響。</p><div class="actions"><button class="danger" onclick="confirmResetMapBattleStatistics()">確認重置</button><button onclick="closeModal()">取消</button></div>`;
+  $('modal').innerHTML=`<h2>重置戰鬥統計？</h2><p>清除「${esc(name)}」最近 ${n} 場的完成戰鬥、總獲得精通經驗、掉落道具與死亡紀錄。已取得的獎勵不受影響。</p><div class="actions"><button class="danger" onclick="confirmResetMapBattleStatistics()">確認重置</button><button onclick="closeModal()">取消</button></div>`;
   if(!$('modal').open)$('modal').showModal();return true;
 };
 globalThis.confirmResetMapBattleStatistics=function(){
@@ -138,7 +138,7 @@ function statisticsView(){
   return heading('STATISTICS / 戰鬥統計',m.name,`<span class="tag">最近 ${a.records.length} / ${BATTLE_STATS_LIMIT} 場</span>`)+
   `<section class="statistics-summary">
     <article class="card"><span class="statistics-number">${a.records.filter(r=>r.result!=='abandoned').length.toLocaleString()}</span><span class="statistics-label">已完成戰鬥</span></article>
-    <article class="card"><span class="statistics-number">${a.xp.toLocaleString()}</span><span class="statistics-label">總獲得經驗</span></article>
+    <article class="card"><span class="statistics-number">${a.xp.toLocaleString()}</span><span class="statistics-label">總獲得精通經驗</span></article>
     <article class="card"><span class="statistics-number">${a.wipes.toLocaleString()}</span><span class="statistics-label">總全滅次數</span></article>
     <article class="card"><span class="statistics-number">${a.deaths.toLocaleString()}</span><span class="statistics-label">總死亡次數</span></article>
   </section><p class="small">統計只計算在此地圖完成的群怪遭遇；停止探索保留已取得獎勵並記錄為中止，不計完成場次；中途換圖、換隊員或切換難度不計場次。模式場次：${MODES.map((d,i)=>`${d.name} ${difficultyCounts[i]}`).join(' ／ ')}</p>

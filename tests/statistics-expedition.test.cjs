@@ -2,12 +2,12 @@
 /* v0.114: 累積戰利品 lives on the 戰鬥統計 page (not the battle journal), with manual resets, and the page
    charts damage / damage taken / healing for the active protagonist and companions. */
 const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),{performance}=require('node:perf_hooks');
-const {loadRuntime}=require('./headless-runtime.cjs');
+const {loadRuntime,ADD_TEST_MAP}=require('./headless-runtime.cjs');
 const root=path.resolve(__dirname,'..');
 const json=(r,x)=>JSON.parse(r.run('JSON.stringify('+x+')'));
 function game(){
  const r=loadRuntime(root);r.ctx.performance.now=performance.now.bind(performance);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`selectSaveSlot(1);start(3);closeModal();recruitCompanion(10);closeModal();recruitCompanion(12);closeModal();globalThis.rng=24680;Math.random=()=>((rng=(Math.imul(rng,1664525)+1013904223)>>>0)/4294967296);startSelectedExploration();save();`);
+ r.run(`selectSaveSlot(1);start(3);closeModal();recruitCompanion(10);closeModal();recruitCompanion(13);closeModal();globalThis.rng=24680;Math.random=()=>((rng=(Math.imul(rng,1664525)+1013904223)>>>0)/4294967296);startSelectedExploration();save();`);
  return r;
 }
 function drive(r,ms){for(let i=0;i<ms;i+=50){r.advance(Math.min(50,ms-i));r.run('tick()');}}
@@ -29,7 +29,7 @@ test('real combat records damage, damage taken and healing per active member; th
 });
 
 test('the journal has no loot list; the statistics page keeps one drops table whose reset clears only this map',()=>{
- const r=game();drive(r,120000);
+ const r=game();r.run('stopTeamExploration()');r.run(ADD_TEST_MAP);r.run('startSelectedExploration()');drive(r,120000);
  const journal=r.run('sharedBattleJournal()');
  assert.doesNotMatch(journal,/累積戰利品|journal-loot-compact|journal-resizer/);
  assert.match(journal,/id="liveLog"/);

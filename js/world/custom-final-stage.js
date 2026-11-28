@@ -32,8 +32,8 @@
   };
 
   function stageEnemyFromRow(row,mi,h,kind){
-    const runtime=MAPS[mi],ahead=EmberwildProgression.encounterLevelLead(GAMEPLAY_SETTINGS,h.lv);
-    const maxLv=Math.max(runtime.min,Math.min(runtime.max,h.lv+ahead)),lv=runtime.min+Math.floor(Math.random()*Math.max(1,maxLv-runtime.min+1));
+    const runtime=MAPS[mi];
+    const maxLv=Math.max(runtime.min,runtime.max),lv=runtime.min+Math.floor(Math.random()*Math.max(1,maxLv-runtime.min+1));
     const mode=h.difficulty||0,{hp,atk,def}=EmberwildProgression.monsterStats(GAMEPLAY_SETTINGS,lv,kind,mode,row);
     return {name:(kind==='elite'?'菁英・':'')+row.name,icon:'',mat:row.material,lv,hp,maxhp:hp,atk,def,kind,turn:0,monsterId:row.id,maxDrops:row.maxDrops,element:row.element,race:row.race,difficulty:mode,region:mi,stageOrder:row.stageOrder};
   }
@@ -54,7 +54,7 @@
   const customStageSpawnBase=spawnGroup;
   spawnGroup=function(){
     if(!party||!isFinal(party.map))return customStageSpawnBase();
-    const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],rows=configuredStageRows(party.map);
+    const weak=heroes()[0],rows=configuredStageRows(party.map);
     foes=[];effects=[];actorCooldowns={};supportCooldowns={};for(const h of heroes())h.shield=0;
     for(const spec of rows)for(let i=0;i<spec.count;i++){
       const e=spec.kind==='final'?finalBossFromRow(spec.row,party.map,weak):stageEnemyFromRow(spec.row,party.map,weak,spec.kind);
@@ -82,12 +82,12 @@
   function completeFinalStage(mi){
     if(globalThis.__EMBERWILD_FINAL_STAGE_CLEARED)return;
     globalThis.__EMBERWILD_FINAL_STAGE_CLEARED=true;
-    const boss=foes.find(e=>e.kind==='final'),mode=boss?.difficulty??state.difficulty??0,d=MODES[mode],gate=isGate(mi),firstClear=gate&&!party.cleared,before=Math.floor(GS('progression.levelCaps.beforeClear',30));
+    const boss=foes.find(e=>e.kind==='final'),mode=boss?.difficulty??state.difficulty??0,d=MODES[mode],gate=isGate(mi),firstClear=gate&&!party.cleared;
     globalThis.expeditionChallengeResult={name:MAPS[mi]?.name||'終局關卡',success:true};running=false;refillParty();
     globalThis.recordMapClear?.(mi);
-    if(gate){party.cleared=true;for(const h of heroes()){h.modeClears[mode]=(h.modeClears[mode]||0)+1;if(h.lv>=before)h.won=true;}}
+    if(gate){party.cleared=true;for(const h of heroes()){h.modeClears[mode]=(h.modeClears[mode]||0)+1;h.won=true;}}
     note(`終局關卡「${MAPS[mi]?.name||'未命名'}」已完成。`);
-    if(!partyBusy){const title=gate?(firstClear?'等級界限已突破':'再次完成突破關卡'):'終局關卡已完成',body=gate?(firstClear?'等級上限提升，通關後區域已解鎖。':'可繼續探索通關後區域，或挑戰其他終局地圖。'):`已擊敗首領與所有隨從，完成「${MAPS[mi]?.name||'終局地圖'}」。此關卡不會改變等級上限。`;$('modal').innerHTML=`<h1>${title}</h1><p>${esc(body)}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}
+    if(!partyBusy){const title=gate?(firstClear?'突破關卡已完成':'再次完成突破關卡'):'終局關卡已完成',body=gate?(firstClear?'通關後區域已解鎖。':'可繼續探索通關後區域，或挑戰其他終局地圖。'):`已擊敗首領與所有隨從，完成「${MAPS[mi]?.name||'終局地圖'}」。`;$('modal').innerHTML=`<h1>${title}</h1><p>${esc(body)}</p><button class="primary" onclick="closeModal()">繼續旅程</button>`;$('modal').showModal();}
     save();if(tab==='battle'||!isEditingControl())render();else refreshGlobalJournal();
   }
 

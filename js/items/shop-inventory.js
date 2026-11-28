@@ -82,10 +82,10 @@
     return SHOP_SETTINGS.randomOffers.entries.some(matches);
   }
   function offerItem(offer){return offer.kind==='item'?SHOP.find(x=>x.id===offer.key):null;}
-  function rawOfferName(offer){return offer.kind==='ore'?'鍛鐵':offer.kind==='dust'?'粉塵':offer.kind==='gem'?(GEMS[Number(offer.key)]?.name||'技能寶石'):offerItem(offer)?.name||offer.key;}
+  function rawOfferName(offer){return offer.kind==='ore'?'鍛鐵':offer.kind==='dust'?'粉塵':offer.kind==='gem'?(GEMS[Number(offer.key)]?.name||'屬性寶石'):offerItem(offer)?.name||offer.key;}
   function offerName(offer,rule){
     const raw=rawOfferName(offer);if(!rule?.name)return raw;
-    if(offer.kind==='gem'&&['技能寶石','隨機技能寶石'].includes(rule.name)||offer.kind==='material'&&rule.name==='地區素材')return raw;
+    if(offer.kind==='gem'&&rule.name==='屬性寶石'||offer.kind==='material'&&rule.name==='地區素材')return raw;
     if(offer.kind==='gem'&&rule.key==='random'||offer.kind==='material'&&rule.key==='region')return rule.name+' · '+raw;
     return rule.name;
   }
@@ -118,7 +118,8 @@
       if(state.bag.length+offer.qty>RULES.bagCapacity)return toast('背包空間不足');
       const items=Array.from({length:offer.qty},()=>globalThis.createEquipmentShopGear(offer.stageId,offer.entryId));
       if(items.some(g=>!g))return false;
-      const gold=state.gold;state.bag.push(...items);state.gold-=price;
+      const gold=state.gold,capacity=globalThis.__EMBERWILD_BAG_CAPACITY?.usage();state.bag.push(...items);state.gold-=price;
+      if(capacity&&globalThis.__EMBERWILD_BAG_CAPACITY.grownOver(capacity).length){const ids=new Set(items.map(g=>g.id));state.bag.splice(0,state.bag.length,...state.bag.filter(g=>!ids.has(g.id)));state.gold=gold;toast('背包格數不足');return false;}
       if(!save()){const ids=new Set(items.map(g=>g.id));state.bag.splice(0,state.bag.length,...state.bag.filter(g=>!ids.has(g.id)));state.gold=gold;return false;}
       render();toast('已購買 '+name+' ×'+offer.qty);return true;
     }
@@ -127,7 +128,11 @@
     if(state.gold<price)return toast('金幣不足');
     const had=Object.prototype.hasOwnProperty.call(slot.object,slot.key),old=Number(slot.object[slot.key])||0,next=old+offer.qty,gold=state.gold;
     if(!Number.isSafeInteger(next)||next>slot.limit)return toast('庫存已達上限');
-    slot.object[slot.key]=next;state.gold-=price;if(onSold)onSold(true);
+    const capacity=globalThis.__EMBERWILD_BAG_CAPACITY?.usage();
+    slot.object[slot.key]=next;
+    // v0.228: a purchase that needs more slots than the bag tab has open is refused.
+    if(capacity&&globalThis.__EMBERWILD_BAG_CAPACITY.grownOver(capacity).length){if(had)slot.object[slot.key]=old;else delete slot.object[slot.key];return toast('背包格數不足');}
+    state.gold-=price;if(onSold)onSold(true);
     if(!save()){if(had)slot.object[slot.key]=old;else delete slot.object[slot.key];state.gold=gold;if(onSold)onSold(false);return;}
     render();toast('已購買 '+name+' ×'+offer.qty);
   }
@@ -150,7 +155,7 @@
       for(const [i,offer] of p.market.offers.entries()){if(offer.kind==='item'&&!SHOP.some(x=>x.id===offer.key))throw Error('商店存檔引用不存在的道具：'+offer.key);if(typeof raw.offers?.[i]?.ruleId==='string')offer.ruleId=raw.offers[i].ruleId;}
     }return p;
   };
-  const SHOP_CATEGORIES=[['equipment','裝備商店'],['life','生活技能材料'],['random','隨機商品'],['fixed','固定商品']];
+  const SHOP_CATEGORIES=[['equipment','裝備商店'],['random','隨機商品'],['fixed','固定商品']];
   let shopCategory='random';
   globalThis.setShopCategory=function(id){
     if(!SHOP_CATEGORIES.some(([key])=>key===id))return false;
@@ -162,10 +167,9 @@
     const tabs=`<nav class="shop-category-tabs" aria-label="商店分類">${SHOP_CATEGORIES.map(([id,name])=>`<button class="${shopCategory===id?'primary':''}" aria-pressed="${shopCategory===id}" onclick="setShopCategory('${id}')">${name}</button>`).join('')}</nav>`;
     let section;
     if(shopCategory==='equipment')section=globalThis.equipmentShopView?.()||'<div class="shop-empty">裝備商店尚未載入。</div>';
-    else if(shopCategory==='life')section=globalThis.lifeShopMaterialsView?.()||'<div class="shop-empty">生活技能材料尚未載入。</div>';
     else if(shopCategory==='fixed'){
       const fixed=SHOP_SETTINGS.fixedOffers.entries.filter(x=>x.enabled).map(rule=>productRow(fixedOffer(rule),rule,false)).join('');
-      section=`<section class="shop-section shop-fixed-section"><div class="shop-section-head"><h2>固定商品</h2><span class="small">購買後進入共用背包；使用請到「背包 → 道具」。</span></div><div class="shop-product-grid">${fixed||'<div class="shop-empty">目前沒有上架固定商品。</div>'}</div></section>`;
+      section=`<section class="shop-section shop-fixed-section"><div class="shop-section-head"><h2>固定商品</h2><span class="small">購買後進入共用背包；使用請到「背包 → 消耗品」。</span></div><div class="shop-product-grid">${fixed||'<div class="shop-empty">目前沒有上架固定商品。</div>'}</div></section>`;
     }else section=`<section class="shop-section shop-random-section"><div class="shop-section-head"><h2>隨機商品</h2><div class="shop-refresh-meta"><span>第 ${party.market.serial} 批</span><span>今日已刷新 <b>${rc}</b> 次</span><span>每日 0 點重置刷新價格</span></div><div class="actions"><button onclick="refreshMarket()" ${state.gold<cost||!hasRandomRules()?'disabled':''}>刷新 · ${cost} 金幣</button></div></div><div class="shop-product-grid">${marketCards()}</div></section>`;
     return heading('SUPPLIES / 全隊共用','商店')+tabs+`<div class="shop-catalog-scroll" data-shop-category="${shopCategory}">${section}</div>`;
   };
@@ -176,11 +180,11 @@
   function setInventoryItemCount(item,n){n=Math.max(0,Math.floor(Number(n)||0));if(item.type==='levelScroll')setMaterialCount('升級卷軸',n);else if(typeof isHealPotion==='function'&&isHealPotion(item))setHealPotionCount(item.id,n);else state.consumables[item.id]=n;}
   globalThis.__EMBERWILD_INVENTORY_STOCK={item:inventoryItemById,count:id=>{const item=inventoryItemById(id);return item?inventoryItemCount(item):0;},set:(id,n)=>{const item=inventoryItemById(id);if(!item)return false;setInventoryItemCount(item,n);return true;}};
   const inventoryItemSellPrice=item=>item.type==='levelScroll'?materialSellPrice('升級卷軸'):itemSellPrice(item.id);
-  globalThis.useInventoryItem=function(id,key){const item=inventoryItemById(id);if(!item)return;if(item.type==='levelScroll')return useLevelScroll();const h=partyMember(key);if(!h)return;if(id==='power_tier_reroll'){setTab('forge');toast('請選擇裝備後使用'+item.name);return;}if(typeof isHealPotion==='function'&&isHealPotion(item)){openHealingSettings();return;}if(inventoryItemCount(item)<1)return toast('道具數量不足');pageHeroSelection.set('equipment',key);withHero(h,()=>useSupply(id));render();};
+  globalThis.useInventoryItem=function(id,key){const item=inventoryItemById(id);if(!item)return;if(item.type==='levelScroll')return false;/* v0.161: level scrolls have no use; old stock is refunded on load */const h=partyMember(key);if(!h)return;if(id==='power_tier_reroll'){setTab('forge');toast('請選擇裝備後使用'+item.name);return;}if(typeof isHealPotion==='function'&&isHealPotion(item)){openHealingSettings();return;}if(inventoryItemCount(item)<1)return toast('道具數量不足');pageHeroSelection.set('equipment',key);withHero(h,()=>useSupply(id));render();};
   globalThis.sellInventoryItem=function(id,qty){if(globalThis.__EMBERWILD_CAN_SELL?.('item',id)===false)return toast('此消耗品不可販售');const item=inventoryItemById(id);if(!item)return;const have=inventoryItemCount(item),n=Math.max(0,Math.min(have,Math.floor(Number(qty)||0)));if(n<1)return toast('請輸入要販售的數量');const price=inventoryItemSellPrice(item),gold=state.gold;if(!Number.isSafeInteger(price*n)||gold+price*n>1e12)return toast('金幣已達上限，道具已保留');setInventoryItemCount(item,have-n);state.gold+=price*n;if(!save()){setInventoryItemCount(item,have);state.gold=gold;return;}render();toast(`已販售 ${item.name} ×${n}，獲得 ${price*n} 金幣`);};
   globalThis.sellInventoryItemFromButton=function(btn,id,all=false){const item=inventoryItemById(id);if(!item)return;const row=btn.closest('[data-inventory-item]'),input=row?.querySelector('input[data-sell-qty]'),qty=all?inventoryItemCount(item):input?.value;sellInventoryItem(id,qty);};
   globalThis.inventoryMaterialIcon=function(name){
-    const glyphs={'鍛鐵':['anvil','#a9c98b'],'粉塵':['sparkles','#dfbe70'],'以太鍛鐵':['anvil','#9c9df2'],'光輝碎塊':['sparkles','#dfbe70'],'紅色草':['leaf','#ed7774'],'紅色草泥':['flask-conical','#ed7774'],'小蟲':['bug','#a9c98b'],'清水':['droplet','#87c5e7'],'藥水瓶':['flask-round','#c6d5df'],'升級卷軸':['scroll-text','#dfbe70']};
+    const glyphs={'鍛鐵':['anvil','#a9c98b'],'粉塵':['sparkles','#dfbe70'],'以太鍛鐵':['anvil','#9c9df2'],'光輝碎塊':['sparkles','#dfbe70'],'升級卷軸':['scroll-text','#dfbe70']};
     const [key,tone]=glyphs[name]||[/牙|骨/.test(name)?'bone':/翼|羽/.test(name)?'feather':/晶|石/.test(name)?'gem':/齒輪/.test(name)?'cog':'package','#a9c98b'];
     return `<span class="inventory-item-icon" style="color:${tone}" aria-hidden="true">${globalThis.__EMBERWILD_INVENTORY_ICON?.('material',name,'lucide:'+key,{size:26})||__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+key,[],{size:26})}</span>`;
   };
@@ -199,7 +203,7 @@
   };
   // Item tab: tickets, potions, other consumables and skill gems are separate blocks.
   accountItemsView=function(){
-    ensureHealingPotionState();const target=pageHero('equipment')||party.members[0],rows=[...SHOP,LEVEL_SCROLL].filter(item=>inventoryItemCount(item)>0),needsTarget=rows.some(item=>!['levelScroll','gearTierReroll'].includes(item.type)&&!isHealPotion(item)&&!EmberwildTimedBoosts.isItem(item));
+    ensureHealingPotionState();const target=pageHero('equipment')||party.members[0],rows=[...SHOP].filter(item=>inventoryItemCount(item)>0),needsTarget=rows.some(item=>!['levelScroll','gearTierReroll'].includes(item.type)&&!isHealPotion(item)&&!EmberwildTimedBoosts.isItem(item));
     const slot=item=>`<div class="account-item-row icon-only-row" data-inventory-item="${esc(item.id)}">${itemSlotHTML('item',item.id,{count:inventoryItemCount(item),context:'inventory'})}</div>`;
     const isPotion=item=>isHealPotion(item)||['imbue','ward','elementTonic'].includes(item.type),isTicket=item=>EmberwildTimedBoosts.isItem(item);
     const potions=rows.filter(isPotion),tickets=rows.filter(item=>!isPotion(item)&&isTicket(item)),others=rows.filter(item=>!isPotion(item)&&!isTicket(item));

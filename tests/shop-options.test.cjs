@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {openRuntime}=require('./runtime.cjs');
 const root=path.resolve(__dirname,'..');
-const balanceRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const balanceRoot=require('./runtime.cjs').balanceRoot(root);
 
 async function gameRuntime(preview=false){
   const runtime=await openRuntime(root);
@@ -61,7 +61,7 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       });
       // Shop rows are item slots: the name sits under the slot and the description and effect show in the hover tooltip.
       const rows=[];
-      for(const category of ['life','random','fixed']){
+      for(const category of ['random','fixed']){
         await game.page.evaluate(category=>setShopCategory(category),category);
         const count=await game.page.locator('.shop-product-row').count();
         for(let i=0;i<count;i++){
@@ -71,12 +71,12 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
           await game.page.mouse.move(0,0);
         }
       }
-      assert(rows.length>=16);
+      assert(rows.length>=11,'v0.179: the five elemental potions are off the shop: '+rows.length);
       for(const row of rows){const lines=row.tooltip.split('\n').map(x=>x.trim()).filter(Boolean);assert(lines[0].includes(row.name.trim()),JSON.stringify(row));assert(lines.length>=3&&lines[1].length>4,'every product has a description: '+JSON.stringify(row));assert(!/隨機出現|隨機挑選|本批隨機商品/.test(row.tooltip));assert(!/回合/.test(row.tooltip),'durations use seconds: '+row.tooltip);assert(row.height<140,JSON.stringify(row));assert(row.scrollWidth<=row.width+1,JSON.stringify(row));}
       const stone=rows.find(x=>x.name.includes('重鑄'));assert(stone);assert(stone.tooltip.includes('基底'));assert(stone.tooltip.includes('基底評級'));
       assert.equal(await game.page.locator('main button[onclick="showTestCodes()"] ').count(),0);
       await game.page.setViewportSize({width:680,height:850});
-      for(const category of ['life','random','fixed']){
+      for(const category of ['random','fixed']){
         await game.page.evaluate(category=>setShopCategory(category),category);
         const overflow=await game.page.locator('.shop-product-row').evaluateAll(rows=>rows.some(row=>row.scrollWidth>row.clientWidth+1));assert.equal(overflow,false,category);
       }
@@ -100,11 +100,14 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       assert.deepEqual(result.charges,[2*7,3*7,2*7,4*7,2*7,3*7,1*7]);assert.equal(result.before.gold-result.after.gold,result.charges.reduce((a,b)=>a+b,0));assert.equal(result.healGain,2);assert.equal(result.goldSpent,2*5);assert.equal(result.offer.sold,true);assert.equal(result.savedOffer.kind,'item');assert.equal(result.savedOffer.key,'heal_small');assert.equal(result.savedOffer.ruleId,'healing');assert.equal(result.savedOffer.sold,true);
     });
     await t.test('Failed saves roll back gold, inventory and sold flags; stock limits also prevent charges',async()=>{
+      // v0.228: the random market sells no potions any more and fixed offers use item ids (heal_small). The stack-based
+      // backpack (v0.204) keeps one object per 99 potions, so the 1e9 stock limit is checked on an oversized offer
+      // instead of filling the backpack with 1e9 potions.
       const result=await game.page.evaluate(()=>{
-        const offer=party.market.offers[0];offer.sold=false;const gold=state.gold,heals=healPotionCount('heal_small'),priorSave=save;save=()=>false;
-        try{buyMarketOffer(offer.id);buyFixedShopOffer('fixed_5');}finally{save=priorSave;}
+        party.market??=generateMarket();const offer=party.market.offers[0];offer.sold=false;const gold=state.gold,heals=healPotionCount('heal_small'),priorSave=save;save=()=>false;
+        try{buyMarketOffer(offer.id);buyFixedShopOffer('heal_small');}finally{save=priorSave;}
         const rollback={gold:state.gold===gold,heals:healPotionCount('heal_small')===heals,sold:offer.sold===false};
-        setHealPotionCount('heal_small',1e9);buyMarketOffer(offer.id);const limits={gold:state.gold===gold,heals:healPotionCount('heal_small')===1e9,sold:offer.sold===false};setHealPotionCount('heal_small',heals);
+        let soldCalls=0;purchaseShopOffer({kind:'item',key:'heal_small',qty:1e9+1-heals,price:1},'上限測試',()=>{soldCalls++;});const limits={gold:state.gold===gold,heals:healPotionCount('heal_small')===heals,sold:soldCalls===0};
         return {rollback,limits};
       });assert.deepEqual(result,{rollback:{gold:true,heals:true,sold:true},limits:{gold:true,heals:true,sold:true}});
     });

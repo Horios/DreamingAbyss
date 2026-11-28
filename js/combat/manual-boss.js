@@ -89,7 +89,7 @@
       const runtime=MAPS[map],cat=monsterCatalog(),normals=cat.filter(m=>m.mapIndex===map&&EmberwildMonsterDesign.roaming(m)),elites=normals.filter(m=>m.kind==='normal'&&m.eliteEnabled!==false);
       if(!normals.length)throw Error('地圖沒有啟用中的普通怪物：'+runtime.name);
       const eliteChance=mc.eliteEnabled&&elites.length?Math.max(0,Math.min(1,Number(mc.eliteChance)||0)):0,elite=rng()<eliteChance,row=weightedPick(elite?elites:normals,rng),kind=row.kind==='elite'||elite?'elite':'normal';
-      const ahead=EmberwildProgression.encounterLevelLead(GAMEPLAY_SETTINGS,h.lv),maxLv=Math.min(runtime.max,h.lv+ahead),lv=runtime.min+Math.floor(rng()*Math.max(1,maxLv-runtime.min+1));
+      const maxLv=runtime.max,lv=runtime.min+Math.floor(rng()*Math.max(1,maxLv-runtime.min+1));
       const {hp,atk,def}=EmberwildProgression.baseMonsterStats(GAMEPLAY_SETTINGS,lv,kind,row);
       return {name:(kind==='elite'?'菁英・':'')+row.name,icon:'',mat:row.material,lv,hp,maxhp:hp,atk,def,kind,turn:0,monsterId:row.id,maxDrops:row.maxDrops,element:row.element,race:row.race};
     };
@@ -107,8 +107,8 @@
   if(typeof rewardGroupKill==='function'){const base=rewardGroupKill;rewardGroupKill=function(e){const eligible=!!e&&!e.rewarded,result=base(e);if(eligible&&e.rewarded)addBossProgress(e);return result;};}
 
   function enemyFromStageRow(row,mi,h,kind,order){
-    const runtime=MAPS[mi],mode=h.difficulty||0,ahead=EmberwildProgression.encounterLevelLead(GAMEPLAY_SETTINGS,h.lv);
-    const maxLv=Math.max(runtime.min,Math.min(runtime.max,h.lv+ahead)),lv=kind==='boss'?runtime.max:runtime.min+Math.floor(Math.random()*Math.max(1,maxLv-runtime.min+1));
+    const runtime=MAPS[mi],mode=h.difficulty||0;
+    const maxLv=Math.max(runtime.min,runtime.max),lv=kind==='boss'?runtime.max:runtime.min+Math.floor(Math.random()*Math.max(1,maxLv-runtime.min+1));
     const {hp,atk,def}=EmberwildProgression.monsterStats(GAMEPLAY_SETTINGS,lv,kind,mode,row);
     return {name:(kind==='elite'?'菁英・':'')+row.name,icon:'',mat:row.material,lv,hp,maxhp:hp,atk,def,kind,turn:0,monsterId:row.id,maxDrops:row.maxDrops,element:row.element,race:row.race,difficulty:mode,region:mi,bossChallenge:true,stageOrder:order};
   }
@@ -121,7 +121,7 @@
   function spawnBossStage(){
     const ch=party?.bossChallenge;if(!ch?.active)return false;const mi=ch.mapIndex,entry=bossProgressEntry(mi);
     if(!ch.stagePaid){if(entry.charges<1){party.bossChallenge=null;clearEncounter();return false;}entry.charges--;ch.stagePaid=true;note(`進入 ${MAPS[mi].name} BOSS 關卡，消耗 1 次挑戰（剩餘 ${entry.charges}）。`);}
-    const weak=[...heroes()].sort((a,b)=>a.lv-b.lv)[0],rows=configuredBossStageRows(mi);refillParty();clearEncounter();
+    const weak=heroes()[0],rows=configuredBossStageRows(mi);refillParty();clearEncounter();
     for(const spec of rows)for(let i=0;i<spec.count;i++){const e=enemyFromStageRow(spec.row,mi,weak,spec.kind,spec.order);e.id='foe-'+uid();e.rewarded=false;foes.push(e);}
     enemy=foes.find(e=>e.hp>0)||null;if(typeof beginBattleStatistics==='function')beginBattleStatistics();note(`BOSS 關卡開始：${foes.length} 隻敵人。`);return true;
   }

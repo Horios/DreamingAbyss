@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),test=require('node:test');
 const {loadRuntime}=require('./headless-runtime.cjs');
-const root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('Real game/editor modules preserve elemental effects across combat, saves, reserve and offline time',{skip:!fs.existsSync(editorRoot+'/balance-editor.html')},async()=>{
  const plain=x=>JSON.parse(JSON.stringify(x)),{loadRuntime:loadEditor}=require(path.join(editorRoot,'tests/headless-editor.cjs'));
  const e=loadEditor(editorRoot),g=loadRuntime(root);g.ctx.setTimeout=fn=>setImmediate(fn);

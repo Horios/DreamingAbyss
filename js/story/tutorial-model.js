@@ -1,0 +1,391 @@
+/* Tutorial contract shared by the game and the balance editor (embedded there by scripts/sync-tutorials.cjs).
+   Content (text, steps, triggers) is balance data in `tutorials`; behaviour is limited to the fixed condition, event,
+   target and trigger types declared here. No free JavaScript is ever read from the data. */
+(function(root){
+ 'use strict';
+ const VERSION=1,copy=x=>structuredClone(x);
+ const TYPES={guide:'操作引導',intro:'功能介紹',tip:'簡短提示',notice:'說明彈窗'};
+ const CATEGORIES={battle:'探索',equipment:'裝備',skills:'技能',companions:'夥伴',wishingLake:'許願湖',shop:'商店',catalog:'圖鑑',quests:'任務',character:'角色',other:'其他'};
+ // Page identities are the game's fixed navigation ids (js/ui/navigation-tree.js); 'story' is the quest page.
+ const PAGES={battle:'荒野探索',statistics:'戰鬥統計',shop:'商店',roster:'隊伍編成',partnerRoster:'夥伴名冊',character:'角色能力',skills:'技能',equipment:'背包',worn:'裝備與信物',forge:'裝備工坊',crafting:'製作',story:'任務',quests:'委託',wishingLake:'許願湖'};
+ // Condition types the game can evaluate. key: what `key` names; count: whether `count` is used.
+ const CONDITIONS={
+  prologueDone:{label:'序幕已完成'},
+  tutorialDone:{label:'前置教學已完成',key:'tutorial'},
+  pageVisited:{label:'曾進入頁面',key:'page'},
+  featureUnlocked:{label:'劇情解鎖鍵已開啟',key:'text'},
+  questDone:{label:'任務已完成',key:'quest'},
+  classMastery:{label:'主角職業精通等級達到',count:true},
+  companions:{label:'擁有的夥伴數',count:true},
+  gearOwned:{label:'持有的一般裝備數（不含新手與任務裝備）',count:true},
+  gearAcquired:{label:'取得一般裝備的件數（教學系統記錄，不含新手與任務裝備）',count:true},
+  itemAcquired:{label:'曾取得道具／材料數量',key:'item',count:true},
+  exploring:{label:'目前正在探索'},
+  explorationStarted:{label:'開始探索次數（教學系統記錄）',count:true},
+  gearEquipped:{label:'穿戴裝備次數（教學系統記錄）',count:true},
+  learnedActiveSkills:{label:'已取得的主動技能數（目前職業）',count:true},
+  activeSkillSlotted:{label:'已裝入主動槽的技能數',count:true},
+  skillSlots:{label:'技能槽數量（主動／觸發／輔助）',key:'slotType',count:true},
+  prologueLesson:{label:'序幕已教過的操作',key:'lesson'},
+  // v0.173: the inline onboarding (story quest 'prologue') is at this stage now; it stops holding once the stage is done.
+  prologueStage:{label:'新手引導進行到',key:'stage'},
+  lakeUnlocked:{label:'許願湖已解鎖'},
+  socketGearWorn:{label:'主角穿著有鑲嵌孔的裝備'},
+  // v0.178: tickets held for a companion (key: companion id).
+  companionTicket:{label:'持有指定夥伴的招募券',key:'companion',count:true},
+  // v0.226: the caravan story can be started from the quest page (questOffered) / has been started (questStarted).
+  questOffered:{label:'任務可以開始',key:'quest'},
+  questStarted:{label:'任務已開始',key:'quest'}
+ };
+ // Stages of the inline onboarding a tutorial can wait for (js/story/prologue-runtime.js).
+ const STAGES={gift:'女神的贈禮',charm:'護符與裝備技能',gem:'鑲嵌寶石',practice:'首次探索戰鬥',helper:'招募牧師'};
+ const SLOT_TYPES={active:'主動',proc:'觸發',support:'輔助'};
+ // Lessons the prologue already teaches (its fixed system actions). A step can be left out for players who did them.
+ const LESSONS={equipLesson:'穿戴裝備',skillLesson:'裝入技能',recruitHelper:'加入隊友'};
+ // Events the game reports to a waiting step. They come from the game's own handlers, after they succeed.
+ const EVENTS={explorationStarted:'開始探索',gearSelected:'在背包點選裝備',wearOpened:'按下背包的「穿戴」',gearEquipped:'完成穿戴',skillSlotOpened:'開啟技能槽',skillSlotted:'裝入技能',catalogOpened:'開啟技能圖鑑',socketsOpened:'開啟裝備的鑲嵌孔',itemsOpened:'開啟背包的道具分類',itemDetailsOpened:'開啟道具詳細資料',ticketUsed:'使用夥伴招募券',socketSelected:'點選鑲嵌孔',gemSocketed:'鑲嵌或拆除寶石'};
+ const ADVANCE={next:'按「下一步」',click:'點擊高亮目標',event:'等待遊戲事件',condition:'等待狀態成立',page:'進入指定頁面'};
+ const TRIGGERS={pageEnter:'首次進入頁面時開始',unlock:'條件成立時立即提示',manual:'只能從教學回顧開始'};
+ const PLACEMENTS={auto:'自動',top:'目標上方',bottom:'目標下方',left:'目標左側',right:'目標右側',center:'畫面中央'};
+ // Semantic target ids. The game resolves each to a control (js/story/tutorial-runtime.js); data never holds selectors.
+ const TARGETS={
+  'battle.destination':{label:'探索目的地列',page:'battle'},
+  'battle.categories':{label:'關卡分類按鈕',page:'battle'},
+  'battle.mapSelect':{label:'探索地圖選單',page:'battle'},
+  'battle.start':{label:'開始／停止探索按鈕',page:'battle'},
+  'battle.allies':{label:'我方戰鬥卡片',page:'battle'},
+  'battle.enemies':{label:'敵方戰鬥卡片',page:'battle'},
+  'bag.categories':{label:'背包分類按鈕',page:'equipment'},
+  'bag.list':{label:'背包裝備清單',page:'equipment'},
+  'bag.newGear':{label:'最新取得的一般裝備',page:'equipment'},
+  'bag.wearButton':{label:'裝備詳情的「穿戴」',page:'equipment'},
+  'worn.slots':{label:'已穿戴欄位',page:'worn'},
+  'worn.candidate':{label:'穿戴候選裝備',page:'worn'},
+  'worn.confirm':{label:'換裝比較的「確認穿戴」',page:'worn'},
+  'skills.catalog':{label:'技能圖鑑按鈕',page:'skills'},
+  'skills.activeSlots':{label:'主動技能槽',page:'skills'},
+  'skills.firstActiveSlot':{label:'第一個主動槽',page:'skills'},
+  'skills.procSlots':{label:'觸發技能槽',page:'skills'},
+  'skills.supportSlots':{label:'輔助技能槽（已併入主動技能）',page:'skills'},
+  'skills.slotChoice':{label:'技能槽視窗的「裝入技能」',page:'skills'},
+  'shop.categories':{label:'商店分類按鈕',page:'shop'},
+  'shop.fixed':{label:'商店固定商品',page:'shop'},
+  'shop.random':{label:'商店限時商品與刷新',page:'shop'},
+  'quests.board':{label:'每日委託清單',page:'quests'},
+  'quests.start':{label:'委託的「開始任務」',page:'quests'},
+  'header.options':{label:'頁首「設定」',page:''},
+  // v0.173: onboarding and the first visit of every system page.
+  'bag.starterGear':{label:'尚未穿戴的新手裝備',page:'equipment'},
+  'stats.summary':{label:'戰鬥統計總覽',page:'statistics'},
+  'stats.combat':{label:'戰鬥數據（傷害／承傷／治療）',page:'statistics'},
+  'stats.drops':{label:'掉落與死亡紀錄',page:'statistics'},
+  'roster.plans':{label:'隊伍方案',page:'roster'},
+  'roster.list':{label:'上陣與後備名單',page:'roster'},
+  'partners.list':{label:'夥伴名冊清單',page:'partnerRoster'},
+  'bag.itemsCategory':{label:'背包的「特殊」分類',page:'equipment'},
+  'bag.companionTicket':{label:'特殊分類中的夥伴招募券',page:'equipment'},
+  'items.useTicket':{label:'招募券詳細資料的「使用招募券」',page:'equipment'},
+  'character.stats':{label:'人物能力',page:'character'},
+  'character.mastery':{label:'職業精通',page:'character'},
+  'worn.tokens':{label:'夥伴信物',page:'worn'},
+  'worn.socketButton':{label:'有鑲嵌孔裝備的「移到工坊」',page:'worn'},
+  'worn.socketSlot':{label:'第一個鑲嵌孔',page:'worn'},
+  'worn.gemChoices':{label:'可鑲嵌的寶石',page:'worn'},
+  'worn.socketBadge':{label:'裝備名稱旁的孔位',page:'worn'},
+  'worn.skillLink':{label:'「前往技能配置」',page:'worn'},
+  'forge.list':{label:'工坊分類',page:'forge'},
+  'forge.detail':{label:'工坊中間的放入格',page:'forge'},
+  'forge.actions':{label:'目前裝備操作',page:'forge'},
+  'forge.extraction':{label:'信物萃取',page:'forge'},
+  'boss.classTabs':{label:'BOSS 製作職業分頁',page:'crafting'},
+  'boss.recipe':{label:'第一張 BOSS 配方',page:'crafting'},
+  'story.tabs':{label:'任務分類分頁',page:'story'},
+  'story.card':{label:'任務卡片',page:'story'},
+  'story.action':{label:'任務卡片的操作按鈕',page:'story'},
+  // v0.226: onboarding charm and gem lessons, the caravan story's start button.
+  'bag.storyGear':{label:'尚未穿戴的任務裝備（啟程護符）',page:'equipment'},
+  'skills.firstProcSlot':{label:'第一個觸發槽',page:'skills'},
+  'skills.echoChoice':{label:'技能槽視窗中的「追擊」',page:'skills'},
+  'forge.socketAction':{label:'工坊的「鑲嵌」',page:'forge'},
+  'forge.socketSlot':{label:'工坊鑲嵌的第一孔',page:'forge'},
+  'forge.gemChoice':{label:'工坊鑲嵌可放入的寶石',page:'forge'},
+  'story.begin':{label:'商隊事件的「閱讀劇情」',page:'story'},
+  'lake.panel':{label:'許願湖說明',page:'wishingLake'},
+  'lake.offerings':{label:'許願湖投入物品',page:'wishingLake'},
+  'lake.confirm':{label:'許願湖「投入」',page:'wishingLake'},
+ };
+ const ID=/^[a-z][a-z0-9_]{1,47}$/,STEP_ID=/^[a-z][a-z0-9_]{0,31}$/;
+ const text=(v,max)=>typeof v==='string'&&v.length<=max,filled=(v,max)=>text(v,max)&&v.trim().length>0;
+ const condition=(type,key='',count=1,itemType)=>{const c={type,key,count};if(itemType)c.itemType=itemType;return c;};
+ const group=(conditions=[],mode='all')=>({mode,conditions});
+ const step=(id,title,body,o={})=>({id,title,text:body,page:o.page??'',target:o.target??'',placement:o.placement||'auto',advance:o.advance||{type:'next'},optional:!!o.optional,requires:o.requires||group(),onReplay:o.onReplay||'same',skipIf:o.skipIf||group()});
+ function makeModule(o){return {id:o.id,title:o.title,category:o.category,type:o.type||'guide',enabled:o.enabled!==false,implemented:o.implemented!==false,description:o.description||'',trigger:{type:'pageEnter',page:'',notify:false,notifyText:'',...o.trigger},prerequisites:o.prerequisites||group(),steps:o.steps||[],completion:o.completion||{type:'steps'},replayable:o.replayable!==false,skippable:o.skippable!==false,interrupt:o.interrupt||'pause',revision:o.revision||1,reprompt:!!o.reprompt};}
+
+ // v0.176: only the key systems (exploring, wearing gear, the party) keep the spotlight. The other guides are a popup that
+ // lists their steps, never takes focus and has one 「關閉」 button.
+ const NOTICE_GUIDES=['skill_basics','shop_basics','quest_basics','statistics_basics','partner_basics','character_basics','worn_basics','socket_basics','forge_basics','extraction_basics','boss_basics','story_basics','wishing_basics'];
+ const asNotice=m=>NOTICE_GUIDES.includes(m.id)?{...m,type:'notice',steps:m.steps.map(x=>({...x,advance:{type:'next'},optional:false,onReplay:'same'}))}:m;
+ function defaults(){return {version:VERSION,modules:[
+  makeModule({id:'explore_basics',title:'探索',category:'battle',description:'選擇探索地圖、開始自動探索，以及看懂自動戰鬥的狀態。基礎引導已透過首次實戰介紹，可在此回顧。',
+   trigger:{type:'pageEnter',page:'battle'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('intro','探索介面','這裡是荒野探索。上方選擇要前往的地圖，下方是隊伍與敵人的戰鬥卡片。',{page:'battle',target:'battle.destination'}),
+   step('map','選擇探索地圖','從清單選擇要探索的地圖。擊敗地圖首領後會開放下一張地圖；地圖旁的推薦裝等可以參考自己的裝備強度。',{page:'battle',target:'battle.mapSelect'}),
+   step('start','開始探索','按下「開始探索」，隊伍就會自動尋找怪物並開始戰鬥。',{page:'battle',target:'battle.start',advance:{type:'condition',condition:condition('exploring')}}),
+   step('auto','自動戰鬥','戰鬥會自動進行。普攻與已裝入的技能依冷卻與 MP 自動施放，卡片上的讀秒條是下一次行動的時間。打完一場後隊伍會先恢復，再自動尋找下一場戰鬥。',{page:'battle',target:'battle.allies'})
+  ]}),
+  makeModule({id:'equipment_basics',title:'裝備',category:'equipment',description:'在背包查看新裝備的資訊，並從背包進入穿戴頁面換上裝備。第一次取得一般裝備後提示。',
+   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得了新的裝備。到「背包」看看裝備資訊與穿戴方式。'},prerequisites:group([condition('prologueDone'),condition('gearAcquired','',1)]),steps:[
+   step('bag','背包','背包的「裝備」分類列出持有的裝備，可以用排序與篩選整理清單。',{page:'equipment',target:'bag.categories'}),
+   step('info','查看裝備','點選這件裝備，查看它的等級、數值與孔位。',{page:'equipment',target:'bag.newGear',advance:{type:'event',key:'gearSelected'},requires:group([condition('gearOwned','',1)]),skipIf:group([condition('prologueLesson','equipLesson')])}),
+   step('wear','前往穿戴','按「穿戴」會前往裝備頁，並比較穿上前後的數值。',{page:'equipment',target:'bag.wearButton',advance:{type:'event',key:'wearOpened'},requires:group([condition('gearOwned','',1)]),skipIf:group([condition('prologueLesson','equipLesson')])}),
+   step('equip','完成穿戴','選擇候選裝備並確認穿戴。數值比目前的差時可以不換，按「略過此步」繼續。',{page:'worn',target:'worn.candidate',advance:{type:'event',key:'gearEquipped'},optional:true,onReplay:'explain',requires:group([condition('gearOwned','',1)]),skipIf:group([condition('prologueLesson','equipLesson')])}),
+   step('slots','已穿戴欄位','已穿戴的裝備顯示在這裡，可以卸下、強化、鑲嵌或查看詳情。',{page:'worn',target:'worn.slots'})
+  ]}),
+  makeModule({id:'skill_basics',title:'技能',category:'skills',description:'看懂技能頁的技能槽、技能圖鑑，以及戰鬥中技能的自動施放規則。第一次進入技能頁時開始。',
+   trigger:{type:'pageEnter',page:'skills'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('slots','技能槽','技能頁分成主動與觸發兩種技能槽。技能要裝進技能槽才會在戰鬥中使用。',{page:'skills',target:'skills.activeSlots'}),
+   step('catalog','技能圖鑑','「技能圖鑑」列出目前職業可以取得的技能、已取得的技能，以及取得的方式。',{page:'skills',target:'skills.catalog'}),
+   step('active','主動技能','點選主動槽可以選擇或替換技能。',{page:'skills',target:'skills.firstActiveSlot',advance:{type:'event',key:'skillSlotOpened'},requires:group([condition('learnedActiveSkills','',1),condition('skillSlots','active',1)]),skipIf:group([condition('prologueLesson','skillLesson')])}),
+   step('auto','自動施放','戰鬥中，主動槽的技能在冷卻結束且 MP 足夠時自動施放；有施放條件的技能要等條件成立。沒有可用的技能時角色會普攻。',{page:'skills',target:'skills.activeSlots'}),
+   step('others','觸發技能','觸發技能在普攻時依觸發率發動。各技能的效果以技能說明為準。',{page:'skills',target:'skills.procSlots',requires:group([condition('skillSlots','proc',1)])})
+  ]}),
+  makeModule({id:'shop_basics',title:'商店',category:'shop',description:'商店的分類、固定商品與限時商品。第一次進入商店時開始。',
+   trigger:{type:'pageEnter',page:'shop'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('categories','商品分類','上方按鈕切換商品分類。',{page:'shop',target:'shop.categories'}),
+   step('fixed','商品','每件商品標示數量與價格，按「購買」後物品放進背包對應的分類。',{page:'shop',target:'shop.fixed'}),
+   step('random','限時商品','這一區的商品會定期更換，也可以花金幣手動刷新。',{page:'shop',target:'shop.random'})
+  ]}),
+  makeModule({id:'quest_basics',title:'委託',category:'quests',description:'每日委託的接取與交付。第一次進入委託時開始。',
+   trigger:{type:'pageEnter',page:'quests'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('board','每日委託','每天會出現五項委託，最多可以完成四項。',{page:'quests',target:'quests.board'}),
+   step('start','接取委託','按「開始任務」接下委託。擊殺與強化等進度從接下之後開始計算。',{page:'quests',target:'quests.start'}),
+   step('claim','交付','達成目標後回到這裡交付，領取委託上的獎勵。',{page:'quests',target:'quests.board'})
+  ]}),
+  // v0.173: the three onboarding tasks each play a spotlight guide. They hold only while the onboarding is at that
+  // stage and finish by themselves when the task is done (the onboarding then moves to its next page).
+  makeModule({id:'onboarding_gift',title:'女神的贈禮',category:'equipment',description:'新手引導：在背包選擇女神送的新手武器並穿上。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','gift')]),skippable:false,steps:[
+   step('bag','背包','女神送的新手武器與啟程護符都放在背包。先穿上武器。',{page:'equipment',target:'bag.list'}),
+   step('pick','選擇新手武器','點選這件還沒穿上的新手裝備，右側會顯示它的數值。',{page:'equipment',target:'bag.starterGear',advance:{type:'event',key:'gearSelected'}}),
+   step('wear','前往穿戴','按「穿戴」前往裝備頁。',{page:'equipment',target:'bag.wearButton',advance:{type:'event',key:'wearOpened'}}),
+   step('equip','穿上武器','按「穿戴至武器」把武器裝上。接著穿上啟程護符。',{page:'worn',target:'worn.candidate',advance:{type:'event',key:'gearEquipped'}})
+  ]}),
+  // v0.226: the charm's skill and sockets are taught right after the weapon (they replace the old quest 裝備技能與寶石入門).
+  makeModule({id:'onboarding_charm',title:'護符與裝備技能',category:'equipment',description:'新手引導：穿上啟程護符，把護符附帶的技能「追擊」裝進觸發技能槽。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','charm')]),skippable:false,steps:[
+   step('pick','啟程護符','點選啟程護符。護符附帶技能「追擊」，還有兩個鑲嵌孔。',{page:'equipment',target:'bag.storyGear',advance:{type:'event',key:'gearSelected'}}),
+   step('wear','前往穿戴','按「穿戴」前往裝備頁。',{page:'equipment',target:'bag.wearButton',advance:{type:'event',key:'wearOpened'}}),
+   step('equip','穿上護符','按「穿戴至飾品」把護符裝上。',{page:'worn',target:'worn.candidate',advance:{type:'event',key:'gearEquipped'}}),
+   step('slot','觸發技能槽','裝備附帶的技能要裝進技能槽才會使用。點選第一個觸發槽。',{page:'skills',target:'skills.firstProcSlot',advance:{type:'event',key:'skillSlotOpened'}}),
+   step('echo','裝入追擊','點選「追擊」的「裝入」。觸發技能會在普攻時依觸發率發動。',{page:'skills',target:'skills.echoChoice',advance:{type:'event',key:'skillSlotted'}})
+  ]}),
+  makeModule({id:'onboarding_gem',title:'鑲嵌寶石',category:'equipment',description:'新手引導：在裝備工坊把赤焰石鑲進啟程護符的第一孔，完成後學會新技能。',
+   trigger:{type:'pageEnter',page:'worn'},prerequisites:group([condition('prologueStage','gem')]),skippable:false,steps:[
+   step('move','移到工坊','女神另外給了一顆赤焰石。鑲嵌在裝備工坊進行，按護符的「移到工坊」。',{page:'worn',target:'worn.socketButton',advance:{type:'page',key:'forge'}}),
+   step('action','鑲嵌','按「鑲嵌」開啟護符的鑲嵌孔。',{page:'forge',target:'forge.socketAction',advance:{type:'event',key:'socketsOpened'}}),
+   step('slot','選擇孔位','點選第一孔。',{page:'forge',target:'forge.socketSlot',advance:{type:'event',key:'socketSelected'}}),
+   step('gem','放入寶石','點選赤焰石放進去。鑲嵌後攻擊力會提高，拆除與替換都免費。完成後女神會教你一招新技能。',{page:'forge',target:'forge.gemChoice',advance:{type:'event',key:'gemSocketed'}})
+  ]}),
+  makeModule({id:'onboarding_practice',title:'首次探索戰鬥',category:'battle',description:'新手引導：開始探索並完成第一場戰鬥。',
+   trigger:{type:'pageEnter',page:'battle'},prerequisites:group([condition('prologueStage','practice')]),skippable:false,steps:[
+   step('intro','荒野探索','這裡是荒野探索。上方是目前的探索地圖，第一站是無名密林。',{page:'battle',target:'battle.destination'}),
+   step('start','開始探索','按「開始探索」，隊伍會自動尋找怪物並開始戰鬥。',{page:'battle',target:'battle.start',advance:{type:'condition',condition:condition('exploring')}}),
+   step('enemies','敵人','敵人的生命與下一次行動的讀秒顯示在這裡。',{page:'battle',target:'battle.enemies'}),
+   step('auto','自動戰鬥','戰鬥自動進行。普攻與裝入的技能會依冷卻與 MP 自動施放。打完這一場就完成首次探索。',{page:'battle',target:'battle.allies'})
+  ]}),
+  // v0.178: companions join by their ticket. The onboarding hands out the priest's; the caravan story hands out 洛恩's.
+  makeModule({id:'onboarding_helper',title:'招募牧師',category:'companions',description:'新手引導：在背包使用「夥伴招募券 - 艾琳」，讓牧師艾琳加入隊伍。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueStage','helper')]),skippable:false,steps:[
+   step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   step('ticket','夥伴招募券','點選「夥伴招募券 - 艾琳」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
+   step('use','使用招募券','艾琳是牧師，專注隊伍治療，技能有治癒禱言、生命泉源、治療強化與復活。按「使用招募券」，艾琳就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
+  ]}),
+  // v0.226: right after the priest joins, the caravan story (which hands out 洛恩's ticket) is started from the quest page.
+  makeModule({id:'caravan_quest',title:'商隊事件',category:'quests',description:'新手引導結束後，到任務頁開始主線「商隊事件」。完成後可以取得「夥伴招募券 - 洛恩」。',
+   trigger:{type:'pageEnter',page:'equipment'},prerequisites:group([condition('prologueDone'),condition('tutorialDone','onboarding_helper'),condition('questOffered','chapter1')]),steps:[
+   step('card','主線任務','林間的商隊正被魔物襲擊，戰士洛恩在護衛商隊。主線任務「商隊事件」已經可以開始。',{page:'story',target:'story.card'}),
+   step('begin','閱讀劇情','按「閱讀劇情」前往救援。完成後會取得「夥伴招募券 - 洛恩」。',{page:'story',target:'story.begin',advance:{type:'condition',condition:condition('questStarted','chapter1')}})
+  ]}),
+  makeModule({id:'recruit_lorne',title:'招募戰士',category:'companions',description:'完成商隊事件後取得「夥伴招募券 - 洛恩」，在背包使用讓戰士洛恩加入隊伍。',
+   trigger:{type:'pageEnter',page:'equipment',notify:true,notifyText:'取得「夥伴招募券 - 洛恩」，到背包 → 特殊使用。'},prerequisites:group([condition('prologueDone'),condition('companionTicket','10')]),steps:[
+   step('items','特殊分類','按「特殊」切換到特殊道具。夥伴招募券放在這個分類。',{page:'equipment',target:'bag.itemsCategory',advance:{type:'event',key:'itemsOpened'}}),
+   step('ticket','夥伴招募券','點選「夥伴招募券 - 洛恩」查看詳細資料。',{page:'equipment',target:'bag.companionTicket',advance:{type:'event',key:'itemDetailsOpened'}}),
+   step('use','使用招募券','洛恩是戰士，專注劍術輸出，技能有裂地斬、嘲諷、反擊之刃與攻擊強化。按「使用招募券」，洛恩就會加入隊伍。',{page:'equipment',target:'items.useTicket',advance:{type:'event',key:'ticketUsed'}})
+  ]}),
+  // v0.173: every other system page plays one spotlight guide the first time it is opened after the onboarding.
+  makeModule({id:'statistics_basics',title:'戰鬥統計',category:'battle',description:'目前地圖的戰鬥場次、隊員表現與掉落紀錄。第一次進入戰鬥統計時開始。',
+   trigger:{type:'pageEnter',page:'statistics'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('summary','統計總覽','這裡統計目前地圖完成的戰鬥場數、獲得的精通經驗與全滅次數。',{page:'statistics',target:'stats.summary'}),
+   step('combat','戰鬥數據','比較出戰隊員的傷害、承傷與治療，方便調整隊伍與技能。',{page:'statistics',target:'stats.combat'}),
+   step('drops','掉落與死亡','最近戰鬥的掉落道具與隊員死亡次數記錄在下方。',{page:'statistics',target:'stats.drops'})
+  ]}),
+  makeModule({id:'roster_basics',title:'隊伍編成',category:'companions',description:'隊伍方案、上陣與後備的調整。第一次進入隊伍編成時開始。',
+   trigger:{type:'pageEnter',page:'roster'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('list','上陣名單','最多三人上陣。點「移至後備」或「上陣」調整出戰的成員，請先停止探索再調整。',{page:'roster',target:'roster.list'}),
+   step('plans','隊伍方案','隊伍方案會記住成員、裝備與技能配置，可以複製或切換不同的方案。新夥伴要使用夥伴招募券加入（背包 → 特殊）。',{page:'roster',target:'roster.plans'})
+  ]}),
+  makeModule({id:'partner_basics',title:'夥伴名冊',category:'companions',description:'查看每位夥伴的能力、技能與信物。新手引導結束後第一次進入夥伴名冊時開始。',
+   trigger:{type:'pageEnter',page:'partnerRoster'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('list','夥伴資料','點選夥伴可以查看能力、技能與信物。夥伴依固定走向自動成長，職業精通等級會解鎖夥伴技能。',{page:'partnerRoster',target:'partners.list'}),
+   step('recruit','更多夥伴','新夥伴要使用夥伴招募券加入：到背包 → 特殊，點選招募券後按「使用招募券」。',{page:'partnerRoster'})
+  ]}),
+  makeModule({id:'character_basics',title:'角色能力',category:'character',description:'人物能力與職業、武器、元素精通。第一次進入角色能力時開始。',
+   trigger:{type:'pageEnter',page:'character'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('stats','人物能力','生命、攻擊、防禦等能力會隨裝備、技能與信物變化。',{page:'character',target:'character.stats'}),
+   step('mastery','精通等級','戰鬥會累積職業、武器與元素精通。職業精通等級決定能學會哪些技能，切換職業後也會保留。',{page:'character',target:'character.mastery'})
+  ]}),
+  makeModule({id:'worn_basics',title:'裝備與信物',category:'equipment',description:'已穿戴的裝備、夥伴信物與技能配置的入口。第一次進入裝備與信物時開始。',
+   trigger:{type:'pageEnter',page:'worn'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('slots','已穿戴裝備','每個欄位都可以卸下、強化、鑲嵌寶石或查看詳情。點欄位會列出可以換上的裝備。',{page:'worn',target:'worn.slots'}),
+   step('tokens','夥伴信物','夥伴只能穿戴一件信物。信物也可以透過技能萃取帶上裝備技能。',{page:'worn',target:'worn.tokens'}),
+   step('skills','技能配置','裝備帶來的技能要到技能頁裝進技能槽才會使用。',{page:'worn',target:'worn.skillLink'})
+  ]}),
+  // v0.173: the socket guide plays on the first visit to the worn page with socketed gear on (after the page guide).
+  makeModule({id:'socket_basics',title:'寶石鑲嵌',category:'equipment',description:'在裝備的鑲嵌孔放入寶石。第一次穿著有鑲嵌孔的裝備進入裝備與信物時開始。',
+   trigger:{type:'pageEnter',page:'worn'},prerequisites:group([condition('prologueDone'),condition('socketGearWorn')]),steps:[
+   step('badge','鑲嵌孔','裝備名稱旁的圓圈是鑲嵌孔。空心是空孔，有顏色的圓圈代表已放入的寶石。',{page:'worn',target:'worn.socketBadge'}),
+   step('move','移到工坊鑲嵌','鑲嵌在裝備工坊進行。按「移到工坊」把這件裝備放進工坊，再選下方的「鑲嵌」。',{page:'worn',target:'worn.socketButton'}),
+   step('gem','放入寶石','在「鑲嵌」點選孔位，再點一顆持有的寶石放入，提供屬性加成。拆除與替換都免費；出售或分解裝備時寶石會退回庫存。',{page:'worn',target:'worn.socketButton'})
+  ]}),
+  makeModule({id:'forge_basics',title:'裝備工坊',category:'equipment',description:'強化、洗鍊、重鑄、鑲嵌與信物萃取。第一次進入裝備工坊時開始。',
+   trigger:{type:'pageEnter',page:'forge'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('list','選擇分類','裝備工坊分成武器、防具、飾品、信物四類。先選擇要處理的分類。',{page:'forge',target:'forge.list'}),
+   step('detail','放入物品','點擊中間的格子，從物品欄選擇要放入的物品，穿戴中的裝備也可以選。',{page:'forge',target:'forge.detail'}),
+   step('actions','可進行的操作','物品放入後，下方只會列出它可以進行的操作，例如強化、洗鍊、重鑄、鑲嵌或信物萃取。強化與洗鍊會消耗金幣與材料。',{page:'forge',target:'forge.actions'})
+  ]}),
+  makeModule({id:'extraction_basics',title:'信物萃取',category:'equipment',description:'把技能裝備的技能轉移到夥伴信物。第一次進入裝備工坊、看完工坊教學後開始。',
+   trigger:{type:'pageEnter',page:'forge'},prerequisites:group([condition('prologueDone'),condition('tutorialDone','forge_basics')]),steps:[
+   step('panel','信物萃取','在「信物」分類放入夥伴信物，或放入帶有技能的裝備，下方會出現「信物萃取」。',{page:'forge',target:'forge.extraction'}),
+   step('extract','萃取方式','在「信物萃取」選擇要搭配的技能裝備或信物後按「萃取」。萃取後該裝備會消失；信物原本有技能時會被新技能覆蓋。',{page:'forge',target:'forge.extraction'}),
+   step('use','使用技能','夥伴穿戴這件信物就能使用該技能，不受職業限制，冷卻與 MP 消耗不變。',{page:'forge',target:'forge.extraction'})
+  ]}),
+  makeModule({id:'boss_basics',title:'BOSS 製作',category:'equipment',description:'用首領材料製作職業專屬裝備。第一次進入 BOSS 製作時開始。',
+   trigger:{type:'pageEnter',page:'crafting'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('classes','職業分頁','切換職業查看該職業可以製作的首領裝備。',{page:'crafting',target:'boss.classTabs'}),
+   step('recipe','首領配方','每張地圖的首領會掉落製作材料。材料與金幣足夠時就能製作。',{page:'crafting',target:'boss.recipe'})
+  ]}),
+  makeModule({id:'story_basics',title:'任務',category:'quests',description:'主線、支線與 NPC 任務。第一次進入任務頁時開始。',
+   trigger:{type:'pageEnter',page:'story'},prerequisites:group([condition('prologueDone')]),steps:[
+   step('tabs','任務分類','任務分成主線、支線與 NPC 任務，有新任務時分頁會出現提示。',{page:'story',target:'story.tabs'}),
+   step('card','任務內容','任務卡片列出目前的目標與階段獎勵。',{page:'story',target:'story.card'}),
+   step('action','進行任務','按這裡閱讀劇情或前往目標所在的頁面。',{page:'story',target:'story.action'})
+  ]}),
+  makeModule({id:'wishing_basics',title:'許願湖',category:'wishingLake',description:'每天投入物品，等待湖泊回贈。許願湖解鎖後第一次打開時開始。',
+   trigger:{type:'pageEnter',page:'wishingLake'},prerequisites:group([condition('prologueDone'),condition('lakeUnlocked')]),interrupt:'end',steps:[
+   step('panel','許願湖','許願湖每天可以投入物品，湖泊有時會回贈其他道具。',{page:'wishingLake',target:'lake.panel'}),
+   step('offerings','選擇物品','背包裡有可投入的物品時，這裡會列出來，選擇要投入的物品與數量。',{page:'wishingLake',target:'lake.offerings'}),
+   step('confirm','投入','確認後物品會沉入湖底，湖泊的回贈結果顯示在這個視窗。每天的次數有限。',{page:'wishingLake',target:'lake.confirm'})
+  ]}),
+ ].map(asNotice)};}
+
+ function conditionIssues(c,where,ctx,ids,add){
+  if(!c||typeof c!=='object'||Array.isArray(c)||!Object.hasOwn(CONDITIONS,c.type)){add(where+'：未知的條件類型 '+(c?.type??''));return;}
+  const def=CONDITIONS[c.type];
+  if(!Number.isSafeInteger(c.count)||c.count<0||c.count>1e9)add(where+'：數量必須為 0～1000000000 的整數');
+  if(!text(c.key,80))add(where+'：鍵值必須為 80 字以內的文字');
+  if(def.key==='tutorial'&&!ids.has(c.key))add(where+'：前置教學不存在：'+c.key);
+  if(def.key==='page'&&!Object.hasOwn(PAGES,c.key))add(where+'：頁面不存在：'+c.key);
+  if(def.key==='stage'&&!Object.hasOwn(STAGES,c.key))add(where+'：新手引導階段必須為 '+Object.keys(STAGES).join('、'));
+  if(def.key==='lesson'&&!Object.hasOwn(LESSONS,c.key))add(where+'：序幕操作必須為 equipLesson、skillLesson 或 recruitHelper');
+  if(def.key==='slotType'&&!Object.hasOwn(SLOT_TYPES,c.key))add(where+'：技能槽類型必須為 active、proc 或 support');
+  if(def.key==='text'&&!filled(c.key,80))add(where+'：必須填寫解鎖鍵');
+  if(def.key==='companion'&&!/^\d{1,9}$/.test(String(c.key)))add(where+'：必須指定夥伴 ID');
+  if(def.key==='quest'&&(!filled(c.key,80)||Array.isArray(ctx.quests)&&!ctx.quests.some(q=>q?.id===c.key)))add(where+'：任務不存在：'+c.key);
+  if(def.key==='item'){if(!['item','material'].includes(c.itemType))add(where+'：物品類型必須為 item 或 material');if(!filled(c.key,80))add(where+'：必須指定物品');else if(c.itemType==='item'&&Array.isArray(ctx.items)&&!ctx.items.some(i=>i?.id===c.key))add(where+'：道具不存在：'+c.key);}
+ }
+ function groupIssues(g,where,ctx,ids,add){
+  if(!g||typeof g!=='object'||Array.isArray(g)||!['all','any'].includes(g.mode)||!Array.isArray(g.conditions)||g.conditions.length>12){add(where+'：條件群組格式無效（mode 為 all／any，最多 12 項）');return;}
+  g.conditions.forEach((c,i)=>conditionIssues(c,where+' 第 '+(i+1)+' 項',ctx,ids,add));
+ }
+ const refs=g=>Array.isArray(g?.conditions)?g.conditions.filter(c=>c?.type==='tutorialDone').map(c=>c.key):[];
+ // Rules shared by the editor (before saving or publishing) and the game (before applying). Empty means valid.
+ function issues(raw,ctx={}){
+  const out=[],add=m=>out.push(m);
+  if(!raw||typeof raw!=='object'||Array.isArray(raw)){add('教學資料必須為物件');return out;}
+  if(raw.version!==VERSION)add('教學資料版本必須為 '+VERSION);
+  if(!Array.isArray(raw.modules)||raw.modules.length>80){add('modules 必須為陣列，最多 80 個教學');return out;}
+  const ids=new Set(),seen=new Set();
+  for(const m of raw.modules)if(m&&typeof m.id==='string')ids.add(m.id);
+  raw.modules.forEach((m,mi)=>{
+   const label='教學 '+(m?.id||'#'+(mi+1));
+   if(!m||typeof m!=='object'||Array.isArray(m)){add(label+'：必須為物件');return;}
+   if(typeof m.id!=='string'||!ID.test(m.id))add(label+'：ID 只能使用小寫英文、數字與底線，2～48 字，英文開頭');
+   else if(seen.has(m.id))add(label+'：ID 重複');seen.add(m.id);
+   if(!filled(m.title,40))add(label+'：名稱不可空白，最多 40 字');
+   if(!text(m.description,600))add(label+'：說明最多 600 字');
+   if(!Object.hasOwn(CATEGORIES,m.category))add(label+'：未知的所屬系統 '+m.category);
+   if(!Object.hasOwn(TYPES,m.type))add(label+'：未知的教學類型 '+m.type);
+   for(const k of ['enabled','implemented','replayable','skippable','reprompt'])if(typeof m[k]!=='boolean')add(label+'：'+k+' 必須為 true／false');
+   if(!['pause','end'].includes(m.interrupt))add(label+'：中斷處理必須為 pause 或 end');
+   if(!Number.isSafeInteger(m.revision)||m.revision<1||m.revision>9999)add(label+'：修訂版本必須為 1～9999 的整數');
+   const t=m.trigger;
+   if(!t||typeof t!=='object'||!Object.hasOwn(TRIGGERS,t.type))add(label+'：未知的觸發方式');
+   else{
+    if(t.type==='pageEnter'&&!Object.hasOwn(PAGES,t.page))add(label+'：觸發頁面不存在：'+t.page);
+    if(t.type!=='pageEnter'&&t.page!==''&&t.page!==undefined)add(label+'：只有「首次進入頁面」需要指定頁面');
+    if(typeof t.notify!=='boolean'||!text(t.notifyText,120))add(label+'：解鎖通知設定無效（notifyText 最多 120 字）');
+    if(t.notify&&!filled(t.notifyText,120))add(label+'：開啟解鎖通知時必須填寫通知文字');
+   }
+   groupIssues(m.prerequisites,label+' 前置條件',ctx,ids,add);
+   if(refs(m.prerequisites).includes(m.id))add(label+'：前置條件不能是自己');
+   const c=m.completion;
+   if(!c||!['steps','condition'].includes(c.type))add(label+'：完成條件必須為 steps 或 condition');
+   else if(c.type==='condition'){groupIssues(c.condition,label+' 完成條件',ctx,ids,add);if(!c.condition?.conditions?.length)add(label+'：完成條件為「狀態成立」時至少要有一項條件');if(refs(c.condition).includes(m.id))add(label+'：完成條件不能等待自己完成，教學將無法結束');}
+   if(!Array.isArray(m.steps)||m.steps.length>20){add(label+'：steps 必須為陣列，最多 20 步');return;}
+   if(m.implemented&&!m.steps.length)add(label+'：標記為已實裝的教學至少要有一個步驟');
+   if(m.type==='tip'&&m.steps.length>1)add(label+'：簡短提示只能有一個步驟');
+   const stepIds=new Set();
+   m.steps.forEach((s,si)=>{
+    const where=label+' 第 '+(si+1)+' 步';
+    if(!s||typeof s!=='object'||Array.isArray(s)){add(where+'：必須為物件');return;}
+    if(typeof s.id!=='string'||!STEP_ID.test(s.id))add(where+'：步驟 ID 只能使用小寫英文、數字與底線，最多 32 字');
+    else if(stepIds.has(s.id))add(where+'：步驟 ID 重複');stepIds.add(s.id);
+    if(!filled(s.title,40))add(where+'：標題不可空白，最多 40 字');
+    if(!filled(s.text,400))add(where+'：說明文字不可空白，最多 400 字');
+    if(s.page!==''&&!Object.hasOwn(PAGES,s.page))add(where+'：頁面不存在：'+s.page);
+    if(s.target!==''&&!Object.hasOwn(TARGETS,s.target))add(where+'：引導目標不存在：'+s.target);
+    else if(s.target&&TARGETS[s.target].page&&s.page&&TARGETS[s.target].page!==s.page)add(where+'：引導目標屬於「'+PAGES[TARGETS[s.target].page]+'」頁，與步驟頁面不同');
+    if(!Object.hasOwn(PLACEMENTS,s.placement))add(where+'：提示位置無效');
+    if(typeof s.optional!=='boolean')add(where+'：optional 必須為 true／false');
+    if(!['same','explain'].includes(s.onReplay))add(where+'：重播方式必須為 same 或 explain');
+    groupIssues(s.requires,where+' 可執行條件',ctx,ids,add);
+    groupIssues(s.skipIf,where+' 略過條件',ctx,ids,add);
+    const a=s.advance;
+    if(!a||typeof a!=='object'||!Object.hasOwn(ADVANCE,a.type)){add(where+'：未知的下一步條件');return;}
+    if(m.type==='tip'&&a.type!=='next')add(where+'：簡短提示只能用「下一步」結束');
+    if(m.type==='notice'&&a.type!=='next')add(where+'：說明彈窗一次列出全部步驟，只能用「下一步」');
+    if(a.type==='click'&&!s.target)add(where+'：「點擊高亮目標」必須指定引導目標');
+    if(a.type==='event'&&!Object.hasOwn(EVENTS,a.key))add(where+'：遊戲不支援這個事件：'+a.key);
+    if(a.type==='page'&&!Object.hasOwn(PAGES,a.key))add(where+'：等待的頁面不存在：'+a.key);
+    if(a.type==='condition'){conditionIssues(a.condition,where+' 等待狀態',ctx,ids,add);if(a.condition?.type==='tutorialDone'&&a.condition.key===m.id)add(where+'：等待自己的完成，教學將無法結束');}
+   });
+  });
+  // Prerequisite chains (through tutorialDone) must not loop: a loop means none of them can ever start.
+  const byId=new Map(raw.modules.filter(m=>m&&typeof m.id==='string').map(m=>[m.id,m])),state=new Map();
+  function visit(id,path){
+   if(state.get(id)===2)return;if(state.get(id)===1){add('前置教學形成循環：'+[...path.slice(path.indexOf(id)),id].join(' → '));return;}
+   state.set(id,1);for(const r of refs(byId.get(id)?.prerequisites))if(byId.has(r))visit(r,[...path,id]);state.set(id,2);
+  }
+  for(const id of byId.keys())visit(id,[]);
+  return [...new Set(out)];
+ }
+ // Fill optional fields older or hand-written documents may leave out, then check. Missing keys are appended, so a
+ // complete document keeps its exact key order (the published modules compare as text).
+ const fill=(o,base)=>{if(o&&typeof o==='object'&&!Array.isArray(o))for(const [k,v] of Object.entries(base))if(o[k]===undefined)o[k]=copy(v);return o;};
+ function normalize(raw){
+  if(raw===undefined||raw===null)return defaults();
+  const d=copy(raw);
+  if(d&&Array.isArray(d.modules))for(const m of d.modules){
+   if(!m||typeof m!=='object'||Array.isArray(m))continue;
+   fill(m,{type:'guide',enabled:true,implemented:true,description:'',trigger:{type:'pageEnter',page:''},prerequisites:group(),steps:[],completion:{type:'steps'},replayable:true,skippable:true,interrupt:'pause',revision:1,reprompt:false});
+   fill(m.trigger,{page:'',notify:false,notifyText:''});
+   const conditions=[...(m.prerequisites?.conditions||[]),...(m.completion?.condition?.conditions||[])];
+   if(Array.isArray(m.steps))for(const s of m.steps){fill(s,{page:'',target:'',placement:'auto',advance:{type:'next'},optional:false,requires:group(),onReplay:'same',skipIf:group()});if(s&&typeof s==='object')conditions.push(...(s.requires?.conditions||[]),...(s.skipIf?.conditions||[]),...(s.advance?.condition?[s.advance.condition]:[]));}
+   for(const c of conditions){fill(c,{key:'',count:1});if(c&&c.type==='level'){c.type='classMastery';c.count=Math.max(0,(Number(c.count)||1)-1);}}
+  }
+  return d;
+ }
+ function validate(raw,ctx={}){const d=normalize(raw),errors=issues(d,ctx);if(errors.length)throw Object.assign(Error('教學資料無效：\n'+errors.join('\n')),{issues:errors});return d;}
+ const api={VERSION,TYPES,CATEGORIES,PAGES,CONDITIONS,SLOT_TYPES,LESSONS,STAGES,EVENTS,ADVANCE,TRIGGERS,PLACEMENTS,TARGETS,copy,condition,group,step,module:makeModule,defaults,issues,normalize,validate};
+ root.EmberwildTutorial=api;if(typeof module==='object'&&module.exports)module.exports=api;
+})(globalThis);

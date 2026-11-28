@@ -10,7 +10,7 @@ function transform(source){return source.replace('globalThis.EmberwildOffline={'
 function game(source,bag=0){
  const r=loadRuntime(root,'index.html',{},undefined,{transformSource:(name,code)=>name===file?transform(source):code});
  r.ctx.performance.now=performance.now.bind(performance);r.ctx.setTimeout=fn=>setImmediate(fn);
- r.run(`globalThis.rngState=123456;globalThis.randomCalls=0;Math.random=()=>{randomCalls++;rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};uidSerial=0;selectSaveSlot(1);start(0);closeModal();state.lv=20;syncParty();refillParty();GAMEPLAY_SETTINGS.equipment.bagCapacity=10000;
+ r.run(`globalThis.rngState=123456;globalThis.randomCalls=0;Math.random=()=>{randomCalls++;rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};uidSerial=0;selectSaveSlot(1);start(0);closeModal();setClassMasteryLevel(19);syncParty();refillParty();GAMEPLAY_SETTINGS.equipment.bagCapacity=10000;
  const token=createCompanionToken(EmberwildTokens.normalize().catalog[0].id);
  for(let i=0;i<${bag};i++)state.bag.push({...structuredClone(i%2?token:state.bag[0]),id:'load-'+i});
  startSelectedExploration();save();__offlineProfile={};
@@ -26,7 +26,7 @@ async function equivalenceScenarios(){
  // actually compared, rather than accepting a seed that happens to drop none.
  const scenarios={
   boosts:`for(const id of ['exp_100_30m','drop_50_30m']){state.consumables[id]=1;useSupply(id);}party.timedBoosts[0].remainingMs=20000;party.timedBoosts[1].remainingMs=45000;save();`,
-  drops:`state.lv=1;syncParty();refillParty();state.healingPotions.heal_standard=5000;for(const row of GAMEPLAY_SETTINGS.drops.entries)if(['gear','equipment'].includes(row.type))row.chanceByDifficulty=[1,1,1];save();`
+  drops:`setClassMasteryLevel(0);syncParty();refillParty();state.healingPotions.heal_standard=5000;for(const row of GAMEPLAY_SETTINGS.drops.entries)if(['gear','equipment'].includes(row.type))row.chanceByDifficulty=[1,1,1];save();`
  };
  for(const [scenario,setup] of Object.entries(scenarios)){
   const states=[];let summary;

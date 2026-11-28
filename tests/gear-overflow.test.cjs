@@ -19,8 +19,9 @@ test('full shared backpack salvages only the incoming gear, preserving owned ite
  r.run('addGear(gear(1,0,0,state.job))');
  const after=inspect(r,'({gear:state.bag.map(g=>g.id),ore:state.ore,dust:state.dust,running})');
  assert.deepEqual(after.gear,full.gear,'overflow neither appends nor replaces an owned item');
- assert.equal(after.ore,full.ore+3,'tier-one unmodified overflow yields forge material');
- assert.equal(after.dust,full.dust+1,'tier-one unmodified overflow yields dust');
+ // v0.180: 鍛鐵 and 粉塵 salvage amounts swapped.
+ assert.equal(after.ore,full.ore+1,'tier-one unmodified overflow yields forge material');
+ assert.equal(after.dust,full.dust+3,'tier-one unmodified overflow yields dust');
  assert.equal(after.running,true,'full bag does not terminate exploration');
  assert.equal(r.run('save()'),true);
  const saved=JSON.parse(r.values.get(r.run('KEY')));

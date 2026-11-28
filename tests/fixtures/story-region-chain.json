@@ -1,0 +1,142 @@
+{
+  "id": "test_region_chain",
+  "name": "無名密林巡查（測試）",
+  "type": "side",
+  "npc": "巡查員",
+  "description": "巡查無名密林，確認怪物與 BOSS 的狀況。",
+  "enabled": true,
+  "unlock": {
+    "mode": "all",
+    "conditions": []
+  },
+  "prerequisites": [],
+  "entry": "explore_0",
+  "stages": [
+    {
+      "id": "explore_0",
+      "name": "巡查無名密林",
+      "speaker": "巡查員",
+      "description": "前往無名密林並擊敗 2 隻怪物。",
+      "dialogue": [
+        {
+          "kind": "npc",
+          "speaker": "巡查員",
+          "text": "前往無名密林並擊敗 2 隻怪物。"
+        }
+      ],
+      "conditions": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "visit",
+            "key": "0",
+            "count": 1,
+            "mode": "lifetime",
+            "itemType": "material"
+          },
+          {
+            "type": "explore",
+            "key": "0",
+            "count": 2,
+            "mode": "lifetime",
+            "itemType": "material"
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [],
+      "next": "hunt_0",
+      "branches": [],
+      "choices": [],
+      "guides": [
+        "battle"
+      ]
+    },
+    {
+      "id": "hunt_0",
+      "name": "調查苔原史萊姆",
+      "speaker": "巡查員",
+      "description": "擊敗 苔原史萊姆 3 隻。",
+      "dialogue": [
+        {
+          "kind": "npc",
+          "speaker": "巡查員",
+          "text": "擊敗 苔原史萊姆 3 隻。"
+        }
+      ],
+      "conditions": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "kill",
+            "key": "map0_mob0",
+            "count": 3,
+            "mode": "lifetime",
+            "itemType": "material"
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [],
+      "next": "boss_0",
+      "branches": [],
+      "choices": [],
+      "guides": [
+        "battle"
+      ]
+    },
+    {
+      "id": "boss_0",
+      "name": "挑戰無名密林 BOSS",
+      "speaker": "巡查員",
+      "description": "擊敗此地區的 BOSS 一次。",
+      "dialogue": [
+        {
+          "kind": "npc",
+          "speaker": "巡查員",
+          "text": "擊敗此地區的 BOSS 一次。"
+        }
+      ],
+      "conditions": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "boss",
+            "key": "0",
+            "count": 1,
+            "mode": "lifetime",
+            "itemType": "material"
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [],
+      "next": "",
+      "branches": [],
+      "choices": [],
+      "guides": [
+        "battle"
+      ]
+    }
+  ],
+  "rewards": {
+    "gold": 300,
+    "ore": 20,
+    "items": []
+  },
+  "effects": [],
+  "nextQuests": [],
+  "hidden": false
+}

@@ -1,0 +1,888 @@
+{
+  "version": 1,
+  "quests": [
+    {
+      "id": "shop_rescue",
+      "name": "商店任務線",
+      "type": "npc",
+      "npc": "商人",
+      "description": "解救商人並協助收集材料，取得永久銅級 VIP 資格。",
+      "enabled": true,
+      "hidden": false,
+      "unlock": {
+        "mode": "all",
+        "conditions": []
+      },
+      "prerequisites": [],
+      "entry": "rescue",
+      "stages": [
+        {
+          "id": "rescue",
+          "name": "解救商人",
+          "speaker": "商人",
+          "description": "我在無名密林被史萊姆包圍了，請幫我擊敗 3 隻苔原史萊姆。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "我在無名密林被史萊姆包圍了，請幫我擊敗 3 隻苔原史萊姆。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "kill",
+                "key": "map0_mob0",
+                "count": 3,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "supplies",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ],
+          "encounter": {
+            "enabled": true,
+            "name": "解救商人",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": [
+              {
+                "monsterId": "map0_mob0",
+                "count": 3
+              }
+            ]
+          }
+        },
+        {
+          "id": "supplies",
+          "name": "收集材料",
+          "speaker": "商人",
+          "description": "請準備 2 個黏稠凝膠讓我查看；此階段不消耗材料。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "請準備 2 個黏稠凝膠讓我查看；此階段不消耗材料。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "stock",
+                "key": "黏稠凝膠",
+                "count": 2,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "vip",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle",
+            "equipment"
+          ]
+        },
+        {
+          "id": "vip",
+          "name": "商人的謝禮",
+          "speaker": "商人",
+          "description": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "謝謝你的協助。這張銅級 VIP 卡讓商店商品常駐 95 折。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [
+            {
+              "id": "thanks",
+              "text": "收下 VIP 卡",
+              "conditions": {
+                "mode": "all",
+                "conditions": []
+              },
+              "effects": [],
+              "next": "",
+              "nextQuests": []
+            }
+          ],
+          "guides": []
+        }
+      ],
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [
+        {
+          "type": "vip",
+          "key": "shop_vip_bronze",
+          "value": 1
+        }
+      ],
+      "nextQuests": []
+    },
+    {
+      "id": "prologue",
+      "name": "新手引導",
+      "type": "main",
+      "npc": "女神",
+      "description": "命名與選擇職業後，透過實際操作學習裝備、探索與招募。",
+      "enabled": true,
+      "hidden": true,
+      "unlock": {
+        "mode": "all",
+        "conditions": []
+      },
+      "prerequisites": [],
+      "entry": "creation",
+      "stages": [
+        {
+          "id": "creation",
+          "name": "造物",
+          "speaker": "女神",
+          "description": "女神詢問你的名字。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "醒啦？我是女神，你是我創造出來的使者。",
+              "source": "draft"
+            },
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "有個叫艾斯蘭的世界讓我一直很在意。那裡有森林、礦坑和沼澤，也有很多我還搞不懂的事。",
+              "source": "draft"
+            },
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "我現在沒辦法親自過去，所以想請你替我走一趟。要去哪裡、要做什麼都由你決定，看到有趣的事再回來告訴我就好。",
+              "source": "draft"
+            },
+            {
+              "kind": "npc",
+              "speaker": "女神",
+              "text": "出發前先告訴我你的名字，再選一種力量當作起點。",
+              "source": "draft"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "calling",
+          "branches": [],
+          "choices": [],
+          "guides": [],
+          "prologue": {
+            "scene": 1,
+            "action": "nameHero",
+            "hint": "在造物室醒來。",
+            "steps": [],
+            "after": []
+          }
+        },
+        {
+          "id": "calling",
+          "name": "選擇力量",
+          "speaker": "女神",
+          "description": "選擇初始職業。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": [
+              {
+                "type": "gear",
+                "key": "initiation_charm",
+                "quantity": 1
+              },
+              {
+                "type": "gem",
+                "key": "0",
+                "quantity": 1
+              }
+            ]
+          },
+          "effects": [],
+          "next": "gift",
+          "branches": [],
+          "choices": [],
+          "guides": [],
+          "prologue": {
+            "scene": 1,
+            "action": "chooseClass",
+            "hint": "選擇一種力量作為起點。",
+            "steps": [],
+            "after": [],
+            "options": [
+              {
+                "job": 0,
+                "text": "戰士",
+                "description": "使用武器進行近距離戰鬥"
+              },
+              {
+                "job": 1,
+                "text": "法師",
+                "description": "運用魔力施展法術"
+              },
+              {
+                "job": 2,
+                "text": "弓箭手",
+                "description": "使用遠距離武器攻擊"
+              },
+              {
+                "job": 3,
+                "text": "牧師",
+                "description": "使用神聖力量攻擊、治療與輔助"
+              }
+            ]
+          }
+        },
+        {
+          "id": "gift",
+          "name": "女神的贈禮",
+          "speaker": "女神",
+          "description": "前往背包選擇新手武器，按「穿戴」並選擇武器欄位。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "charm",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment",
+            "worn"
+          ],
+          "prologue": {
+            "scene": 1,
+            "action": "equipLesson",
+            "hint": "前往背包選擇新手武器，按「穿戴」並選擇武器欄位。",
+            "steps": [],
+            "after": []
+          }
+        },
+        {
+          "id": "charm",
+          "name": "護符與裝備技能",
+          "speaker": "女神",
+          "description": "在背包點選「啟程護符」穿上，再到技能頁把護符附帶的「追擊」裝進觸發技能槽。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "gearWorn",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              },
+              {
+                "type": "skillSlotted",
+                "key": "tutorial_echo",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "gem",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment",
+            "skills"
+          ],
+          "prologue": {
+            "scene": 1,
+            "action": "",
+            "hint": "在背包點選「啟程護符」穿上，再到技能頁把護符附帶的「追擊」裝進觸發技能槽。",
+            "steps": [],
+            "after": []
+          }
+        },
+        {
+          "id": "gem",
+          "name": "鑲嵌寶石",
+          "speaker": "女神",
+          "description": "按啟程護符的「移到工坊」，在「鑲嵌」選第一孔放入赤焰石。完成後學會一招新技能。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "gearBaseGem",
+                "key": "initiation_charm",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material",
+                "slot": 0
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": [
+              {
+                "type": "skill",
+                "key": "job0-support0",
+                "quantity": 1,
+                "job": 0
+              },
+              {
+                "type": "skill",
+                "key": "job1-support0",
+                "quantity": 1,
+                "job": 1
+              },
+              {
+                "type": "skill",
+                "key": "job2-support0",
+                "quantity": 1,
+                "job": 2
+              },
+              {
+                "type": "skill",
+                "key": "job3-support0",
+                "quantity": 1,
+                "job": 3
+              }
+            ]
+          },
+          "effects": [],
+          "next": "practice",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "worn",
+            "forge"
+          ],
+          "prologue": {
+            "scene": 1,
+            "action": "",
+            "hint": "按啟程護符的「移到工坊」，在「鑲嵌」選第一孔放入赤焰石。完成後學會一招新技能。",
+            "steps": [],
+            "after": []
+          }
+        },
+        {
+          "id": "practice",
+          "name": "首次探索戰鬥",
+          "speaker": "女神",
+          "description": "開始無名密林探索。角色會自動攻擊並施放已配置技能；戰鬥結束後可查看戰報與掉落。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "helper",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ],
+          "prologue": {
+            "scene": 1,
+            "action": "",
+            "hint": "開始無名密林探索。角色會自動攻擊並施放已配置技能；戰鬥結束後可查看戰報與掉落。",
+            "steps": [],
+            "after": []
+          },
+          "encounter": {
+            "enabled": false,
+            "name": "戰鬥練習",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": [
+              {
+                "monsterId": "map0_mob0",
+                "count": 2
+              }
+            ],
+            "training": true
+          }
+        },
+        {
+          "id": "helper",
+          "name": "招募牧師",
+          "speaker": "女神",
+          "description": "到背包 → 特殊，點選「夥伴招募券 - 艾琳」並使用，讓牧師艾琳加入隊伍。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "departure",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "equipment"
+          ],
+          "prologue": {
+            "scene": 1,
+            "action": "recruitHelper",
+            "hint": "到背包 → 特殊，點選「夥伴招募券 - 艾琳」並使用，讓牧師艾琳加入隊伍。",
+            "steps": [],
+            "after": []
+          }
+        },
+        {
+          "id": "departure",
+          "name": "完成教學",
+          "speaker": "女神",
+          "description": "基本教學完成，可自由探索。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [],
+          "guides": [],
+          "prologue": {
+            "scene": 1,
+            "action": "enterWorld",
+            "hint": "穿過出口，前往艾斯蘭。",
+            "steps": [],
+            "after": []
+          }
+        }
+      ],
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [],
+      "nextQuests": [],
+      "prologue": {
+        "version": 2,
+        "scenes": [
+          {
+            "id": 1,
+            "name": "角色建立",
+            "description": "命名與選擇初始職業。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chapter1",
+      "name": "商隊事件",
+      "type": "main",
+      "npc": "旁白",
+      "description": "無名密林中的商隊遭到魔物襲擊。可自行開始，延後不影響探索。",
+      "enabled": true,
+      "hidden": true,
+      "skippable": false,
+      "unlock": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "flag",
+            "key": "onboarding_done",
+            "count": 1,
+            "mode": "lifetime",
+            "itemType": "material"
+          }
+        ]
+      },
+      "prerequisites": [],
+      "entry": "ambush",
+      "stages": [
+        {
+          "id": "ambush",
+          "name": "突如其來的襲擊",
+          "encounter": {
+            "enabled": false,
+            "name": "任務關卡",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": []
+          },
+          "speaker": "護衛",
+          "description": "商隊遭到襲擊，你決定如何回應。",
+          "dialogue": [
+            {
+              "kind": "narrator",
+              "speaker": "旁白",
+              "text": "林間的商隊遭到魔物襲擊，護衛洛恩正掩護商人與旅行牧師艾琳。"
+            },
+            {
+              "kind": "npc",
+              "speaker": "洛恩",
+              "text": "有人嗎？幫我們擊退這些魔物！"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [
+            {
+              "id": "help",
+              "text": "「我來幫忙！」",
+              "conditions": {
+                "mode": "all",
+                "conditions": []
+              },
+              "effects": [],
+              "next": "ambush_help",
+              "nextQuests": []
+            },
+            {
+              "id": "ask",
+              "text": "「發生什麼事了？」",
+              "conditions": {
+                "mode": "all",
+                "conditions": []
+              },
+              "effects": [],
+              "next": "ambush_ask",
+              "nextQuests": []
+            },
+            {
+              "id": "what",
+              "text": "「需要我做什麼？」",
+              "conditions": {
+                "mode": "all",
+                "conditions": []
+              },
+              "effects": [],
+              "next": "ambush_what",
+              "nextQuests": []
+            }
+          ],
+          "guides": []
+        },
+        {
+          "id": "ambush_help",
+          "name": "突如其來的襲擊",
+          "encounter": {
+            "enabled": false,
+            "name": "任務關卡",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": []
+          },
+          "speaker": "護衛",
+          "description": "護衛要你加入戰鬥。",
+          "dialogue": [
+            {
+              "speaker": "護衛",
+              "kind": "npc",
+              "text": "好！注意別被牠們包圍！"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "ambush_fight",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        },
+        {
+          "id": "ambush_ask",
+          "name": "突如其來的襲擊",
+          "encounter": {
+            "enabled": false,
+            "name": "任務關卡",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": []
+          },
+          "speaker": "護衛",
+          "description": "護衛要你加入戰鬥。",
+          "dialogue": [
+            {
+              "speaker": "護衛",
+              "kind": "npc",
+              "text": "魔物襲擊！還能是什麼？先解決牠們再說！"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "ambush_fight",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        },
+        {
+          "id": "ambush_what",
+          "name": "突如其來的襲擊",
+          "encounter": {
+            "enabled": false,
+            "name": "任務關卡",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": []
+          },
+          "speaker": "護衛",
+          "description": "護衛要你加入戰鬥。",
+          "dialogue": [
+            {
+              "speaker": "護衛",
+              "kind": "npc",
+              "text": "幫我守住左邊！別讓牠們靠近馬車！"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "ambush_fight",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        },
+        {
+          "id": "ambush_fight",
+          "name": "擊退魔物",
+          "encounter": {
+            "enabled": true,
+            "name": "商隊遇襲",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": [
+              {
+                "monsterId": "map0_mob1",
+                "count": 3
+              }
+            ]
+          },
+          "speaker": "牧師",
+          "description": "擊退襲擊商隊的魔物。",
+          "dialogue": [],
+          "conditions": {
+            "mode": "all",
+            "conditions": [
+              {
+                "type": "encounter",
+                "key": "chapter1/ambush_fight",
+                "count": 1,
+                "mode": "lifetime",
+                "itemType": "material"
+              }
+            ]
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "village",
+          "branches": [],
+          "choices": [],
+          "guides": [
+            "battle"
+          ]
+        },
+        {
+          "id": "village",
+          "name": "抵達村莊",
+          "encounter": {
+            "enabled": false,
+            "name": "任務關卡",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": []
+          },
+          "speaker": "商人",
+          "description": "商隊平安抵達村莊，商人送上謝禮：金幣 ×100。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "商人",
+              "text": "多虧你擊退魔物，商隊才能平安抵達。請收下金幣 100，作為我們的謝禮。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 100,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "together",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        },
+        {
+          "id": "together",
+          "name": "結伴同行",
+          "encounter": {
+            "enabled": false,
+            "name": "任務關卡",
+            "mapIndex": 0,
+            "repeatable": false,
+            "enemies": []
+          },
+          "speaker": "旁白",
+          "description": "商隊平安抵達，戰士洛恩決定與你同行。",
+          "dialogue": [
+            {
+              "kind": "npc",
+              "speaker": "洛恩",
+              "text": "你在危急時願意出手，我想與你一起走接下來的路。"
+            },
+            {
+              "kind": "narrator",
+              "speaker": "旁白",
+              "text": "完成後會取得「夥伴招募券 - 洛恩」，到背包 → 特殊使用，洛恩就會加入隊伍。"
+            }
+          ],
+          "conditions": {
+            "mode": "all",
+            "conditions": []
+          },
+          "rewards": {
+            "gold": 0,
+            "ore": 0,
+            "items": []
+          },
+          "effects": [],
+          "next": "",
+          "branches": [],
+          "choices": [],
+          "guides": []
+        }
+      ],
+      "rewards": {
+        "gold": 0,
+        "ore": 0,
+        "items": []
+      },
+      "effects": [],
+      "nextQuests": []
+    }
+  ],
+  "gearRewards": [
+    {
+      "id": "initiation_charm",
+      "name": "啟程護符",
+      "formId": "job4-slot3-form0",
+      "skillId": "tutorial_echo",
+      "socketCount": 2,
+      "level": 1,
+      "powerTier": 1,
+      "rarity": 0
+    }
+  ]
+}

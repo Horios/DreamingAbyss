@@ -9,15 +9,18 @@
  const config=()=>source.balanceSettings.combat.seconds;
  const unit=id=>party?.members.find(h=>heroKey(h)===id)||foes.find(e=>e.id===id);
  const skill=id=>S.byId(id)||source.skillSystem.definitions.find(s=>s.id===id);
+ const adapter=(h,s)=>s?EmberwildSkillSystem.adapterFor(s,h.job):null;
  const timing=s=>s?.timing||source.skillSystem.definitions.find(x=>x.id===s?.id)?.timing;
  const statusList=()=>EmberwildStatusCombatState.seconds.instances(),statusDefs=()=>EmberwildStatusCombatState.seconds.definitions();
  const actorInterval=h=>config().classes.find(x=>x.job===h.job).baseIntervalSeconds;
  // v0.075: each cooldown reduction source has its own percent or fixed-seconds rule (combat.seconds.cooldownReduction).
  const cdr=()=>config().cooldownReduction||Schema.defaultCooldownReduction();
  function cdrPoints(h,s){
-  const core=s?.adapter?.kind==='core',i=s?.adapter?.index,fixed=globalThis.equipmentIdentityEffectNumber;
+  const a=adapter(h,s),core=a?.kind==='core',i=a?.index,fixed=globalThis.equipmentIdentityEffectNumber;
   return {affixAll:equipment(h).filter(g=>g.job===h.job||g.slot===1).flatMap(g=>g.affix||[]).filter(a=>a.type===16).reduce((n,a)=>n+(Number(a.value)||0),0),
-   affixSkill:core?bonusFor(i,5,h):0,fixedAll:Math.max(0,Math.round(fixed?.(h,'allCooldownReduction')||0)),fixedSkill:core?Math.max(0,Math.round(fixed?.(h,'skillCooldownReduction',i)||0)):0};
+   affixSkill:core?bonusFor(i,5,h):0,fixedAll:Math.max(0,Math.round(fixed?.(h,'allCooldownReduction')||0)),fixedSkill:core?Math.max(0,Math.round(fixed?.(h,'skillCooldownReduction',i)||0)):0,
+   // v0.215 weapon base 技能冷卻 −X%: percent points added directly to the percent part (no per-point source rule).
+   directPercent:Math.max(0,Number(fixed?.(h,'cooldownPct'))||0)};
  }
  function reducedCooldown(h,s,extra={}){return Schema.applyCooldownReduction(timing(s).cooldownSeconds,{...cdrPoints(h,s),...extra},cdr(),config().minimumActionIntervalSeconds);}
  const mono=()=>engine?engine.now/1e6:partyClock;
@@ -26,15 +29,16 @@
   return {maxMp:Math.max(1,(h.mana?.maxMp??c.maxMp)+extras.reduce((n,x)=>n+(Number(x.maxMp)||0),0)),regen:Math.max(0,(h.mana?.regenPerSecond??c.regenPerSecond)+extras.reduce((n,x)=>n+(Number(x.regenPerSecond)||0),0)),cost:Math.max(0,(h.mana?.costMultiplier??c.costMultiplier)-extras.reduce((n,x)=>n+(Number(x.costReduction)||0),0))};
  }
  function skillCooldownSeconds(h,s){return reducedCooldown(h,s);}
- // A gem or equipment skill may cut this cast's cooldown; the cut joins the same percent/fixed rule and floor.
- function cooldownReductionOnCast(h,id){const chance=__EMBERWILD_EQUIPMENT_SKILLS.skillRate(h,id,'cooldown');return chance>0&&Math.random()<chance;}
+ // v0.196: the total attack speed bonus of a hero or companion (percent points), from the finished battle stats.
+ function heroAttackSpeedPct(h){return EmberwildAttackSpeed.checkPct(battleStats(h).attackSpeedPct??0);}
+ const engineConfig=()=>({minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed,attackSpeed:copy(config().attackSpeed)});
  function definition(x){
   const hero=Object.hasOwn(x,'job'),m=mana(x);
-  const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i))].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
-   (GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===x.monsterId)?.skillAssignments||[]).map(r=>skill(r.skillId)).filter(s=>s?.type==='active'&&!s.disabled&&x.lv>=(s.requiredLevel||1)&&sharedSkillScopeAllowsEnemy(s.usageScope||'character',x.kind));
+  const rows=hero?[...x.active.filter(i=>i!==null).map(i=>S.byPosition(x.job,'core',i)),...x.supportSlots.filter(i=>i!==null).map(i=>S.byPosition(x.job,'support',i)),...(globalThis.__EMBERWILD_TOKEN_SKILL?.(x)?[S.byId(globalThis.__EMBERWILD_TOKEN_SKILL(x))]:[])].filter(s=>s&&['active','support'].includes(s.type)&&!s.disabled&&S.learned(x,s)):
+   (GAMEPLAY_SETTINGS.monsters.catalog.find(m=>m.id===x.monsterId)?.skillAssignments||[]).map(r=>skill(r.skillId)).filter(s=>s?.type==='active'&&!s.disabled&&x.lv>=(s.requiredLevel||0)+1&&sharedSkillScopeAllowsEnemy(s.usageScope||'character',x.kind));
   const skills=[...new Map(rows.map(s=>[s.id,s])).values()].map(s=>{const t=timing(s);return {id:s.id,type:'active',cooldownSeconds:hero?skillCooldownSeconds(x,s):t.cooldownSeconds,initialReadyInSeconds:Schema.initialCooldownSeconds(s.timing?s:{...s,timing:t}),castSeconds:t.castSeconds,actionCostSeconds:t.actionCostSeconds,mpCost:t.mpCost,priority:t.priority};});
   return {id:key(x),baseIntervalSeconds:hero?actorInterval(x):source.balanceSettings.monsters.catalog.find(m=>m.id===x.monsterId)?.timing.baseIntervalSeconds??config().actionReferenceSeconds,
-   speed:hero?battleStats(x).speed:combatSpeed(x),mp:Math.max(0,Math.min(m.maxMp,Number.isFinite(x.mp)?x.mp:m.maxMp)),maxMp:m.maxMp,mpRegenPerSecond:m.regen,skills};
+   ...(hero?{attackSpeedPct:heroAttackSpeedPct(x)}:{speed:combatSpeed(x)}),mp:Math.max(0,Math.min(m.maxMp,Number.isFinite(x.mp)?x.mp:m.maxMp)),maxMp:m.maxMp,mpRegenPerSecond:m.regen,skills};
  }
  // Out-of-combat healing (v0.068): during recovery a hero whose 戰鬥外治療 option is on may cast equipped heal or regen
  // skills on allies below the recovery HP target. Nothing else acts while no enemy is present.
@@ -43,11 +47,11 @@
  function canUse(view,s){
   const x=unit(view.id),d=skill(s.id);if(!x||x.hp<=0||!d)return false;
   const hero=Object.hasOwn(x,'job'),t=timing(d),effect=d.effect||d.kind;
-  if(phase==='recovery'&&!foes.some(e=>e.hp>0)){if(!recoveryHealer(x)||!['heal','regen'].includes(effect)||!belowRecoveryTarget())return false;return !!S.learned(x,d)&&!__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length;}
+  if(phase==='recovery'&&!foes.some(e=>e.hp>0)){if(!recoveryHealer(x)||!['heal','regen'].includes(effect)||!belowRecoveryTarget())return false;return !!S.learned(x,d)&&!__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,adapter(x,d).index,true).length;}
   if((t.minTargets||1)>(hero?foes:living()).filter(e=>e.hp>0).length)return false;
   if(t.requiredTargetStatusId&&!statusList().some(s=>s.statusId===t.requiredTargetStatusId&&unit(s.targetKey)?.hp>0&&(hero?foes:living()).some(x=>key(x)===s.targetKey)))return false;
-  if(!hero){const c=EmberwildControlState.states[x.id];if(c?.rage||!living().length)return false;if(effect==='revive')return foes.some(e=>e.hp<=0);if(t.condition==='injured')return foes.some(e=>e.hp>0&&e.hp/e.maxhp<config().healThreshold);if(t.condition==='missingEffect'&&effect==='shield')return x.shield<x.atk*(d.power||0);return true;}
-  if(!S.learned(x,d)||__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,d.adapter.index,true).length)return false;
+  if(!hero){const c=EmberwildControlState.states[x.id];if(c?.rage||!living().length)return false;if(effect==='revive')return foes.some(e=>e.hp<=0);if(effect==='summonAllies')return !globalThis.enemySummonsAlive?.(x);if(t.condition==='injured')return foes.some(e=>e.hp>0&&e.hp/e.maxhp<config().healThreshold);if(t.condition==='missingEffect'&&effect==='shield')return x.shield<x.atk*(d.power||0);return true;}
+  if(!S.learned(x,d)||__EMBERWILD_MASTERY?.[d.type==='support'?'supportMissingRequirements':'coreMissingRequirements'](x,adapter(x,d).index,true).length)return false;
   if(['revive'].includes(effect))return heroes().some(h=>h.hp<=0);
   if(['heal','regen'].includes(effect)&&t.condition==='injured')return living().some(h=>h.hp/stats(h).hp<config().healThreshold);
   if(t.condition==='missingEffect'){
@@ -66,12 +70,12 @@
  function ensure(){
   if(!party)return null;
   if(owner!==party){engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};}
-  if(!engine){engine=E.create({minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed},[],handlers);engine.now=Math.round(partyClock*1e6);}
+  if(!engine){engine=E.create(engineConfig(),[],handlers);engine.now=Math.round(partyClock*1e6);}
   return engine;
  }
  function syncRoster(){
   if(!ensure())return;
-  engine.config={minimumActionIntervalSeconds:config().minimumActionIntervalSeconds,referenceSpeed:config().referenceSpeed};
+  engine.config=engineConfig();
   engine.syncActors([...heroes(),...foes].map(definition));
   const retained=[...party.members,...foes].map(x=>key(x)+':');procReady=Object.fromEntries(Object.entries(procReady).filter(([id])=>retained.some(prefix=>id.startsWith(prefix))));
   for(const a of engine.actors){const x=unit(a.definition.id);a.alive=!!x&&x.hp>0;}
@@ -85,9 +89,10 @@
   for(const a of engine.actors){const x=unit(a.definition.id);if(!x)continue;
    if(x.hp<=0&&a.alive)engine.setAlive(a.definition.id,false);else if(x.hp>0&&!a.alive)engine.setAlive(a.definition.id,true);
    {const m=mana(x);if(a.definition.maxMp!==m.maxMp)engine.setMaxMp(key(x),m.maxMp);engine.setMpRegen(key(x),m.regen*(phase==='recovery'&&Object.hasOwn(x,'job')?config().recovery.mpRegenMultiplier:1)*Math.max(0,1+effectTotal(key(x),'mpRegen')));engine.setMpCostMultiplier(key(x),Math.max(0,m.cost-effectTotal(key(x),'mpCostReduction')));}
-   const speed=Object.hasOwn(x,'job')?battleStats(x).speed:combatSpeed(x);if(speed!==a.speed)engine.setSpeed(key(x),speed);
+   if(Object.hasOwn(x,'job')){if(engine.player(a)){const pct=heroAttackSpeedPct(x);if(pct!==a.attackSpeedPct)engine.setAttackSpeed(key(x),pct);}else needsRoster=true;}
+   else{const speed=combatSpeed(x);if(speed!==a.speed)engine.setSpeed(key(x),speed);}
    x.mp=engine.mana(a,engine.now); // same value as engine.actor(id).mp without copying the actor view
-   if(Object.hasOwn(x,'job'))for(const s of a.definition.skills){const d=skill(s.id);(d.type==='support'?supportCooldowns:actorCooldowns)[memberKey(x)+'-'+d.adapter.index]=Math.max(0,(a.ready[s.id]-engine.now)/1e6);}
+   if(Object.hasOwn(x,'job'))for(const s of a.definition.skills){const d=skill(s.id);(d.type==='support'?supportCooldowns:actorCooldowns)[memberKey(x)+'-'+adapter(x,d).index]=Math.max(0,(a.ready[s.id]-engine.now)/1e6);}
   }
  }
  function addTimer(id,actorId,duration,interval,payload,control=false,priority=0){
@@ -145,11 +150,13 @@
   const delta=Math.max(0,at-partyClock);partyClock=at;
   // v0.094: the per-second recovery regeneration updates HP through EmberwildBattleEffects.quiet; it plays no healing effect (that pulsed every second
   // and hid the effect of real regen ticks such as 晨光祝福).
+  // v0.172: gear and token passives that restore a fixed amount of HP per second (凝膠復原), in and out of battle, quietly.
+  if(delta>0)globalThis.__EMBERWILD_GEAR_REGEN?.(delta);
   if(phase==='recovery'&&delta>0){const regen=()=>{for(const h of heroes())h.hp=Math.min(stats(h).hp,h.hp+stats(h).hp*config().recovery.hpFractionPerSecond*delta);},fx=globalThis.EmberwildBattleEffects;if(fx?.quiet)fx.quiet(regen);else regen();}
   for(const h of heroes()){h.healPotionCooldownRemaining=Math.max(0,(h.healPotionCooldownRemaining||0)-delta);h.manaPotionCooldownRemaining=Math.max(0,(h.manaPotionCooldownRemaining||0)-delta);for(const id of Object.keys(h.eventPassiveCooldowns||{}))h.eventPassiveCooldowns[id]=Math.max(0,h.eventPassiveCooldowns[id]-delta);const b=h.imbue;if(b?.remainingTurns){b.remainingTurns=Math.max(0,b.remainingTurns-delta);if(!b.remainingTurns)h.imbue=null;}}
   for(const c of Object.values(EmberwildControlState.states))for(const s of Object.values(c))if(s.secondsUntil!==undefined)s.turns=Math.max(0,s.secondsUntil-at);
  }
- function periodic(event){
+ function periodicBody(event){
   const p=event.payload,x=unit(event.actorId);if(!p)return;
   if(event.type==='statusExpire'){
    if(p.kind==='supply')automaticSupplies();else if(p.kind==='control')EmberwildControlState.clear(x,p.control);
@@ -171,17 +178,21 @@
    const api=__EMBERWILD_TOKEN_TEST,g=api.item(x);if(g&&g.snapshot.ability.event==='round')api.trigger(x,'round');
   }
  }
+ function periodic(event){
+  const visual=globalThis.EmberwildBattleEffects;
+  return visual?.capturing?visual.scope({mode:event.type==='statusExpire'?'skill':'damage',periodic:event.type!=='statusExpire',critical:false},()=>periodicBody(event)):periodicBody(event);
+ }
+
  function castResolved(x,s){
   const d=skill(s.id),before=new Set(effects),t=timing(d);currentTiming=t;
   let ok;
   try{
-   if(Object.hasOwn(x,'job'))ok=d.type==='support'?castSupport(x,d.adapter.index):castPartySkill(x,d.adapter.index,battleStats(x));
+   if(Object.hasOwn(x,'job'))ok=d.type==='support'?castSupport(x,adapter(x,d).index):castPartySkill(x,adapter(x,d).index,battleStats(x));
    else{const shared=sharedSkillById(d.id),old=x.atk,c=EmberwildControlState.states[x.id];x.atk*=1-(c?.fear?.damageReduction||0);try{ok=EmberwildCombatEvents.action(x,()=>castEnemySharedSkill(x,shared));}finally{x.atk=old;}EmberwildCombatEvents.endTurn(x,ok!==false);}
   }finally{currentTiming=null;}
   if(ok===false){const a=engine.find(key(x));engine.setMp(key(x),Math.min(a.definition.maxMp,engine.actor(key(x)).mp+s.mpCost*a.mpCostMultiplier));a.ready[s.id]=engine.now;engine.deferSkill(key(x),s.id,config().minimumActionIntervalSeconds);return false;}
   scheduleEffects(before,t,d);scheduleControls(t);
   if(Object.hasOwn(x,'job')){
-   const a=engine.find(key(x));if(cooldownReductionOnCast(x,d.id))a.ready[s.id]=Math.min(a.ready[s.id],engine.now+Math.round(reducedCooldown(x,d,{onCast:1})*1e6));
    EmberwildCombatEvents.endTurn(x,true);
   }
   return true;
@@ -205,7 +216,9 @@
    const s=engine.find(event.actorId).definition.skills.find(s=>s.id===event.skillId);if(s){if(castResolved(x,s))recordAction(event.actorId,Object.hasOwn(x,'job')?characterName(x):combatEnemyName(x),skill(s.id).name);}
   }
   scheduleEffects(new Set(effects.filter(f=>f.secondsId)),null,null);scheduleControls();
-  for(const a of engine.actors){const u=unit(a.definition.id);if(!u)continue;const steps=(u.procAdvanceSteps||0)+(u.basicAdvanceRound?1:0)+(u.sharedAdvanceSteps||0);if(steps){const advance=steps*config().advanceStepSeconds*1e6;a.basicAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.basicAt-advance);a.actionSpeedAt=Math.max(engine.now+config().minimumActionIntervalSeconds*1e6,a.actionSpeedAt-advance);a.actionAt=Math.max(a.actionSpeedAt,a.actionFixedAt);for(const k of ['procAdvanceSteps','basicAdvanceRound','procAdvanceRound','sharedAdvanceSteps','sharedAdvanceRound'])delete u[k];}}
+  // Advance effects (enemy shared skill 'advanceNextRound', the legacy hero proc option) move the basic deadline through the
+  // timeline, which keeps a player actor's basic attacks at least the minimum interval apart.
+  for(const a of engine.actors){const u=unit(a.definition.id);if(!u)continue;const steps=(u.procAdvanceSteps||0)+(u.basicAdvanceRound?1:0)+(u.sharedAdvanceSteps||0);if(steps){engine.advanceBasic(a.definition.id,steps*config().advanceStepSeconds,config().minimumActionIntervalSeconds);for(const k of ['procAdvanceSteps','basicAdvanceRound','procAdvanceRound','sharedAdvanceSteps','sharedAdvanceRound'])delete u[k];}}
  }
  // During recovery a hero acts only when a heal/regen skill is ready, affordable and allowed right now (v0.093). Otherwise the
  // timeline offered its basic attack, beforeAction refused it and the hero was "blocked" every attack interval: the card
@@ -303,7 +316,7 @@
  }
  function pack(){if(!party)return null;ensure();syncResources();return {version:1,timeline:engine.snapshot(),uidSerial,serial,ended,phase,recoveryUntil,encounterStart,scheduledAt,procReady:copy(procReady)};}
  function restore(raw){engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;pendingRestore=raw;
-  if(raw){engine=E.restore(raw.timeline,handlers);serial=raw.serial;if(raw.uidSerial!==undefined)uidSerial=raw.uidSerial;ended=raw.ended;phase=raw.phase||"combat";recoveryUntil=raw.recoveryUntil||0;encounterStart=raw.encounterStart;scheduledAt=raw.scheduledAt??engine.now/1e6;needsRoster=false;procReady=copy(raw.procReady);partyClock=engine.now/1e6;syncResources();}
+  if(raw){engine=E.restore(raw.timeline,handlers);serial=raw.serial;if(raw.uidSerial!==undefined)uidSerial=raw.uidSerial;ended=raw.ended;phase=raw.phase||"combat";recoveryUntil=raw.recoveryUntil||0;encounterStart=raw.encounterStart;scheduledAt=raw.scheduledAt??engine.now/1e6;needsRoster=false;procReady=copy(raw.procReady);partyClock=engine.now/1e6;/* v0.196: a snapshot from before attack speed holds heroes in the old speed mode; rebuild them from current stats on the next step. */if(engine.actors.some(a=>!engine.player(a)&&party?.members.some(h=>key(h)===a.definition.id)))needsRoster=true;syncResources();}
  }
  function migrateLegacy(){
   if(!party)return;const before=partyClock,oldCds=copy(actorCooldowns),oldSupports=copy(supportCooldowns);partyClock=0;scheduledAt=0;round=0;combatRoundProgress=null;roundIterator=null;restore(null);ensure();syncRoster();
@@ -312,7 +325,7 @@
   for(const c of Object.values(EmberwildControlState.states))for(const row of Object.values(c))delete row.secondsUntil;
   for(const inst of statusList()){const left=inst.definition.permanent?null:Math.max(.000001,(inst.expiresClock===Number.MAX_SAFE_INTEGER?inst.remainingTurns:inst.expiresClock-before)*config().durationReferenceSeconds);inst.appliedClock=0;delete inst.seconds;scheduleStatus(inst,left);}
   scheduleEffects(new Set(),null,null);scheduleControls();
-  for(const h of heroes()){const a=engine.find(key(h));for(const s of a.definition.skills){const d=skill(s.id),old=(d.type==='support'?oldSupports:oldCds)[memberKey(h)+'-'+d.adapter.index]||0;a.ready[s.id]=Math.round(old*actorInterval(h)*1e6);}}
+  for(const h of heroes()){const a=engine.find(key(h));for(const s of a.definition.skills){const d=skill(s.id),old=(d.type==='support'?oldSupports:oldCds)[memberKey(h)+'-'+adapter(h,d).index]||0;a.ready[s.id]=Math.round(old*actorInterval(h)*1e6);}}
   const enemyCds=EmberwildEnemyCombatState.pack();for(const e of foes){const a=engine.find(key(e)),base=source.balanceSettings.monsters.catalog.find(m=>m.id===e.monsterId)?.timing.baseIntervalSeconds??config().actionReferenceSeconds;for(const s of a.definition.skills)a.ready[s.id]=Math.round((enemyCds[e.id]?.[s.id]||0)*base*1e6);}
   const c=party.offlineExploration;if(c){c.version=3;c.combat=null;}
  }
@@ -330,8 +343,6 @@
  skillManaCost=function(i,h=state){return timing(S.byPosition(h.job,'core',i))?.mpCost||0;};
  skillCooldown=function(i,h=state){const s=S.byPosition(h.job,'core',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
  supportSkillCooldown=function(h,i){const s=S.byPosition(h.job,'support',i);return s?(s.type==='proc'?timing(s).cooldownSeconds:skillCooldownSeconds(h,s)):0;};
- gemCooldownOnCast=function(i,h=state){const s=S.byPosition(h.job,'core',i),cd=skillCooldown(i,h);return s?.type==='active'&&cooldownReductionOnCast(h,s.id)?reducedCooldown(h,s,{onCast:1}):cd;};
- __EMBERWILD_EQUIPMENT_SKILLS.supportCooldownOnCast=function(h,i){const s=S.byPosition(h.job,'support',i);return s&&cooldownReductionOnCast(h,s.id)?reducedCooldown(h,s,{onCast:1}):supportSkillCooldown(h,i);};
  const oldReset=resetEncounter;resetEncounter=function(...args){const out=oldReset(...args);engine=null;owner=party;ended=false;phase="combat";recoveryUntil=0;scheduledAt=partyClock;needsRoster=true;procReady={};return out;};
  const MAX_FOES=5;
  const oldSpawn=spawnGroup;spawnGroup=function(...args){
@@ -344,15 +355,16 @@
   actorCooldowns=cds;supportCooldowns=supports;needsRoster=true;return out;
  };
  const oldPack=packParty,oldPartyValidate=validateParty;
- packParty=function(){const out=oldPack();if(party){out.huntingMode=party.huntingMode||'single';out.currentHuntingMode=party.currentHuntingMode||out.huntingMode;if(party.explorationRecovery)out.explorationRecovery=copy(party.explorationRecovery);}return out;};
- validateParty=function(raw){if(raw?.huntingMode!==undefined&&!['single','group'].includes(raw.huntingMode))throw Error('狩獵模式無效');const out=oldPartyValidate(raw);out.huntingMode=raw?.huntingMode||'single';out.currentHuntingMode=raw?.currentHuntingMode||out.huntingMode;if(raw?.explorationRecovery!==undefined){const r=raw.explorationRecovery;if(!r||['minimumHpRatio','minimumMpRatio'].some(k=>typeof r[k]!=='number'||!Number.isFinite(r[k])||r[k]<0||r[k]>1))throw Error('探索恢復門檻無效');out.explorationRecovery=copy(r);}return out;};
+ packParty=function(){const out=oldPack();if(party){delete out.huntingMode;delete out.currentHuntingMode;if(party.explorationRecovery)out.explorationRecovery=copy(party.explorationRecovery);}return out;};
+ validateParty=function(raw){const out=oldPartyValidate(raw);/* v0.215: the hunting mode (single/group) is gone; older saves drop huntingMode and currentHuntingMode. */delete out.huntingMode;delete out.currentHuntingMode;if(raw?.explorationRecovery!==undefined){const r=raw.explorationRecovery;if(!r||['minimumHpRatio','minimumMpRatio'].some(k=>typeof r[k]!=='number'||!Number.isFinite(r[k])||r[k]<0||r[k]>1))throw Error('探索恢復門檻無效');out.explorationRecovery=copy(r);}return out;};
  const baseSupplyDetail=supplyDetail;supplyDetail=function(item){let text=baseSupplyDetail(item);if(item?.type==='imbue')text=text.replace(/持續 \d+(?:\.\d+)? ?(?:戰鬥)? ?回合/g,'持續 '+item.timing.durationSeconds+' 秒');return text;};
  const baseSupplyDetails=supplyBuffDetails;supplyBuffDetails=function(b,k){const d=baseSupplyDetails(b,k);if(k==='imbue'){d.time=Number(b.remainingTurns.toFixed(1))+' / '+Number(b.totalTurns.toFixed(1))+' 秒';d.clock='戰鬥秒數';}return d;};
  const baseSupplyStatus=supplyStatus;supplyStatus=function(h){return baseSupplyStatus(h).replace(/回合/g,'秒');};
  globalThis.setRecoveryThresholds=function(hp,mp){if(!party||![hp,mp].every(x=>Number.isFinite(x)&&x>=0&&x<=1))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.explorationRecovery={minimumHpRatio:hp,minimumMpRatio:mp};save();render();return true;};
- globalThis.setHuntingMode=function(mode){if(!party||!['single','group'].includes(mode))return false;EmberwildOffline.sync();if(EmberwildOffline.busy||EmberwildOffline.failed)return false;party.huntingMode=mode;save();render();return true;};
- globalThis.EmberwildSecondsCombat={active:true,maxEncounterSize:MAX_FOES,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
-  encounterSize(){party.currentHuntingMode=party.huntingMode||'single';if(party.currentHuntingMode==='single')return 1;const weights=config().groupWeights,total=weights.reduce((a,b)=>a+b,0);let pick=Math.random()*total;for(let i=0;i<weights.length;i++)if((pick-=weights[i])<0)return i+3;return 5;},
+ globalThis.EmberwildSecondsCombat={active:true,/* v0.226 monster effects: a summon joins at the next step; 纏藤 restarts one hero's basic charge. */rosterChanged(){needsRoster=true;},resetBasic(id){if(engine?.actors.some(a=>a.definition.id===id))engine.resetBasic(id);},maxEncounterSize:MAX_FOES,config,thresholds,get phase(){return phase;},get nextSimulationAt(){return scheduledAt;},get continuing(){return continuing;},resourceProfile:mana,step,pack,restore,migrateLegacy,tokenTiming,statusApplied:scheduleStatus,get timeline(){return engine;},get source(){return source;},ensure,sync:syncResources,
+  encounterSize(){return Schema.encounterCount(config().encounterByTeamSize,heroes().length,Math.random);},
+  // v0.215: the encounter size range for the deployed team (seconds-schema encounterByTeamSize).
+  encounterRange(){return Schema.encounterRange(config().encounterByTeamSize,heroes().length);},
   validateSnapshot(raw){if(raw!==null){if(raw.phase!==undefined&&!['combat','recovery'].includes(raw.phase)||raw.recoveryUntil!==undefined&&(!Number.isFinite(raw.recoveryUntil)||raw.recoveryUntil<0)||raw.version!==1||!Number.isSafeInteger(raw.serial)||raw.serial<0||typeof raw.ended!=='boolean'||!Number.isFinite(raw.encounterStart)||raw.scheduledAt!==undefined&&(!Number.isFinite(raw.scheduledAt)||raw.scheduledAt<0)||raw.uidSerial!==undefined&&(!Number.isSafeInteger(raw.uidSerial)||raw.uidSerial<0))throw Error('秒數快照無效');E.restore(raw.timeline);}},
   // Enemy-death passives cut the remaining cooldowns by their rule: fixed seconds, or a percent of each skill's reuse cooldown.
   reduceCooldowns(h,points){if(!engine?.actors.some(a=>a.definition.id===key(h)))return;const r=cdr().sources.enemyDeath,a=engine.find(key(h)),now=engine.now;

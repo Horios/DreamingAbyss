@@ -1,13 +1,14 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=process.env.EMBERWILD_BALANCE_ROOT||path.resolve(root,'../Emberwild-Balance');
+const {openRuntime}=require('./runtime.cjs'),root=path.resolve(__dirname,'..'),editorRoot=require('./runtime.cjs').balanceRoot(root);
 test('Chromium: existing icon maker, offline catalog, appearance/effects, JSON download/import and effective game UI',async t=>{
   const editor=await openRuntime(editorRoot,'balance-editor.html'),game=await openRuntime(root,'index.html',{}, {pathname:'/DreamingAbyss/preview/'}),p=editor.page,g=game.page;
   p.setDefaultTimeout(10000);g.setDefaultTimeout(10000);p.on('dialog',d=>d.accept());
   let doc,file,originalId,baseline,iconCount,skillRef;
   // Skill system v1 moved protagonist skills to the workbench; the existing icon picker lives on companion skill pages.
   // The game checks render the same custom icon on the protagonist's starting skill, set in the imported document.
-  // The new protagonist starts with class0-initial0 in active slot 1; the game renders that slot's icon.
-  const setStarterIcon=(d,type)=>{const def=d.skillSystem.definitions.find(sk=>sk.id==='class0-initial0');def.iconType=type;const a=def.adapter;d.classes[a.job].skills[a.index].iconType=type;return d;};
+  // The new protagonist starts with its class mastery 0 skill in active slot 1; the game renders that slot's icon.
+  /* v0.226: the warrior starts with 重擊 (class0-initial2); use whichever skill class mastery 0 grants. */const starterId=d=>d.skillSystem.classRules[0].initial.find(x=>!x.masteryLevel).skillId;
+  const setStarterIcon=(d,type)=>{const def=d.skillSystem.definitions.find(sk=>sk.id===starterId(d));def.iconType=type;const a=def.adapter;d.classes[a.job].skills[a.index].iconType=type;return d;};
   const protagonistIcon=buffer=>{const d=JSON.parse(buffer);return Buffer.from(JSON.stringify(setStarterIcon(d,'custom:'+d.skillIcons[0].id)));};
   const change=async(key,value)=>{await p.locator(`[data-icon-appearance="${key}"]`).fill(String(value));await p.locator(`[data-icon-appearance="${key}"]`).blur();};
   try{

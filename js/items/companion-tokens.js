@@ -62,6 +62,8 @@
   function makeToken(id,quality=null){const d=config.catalog.find(x=>x.id===id);if(!d)return null;const q=quality??d.quality;const g={id:uid(),type:M.TYPE,tokenId:d.id,name:d.name,slot:4,job:0,tier:1,rar:q,plus:0,affix:[],locked:false,snapshot:copy(d),qualityMultipliers:copy(config.qualityMultipliers)};M.validateItem(g,RULES.enhanceMax);return g;}
   function addToken(g){ensureSharedGear();addGear(g);}
   globalThis.createCompanionToken=makeToken;
+  // v0.172: the skill a companion's worn token carries after a skill extraction (skill-extraction.js).
+  globalThis.__EMBERWILD_TOKEN_SKILL=h=>item(h)?.extractedSkillId||null;
   globalThis.grantConfiguredToken=function(id,rng=Math.random){
     const def=config.catalog.find(t=>t.id===id);if(!def)return null;
     const quality=def.qualityFixed?def.quality:M.weighted([0,1,2,3],config.drop.qualityWeights,rng),g=makeToken(id,quality);addToken(g);return g;
@@ -69,7 +71,7 @@
   function tokenDropChance(e){
     // Match ordinary equipment rules for this monster/kind/difficulty, including
     // timed boosts and level-gap attenuation; keep token pool eligibility below.
-    const rules=configuredDropRules(e).filter(r=>['gear','equipment'].includes(r.type));
+    const rules=configuredDropRules(e).filter(r=>['gear','equipment','monsterGear'].includes(r.type));
     return 1-rules.reduce((miss,r)=>miss*(1-effectiveDropChance(r,e)),1);
   }
   function rollTokens(e,rng=Math.random){
@@ -111,7 +113,7 @@
   const baseFilter=filteredGear;
   filteredGear=function(){return baseFilter().filter(g=>!M.isToken(g));};
   const baseNameHTML=equipmentNameHTML,baseDisplay=equipmentDisplayName,baseDesc=gearDesc;
-  equipmentDisplayName=function(g){return M.isToken(g)?`+${g.plus} ${g.snapshot.name}`:baseDisplay(g);};
+  equipmentDisplayName=function(g){return M.isToken(g)?`+${g.plus} ${g.extractedPrefix?g.extractedPrefix+' ':''}${g.snapshot.name}`:baseDisplay(g);};
   equipmentNameHTML=function(g){return M.isToken(g)?`<span class="effect-quality-${g.rar}">${esc(equipmentDisplayName(g))}</span>`:baseNameHTML(g);};
   gearDesc=function(g){return M.isToken(g)?tokenStatsText(g):baseDesc(g);};
   for(const name of ['reroll','rerollGear','rerollAffix','autoReroll','rerollEquipmentPowerTier','setAffixLock','toggleAffixLock']){const base=globalThis[name];if(typeof base==='function')globalThis[name]=function(id,...args){if(M.isToken(findGear(id)))return toast('信物使用固定複合屬性');return base(id,...args);};}
@@ -156,18 +158,19 @@
     return `<span class="inventory-item-icon effect-quality-${g.rar}" aria-hidden="true">${globalThis.__EMBERWILD_INVENTORY_ICON?.('token',g.tokenId,'lucide:'+key,{size:26})||__EMBERWILD_SKILL_ICONS.svgFor('lucide:'+key,[],{size:26})}</span>`;
   }
   function tokenIdentity(g){return `<div class="token-identity">${tokenIcon(g)}<b>${equipmentNameHTML(g)}</b><span class="tag token-job-tag">${esc(companionTokenJobLabel(g))}</span>${gearWearer(g.id)?`<span class="small token-wearer">${esc(characterName(gearWearer(g.id)))} · 已裝備</span>`:''}</div>`;}
-  function detail(g){const description=tokenDescription(g);return `${tokenIdentity(g)}${description?`<p>${esc(description)}</p>`:''}<p class="small">${esc(gearDesc(g))}</p><p class="token-special">${esc(abilityText(g))}</p>`;}
-  function companionCards(){return `<section class="panel companion-token-panel"><h2>夥伴信物</h2><p class="small">夥伴依自身等級成長，只使用一件信物；後備與名冊夥伴保留穿戴。更換或卸下信物會放棄目前遭遇。</p><div class="token-grid">${party.members.filter(companion).map(h=>{const g=item(h);return `<article class="card token-slot" data-token-owner="${memberKey(h)}"><h3>${esc(characterName(h))} · ${esc(CLASSES[h.job].name)}</h3>${g?gearSlotHTML(g):'<p class="empty">未穿戴信物</p>'}<div class="actions"><button onclick="showCompanionTokens(${memberKey(h)})">更換信物</button>${g?`<button onclick="unequipCompanionToken(${memberKey(h)})">卸下</button><button onclick="openForge('${g.id}')">強化</button><button type="button" disabled title="信物目前沒有鑲嵌孔">鑲嵌</button><button type="button" onclick="showWornTokenDetail('${g.id}')">詳情</button>`:''}</div></article>`;}).join('')||'<p>招募夥伴後即可使用信物。</p>'}</div></section>`;}
+  function extractedSkillHTML(g){const sk=g?.extractedSkillId&&globalThis.__EMBERWILD_SKILLS?.byId(g.extractedSkillId);if(!sk)return '';const kind={active:'主動',proc:'觸發',support:'主動',passive:'被動'}[sk.type]||sk.type,t=sk.timing||{};return `<p class="token-extracted-skill" data-token-skill="${esc(sk.id)}"><b>萃取技能：${esc(sk.name)}</b>（${kind}${sk.type!=='passive'?` · 冷卻 ${t.cooldownSeconds} 秒 · ${t.mpCost} MP`:''}）<br><span class="small">${esc(sk.description||'')}。穿戴的夥伴可使用此技能，不受職業限制。</span></p>`;}
+  function detail(g){const description=tokenDescription(g);return `${tokenIdentity(g)}${description?`<p>${esc(description)}</p>`:''}<p class="small">${esc(gearDesc(g))}</p><p class="token-special">${esc(abilityText(g))}</p>${extractedSkillHTML(g)}`;}
+  function companionCards(){return `<section class="panel companion-token-panel"><h2>夥伴信物</h2><p class="small">夥伴各自累積職業精通，只使用一件信物；後備與名冊夥伴保留穿戴。更換或卸下信物會放棄目前遭遇。</p><div class="token-grid">${party.members.filter(companion).map(h=>{const g=item(h);return `<article class="card token-slot" data-token-owner="${memberKey(h)}"><h3>${esc(characterName(h))} · ${esc(CLASSES[h.job].name)}</h3>${g?gearSlotHTML(g):'<p class="empty">未穿戴信物</p>'}<div class="actions"><button onclick="showCompanionTokens(${memberKey(h)})">更換信物</button>${g?`<button onclick="unequipCompanionToken(${memberKey(h)})">卸下</button><button type="button" onclick="moveToWorkshop('${g.id}')">移到工坊</button><button type="button" onclick="showWornTokenDetail('${g.id}')">詳情</button>`:''}</div></article>`;}).join('')||'<p>招募夥伴後即可使用信物。</p>'}</div></section>`;}
   globalThis.showWornTokenDetail=function(id){const g=findGear(id);if(!M.isToken(g)||!gearWearer(id))return false;const modal=$('modal');modal.innerHTML=`<h2>信物詳情</h2>${detail(g)}<p class="small">品質：${AFFIX_RANK[g.rar]} · 強化 +${g.plus} · ${esc(companionTokenJobLabel(g))}</p><div class="actions"><button type="button" onclick="closeModal()">關閉</button></div>`;if(!modal.open)modal.showModal();return true;};
   globalThis.showCompanionTokens=function(key){const h=partyMember(key);if(!companion(h))return;const current=item(h);$('modal').innerHTML=`<div class="token-dialog-header"><h2>${esc(characterName(h))} · 信物管理</h2><button type="button" onclick="closeModal()">關閉</button></div>${current?detail(current):'<p>目前未穿戴信物</p>'}<div class="token-grid">${state.bag.filter(g=>M.canEquip(g,h)&&(!gearWearer(g.id)||gearWearer(g.id)===h)).map(g=>`<article class="card">${detail(g)}${comparison(h,g)}<button data-token-id="${g.id}" onclick="if(equipCompanionToken('${g.id}',${key}))closeModal()" ${g===current?'disabled':''}>${g===current?'已穿戴':'穿戴'}</button></article>`).join('')||'<p>背包目前沒有可穿戴的信物。</p>'}</div>`;$('modal').showModal();};
-  function comparison(h,g){const before=stats(h),after=stats({...h,tokenId:g.id});return `<p class="small">換裝比較：${['hp','atk','def','crit','critDamage','speed','pierce','defenseIgnore','lifesteal','evasion'].filter(k=>before[k]!==after[k]).map(k=>`${({hp:'HP',atk:'攻擊',def:'防禦',crit:'暴擊',critDamage:'暴傷',speed:'速度',pierce:'穿透',defenseIgnore:'無視',lifesteal:'竊取',evasion:'閃避'})[k]} ${Number(before[k].toFixed(3))} → ${Number(after[k].toFixed(3))}`).join(' / ')||'面板相同，請比較特殊效果'}</p>`;}
+  function comparison(h,g){const before=stats(h),after=stats({...h,tokenId:g.id});return `<p class="small">換裝比較：${['hp','atk','def','crit','critDamage','attackSpeedPct','pierce','defenseIgnore','lifesteal','evasion'].filter(k=>(before[k]||0)!==(after[k]||0)).map(k=>`${({hp:'HP',atk:'攻擊',def:'防禦',crit:'暴擊',critDamage:'暴傷',attackSpeedPct:'攻擊速度 %',pierce:'穿透',defenseIgnore:'無視',lifesteal:'竊取',evasion:'閃避'})[k]} ${Number((before[k]||0).toFixed(3))} → ${Number((after[k]||0).toFixed(3))}`).join(' / ')||'面板相同，請比較特殊效果'}</p>`;}
   const tokenDefaults=()=>({name:'',job:'all',quality:'all',locked:'all',worn:'all',plusMin:'',plusMax:'',stat:'',op:'gte',value:'',upper:''});
   let tokenFilter=tokenDefaults(),tokenSort='quality',tokenDirection='desc',tokenMulti=false,tokenAdvanced=false,tokenSelected=new Set(),tokenReview=null,tokenDetailId=null;
   const tokenOwned=g=>!!gearWearer(g.id)||!!globalThis.__EMBERWILD_TEAM_EQUIPMENT?.references(g.id).length;
   const tokenActionable=(g,mode)=>M.isToken(g)&&!g.locked&&!tokenOwned(g)&&(mode!=='sell'||globalThis.__EMBERWILD_CAN_SELL_GEAR?.(g)!==false);
   const tokenBound=(n,v,lower)=>v===''||Number.isFinite(Number(v))&&(lower?n>=Number(v):n<=Number(v));
   function tokenNumeric(g){
-    const totals={atk:0,hp:0,def:0,speed:0},flat={flatAttack:'atk',flatHp:'hp',flatDefense:'def',speed:'speed'};
+    const totals={atk:0,hp:0,def:0,attackSpeedPct:0},flat={flatAttack:'atk',flatHp:'hp',flatDefense:'def',attackSpeedPct:'attackSpeedPct'};
     for(const e of M.effectsFor(g,GS('equipment.enhance.statPerLevel',.05))){
       if(e.key==='basicElement')continue;
       const key=flat[e.key]||(['attackPct','hpPct','defensePct'].includes(e.key)?e.key:[e.key,e.element||'',e.race||'',e.skill??''].join(':'));
@@ -203,6 +206,7 @@
   globalThis.toggleTokenSelected=(id,checked)=>{if(!tokenMulti||!tokenActionable(findGear(id))||!tokenRows().some(r=>r.g.id===id))return false;if(checked)tokenSelected.add(id);else tokenSelected.delete(id);tokenRedraw();return true;};
   globalThis.selectVisibleTokens=()=>{if(!tokenMulti)return;tokenSelected=new Set(tokenRows().map(r=>r.g).filter(g=>tokenActionable(g)).map(g=>g.id));tokenRedraw();};
   globalThis.clearSelectedTokens=()=>{tokenSelected.clear();tokenRedraw();};
+  globalThis.setTokenSelection=ids=>{if(!tokenMulti)return 0;const listed=new Set(tokenRows().map(r=>r.g.id));tokenSelected=new Set([...ids].filter(id=>listed.has(id)&&tokenActionable(findGear(id))));tokenRedraw();return tokenSelected.size;};
   function tokenBatchReview(mode){
     const items=tokenRows().map(r=>r.g).filter(g=>tokenSelected.has(g.id)&&tokenActionable(g,mode)),quote=__EMBERWILD_GEAR_INVENTORY.quote(items,mode),ids=items.map(g=>g.id);
     return {mode,ids,quote,signature:JSON.stringify([ids,quote])};
@@ -254,7 +258,7 @@
   }
   const tokenReset=resetSession;
   resetSession=function(){const out=tokenReset();tokenFilter=tokenDefaults();tokenSort='quality';tokenDirection='desc';tokenMulti=false;tokenAdvanced=false;tokenSelected.clear();tokenReview=null;tokenDetailId=null;return out;};
-  globalThis.__EMBERWILD_TOKEN_INVENTORY={rows:tokenRows,selection:()=>[...tokenSelected],review:()=>tokenReview};
+  globalThis.__EMBERWILD_TOKEN_INVENTORY={rows:tokenRows,selection:()=>[...tokenSelected],review:()=>tokenReview,detail:tokenInventoryDetail,actionable:g=>tokenActionable(g),multi:()=>tokenMulti};
   const baseTabs=inventoryTabs;
   inventoryTabs=function(){return baseTabs().replace('</div>',`<button onclick="setInventoryCategory('tokens')" class="${inventoryCategory==='tokens'?'primary':''}">信物</button></div>`);};
   const baseCategory=setInventoryCategory;
@@ -264,8 +268,6 @@
   const baseWorn=wornEquipmentView;
   wornEquipmentView=function(){pageHeroSelection.set('worn',memberKey(party.members[0]));return `<div class="companion-management-page worn-token-page">${baseWorn()+companionCards()}</div>`;};
   for(const name of ['rosterView','partnerRosterView']){const base=globalThis[name];globalThis[name]=function(){return `<div class="companion-management-page">${base()}</div>`;};}
-  const baseForge=openForge;
-  openForge=function(id){const g=findGear(id);if(!M.isToken(g))return baseForge(id);$('modal').innerHTML=`<h2>信物強化</h2>${detail(g)}<p>每級屬性 +${GS('equipment.enhance.statPerLevel',.05)*100}%；特殊能力保持原參數。</p><p>${esc(upgradeCostText(g))}</p><div class="actions"><button onclick="enhance('${g.id}');closeModal();openForge('${g.id}')" ${g.plus>=RULES.enhanceMax||!canEnhance(g)?'disabled':''}>強化</button><button onclick="closeModal()">關閉</button></div>`;$('modal').showModal();};
   globalThis.__EMBERWILD_TOKEN_READY=true;
   if(state&&party){syncTokens();for(const h of party.members.filter(companion)){h.equipped=Array(5).fill(null);h.tokenId??=null;withHero(h,clampVitals);}render();}
 })();

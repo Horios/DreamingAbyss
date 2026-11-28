@@ -4,6 +4,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),path=requir
 const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirname,'..'),seed=require('../data/balance.json');
 const json=(r,code)=>JSON.parse(r.run('JSON.stringify('+code+')'));
 const MIN=60000,HOUR=60*MIN;
+// v0.179: players always meet groups; a lone level-0 warrior keeps wiping against them, so these sampling tests keep the
+// internal single-enemy setting.
 function game(averageMinutes){
  const doc=JSON.parse(JSON.stringify(seed));if(averageMinutes)doc.balanceSettings.rewards.regionVouchers.averageMinutes=averageMinutes;
  const r=loadRuntime(root);r.ctx.seed=doc;r.ctx.setTimeout=fn=>setImmediate(fn);

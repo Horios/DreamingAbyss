@@ -6,6 +6,8 @@ const {loadRuntime}=require('./headless-runtime.cjs'),root=path.resolve(__dirnam
 
 test('offline receipt gear detail shows tier, level, total stats and attribute sources like the backpack',async()=>{
  const r=loadRuntime(root);r.ctx.seed=seed;r.ctx.setTimeout=fn=>setImmediate(fn);
+ /* v0.161 fixed-base heroes kill fewer foes in 3 hours; raise the ordinary gear rate so the receipt surely holds gear */
+ r.ctx.seed=structuredClone(seed);for(const e of r.ctx.seed.balanceSettings.drops.entries)if(e.type==='monsterGear')e.chanceByDifficulty=[.02,.02,.02];
  r.run(`applyBalanceConfig(seed,{persist:false});selectSaveSlot(1);start(0);closeModal();globalThis.rngState=97531;Math.random=()=>{rngState=(Math.imul(rngState,1664525)+1013904223)>>>0;return rngState/4294967296;};startSelectedExploration();save();`);
  // Long enough for ordinary drops to include equipment; offline settlement builds the receipt.
  r.advance(3*60*60*1000);await r.run('EmberwildOffline.settle(undefined,true)');
@@ -15,7 +17,13 @@ test('offline receipt gear detail shows tier, level, total stats and attribute s
  const kinds=new Set(),skills=[];
  for(let i=0;i<Math.min(count,12);i++){
   r.run(`closeModal();showOfflineGear(${i})`);
-  const html=r.run("$('modal').innerHTML"),g=JSON.parse(r.run(`JSON.stringify(party.offlineExploration.receipt.gear[${i}])`));
+  const g=JSON.parse(r.run(`JSON.stringify(party.offlineExploration.receipt.gear[${i}])`));
+  if(g.unidentified){
+   const hidden=r.run("$('modal').innerHTML");assert.match(hidden,/未鑑定/);assert.doesNotMatch(hidden,/<p>T\d|已附詞綴|詳細數值來源|equipment-summary-values/);
+   // The same generated snapshot also exercises the identified presentation, without rerolling its data.
+   r.run(`delete party.offlineExploration.receipt.gear[${i}].unidentified;showOfflineGear(${i})`);
+  }
+  const html=r.run("$('modal').innerHTML");
   assert.match(html,/<h2>/,'name heading');
   assert.match(html,new RegExp('<p>T'+(g.powerTier||1)+' · '),'tier line');
   if(r.run(`EmberwildTokens.isToken(party.offlineExploration.receipt.gear[${i}])`)){
@@ -23,16 +31,17 @@ test('offline receipt gear detail shows tier, level, total stats and attribute s
    assert.match(html,/token-job-tag/,'token job tag');
    assert.ok(html.includes(r.run(`companionTokenAbilityText(party.offlineExploration.receipt.gear[${i}])`)),'token ability text');
   }else{
-   assert.match(html,/ · LV \d+/,'wearable jobs and required level');
-   assert.match(html,/class="equipment-total-summary"><span class="equipment-summary-values"><span>[^<]+ \+\d/,'total stat values');
+   assert.match(html,/ · 裝等 \d+/,'wearable jobs and gear level');
+   // v0.215: a weapon opens with its base block (攻擊力：N); other slots list their totals first.
+   assert.match(html,/class="equipment-total-summary">(?:<span class="equipment-weapon-base"><span>攻擊力：\d+<\/span>|<span class="equipment-summary-values"><span>[^<]+ \+\d)/,'total stat values');
   }
   assert.match(html,/詳細數值來源/,'attribute sources stay available');
   assert.doesNotMatch(html,/^<h2>[\s\S]*?<\/h2><div class="offline-gear-detail"><h3>/,'the name is not repeated as a second heading');
-  if(g.skillSockets!==undefined||g.equipmentSkill||g.skillId)skills.push(/<h3>裝備技能<\/h3>/.test(html));
+  if(g.equipmentSkill||g.skillId)skills.push(/<h3>裝備技能<\/h3>/.test(html));
   assert.equal(html,html.replace(/undefined|NaN/g,''),'no missing values');
   kinds.add(r.run(`EmberwildTokens.isToken(party.offlineExploration.receipt.gear[${i}])?'token':'gear'`));
  }
  assert(kinds.has('gear'),'covered ordinary equipment: '+[...kinds]);
- assert(skills.some(Boolean),'an equipment skill (ability) is shown for gear that has one');
+ assert(skills.every(Boolean),'an equipment skill (ability) is shown for gear that has one');
  assert.deepEqual(r.errors,[]);
 });

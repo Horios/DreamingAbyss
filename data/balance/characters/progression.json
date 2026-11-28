@@ -1,0 +1,13 @@
+{
+  "starting": {
+    "gold": 150,
+    "ore": 0,
+    "dust": 12,
+    "potions": 5
+  },
+  "baseCrit": {
+    "default": 0.07,
+    "archer": 0.17
+  },
+  "regionTierLevels": 5
+}

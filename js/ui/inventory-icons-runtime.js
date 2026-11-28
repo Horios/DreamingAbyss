@@ -1,8 +1,8 @@
 /* Optional presentation data shares the published balance document and icon library. */
 (()=>{
   const M=EmberwildInventoryIcons,baseExport=exportableBalance,baseValidate=validateBalanceConfig,baseApply=applyBalanceConfig;
-  const defaultGemLabels=GEMS.map(g=>({name:g.name}));
-  function applyGemLabels(){for(const [i,g]of GEMS.entries()){g.name=lookup.get('gem:'+i)?.displayName||defaultGemLabels[i].name;g.desc=lookup.get('gem:'+i)?.description??g.desc;}}
+  const defaultGemLabels=GEMS.map(g=>({name:g.name,desc:g.desc}));
+  function applyGemLabels(){for(const [i,g]of GEMS.entries()){g.name=lookup.get('gem:'+i)?.displayName||defaultGemLabels[i].name;g.desc=lookup.get('gem:'+i)?.description??defaultGemLabels[i].desc;}}
   let templates,definitions=M.migrateDescriptions(baseExport()).inventoryIcons,customIcons=baseExport().skillIcons||[],lookup=new Map(definitions.map(r=>[r.kind+':'+r.key,r]));
   const saved=balanceSourceText();if(saved){templates=EmberwildIconColors.validate(JSON.parse(saved));EmberwildIconColors.use(templates);definitions=M.validate(M.migrateDescriptions(JSON.parse(saved)),__EMBERWILD_SKILL_ICONS);lookup=new Map((definitions||[]).map(r=>[r.kind+':'+r.key,r]));}
   exportableBalance=()=>{const out=baseExport();if(templates!==undefined)out.iconColorTemplates=structuredClone(templates);if(definitions!==undefined)out.inventoryIcons=structuredClone(definitions);return M.migrateDescriptions(out);};
@@ -22,7 +22,7 @@
   globalThis.__EMBERWILD_ITEM_DETAILS=(kind,key)=>lookup.get(kind+':'+String(key));
   globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY=g=>globalThis.EmberwildTokens?.isToken(g)?{kind:'token',key:g.tokenId}:{kind:'equipment',key:gearKey(g)};
   globalThis.__EMBERWILD_ITEM_NAME=(kind,key,fallback)=>lookup.get(kind+':'+String(key))?.displayName||fallback;
-  globalThis.__EMBERWILD_CAN_SELL=(kind,key)=>lookup.get(kind+':'+String(key))?.saleEnabled??(!['gem','skill'].includes(kind)&&!String(key).startsWith('companion-ticket-'));
+  globalThis.__EMBERWILD_CAN_SELL=(kind,key)=>kind==='material'&&key==='粉塵'?false:lookup.get(kind+':'+String(key))?.saleEnabled??(!['gem','skill'].includes(kind)&&!String(key).startsWith('companion-ticket-'));
   globalThis.__EMBERWILD_CAN_SELL_GEAR=g=>{const id=globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY(g);return globalThis.__EMBERWILD_CAN_SELL(id.kind,id.key);};
   const baseGearName=gearName,baseGearDisplay=equipmentDisplayName;
   gearName=function(g){const out=baseGearName(g),id=globalThis.__EMBERWILD_GEAR_CATALOGUE_KEY(g);return globalThis.__EMBERWILD_ITEM_NAME(id.kind,id.key,out);};

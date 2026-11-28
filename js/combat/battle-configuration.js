@@ -5,7 +5,7 @@
  'use strict';
  const S=__EMBERWILD_SKILLS,copy=EmberwildSkillSystem.copy;
  // tokenId (v0.083): a companion token changed during an encounter applies from the next encounter, like gear.
- const fields=['skills','supportLevels','active','procSlots','supportSlots','skillLoadout','activeSkillEquipmentId','passiveEnabled','equipped','tokenId'];
+ const fields=['skills','supportLevels','active','procSlots','supportSlots','skillLoadout','passiveEnabled','equipped','tokenId'];
  // frozenActive (v0.083): the lineup that started the encounter; roster changes during it apply from the next encounter.
  let owner=null,rows=null,active=false,live=null,notified=false,frozenActive=null,liveActive=null;
  const gemEffects=new Map();
@@ -53,7 +53,7 @@
    if(!h||!c||Object.keys(c).some(k=>!fields.includes(k))||!Array.isArray(r.gear)||r.gear.length>5||!Array.isArray(r.learned)||new Set(r.learned).size!==r.learned.length||r.learned.some(id=>!S.byId(id)?.jobs.includes(h.job)))throw Error('戰鬥配置角色無效');
    for(const f of ['skills','supportLevels'])if(!Array.isArray(c[f])||c[f].length>64||c[f].some(n=>!Number.isInteger(n)||n<0||n>5))throw Error('戰鬥配置技能無效');
    for(const [f,defs] of [['active',CLASSES[h.job].skills],['procSlots',CLASSES[h.job].skills],['supportSlots',SUPPORT[h.job]]])if(!Array.isArray(c[f])||c[f].length>64||c[f].some(i=>i!==null&&(!Number.isInteger(i)||i<0||!defs[i])))throw Error('戰鬥配置技能槽無效');
-   if(!Array.isArray(c.equipped)||c.equipped.length!==5||c.equipped.some(id=>id!==null&&typeof id!=='string')||c.activeSkillEquipmentId!=null&&typeof c.activeSkillEquipmentId!=='string'||c.tokenId!=null&&typeof c.tokenId!=='string'||!c.passiveEnabled||typeof c.passiveEnabled!=='object'||Array.isArray(c.passiveEnabled)||Object.entries(c.passiveEnabled).some(([id,v])=>S.byId(id)?.type!=='passive'||typeof v!=='boolean'))throw Error('戰鬥配置啟用資料無效');
+   if(!Array.isArray(c.equipped)||c.equipped.length!==5||c.equipped.some(id=>id!==null&&typeof id!=='string')||c.tokenId!=null&&typeof c.tokenId!=='string'||!c.passiveEnabled||typeof c.passiveEnabled!=='object'||Array.isArray(c.passiveEnabled)||Object.entries(c.passiveEnabled).some(([id,v])=>S.byId(id)?.type!=='passive'||typeof v!=='boolean'))throw Error('戰鬥配置啟用資料無效');
    if(h.companionId===undefined&&(!c.skillLoadout||['active','proc','support'].some(k=>!Array.isArray(c.skillLoadout[k])||c.skillLoadout[k].some(id=>id!==null&&!r.learned.includes(id)))))throw Error('戰鬥配置技能引用無效');
    for(const g of r.gear){if(!g||typeof g.id!=='string'||!Number.isInteger(g.slot)||g.slot<0||g.slot>4||!Array.isArray(g.affix))throw Error('戰鬥配置裝備無效');EmberwildSkillSystem.gear(g,{legacy:true,system:S.system()});}
   }
@@ -77,7 +77,7 @@
  pacedRound=function(...args){const iterator=roundBase(...args);return {next:v=>combat(()=>iterator.next(v)),return:v=>combat(()=>iterator.return(v)),throw:e=>combat(()=>iterator.throw(e)),[Symbol.iterator](){return this;}};};
  // Saving and progression always see the latest permanent configuration, even
  // when a reward or a checkpoint is produced inside an encounter step.
- for(const name of ['save','packParty','awardXP','render']){
+ for(const name of ['save','packParty','render']){
   const fn=globalThis[name];globalThis[name]=function(...args){if(name==='save'&&__EMBERWILD_TEAMS.savingSuppressed())return true;return editable(()=>fn(...args));};
  }
 })();

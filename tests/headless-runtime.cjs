@@ -19,7 +19,7 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
     localStorage:{getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,String(value)),removeItem:key=>values.delete(key),clear:()=>values.clear()},
     sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},location:{href:'http://emberwild.test/',origin:'http://emberwild.test',pathname:'/',hash:'',search:'',reload(){}},navigator:{userAgent:'runtime-verification'},
     HTMLElement:Element,HTMLDialogElement:Element,HTMLInputElement:Element,HTMLSelectElement:Element,HTMLTextAreaElement:Element,
-    MutationObserver:class{observe(){}disconnect(){}},ResizeObserver:class{observe(){}disconnect(){}},
+    MutationObserver:class{observe(){}disconnect(){}takeRecords(){return [];}},ResizeObserver:class{observe(){}disconnect(){}},
     setTimeout:()=>++seq,clearTimeout(){},setInterval:()=>++seq,clearInterval(){},requestAnimationFrame:()=>++seq,cancelAnimationFrame(){},queueMicrotask(){},
     addEventListener:(type,fn)=>on('window',type,fn),removeEventListener(){},matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),getComputedStyle:()=>({lineHeight:'20px',fontSize:'16px',getPropertyValue:()=>''}),
     performance:{now:()=>now},crypto:{randomUUID:()=>String(++seq)},innerWidth:1440,innerHeight:900,scrollX:0,scrollY:0,alert(){},confirm:()=>true,prompt:()=>null};
@@ -42,6 +42,30 @@ function loadRuntime(root,entry='index.html',saved={},clockStart=Date.parse('202
   // Individual module execution remains capped at 10s.
   // Mirror the loader's final domain apply and late-validator save restoration.
   vm.runInContext(`{const raw=typeof balanceSourceText==='function'?balanceSourceText():null;if(raw||globalThis.__HEADLESS_PUBLISHED_BALANCE)applyBalanceConfig(raw?JSON.parse(raw):globalThis.__HEADLESS_PUBLISHED_BALANCE,{persist:false});const boot=globalThis.__EMBERWILD_TEAM_BOOT_RAW||globalThis.__EMBERWILD_BOOT_SAVE_RAW;if(boot){try{loadParty(JSON.parse(boot));globalThis.__EMBERWILD_BOOT_SAVE_ERROR=null;}catch(error){party=null;state=null;running=false;globalThis.__EMBERWILD_BOOT_SAVE_ERROR=String(error.message||error);if(typeof backToTitle==='function')backToTitle();else render();}}}`,ctx,{filename:'headless-published-loader',timeout:options.bootstrapTimeoutMs||30000});
+  // v0.206: the game no longer equips anything when a character is created. Most tests create their character with a direct
+  // start(job) and were written for the former white starting set, so the harness equips that set on a direct start
+  // (not on the prologue path). Tests of character creation pass {bareStart:true} to see the game's own behavior.
+  if(entry==='index.html'&&!options.bareStart)vm.runInContext(`{const __start=start,SP=globalThis.__EMBERWILD_STARTER_PACK;let __prologue=false;
+    if(SP?.asPrologue){const base=SP.asPrologue;SP.asPrologue=function(action){__prologue=true;try{return base.call(this,action);}finally{__prologue=false;}};}
+    start=function(...args){const out=__start.apply(this,args);
+      if(!__prologue&&state&&party&&party.members?.length===1&&!(state.equipped||[]).some(Boolean)){
+        for(const [position,slot] of [0,1,2,3,3].entries()){const g=gear(1,slot,0,state.job);g.formJob=state.job;g.form=0;const f=typeof itemForm==='function'?itemForm(g):null;if(f?.weaponType)g.weaponType=f.weaponType;
+          Object.assign(g,{rar:0,plus:0,affix:[],powerTier:1,prefixId:'',suffixId:''});globalThis.__EMBERWILD_EQUIPMENT_SKILLS?.generate?.(g,{source:'starter',force:true});g.name=gearName(g);
+          state.bag.push(g);state.equipped[position]=g.id;}
+        state.hp=stats(state).hp;save();}
+      return out;};}`,ctx,{filename:'headless-starting-set'});
   return {ctx,elements,errors,warnings,values,dispatch:(type,target='window',event={})=>{for(const fn of listeners[target].get(type)||[])fn({...event,type});},run:code=>vm.runInContext(code,ctx),advance:ms=>{now+=ms;},get now(){return now;}};
 }
-module.exports={loadRuntime};
+// 遊戲資料只保留第一張地圖；需要第二張地圖的測試以 map0 複製一張暫時地圖（不寫入存檔）。
+const ADD_TEST_MAP=`{const d=exportableBalance(),bs=d.balanceSettings;const m=structuredClone(bs.maps.catalog[0]);m.id="map1";m.name="測試第二地圖";m.min=6;m.max=10;m.recommendedGearLevel=10;bs.maps.catalog.push(m);bs.maps.levelRanges.push({min:6,max:10});
+for(const x of bs.monsters.catalog.filter(x=>x.mapIndex===0)){const c=structuredClone(x);c.id=x.id.replace("map0","map1");c.mapIndex=1;bs.monsters.catalog.push(c);}
+for(const e of bs.drops.entries.filter(e=>e.type==="monsterGear"&&e.sources.length===1&&/^map0_/.test(e.sources[0]))){const c=structuredClone(e);c.id=e.id.replace("map0","map1");c.sources=[e.sources[0].replace("map0","map1")];bs.drops.entries.push(c);}
+applyBalanceConfig(d);}`;
+function addTestMap(r){r.run(ADD_TEST_MAP);}
+// 遊戲只保留洛恩（10）與艾琳（13）；需要更多夥伴的測試加入不帶技能的暫時夥伴 11／12／14（戰士／法師／弓箭手）。
+const ADD_TEST_COMPANIONS=`{const d=exportableBalance();for(const [id,job,w] of [[11,0,"sword"],[12,1,"staff"],[14,2,"bow"]]){if(d.companions.some(p=>p.id===id))continue;const p=structuredClone(d.companions.find(p=>p.id===10));Object.assign(p,{id,job,weapon:w,name:"測試夥伴"+id,passives:[],core:[],active:[],proc:[],support:[],availability:"visible",unlockCondition:{type:"initial"}});d.companions.push(p);}applyBalanceConfig(d);}`;
+// v0.228: a final map appended after the existing maps (index 2 after ADD_TEST_MAP), with its final boss.
+const ADD_TEST_FINAL=`{const d=exportableBalance(),bs=d.balanceSettings,i=bs.maps.catalog.length;const m=structuredClone(bs.maps.catalog[0]);Object.assign(m,{id:"map"+i,name:"測試終局",min:40,max:40,mapType:"final",progressionGate:true,eliteEnabled:false});bs.maps.catalog.push(m);bs.maps.levelRanges.push({min:40,max:40});const b=structuredClone(bs.monsters.catalog.find(x=>x.id==="map0_boss"));Object.assign(b,{id:"map"+i+"_final",mapIndex:i,kind:"final",name:"測試終局首領"});bs.monsters.catalog.push(b);applyBalanceConfig(d);}`;
+// Hidden test companions 11／12／14 that unlock only through the rules a test assigns (like the removed 15／16／17).
+const ADD_HIDDEN_TEST_COMPANIONS=ADD_TEST_COMPANIONS.replace('availability:"visible",unlockCondition:{type:"initial"}',"availability:'hidden',unlockCondition:{type:'achievement',achievementIds:['region-0-boss-1000']}");
+module.exports={loadRuntime,addTestMap,ADD_TEST_MAP,ADD_TEST_COMPANIONS,ADD_TEST_FINAL,ADD_HIDDEN_TEST_COMPANIONS};

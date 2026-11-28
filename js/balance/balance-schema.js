@@ -18,12 +18,12 @@ function validateMonsterDropDynamicInput(input){
   if(drops!==undefined){
     if(!Array.isArray(drops))throw Error('掉落表必須是陣列');
     if(!Array.isArray(cat)||!cat.length)throw Error('掉落表需要有效怪物設計清單');
-    const monsterById=new Map(cat.map(m=>[m.id,m])),dropIds=new Set(),types=new Set(['sourceMaterial','material','ore','dust','gem','potion','item','gear','gearLegendary','bossGear','equipment','token']),encKinds=new Set(['normal','elite','boss','final']);
+    const monsterById=new Map(cat.map(m=>[m.id,m])),dropIds=new Set(),types=new Set(['sourceMaterial','material','ore','gem','item','bossGear','equipment','token','monsterGear','gemPool']),encKinds=new Set(['normal','elite','boss','final']);
     for(const [i,d] of drops.entries()){
       if(!d||typeof d.id!=='string'||!/^[a-zA-Z0-9_-]{1,120}$/.test(d.id)||dropIds.has(d.id))throw Error('掉落規則 ID 無效或重複：'+i);dropIds.add(d.id);
-      if(typeof d.name!=='string'||!d.name.trim()||typeof d.enabled!=='boolean'||!types.has(d.type)||!Array.isArray(d.kinds)||!d.kinds.length||d.kinds.some(k=>!encKinds.has(k))||!Array.isArray(d.chanceByDifficulty)||d.chanceByDifficulty.length!==3||d.chanceByDifficulty.some(v=>!Number.isFinite(v)||v<0||v>1)||!Number.isInteger(d.quantityMin)||!Number.isInteger(d.quantityMax)||d.quantityMin<1||d.quantityMax<d.quantityMin||d.quantityMax>999||!Array.isArray(d.sources)||!d.sources.length||d.sources.some(id=>!monsterById.has(id)))throw Error('掉落規則資料無效：'+d.id);
+      if(typeof d.name!=='string'||!d.name.trim()||typeof d.enabled!=='boolean'||!types.has(d.type)||!Array.isArray(d.kinds)||!d.kinds.length||d.kinds.some(k=>!encKinds.has(k))||!Array.isArray(d.chanceByDifficulty)||d.chanceByDifficulty.length!==3||d.chanceByDifficulty.some(v=>!Number.isFinite(v)||v<0||v>1)||!Number.isInteger(d.quantityMin)||!Number.isInteger(d.quantityMax)||d.quantityMin<1||d.quantityMax<d.quantityMin||d.quantityMax>999||!Array.isArray(d.sources)||!d.sources.length||d.sources.some(id=>!monsterById.has(id)))throw Error('掉落規則資料無效：'+d.id);{const poolIssues=EmberwildDropRework.ruleIssues(d,{formExists:ref=>!!(typeof ITEM_FORMS!=='undefined'?ITEM_FORMS:[])[ref.job]?.[ref.slot]?.[ref.index]});if(poolIssues.length)throw Error(poolIssues.join('；'));}
       if(d.type==='material'&&(typeof d.key!=='string'||!d.key.trim()))throw Error('材料掉落需要材料名稱：'+d.id);
-      if(d.type==='gem'&&d.key!=='random'&&![0,1,2,'0','1','2'].includes(d.key))throw Error('寶石掉落 key 需為 random/0/1/2：'+d.id);
+      if(d.type==='gem'&&![0,1,2,3,4,'0','1','2','3','4'].includes(d.key))throw Error('寶石掉落 key 需為指定寶石 0～4（隨機寶石掉落已移除，請改用地圖寶石池）：'+d.id);
       if(d.type==='item'&&Array.isArray(input.items)&&!input.items.some(x=>x.id===d.key))throw Error('商店道具掉落 key 無效：'+d.id);
       const ruleKinds=new Set(d.kinds);
       for(const id of d.sources){
@@ -60,6 +60,6 @@ balanceReference=function(){
   out.legacySettings=legacy;
   out.balancePaths['balanceSettings.drops.entries']='所有可配置物品掉落的唯一機率來源；各規則依來源怪物、遭遇種類與難度獨立判定，並受 maxDrops 與掉寶率加成影響。';
   out.balancePaths['balanceSettings.equipment.difficultyAffix']='hardChance / hellChance 與各品質累積門檻只決定難度品質處理；最終種類與數值由 balance.affixes.poolBySlotRank 抽取。';
-  out.balancePaths['balanceSettings.progression.statsPerLevel']='舊資料 fallback：新版優先使用 classes[].growthPerLevel，不會覆寫各職業獨立成長。';
+  
   return out;
 };
