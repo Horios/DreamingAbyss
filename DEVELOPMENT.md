@@ -1701,3 +1701,11 @@ v0.211～v0.214 是手動觸發部署，沒有通過 CI；v0.215 合併後 CI �
 - 召喚樹精（`boss-summon-treants`）`initialCooldownSeconds` 10 → 5，戰鬥開始 5 秒後第一次召喚；冷卻 60 秒與「場上有召喚物不施放」不變（`data/balance/combat/skills.json`、`data/balance/characters/classes.json`）。
 - `tests/boss-map0-skills.test.cjs` 的時間點改為 5 秒與 65 秒。
 - 測試修正：`ancient-heart-bracer` 改用 `9c41f98` 降為 1/3 後的機率；`healing-potions` 只把藥水規則視為藥水掉落，掉落上下限改用鍛鐵規則測試；`story-system` 的巡查支線只剩無名密林、招募改用洛恩與艾琳（v0.222 只保留第一張地圖與兩位夥伴）。`healing-potions`、`story-system` 需要平衡器同步到 v0.228（序章 `charm`、`gem` 階段與 BOSS 效果 `summonAllies`、`resetBasic`）。
+- 需要平衡器的測試（`EMBERWILD_BALANCE_ROOT` 指向平衡器）配合 v0.222 精簡資料：
+  - `tests/headless-runtime.cjs` 新增 `ADD_TEST_FINAL`（接在現有地圖後的測試終局地圖與首領）與 `ADD_HIDDEN_TEST_COMPANIONS`（隱藏的暫時夥伴 11／12／14，只靠測試指定的條件解鎖）。
+  - 成就、夥伴解鎖、信箱：原本的 15／16／17 號夥伴改用暫時夥伴 11／12／14，地區 6 的終局改為測試終局地圖（索引 2）。
+  - 夥伴被動、技能歸屬、名冊：開局前加入暫時夥伴；艾琳的復活需要倒地隊友；同職業夥伴改用暫時戰士 11 號。
+  - 夥伴技能開關：依目前資料檢查洛恩（0／0／2、被動 7）與艾琳（0／0／7、被動 4）的解鎖精通等級。
+  - 具名夥伴：雷昂改由平衡器匯出資料拆分洛恩的名稱產生。
+  - 商店：存檔失敗退回改用固定商品 `heal_small`；庫存上限改用超量訂單檢查，因為堆疊背包（v0.204）每 99 個藥水一個物件，塞入 1e9 個會卡住存檔。
+  - 材料價格改用 `balanceRoot()` 找平衡器；內嵌模組比對忽略結尾換行。

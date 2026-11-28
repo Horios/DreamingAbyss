@@ -100,11 +100,14 @@ test('Options, shop pools, transactions and editor JSON use the real loaded modu
       assert.deepEqual(result.charges,[2*7,3*7,2*7,4*7,2*7,3*7,1*7]);assert.equal(result.before.gold-result.after.gold,result.charges.reduce((a,b)=>a+b,0));assert.equal(result.healGain,2);assert.equal(result.goldSpent,2*5);assert.equal(result.offer.sold,true);assert.equal(result.savedOffer.kind,'item');assert.equal(result.savedOffer.key,'heal_small');assert.equal(result.savedOffer.ruleId,'healing');assert.equal(result.savedOffer.sold,true);
     });
     await t.test('Failed saves roll back gold, inventory and sold flags; stock limits also prevent charges',async()=>{
+      // v0.228: the random market sells no potions any more and fixed offers use item ids (heal_small). The stack-based
+      // backpack (v0.204) keeps one object per 99 potions, so the 1e9 stock limit is checked on an oversized offer
+      // instead of filling the backpack with 1e9 potions.
       const result=await game.page.evaluate(()=>{
-        const offer=party.market.offers[0];offer.sold=false;const gold=state.gold,heals=healPotionCount('heal_small'),priorSave=save;save=()=>false;
-        try{buyMarketOffer(offer.id);buyFixedShopOffer('fixed_5');}finally{save=priorSave;}
+        party.market??=generateMarket();const offer=party.market.offers[0];offer.sold=false;const gold=state.gold,heals=healPotionCount('heal_small'),priorSave=save;save=()=>false;
+        try{buyMarketOffer(offer.id);buyFixedShopOffer('heal_small');}finally{save=priorSave;}
         const rollback={gold:state.gold===gold,heals:healPotionCount('heal_small')===heals,sold:offer.sold===false};
-        setHealPotionCount('heal_small',1e9);buyMarketOffer(offer.id);const limits={gold:state.gold===gold,heals:healPotionCount('heal_small')===1e9,sold:offer.sold===false};setHealPotionCount('heal_small',heals);
+        let soldCalls=0;purchaseShopOffer({kind:'item',key:'heal_small',qty:1e9+1-heals,price:1},'上限測試',()=>{soldCalls++;});const limits={gold:state.gold===gold,heals:healPotionCount('heal_small')===heals,sold:soldCalls===0};
         return {rollback,limits};
       });assert.deepEqual(result,{rollback:{gold:true,heals:true,sold:true},limits:{gold:true,heals:true,sold:true}});
     });
