@@ -2984,7 +2984,7 @@
             "bossDurationSeconds": 0,
             "tickIntervalSeconds": 6,
             "condition": "always",
-            "initialCooldownSeconds": 10
+            "initialCooldownSeconds": 5
           }
         },
         {
@@ -7912,7 +7912,7 @@
           "enabled": true,
           "eliteEnabled": false,
           "spawnWeight": 1,
-          "hpMultiplier": 1,
+          "hpMultiplier": 2,
           "attackMultiplier": 1,
           "defenseMultiplier": 1,
           "stageCount": 1,
@@ -18040,7 +18040,7 @@
           "bossDurationSeconds": 0,
           "tickIntervalSeconds": 6,
           "condition": "always",
-          "initialCooldownSeconds": 10
+          "initialCooldownSeconds": 5
         }
       },
       {

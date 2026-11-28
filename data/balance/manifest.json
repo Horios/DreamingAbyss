@@ -2,11 +2,11 @@
   "schema": "dreaming-abyss-balance-modules-v1",
   "formatVersion": 1,
   "documentSchema": "emberwild-balance-v1",
-  "dataRevision": 96,
+  "dataRevision": 97,
   "integrated": {
     "file": "data/balance.json",
-    "sha256": "ff48ceb24800030eaed3e3bd2921ac6b67395f2070d5c0c07e5a4679ce89b092",
-    "bytes": 567451
+    "sha256": "f7a856a84fe447d0fa269d46a4b8b52c2954725a80151349df80bd575cd82e46",
+    "bytes": 567449
   },
   "layout": {
     "": [
@@ -194,8 +194,8 @@
       "file": "world/monsters.json",
       "source": "balanceSettings.monsters",
       "present": true,
-      "version": 6,
-      "sha256": "a4501d2dff32521dbc36569002b06cbaf7b2556eb1c9ff663f0a5aaa587cf360",
+      "version": 7,
+      "sha256": "7db054bc13508c55b0571e4fd86014439d4c9afe681adb3b33486c9cbab393e0",
       "bytes": 6844,
       "dependsOn": [
         "combat/skills",
@@ -290,9 +290,9 @@
       "file": "combat/skills.json",
       "source": "skillSystem.definitions",
       "present": true,
-      "version": 16,
-      "sha256": "93e2f4d8748b22622d5b46e270027b94a8788e1c548acb0ca29f9c637ca64c3d",
-      "bytes": 114126,
+      "version": 17,
+      "sha256": "f210c15498f190f64e953b39844390b80000a00719106810354c960093574cef",
+      "bytes": 114125,
       "dependsOn": [
         "characters/classes",
         "characters/companions",
@@ -342,9 +342,9 @@
       "file": "characters/classes.json",
       "source": "classes",
       "present": true,
-      "version": 12,
-      "sha256": "4db37cbf04604fc8b803b3edba175a0b9107f5dc9a3d2f8fe8ee7e2199fd179c",
-      "bytes": 105936,
+      "version": 13,
+      "sha256": "c491dc82c7db104805411f6be93f0f81c01c9201c2419d0f1beae6742a2ce602",
+      "bytes": 105935,
       "dependsOn": [
         "systems/quests",
         "world/maps"

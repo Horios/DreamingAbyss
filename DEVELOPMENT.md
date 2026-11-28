@@ -1694,3 +1694,9 @@ v0.211～v0.214 是手動觸發部署，沒有通過 CI；v0.215 合併後 CI �
 ## v0.227 CI 測試清單
 
 - `test-skill-gems.yml` 的 skill-loadouts 群組改跑 `tests/onboarding-lessons.test.cjs` 與 `tests/boss-map0-skills.test.cjs`（取代 v0.226 刪除的 `tests/skill-equipment-tutorial.test.cjs`）。遊戲內容與 v0.226 相同。
+
+## v0.228 古木守望者血量與召喚時間
+
+- 古木守望者（`map0_boss`）`hpMultiplier` 1 → 2，血量為原本兩倍（`data/balance/world/monsters.json`）。
+- 召喚樹精（`boss-summon-treants`）`initialCooldownSeconds` 10 → 5，戰鬥開始 5 秒後第一次召喚；冷卻 60 秒與「場上有召喚物不施放」不變（`data/balance/combat/skills.json`、`data/balance/characters/classes.json`）。
+- `tests/boss-map0-skills.test.cjs` 的時間點改為 5 秒與 65 秒。

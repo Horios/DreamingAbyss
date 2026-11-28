@@ -5094,7 +5094,7 @@
       "bossDurationSeconds": 0,
       "tickIntervalSeconds": 6,
       "condition": "always",
-      "initialCooldownSeconds": 10
+      "initialCooldownSeconds": 5
     }
   },
   {
