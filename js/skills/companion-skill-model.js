@@ -26,18 +26,28 @@
     if(!raw||raw.version!==1||!Array.isArray(raw.unlocked)||raw.unlocked.length>512||new Set(raw.unlocked).size!==raw.unlocked.length||raw.unlocked.some(id=>!Number.isInteger(id)||id<10||id>1e9)||!Array.isArray(raw.regions)||raw.regions.length>1000||new Set(raw.regions).size!==raw.regions.length||raw.regions.some(i=>!Number.isInteger(i)||i<0||i>999)||!raw.eliteKills||typeof raw.eliteKills!=='object'||Array.isArray(raw.eliteKills)||Object.entries(raw.eliteKills).some(([key,n])=>! /^(0|[1-9]\d{0,2})$/.test(key)||!Number.isSafeInteger(n)||n<0||n>1e12))throw Error('夥伴解鎖進度無效');
     return copy(raw);
   }
+  // v0.228: a document with the canonical skill system also gets a definition for every cloned skill and passive,
+  // copied from the source definition (timing, tags, conditions) and pointed at the clone's owner and position.
+  function mirrorDefinition(doc,kind,job,sourceIndex,index,row,ownerJob=job){
+    const defs=doc.skillSystem?.definitions;if(!Array.isArray(defs)||defs.some(d=>d.id===row.id))return;
+    const source=defs.find(d=>(d.adapters||[d.adapter]).some(a=>a&&a.job===ownerJob&&a.kind===kind&&a.index===sourceIndex));
+    const def={...copy(source||row),...copy(row),type:kind==='core'?row.activation:kind,jobs:[job],adapter:{job,index,kind},sources:[{type:'companion',companionId:row.partnerId}]};
+    delete def.adapters;defs.push(def);
+  }
   function cloneSkills(doc,p,ownerId){
     const core=doc.classes[p.job].skills,support=doc.supportSkills[p.job],remap=new Map();
     const indices=[...new Set([...p.core,...core.flatMap((sk,i)=>ownerId!==undefined&&sk.partnerId===ownerId?[i]:[])])];
     for(const i of indices){const sk=core[i];if(!sk)throw Error('夥伴核心技能不存在：'+p.id);if(core.length>=64)throw Error('此職業核心技能最多 64 個');const next=copy(sk);next.id='partner'+p.id+'-core'+core.length;next.partnerId=p.id;next.usageScope='character';next.requiresAdvanced=false;next.mastery=null;next.requiredMastery=null;next.requiredMasteryLevel=0;remap.set(i,core.length);core.push(next);}
     for(const [old,index] of remap){const next=core[index];for(const target of next.induction?.targets||[])if(target.kind==='skill'){const match=[...remap].find(([source])=>core[source].id===target.skillId);if(match)target.skillId=core[match[1]].id;}}
+    for(const [old,index] of remap)mirrorDefinition(doc,'core',p.job,old,index,core[index]);
     p.core=p.core.map(i=>remap.get(i));p.active=p.active.map(i=>remap.get(i));p.proc=p.proc.map(i=>remap.get(i));
     const supportMap=new Map(),supportIndices=[...new Set([...p.support,...support.flatMap((sk,i)=>ownerId!==undefined&&sk.partnerId===ownerId?[i]:[])])];
-    for(const i of supportIndices){const sk=support[i];if(!sk)throw Error('夥伴輔助技能不存在：'+p.id);if(support.length>=64)throw Error('此職業輔助技能最多 64 個');const next=copy(sk);next.id='partner'+p.id+'-support'+support.length;next.partnerId=p.id;next.mastery=null;next.requiredMastery=null;next.requiredMasteryLevel=0;supportMap.set(i,support.length);support.push(next);}p.support=p.support.map(i=>supportMap.get(i));
+    for(const i of supportIndices){const sk=support[i];if(!sk)throw Error('夥伴輔助技能不存在：'+p.id);if(support.length>=64)throw Error('此職業輔助技能最多 64 個');const next=copy(sk);next.id='partner'+p.id+'-support'+support.length;next.partnerId=p.id;next.mastery=null;next.requiredMastery=null;next.requiredMasteryLevel=0;supportMap.set(i,support.length);support.push(next);mirrorDefinition(doc,'support',p.job,i,support.length-1,next);}p.support=p.support.map(i=>supportMap.get(i));
   }
   function clonePassives(doc,p,ownerId){
     const ids=[...new Set([...(p.passives||[]),...doc.passiveDefinitions.filter(d=>ownerId!==undefined&&d.partnerId===ownerId).map(d=>d.id)])],remap=new Map();
-    for(const id of ids){const d=doc.passiveDefinitions.find(x=>x.id===id);if(!d)throw Error('夥伴被動不存在：'+p.id);if(doc.passiveDefinitions.length>=512)throw Error('被動最多 512 個');const next=copy(d);let n=1;while(doc.passiveDefinitions.some(x=>x.id==='partner'+p.id+'-passive'+n))n++;next.id='partner'+p.id+'-passive'+n;next.partnerId=p.id;next.requiredLevel=d.requiredLevel??1;doc.passiveDefinitions.push(next);remap.set(id,next.id);}p.passives=(p.passives||[]).map(id=>remap.get(id));
+    for(const id of ids){const d=doc.passiveDefinitions.find(x=>x.id===id);if(!d)throw Error('夥伴被動不存在：'+p.id);if(doc.passiveDefinitions.length>=512)throw Error('被動最多 512 個');const next=copy(d);let n=1;while(doc.passiveDefinitions.some(x=>x.id==='partner'+p.id+'-passive'+n))n++;next.id='partner'+p.id+'-passive'+n;next.partnerId=p.id;next.requiredLevel=d.requiredLevel??1;doc.passiveDefinitions.push(next);remap.set(id,next.id);
+      if(doc.skillSystem?.definitions){const source=doc.skillSystem.definitions.find(x=>x.id===id&&x.type==='passive'),owner=source?.adapter?.job??p.job;mirrorDefinition(doc,'passive',p.job,source?.adapter?.index,doc.passiveDefinitions.length-1,next,owner);}}p.passives=(p.passives||[]).map(id=>remap.get(id));
   }
   function migrate(doc){
     if(doc.companionSkillVersion!==1){

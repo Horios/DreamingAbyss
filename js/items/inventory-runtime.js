@@ -203,14 +203,15 @@
   /* Region vouchers keep their own ledger: each voucher stack carries locked snapshot values, so only identical
      vouchers merge. Every ledger stack takes ceil(count / cap) slots of item:region-voucher's tab (消耗品). */
   function ledgerSlots(id,counts){const d=definition(id);if(!d.occupiesSlot)return [d.tab,0];return [d.tab,counts.reduce((n,c)=>n+(Number.isSafeInteger(c)&&c>0?Math.ceil(c/d.maxStack):0),0)];}
-  /* Six tabs, each with its own capacity (balanceSettings.inventory.capacities, default 100). Not enforced yet. */
+  /* Six tabs, each opening balanceSettings.inventory.capacities slots (default 100) of maxCapacities (default 3000).
+     v0.228: enforced; loot beyond the open slots is mailed (inventory-overflow.js), purchases and mail claims are refused. */
   function slots(){
     const r=store(),loose=gearBag().filter(g=>!wearer(g)),tokens=loose.filter(g=>globalThis.EmberwildTokens?.isToken(g)).length,extra={};
     const add=([tab,n])=>{if(n)extra[tab]=(extra[tab]||0)+n;};
     add(ledgerSlots('item:region-voucher',(party?.regionVouchers?.stacks||[]).map(v=>v?.count)));
     for(const [t,n] of Object.entries(tickets()))add(ledgerSlots('item:companion-ticket-'+t,[n]));
     const usage=M.slotUsage(r.store,{tabOf:id=>{const d=definition(id);return d.occupiesSlot?d.tab:null;},instances:{equipment:loose.length-tokens,token:tokens},extra,settings:gameplaySettingsRef()?.inventory});
-    return {...usage,enforced:false};
+    return {...usage,enforced:true};
   }
   function byCategory(category){
     if(!M.CATEGORIES[category])throw Error('未知的物品分類：'+category);
@@ -233,6 +234,6 @@
   const api={VERSION:M.VERSION,audit,model:M,definition,gearDefinition,count,has,add,remove,removeMany,merge,split,stacks,snapshot,restore,getGear,createGear,addGear:addGearInstance,slots,byCategory,settings,
     ensure:ensureInventory,_debug:()=>parties.get(party)};
   globalThis.EmberwildItems=api;
-  /* Existing bag page: show the computed slot usage next to the category tabs. Capacity is not enforced yet. */
-  if(typeof inventoryTabs==='function'){const baseTabs=inventoryTabs;inventoryTabs=function(...args){const html=baseTabs.apply(this,args);let note='';try{const s=slots();note=`<p class="small inventory-slot-usage">背包格數（目前不限制）：${Object.entries(s.tabs).map(([k,t])=>`<span data-inventory-tab="${k}" data-inventory-slots="${t.used}">${t.label} ${t.used} / ${t.capacity}</span>`).join('、')}</p>`;}catch{}return html+note;};}
+  /* Existing bag page: show the computed slot usage next to the category tabs. */
+  if(typeof inventoryTabs==='function'){const baseTabs=inventoryTabs;inventoryTabs=function(...args){const html=baseTabs.apply(this,args);let note='';try{const s=slots();note=`<p class="small inventory-slot-usage">背包格數（已開放／上限）：${Object.entries(s.tabs).map(([k,t])=>`<span data-inventory-tab="${k}" data-inventory-slots="${t.used}">${t.label} ${t.used} / ${t.capacity}（上限 ${t.maxCapacity}）</span>`).join('、')}</p>`;}catch{}return html+note;};}
 })();

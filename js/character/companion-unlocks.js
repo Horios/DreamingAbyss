@@ -140,6 +140,7 @@
   function claimMail(ids,direct=null){
     syncUnlocks();ensureSharedGear();ensureAccountResources();ensureSharedItems();ensureHealingPotionState();
     const messages=direct?[{attachments:direct}]:party.mailbox.messages.filter(m=>ids.includes(m.id)&&!m.claimed);if(!messages.length)return false;
+    const capacityBefore=direct?null:globalThis.__EMBERWILD_BAG_CAPACITY?.usage();
     const tickets=copy(party.achievements.tickets),bag=[...state.bag],materials=copy(state.materials),consumables=copy(state.consumables),gems=[...state.gems],potions=copy(healingInventory());
     let ore=state.ore,dust=state.dust;
     const add=(object,key,n,limit=1e9)=>{const next=(object[key]||0)+n;if(!Number.isSafeInteger(next)||next>limit)throw Error('道具庫存已達上限，附件保留在信箱');object[key]=next;};
@@ -165,8 +166,10 @@
     const before={tickets:party.achievements.tickets,bag:state.bag,materials:copy(state.materials),consumables:copy(state.consumables),gems:[...state.gems],potions:copy(party.members[0].healingPotions),ore:state.ore,dust:state.dust,mailbox:copy(party.mailbox),inventory:globalThis.EmberwildItems?.snapshot()};
     party.achievements.tickets=tickets;state.bag=bag;state.materials=materials;state.consumables=consumables;state.gems=gems;state.ore=ore;state.dust=dust;party.members[0].healingPotions=potions;
     if(direct)return true;
+    // v0.228: attachments that need more slots than a bag tab has open stay in the mailbox.
+    const full=capacityBefore?globalThis.__EMBERWILD_BAG_CAPACITY.grownOver(capacityBefore):[];
     for(const m of messages){m.claimed=true;m.read=true;}
-    let saved=false;try{saved=save()===true;}catch(error){toast('儲存失敗，附件保留在信箱');}
+    let saved=false;if(full.length)toast('背包格數不足，請整理背包後再領取附件');else try{saved=save()===true;}catch(error){toast('儲存失敗，附件保留在信箱');}
     if(!saved){party.achievements.tickets=before.tickets;state.bag=before.bag;state.materials=before.materials;state.consumables=before.consumables;state.gems=before.gems;state.ore=before.ore;state.dust=before.dust;party.members[0].healingPotions=before.potions;party.mailbox=before.mailbox;if(before.inventory)globalThis.EmberwildItems.restore(before.inventory);return false;}
     render();toast('已領取 '+messages.length+' 封郵件的附件，道具已放入背包');return true;
   }

@@ -13,7 +13,9 @@ test('Every legacy name becomes a uniquely named companion with independent comp
 test('Splitting copies unconfigured skills too, remaps references and rejects capacity overflow without partial changes',()=>{
  const r=game(),doc=json(r,'exportableBalance()'),p=doc.companions.find(p=>p.id===10);delete doc.companionNameVersion;p.names=[p.name,'拆分測試'];delete p.name;
  const raw=structuredClone(doc.classes[p.job].skills[p.core[0]]);raw.id='unused-core';raw.name='尚未配置';doc.classes[p.job].skills.push(raw);
- Skills.migrate(doc);const split=doc.companions.find(p=>p.name==='拆分測試');assert(doc.classes[split.job].skills.some(s=>s.partnerId===split.id&&s.name==='尚未配置'));assert.equal(split.core.length,p.core.length);Skills.validate(doc);
+ Skills.migrate(doc);const split=doc.companions.find(p=>p.name==='拆分測試');assert(doc.classes[split.job].skills.some(s=>s.partnerId===split.id&&s.name==='尚未配置'));assert.equal(split.core.length,p.core.length);
+ // v0.228: the skill system gets a definition for every split skill and passive, at the clone's position.
+ for(const i of split.core)assert(doc.skillSystem.definitions.some(d=>d.partnerId===split.id&&d.adapter.kind==='core'&&d.adapter.index===i&&d.id===doc.classes[split.job].skills[i].id),'core '+i);for(const id of split.passives)assert(doc.skillSystem.definitions.some(d=>d.id===id&&d.type==='passive'&&d.partnerId===split.id),'passive '+id);Skills.validate(doc);
  const large=json(r,'exportableBalance()');delete large.companionNameVersion;const first=large.companions.find(p=>p.id===10);delete first.name;first.names=Array.from({length:30},(_,i)=>'容量測試'+i);const before=structuredClone(large);assert.throws(()=>Skills.migrate(large),/最多 64/);assert.deepEqual(large,before);
 });
 test('Designer names import, recruit deterministically and keep sibling stats, skill ownership and unlock levels independent',()=>{
@@ -22,7 +24,7 @@ test('Designer names import, recruit deterministically and keep sibling stats, s
  assert.deepEqual(json(r,'[partyMember(10).name,partyMember(sid).name]'),['洛恩','雷昂']);
  const definitions=json(r,'exportableBalance().companions'),first=definitions.find(p=>p.id===10),other=definitions.find(p=>p.id===sid);assert.deepEqual(first.initialStats,other.initialStats);assert.deepEqual(first.growthPerLevel,other.growthPerLevel);
  // Skill system v1: edit the canonical definition that classes[0].skills is projected from.
- r.run('const edited=exportableBalance(),owner=edited.companions.find(p=>p.id===sid),sk=edited.skillSystem.definitions.find(x=>(x.adapters||[x.adapter]).some(a=>a?.job===0&&a.kind==="core"&&a.index===owner.core[0]))||edited.classes[0].skills[owner.core[0]];sk.power=7;sk.requiredLevel=20;applyBalanceConfig(edited);');
+ r.run('const edited=exportableBalance(),owner=edited.companions.find(p=>p.id===sid),sk=edited.skillSystem.definitions.find(x=>(x.adapters||[x.adapter]).some(a=>a?.job===0&&a.kind==="core"&&a.index===owner.core[0]));sk.power=7;sk.requiredLevel=20;applyBalanceConfig(edited);');
  assert.equal(r.run('partyMember(sid).skills[__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(sid)).core[0]]'),0);assert.equal(r.run('CLASSES[0].skills[__EMBERWILD_COMPANION_TEST_API.companionPlan(partyMember(10)).core[0]][4]'),first?json(e,'data.classes[0].skills[data.companions.find(p=>p.id===10).core[0]].power'):0);
  r.run('save();loadParty(structuredClone(packParty()));');const restarted=loadRuntime(root,'index.html',Object.fromEntries(r.values));assert.equal(restarted.run('partyMember('+sid+').name'),'雷昂');assert.equal(restarted.run('__EMBERWILD_COMPANION_TEST_API.plans.length'),doc.companions.length);assert.deepEqual(restarted.errors,[]);
 });

@@ -4,7 +4,7 @@
 <script data-balance-src="js/character/companion-model.js?v=20261123-v0196-aspd"></script>
 <script data-balance-src="js/skills/passive-model.js?v=20261123-v0196-aspd"></script>
 <script data-balance-src="js/character/achievement-model.js?v=20261012-utility1"></script>
-<script data-balance-src="js/skills/companion-skill-model.js?v=20261120-v0179"></script>
+<script data-balance-src="js/skills/companion-skill-model.js?v=20261128-v0228-split-skills"></script>
 <script data-balance-src="js/character/team-model.js?v=20261119-v0169"></script>
 <script data-balance-src="js/items/timed-boosts.js?v=20261119-v0169"></script>
 <script data-balance-src="js/skills/skill-effect-schema.js"></script>
@@ -14,14 +14,14 @@
 <script data-balance-src="js/world/quest-design-model.js?v=20261126-v0216-material-economy"></script>
 <script data-balance-src="js/world/commission-model.js?v=20261126-v0216-material-economy"></script>
 <script data-balance-src="js/equipment/gear-inventory-model.js"></script>
-<script data-balance-src="js/items/inventory-model.js?v=20261124-v0205-inventory-fix"></script>
+<script data-balance-src="js/items/inventory-model.js?v=20261128-v0228-bag-capacity"></script>
 <script data-balance-src="js/world/drop-rework-model.js?v=20261126-v0215-merge"></script>
 <script data-balance-src="js/core/game-catalog.js?v=20261126-v0215-merge"></script>
 <script data-balance-src="js/balance/game-balance-defaults.js?v=20261022-core-catalog1"></script>
-<script data-balance-src="js/balance/gameplay-defaults.js?v=20261126-v0217-gem-dust"></script>
+<script data-balance-src="js/balance/gameplay-defaults.js?v=20261128-v0228-bag-capacity"></script>
 <script data-balance-src="js/core/save-validation.js?v=20261126-v0223-retired-board"></script>
 <script data-balance-src="js/skills/skill-presentation-metadata.js?v=20261022-core-services1"></script>
-<script data-balance-src="js/balance/gameplay-settings-schema.js?v=20261124-v0204-inventory"></script>
+<script data-balance-src="js/balance/gameplay-settings-schema.js?v=20261128-v0228-bag-capacity"></script>
 <script data-balance-src="js/ui/core-screen-views.js?v=20261126-v0216-material-economy"></script>
 <script data-balance-src="js/ui/core-equipment-views.js?v=20261119-v0169"></script>
 <script data-balance-src="js/ui/core-battle-journal.js?v=20261106-gold1"></script>
@@ -156,7 +156,7 @@
 <script data-balance-src="js/character/companions.js?v=20261124-v0211-grid"></script>
 <script data-balance-src="js/balance/progression-runtime.js?v=20261123-v0192-floor"></script>
 <script data-balance-src="js/items/shop-catalog.js?v=20261118-v0163-gear"></script>
-<script id="shop-inventory-overhaul-system" data-balance-src="js/items/shop-inventory.js?v=20261126-v0216-material-economy"></script>
+<script id="shop-inventory-overhaul-system" data-balance-src="js/items/shop-inventory.js?v=20261128-v0228-bag-capacity"></script>
 <link rel="stylesheet" href="css/options.css?v=20261118-v0158-merge1">
 <script data-balance-src="js/equipment/equipment-shop.js?v=20261126-v0211-gear"></script>
 <script data-balance-src="js/ui/options.js?v=20261113-v0144-tutorial1"></script>
@@ -192,7 +192,7 @@
 <script src="js/balance/balance-document.js?v=20261126-v0221-retired-root"></script><!-- shared preflight -->
 
 <link rel="stylesheet" href="css/achievements.css?v=20261118-v0158-merge1">
-<script data-balance-src="js/character/companion-unlocks.js?v=20261126-v0215-merge"></script>
+<script data-balance-src="js/character/companion-unlocks.js?v=20261128-v0228-bag-capacity"></script>
 <link rel="stylesheet" href="css/utility-navigation.css?v=20261118-v0158-merge1">
 <script data-balance-src="js/world/quest-design-settings.js?v=20261019-daily-speed2"></script>
 <link rel="stylesheet" href="css/quest-design.css?v=20261012-quests2">
@@ -202,7 +202,7 @@
 <script data-balance-src="js/balance/published-runtime.js?v=20261126-v0216-material-economy"></script>
 <script data-balance-src="js/ui/navigation-tree.js?v=20261126-v0216-material-economy"></script>
 <script data-balance-src="js/ui/inventory-icons-runtime.js?v=20261126-v0216-material-economy"></script>
-<script data-balance-src="js/items/inventory-runtime.js?v=20261126-v0217-gem-dust"></script>
+<script data-balance-src="js/items/inventory-runtime.js?v=20261128-v0228-bag-capacity"></script>
 <script data-balance-src="js/world/monster-design-runtime.js?v=20261124-v0206-drops"></script>
 <link rel="stylesheet" href="css/story.css?v=20261120-v0184">
 <link rel="stylesheet" href="css/prologue.css?v=20261120-v0185">
@@ -249,12 +249,13 @@
 <script data-balance-src="js/story/quest-lesson-runtime.js?v=20261126-v0215-merge"></script>
 <script data-balance-src="js/skills/mastery-damage.js?v=20261126-v0215-merge"></script>
 <script data-balance-src="js/ui/skill-page.js?v=20261126-v0220-upstream-fix"></script>
-<script data-balance-src="js/ui/inventory-grid.js?v=20261126-v0217-gem-dust"></script>
+<script data-balance-src="js/ui/inventory-grid.js?v=20261128-v0228-bag-capacity"></script>
 <script data-balance-src="js/story/tutorial-runtime.js?v=20261126-v0217-retired-save"></script>
 <script data-balance-src="js/ui/bestiary.js?v=20261124-v0206-drops"></script>
 <script data-balance-src="js/ui/loot-effects.js?v=20261126-v0217-gem-dust"></script>
 <script data-balance-src="js/ui/enhancement-effects.js?v=20261123-v0188-1"></script>
 <script data-balance-src="js/world/drop-rework.js?v=20261126-v0217-gem-dust"></script>
+<script data-balance-src="js/items/inventory-overflow.js?v=20261128-v0228-bag-capacity"></script>
 <script data-balance-src="js/balance/apply-guard.js?v=20261113-v0137-prologue3"></script>
 <script data-balance-src="js/ui/responsive-shell.js?v=20261126-v0216-material-economy"></script>
 <script src="js/ui/preview-version.js"></script><script src="js/balance/published-loader.js?v=20261123-v0190-styles"></script>

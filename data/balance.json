@@ -8631,6 +8631,14 @@
         "consumable": 100,
         "special": 100
       },
+      "maxCapacities": {
+        "equipment": 3000,
+        "token": 3000,
+        "gem": 3000,
+        "material": 3000,
+        "consumable": 3000,
+        "special": 3000
+      },
       "stackLimits": {
         "equipment": 1,
         "token": 1,

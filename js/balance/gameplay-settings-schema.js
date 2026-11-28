@@ -22,7 +22,7 @@ function validateGameplaySettings(cfg){
   if(!Number.isInteger(cfg.equipment.maxLevel)||cfg.equipment.maxLevel<1||cfg.equipment.maxLevel>999)throw Error('裝備等級上限設定無效');
   if(cfg.rewards.ether.firstBossMax<cfg.rewards.ether.firstBossMin)throw Error('首次 BOSS 以太鍛鐵範圍無效');
   cfg.maps.levelRanges.forEach((m,i)=>{if(!Number.isFinite(m.min)||!Number.isFinite(m.max)||m.min<1||m.max<m.min)throw Error('地圖等級範圍無效：'+i);});
-  // v0.204: stack limits per item category and the planned bag capacity (not enforced yet).
+  // v0.204: stack limits per item category; v0.228: open slots (capacities) and slot ceilings (maxCapacities) per tab.
   if(globalThis.EmberwildInventory){const errors=EmberwildInventory.settingsIssues(cfg.inventory);if(errors.length)throw Error(errors.join('\n'));}
   return cfg;
 }

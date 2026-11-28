@@ -10,10 +10,11 @@
   const VERSION=1;
   // Category defaults. Balance data (balanceSettings.inventory.stackLimits) may change the numbers;
   // a single item can still override them with inventoryIcons[].maxStack / .occupiesSlot / .stackable.
-  /* The bag has six tabs with their own capacity (default 100 each). Every category belongs to one tab. */
+  /* The bag has six tabs. Each tab opens `capacity` slots (default 100) out of `maxCapacity` (default 3000, v0.228).
+     Every category belongs to one tab. */
   const TABS={
-    equipment:{label:'裝備',capacity:100},token:{label:'信物',capacity:100},gem:{label:'寶石',capacity:100},
-    material:{label:'素材',capacity:100},consumable:{label:'消耗品',capacity:100},special:{label:'特殊',capacity:100}
+    equipment:{label:'裝備',capacity:100,maxCapacity:3000},token:{label:'信物',capacity:100,maxCapacity:3000},gem:{label:'寶石',capacity:100,maxCapacity:3000},
+    material:{label:'素材',capacity:100,maxCapacity:3000},consumable:{label:'消耗品',capacity:100,maxCapacity:3000},special:{label:'特殊',capacity:100,maxCapacity:3000}
   };
   const CATEGORIES={
     equipment:{label:'裝備',tab:'equipment',maxStack:1,stackable:false,occupiesSlot:true},
@@ -28,7 +29,8 @@
     questItem:{label:'任務道具',tab:'special',maxStack:999,stackable:true,occupiesSlot:false}
   };
   const INSTANCE_CATEGORIES=new Set(['equipment','token']);
-  const DEFAULT_SETTINGS={capacities:Object.fromEntries(Object.entries(TABS).map(([k,v])=>[k,v.capacity])),stackLimits:Object.fromEntries(Object.entries(CATEGORIES).map(([k,v])=>[k,v.maxStack]))};
+  const MAX_CAPACITY=3000;
+  const DEFAULT_SETTINGS={capacities:Object.fromEntries(Object.entries(TABS).map(([k,v])=>[k,v.capacity])),maxCapacities:Object.fromEntries(Object.entries(TABS).map(([k,v])=>[k,v.maxCapacity])),stackLimits:Object.fromEntries(Object.entries(CATEGORIES).map(([k,v])=>[k,v.maxStack]))};
   const MAX_STACK=1e9,MAX_TOTAL=1e12,UNSAFE=new Set(['__proto__','constructor','prototype']);
   const ENHANCEMENT=new Set(['鍛鐵','粉塵']),RARE=new Set(['以太鍛鐵','光輝碎塊']),CONSUMABLE_MATERIALS=new Set(['升級卷軸']);
   const STACK_KINDS=['material','gem','item'];
@@ -57,9 +59,10 @@
     return 'material';
   }
   function normalizeSettings(raw){
-    const out={capacities:{...DEFAULT_SETTINGS.capacities},stackLimits:{...DEFAULT_SETTINGS.stackLimits}};
+    const out={capacities:{...DEFAULT_SETTINGS.capacities},maxCapacities:{...DEFAULT_SETTINGS.maxCapacities},stackLimits:{...DEFAULT_SETTINGS.stackLimits}};
     if(raw&&typeof raw==='object'){
-      for(const k of Object.keys(TABS)){const n=raw.capacities?.[k];if(Number.isSafeInteger(n)&&n>=1&&n<=100000)out.capacities[k]=n;}
+      for(const k of Object.keys(TABS)){const n=raw.maxCapacities?.[k];if(Number.isSafeInteger(n)&&n>=1&&n<=MAX_CAPACITY)out.maxCapacities[k]=n;}
+      for(const k of Object.keys(TABS)){const n=raw.capacities?.[k];if(Number.isSafeInteger(n)&&n>=1)out.capacities[k]=Math.min(n,out.maxCapacities[k]);}
       for(const k of Object.keys(CATEGORIES)){const n=raw.stackLimits?.[k];if(!INSTANCE_CATEGORIES.has(k)&&Number.isSafeInteger(n)&&n>=1&&n<=MAX_STACK)out.stackLimits[k]=n;}
     }
     for(const k of INSTANCE_CATEGORIES)out.stackLimits[k]=1;
@@ -70,7 +73,11 @@
     if(!raw||typeof raw!=='object'||Array.isArray(raw))return ['背包設定必須是物件'];
     if(raw.capacities!==undefined){
       if(!raw.capacities||typeof raw.capacities!=='object'||Array.isArray(raw.capacities))errors.push('背包分頁容量必須是物件');
-      else for(const [k,n] of Object.entries(raw.capacities)){if(!TABS[k]){errors.push('未知的背包分頁：'+k);continue;}if(!Number.isSafeInteger(n)||n<1||n>100000)errors.push('背包分頁容量必須是 1～100000 的整數：'+k);}
+      else for(const [k,n] of Object.entries(raw.capacities)){if(!TABS[k]){errors.push('未知的背包分頁：'+k);continue;}const max=Number.isSafeInteger(raw.maxCapacities?.[k])?raw.maxCapacities[k]:TABS[k].maxCapacity;if(!Number.isSafeInteger(n)||n<1||n>max)errors.push('背包分頁開放格數必須是 1～'+max+' 的整數（不可超過格數上限）：'+k);}
+    }
+    if(raw.maxCapacities!==undefined){
+      if(!raw.maxCapacities||typeof raw.maxCapacities!=='object'||Array.isArray(raw.maxCapacities))errors.push('背包分頁格數上限必須是物件');
+      else for(const [k,n] of Object.entries(raw.maxCapacities)){if(!TABS[k]){errors.push('未知的背包分頁：'+k);continue;}if(!Number.isSafeInteger(n)||n<1||n>MAX_CAPACITY)errors.push('背包分頁格數上限必須是 1～'+MAX_CAPACITY+' 的整數：'+k);}
     }
     if(raw.stackLimits!==undefined){
       if(!raw.stackLimits||typeof raw.stackLimits!=='object'||Array.isArray(raw.stackLimits))errors.push('堆疊上限必須是物件');
@@ -180,7 +187,7 @@
      extra = {tab:n} for stores kept outside the stack store (tickets, region vouchers). */
   function slotUsage(store,{tabOf=()=>null,instances={},extra={},settings}={}){
     const s=normalizeSettings(settings),tabs={};
-    for(const [k,t] of Object.entries(TABS))tabs[k]={label:t.label,used:0,capacity:s.capacities[k]};
+    for(const [k,t] of Object.entries(TABS))tabs[k]={label:t.label,used:0,capacity:s.capacities[k],maxCapacity:s.maxCapacities[k]};
     for(const st of store.stacks){const t=tabOf(st.item);if(t&&tabs[t])tabs[t].used++;}
     for(const [t,n] of [...Object.entries(instances),...Object.entries(extra)])if(tabs[t])tabs[t].used+=n;
     for(const t of Object.values(tabs))t.free=Math.max(0,t.capacity-t.used),t.over=Math.max(0,t.used-t.capacity);
@@ -223,7 +230,7 @@
   /* Split a quantity into stack sizes, e.g. 1500 at 999 → [999,501]. */
   function stackSizes(qty,cap){checkQty(qty);const out=[];while(qty>0){out.push(Math.min(cap,qty));qty-=Math.min(cap,qty);}return out;}
 
-  const api={VERSION,TABS,CATEGORIES,DEFAULT_SETTINGS,MAX_STACK,parseId,itemId,validId,classify,normalizeSettings,settingsIssues,overrideIssues,definition,instanceDefinition,
+  const api={VERSION,TABS,CATEGORIES,DEFAULT_SETTINGS,MAX_STACK,MAX_CAPACITY,parseId,itemId,validId,classify,normalizeSettings,settingsIssues,overrideIssues,definition,instanceDefinition,
     createStore,total,items,stacksOf,isStandard,add,remove,removeMany,setTotal,merge,split,normalize,slotUsage,serialize,validateLayout,reconcile,sortBySavedOrder,stackByUid,stackSizes};
   root.EmberwildInventory=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

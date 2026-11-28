@@ -118,7 +118,8 @@
       if(state.bag.length+offer.qty>RULES.bagCapacity)return toast('背包空間不足');
       const items=Array.from({length:offer.qty},()=>globalThis.createEquipmentShopGear(offer.stageId,offer.entryId));
       if(items.some(g=>!g))return false;
-      const gold=state.gold;state.bag.push(...items);state.gold-=price;
+      const gold=state.gold,capacity=globalThis.__EMBERWILD_BAG_CAPACITY?.usage();state.bag.push(...items);state.gold-=price;
+      if(capacity&&globalThis.__EMBERWILD_BAG_CAPACITY.grownOver(capacity).length){const ids=new Set(items.map(g=>g.id));state.bag.splice(0,state.bag.length,...state.bag.filter(g=>!ids.has(g.id)));state.gold=gold;toast('背包格數不足');return false;}
       if(!save()){const ids=new Set(items.map(g=>g.id));state.bag.splice(0,state.bag.length,...state.bag.filter(g=>!ids.has(g.id)));state.gold=gold;return false;}
       render();toast('已購買 '+name+' ×'+offer.qty);return true;
     }
@@ -127,7 +128,11 @@
     if(state.gold<price)return toast('金幣不足');
     const had=Object.prototype.hasOwnProperty.call(slot.object,slot.key),old=Number(slot.object[slot.key])||0,next=old+offer.qty,gold=state.gold;
     if(!Number.isSafeInteger(next)||next>slot.limit)return toast('庫存已達上限');
-    slot.object[slot.key]=next;state.gold-=price;if(onSold)onSold(true);
+    const capacity=globalThis.__EMBERWILD_BAG_CAPACITY?.usage();
+    slot.object[slot.key]=next;
+    // v0.228: a purchase that needs more slots than the bag tab has open is refused.
+    if(capacity&&globalThis.__EMBERWILD_BAG_CAPACITY.grownOver(capacity).length){if(had)slot.object[slot.key]=old;else delete slot.object[slot.key];return toast('背包格數不足');}
+    state.gold-=price;if(onSold)onSold(true);
     if(!save()){if(had)slot.object[slot.key]=old;else delete slot.object[slot.key];state.gold=gold;if(onSold)onSold(false);return;}
     render();toast('已購買 '+name+' ×'+offer.qty);
   }

@@ -41,7 +41,7 @@ test('unified API: add, count, has, all-or-nothing removal across stacks, merge 
 test('slots are counted per tab: 裝備 / 信物 / 寶石 / 素材 / 消耗品 / 特殊, 100 each; worn gear is free',()=>{
  const r=game();r.run(`clearStackables();for(const k of Object.keys(party.achievements.tickets))delete party.achievements.tickets[k];state.bag=state.bag.filter(g=>gearWearer(g.id));for(let i=0;i<15;i++)state.bag.push(fixture('g'+i));state.ore=1500;state.dust=2000;state.gems[0]=3;EmberwildItems.add('item:heal_standard',120);EmberwildItems.add('item:companion-ticket-10',5);`);
  const tabs=()=>json(r,'Object.fromEntries(Object.entries(EmberwildItems.slots().tabs).map(([k,t])=>[k,[t.used,t.capacity]]))');
- assert.deepEqual(tabs(),{equipment:[15,100],token:[0,100],gem:[1,100],material:[5,100],consumable:[2,100],special:[1,100]});assert.equal(r.run('EmberwildItems.slots().enforced'),false);
+ assert.deepEqual(tabs(),{equipment:[15,100],token:[0,100],gem:[1,100],material:[5,100],consumable:[2,100],special:[1,100]});assert.equal(r.run('EmberwildItems.slots().enforced'),true);
  r.run("unequipSharedGear(state.equipped[0])");assert.equal(tabs().equipment[0],16);r.run("equipSharedGear('g0',memberKey(state),0)");assert.equal(tabs().equipment[0],15);
  // Exceeding a tab capacity never blocks a grant in this stage.
  r.run('EmberwildItems.add("material:鍛鐵",999*200)');assert(tabs().material[0]>100);assert.equal(r.run('EmberwildItems.slots().tabs.material.over'),tabs().material[0]-100);assert.equal(r.run('state.ore'),1500+999*200);

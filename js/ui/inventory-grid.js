@@ -242,7 +242,7 @@
   function usageHTML(t,usage){
     const u=usage?.tabs?.[t.tab];if(!u)return '';
     const over=u.used>u.capacity;
-    return `<span class="bag-usage${over?' is-over':''}" data-inventory-tab="${t.tab}" data-inventory-slots="${u.used}" title="${t.label}格數"><b>${u.used}</b>／${u.capacity}</span>${usage.enforced===false?'<span class="small bag-usage-note">容量尚未限制</span>':''}`;
+    return `<span class="bag-usage${over?' is-over':''}" data-inventory-tab="${t.tab}" data-inventory-slots="${u.used}" title="${t.label}格數：已開放 ${u.capacity} 格，上限 ${u.maxCapacity} 格"><b>${u.used}</b>／${u.capacity}</span>${usage.enforced===false?'<span class="small bag-usage-note">容量尚未限制</span>':''}`;
   }
 
   /* ---------- page ---------- */
